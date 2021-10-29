@@ -315,6 +315,11 @@ class CrosHealthdServiceConnectionTest : public testing::Test {
  public:
   CrosHealthdServiceConnectionTest() = default;
 
+  CrosHealthdServiceConnectionTest(const CrosHealthdServiceConnectionTest&) =
+      delete;
+  CrosHealthdServiceConnectionTest& operator=(
+      const CrosHealthdServiceConnectionTest&) = delete;
+
   void SetUp() override { CrosHealthdClient::InitializeFake(); }
 
   void TearDown() override {
@@ -326,8 +331,6 @@ class CrosHealthdServiceConnectionTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrosHealthdServiceConnectionTest);
 };
 
 TEST_F(CrosHealthdServiceConnectionTest, GetAvailableRoutines) {

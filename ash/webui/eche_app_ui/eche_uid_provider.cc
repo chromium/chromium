@@ -13,7 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "crypto/random.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 const char kEcheAppSeedPref[] = "cros.echeapp.seed";
@@ -103,4 +103,4 @@ void EcheUidProvider::Bind(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

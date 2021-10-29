@@ -104,6 +104,10 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
       media::VideoFacingMode::MEDIA_VIDEO_FACING_USER;
 
   WrappedDeviceFactory() = default;
+
+  WrappedDeviceFactory(const WrappedDeviceFactory&) = delete;
+  WrappedDeviceFactory& operator=(const WrappedDeviceFactory&) = delete;
+
   ~WrappedDeviceFactory() override = default;
 
   std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
@@ -145,8 +149,6 @@ class WrappedDeviceFactory final : public media::FakeVideoCaptureDeviceFactory {
   }
 
   std::vector<WrappedDevice*> devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(WrappedDeviceFactory);
 };
 
 // Listener class used to track progress of VideoCaptureManager test.

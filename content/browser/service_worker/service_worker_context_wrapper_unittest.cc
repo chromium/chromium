@@ -34,6 +34,11 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
  public:
   ServiceWorkerContextWrapperTest() = default;
 
+  ServiceWorkerContextWrapperTest(const ServiceWorkerContextWrapperTest&) =
+      delete;
+  ServiceWorkerContextWrapperTest& operator=(
+      const ServiceWorkerContextWrapperTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(user_data_directory_.CreateUniqueTempDir());
     InitWrapper();
@@ -114,9 +119,6 @@ class ServiceWorkerContextWrapperTest : public testing::Test {
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
   std::unique_ptr<storage::ServiceWorkerStorageControlImpl> storage_control_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWrapperTest);
 };
 
 // Test that the UI thread knows which origins have registrations upon

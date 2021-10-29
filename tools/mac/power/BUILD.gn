@@ -24,14 +24,14 @@ group("all") {
 
 static_library("power_sampler_lib") {
   sources = [
-    "power_sampler/backlight_level_sampler.cc",
-    "power_sampler/backlight_level_sampler.h",
     "power_sampler/battery_sampler.h",
     "power_sampler/battery_sampler.mm",
     "power_sampler/csv_exporter.cc",
     "power_sampler/csv_exporter.h",
     "power_sampler/json_exporter.cc",
     "power_sampler/json_exporter.h",
+    "power_sampler/main_display_sampler.cc",
+    "power_sampler/main_display_sampler.h",
     "power_sampler/monitor.cc",
     "power_sampler/monitor.h",
     "power_sampler/sampler.cc",
@@ -43,6 +43,7 @@ static_library("power_sampler_lib") {
   ]
   deps = [ "//base" ]
   frameworks = [
+    "CoreGraphics.framework",
     "Foundation.framework",
 
     # Used by the backlight sampler.
@@ -63,10 +64,10 @@ executable("power_sampler") {
 test("power_sampler_unittests") {
   testonly = true
   sources = [
-    "power_sampler/backlight_level_sampler_unittest.cc",
     "power_sampler/battery_sampler_unittest.cc",
     "power_sampler/csv_exporter_unittest.cc",
     "power_sampler/json_exporter_unittest.cc",
+    "power_sampler/main_display_sampler_unittest.cc",
     "power_sampler/sampling_controller_unittest.cc",
     "power_sampler/user_idle_level_sampler_unittest.cc",
   ]

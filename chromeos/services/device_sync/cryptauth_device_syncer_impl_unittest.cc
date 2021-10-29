@@ -103,6 +103,12 @@ const CryptAuthKey& GetGroupKeyWithoutPrivateKey() {
 }  // namespace
 
 class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthDeviceSyncerImplTest(
+      const DeviceSyncCryptAuthDeviceSyncerImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceSyncerImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceSyncerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthDeviceSyncerImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -438,8 +444,6 @@ class DeviceSyncCryptAuthDeviceSyncerImplTest : public testing::Test {
   absl::optional<CryptAuthDeviceSyncResult> device_sync_result_;
 
   std::unique_ptr<CryptAuthDeviceSyncer> syncer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceSyncerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceSyncerImplTest,

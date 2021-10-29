@@ -68,6 +68,9 @@ class IndexedDBFactoryTest : public testing::Test {
       std::unique_ptr<base::test::TaskEnvironment> task_environment)
       : task_environment_(std::move(task_environment)) {}
 
+  IndexedDBFactoryTest(const IndexedDBFactoryTest&) = delete;
+  IndexedDBFactoryTest& operator=(const IndexedDBFactoryTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     quota_policy_ = base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
@@ -214,8 +217,6 @@ class IndexedDBFactoryTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> context_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactoryTest);
 };
 
 class IndexedDBFactoryTestWithMockTime : public IndexedDBFactoryTest {
@@ -224,8 +225,10 @@ class IndexedDBFactoryTestWithMockTime : public IndexedDBFactoryTest {
       : IndexedDBFactoryTest(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBFactoryTestWithMockTime);
+  IndexedDBFactoryTestWithMockTime(const IndexedDBFactoryTestWithMockTime&) =
+      delete;
+  IndexedDBFactoryTestWithMockTime& operator=(
+      const IndexedDBFactoryTestWithMockTime&) = delete;
 };
 
 TEST_F(IndexedDBFactoryTest, BasicFactoryCreationAndTearDown) {
@@ -868,6 +871,12 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
                            blink::StorageKey(),
                            mojo::NullAssociatedRemote(),
                            base::SequencedTaskRunnerHandle::Get()) {}
+
+  LookingForQuotaErrorMockCallbacks(const LookingForQuotaErrorMockCallbacks&) =
+      delete;
+  LookingForQuotaErrorMockCallbacks& operator=(
+      const LookingForQuotaErrorMockCallbacks&) = delete;
+
   void OnError(const IndexedDBDatabaseError& error) override {
     error_called_ = true;
     EXPECT_EQ(blink::mojom::IDBException::kQuotaError, error.code());
@@ -877,8 +886,6 @@ class LookingForQuotaErrorMockCallbacks : public IndexedDBCallbacks {
  private:
   ~LookingForQuotaErrorMockCallbacks() override = default;
   bool error_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LookingForQuotaErrorMockCallbacks);
 };
 
 TEST_F(IndexedDBFactoryTest, QuotaErrorOnDiskFull) {
@@ -935,6 +942,9 @@ class ErrorCallbacks : public MockIndexedDBCallbacks {
  public:
   ErrorCallbacks() : MockIndexedDBCallbacks(false) {}
 
+  ErrorCallbacks(const ErrorCallbacks&) = delete;
+  ErrorCallbacks& operator=(const ErrorCallbacks&) = delete;
+
   void OnError(const IndexedDBDatabaseError& error) override {
     saw_error_ = true;
   }
@@ -943,8 +953,6 @@ class ErrorCallbacks : public MockIndexedDBCallbacks {
  private:
   ~ErrorCallbacks() override = default;
   bool saw_error_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorCallbacks);
 };
 
 TEST_F(IndexedDBFactoryTest, DatabaseFailedOpen) {

@@ -38,6 +38,10 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
  public:
   static AuthenticatorEnvironmentImpl* GetInstance();
 
+  AuthenticatorEnvironmentImpl(const AuthenticatorEnvironmentImpl&) = delete;
+  AuthenticatorEnvironmentImpl& operator=(const AuthenticatorEnvironmentImpl&) =
+      delete;
+
   // Enables the scoped virtual authenticator environment for the |node| and its
   // descendants.
   // Does not have any effect if the |node| already has the virtual environment
@@ -109,8 +113,6 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
 #if defined(OS_WIN)
   device::WinWebAuthnApi* win_webauthn_api_for_testing_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorEnvironmentImpl);
 };
 
 }  // namespace content

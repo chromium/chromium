@@ -26,6 +26,9 @@ class CloseTrackingDelegate : public WebContentsDelegate {
  public:
   CloseTrackingDelegate() : close_contents_called_(false) {}
 
+  CloseTrackingDelegate(const CloseTrackingDelegate&) = delete;
+  CloseTrackingDelegate& operator=(const CloseTrackingDelegate&) = delete;
+
   bool close_contents_called() const { return close_contents_called_; }
 
   void CloseContents(WebContents* source) override {
@@ -34,8 +37,6 @@ class CloseTrackingDelegate : public WebContentsDelegate {
 
  private:
   bool close_contents_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseTrackingDelegate);
 };
 
 }  // namespace

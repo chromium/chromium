@@ -53,6 +53,10 @@ std::u16string ConstructVfsFileName(const url::Origin& origin,
 }  // namespace
 
 class WebDatabaseHostImplTest : public ::testing::Test {
+ public:
+  WebDatabaseHostImplTest(const WebDatabaseHostImplTest&) = delete;
+  WebDatabaseHostImplTest& operator=(const WebDatabaseHostImplTest&) = delete;
+
  protected:
   WebDatabaseHostImplTest() = default;
   ~WebDatabaseHostImplTest() override = default;
@@ -151,8 +155,6 @@ class WebDatabaseHostImplTest : public ::testing::Test {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDatabaseHostImplTest);
 };
 
 TEST_F(WebDatabaseHostImplTest, OpenFileCreatesBucket) {

@@ -1001,8 +1001,12 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
   const Node* parent = LayoutTreeBuilderTraversal::Parent(slot);
   if (const HTMLSlotElement* parent_slot = DynamicTo<HTMLSlotElement>(parent))
     return AXObjectCacheImpl::IsRelevantSlotElement(*parent_slot);
-  return parent && (parent->GetLayoutObject() ||
-                    DynamicTo<HTMLElement>(parent)->IsInCanvasSubtree());
+
+  if (parent && parent->GetLayoutObject())
+    return true;
+
+  const Element* parent_element = DynamicTo<Element>(parent);
+  return parent_element ? parent_element->IsInCanvasSubtree() : false;
 }
 
 // static

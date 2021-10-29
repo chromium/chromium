@@ -65,6 +65,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -648,12 +649,16 @@ TEST_F(WebSocketEndToEndTest, DnsSchemeUpgradeSupported) {
   replacements.SetSchemeStr(url::kWsScheme);
   GURL ws_url = wss_url.ReplaceComponents(replacements);
 
-  // Build a mocked resolver that returns ERR_DNS_NAME_HTTPS_ONLY for the
-  // first lookup, regardless of the request scheme. Real resolvers should
-  // only return this error when the scheme is "http" or "ws".
+  // Note that due to socket pool behavior, HostResolver will see the ws/wss
+  // requests as http/https.
   MockHostResolver host_resolver;
-  host_resolver.rules()->AddSimulatedHTTPSServiceFormRecord("a.test");
-  host_resolver.rules()->AddRule("*", "127.0.0.1");
+  MockHostResolverBase::RuleResolver::RuleKey unencrypted_resolve_key;
+  unencrypted_resolve_key.scheme = url::kHttpScheme;
+  host_resolver.rules()->AddRule(std::move(unencrypted_resolve_key),
+                                 ERR_DNS_NAME_HTTPS_ONLY);
+  MockHostResolverBase::RuleResolver::RuleKey encrypted_resolve_key;
+  encrypted_resolve_key.scheme = url::kHttpsScheme;
+  host_resolver.rules()->AddRule(std::move(encrypted_resolve_key), "127.0.0.1");
   context_.set_host_resolver(&host_resolver);
 
   EXPECT_TRUE(ConnectAndWait(ws_url));

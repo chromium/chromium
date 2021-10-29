@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -902,16 +902,17 @@ export function fakeShimlessRmaServiceTestSuite() {
         /** @type {!FinalizationObserverRemote} */ ({
           /**
            * Implements
-           * FinalizationObserverRemote.onHardwareVerificationResult()
-           * @param {boolean} is_compliant
-           * @param {string} error_message
+           * FinalizationObserverRemote.onFinalizationUpdated()
+           * @param {!FinalizationStatus} status
+           * @param {number} progress
            */
-          onHardwareVerificationResult(is_compliant, error_message) {
-            assertEquals(true, is_compliant);
-            assertEquals('ok', error_message);
+          onFinalizationUpdated(status, progress) {
+            assertEquals(FinalizationStatus.kInProgress, status);
+            assertEquals(0.5, progress);
           }
         });
     service.observeFinalizationStatus(finalizationObserver);
-    return service.triggerFinalizationObserver(true, 'ok', 0);
+    return service.triggerFinalizationObserver(
+        FinalizationStatus.kInProgress, 0.5, 0);
   });
 }

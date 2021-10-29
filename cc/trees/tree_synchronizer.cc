@@ -43,11 +43,13 @@ static bool LayerHasValidPropertyTreeIndices(LayerImpl* layer) {
          layer->scroll_tree_index() != ScrollTree::kInvalidNodeId;
 }
 
-static bool LayerWillPushProperties(LayerTreeHost* host, Layer* layer) {
-  return base::Contains(host->LayersThatShouldPushProperties(), layer);
+static bool LayerWillPushProperties(const CommitState* commit_state,
+                                    const Layer* layer) {
+  return commit_state->layers_that_should_push_properties.contains(layer);
 }
 
-static bool LayerWillPushProperties(LayerTreeImpl* tree, LayerImpl* layer) {
+static bool LayerWillPushProperties(const LayerTreeImpl* tree,
+                                    const LayerImpl* layer) {
   return base::Contains(tree->LayersThatShouldPushProperties(), layer) ||
          // TODO(crbug.com/303943): Stop always pushing PictureLayerImpl
          // properties.
@@ -109,12 +111,12 @@ void SynchronizeTreesInternal(LayerTreeType* source_tree,
 
 }  // namespace
 
-void TreeSynchronizer::SynchronizeTrees(Layer* layer_root,
+void TreeSynchronizer::SynchronizeTrees(const CommitState* commit_state,
                                         LayerTreeImpl* tree_impl) {
-  if (!layer_root) {
+  if (!commit_state->root_layer) {
     tree_impl->DetachLayers();
   } else {
-    SynchronizeTreesInternal(layer_root->layer_tree_host(), tree_impl);
+    SynchronizeTreesInternal(commit_state, tree_impl);
   }
 }
 
@@ -152,13 +154,21 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 
-void TreeSynchronizer::PushLayerProperties(LayerTreeHost* host_tree,
+void TreeSynchronizer::PushLayerProperties(CommitState* commit_state,
                                            LayerTreeImpl* impl_tree) {
-  auto layers = host_tree->LayersThatShouldPushProperties();
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Main",
-               "layer_count", layers.size());
-  PushLayerPropertiesInternal(layers.begin(), layers.end(), impl_tree);
-  host_tree->ClearLayersThatShouldPushProperties();
+               "layer_count",
+               commit_state->layers_that_should_push_properties.size());
+  auto source_layers_begin =
+      commit_state->layers_that_should_push_properties.begin();
+  auto source_layers_end =
+      commit_state->layers_that_should_push_properties.end();
+  for (auto it = source_layers_begin; it != source_layers_end; ++it) {
+    auto* source_layer = *it;
+    LayerImpl* target_layer = impl_tree->LayerById(source_layer->id());
+    DCHECK(target_layer);
+    source_layer->PushPropertiesTo(target_layer, *commit_state);
+  }
 }
 
 }  // namespace cc

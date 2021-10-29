@@ -56,6 +56,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   // For normal usage, access the singleton via DBusThreadManager::Get().
   static ShillIPConfigClient* Create();
 
+  ShillIPConfigClient(const ShillIPConfigClient&) = delete;
+  ShillIPConfigClient& operator=(const ShillIPConfigClient&) = delete;
+
   // Adds a property changed |observer| for the ipconfig at |ipconfig_path|.
   virtual void AddPropertyChangedObserver(
       const dbus::ObjectPath& ipconfig_path,
@@ -99,9 +102,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   // Initialize/Shutdown should be used instead.
   ShillIPConfigClient();
   virtual ~ShillIPConfigClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillIPConfigClient);
 };
 
 }  // namespace chromeos

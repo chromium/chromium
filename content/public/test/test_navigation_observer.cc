@@ -21,6 +21,9 @@ class TestNavigationObserver::TestWebContentsObserver
         parent_(parent) {
   }
 
+  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
+  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
+
  private:
   // WebContentsObserver:
   void NavigationEntryCommitted(
@@ -52,8 +55,6 @@ class TestNavigationObserver::TestWebContentsObserver
   }
 
   TestNavigationObserver* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebContentsObserver);
 };
 
 TestNavigationObserver::WebContentsState::WebContentsState() = default;

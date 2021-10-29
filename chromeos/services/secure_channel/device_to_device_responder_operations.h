@@ -54,6 +54,12 @@ class DeviceToDeviceResponderOperations {
   typedef base::OnceCallback<void(bool, const std::string&)>
       ValidateHelloCallback;
 
+  DeviceToDeviceResponderOperations() = delete;
+  DeviceToDeviceResponderOperations(const DeviceToDeviceResponderOperations&) =
+      delete;
+  DeviceToDeviceResponderOperations& operator=(
+      const DeviceToDeviceResponderOperations&) = delete;
+
   // Validates that the [Hello] message, received from the initiator,
   // is properly signed and encrypted.
   // |hello_message|: The bytes of the [Hello] message to validate.
@@ -112,9 +118,6 @@ class DeviceToDeviceResponderOperations {
       const std::string& responder_auth_message,
       multidevice::SecureMessageDelegate* secure_message_delegate,
       ValidationCallback callback);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DeviceToDeviceResponderOperations);
 };
 
 }  // namespace secure_channel

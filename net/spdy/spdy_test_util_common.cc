@@ -290,7 +290,9 @@ SpdySessionDependencies::SpdySessionDependencies()
 
 SpdySessionDependencies::SpdySessionDependencies(
     std::unique_ptr<ProxyResolutionService> proxy_resolution_service)
-    : host_resolver(std::make_unique<MockCachingHostResolver>()),
+    : host_resolver(std::make_unique<MockCachingHostResolver>(
+          /*cache_invalidation_num=*/0,
+          MockHostResolverBase::RuleResolver::GetLocalhostResult())),
       cert_verifier(std::make_unique<MockCertVerifier>()),
       transport_security_state(std::make_unique<TransportSecurityState>()),
       ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>()),
@@ -411,7 +413,9 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
 }
 
 SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
-  storage_.set_host_resolver(std::make_unique<MockHostResolver>());
+  storage_.set_host_resolver(std::make_unique<MockHostResolver>(
+      /*default_result=*/MockHostResolverBase::RuleResolver::
+          GetLocalhostResult()));
   storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
   storage_.set_transport_security_state(
       std::make_unique<TransportSecurityState>());

@@ -9,7 +9,7 @@
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/containers/queue.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Provides interface to connect to target device when a message is made
@@ -33,6 +33,6 @@ class EcheConnector {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTOR_H_

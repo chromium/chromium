@@ -63,7 +63,8 @@ class CrostiniApps : public KeyedService,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info) override;
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,

@@ -148,11 +148,6 @@ void WebrtcVideoStream::OnRttUpdate(base::TimeDelta rtt) {
   scheduler_->OnRttUpdate(rtt);
 }
 
-void WebrtcVideoStream::OnTopOffActive(bool active) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  scheduler_->OnTopOffActive(active);
-}
-
 void WebrtcVideoStream::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
@@ -163,7 +158,7 @@ void WebrtcVideoStream::OnCaptureResult(
       base::Milliseconds(frame ? frame->capture_time_ms() : 0);
 
   if (!frame) {
-    scheduler_->OnFrameCaptured(nullptr, nullptr);
+    scheduler_->OnFrameCaptured(nullptr);
     return;
   }
 
@@ -181,10 +176,7 @@ void WebrtcVideoStream::OnCaptureResult(
 
   current_frame_stats_->capturer_id = frame->capturer_id();
 
-  WebrtcVideoEncoder::FrameParams frame_params;
-  if (!scheduler_->OnFrameCaptured(frame.get(), &frame_params)) {
-    return;
-  }
+  scheduler_->OnFrameCaptured(frame.get());
 
   // Send the captured frame to the registered sink, if any. WebRTC will route
   // this to the appropriate encoder.

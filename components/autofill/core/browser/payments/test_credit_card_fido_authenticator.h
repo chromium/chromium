@@ -33,7 +33,8 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   // CreditCardFIDOAuthenticator:
   void Authenticate(const CreditCard* card,
                     base::WeakPtr<Requester> requester,
-                    base::Value request_options) override;
+                    base::Value request_options,
+                    absl::optional<std::string> context_token) override;
   void IsUserVerifiable(base::OnceCallback<void(bool)> callback) override;
   bool IsUserOptedIn() override;
   void GetAssertion(
@@ -66,6 +67,7 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   bool IsOptOutCalled() { return opt_out_called_; }
   bool authenticate_invoked() { return authenticate_invoked_; }
   const CreditCard& card() { return card_; }
+  const absl::optional<std::string>& context_token() { return context_token_; }
 
   // Resets all the testing related states.
   void Reset();
@@ -81,6 +83,7 @@ class TestCreditCardFIDOAuthenticator : public CreditCardFIDOAuthenticator {
   bool opt_out_called_ = false;
   bool authenticate_invoked_ = false;
   CreditCard card_;
+  absl::optional<std::string> context_token_;
 };
 
 }  // namespace autofill

@@ -13,8 +13,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/policy/networking/network_roaming_state_migration_handler_impl.h"
-#include "chrome/browser/ash/policy/networking/roaming_configuration_migration_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -85,16 +83,6 @@ DeviceNetworkConfigurationUpdater::DeviceNetworkConfigurationUpdater(
           base::Unretained(this)));
   if (device_asset_id_fetcher_.is_null())
     device_asset_id_fetcher_ = base::BindRepeating(&GetDeviceAssetID);
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kCellularAllowPerNetworkRoaming)) {
-    network_roaming_state_migration_handler_ =
-        std::make_unique<NetworkRoamingStateMigrationHandlerImpl>();
-    if (!chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
-      roaming_configuration_migration_handler_ =
-          std::make_unique<RoamingConfigurationMigrationHandler>(
-              network_roaming_state_migration_handler_.get());
-    }
-  }
 }
 
 void DeviceNetworkConfigurationUpdater::Init() {

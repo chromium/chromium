@@ -154,7 +154,7 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
 
 bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
   if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
-    return Eval(n->Child());
+    return Eval(n->Operand());
   if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
     return !Eval(n->Operand());
   if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))

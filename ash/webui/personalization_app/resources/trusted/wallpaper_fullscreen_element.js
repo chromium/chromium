@@ -80,6 +80,14 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
             state.dailyRefresh.collectionId && !state.pendingSelected);
     this.watch('showConfirm_', state => !!state.pendingSelected);
     this.watch('image_', state => state.currentSelected);
+    window.addEventListener('beforeunload', () => {
+      // Attempt to cancel preview in the scenario the user exits wallpaper
+      // picker by pressing CTRL + W while preview is still enabled.
+      const hidden = !this.getFullscreenElement();
+      if (!hidden) {
+        cancelPreviewWallpaper(this.wallpaperProvider_);
+      }
+    });
   }
 
   /**

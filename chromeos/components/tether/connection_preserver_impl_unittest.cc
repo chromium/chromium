@@ -54,6 +54,11 @@ std::string CreateConfigurationJsonString(const std::string& guid,
 }  // namespace
 
 class ConnectionPreserverImplTest : public testing::Test {
+ public:
+  ConnectionPreserverImplTest(const ConnectionPreserverImplTest&) = delete;
+  ConnectionPreserverImplTest& operator=(const ConnectionPreserverImplTest&) =
+      delete;
+
  protected:
   ConnectionPreserverImplTest()
       : test_local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -194,9 +199,6 @@ class ConnectionPreserverImplTest : public testing::Test {
   std::unique_ptr<ConnectionPreserverImpl> connection_preserver_;
 
   std::vector<std::string> previously_connected_host_ids_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionPreserverImplTest);
 };
 
 TEST_F(ConnectionPreserverImplTest,

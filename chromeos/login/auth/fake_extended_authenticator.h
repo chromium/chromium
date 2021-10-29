@@ -20,6 +20,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
   FakeExtendedAuthenticator(AuthStatusConsumer* consumer,
                             const UserContext& expected_user_context);
 
+  FakeExtendedAuthenticator(const FakeExtendedAuthenticator&) = delete;
+  FakeExtendedAuthenticator& operator=(const FakeExtendedAuthenticator&) =
+      delete;
+
   // ExtendedAuthenticator:
   void SetConsumer(AuthStatusConsumer* consumer) override;
   void AuthenticateToCheck(const UserContext& context,
@@ -51,8 +55,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
   AuthStatusConsumer* consumer_;
 
   UserContext expected_user_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeExtendedAuthenticator);
 };
 
 }  // namespace chromeos

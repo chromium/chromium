@@ -128,7 +128,7 @@ public class TabUiFeatureUtilities {
 
         // Having Tab Groups or Start implies Grid Tab Switcher.
         return isTabManagementModuleSupported() || isTabGroupsAndroidEnabled(context)
-                || ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+                || ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
     }
 
     /**

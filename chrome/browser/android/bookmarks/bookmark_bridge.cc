@@ -346,6 +346,16 @@ void BookmarkBridge::GetTopLevelFolderIDs(
   }
 }
 
+base::android::ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListFolder(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const BookmarkNode* root_node = reading_list_manager_->GetRoot();
+  ScopedJavaLocalRef<jobject> folder_id_obj = JavaBookmarkIdCreateBookmarkId(
+      env, root_node->id(), GetBookmarkType(root_node));
+  return folder_id_obj;
+}
+
 void BookmarkBridge::GetAllFoldersWithDepths(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

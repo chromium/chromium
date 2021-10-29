@@ -95,33 +95,6 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     return nullptr;
   }
 
-  // Note that EncryptionScheme::kUnencrypted is fine even for the use case
-  // where the VPP is needed for processing protected content after decoding.
-  // That's because when calling VaapiWrapper::BlitSurface(), we re-use the
-  // protected session ID created at decoding time.
-  auto vaapi_wrapper = VaapiWrapper::Create(
-      VaapiWrapper::kVideoProcess, VAProfileNone,
-      EncryptionScheme::kUnencrypted,
-      base::BindRepeating(&ReportVaapiErrorToUMA,
-                          "Media.VaapiImageProcessorBackend.VAAPIError"));
-  if (!vaapi_wrapper) {
-    VLOGF(1) << "Failed to create VaapiWrapper";
-    return nullptr;
-  }
-
-  // Size is irrelevant for a VPP context.
-  if (!vaapi_wrapper->CreateContext(gfx::Size())) {
-    VLOGF(1) << "Failed to create context for VPP";
-    return nullptr;
-  }
-
-  // Checks if VA-API driver supports rotation.
-  if (relative_rotation != VIDEO_ROTATION_0 &&
-      !vaapi_wrapper->IsRotationSupported()) {
-    VLOGF(1) << "VaapiIP doesn't support rotation";
-    return nullptr;
-  }
-
   // We should restrict the acceptable PortConfig for input and output both to
   // the one returned by GetPlatformVideoFrameLayout(). However,
   // ImageProcessorFactory interface doesn't provide information about what
@@ -131,13 +104,12 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
   // TODO(crbug.com/898423): Adjust layout once ImageProcessor provide the use
   // scenario.
   return base::WrapUnique<ImageProcessorBackend>(new VaapiImageProcessorBackend(
-      std::move(vaapi_wrapper), input_config, output_config, OutputMode::IMPORT,
-      relative_rotation, std::move(error_cb), std::move(backend_task_runner)));
+      input_config, output_config, OutputMode::IMPORT, relative_rotation,
+      std::move(error_cb), std::move(backend_task_runner)));
 #endif
 }
 
 VaapiImageProcessorBackend::VaapiImageProcessorBackend(
-    scoped_refptr<VaapiWrapper> vaapi_wrapper,
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
@@ -149,15 +121,17 @@ VaapiImageProcessorBackend::VaapiImageProcessorBackend(
                             output_mode,
                             relative_rotation,
                             std::move(error_cb),
-                            std::move(backend_task_runner)),
-      vaapi_wrapper_(std::move(vaapi_wrapper)) {}
+                            std::move(backend_task_runner)) {}
 
 VaapiImageProcessorBackend::~VaapiImageProcessorBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
-  vaapi_wrapper_->DestroyContext();
-  allocated_va_surfaces_.clear();
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
+  if (vaapi_wrapper_) {
+    // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
+    vaapi_wrapper_->DestroyContext();
+    allocated_va_surfaces_.clear();
+  }
 }
 
 const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
@@ -185,6 +159,7 @@ const VASurface* VaapiImageProcessorBackend::GetSurfaceForVideoFrame(
     return nullptr;
   }
 
+  DCHECK(vaapi_wrapper_);
   auto va_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap),
                                                              use_protected);
   if (!va_surface) {
@@ -201,6 +176,40 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
                                          FrameReadyCB cb) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
+
+  if (!vaapi_wrapper_) {
+    // Note that EncryptionScheme::kUnencrypted is fine even for the use case
+    // where the VPP is needed for processing protected content after decoding.
+    // That's because when calling VaapiWrapper::BlitSurface(), we re-use the
+    // protected session ID created at decoding time.
+    auto vaapi_wrapper = VaapiWrapper::Create(
+        VaapiWrapper::kVideoProcess, VAProfileNone,
+        EncryptionScheme::kUnencrypted,
+        base::BindRepeating(&ReportVaapiErrorToUMA,
+                            "Media.VaapiImageProcessorBackend.VAAPIError"));
+    if (!vaapi_wrapper) {
+      VLOGF(1) << "Failed to create VaapiWrapper";
+      error_cb_.Run();
+      return;
+    }
+
+    // Size is irrelevant for a VPP context.
+    if (!vaapi_wrapper->CreateContext(gfx::Size())) {
+      VLOGF(1) << "Failed to create context for VPP";
+      error_cb_.Run();
+      return;
+    }
+
+    // Checks if VA-API driver supports rotation.
+    if (relative_rotation_ != VIDEO_ROTATION_0 &&
+        !vaapi_wrapper->IsRotationSupported()) {
+      VLOGF(1) << "VaapiIP doesn't support rotation";
+      error_cb_.Run();
+      return;
+    }
+
+    vaapi_wrapper_ = std::move(vaapi_wrapper);
+  }
 
   bool use_protected = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -278,9 +287,12 @@ void VaapiImageProcessorBackend::Reset() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(backend_sequence_checker_);
 
-  // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
-  vaapi_wrapper_->DestroyContext();
-  allocated_va_surfaces_.clear();
+  DCHECK(vaapi_wrapper_ || allocated_va_surfaces_.empty());
+  if (vaapi_wrapper_) {
+    // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
+    vaapi_wrapper_->DestroyContext();
+    allocated_va_surfaces_.clear();
+  }
   needs_context_ = true;
 }
 

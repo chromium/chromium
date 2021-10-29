@@ -35,6 +35,9 @@ class PepperHungPluginFilter
  public:
   PepperHungPluginFilter();
 
+  PepperHungPluginFilter(const PepperHungPluginFilter&) = delete;
+  PepperHungPluginFilter& operator=(const PepperHungPluginFilter&) = delete;
+
   // The |hung_host| is the mojo channel to inform the browser about the new
   // hung status.
   void BindHungDetectorHost(
@@ -111,8 +114,6 @@ class PepperHungPluginFilter
   bool hung_plugin_showing_ = false;
 
   bool timer_task_pending_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperHungPluginFilter);
 };
 
 }  // namespace content

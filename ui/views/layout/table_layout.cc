@@ -150,6 +150,8 @@ void CalculateLocationAndSize(int pref_size,
 
 }  // namespace
 
+constexpr float TableLayout::kFixedSize;
+
 // As the name implies, this represents a Column. Column contains default values
 // for views originating in this column.
 class TableLayout::Column : public LayoutElement {

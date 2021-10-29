@@ -208,6 +208,10 @@ class PowerMonitorTestObserverLocal
  public:
   using base::test::PowerMonitorTestObserver::PowerMonitorTestObserver;
 
+  PowerMonitorTestObserverLocal(const PowerMonitorTestObserverLocal&) = delete;
+  PowerMonitorTestObserverLocal& operator=(
+      const PowerMonitorTestObserverLocal&) = delete;
+
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
     ASSERT_TRUE(cb);
@@ -221,8 +225,6 @@ class PowerMonitorTestObserverLocal
 
  private:
   base::OnceCallback<void()> cb;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTestObserverLocal);
 };
 
 }  // namespace

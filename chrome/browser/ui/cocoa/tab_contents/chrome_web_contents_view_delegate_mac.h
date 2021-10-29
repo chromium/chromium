@@ -45,7 +45,7 @@ class ChromeWebContentsViewDelegateMac
       content::RenderWidgetHost* render_widget_host,
       bool is_popup) override;
   content::WebDragDestDelegate* GetDragDestDelegate() override;
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params) override;
   void StoreFocus() override;
   bool RestoreFocus() override;
@@ -53,7 +53,7 @@ class ChromeWebContentsViewDelegateMac
 
   // Overridden from ContextMenuDelegate.
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(
-      content::WebContents* web_contents,
+      content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params) override;
   void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) override;
 
@@ -65,7 +65,7 @@ class ChromeWebContentsViewDelegateMac
   NSWindow* GetNSWindowForFocusTracker() const;
 
   RenderViewContextMenuBase* CreateRenderViewContextMenu(
-      content::WebContents* web_contents,
+      content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params);
 
   // The context menu. Callbacks are asynchronous so we need to keep it around.

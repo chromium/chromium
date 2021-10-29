@@ -2328,8 +2328,8 @@ if (!is_android && !is_fuchsia) {
           "//ash/webui/help_app_ui:browser_tests_js",
           "//ash/webui/media_app_ui:browser_tests_js",
           "//ash/webui/personalization_app:browser_tests_js",
+          "//ash/webui/system_apps:browser_tests",
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
-          "//chromeos/components/system_apps:browser_tests",
         ]
 
         data_deps += [ "//chrome/test/data/webui:browser_tests_js_webui" ]
@@ -3388,6 +3388,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/app_list/chrome_app_list_model_updater_browsertest.cc",
         "../browser/ui/app_list/search/app_list_search_browsertest.cc",
         "../browser/ui/ash/accelerator_commands_browsertest.cc",
+        "../browser/ui/ash/ash_web_view_impl_browsertest.cc",
         "../browser/ui/ash/assistant/assistant_context_browsertest.cc",
         "../browser/ui/ash/back_gesture_browsertest.cc",
         "../browser/ui/ash/capture_mode/capture_mode_browsertest.cc",
@@ -3533,7 +3534,6 @@ if (!is_android && !is_fuchsia) {
           "../browser/ui/ash/assistant/assistant_test_mixin.cc",
           "../browser/ui/ash/assistant/assistant_test_mixin.h",
           "../browser/ui/ash/assistant/assistant_timers_browsertest.cc",
-          "../browser/ui/ash/assistant/assistant_web_view_impl_browsertest.cc",
         ]
 
         deps += [
@@ -7924,8 +7924,8 @@ if (!is_android) {
       "../browser/ui/search/ntp_test_utils.h",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest_base.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest_base.h",
+      "../browser/ui/views/web_apps/web_app_integration_test_driver.cc",
+      "../browser/ui/views/web_apps/web_app_integration_test_driver.h",
       "../browser/ui/webui/signin/login_ui_test_utils.cc",
       "../browser/ui/webui/signin/login_ui_test_utils.h",
       "../browser/web_applications/test/profile_test_helper.cc",
@@ -8229,6 +8229,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/renderer_context_menu/mock_render_view_context_menu.h",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_browsertest_util.h",
+      "../browser/renderer_context_menu/render_view_context_menu_interactive_uitest.cc",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.cc",
       "../browser/renderer_context_menu/render_view_context_menu_test_util.h",
       "../browser/resource_coordinator/tab_metrics_logger_interactive_uitest.cc",

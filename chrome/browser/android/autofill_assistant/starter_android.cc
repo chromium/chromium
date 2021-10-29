@@ -128,7 +128,7 @@ void StarterAndroid::OnActivityAttachmentChanged(
 
   // Notify the starter. Some flows are only available in CCT or in regular tab,
   // so we need to cancel ongoing flows if they are no longer supported.
-  starter_->CheckSettings();
+  starter_->OnDependenciesInvalidated();
 }
 
 bool StarterAndroid::GetIsFirstTimeUser() const {

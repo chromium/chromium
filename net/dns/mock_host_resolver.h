@@ -6,6 +6,7 @@
 #define NET_DNS_MOCK_HOST_RESOLVER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <list>
 #include <map>
@@ -16,11 +17,14 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/host_port_pair.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_proc.h"
@@ -30,6 +34,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -39,9 +44,7 @@ class TickClock;
 namespace net {
 
 class HostCache;
-class HostPortPair;
 class IPEndPoint;
-class RuleBasedHostResolverProc;
 class URLRequestContext;
 
 // Fills `*addrlist` with a socket address for `host_list` which should be a
@@ -50,7 +53,7 @@ class URLRequestContext;
 // canonical name (i.e. address record name) for the host, and the alias
 // chain is listed in reverse order through to the last entry, the query name.
 // Returns OK on success, ERR_UNEXPECTED otherwise.
-int ParseAddressList(const std::string& host_list,
+int ParseAddressList(base::StringPiece host_list,
                      const std::vector<std::string>& dns_aliases,
                      AddressList* addrlist);
 
@@ -59,33 +62,31 @@ int ParseAddressList(const std::string& host_list,
 // is unreliable for some reason.  To simplify writing tests that avoid making
 // actual DNS queries, pass a MockHostResolver as the HostResolver dependency.
 // The socket addresses returned can be configured using the
-// RuleBasedHostResolverProc:
+// MockHostResolverBase::RuleResolver:
 //
 //   host_resolver->rules()->AddRule("foo.com", "1.2.3.4");
 //   host_resolver->rules()->AddRule("bar.com", "2.3.4.5");
 //
 // The above rules define a static mapping from hostnames to IP address
 // literals.  The first parameter to AddRule specifies a host pattern to match
-// against, and the second parameter indicates what value should be used to
+// against, and the second parameter indicates what IP address should be used to
 // replace the given hostname.  So, the following is also supported:
 //
 //   host_mapper->AddRule("*.com", "127.0.0.1");
 //
-// Replacement doesn't have to be string representing an IP address. It can
-// re-map one hostname to another as well.
+// For more advanced matching, the first parameter may be replaced with a
+// MockHostResolverBase::RuleResolver::RuleKey. For more advanced responses, the
+// second parameter may be replaced with a
+// MockHostResolverBase::RuleResolver::RuleResult.
 //
-// By default, MockHostResolvers include a single rule that maps all hosts to
-// 127.0.0.1. Disable by setting `require_matching_rule` to true.
-// TODO(crbug.com/1182263): Fixup any tests relying on the current default and
-// switch to make `require_matching_rule` be the default.
+// MockHostResolvers may optionally be created with a default result:
 //
-// Separate rules are used for separate HostResolverSource (eg
-// HostResolverSource::SYSTEM for requests that should only be resolved using
-// the system resolver).  Use rules_map() to access the separate rules if tests
-// involve requests specifying sources:
+//   MockHostResolver(ERR_NAME_NOT_RESOLVED);
+//   MockHostResolver(AddressList(ip_endpoint));
+//   MockHostResolver(MockHostResolverBase::RuleResolver::GetLocalhostResult());
 //
-//    host_resolver->rules_map()[HostResolverSource::DNS]->AddRule("foo.com",
-//                                                                 "1.2.3.4");
+// If no default result is given, every resolve request must match a configured
+// rule, otherwise DCHECKs will fire.
 
 // Base class shared by MockHostResolver and MockCachingHostResolver.
 class MockHostResolverBase
@@ -97,21 +98,103 @@ class MockHostResolverBase
   class MdnsListenerImpl;
 
  public:
+  class RuleResolver {
+   public:
+    struct RuleKey {
+      struct WildcardScheme : absl::monostate {};
+      struct NoScheme : absl::monostate {};
+      using Scheme = std::string;
+
+      RuleKey();
+      ~RuleKey();
+
+      RuleKey(const RuleKey&);
+      RuleKey& operator=(const RuleKey&);
+      RuleKey(RuleKey&&);
+      RuleKey& operator=(RuleKey&&);
+
+      auto GetTuple() const {
+        return std::tie(scheme, hostname_pattern, port, query_type,
+                        query_source);
+      }
+
+      bool operator<(const RuleKey& other) const {
+        return GetTuple() < other.GetTuple();
+      }
+
+      // If `WildcardScheme`, scheme is wildcard and any query will match,
+      // whether made with url::SchemeHostPort or HostPortPair. If `NoScheme`,
+      // queries will only match if made using HostPortPair. Else, queries will
+      // only match if made using url::SchemeHostPort with matching scheme
+      // value.
+      absl::variant<WildcardScheme, NoScheme, Scheme> scheme = WildcardScheme();
+
+      // Pattern matched via `base::MatchPattern()`.
+      std::string hostname_pattern = "*";
+
+      // `nullopt` represents wildcard and all queries will match.
+      absl::optional<uint16_t> port;
+      absl::optional<DnsQueryType> query_type;
+      absl::optional<HostResolverSource> query_source;
+    };
+
+    using ErrorResult = Error;
+    using RuleResult = absl::variant<AddressList, ErrorResult>;
+
+    // If `default_result` is nullopt, every resolve must match an added rule.
+    explicit RuleResolver(
+        absl::optional<RuleResult> default_result = absl::nullopt);
+    ~RuleResolver();
+
+    RuleResolver(const RuleResolver&);
+    RuleResolver& operator=(const RuleResolver&);
+    RuleResolver(RuleResolver&&);
+    RuleResolver& operator=(RuleResolver&&);
+
+    const RuleResult& Resolve(
+        const absl::variant<url::SchemeHostPort, HostPortPair>&
+            request_endpoint,
+        DnsQueryType request_type,
+        HostResolverSource request_source) const;
+
+    void ClearRules();
+
+    static RuleResult GetLocalhostResult();
+
+    void AddRule(RuleKey key, RuleResult result);
+    void AddRule(RuleKey key, base::StringPiece ip_literal);
+    void AddRule(base::StringPiece hostname_pattern, RuleResult result);
+    void AddRule(base::StringPiece hostname_pattern,
+                 base::StringPiece ip_literal);
+    void AddRule(base::StringPiece hostname_pattern, Error error);
+
+    // Legacy rule creation. Only for compatibility with tests written for use
+    // with RuleBasedHostResolverProc. New code should use the AddRule() calls
+    // above.
+    void AddIPLiteralRule(base::StringPiece hostname_pattern,
+                          base::StringPiece ip_literal,
+                          base::StringPiece canonical_name);
+    void AddIPLiteralRuleWithDnsAliases(base::StringPiece hostname_pattern,
+                                        base::StringPiece ip_literal,
+                                        std::vector<std::string> dns_aliases);
+    void AddSimulatedFailure(base::StringPiece hostname_pattern);
+    void AddSimulatedTimeoutFailure(base::StringPiece hostname_pattern);
+    void AddRuleWithFlags(base::StringPiece host_pattern,
+                          base::StringPiece ip_literal,
+                          HostResolverFlags flags,
+                          std::vector<std::string> dns_aliases = {});
+
+   private:
+    std::map<RuleKey, RuleResult> rules_;
+    absl::optional<RuleResult> default_result_;
+  };
+
   MockHostResolverBase(const MockHostResolverBase&) = delete;
   MockHostResolverBase& operator=(const MockHostResolverBase&) = delete;
 
   ~MockHostResolverBase() override;
 
-  RuleBasedHostResolverProc* rules() {
-    return rules_map_[HostResolverSource::ANY].get();
-  }
-  void set_rules(RuleBasedHostResolverProc* rules) {
-    rules_map_[HostResolverSource::ANY] = rules;
-  }
-  std::map<HostResolverSource, scoped_refptr<RuleBasedHostResolverProc>>
-  rules_map() {
-    return rules_map_;
-  }
+  RuleResolver* rules() { return &rule_resolver_; }
 
   // Controls whether resolutions complete synchronously or asynchronously.
   void set_synchronous_mode(bool is_synchronous) {
@@ -149,7 +232,7 @@ class MockHostResolverBase
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
   int LoadIntoCache(
-      const HostPortPair& host,
+      const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       const absl::optional<ResolveHostParameters>& optional_parameters);
 
@@ -177,7 +260,7 @@ class MockHostResolverBase
   void DetachRequest(size_t id);
 
   // Returns the hostname of the request with the given id.
-  const std::string& request_host(size_t id);
+  base::StringPiece request_host(size_t id);
 
   // Returns the priority of the request with the given id.
   RequestPriority request_priority(size_t id);
@@ -256,9 +339,9 @@ class MockHostResolverBase
   // If > 0, |cache_invalidation_num| is the number of times a cached entry can
   // be read before it invalidates itself. Useful to force cache expiration
   // scenarios.
-  explicit MockHostResolverBase(bool use_caching,
-                                int cache_invalidation_num,
-                                bool require_matching_rule);
+  MockHostResolverBase(bool use_caching,
+                       int cache_invalidation_num,
+                       RuleResolver rule_resolver);
 
   // Handle resolution for |request|. Expected to be called only the RequestImpl
   // object itself.
@@ -267,7 +350,7 @@ class MockHostResolverBase
   // Resolve as IP or from |cache_| return cached error or
   // DNS_CACHE_MISS if failed.
   int ResolveFromIPLiteralOrCache(
-      const HostPortPair& host,
+      const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       DnsQueryType dns_query_type,
       HostResolverFlags flags,
@@ -275,13 +358,7 @@ class MockHostResolverBase
       HostResolver::ResolveHostParameters::CacheUsage cache_usage,
       AddressList* addresses,
       absl::optional<HostCache::EntryStaleness>* stale_info);
-  // Resolve via |proc_|.
-  int ResolveProc(const HostPortPair& host,
-                  const NetworkIsolationKey& network_isolation_key,
-                  AddressFamily requested_address_family,
-                  HostResolverFlags flags,
-                  HostResolverSource source,
-                  AddressList* addresses);
+  int DoSynchronousResolution(RequestImpl& request);
 
   void AddListener(MdnsListenerImpl* listener);
   void RemoveCancelledListener(MdnsListenerImpl* listener);
@@ -291,8 +368,7 @@ class MockHostResolverBase
   SecureDnsPolicy last_secure_dns_policy_;
   bool synchronous_mode_;
   bool ondemand_mode_;
-  std::map<HostResolverSource, scoped_refptr<RuleBasedHostResolverProc>>
-      rules_map_;
+  RuleResolver rule_resolver_;
   std::unique_ptr<HostCache> cache_;
 
   const int initial_cache_invalidation_num_;
@@ -318,10 +394,11 @@ class MockHostResolverBase
 
 class MockHostResolver : public MockHostResolverBase {
  public:
-  explicit MockHostResolver(bool require_matching_rule = false)
-      : MockHostResolverBase(false /*use_caching*/,
-                             0 /* cache_invalidation_num */,
-                             require_matching_rule) {}
+  explicit MockHostResolver(
+      absl::optional<RuleResolver::RuleResult> default_result = absl::nullopt)
+      : MockHostResolverBase(/*use_caching=*/false,
+                             /*cache_invalidation_num=*/0,
+                             RuleResolver(std::move(default_result))) {}
   ~MockHostResolver() override = default;
 };
 
@@ -335,11 +412,12 @@ class MockCachingHostResolver : public MockHostResolverBase {
   // If > 0, |cache_invalidation_num| is the number of times a cached entry can
   // be read before it invalidates itself. Useful to force cache expiration
   // scenarios.
-  explicit MockCachingHostResolver(int cache_invalidation_num = 0,
-                                   bool require_matching_rule = false)
-      : MockHostResolverBase(true /*use_caching*/,
+  explicit MockCachingHostResolver(
+      int cache_invalidation_num = 0,
+      absl::optional<RuleResolver::RuleResult> default_result = absl::nullopt)
+      : MockHostResolverBase(/*use_caching=*/true,
                              cache_invalidation_num,
-                             require_matching_rule) {}
+                             RuleResolver(std::move(default_result))) {}
   ~MockCachingHostResolver() override = default;
 };
 
@@ -351,10 +429,10 @@ class MockCachingHostResolver : public MockHostResolverBase {
 // factory construction and |enable_caching| is set in the creation method.
 class MockHostResolverFactory : public HostResolver::Factory {
  public:
-  MockHostResolverFactory(
-      scoped_refptr<RuleBasedHostResolverProc> rules = nullptr,
-      bool use_caching = false,
-      int cache_invalidation_num = 0);
+  explicit MockHostResolverFactory(MockHostResolverBase::RuleResolver rules =
+                                       MockHostResolverBase::RuleResolver(),
+                                   bool use_caching = false,
+                                   int cache_invalidation_num = 0);
 
   MockHostResolverFactory(const MockHostResolverFactory&) = delete;
   MockHostResolverFactory& operator=(const MockHostResolverFactory&) = delete;
@@ -372,7 +450,7 @@ class MockHostResolverFactory : public HostResolver::Factory {
       bool enable_caching) override;
 
  private:
-  const scoped_refptr<RuleBasedHostResolverProc> rules_;
+  const MockHostResolverBase::RuleResolver rules_;
   const bool use_caching_;
   const int cache_invalidation_num_;
 };

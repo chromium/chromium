@@ -2293,6 +2293,8 @@ ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
   if (IsText()) {
     const std::vector<int32_t>& marker_types =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int32_t>& highlight_types =
+        GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes);
     const std::vector<int>& marker_starts =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
     const std::vector<int>& marker_ends =
@@ -2300,10 +2302,18 @@ ui::TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes()
     for (size_t i = 0; i < marker_types.size(); ++i) {
       bool is_spelling_error =
           (marker_types[i] &
-           static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) != 0;
+           static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) ||
+          ((marker_types[i] &
+            static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+           highlight_types[i] ==
+               static_cast<int32_t>(ax::mojom::HighlightType::kSpellingError));
       bool is_grammar_error =
           (marker_types[i] &
-           static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) != 0;
+           static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) ||
+          ((marker_types[i] &
+            static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+           highlight_types[i] ==
+               static_cast<int32_t>(ax::mojom::HighlightType::kGrammarError));
 
       if (!is_spelling_error && !is_grammar_error)
         continue;

@@ -59,6 +59,9 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void TriggerHardwareVerificationResultObservation(
       bool is_compliant,
       const std::string& error_str);
+  void TriggerFinalizationProgressObservation(
+      rmad::FinalizeStatus::Status status,
+      double progress);
 
  private:
   const rmad::GetStateReply& GetStateReply() const;

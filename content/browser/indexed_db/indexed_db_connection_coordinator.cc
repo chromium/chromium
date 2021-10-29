@@ -135,6 +135,9 @@ class IndexedDBConnectionCoordinator::OpenRequest
     db_->metadata_.was_cold_open = pending_->was_cold_open;
   }
 
+  OpenRequest(const OpenRequest&) = delete;
+  OpenRequest& operator=(const OpenRequest&) = delete;
+
   // Note: the |tasks_available_callback_| is NOT called here because the state
   // is checked after this method.
   void Perform(bool has_connections) override {
@@ -377,7 +380,6 @@ class IndexedDBConnectionCoordinator::OpenRequest
   IndexedDBConnection* connection_ptr_for_close_comparision_ = nullptr;
 
   base::WeakPtrFactory<OpenRequest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(OpenRequest);
 };
 
 class IndexedDBConnectionCoordinator::DeleteRequest
@@ -395,6 +397,9 @@ class IndexedDBConnectionCoordinator::DeleteRequest
                           std::move(tasks_available_callback)),
         callbacks_(callbacks),
         on_database_deleted_(std::move(on_database_deleted)) {}
+
+  DeleteRequest(const DeleteRequest&) = delete;
+  DeleteRequest& operator=(const DeleteRequest&) = delete;
 
   void Perform(bool has_connections) override {
     if (!has_connections) {
@@ -510,7 +515,6 @@ class IndexedDBConnectionCoordinator::DeleteRequest
   base::OnceClosure on_database_deleted_;
 
   base::WeakPtrFactory<DeleteRequest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DeleteRequest);
 };
 
 IndexedDBConnectionCoordinator::IndexedDBConnectionCoordinator(

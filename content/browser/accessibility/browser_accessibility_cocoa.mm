@@ -1897,6 +1897,10 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSNumber*)maxValue {
   if (![self instanceActive])
     return nil;
+
+  if (!_owner->HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange))
+    return @0;  // Indeterminate value exposes AXMinValue/AXMaxValue of 0.
+
   float floatValue =
       _owner->GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
   return @(floatValue);
@@ -1905,6 +1909,10 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSNumber*)minValue {
   if (![self instanceActive])
     return nil;
+
+  if (!_owner->HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange))
+    return @0;  // Indeterminate value exposes AXMinValue/AXMaxValue of 0.
+
   float floatValue =
       _owner->GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
   return @(floatValue);

@@ -37,6 +37,9 @@ class SSLClientAuthHandler {
    public:
     Delegate() {}
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Called to continue the request with |cert|. |cert| may be nullptr.
     virtual void ContinueWithCertificate(
         scoped_refptr<net::X509Certificate> cert,
@@ -47,9 +50,6 @@ class SSLClientAuthHandler {
 
    protected:
     virtual ~Delegate() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Creates a new SSLClientAuthHandler. The caller ensures that the handler
@@ -58,6 +58,10 @@ class SSLClientAuthHandler {
                        WebContents::Getter web_contents_getter,
                        net::SSLCertRequestInfo* cert_request_info,
                        Delegate* delegate);
+
+  SSLClientAuthHandler(const SSLClientAuthHandler&) = delete;
+  SSLClientAuthHandler& operator=(const SSLClientAuthHandler&) = delete;
+
   ~SSLClientAuthHandler();
 
   // Selects a certificate and resumes the URL request with that certificate.
@@ -88,8 +92,6 @@ class SSLClientAuthHandler {
   Delegate* delegate_;
 
   base::WeakPtrFactory<SSLClientAuthHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SSLClientAuthHandler);
 };
 
 }  // namespace content

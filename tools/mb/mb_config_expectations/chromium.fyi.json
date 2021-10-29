@@ -325,7 +325,7 @@
       "use_goma": true
     }
   },
-  "Mojo Linux": {
+  "Mojo Linux (reclient shadow)": {
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
@@ -529,8 +529,9 @@
     }
   },
   "chromeos-amd64-generic-rel (reclient compare)": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_rbe": true,
@@ -539,23 +540,14 @@
     }
   },
   "chromeos-amd64-generic-rel (reclient)": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_rbe": true,
       "use_real_dbus_clients": false,
       "use_remoteexec": true
-    }
-  },
-  "chromeos-amd64-generic-rel-dchecks": {
-    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
     }
   },
   "fuchsia-code-coverage": {
@@ -821,11 +813,12 @@
     }
   },
   "lacros-amd64-generic-rel (reclient)": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "target_os": "chromeos",

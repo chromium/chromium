@@ -1355,4 +1355,42 @@ TEST_F(DragWindowFromShelfControllerTest,
   EXPECT_TRUE(window_transient->IsVisible());
 }
 
+// Tests that dragging a window which has multiple transient child windows from
+// shelf should work properly.  Regression test for crash in
+// `WindowScaleAnimation::DestroyWindowAnimationObserver`.
+// https://crbug.com/1263183
+TEST_F(DragWindowFromShelfControllerTest,
+       DragWindowWithMultipleTransientChildWindows) {
+  const gfx::Rect shelf_bounds =
+      Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+
+  // Specify using `ZERO_DURATION` here to make sure the drag will still work
+  // even all the animations are no-ops.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  auto window = CreateTestWindow();
+  auto transient_child_win1 = CreateTransientModalChildWindow(
+      window.get(), gfx::Rect(0, 20, 1366, 728));
+  auto transient_child_win2 = CreateTransientModalChildWindow(
+      window.get(), gfx::Rect(100, 100, 1000, 800));
+  wm::TransientWindowManager::GetOrCreate(transient_child_win1.get())
+      ->set_parent_controls_visibility(true);
+  wm::TransientWindowManager::GetOrCreate(transient_child_win2.get())
+      ->set_parent_controls_visibility(true);
+
+  StartDrag(window.get(), shelf_bounds.right_center());
+  Drag(gfx::Point(745, 616), 47, -47);
+  EndDrag(gfx::Point(1366, 0), -1815.28);
+  WaitForHomeLauncherAnimationToFinish();
+
+  aura::Window* home_screen_window =
+      Shell::Get()->app_list_controller()->GetHomeScreenWindow();
+  EXPECT_TRUE(home_screen_window);
+  EXPECT_TRUE(home_screen_window->IsVisible());
+
+  EXPECT_FALSE(window->IsVisible());
+  EXPECT_FALSE(transient_child_win1->IsVisible());
+  EXPECT_FALSE(transient_child_win2->IsVisible());
+}
 }  // namespace ash

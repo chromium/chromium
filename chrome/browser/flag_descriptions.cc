@@ -3026,6 +3026,12 @@ const char kContextualSearchDebugDescription[] =
     "Enables internal debugging of Contextual Search behavior on the client "
     "and server.";
 
+const char kContextualSearchDelayedIntelligenceName[] =
+    "Contextual Search Delayed Intelligence";
+const char kContextualSearchDelayedIntelligenceDescription[] =
+    "Enables an intelligent search for default-enabled users when they open "
+    "the bottom sheet.";
+
 const char kContextualSearchForceCaptionName[] =
     "Contextual Search force a caption";
 const char kContextualSearchForceCaptionDescription[] =
@@ -4127,12 +4133,6 @@ const char kHdrNetOverrideDescription[] =
 const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
     "Launcher search results grouped by categories";
-
-const char kCellularAllowPerNetworkRoamingName[] =
-    "Allow per-networking roaming";
-const char kCellularAllowPerNetworkRoamingDescription[] =
-    "Allows per-network cellular roaming configuration when cellular roaming "
-    "is not disabled for the device through enterprise policy.";
 
 const char kCellularForbidAttachApnName[] = "Forbid Use Attach APN";
 const char kCellularForbidAttachApnDescription[] =

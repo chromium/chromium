@@ -6,9 +6,11 @@
 #define REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_H_
 
 #include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
-#include "remoting/codec/webrtc_video_encoder.h"
 #include "remoting/protocol/video_channel_state_observer.h"
+
+namespace webrtc {
+class DesktopFrame;
+}  // namespace webrtc
 
 namespace remoting {
 namespace protocol {
@@ -30,12 +32,9 @@ class WebrtcFrameScheduler : public VideoChannelStateObserver {
   // Pause and resumes the scheduler.
   virtual void Pause(bool pause) = 0;
 
-  // Called after |frame| has been captured to get encoding parameters for the
-  // frame. Returns false if the frame should be dropped (e.g. when there are no
-  // changes), true otherwise. |frame| may be set to nullptr if the capture
-  // request failed.
-  virtual bool OnFrameCaptured(const webrtc::DesktopFrame* frame,
-                               WebrtcVideoEncoder::FrameParams* params_out) = 0;
+  // Called after |frame| has been captured. |frame| may be set to nullptr
+  // if the capture request failed.
+  virtual void OnFrameCaptured(const webrtc::DesktopFrame* frame) = 0;
 
   // Writes the following bandwidth-related statistics to |frame_stats_out|:
   // * bandwidth_estimate_kbps

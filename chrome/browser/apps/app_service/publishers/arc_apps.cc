@@ -674,15 +674,17 @@ void ArcApps::Connect(
 
 void ArcApps::LoadIcon(const std::string& app_id,
                        apps::mojom::IconKeyPtr icon_key,
-                       apps::mojom::IconType icon_type,
+                       apps::mojom::IconType mojom_icon_type,
                        int32_t size_hint_in_dip,
                        bool allow_placeholder_icon,
                        LoadIconCallback callback) {
-  if (!icon_key || icon_type == apps::mojom::IconType::kUnknown) {
+  if (!icon_key || mojom_icon_type == apps::mojom::IconType::kUnknown) {
     std::move(callback).Run(apps::mojom::IconValue::New());
     return;
   }
   IconEffects icon_effects = static_cast<IconEffects>(icon_key->icon_effects);
+
+  apps::IconType icon_type = ConvertMojomIconTypeToIconType(mojom_icon_type);
 
   // Treat the Play Store as a special case, loading an icon defined by a
   // resource instead of asking the Android VM (or the cache of previous
@@ -692,7 +694,7 @@ void ArcApps::LoadIcon(const std::string& app_id,
   // Android app and before bringing up an Android VM for the first time.
   if (app_id == arc::kPlayStoreAppId) {
     LoadPlayStoreIcon(icon_type, size_hint_in_dip, icon_effects,
-                      std::move(callback));
+                      IconValueToMojomIconValueCallback(std::move(callback)));
   } else {
     const ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile_);
     DCHECK(arc_prefs);
@@ -707,9 +709,8 @@ void ArcApps::LoadIcon(const std::string& app_id,
     }
 
     arc_icon_once_loader_.LoadIcon(
-        app_id, size_hint_in_dip, icon_type,
-        base::BindOnce(&OnArcAppIconCompletelyLoaded,
-                       ConvertMojomIconTypeToIconType(icon_type),
+        app_id, size_hint_in_dip, mojom_icon_type,
+        base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
                        size_hint_in_dip, icon_effects,
                        IconValueToMojomIconValueCallback(std::move(callback))));
   }
@@ -746,9 +747,11 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
                                   int32_t event_flags,
                                   apps::mojom::IntentPtr intent,
                                   apps::mojom::LaunchSource launch_source,
-                                  apps::mojom::WindowInfoPtr window_info) {
+                                  apps::mojom::WindowInfoPtr window_info,
+                                  LaunchAppWithIntentCallback callback) {
   auto user_interaction_type = GetUserInterationType(launch_source);
   if (!user_interaction_type.has_value()) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -763,12 +766,14 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
   if (!prefs) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       prefs->GetApp(app_id);
   if (!app_info) {
     LOG(ERROR) << "Launch App failed, could not find app with id " << app_id;
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -794,6 +799,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
                          event_flags, std::move(intent), std::move(activity),
                          std::move(new_window_info)));
+      std::move(callback).Run(/*success=*/true);
       return;
     }
 
@@ -808,6 +814,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
               user_interaction_type.value(),
               MakeArcWindowInfo(std::move(new_window_info)))) {
         VLOG(2) << "Failed to launch app: " + app_id + ".";
+        std::move(callback).Run(/*success=*/false);
         return;
       }
     } else {
@@ -818,11 +825,13 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
 
       if (!arc_intent) {
         LOG(ERROR) << "Launch App failed, launch intent is not valid";
+        std::move(callback).Run(/*success=*/false);
         return;
       }
 
       auto* arc_service_manager = arc::ArcServiceManager::Get();
       if (!arc_service_manager) {
+        std::move(callback).Run(/*success=*/false);
         return;
       }
 
@@ -838,6 +847,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
             arc_service_manager->arc_bridge_service()->intent_helper(),
             HandleIntent);
         if (!instance) {
+          std::move(callback).Run(/*success=*/false);
           return;
         }
 
@@ -852,6 +862,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
         std::make_unique<app_restore::AppLaunchInfo>(
             app_id, event_flags, std::move(intent_for_full_restore), session_id,
             display_id));
+    std::move(callback).Run(/*success=*/true);
     return;
   }
 
@@ -867,6 +878,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       // Store.
       if (app_id == arc::kPlayStoreAppId) {
         prefs->SetLastLaunchTime(app_id);
+        std::move(callback).Run(/*success=*/true);
         return;
       }
     }
@@ -876,6 +888,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       // caller is responsible to not call this function in such case.  DCHECK
       // is here to prevent possible mistake.
       if (!arc::SetArcPlayStoreEnabledForProfile(profile_, true)) {
+        std::move(callback).Run(/*success=*/false);
         return;
       }
       DCHECK(arc::IsArcPlayStoreEnabledForProfile(profile_));
@@ -886,6 +899,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       // Store.
       if (app_id == arc::kPlayStoreAppId) {
         prefs->SetLastLaunchTime(app_id);
+        std::move(callback).Run(/*success=*/false);
         return;
       }
     } else {
@@ -893,6 +907,7 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
       DCHECK(arc::ShouldArcAlwaysStart());
     }
   }
+  std::move(callback).Run(/*success=*/true);
 }
 
 void ArcApps::SetPermission(const std::string& app_id,
@@ -1420,10 +1435,10 @@ void ArcApps::OnInstanceRegistryWillBeDestroyed(
   instance_registry_observation_.Reset();
 }
 
-void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
+void ArcApps::LoadPlayStoreIcon(apps::IconType icon_type,
                                 int32_t size_hint_in_dip,
                                 IconEffects icon_effects,
-                                LoadIconCallback callback) {
+                                apps::LoadIconCallback callback) {
   // Use overloaded Chrome icon for Play Store that is adapted to Chrome style.
   constexpr bool quantize_to_supported_scale_factor = true;
   int size_hint_in_px = apps_util::ConvertDipToPx(
@@ -1431,10 +1446,8 @@ void ArcApps::LoadPlayStoreIcon(apps::mojom::IconType icon_type,
   int resource_id = (size_hint_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32
                                             : IDR_ARC_SUPPORT_ICON_192;
   constexpr bool is_placeholder_icon = false;
-  LoadIconFromResource(ConvertMojomIconTypeToIconType(icon_type),
-                       size_hint_in_dip, resource_id, is_placeholder_icon,
-                       icon_effects,
-                       IconValueToMojomIconValueCallback(std::move(callback)));
+  LoadIconFromResource(icon_type, size_hint_in_dip, resource_id,
+                       is_placeholder_icon, icon_effects, std::move(callback));
 }
 
 apps::mojom::InstallReason GetInstallReason(

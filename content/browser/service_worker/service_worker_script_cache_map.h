@@ -32,6 +32,10 @@ class ServiceWorkerVersion;
 // for a particular version's implicit script resources.
 class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
  public:
+  ServiceWorkerScriptCacheMap(const ServiceWorkerScriptCacheMap&) = delete;
+  ServiceWorkerScriptCacheMap& operator=(const ServiceWorkerScriptCacheMap&) =
+      delete;
+
   int64_t LookupResourceId(const GURL& url);
 
   // Used during the initial run of a new version to build the map
@@ -101,8 +105,6 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
       callbacks_;
 
   base::WeakPtrFactory<ServiceWorkerScriptCacheMap> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerScriptCacheMap);
 };
 
 }  // namespace content

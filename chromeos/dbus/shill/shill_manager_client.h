@@ -140,6 +140,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // Returns the global instance if initialized. May return null.
   static ShillManagerClient* Get();
 
+  ShillManagerClient(const ShillManagerClient&) = delete;
+  ShillManagerClient& operator=(const ShillManagerClient&) = delete;
+
   // Adds a property changed |observer|.
   virtual void AddPropertyChangedObserver(
       ShillPropertyChangedObserver* observer) = 0;
@@ -219,9 +222,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
   // Initialize/Shutdown should be used instead.
   ShillManagerClient();
   virtual ~ShillManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillManagerClient);
 };
 
 }  // namespace chromeos

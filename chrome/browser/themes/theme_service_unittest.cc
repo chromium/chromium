@@ -41,6 +41,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/test_native_theme.h"
+#include "ui/views/views_features.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -293,8 +294,16 @@ class IncognitoThemeServiceTest : public ThemeServiceTest,
   IncognitoThemeServiceTest() {
     bool flag_enabled = GetParam();
     if (flag_enabled) {
-      feature_list_.InitAndEnableFeature(
-          features::kIncognitoBrandConsistencyForDesktop);
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kIncognitoBrandConsistencyForDesktop,
+                                views::features::
+                                    kInheritNativeThemeFromParentWidget},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{}, /*disabled_features=*/{
+              features::kIncognitoBrandConsistencyForDesktop,
+              views::features::kInheritNativeThemeFromParentWidget});
     }
   }
 };

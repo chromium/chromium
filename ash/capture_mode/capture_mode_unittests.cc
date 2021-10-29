@@ -71,6 +71,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/user_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -159,6 +160,21 @@ void ClickNotification(absl::optional<int> button_index) {
   const message_center::Notification* notification = GetPreviewNotification();
   DCHECK(notification);
   notification->delegate()->Click(button_index, absl::nullopt);
+}
+
+// Sets up a callback that will be triggered when a capture file (image or
+// video) is deleted as a result of a user action. The callback will verify the
+// successful deletion of the file, and will quit the given `loop`.
+void SetUpFileDeletionVerifier(base::RunLoop* loop) {
+  DCHECK(loop);
+  CaptureModeTestApi().SetOnCaptureFileDeletedCallback(
+      base::BindLambdaForTesting(
+          [loop](const base::FilePath& path, bool delete_successful) {
+            EXPECT_TRUE(delete_successful);
+            base::ScopedAllowBlockingForTesting allow_blocking;
+            EXPECT_FALSE(base::PathExists(path));
+            loop->Quit();
+          }));
 }
 
 // Moves the mouse and updates the cursor's display manually to imitate what a
@@ -472,16 +488,19 @@ class CaptureModeTest : public AshTestBase {
     EXPECT_EQ(region, controller->user_capture_region());
   }
 
-  void WaitForCountDownToFinish() {
+  void WaitForSessionToEnd() {
     auto* controller = CaptureModeController::Get();
-    DCHECK_EQ(controller->type(), CaptureModeType::kVideo);
-    while (controller->IsActive() &&
-           controller->capture_mode_session()->IsInCountDownAnimation()) {
-      base::RunLoop run_loop;
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
-      run_loop.Run();
-    }
+    if (!controller->IsActive())
+      return;
+
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+    ASSERT_TRUE(test_delegate);
+    base::RunLoop run_loop;
+    test_delegate->set_on_session_state_changed_callback(
+        run_loop.QuitClosure());
+    run_loop.Run();
+    ASSERT_FALSE(controller->IsActive());
   }
 
   void RemoveSecondaryDisplay() {
@@ -507,8 +526,7 @@ class CaptureModeTest : public AshTestBase {
   void WaitForSeconds(int seconds) {
     base::RunLoop loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, base::BindLambdaForTesting([&]() { loop.Quit(); }),
-        base::Seconds(seconds));
+        FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
     loop.Run();
   }
 
@@ -532,8 +550,7 @@ class CaptureModeTest : public AshTestBase {
         controller->delegate_for_testing());
     ASSERT_TRUE(test_delegate);
     base::RunLoop run_loop;
-    test_delegate->set_on_recording_started_callback(
-        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    test_delegate->set_on_recording_started_callback(run_loop.QuitClosure());
     run_loop.Run();
     ASSERT_TRUE(controller->is_recording_in_progress());
   }
@@ -736,7 +753,7 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   SendKey(ui::VKEY_RETURN, event_generator);
   EXPECT_EQ(ui::mojom::CursorType::kPointer,
             Shell::Get()->cursor_manager()->GetCursor().type());
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
 
@@ -1809,7 +1826,7 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   EXPECT_EQ(capture_mode_session->GetSelectedWindow(), window1.get());
   EXPECT_NE(capture_mode_session->GetSelectedWindow(), window2.get());
 
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
 }
 
 // Test that during countdown, window changes or crashes are handled.
@@ -1854,7 +1871,7 @@ TEST_F(CaptureModeTest, WindowChangesDuringCountdown) {
   EXPECT_FALSE(controller->is_recording_in_progress());
 
   // Wait for countdown to finish and check that recording starts.
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
 }
@@ -3184,7 +3201,7 @@ TEST_F(CaptureModeTest, FullscreenCapture) {
   EXPECT_TRUE(controller->IsActive());
   // Press anywhere to capture video.
   event_generator->ClickLeftButton();
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   EXPECT_FALSE(controller->IsActive());
 }
 
@@ -3917,8 +3934,11 @@ TEST_F(CaptureModeTest, QuickActionHistograms) {
     waiter.Wait();
   }
   // Verify clicking delete on screenshot notification.
+  base::RunLoop loop;
+  SetUpFileDeletionVerifier(&loop);
   const int delete_button = 1;
   ClickNotification(delete_button);
+  loop.Run();
   EXPECT_FALSE(GetPreviewNotification());
   histogram_tester.ExpectBucketCount(kQuickActionHistogramName,
                                      CaptureQuickAction::kDelete, 1);
@@ -4223,6 +4243,29 @@ TEST_F(CaptureModeTest, CaptureFolderSetToEmptyPath) {
   capture_folder = controller->GetCurrentCaptureFolder();
   EXPECT_EQ(capture_folder.path, default_downloads_folder);
   EXPECT_TRUE(capture_folder.is_default_downloads_folder);
+}
+
+TEST_F(CaptureModeTest, SimulateUserCancelingDlpWarningDialog) {
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+
+  // Simulate the user canceling the DLP warning dialog at the end of the
+  // recording which is shown to the user to alert about restricted content
+  // showing up on the screen during the recording. In this case, the user
+  // requests the deletion of the file.
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  test_delegate->set_should_save_after_dlp_check(false);
+  base::RunLoop loop;
+  SetUpFileDeletionVerifier(&loop);
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  loop.Run();
+  // No notification should show in this case, nor any thing on Tote.
+  EXPECT_FALSE(GetPreviewNotification());
+  ash::HoldingSpaceTestApi holding_space_api;
+  EXPECT_TRUE(holding_space_api.GetScreenCaptureViews().empty());
 }
 
 namespace {
@@ -4783,7 +4826,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {
   // projector.
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_CALL(projector_client_, StartSpeechRecognition());
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
 
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -4890,7 +4933,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
         break;
     }
 
-    WaitForCountDownToFinish();
+    WaitForSessionToEnd();
     EXPECT_FALSE(ProjectorSession::Get()->is_active());
     EXPECT_FALSE(controller->is_recording_in_progress());
 
@@ -4906,7 +4949,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidget) {
   EXPECT_TRUE(controller->IsActive());
 
   PressAndReleaseKey(ui::VKEY_RETURN);
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   CaptureModeTestApi test_api;
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();
@@ -4931,7 +4974,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayDockedMagnifier) {
   EXPECT_TRUE(controller->IsActive());
 
   PressAndReleaseKey(ui::VKEY_RETURN);
-  WaitForCountDownToFinish();
+  WaitForRecordingToStart();
   CaptureModeTestApi test_api;
   RecordingOverlayController* overlay_controller =
       test_api.GetRecordingOverlayController();
@@ -5171,6 +5214,38 @@ TEST_F(CaptureModeAdvancedSettingsTest, NudgeBehaviorWhenSelectingRegion) {
   EXPECT_EQ(
       nudge_controller->toast_widget()->GetNativeWindow()->GetRootWindow(),
       session->current_root());
+}
+
+TEST_F(CaptureModeAdvancedSettingsTest, NudgeDoesNotShowForAllUserTypes) {
+  struct {
+    std::string trace;
+    user_manager::UserType user_type;
+    bool can_see_nudge;
+  } kTestCases[] = {
+      {"regular user", user_manager::USER_TYPE_REGULAR, true},
+      {"child", user_manager::USER_TYPE_CHILD, true},
+      {"guest", user_manager::USER_TYPE_GUEST, false},
+      {"public account", user_manager::USER_TYPE_PUBLIC_ACCOUNT, false},
+      {"kiosk app", user_manager::USER_TYPE_KIOSK_APP, false},
+      {"arc kiosk app", user_manager::USER_TYPE_ARC_KIOSK_APP, false},
+      {"web kiosk app", user_manager::USER_TYPE_WEB_KIOSK_APP, false},
+      {"active dir", user_manager::USER_TYPE_ACTIVE_DIRECTORY, false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.trace);
+    ClearLogin();
+    SimulateUserLogin("example@gmail.com", test_case.user_type);
+
+    auto* controller = StartImageRegionCapture();
+    EXPECT_EQ(test_case.can_see_nudge,
+              controller->CanShowFolderSelectionNudge());
+
+    auto* nudge_controller = GetUserNudgeController();
+    EXPECT_EQ(test_case.can_see_nudge, !!nudge_controller);
+
+    controller->Stop();
+  }
 }
 
 // Tests that clicking on audio input buttons updates the state in the

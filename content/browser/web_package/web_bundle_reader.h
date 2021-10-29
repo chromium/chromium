@@ -51,6 +51,9 @@ class CONTENT_EXPORT WebBundleReader final
                   network::mojom::URLLoaderClientEndpointsPtr endpoints,
                   BrowserContext::BlobContextGetter blob_context_getter);
 
+  WebBundleReader(const WebBundleReader&) = delete;
+  WebBundleReader& operator=(const WebBundleReader&) = delete;
+
   // Starts parsing, and runs |callback| when meta data gets to be available.
   // |error| is set only on failures.
   // Other methods below are only available after this |callback| invocation.
@@ -100,6 +103,10 @@ class CONTENT_EXPORT WebBundleReader final
   class SharedFile final : public base::RefCountedThreadSafe<SharedFile> {
    public:
     explicit SharedFile(std::unique_ptr<WebBundleSource> source);
+
+    SharedFile(const SharedFile&) = delete;
+    SharedFile& operator=(const SharedFile&) = delete;
+
     void DuplicateFile(base::OnceCallback<void(base::File)> callback);
     base::File* operator->();
 
@@ -112,8 +119,6 @@ class CONTENT_EXPORT WebBundleReader final
     base::FilePath file_path_;
     std::unique_ptr<base::File> file_;
     base::OnceCallback<void(base::File)> duplicate_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(SharedFile);
   };
   class SharedFileDataSource;
 
@@ -160,8 +165,6 @@ class CONTENT_EXPORT WebBundleReader final
       pending_read_responses_;
 
   base::WeakPtrFactory<WebBundleReader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleReader);
 };
 
 }  // namespace content

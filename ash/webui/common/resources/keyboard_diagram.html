@@ -5,17 +5,18 @@
   }
 
   .keyboard {
-    display: inline-flex;
+    column-gap: var(--grid-gap);
     height: 200px;
     width: 100%;
   }
 
   .main-cluster {
-    display: grid;
-    flex-grow: 1;
+    display: inline-grid;
     grid-gap: var(--grid-gap);
     grid-template-columns: repeat(29, 1fr);
     grid-template-rows: 1fr repeat(5, 2fr);
+    height: 100%;
+    width: 100%;
   }
 
   keyboard-key {
@@ -32,6 +33,7 @@
   }
 
   #topRow {
+    column-gap: var(--grid-gap);
     display: flex;
     grid-column: 1 / -1;
   }
@@ -39,11 +41,6 @@
   #topRow keyboard-key {
     flex-basis: 0;
     flex-grow: 1;
-    margin-right: var(--grid-gap);  /* csschecker-disable-line left-right */
-  }
-
-  #topRow keyboard-key:last-child {
-    margin-right: 0;  /* csschecker-disable-line left-right */
   }
 
   #arrowKeyCluster {
@@ -153,8 +150,46 @@
   [data-mech-layout='jis'] #arrowKeyCluster {
     grid-column: span 7;
   }
+
+  /* Number pad */
+
+  #numberPad {
+    display: none;
+  }
+
+  [data-show-number-pad] .main-cluster {
+    width: 77%;
+  }
+
+  [data-show-number-pad] #numberPad {
+    box-sizing: border-box;
+    display: inline-grid;
+    grid-gap: var(--grid-gap);
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr repeat(5, 2fr);
+    height: 100%;
+    /*
+     * The number pad will always be on the right, even in RTL locales, so
+     * disable the lint warning.
+     */
+    padding-left: 9px;  /* csschecker-disable-line left-right */
+    width: 23%;
+  }
+
+  #numberPad keyboard-key {
+    grid-column: span 1;
+  }
+
+  #numberPad .double-height {
+    grid-row: span 2;
+  }
+
+  #numberPad .double-width {
+    grid-column: span 2;
+  }
 </style>
-<div class="keyboard">
+<div class="keyboard"
+    data-show-number-pad$="[[showNumberPad]]">
   <div class="main-cluster"
       data-mech-layout$="[[mechanicalLayout]]">
     <div id="topRow">
@@ -260,5 +295,33 @@
       <keyboard-key main-glyph="↓"></keyboard-key>
       <keyboard-key main-glyph="→"></keyboard-key>
     </div>
+  </div>
+  <div id="numberPad">
+    <keyboard-key main-glyph="page up"></keyboard-key>
+    <keyboard-key main-glyph="page dn"></keyboard-key>
+    <keyboard-key main-glyph="home"></keyboard-key>
+    <keyboard-key main-glyph="end"></keyboard-key>
+
+    <keyboard-key main-glyph="delete"></keyboard-key>
+    <keyboard-key main-glyph="/"></keyboard-key>
+    <keyboard-key main-glyph="*"></keyboard-key>
+    <keyboard-key main-glyph="-"></keyboard-key>
+
+    <keyboard-key main-glyph="7"></keyboard-key>
+    <keyboard-key main-glyph="8"></keyboard-key>
+    <keyboard-key main-glyph="9"></keyboard-key>
+    <keyboard-key class="double-height" main-glyph="+"></keyboard-key>
+
+    <keyboard-key main-glyph="4"></keyboard-key>
+    <keyboard-key main-glyph="5"></keyboard-key>
+    <keyboard-key main-glyph="6"></keyboard-key>
+
+    <keyboard-key main-glyph="1"></keyboard-key>
+    <keyboard-key main-glyph="2"></keyboard-key>
+    <keyboard-key main-glyph="3"></keyboard-key>
+    <keyboard-key class="double-height" main-glyph="enter"></keyboard-key>
+
+    <keyboard-key class="double-width" main-glyph="0"></keyboard-key>
+    <keyboard-key main-glyph="."></keyboard-key>
   </div>
 </div>

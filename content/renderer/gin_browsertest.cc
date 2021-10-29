@@ -28,13 +28,14 @@ class TestGinObject : public gin::Wrappable<TestGinObject> {
     return gin::CreateHandle(isolate, new TestGinObject(alive));
   }
 
+  TestGinObject(const TestGinObject&) = delete;
+  TestGinObject& operator=(const TestGinObject&) = delete;
+
  private:
   TestGinObject(bool* alive) : alive_(alive) { *alive_ = true; }
   ~TestGinObject() override { *alive_ = false; }
 
   bool* alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestGinObject);
 };
 
 gin::WrapperInfo TestGinObject::kWrapperInfo = { gin::kEmbedderNativeGin };

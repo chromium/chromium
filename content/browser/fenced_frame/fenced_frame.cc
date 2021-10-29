@@ -185,4 +185,37 @@ void FencedFrame::WaitForDidStopLoadingForTesting() {
   run_loop.Run();
 }
 
+void FencedFrame::NotifyNavigationStateChanged(InvalidateTypes changed_flags) {}
+
+void FencedFrame::NotifyBeforeFormRepostWarningShow() {
+  // TODO(https://crbug.com/1263557): Should we call
+  // web_contents_->NotifyBeforeFormRepostWarningShow()?
+}
+
+void FencedFrame::NotifyNavigationEntryCommitted(
+    const LoadCommittedDetails& load_details) {}
+
+void FencedFrame::NotifyNavigationEntryChanged(
+    const EntryChangedDetails& change_details) {}
+
+void FencedFrame::NotifyNavigationListPruned(
+    const PrunedDetails& pruned_details) {}
+
+void FencedFrame::NotifyNavigationEntriesDeleted() {}
+
+void FencedFrame::ActivateAndShowRepostFormWarningDialog() {
+  // TODO(https://crbug.com/1263557): The continuation callback would goto the
+  // wrong NavigationController so perhaps we need to pass a callback in?
+}
+
+bool FencedFrame::ShouldPreserveAbortedURLs() {
+  return false;
+}
+
+WebContents* FencedFrame::DeprecatedGetWebContents() {
+  return web_contents_;
+}
+
+void FencedFrame::UpdateOverridingUserAgent() {}
+
 }  // namespace content

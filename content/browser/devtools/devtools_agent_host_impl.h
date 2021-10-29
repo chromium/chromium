@@ -37,6 +37,9 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   // Returns DevToolsAgentHost with a given |id| or nullptr of it doesn't exist.
   static scoped_refptr<DevToolsAgentHostImpl> GetForId(const std::string& id);
 
+  DevToolsAgentHostImpl(const DevToolsAgentHostImpl&) = delete;
+  DevToolsAgentHostImpl& operator=(const DevToolsAgentHostImpl&) = delete;
+
   // DevToolsAgentHost implementation.
   bool AttachClient(DevToolsAgentHostClient* client) override;
   bool AttachClientWithoutWakeLock(DevToolsAgentHostClient* client) override;
@@ -144,8 +147,6 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsIOContext io_context_;
   DevToolsRendererChannel renderer_channel_;
   static int s_force_creation_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsAgentHostImpl);
 };
 
 }  // namespace content

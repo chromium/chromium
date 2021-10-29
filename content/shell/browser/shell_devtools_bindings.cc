@@ -106,6 +106,9 @@ class ShellDevToolsBindings::NetworkResourceLoader
     loader_->DownloadAsStream(url_loader_factory, this);
   }
 
+  NetworkResourceLoader(const NetworkResourceLoader&) = delete;
+  NetworkResourceLoader& operator=(const NetworkResourceLoader&) = delete;
+
  private:
   void OnResponseStarted(const GURL& final_url,
                          const network::mojom::URLResponseHead& response_head) {
@@ -147,8 +150,6 @@ class ShellDevToolsBindings::NetworkResourceLoader
   ShellDevToolsBindings* const bindings_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkResourceLoader);
 };
 
 // This constant should be in sync with

@@ -135,6 +135,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   scoped_refptr<SerializedScriptValue> SerializeState(const ScriptValue&,
                                                       ExceptionState&);
 
+  bool HasEntriesAndEventsDisabled() const;
+
   HeapVector<Member<AppHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
   int current_index_ = -1;

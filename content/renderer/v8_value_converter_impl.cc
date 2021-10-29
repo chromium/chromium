@@ -90,6 +90,9 @@ class V8ValueConverterImpl::FromV8ValueState {
       : max_recursion_depth_(kMaxRecursionDepth),
         avoid_identity_hash_for_testing_(avoid_identity_hash_for_testing) {}
 
+  FromV8ValueState(const FromV8ValueState&) = delete;
+  FromV8ValueState& operator=(const FromV8ValueState&) = delete;
+
   // If |handle| is not in |unique_map_|, then add it to |unique_map_| and
   // return true.
   //
@@ -144,8 +147,6 @@ class V8ValueConverterImpl::FromV8ValueState {
   int max_recursion_depth_;
 
   bool avoid_identity_hash_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromV8ValueState);
 };
 
 // A class to ensure that objects/arrays that are being converted by

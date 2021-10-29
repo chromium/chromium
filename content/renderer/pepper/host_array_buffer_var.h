@@ -24,6 +24,9 @@ class HostArrayBufferVar : public ppapi::ArrayBufferVar {
   explicit HostArrayBufferVar(uint32_t size_in_bytes,
                               const base::UnsafeSharedMemoryRegion& Region);
 
+  HostArrayBufferVar(const HostArrayBufferVar&) = delete;
+  HostArrayBufferVar& operator=(const HostArrayBufferVar&) = delete;
+
   // ArrayBufferVar implementation.
   void* Map() override;
   void Unmap() override;
@@ -41,8 +44,6 @@ class HostArrayBufferVar : public ppapi::ArrayBufferVar {
   blink::WebArrayBuffer buffer_;
   // Tracks whether the data in the buffer is valid.
   bool valid_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostArrayBufferVar);
 };
 
 }  // namespace content

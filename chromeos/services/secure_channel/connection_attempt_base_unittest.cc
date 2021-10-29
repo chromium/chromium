@@ -84,6 +84,12 @@ class TestConnectionAttempt
 }  // namespace
 
 class SecureChannelConnectionAttemptBaseTest : public testing::Test {
+ public:
+  SecureChannelConnectionAttemptBaseTest(
+      const SecureChannelConnectionAttemptBaseTest&) = delete;
+  SecureChannelConnectionAttemptBaseTest& operator=(
+      const SecureChannelConnectionAttemptBaseTest&) = delete;
+
  protected:
   SecureChannelConnectionAttemptBaseTest() = default;
   ~SecureChannelConnectionAttemptBaseTest() override = default;
@@ -228,8 +234,6 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
   bool is_extract_client_data_test_ = false;
 
   std::unique_ptr<TestConnectionAttempt> connection_attempt_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectionAttemptBaseTest);
 };
 
 TEST_F(SecureChannelConnectionAttemptBaseTest, SingleRequest_Success) {

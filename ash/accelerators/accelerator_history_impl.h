@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_handler.h"
 
@@ -52,6 +53,9 @@ class ASH_EXPORT AcceleratorHistoryImpl : public AcceleratorHistory,
   ui::Accelerator previous_accelerator_;
 
   std::set<ui::KeyboardCode> currently_pressed_keys_;
+
+  // The most recently logged KeyboardCode, saved to prevent spammy logs.
+  absl::optional<ui::KeyboardCode> last_logged_key_code_;
 };
 
 }  // namespace ash

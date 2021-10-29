@@ -90,6 +90,9 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
       bool was_created_by_renderer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  RenderViewImpl(const RenderViewImpl&) = delete;
+  RenderViewImpl& operator=(const RenderViewImpl&) = delete;
+
   // Instances of this object are created by and destroyed by the browser
   // process. This method must be called exactly once by the IPC subsystem when
   // the browser wishes the object to be destroyed.
@@ -195,8 +198,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   // use the Observer interface to filter IPC messages and receive frame change
   // notifications.
   // ---------------------------------------------------------------------------
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewImpl);
 };
 
 }  // namespace content

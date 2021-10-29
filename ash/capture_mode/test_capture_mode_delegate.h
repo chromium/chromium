@@ -31,11 +31,17 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   recording::RecordingServiceTestApi* recording_service() const {
     return recording_service_.get();
   }
+  void set_on_session_state_changed_callback(base::OnceClosure callback) {
+    on_session_state_changed_callback_ = std::move(callback);
+  }
   void set_on_recording_started_callback(base::OnceClosure callback) {
     on_recording_started_callback_ = std::move(callback);
   }
   void set_is_allowed_by_dlp(bool value) { is_allowed_by_dlp_ = value; }
   void set_is_allowed_by_policy(bool value) { is_allowed_by_policy_ = value; }
+  void set_should_save_after_dlp_check(bool value) {
+    should_save_after_dlp_check_ = value;
+  }
 
   // Resets |is_allowed_by_policy_| and |is_allowed_by_dlp_| back to true.
   void ResetAllowancesToDefault();
@@ -71,7 +77,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       const aura::Window* window,
       const gfx::Rect& bounds,
       base::OnceClosure stop_callback) override;
-  void StopObservingRestrictedContent() override;
+  void StopObservingRestrictedContent(
+      OnCaptureModeDlpRestrictionChecked callback) override;
   mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
       override;
   void BindAudioStreamFactory(
@@ -85,9 +92,11 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
   base::FilePath fake_downloads_dir_;
+  base::OnceClosure on_session_state_changed_callback_;
   base::OnceClosure on_recording_started_callback_;
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
+  bool should_save_after_dlp_check_ = true;
 };
 
 }  // namespace ash

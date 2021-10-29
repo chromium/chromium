@@ -403,6 +403,13 @@ const GetLineThrough = natives.GetLineThrough;
 /**
  * @param {string} axTreeID The id of the accessibility tree.
  * @param {number} nodeID The id of a node.
+ * @return {boolean}
+ */
+const GetIsButton = natives.GetIsButton;
+
+/**
+ * @param {string} axTreeID The id of the accessibility tree.
+ * @param {number} nodeID The id of a node.
  * @return {?Array<automation.CustomAction>} List of custom actions of the
  *     node.
  */
@@ -875,6 +882,10 @@ AutomationNodeImpl.prototype = {
 
   get lineThrough() {
     return GetLineThrough(this.treeID, this.id);
+  },
+
+  get isButton() {
+    return GetIsButton(this.treeID, this.id);
   },
 
   get detectedLanguage() {
@@ -2118,6 +2129,7 @@ utils.expose(AutomationNode, AutomationNodeImpl, {
         'imageAnnotation',
         'indexInParent',
         'invalidState',
+        'isButton',
         'isRootNode',
         'italic',
         'lastChild',

@@ -225,13 +225,16 @@ void AppServiceMojomImpl::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
+    apps::mojom::WindowInfoPtr window_info,
+    LaunchAppWithIntentCallback callback) {
   auto iter = publishers_.find(app_type);
   if (iter == publishers_.end()) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   iter->second->LaunchAppWithIntent(app_id, event_flags, std::move(intent),
-                                    launch_source, std::move(window_info));
+                                    launch_source, std::move(window_info),
+                                    std::move(callback));
 }
 
 void AppServiceMojomImpl::SetPermission(apps::mojom::AppType app_type,

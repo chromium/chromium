@@ -42,6 +42,10 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
  public:
   static DWriteFontLookupTableBuilder* GetInstance();
 
+  DWriteFontLookupTableBuilder(const DWriteFontLookupTableBuilder&) = delete;
+  DWriteFontLookupTableBuilder& operator=(const DWriteFontLookupTableBuilder&) =
+      delete;
+
   // Retrieve the prepared memory region if it is available.
   // EnsureFontUniqueNameTable() must be checked before.
   base::ReadOnlySharedMemoryRegion DuplicateMemoryRegion();
@@ -127,12 +131,16 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
 
   struct FamilyResult {
     FamilyResult();
+
+    FamilyResult(const FamilyResult&) = delete;
+    FamilyResult& operator=(const FamilyResult&) = delete;
+
     FamilyResult(FamilyResult&& other);
+
     ~FamilyResult();
+
     std::vector<FontFileWithUniqueNames> font_files_with_names;
     HRESULT exit_hresult{S_OK};
-
-    DISALLOW_COPY_AND_ASSIGN(FamilyResult);
   };
 
   // Try to find a serialized lookup table from the cache directory specified at
@@ -238,8 +246,6 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
       base::MakeRefCounted<base::DeferredSequencedTaskRunner>();
 
   std::map<HRESULT, unsigned> scanning_error_reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(DWriteFontLookupTableBuilder);
 };
 
 }  // namespace content

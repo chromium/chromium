@@ -17,7 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
+#include "build/os_buildflags.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -357,24 +357,24 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
   return result;
 }
 
-#if defined(OS_MAC)
-const base::Feature kWebCodecsEncoderGpuMemoryBufferReadback{
-    "WebCodecsEncoderGpuMemoryBufferReadback",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kWebCodecsEncoderGpuMemoryBufferReadback {
+  "WebCodecsEncoderGpuMemoryBufferReadback",
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
 #endif
+};
 
 bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
                                    bool force_opaque) {
-#if defined(OS_MAC)
   // GMB readback only works with NV12, so only opaque buffers can be used.
   return (format == media::PIXEL_FORMAT_XBGR ||
           format == media::PIXEL_FORMAT_XRGB ||
           (force_opaque && (format == media::PIXEL_FORMAT_ABGR ||
                             format == media::PIXEL_FORMAT_ARGB))) &&
          base::FeatureList::IsEnabled(kWebCodecsEncoderGpuMemoryBufferReadback);
-#else
-  return false;
-#endif
 }
 
 }  // namespace

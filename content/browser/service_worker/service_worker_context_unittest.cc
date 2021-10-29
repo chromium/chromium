@@ -241,6 +241,11 @@ class RecordableEmbeddedWorkerInstanceClient
       EmbeddedWorkerTestHelper* helper)
       : FakeEmbeddedWorkerInstanceClient(helper) {}
 
+  RecordableEmbeddedWorkerInstanceClient(
+      const RecordableEmbeddedWorkerInstanceClient&) = delete;
+  RecordableEmbeddedWorkerInstanceClient& operator=(
+      const RecordableEmbeddedWorkerInstanceClient&) = delete;
+
   void OnConnectionError() override {
     // Do nothing. This allows the object to stay until the test is over, so
     // |events_| can be accessed even after the worker is stopped in the case of
@@ -265,7 +270,6 @@ class RecordableEmbeddedWorkerInstanceClient
 
  private:
   std::vector<Message> events_;
-  DISALLOW_COPY_AND_ASSIGN(RecordableEmbeddedWorkerInstanceClient);
 };
 
 class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {

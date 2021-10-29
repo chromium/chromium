@@ -79,7 +79,7 @@ std::string BuildCpuInfo() {
   cpuinfo = "Intel";
 #elif defined(OS_WIN)
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->wow64_status() == base::win::OSInfo::WOW64_ENABLED) {
+  if (os_info->IsWowX86OnAMD64()) {
     cpuinfo = "WOW64";
   } else {
     base::win::OSInfo::WindowsArchitecture windows_architecture =

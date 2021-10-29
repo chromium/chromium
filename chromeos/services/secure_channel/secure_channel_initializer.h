@@ -50,6 +50,9 @@ class SecureChannelInitializer : public SecureChannelBase {
     static Factory* test_factory_;
   };
 
+  SecureChannelInitializer(const SecureChannelInitializer&) = delete;
+  SecureChannelInitializer& operator=(const SecureChannelInitializer&) = delete;
+
   ~SecureChannelInitializer() override;
 
  private:
@@ -102,8 +105,6 @@ class SecureChannelInitializer : public SecureChannelBase {
   std::unique_ptr<mojom::SecureChannel> secure_channel_impl_;
 
   base::WeakPtrFactory<SecureChannelInitializer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelInitializer);
 };
 
 }  // namespace secure_channel

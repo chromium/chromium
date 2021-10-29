@@ -1225,6 +1225,8 @@ bool CSSAnimations::CanCalculateTransitionUpdateForProperty(
            ->CssAnimations()
            .previous_active_interpolations_for_animations_.Contains(
                property))) {
+    UseCounter::Count(state.animating_element.GetDocument(),
+                      WebFeature::kCSSTransitionBlockedByAnimation);
     return false;
   }
   return true;

@@ -28,6 +28,10 @@ class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
       RenderFrameHost* guest_rfh,
       mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client);
 
+  BrowserPluginPopupMenuHelper(const BrowserPluginPopupMenuHelper&) = delete;
+  BrowserPluginPopupMenuHelper& operator=(const BrowserPluginPopupMenuHelper&) =
+      delete;
+
  private:
   // PopupMenuHelper:
   RenderWidgetHostViewMac* GetRenderWidgetHostView() const override;
@@ -36,8 +40,6 @@ class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
   void OnMenuClosed() override;
 
   RenderFrameHostImpl* embedder_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginPopupMenuHelper);
 };
 
 }  // namespace content

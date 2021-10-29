@@ -99,6 +99,11 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
     mock_client_factory_.AddObserver(this);
   }
 
+  DeviceSyncCryptAuthDeviceNotifierImplTest(
+      const DeviceSyncCryptAuthDeviceNotifierImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceNotifierImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceNotifierImplTest&) = delete;
+
   ~DeviceSyncCryptAuthDeviceNotifierImplTest() override {
     mock_client_factory_.RemoveObserver(this);
   }
@@ -214,8 +219,6 @@ class DeviceSyncCryptAuthDeviceNotifierImplTest
   base::MockOneShotTimer* mock_timer_ = nullptr;
 
   std::unique_ptr<CryptAuthDeviceNotifier> device_notifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceNotifierImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceNotifierImplTest, Test) {

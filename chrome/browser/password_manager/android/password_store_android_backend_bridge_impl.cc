@@ -86,16 +86,22 @@ void PasswordStoreAndroidBackendBridgeImpl::OnCompleteWithLogins(
 
 void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env,
                                                     jint job_id,
-                                                    jint error) {
+                                                    jint error_type,
+                                                    jint api_error_code) {
   DCHECK(consumer_);
   // Posting the tasks to the same sequence prevents that synchronous responses
   // try to finish tasks before their registration was completed.
+  password_manager::AndroidBackendError error{
+      static_cast<password_manager::AndroidBackendErrorType>(error_type)};
+
+  if (error.type == password_manager::AndroidBackendErrorType::kExternalError) {
+    error.api_error_code = static_cast<int>(api_error_code);
+  }
+
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &PasswordStoreAndroidBackendBridge::Consumer::OnError, consumer_,
-          JobId(job_id),
-          static_cast<password_manager::AndroidBackendErrorType>(error)));
+      base::BindOnce(&PasswordStoreAndroidBackendBridge::Consumer::OnError,
+                     consumer_, JobId(job_id), std::move(error)));
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {

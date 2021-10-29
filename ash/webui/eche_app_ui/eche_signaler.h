@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class EcheSignaler : public mojom::SignalingMessageExchanger,
@@ -46,6 +46,6 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_SIGNALER_H_

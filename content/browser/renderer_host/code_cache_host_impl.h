@@ -72,6 +72,10 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
       int render_process_id,
       scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context,
       const net::NetworkIsolationKey& nik);
+
+  CodeCacheHostImpl(const CodeCacheHostImpl&) = delete;
+  CodeCacheHostImpl& operator=(const CodeCacheHostImpl&) = delete;
+
   ~CodeCacheHostImpl() override;
 
   void SetCacheStorageControlForTesting(
@@ -115,8 +119,6 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<CodeCacheHostImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CodeCacheHostImpl);
 };
 
 }  // namespace content

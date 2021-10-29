@@ -31,6 +31,11 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
+  ProhibitedTechnologiesHandlerTest(const ProhibitedTechnologiesHandlerTest&) =
+      delete;
+  ProhibitedTechnologiesHandlerTest& operator=(
+      const ProhibitedTechnologiesHandlerTest&) = delete;
+
   void SetUp() override {
     LoginState::Initialize();
 
@@ -121,8 +126,6 @@ class ProhibitedTechnologiesHandlerTest : public testing::Test {
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
       managed_config_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProhibitedTechnologiesHandlerTest);
 };
 
 TEST_F(ProhibitedTechnologiesHandlerTest,

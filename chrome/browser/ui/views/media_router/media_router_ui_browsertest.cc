@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest, OpenDialogFromContextMenu) {
   content::ContextMenuParams params;
   params.page_url =
       web_contents->GetController().GetLastCommittedEntry()->GetURL();
-  TestRenderViewContextMenu menu(web_contents->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents->GetMainFrame(), params);
   menu.Init();
 
   ASSERT_TRUE(menu.IsItemPresent(IDC_ROUTE_MEDIA));

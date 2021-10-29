@@ -9,7 +9,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheNotificationClickHandler::EcheNotificationClickHandler(
@@ -66,7 +66,7 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
     handler_->RemoveNotificationClickHandler(this);
     is_click_handler_set_ = false;
     if (NeedClose(feature_status_provider_->GetStatus()) &&
-        !base::FeatureList::IsEnabled(chromeos::features::kEcheSWADebugMode)) {
+        !base::FeatureList::IsEnabled(features::kEcheSWADebugMode)) {
       PA_LOG(INFO) << "Close Eche app window";
       launch_app_helper_->CloseEcheApp();
     }
@@ -86,4 +86,4 @@ bool EcheNotificationClickHandler::NeedClose(FeatureStatus status) {
          status == FeatureStatus::kDependentFeature;
 }
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

@@ -151,7 +151,7 @@ AutomationPredicate = class {
    * @return {boolean}
    */
   static button(node) {
-    return /button/i.test(node.role);
+    return node.isButton;
   }
 
   /**

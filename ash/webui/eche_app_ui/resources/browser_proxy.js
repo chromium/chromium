@@ -18,30 +18,30 @@ if (urlParams) {
 // Returns a remote for SignalingMessageExchanger interface which sends messages
 // to the browser.
 const signalMessageExchanger =
-    chromeos.echeApp.mojom.SignalingMessageExchanger.getRemote();
+    ash.echeApp.mojom.SignalingMessageExchanger.getRemote();
 // An object which receives request messages for the SignalingMessageObserver
 // mojom interface and dispatches them as callbacks.
 const signalingMessageObserverRouter =
-    new chromeos.echeApp.mojom.SignalingMessageObserverCallbackRouter();
+    new ash.echeApp.mojom.SignalingMessageObserverCallbackRouter();
 // Set up a message pipe to talk to the browser process.
 signalMessageExchanger.setSignalingMessageObserver(
     signalingMessageObserverRouter.$.bindNewPipeAndPassRemote());
 // Returns a remote for SystemInfoProvider interface which gets system info
 // from the browser.
-const systemInfo = chromeos.echeApp.mojom.SystemInfoProvider.getRemote();
+const systemInfo = ash.echeApp.mojom.SystemInfoProvider.getRemote();
 // Returns a remote for UidGenerator interface which gets an uid from the
 // browser.
-const uidGenerator = chromeos.echeApp.mojom.UidGenerator.getRemote();
+const uidGenerator = ash.echeApp.mojom.UidGenerator.getRemote();
 // An object which receives request messages for the SystemInfoObserver
 // mojom interface and dispatches them as callbacks.
 const systemInfoObserverRouter =
-    new chromeos.echeApp.mojom.SystemInfoObserverCallbackRouter();
+    new ash.echeApp.mojom.SystemInfoObserverCallbackRouter();
 // Set up a message pipe to the browser process to monitor screen state.
 systemInfo.setSystemInfoObserver(
     systemInfoObserverRouter.$.bindNewPipeAndPassRemote());
 
 const notificationGenerator =
-    chromeos.echeApp.mojom.NotificationGenerator.getRemote();
+    ash.echeApp.mojom.NotificationGenerator.getRemote();
 
 /**
  * A pipe through which we can send messages to the guest frame.

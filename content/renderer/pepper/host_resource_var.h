@@ -33,6 +33,9 @@ class HostResourceVar : public ppapi::ResourceVar {
   HostResourceVar(int pending_renderer_host_id,
                   const IPC::Message& creation_message);
 
+  HostResourceVar(const HostResourceVar&) = delete;
+  HostResourceVar& operator=(const HostResourceVar&) = delete;
+
   // ResourceVar override.
   PP_Resource GetPPResource() const override;
   int GetPendingRendererHostId() const override;
@@ -59,8 +62,6 @@ class HostResourceVar : public ppapi::ResourceVar {
   // If the plugin-side resource has not yet been created, carries a message to
   // create a resource of the specific type on the plugin side. Otherwise, NULL.
   std::unique_ptr<IPC::Message> creation_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResourceVar);
 };
 
 }  // namespace content

@@ -11,7 +11,6 @@
 
 #include "base/command_line.h"
 #include "base/cpu.h"
-#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -19,7 +18,6 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -136,8 +134,6 @@ bool PpapiThread::OnControlMessageReceived(const IPC::Message& msg) {
     IPC_MESSAGE_HANDLER(PpapiMsg_LoadPlugin, OnLoadPlugin)
     IPC_MESSAGE_HANDLER(PpapiMsg_CreateChannel, OnCreateChannel)
     IPC_MESSAGE_HANDLER(PpapiMsg_SetNetworkState, OnSetNetworkState)
-    IPC_MESSAGE_HANDLER(PpapiMsg_Crash, OnCrash)
-    IPC_MESSAGE_HANDLER(PpapiMsg_Hang, OnHang)
     IPC_MESSAGE_UNHANDLED(handled = false)
   IPC_END_MESSAGE_MAP()
   return handled;
@@ -353,24 +349,6 @@ void PpapiThread::OnSetNetworkState(bool online) {
       plugin_entry_points_.get_interface(PPP_NETWORK_STATE_DEV_INTERFACE));
   if (ns)
     ns->SetOnLine(PP_FromBool(online));
-}
-
-void PpapiThread::OnCrash() {
-  // Intentionally crash upon the request of the browser.
-  //
-  // Linker's ICF feature may merge this function with other functions with the
-  // same definition and it may confuse the crash report processing system.
-  static int static_variable_to_make_this_function_unique = 0;
-  base::debug::Alias(&static_variable_to_make_this_function_unique);
-
-  volatile int* null_pointer = nullptr;
-  *null_pointer = 0;
-}
-
-void PpapiThread::OnHang() {
-  // Intentionally hang upon the request of the browser.
-  for (;;)
-    base::PlatformThread::Sleep(base::Seconds(1));
 }
 
 bool PpapiThread::SetupChannel(base::ProcessId renderer_pid,

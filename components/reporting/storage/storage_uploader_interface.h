@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/strings/string_piece.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -25,7 +26,7 @@ namespace reporting {
 class UploaderInterface {
  public:
   // Reason upload is instantiated.
-  enum UploadReason {
+  enum class UploadReason : uint32_t {
     UNKNOWN = 0,
     MANUAL = 1,
     KEY_DELIVERY = 2,
@@ -74,6 +75,8 @@ class UploaderInterface {
   // Finalizes the upload (e.g. sends the message to server and gets
   // response). Called always, regardless of whether there were errors.
   virtual void Completed(Status final_status) = 0;
+
+  static base::StringPiece ReasonToString(UploadReason);
 
  protected:
   UploaderInterface();

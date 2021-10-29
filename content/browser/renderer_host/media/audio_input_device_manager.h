@@ -38,6 +38,9 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
  public:
   explicit AudioInputDeviceManager(media::AudioSystem* audio_system);
 
+  AudioInputDeviceManager(const AudioInputDeviceManager&) = delete;
+  AudioInputDeviceManager& operator=(const AudioInputDeviceManager&) = delete;
+
   // Gets the opened device by |session_id|. Returns NULL if the device
   // is not opened, otherwise the opened device. Called on IO thread.
   const blink::MediaStreamDevice* GetOpenedDeviceById(
@@ -118,8 +121,6 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
 #endif
 
   media::AudioSystem* const audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputDeviceManager);
 };
 
 }  // namespace content

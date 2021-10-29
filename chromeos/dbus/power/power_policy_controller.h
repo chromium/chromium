@@ -40,6 +40,9 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
   // Returns the global instance. Initialize() must be called first.
   static PowerPolicyController* Get();
 
+  PowerPolicyController(const PowerPolicyController&) = delete;
+  PowerPolicyController& operator=(const PowerPolicyController&) = delete;
+
   // Reasons why a wake lock may be added.
   // TODO(derat): Remove this enum in favor of device::mojom::WakeLockReason
   // once this class has been moved to the device service:
@@ -282,8 +285,6 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
 
   // Indicates if screen autolock is enabled or not by policy.
   bool auto_screen_lock_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerPolicyController);
 };
 
 }  // namespace chromeos

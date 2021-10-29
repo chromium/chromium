@@ -76,7 +76,8 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info) override;
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,

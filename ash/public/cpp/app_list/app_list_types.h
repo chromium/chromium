@@ -244,14 +244,17 @@ enum SearchResultOmniboxDisplayType {
   kOmniboxTypeMax,  // Do not use.
 };
 
-// Actions for OmniBox zero state suggestion.
-enum OmniBoxZeroStateAction {
-  // Removes the zero state suggestion.
-  kRemoveSuggestion = 0,
-  // Appends the suggestion to search box query.
-  kAppendSuggestion,
-  // kZeroStateActionMax is always last.
-  kZeroStateActionMax
+// Actions for search results. These map to the buttons beside some search
+// results, and do not include the launching of the result itself.
+// TODO(crbug.com/1263751): Currently these are only relevant to omnibox
+// results, but these are being generalized to other result types.
+enum SearchResultActionType {
+  // Removes the search result.
+  kRemove = 0,
+  // Appends the result to search box query.
+  kAppend,
+  // kSearchResultActionMax is always last.
+  kSearchResultActionTypeMax
 };
 
 // The shape to mask a search result icon with.
@@ -288,9 +291,9 @@ struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
   SearchResultIconShape shape = SearchResultIconShape::kDefault;
 };
 
-// Returns OmniBoxZeroStateAction mapped for |button_index|.
-ASH_PUBLIC_EXPORT OmniBoxZeroStateAction
-GetOmniBoxZeroStateAction(int button_index);
+// Returns SearchResultActionType mapped for |button_index|.
+ASH_PUBLIC_EXPORT SearchResultActionType
+GetSearchResultActionType(int button_index);
 
 // A tagged range in search result text.
 struct ASH_PUBLIC_EXPORT SearchResultTag {

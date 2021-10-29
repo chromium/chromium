@@ -34,6 +34,10 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   static void Terminate();
   static BrowserGpuChannelHostFactory* instance() { return instance_; }
 
+  BrowserGpuChannelHostFactory(const BrowserGpuChannelHostFactory&) = delete;
+  BrowserGpuChannelHostFactory& operator=(const BrowserGpuChannelHostFactory&) =
+      delete;
+
   gpu::GpuChannelHost* GetGpuChannel();
   int GetGpuChannelId() { return gpu_client_id_; }
 
@@ -84,8 +88,6 @@ class CONTENT_EXPORT BrowserGpuChannelHostFactory
   base::OneShotTimer timeout_;
 
   static BrowserGpuChannelHostFactory* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserGpuChannelHostFactory);
 };
 
 }  // namespace content

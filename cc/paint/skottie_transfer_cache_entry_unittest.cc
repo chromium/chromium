@@ -12,6 +12,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/test/lottie_test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkSize.h"
 
 namespace cc {
 

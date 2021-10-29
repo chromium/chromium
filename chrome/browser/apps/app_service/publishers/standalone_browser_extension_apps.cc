@@ -108,18 +108,23 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
+    apps::mojom::WindowInfoPtr window_info,
+    LaunchAppWithIntentCallback callback) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts
   // down for an update.
-  if (!controller_.is_bound())
+  if (!controller_.is_bound()) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
   auto launch_params = crosapi::mojom::LaunchParams::New();
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
   launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
       intent, ProfileManager::GetPrimaryUserProfile());
-  controller_->Launch(std::move(launch_params), /*callback=*/base::DoNothing());
+  controller_->Launch(std::move(launch_params),
+                      /*callback=*/base::DoNothing());
+  std::move(callback).Run(/*success=*/true);
 }
 
 void StandaloneBrowserExtensionApps::LaunchAppWithFiles(

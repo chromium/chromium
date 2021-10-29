@@ -342,7 +342,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override;
-  void WillCommit() override {}
+  void WillCommit(cc::CommitState*) override {}
   void DidCommit(base::TimeTicks, base::TimeTicks) override;
   void DidCommitAndDrawFrame() override {}
   void DidReceiveCompositorFrameAck() override;

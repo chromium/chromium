@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheMessageReceiverImpl::EcheMessageReceiverImpl(
@@ -30,4 +30,4 @@ void EcheMessageReceiverImpl::OnMessageReceived(const std::string& payload) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

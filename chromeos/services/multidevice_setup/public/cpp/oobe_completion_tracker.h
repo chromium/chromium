@@ -29,14 +29,16 @@ class OobeCompletionTracker : public KeyedService {
   void RemoveObserver(Observer* observer);
 
   OobeCompletionTracker();
+
+  OobeCompletionTracker(const OobeCompletionTracker&) = delete;
+  OobeCompletionTracker& operator=(const OobeCompletionTracker&) = delete;
+
   ~OobeCompletionTracker() override;
 
   void MarkOobeShown();
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeCompletionTracker);
 };
 
 }  // namespace multidevice_setup

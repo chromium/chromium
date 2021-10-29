@@ -20,7 +20,7 @@ class Value;
 namespace cc {
 
 class LayerTreeHost;
-class LayerTreeHostImpl;
+
 class CC_EXPORT MicroBenchmarkController {
  public:
   explicit MicroBenchmarkController(LayerTreeHost* host);
@@ -38,7 +38,7 @@ class CC_EXPORT MicroBenchmarkController {
   // Returns true if the message was successfully delivered and handled.
   bool SendMessage(int id, base::Value message);
 
-  void ScheduleImplBenchmarks(LayerTreeHostImpl* host_impl);
+  std::vector<std::unique_ptr<MicroBenchmarkImpl>> CreateImplBenchmarks() const;
 
  private:
   void CleanUpFinishedBenchmarks();

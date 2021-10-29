@@ -27,6 +27,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -45,6 +46,7 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -188,16 +190,18 @@ base::FilePath SaveFile(scoped_refptr<base::RefCountedMemory> data,
 }
 
 void DeleteFileAsync(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                     const base::FilePath& path) {
+                     const base::FilePath& path,
+                     OnFileDeletedCallback callback) {
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::DeleteFile, path),
-      base::BindOnce(
-          [](const base::FilePath& path, bool success) {
-            // TODO(afakhry): Show toast?
-            if (!success)
-              LOG(ERROR) << "Failed to delete the file: " << path;
-          },
-          path));
+      callback ? base::BindOnce(std::move(callback), path)
+               : base::BindOnce(
+                     [](const base::FilePath& path, bool success) {
+                       // TODO(afakhry): Show toast?
+                       if (!success)
+                         LOG(ERROR) << "Failed to delete the file: " << path;
+                     },
+                     path));
 }
 
 // Shows a Capture Mode related notification with the given parameters.
@@ -550,7 +554,32 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
 }
 
 bool CaptureModeController::CanShowFolderSelectionNudge() const {
-  return GetActiveUserPrefService()->GetBoolean(kCanShowFolderSelectionNudge);
+  auto* session_controller = Shell::Get()->session_controller();
+  DCHECK(session_controller->IsActiveUserSessionStarted());
+
+  absl::optional<user_manager::UserType> user_type =
+      session_controller->GetUserType();
+  // This can only be called while a user is logged in, so `user_type` should
+  // never be empty.
+  DCHECK(user_type);
+  switch (*user_type) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+      // We only allow regular and child accounts to see the nudge.
+      break;
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+    case user_manager::NUM_USER_TYPES:
+      return false;
+  }
+
+  auto* pref_service = session_controller->GetActivePrefService();
+  DCHECK(pref_service);
+  return pref_service->GetBoolean(kCanShowFolderSelectionNudge);
 }
 
 void CaptureModeController::DisableFolderSelectionNudgeForever() {
@@ -1007,8 +1036,6 @@ CaptureAllowance CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
 
 void CaptureModeController::FinalizeRecording(bool success,
                                               const gfx::ImageSkia& thumbnail) {
-  delegate_->StopObservingRestrictedContent();
-
   // If |success| is false, then recording has been force-terminated due to a
   // failure on the service side, or a disconnection to it. We need to terminate
   // the recording-related UI elements.
@@ -1021,9 +1048,14 @@ void CaptureModeController::FinalizeRecording(bool success,
   recording_service_remote_.reset();
   delegate_->OnServiceRemoteReset();
   recording_service_client_receiver_.reset();
-  OnVideoFileSaved(thumbnail, success,
-                   video_recording_watcher_->is_in_projector_mode());
+  const bool was_in_projector_mode =
+      video_recording_watcher_->is_in_projector_mode();
   video_recording_watcher_.reset();
+
+  delegate_->StopObservingRestrictedContent(
+      base::BindOnce(&CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd,
+                     weak_ptr_factory_.GetWeakPtr(), thumbnail, success,
+                     was_in_projector_mode));
 }
 
 void CaptureModeController::TerminateRecordingUiElements() {
@@ -1142,6 +1174,7 @@ void CaptureModeController::OnImageFileSaved(
 }
 
 void CaptureModeController::OnVideoFileSaved(
+    const base::FilePath& saved_video_file_path,
     const gfx::ImageSkia& video_thumbnail,
     bool success,
     bool in_projector_mode) {
@@ -1151,25 +1184,20 @@ void CaptureModeController::OnVideoFileSaved(
     ShowFailureNotification();
   } else {
     if (!in_projector_mode) {
-      ShowPreviewNotification(current_video_file_path_,
+      ShowPreviewNotification(saved_video_file_path,
                               gfx::Image(video_thumbnail),
                               CaptureModeType::kVideo);
       HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
       if (client)  // May be `nullptr` in tests.
-        client->AddScreenRecording(current_video_file_path_);
+        client->AddScreenRecording(saved_video_file_path);
     }
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
   }
 
-  low_disk_space_threshold_reached_ = false;
-  recording_start_time_ = base::TimeTicks();
-  const auto local_video_file_path = current_video_file_path_;
-  current_video_file_path_.clear();
-
   if (on_file_saved_callback_for_test_)
-    std::move(on_file_saved_callback_for_test_).Run(local_video_file_path);
+    std::move(on_file_saved_callback_for_test_).Run(saved_video_file_path);
 }
 
 void CaptureModeController::ShowPreviewNotification(
@@ -1217,7 +1245,8 @@ void CaptureModeController::HandleNotificationClicked(
     if (type == CaptureModeType::kVideo) {
       DCHECK_EQ(button_index_value,
                 VideoNotificationButtonIndex::BUTTON_DELETE_VIDEO);
-      DeleteFileAsync(blocking_task_runner_, screen_capture_path);
+      DeleteFileAsync(blocking_task_runner_, screen_capture_path,
+                      std::move(on_file_deleted_callback_for_test_));
     } else {
       DCHECK_EQ(type, CaptureModeType::kImage);
       switch (button_index_value) {
@@ -1227,7 +1256,8 @@ void CaptureModeController::HandleNotificationClicked(
               CaptureQuickAction::kBacklight);
           break;
         case ScreenshotNotificationButtonIndex::BUTTON_DELETE:
-          DeleteFileAsync(blocking_task_runner_, screen_capture_path);
+          DeleteFileAsync(blocking_task_runner_, screen_capture_path,
+                          std::move(on_file_deleted_callback_for_test_));
           RecordScreenshotNotificationQuickAction(CaptureQuickAction::kDelete);
           break;
         default:
@@ -1429,6 +1459,27 @@ void CaptureModeController::BeginVideoRecording(
 
 void CaptureModeController::InterruptVideoRecording() {
   EndVideoRecording(EndRecordingReason::kDlpInterruption);
+}
+
+void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
+    const gfx::ImageSkia& video_thumbnail,
+    bool success,
+    bool in_projector_mode,
+    bool proceed) {
+  const bool should_delete_file = !proceed;
+  const auto video_file_path = current_video_file_path_;
+  current_video_file_path_.clear();
+
+  if (should_delete_file) {
+    DeleteFileAsync(blocking_task_runner_, video_file_path,
+                    std::move(on_file_deleted_callback_for_test_));
+  } else {
+    OnVideoFileSaved(video_file_path, video_thumbnail, success,
+                     in_projector_mode);
+  }
+
+  low_disk_space_threshold_reached_ = false;
+  recording_start_time_ = base::TimeTicks();
 }
 
 }  // namespace ash

@@ -19,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkSize.h"
 
 namespace cc {
 namespace {
@@ -112,17 +113,21 @@ TEST(SkottieWrapperTest, SetImageForAsset) {
   ::testing::NiceMock<MockCanvas> canvas;
   EXPECT_TRUE(skottie->SetImageForAsset(
       HashSkottieResourceId("image_0"),
-      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage()));
+      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage(),
+      SkSamplingOptions()));
   EXPECT_TRUE(skottie->SetImageForAsset(
       HashSkottieResourceId("image_1"),
-      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage()));
+      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage(),
+      SkSamplingOptions()));
   skottie->Draw(&canvas, /*t=*/0.1, SkRect::MakeWH(500, 500));
   EXPECT_TRUE(skottie->SetImageForAsset(
       HashSkottieResourceId("image_0"),
-      CreateBitmapImage(gfx::Size(200, 200)).GetSwSkImage()));
+      CreateBitmapImage(gfx::Size(200, 200)).GetSwSkImage(),
+      SkSamplingOptions()));
   EXPECT_TRUE(skottie->SetImageForAsset(
       HashSkottieResourceId("image_1"),
-      CreateBitmapImage(gfx::Size(200, 200)).GetSwSkImage()));
+      CreateBitmapImage(gfx::Size(200, 200)).GetSwSkImage(),
+      SkSamplingOptions()));
   skottie->Draw(&canvas, /*t=*/0.2, SkRect::MakeWH(500, 500));
 }
 
@@ -134,7 +139,8 @@ TEST(SkottieWrapperTest, SetImageForUnknownAsset) {
   ASSERT_TRUE(skottie->is_valid());
   EXPECT_FALSE(skottie->SetImageForAsset(
       HashSkottieResourceId("unknown-asset"),
-      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage()));
+      CreateBitmapImage(gfx::Size(100, 100)).GetSwSkImage(),
+      SkSamplingOptions()));
 }
 
 }  // namespace

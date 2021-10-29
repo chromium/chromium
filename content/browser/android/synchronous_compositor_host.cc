@@ -367,8 +367,8 @@ struct SynchronousCompositorHost::SharedMemoryWithSize {
   SharedMemoryWithSize(size_t stride, size_t buffer_size)
       : stride(stride), buffer_size(buffer_size) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryWithSize);
+  SharedMemoryWithSize(const SharedMemoryWithSize&) = delete;
+  SharedMemoryWithSize& operator=(const SharedMemoryWithSize&) = delete;
 };
 
 bool SynchronousCompositorHost::DemandDrawSw(SkCanvas* canvas,

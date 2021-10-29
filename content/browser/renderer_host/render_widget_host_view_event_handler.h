@@ -66,6 +66,9 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
    public:
     Delegate();
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Converts |rect| from window coordinate to screen coordinate.
     virtual gfx::Rect ConvertRectToScreen(const gfx::Rect& rect) const = 0;
     // Call keybindings handler against the event and send matched edit commands
@@ -101,14 +104,17 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
         selection_controller_client_;
     std::unique_ptr<ui::TouchSelectionController> selection_controller_;
     std::unique_ptr<OverscrollController> overscroll_controller_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   RenderWidgetHostViewEventHandler(RenderWidgetHostImpl* host,
                                    RenderWidgetHostViewBase* host_view,
                                    Delegate* delegate);
+
+  RenderWidgetHostViewEventHandler(const RenderWidgetHostViewEventHandler&) =
+      delete;
+  RenderWidgetHostViewEventHandler& operator=(
+      const RenderWidgetHostViewEventHandler&) = delete;
+
   ~RenderWidgetHostViewEventHandler() override;
 
   // Set child popup's host view, and event handler, in order to redirect input.
@@ -312,8 +318,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
 
   std::unique_ptr<HitTestDebugKeyEventObserver> debug_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewEventHandler);
 };
 
 }  // namespace content

@@ -108,8 +108,10 @@ void WebAppsCrosapi::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
+    apps::mojom::WindowInfoPtr window_info,
+    LaunchAppWithIntentCallback callback) {
   if (!LogIfNotConnected(FROM_HERE)) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -119,6 +121,8 @@ void WebAppsCrosapi::LaunchAppWithIntent(
   launch_params->intent =
       apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
   controller_->Launch(std::move(launch_params), base::DoNothing());
+  // TODO(crbug/1261263): handle the case where launch fails.
+  std::move(callback).Run(/*success=*/true);
 }
 
 void WebAppsCrosapi::LaunchAppWithFiles(const std::string& app_id,

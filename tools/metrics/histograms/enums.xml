@@ -5474,6 +5474,12 @@ others/histograms.xml -->
   <int value="2" label="Import with section union"/>
 </enum>
 
+<enum name="AutofillAssistantDependenciesInvalidated">
+  <int value="0" label="Invalidated outside of flow"/>
+  <int value="1" label="Invalidated during startup"/>
+  <int value="2" label="Invalidated during flow"/>
+</enum>
+
 <enum name="AutofillAssistantDropOutReason">
   <int value="0" label="Autofill Assistant started"/>
   <int value="1" label="Autostart timed out"/>
@@ -26765,6 +26771,7 @@ Called by update_document_policy_enum.py.-->
   <int value="919" label="QuickAnswersTranslationEnabled"/>
   <int value="920" label="QuickAnswersUnitConverstionEnabled"/>
   <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
+  <int value="922" label="RemoteAccessHostClipboardSizeBytes"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -35064,6 +35071,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4063" label="HttpRefreshWhenScriptingDisabled"/>
   <int value="4064" label="V8FragmentDirective_Items_AttributeGetter"/>
   <int value="4065" label="V8FragmentDirective_CreateSelectorDirective_Method"/>
+  <int value="4066" label="CSSTransitionBlockedByAnimation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -36471,6 +36479,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="FAT32"/>
   <int value="2" label="exFAT"/>
   <int value="3" label="NTFS"/>
+</enum>
+
+<enum name="FileManagerGlitch">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Unhandled Error"/>
+  <int value="2" label="Unhandled Rejection"/>
 </enum>
 
 <enum name="FileManagerListType">
@@ -43181,6 +43195,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="A11y"/>
   <int value="5" label="Handwriting"/>
   <int value="6" label="Emoji"/>
+  <int value="7" label="StylusHandwriting"/>
 </enum>
 
 <enum name="IMEVKMode">
@@ -50297,6 +50312,7 @@ from previous Chrome versions.
   <int value="-420956156" label="WebApkGenerator:disabled"/>
   <int value="-420347911" label="MobileIdentityConsistencyFRE:disabled"/>
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
+  <int value="-419659180" label="ContextualSearchDelayedIntelligence:disabled"/>
   <int value="-418868128" label="enable-experimental-web-platform-features"/>
   <int value="-418676305" label="ScanningUI:enabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
@@ -50515,6 +50531,7 @@ from previous Chrome versions.
   <int value="-254158542" label="SubresourceRedirectPreviews:enabled"/>
   <int value="-253619457" label="ChromeSharingHubLaunchAdjacent:enabled"/>
   <int value="-252258023" label="ShimlessRMAFlow:enabled"/>
+  <int value="-252128826" label="ContextualSearchDelayedIntelligence:enabled"/>
   <int value="-250822813" label="PwaImprovedSplashScreen:enabled"/>
   <int value="-250721831" label="AndroidAutofillAccessibility:disabled"/>
   <int value="-250543540" label="DeferAllScript:enabled"/>
@@ -66163,6 +66180,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Invalid URLs found"/>
   <int value="4" label="OK"/>
   <int value="5" label="Invalid JSON (either syntactically or structurally)"/>
+</enum>
+
+<enum name="PasswordStoreAndroidBackendAPIError">
+  <int value="8" label="INTERNAL_ERROR"/>
+  <int value="17" label="API_NOT_CONNECTED"/>
+  <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>
+  <int value="11000" label="PASSPHRASE_REQUIRED"/>
+  <int value="11004" label="ACCESS_DENIED"/>
 </enum>
 
 <enum name="PasswordStoreAndroidBackendError">

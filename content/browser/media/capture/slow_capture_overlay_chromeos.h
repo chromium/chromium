@@ -56,6 +56,11 @@ class CONTENT_EXPORT SlowCaptureOverlayChromeOS final
   SlowCaptureOverlayChromeOS(
       Owner* owner,
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay> receiver);
+
+  SlowCaptureOverlayChromeOS(const SlowCaptureOverlayChromeOS&) = delete;
+  SlowCaptureOverlayChromeOS& operator=(const SlowCaptureOverlayChromeOS&) =
+      delete;
+
   ~SlowCaptureOverlayChromeOS() final;
 
   // viz::mojom::FrameSinkVideoCaptureOverlay implementation.
@@ -80,8 +85,6 @@ class CONTENT_EXPORT SlowCaptureOverlayChromeOS final
   // and re-generated whenever: a) the |image_| changes, or b) the required
   // bitmap size changes.
   SkBitmap cached_scaled_image_;
-
-  DISALLOW_COPY_AND_ASSIGN(SlowCaptureOverlayChromeOS);
 };
 
 }  // namespace content

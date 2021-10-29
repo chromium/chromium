@@ -81,14 +81,14 @@ void EcheAppNotificationController::ShowNotificationFromWebUI(
     const absl::optional<std::u16string>& title,
     const absl::optional<std::u16string>& message,
     absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
-                  chromeos::eche_app::mojom::WebNotificationType> type) {
-  chromeos::eche_app::mojom::WebNotificationType web_type =
-      absl::get<chromeos::eche_app::mojom::WebNotificationType>(type);
+                  ash::eche_app::mojom::WebNotificationType> type) {
+  ash::eche_app::mojom::WebNotificationType web_type =
+      absl::get<ash::eche_app::mojom::WebNotificationType>(type);
   if (title && message) {
     if (web_type ==
-            chromeos::eche_app::mojom::WebNotificationType::CONNECTION_FAILED ||
+            ash::eche_app::mojom::WebNotificationType::CONNECTION_FAILED ||
         web_type ==
-            chromeos::eche_app::mojom::WebNotificationType::CONNECTION_LOST) {
+            ash::eche_app::mojom::WebNotificationType::CONNECTION_LOST) {
       // TODO(guanrulee): Show the buttons once they're completed.
       ShowNotification(CreateNotification(
           kEcheAppRetryConnectionNotifierId, title.value(), message.value(),

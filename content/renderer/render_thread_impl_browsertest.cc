@@ -150,6 +150,10 @@ class RenderThreadImplBrowserTest : public testing::Test,
  public:
   RenderThreadImplBrowserTest() {}
 
+  RenderThreadImplBrowserTest(const RenderThreadImplBrowserTest&) = delete;
+  RenderThreadImplBrowserTest& operator=(const RenderThreadImplBrowserTest&) =
+      delete;
+
   void SetUp() override {
     content_renderer_client_ = std::make_unique<ContentRendererClient>();
     SetRendererClientForTesting(content_renderer_client_.get());
@@ -279,9 +283,6 @@ class RenderThreadImplBrowserTest : public testing::Test,
   RenderThreadImpl* thread_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderThreadImplBrowserTest);
 };
 
 // Disabled under LeakSanitizer due to memory leaks.

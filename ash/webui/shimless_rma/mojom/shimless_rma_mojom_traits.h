@@ -124,6 +124,16 @@ struct EnumTraits<ash::shimless_rma::mojom::CalibrationStatus,
 };
 
 template <>
+struct EnumTraits<ash::shimless_rma::mojom::FinalizationStatus,
+                  rmad::FinalizeStatus_Status> {
+  static ash::shimless_rma::mojom::FinalizationStatus ToMojom(
+      rmad::FinalizeStatus_Status key_status);
+
+  static bool FromMojom(ash::shimless_rma::mojom::FinalizationStatus input,
+                        rmad::FinalizeStatus_Status* out);
+};
+
+template <>
 class StructTraits<ash::shimless_rma::mojom::CalibrationComponentStatusDataView,
                    rmad::CalibrationComponentStatus> {
  public:

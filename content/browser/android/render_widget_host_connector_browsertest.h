@@ -18,6 +18,10 @@ class RenderWidgetHostConnectorTest : public ContentBrowserTest {
  public:
   RenderWidgetHostConnectorTest();
 
+  RenderWidgetHostConnectorTest(const RenderWidgetHostConnectorTest&) = delete;
+  RenderWidgetHostConnectorTest& operator=(
+      const RenderWidgetHostConnectorTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override;
 
@@ -40,9 +44,6 @@ class RenderWidgetHostConnectorTest : public ContentBrowserTest {
     // testing.
     return rwhva->ime_adapter_for_testing();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostConnectorTest);
 };
 
 }  // namespace content

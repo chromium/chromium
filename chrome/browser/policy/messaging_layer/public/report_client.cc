@@ -271,7 +271,9 @@ void ReportingClient::DeliverAsyncStartUploader(
               }
             }
             auto uploader = Uploader::Create(
-                reason,
+                /*need_encryption_key=*/(
+                    EncryptionModuleInterface::is_enabled() &&
+                    reason == UploaderInterface::UploadReason::KEY_DELIVERY),
                 base::BindOnce(
                     [](UploadClient::ReportSuccessfulUploadCallback
                            report_success_upload_cb,

@@ -1760,6 +1760,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
 TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   auto hanging_resolver = std::make_unique<MockHostResolver>();
   hanging_resolver->set_ondemand_mode(true);
+  hanging_resolver->rules()->AddRule("www.google.com", "1.2.3.4");
   session_deps_.host_resolver = std::move(hanging_resolver);
 
   HttpRequestInfo request_info;

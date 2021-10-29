@@ -35,6 +35,9 @@ class URLLoaderFactoryGetter
  public:
   CONTENT_EXPORT URLLoaderFactoryGetter();
 
+  URLLoaderFactoryGetter(const URLLoaderFactoryGetter&) = delete;
+  URLLoaderFactoryGetter& operator=(const URLLoaderFactoryGetter&) = delete;
+
   // Initializes this object on the UI thread. The |partition| is used to
   // initialize the URLLoaderFactories for the network service, AppCache, and
   // ServiceWorkers, and will be cached to recover from connection error.
@@ -151,8 +154,6 @@ class URLLoaderFactoryGetter
   // only be accessed on UI thread. Must be cleared by |StoragePartitionImpl|
   // when it's going away.
   StoragePartitionImpl* partition_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryGetter);
 };
 
 }  // namespace content

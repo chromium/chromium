@@ -92,6 +92,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // deleted it will delete this out from under the caller.
   RenderWidgetHostViewMac(RenderWidgetHost* widget);
 
+  RenderWidgetHostViewMac(const RenderWidgetHostViewMac&) = delete;
+  RenderWidgetHostViewMac& operator=(const RenderWidgetHostViewMac&) = delete;
+
   RenderWidgetHostViewCocoa* GetInProcessNSView() const;
 
   // |delegate| is used to separate out the logic from the NSResponder delegate.
@@ -682,8 +685,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Factory used to safely scope delayed calls to ShutdownHost().
   base::WeakPtrFactory<RenderWidgetHostViewMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewMac);
 };
 
 // RenderWidgetHostViewCocoa is not exported outside of content. This helper

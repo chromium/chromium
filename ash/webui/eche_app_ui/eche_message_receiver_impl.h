@@ -9,7 +9,7 @@
 
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class EcheMessageReceiverImpl
@@ -29,6 +29,6 @@ class EcheMessageReceiverImpl
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_MESSAGE_RECEIVER_IMPL_H_

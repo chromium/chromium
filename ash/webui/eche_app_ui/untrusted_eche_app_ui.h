@@ -12,7 +12,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // WebUI config for chrome-untrusted://eche-app
@@ -34,6 +34,6 @@ class UntrustedEcheAppUI : public ui::UntrustedWebUIController {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_UNTRUSTED_ECHE_APP_UI_H_

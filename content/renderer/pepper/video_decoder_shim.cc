@@ -82,14 +82,15 @@ VideoDecoderShim::PendingDecode::~PendingDecode() {
 struct VideoDecoderShim::PendingFrame {
   explicit PendingFrame(uint32_t decode_id);
   PendingFrame(uint32_t decode_id, scoped_refptr<media::VideoFrame> frame);
+
+  // This could be expensive to copy, so guard against that.
+  PendingFrame(const PendingFrame&) = delete;
+  PendingFrame& operator=(const PendingFrame&) = delete;
+
   ~PendingFrame();
 
   const uint32_t decode_id;
   scoped_refptr<media::VideoFrame> video_frame;
-
- private:
-  // This could be expensive to copy, so guard against that.
-  DISALLOW_COPY_AND_ASSIGN(PendingFrame);
 };
 
 VideoDecoderShim::PendingFrame::PendingFrame(uint32_t decode_id)

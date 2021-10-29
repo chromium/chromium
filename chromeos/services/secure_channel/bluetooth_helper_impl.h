@@ -43,6 +43,9 @@ class BluetoothHelperImpl : public BluetoothHelper {
     static Factory* test_factory_;
   };
 
+  BluetoothHelperImpl(const BluetoothHelperImpl&) = delete;
+  BluetoothHelperImpl& operator=(const BluetoothHelperImpl&) = delete;
+
   ~BluetoothHelperImpl() override;
 
  private:
@@ -74,8 +77,6 @@ class BluetoothHelperImpl : public BluetoothHelper {
   multidevice::RemoteDeviceCache* remote_device_cache_;
   std::unique_ptr<BackgroundEidGenerator> background_eid_generator_;
   std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothHelperImpl);
 };
 
 }  // namespace secure_channel

@@ -65,6 +65,10 @@ class Starter : public content::WebContentsObserver {
   // settings are no longer enabled.
   void CheckSettings();
 
+  // Records the invalidation of platform-specific depencendies. For example:
+  // When the activity is changed on Android.
+  void OnDependenciesInvalidated();
+
  private:
   friend class StarterTest;
 
@@ -127,6 +131,9 @@ class Starter : public content::WebContentsObserver {
   // Deletes the trigger script coordinator.
   void DeleteTriggerScriptCoordinator();
 
+  // Records metrics when the dependencies get invalidated.
+  void RecordDependenciesInvalidated() const;
+
   // Returns a pointer to the currently pending trigger context, or nullptr.
   // Use this method instead of directly accessing |pending_trigger_context_| in
   // cases where the context could be temporarily owned by
@@ -163,7 +170,7 @@ class Starter : public content::WebContentsObserver {
   bool waiting_for_onboarding_ = false;
   bool waiting_for_deeplink_navigation_ = false;
   bool is_custom_tab_ = false;
-  StarterPlatformDelegate* platform_delegate_ = nullptr;
+  StarterPlatformDelegate* const platform_delegate_;
   ukm::UkmRecorder* ukm_recorder_ = nullptr;
   base::WeakPtr<RuntimeManagerImpl> runtime_manager_;
   bool fetch_trigger_scripts_on_navigation_ = false;

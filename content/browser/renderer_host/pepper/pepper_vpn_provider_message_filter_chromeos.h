@@ -39,6 +39,11 @@ class CONTENT_EXPORT PepperVpnProviderMessageFilter
   PepperVpnProviderMessageFilter(BrowserPpapiHostImpl* host,
                                  PP_Instance instance);
 
+  PepperVpnProviderMessageFilter(const PepperVpnProviderMessageFilter&) =
+      delete;
+  PepperVpnProviderMessageFilter& operator=(
+      const PepperVpnProviderMessageFilter&) = delete;
+
   // ppapi::host::ResourceMessageFilter overrides.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& message) override;
@@ -106,8 +111,6 @@ class CONTENT_EXPORT PepperVpnProviderMessageFilter
   base::queue<std::vector<char>> received_packets_;
 
   base::WeakPtrFactory<PepperVpnProviderMessageFilter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVpnProviderMessageFilter);
 };
 
 }  // namespace content

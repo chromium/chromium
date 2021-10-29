@@ -52,6 +52,10 @@ class MockObserver : public SmsProvider::Observer {
 // It creates and injects a fake sms retriver client to trigger various actions
 // for testing purposes.
 class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
+ public:
+  SmsProviderGmsBaseTest(const SmsProviderGmsBaseTest&) = delete;
+  SmsProviderGmsBaseTest& operator=(const SmsProviderGmsBaseTest&) = delete;
+
  protected:
   SmsProviderGmsBaseTest() = default;
   virtual ~SmsProviderGmsBaseTest() override = default;
@@ -148,8 +152,6 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
   base::android::ScopedJavaGlobalRef<jobject> j_fake_sms_retriever_client_;
   base::test::ScopedFeatureList feature_list_;
   ui::WindowAndroid* test_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsProviderGmsBaseTest);
 };
 
 class SmsProviderGmsTest : public ::testing::WithParamInterface<std::string>,

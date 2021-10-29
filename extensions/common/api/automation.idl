@@ -1242,6 +1242,9 @@ enum SortDirectionType {
     // Miscellaneous attributes.
     //
 
+    // Whether or not this node is a button.
+    boolean isButton;
+
     // Aria auto complete.
     DOMString? autoComplete;
 

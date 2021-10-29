@@ -41,6 +41,12 @@ namespace ash {
 
 class CaptureModeSession;
 
+// Defines a callback type that will be invoked when an attempt to delete the
+// given `path` is completed with the given status `delete_successful`.
+using OnFileDeletedCallback =
+    base::OnceCallback<void(const base::FilePath& path,
+                            bool delete_successful)>;
+
 // Controls starting and ending a Capture Mode session and its behavior.
 class ASH_EXPORT CaptureModeController
     : public recording::mojom::RecordingServiceClient,
@@ -318,7 +324,8 @@ class ASH_EXPORT CaptureModeController
   // an RGB image provided by the recording service that can be used as a
   // thumbnail of the video in the notification. If |in_projector_mode| is true
   // the recording will not be shown in tote or notification.
-  void OnVideoFileSaved(const gfx::ImageSkia& video_thumbnail,
+  void OnVideoFileSaved(const base::FilePath& saved_video_file_path,
+                        const gfx::ImageSkia& video_thumbnail,
                         bool success,
                         bool in_projector_mode);
 
@@ -380,6 +387,18 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
+  // At the end of a video recording, the DLP manager is checked to see if there
+  // were any restricted content of a warning level type during the recording
+  // (warning-level restrictions do not result in interrupting the video
+  // recording), if so, the DLP manager shows a dialog asking the user whether
+  // to continue with saving the video file. When the dialog closes, this
+  // function is called to provide the user choice; save the video file when
+  // `proceed` is true, or to delete it when `proceed` is false.
+  void OnDlpRestrictionCheckedAtVideoEnd(const gfx::ImageSkia& video_thumbnail,
+                                         bool success,
+                                         bool in_projector_mode,
+                                         bool proceed);
+
   std::unique_ptr<CaptureModeDelegate> delegate_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
@@ -432,6 +451,8 @@ class ASH_EXPORT CaptureModeController
   // If set, it will be called when either an image or video file is saved.
   base::OnceCallback<void(const base::FilePath&)>
       on_file_saved_callback_for_test_;
+
+  OnFileDeletedCallback on_file_deleted_callback_for_test_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;

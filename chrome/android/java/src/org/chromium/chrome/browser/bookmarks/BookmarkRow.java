@@ -152,7 +152,12 @@ public abstract class BookmarkRow
         BookmarkItem bookmarkItem = null;
         if (mDelegate != null && mDelegate.getModel() != null) {
             bookmarkItem = mDelegate.getModel().getBookmarkById(mBookmarkId);
-            if (bookmarkItem != null) canMove = bookmarkItem.isMovable();
+            if (bookmarkItem != null) {
+                // Reading list items can sometimes be movable (for type swapping purposes), but for
+                // UI purposes they shouldn't be movable.
+                canMove = bookmarkItem.isMovable()
+                        && mBookmarkId.getType() != BookmarkType.READING_LIST;
+            }
         }
         ModelList listItems = new ModelList();
         if (mBookmarkId.getType() == BookmarkType.READING_LIST) {

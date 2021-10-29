@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -168,6 +169,7 @@ class AppLauncherHandlerTest : public testing::Test {
   content::BrowserContext* browser_context() { return testing_profile_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfile> testing_profile_;
   web_app::ScopedOsHooksSuppress os_hooks_suppress_;
   extensions::ExtensionService* extension_service_;

@@ -1938,6 +1938,22 @@
             ]
         }
     ],
+    "ChromeOSHoldingSpaceExperiment": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HoldingSpaceInProgressDownloadsIntegration",
+                        "HoldingSpaceIncognitoProfileIntegration"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSKstaled": [
         {
             "platforms": [
@@ -3086,8 +3102,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Disabled",
-                    "disable_features": [
+                    "name": "Enabled_20211027",
+                    "enable_features": [
                         "EnableDiscoverFeedAppFlows"
                     ]
                 }
@@ -4501,26 +4517,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IncludeInitiallyInvisibleImagesInLCP"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IncognitoBrandConsistencyForDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IncognitoBrandConsistencyForDesktop",
-                        "InheritNativeThemeFromParentWidget"
                     ]
                 }
             ]

@@ -50,13 +50,13 @@ class PictureInPictureDelegate : public WebContentsDelegate {
  public:
   PictureInPictureDelegate() = default;
 
+  PictureInPictureDelegate(const PictureInPictureDelegate&) = delete;
+  PictureInPictureDelegate& operator=(const PictureInPictureDelegate&) = delete;
+
   MOCK_METHOD3(EnterPictureInPicture,
                PictureInPictureResult(WebContents*,
                                       const viz::SurfaceId&,
                                       const gfx::Size&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureDelegate);
 };
 
 class TestOverlayWindow : public OverlayWindow {

@@ -15,7 +15,7 @@ class WebUIControllerFactory;
 
 // Base test class used to test JS libraries for System Apps. It setups
 // chrome://system-app-test and chrome-untrusted://system-app-test URLs and
-// loads files from chromeos/components/system_apps/public/js/.
+// loads files from ash/webui/system_apps/public/js/.
 class JsLibraryTest : public MojoWebUIBrowserTest {
  public:
   JsLibraryTest();

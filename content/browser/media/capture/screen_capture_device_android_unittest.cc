@@ -84,8 +84,10 @@ class ScreenCaptureDeviceAndroidTest : public testing::Test {
  public:
   ScreenCaptureDeviceAndroidTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenCaptureDeviceAndroidTest);
+  ScreenCaptureDeviceAndroidTest(const ScreenCaptureDeviceAndroidTest&) =
+      delete;
+  ScreenCaptureDeviceAndroidTest& operator=(
+      const ScreenCaptureDeviceAndroidTest&) = delete;
 };
 
 TEST_F(ScreenCaptureDeviceAndroidTest, ConstructionDestruction) {

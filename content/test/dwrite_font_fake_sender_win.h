@@ -34,6 +34,8 @@ class FakeFont {
  public:
   explicit FakeFont(const std::u16string& name);
 
+  FakeFont& operator=(const FakeFont&) = delete;
+
   FakeFont(FakeFont&& other);
 
   ~FakeFont();
@@ -62,8 +64,6 @@ class FakeFont {
   std::vector<base::FilePath> file_paths_;
   std::vector<base::File> file_handles_;
   std::vector<std::pair<std::u16string, std::u16string>> family_names_;
-
-  DISALLOW_ASSIGN(FakeFont);
 };
 
 // Implements a font collection that supports interaction through sending IPC

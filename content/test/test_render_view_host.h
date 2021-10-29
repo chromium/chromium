@@ -210,6 +210,10 @@ class TestRenderViewHost
                      int32_t routing_id,
                      int32_t main_frame_routing_id,
                      bool swapped_out);
+
+  TestRenderViewHost(const TestRenderViewHost&) = delete;
+  TestRenderViewHost& operator=(const TestRenderViewHost&) = delete;
+
   // RenderViewHostImpl overrides.
   MockRenderProcessHost* GetProcess() override;
   bool CreateRenderView(
@@ -264,8 +268,6 @@ class TestRenderViewHost
   absl::optional<blink::FrameToken> opener_frame_token_;
 
   std::unique_ptr<TestPageBroadcast> page_broadcast_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRenderViewHost);
 };
 
 // Adds methods to get straight at the impl classes.

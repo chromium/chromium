@@ -193,7 +193,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
                 mStartSurfaceState = startSurface.getController().getStartSurfaceState();
                 mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-                    assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+                    assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext);
                     mStartSurfaceState = newState;
                 };
                 startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
@@ -644,7 +644,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (!mBookmarkBridgeSupplier.hasValue()) return false;
         BookmarkId existingBookmark =
                 mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
-        return existingBookmark != null && existingBookmark.getType() == BookmarkType.NORMAL;
+        if (existingBookmark == null) return false;
+        return existingBookmark.getType() == BookmarkType.NORMAL
+                || (ReadingListFeatures.shouldAllowBookmarkTypeSwapping()
+                        && existingBookmark.getType() == BookmarkType.READING_LIST);
     }
 
     /**

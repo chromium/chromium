@@ -64,6 +64,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       RenderWidgetHost* widget,
       const display::ScreenInfos& parent_screen_infos);
 
+  RenderWidgetHostViewChildFrame(const RenderWidgetHostViewChildFrame&) =
+      delete;
+  RenderWidgetHostViewChildFrame& operator=(
+      const RenderWidgetHostViewChildFrame&) = delete;
+
   void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
 
   // TouchSelectionControllerClientManager::Observer implementation.
@@ -321,7 +326,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   display::ScreenInfos parent_screen_infos_;
 
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);
 };
 
 }  // namespace content

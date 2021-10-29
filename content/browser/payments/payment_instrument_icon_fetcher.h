@@ -21,15 +21,17 @@ class PaymentInstrumentIconFetcher {
   using PaymentInstrumentIconFetcherCallback =
       base::OnceCallback<void(const std::string&)>;
 
+  PaymentInstrumentIconFetcher() = delete;
+  PaymentInstrumentIconFetcher(const PaymentInstrumentIconFetcher&) = delete;
+  PaymentInstrumentIconFetcher& operator=(const PaymentInstrumentIconFetcher&) =
+      delete;
+
   // Should be called on the UI thread.
   static void Start(
       const GURL& scope,
       std::unique_ptr<std::vector<GlobalRenderFrameHostId>> frame_routing_ids,
       const std::vector<blink::Manifest::ImageResource>& icons,
       PaymentInstrumentIconFetcherCallback callback);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentInstrumentIconFetcher);
 };
 
 }  // namespace content

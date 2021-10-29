@@ -21,6 +21,8 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code use_root_bookmark_as_default}: boolean; use the root folder rather than "Mobile
  * bookmarks" as the default bookmark folder. Default: {@code false}</li>
  * <li>{@code read_later_min_version}: boolean; see {@link BookmarkFeatures#VERSION}.</li>
+ * <li>{@code allow_bookmark_type_swapping}: boolean; Allow type swapping between bookmarks and
+ * reading list types. Default: {@code false}</li>
  * </ul>
  */
 public class ReadingListFeatures {
@@ -59,5 +61,11 @@ public class ReadingListFeatures {
         return isReadingListEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.READ_LATER, "reading_list_in_app_menu", false);
+    }
+
+    public static boolean shouldAllowBookmarkTypeSwapping() {
+        return isReadingListEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.READ_LATER, "allow_bookmark_type_swapping", false);
     }
 }

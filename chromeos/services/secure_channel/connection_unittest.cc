@@ -108,6 +108,10 @@ class TestWireMessage : public WireMessage {
 }  // namespace
 
 class CryptAuthConnectionTest : public testing::Test {
+ public:
+  CryptAuthConnectionTest(const CryptAuthConnectionTest&) = delete;
+  CryptAuthConnectionTest& operator=(const CryptAuthConnectionTest&) = delete;
+
  protected:
   CryptAuthConnectionTest() = default;
   ~CryptAuthConnectionTest() override = default;
@@ -126,8 +130,6 @@ class CryptAuthConnectionTest : public testing::Test {
   void OnConnectionRssi(absl::optional<int32_t> rssi) { rssi_ = rssi; }
 
   absl::optional<int32_t> rssi_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthConnectionTest);
 };
 
 TEST_F(CryptAuthConnectionTest, IsConnected) {

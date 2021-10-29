@@ -15,8 +15,8 @@ class WebRTCInternalsUI : public WebUIController {
  public:
   explicit WebRTCInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRTCInternalsUI);
+  WebRTCInternalsUI(const WebRTCInternalsUI&) = delete;
+  WebRTCInternalsUI& operator=(const WebRTCInternalsUI&) = delete;
 };
 
 }  // namespace content

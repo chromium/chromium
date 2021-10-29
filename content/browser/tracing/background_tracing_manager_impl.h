@@ -95,6 +95,10 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   CONTENT_EXPORT static BackgroundTracingManagerImpl* GetInstance();
 
+  BackgroundTracingManagerImpl(const BackgroundTracingManagerImpl&) = delete;
+  BackgroundTracingManagerImpl& operator=(const BackgroundTracingManagerImpl&) =
+      delete;
+
   // Callable from any thread.
   static void ActivateForProcess(int child_process_id,
                                  mojom::ChildProcess* child_process);
@@ -198,8 +202,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
 
   // Callback to override the background tracing config for testing.
   ConfigTextFilterForTesting config_text_filter_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingManagerImpl);
 };
 
 }  // namespace content

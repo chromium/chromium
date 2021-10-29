@@ -2385,18 +2385,14 @@ config("minimal_symbols") {
 
     ldflags = []
     if (is_android && is_clang) {
-      # Android defaults to symbol_level=1 builds in production builds
-      # (https://crbug.com/648948), but clang, unlike gcc, doesn't emit
-      # DW_AT_linkage_name in -g1 builds. -fdebug-info-for-profiling enables
-      # that (and a bunch of other things we don't need), so that we get
-      # qualified names in stacks.
+      # Android defaults to symbol_level=1 builds, but clang, unlike gcc,
+      # doesn't emit DW_AT_linkage_name in -g1 builds.
+      # -fdebug-info-for-profiling enables that (and a bunch of other things we
+      # don't need), so that we get qualified names in stacks.
       # TODO(thakis): Consider making clang emit DW_AT_linkage_name in -g1 mode;
       #               failing that consider doing this on non-Android too.
       cflags += [ "-fdebug-info-for-profiling" ]
     }
-
-    # Note: debug_fission is no-op with symbol_level=1 since all -g1 debug_info
-    # will stay in the executable.
 
     asmflags = cflags
   }

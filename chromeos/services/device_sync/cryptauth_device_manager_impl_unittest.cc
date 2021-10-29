@@ -428,6 +428,12 @@ class DeviceSyncCryptAuthDeviceManagerImplTest
     : public testing::Test,
       public CryptAuthDeviceManager::Observer,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthDeviceManagerImplTest(
+      const DeviceSyncCryptAuthDeviceManagerImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceManagerImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceManagerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthDeviceManagerImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -618,8 +624,6 @@ class DeviceSyncCryptAuthDeviceManagerImplTest
   CryptAuthClient::GetMyDevicesCallback success_callback_;
 
   CryptAuthClient::ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceManagerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, RegisterPrefs) {

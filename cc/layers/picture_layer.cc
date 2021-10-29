@@ -51,13 +51,14 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
   return PictureLayerImpl::Create(tree_impl, id());
 }
 
-void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
+void PictureLayer::PushPropertiesTo(LayerImpl* base_layer,
+                                    const CommitState& commit_state) {
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
 
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
-  Layer::PushPropertiesTo(base_layer);
+  Layer::PushPropertiesTo(base_layer, commit_state);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "PictureLayer::PushPropertiesTo");
   DropRecordingSourceContentIfInvalid(
@@ -65,7 +66,7 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
 
   layer_impl->SetNearestNeighbor(picture_layer_inputs_.nearest_neighbor);
   layer_impl->set_gpu_raster_max_texture_size(
-      layer_tree_host()->device_viewport_rect().size());
+      commit_state.device_viewport_rect.size());
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
   layer_impl->SetDirectlyCompositedImageSize(
       picture_layer_inputs_.directly_composited_image_size);

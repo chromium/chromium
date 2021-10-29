@@ -57,6 +57,28 @@ export function WallpaperCollectionsTest() {
     assertDeepEquals(wallpaperProvider.collections, data);
   });
 
+  test('sends Google Photos count when loaded', async () => {
+    const {sendGooglePhotosCount: sendGooglePhotosCountPromise} =
+        promisifyIframeFunctionsForTesting();
+
+    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+
+    personalizationStore.data.googlePhotos.count = 1234;
+    personalizationStore.data.loading.googlePhotos.count = false;
+    personalizationStore.notifyObservers();
+
+    // Wait for |sendGooglePhotosCount| to be called.
+    const [target, data] = await sendGooglePhotosCountPromise;
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const iframe =
+        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
+    assertFalse(iframe.hidden);
+
+    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertDeepEquals(personalizationStore.data.googlePhotos.count, data);
+  });
+
   test('sends Google Photos photos when loaded', async () => {
     const {sendGooglePhotosPhotos: sendGooglePhotosPhotosPromise} =
         promisifyIframeFunctionsForTesting();

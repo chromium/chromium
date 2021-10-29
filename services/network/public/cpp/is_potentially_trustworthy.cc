@@ -115,6 +115,11 @@ bool IsValidWildcardPattern(const std::string& hostname_pattern) {
   // If there is no registrar portion, the pattern is considered invalid.
   if (registry_length == 0)
     return false;
+  // If the registrar portion contains a wildcard, the pattern is considered
+  // invalid.
+  if (hostname_pattern.find('*', hostname_pattern.size() - registry_length) !=
+      std::string::npos)
+    return false;
   // If there is no component before the registrar portion, or if the component
   // immediately preceding the registrar portion contains a wildcard, the
   // pattern is not considered valid.

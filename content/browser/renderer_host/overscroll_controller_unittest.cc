@@ -20,6 +20,10 @@
 namespace content {
 
 class OverscrollControllerTest : public ::testing::Test {
+ public:
+  OverscrollControllerTest(const OverscrollControllerTest&) = delete;
+  OverscrollControllerTest& operator=(const OverscrollControllerTest&) = delete;
+
  protected:
   OverscrollControllerTest() {}
   ~OverscrollControllerTest() override {}
@@ -122,8 +126,6 @@ class OverscrollControllerTest : public ::testing::Test {
   std::unique_ptr<blink::WebInputEvent> current_event_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerTest);
 };
 
 // Tests that if a mouse-wheel is consumed by content before overscroll is

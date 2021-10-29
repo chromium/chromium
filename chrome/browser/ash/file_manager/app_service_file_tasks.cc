@@ -278,17 +278,26 @@ void ExecuteAppServiceTask(
 
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
       task.app_id, ui::EF_NONE, std::move(intent), launch_source,
-      apps::MakeWindowInfo(display::kDefaultDisplayId));
-
-  // TODO(benwells): return the correct code here, depending on how the app will
-  // be opened in multiprofile.
-  if (task.task_type == TASK_TYPE_WEB_APP) {
-    std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
-  } else {
-    std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
-  }
+      apps::MakeWindowInfo(display::kDefaultDisplayId),
+      base::BindOnce(
+          [](FileTaskFinishedCallback done, TaskType task_type, bool success) {
+            if (!success) {
+              std::move(done).Run(
+                  extensions::api::file_manager_private::TASK_RESULT_FAILED,
+                  "");
+            } else if (task_type == TASK_TYPE_WEB_APP) {
+              // TODO(benwells): return the correct code here, depending on how
+              // the app will be opened in multiprofile.
+              std::move(done).Run(
+                  extensions::api::file_manager_private::TASK_RESULT_OPENED,
+                  "");
+            } else {
+              std::move(done).Run(extensions::api::file_manager_private::
+                                      TASK_RESULT_MESSAGE_SENT,
+                                  "");
+            }
+          },
+          std::move(done), task.task_type));
 }
 
 }  // namespace file_tasks

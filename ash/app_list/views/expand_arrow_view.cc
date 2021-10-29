@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -384,7 +385,7 @@ void ExpandArrowView::MaybeEnableHintingAnimation(bool enabled) {
   // crash when spoken feedback is enabled (See https://crbug.com/926038).
   if (enabled && !app_list_view_->is_side_shelf() &&
       !app_list_view_->is_tablet_mode() &&
-      !AppListView::ShortAnimationsForTesting()) {
+      !ui::ScopedAnimationDurationScaleMode::is_zero()) {
     ScheduleHintingAnimation(true);
   } else {
     hinting_animation_timer_.Stop();

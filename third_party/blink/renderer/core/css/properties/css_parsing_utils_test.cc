@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -13,8 +14,10 @@
 namespace blink {
 namespace {
 
+using css_parsing_utils::AtIdent;
 using css_parsing_utils::ConsumeAngle;
 using css_parsing_utils::ConsumeIdSelector;
+using css_parsing_utils::ConsumeIfIdent;
 
 CSSParserContext* MakeContext() {
   return MakeGarbageCollected<CSSParserContext>(
@@ -124,6 +127,52 @@ TEST(CSSParsingUtilsTest, ConsumeAngles) {
 
   EXPECT_EQ(-100, ConsumeAngleValue("calc(-3.40282e+38deg)", -100, 100));
   EXPECT_EQ(100, ConsumeAngleValue("calc(3.40282e+38deg)", -100, 100));
+}
+
+TEST(CSSParsingUtilsTest, AtIdent_Range) {
+  String text = "foo,bar,10px";
+  auto tokens = CSSTokenizer(text).TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // foo
+  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // ,
+  EXPECT_TRUE(AtIdent(range.Consume(), "bar"));   // bar
+  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // ,
+  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // 10px
+  EXPECT_FALSE(AtIdent(range.Consume(), "bar"));  // EOF
+}
+
+TEST(CSSParsingUtilsTest, AtIdent_Stream) {
+  String text = "foo,bar,10px";
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // foo
+  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // ,
+  EXPECT_TRUE(AtIdent(stream.Consume(), "bar"));   // bar
+  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // ,
+  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // 10px
+  EXPECT_FALSE(AtIdent(stream.Consume(), "bar"));  // EOF
+}
+
+TEST(CSSParsingUtilsTest, ConsumeIfIdent_Range) {
+  String text = "foo,bar,10px";
+  auto tokens = CSSTokenizer(text).TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  EXPECT_TRUE(AtIdent(range.Peek(), "foo"));
+  EXPECT_FALSE(ConsumeIfIdent(range, "bar"));
+  EXPECT_TRUE(AtIdent(range.Peek(), "foo"));
+  EXPECT_TRUE(ConsumeIfIdent(range, "foo"));
+  EXPECT_EQ(kCommaToken, range.Peek().GetType());
+}
+
+TEST(CSSParsingUtilsTest, ConsumeIfIdent_Stream) {
+  String text = "foo,bar,10px";
+  CSSTokenizer tokenizer(text);
+  CSSParserTokenStream stream(tokenizer);
+  EXPECT_TRUE(AtIdent(stream.Peek(), "foo"));
+  EXPECT_FALSE(ConsumeIfIdent(stream, "bar"));
+  EXPECT_TRUE(AtIdent(stream.Peek(), "foo"));
+  EXPECT_TRUE(ConsumeIfIdent(stream, "foo"));
+  EXPECT_EQ(kCommaToken, stream.Peek().GetType());
 }
 
 }  // namespace

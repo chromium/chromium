@@ -6,74 +6,63 @@ import("//build/config/chromeos/ui_mode.gni")
 
 # TODO(nparker): reduce the duplication between these two, somehow.
 
-if (!is_fuchsia) {
-  # Generate the binary proto form of "file_types" from the ascii proto.
-  action("make_file_types_protobuf") {
-    script = "gen_file_type_proto.py"
+# Generate the binary proto form of "file_types" from the ascii proto.
+action("make_file_types_protobuf") {
+  script = "gen_file_type_proto.py"
 
-    # The output goes in $target_gen_dir since that's where
-    # components/resources/safe_browsing_resources.grdp will look for it.
+  # The output goes in $target_gen_dir since that's where
+  # components/resources/safe_browsing_resources.grdp will look for it.
 
-    input_filename = "download_file_types.asciipb"
-    output_dir = target_gen_dir
-    output_basename = "download_file_types.pb"
-    python_path_root = "$root_out_dir/pyproto"
-    python_path_safe_browsing =
-        "$python_path_root/components/safe_browsing/content/common/proto"
+  input_filename = "download_file_types.asciipb"
+  output_dir = target_gen_dir
+  output_basename = "download_file_types.pb"
+  python_path_root = "$root_out_dir/pyproto"
+  python_path_safe_browsing =
+      "$python_path_root/components/safe_browsing/content/common/proto"
 
-    # Pick an architecture to generate for. These string match those
-    # in the python script.
-    if (is_android) {
-      target_arch = "android"
-    } else if (is_chromeos_ash) {
-      target_arch = "chromeos"
-    } else if (is_win) {
-      target_arch = "win"
-    } else if (is_mac) {
-      target_arch = "mac"
-    } else if (is_linux || is_chromeos) {
-      target_arch = "linux"
-    } else {
-      # This will cause the script to fail.
-      target_arch = "unknown_target_arch"
-    }
-
-    inputs = [ input_filename ]
-
-    deps = [
-      "//components/safe_browsing/content/common/proto:download_file_types_proto",
-      "//third_party/protobuf:py_proto",
-    ]
-
-    outputs = [ "$output_dir/$output_basename" ]
-
-    args = [
-      "-w",
-      "-t",
-      target_arch,
-      "-i",
-      rebase_path(input_filename, root_build_dir),
-      "-d",
-      rebase_path(output_dir, root_build_dir),
-      "-o",
-      output_basename,
-      "-p",
-      rebase_path(python_path_root, root_build_dir),
-      "-p",
-      rebase_path(python_path_safe_browsing, root_build_dir),
-    ]
+  # Pick an architecture to generate for. These string match those
+  # in the python script.
+  if (is_android) {
+    target_arch = "android"
+  } else if (is_chromeos_ash) {
+    target_arch = "chromeos"
+  } else if (is_win) {
+    target_arch = "win"
+  } else if (is_mac) {
+    target_arch = "mac"
+  } else if (is_linux || is_chromeos) {
+    target_arch = "linux"
+  } else if (is_fuchsia) {
+    target_arch = "fuchsia"
+  } else {
+    # This will cause the script to fail.
+    target_arch = "unknown_target_arch"
   }
-} else {
-  # Since the component updater doesn't currently support Fuchsia-specific
-  # components, we don't want to create real file type policy for Fuchsia. So
-  # instead we ship a minimal policy with all file types marked as safe.
-  copy("make_file_types_protobuf") {
-    sources = [ "empty_file_type_policy.pb" ]
 
-    output_dir = target_gen_dir
-    output_basename = "download_file_types.pb"
-    outputs = [ "$output_dir/$output_basename" ]
-  }
+  inputs = [ input_filename ]
+
+  deps = [
+    "//components/safe_browsing/content/common/proto:download_file_types_proto",
+    "//third_party/protobuf:py_proto",
+  ]
+
+  outputs = [ "$output_dir/$output_basename" ]
+
+  args = [
+    "-w",
+    "-t",
+    target_arch,
+    "-i",
+    rebase_path(input_filename, root_build_dir),
+    "-d",
+    rebase_path(output_dir, root_build_dir),
+    "-o",
+    output_basename,
+    "-p",
+    rebase_path(python_path_root, root_build_dir),
+    "-p",
+    rebase_path(python_path_safe_browsing, root_build_dir),
+  ]
 }
 
 # Generate the binary proto for ALL platforms.  This is only run manually

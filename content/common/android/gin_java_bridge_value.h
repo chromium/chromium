@@ -35,6 +35,9 @@ class GinJavaBridgeValue {
     TYPE_LAST_VALUE
   };
 
+  GinJavaBridgeValue(const GinJavaBridgeValue&) = delete;
+  GinJavaBridgeValue& operator=(const GinJavaBridgeValue&) = delete;
+
   // Serialization
   CONTENT_EXPORT static std::unique_ptr<base::Value> CreateUndefinedValue();
   CONTENT_EXPORT static std::unique_ptr<base::Value> CreateNonFiniteValue(
@@ -65,8 +68,6 @@ class GinJavaBridgeValue {
   std::unique_ptr<base::Value> SerializeToBinaryValue();
 
   base::Pickle pickle_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeValue);
 };
 
 }  // namespace content

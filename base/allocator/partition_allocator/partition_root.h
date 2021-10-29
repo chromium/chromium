@@ -522,9 +522,9 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
       return internal::GetConfigurablePool();
     }
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-    return brp_enabled() ? internal::GetBRPPool() : internal::GetNonBRPPool();
+    return brp_enabled() ? internal::GetBRPPool() : internal::GetRegularPool();
 #else
-    return internal::GetNonBRPPool();
+    return internal::GetRegularPool();
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   }
 

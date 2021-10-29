@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Tracks the status of whether the user has enabled apps access on
@@ -74,6 +74,6 @@ std::ostream& operator<<(std::ostream& stream,
                          AppsAccessManager::AccessStatus status);
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_APPS_ACCESS_MANAGER_H_

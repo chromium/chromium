@@ -206,6 +206,12 @@ void AppHistory::InitializeForNewWindow(
     const WebVector<WebHistoryItem>& forward_entries) {
   DCHECK(entries_.IsEmpty());
 
+  // This can happen even when commit_reason is not kInitialization, e.g. when
+  // navigating from about:blank#1 to about:blank#2 where both are initial
+  // about:blanks.
+  if (HasEntriesAndEventsDisabled())
+    return;
+
   // Under most circumstances, the browser process provides the information
   // need to initialize appHistory's entries array from
   // |app_history_back_entries_| and |app_history_forward_entries_|.
@@ -265,9 +271,9 @@ void AppHistory::CloneFromPrevious(AppHistory& previous) {
 }
 
 void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
-  // A same-document navigation (e.g., a document.open()) in a newly created
-  // iframe will try to operate on an empty |entries_|. appHistory considers
-  // this a no-op.
+  // A same-document navigation (e.g., a document.open()) in a
+  // |HasEntriesAndEventsDisabled()| situation will try to operate on an empty
+  // |entries_|. appHistory considers this a no-op.
   if (entries_.IsEmpty())
     return;
 
@@ -325,16 +331,15 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
 AppHistoryEntry* AppHistory::current() const {
   // current_index_ is initialized to -1 and set >= 0 when entries_ is
   // populated. It will still be negative if the appHistory of an initial empty
-  // document is accessed.
-  return current_index_ >= 0 && GetSupplementable()->GetFrame()
+  // document or opaque-origin document is accessed.
+  return !HasEntriesAndEventsDisabled() && current_index_ >= 0
              ? entries_[current_index_]
              : nullptr;
 }
 
 HeapVector<Member<AppHistoryEntry>> AppHistory::entries() {
-  return GetSupplementable()->GetFrame()
-             ? entries_
-             : HeapVector<Member<AppHistoryEntry>>();
+  return HasEntriesAndEventsDisabled() ? HeapVector<Member<AppHistoryEntry>>()
+                                       : entries_;
 }
 
 void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
@@ -344,8 +349,7 @@ void AppHistory::updateCurrent(AppHistoryUpdateCurrentOptions* options,
   if (!current_entry) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "updateCurrent() cannot be called when on the initial about:blank "
-        "Document, or when the Window is detached.");
+        "updateCurrent() cannot be called when appHistory.current is null.");
     return;
   }
 
@@ -515,11 +519,11 @@ AppHistoryResult* AppHistory::goTo(ScriptState* script_state,
 }
 
 bool AppHistory::canGoBack() const {
-  return GetSupplementable()->GetFrame() && current_index_ > 0;
+  return !HasEntriesAndEventsDisabled() && current_index_ > 0;
 }
 
 bool AppHistory::canGoForward() const {
-  return GetSupplementable()->GetFrame() && current_index_ != -1 &&
+  return !HasEntriesAndEventsDisabled() && current_index_ != -1 &&
          static_cast<size_t>(current_index_) < entries_.size() - 1;
 }
 
@@ -582,6 +586,12 @@ void AppHistory::PromoteUpcomingNavigationToOngoing(const String& key) {
   }
 }
 
+bool AppHistory::HasEntriesAndEventsDisabled() const {
+  auto* frame = GetSupplementable()->GetFrame();
+  return !frame || !frame->Loader().HasLoadedNonEmptyDocument() ||
+         GetSupplementable()->GetSecurityOrigin()->IsOpaque();
+}
+
 AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     const KURL& url,
     HTMLFormElement* form,
@@ -602,7 +612,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
       destination_item ? destination_item->GetAppHistoryKey() : String();
   PromoteUpcomingNavigationToOngoing(key);
 
-  if (!GetSupplementable()->GetFrame()->Loader().HasLoadedNonEmptyDocument()) {
+  if (HasEntriesAndEventsDisabled()) {
     if (ongoing_navigation_) {
       CleanupApiNavigation(*ongoing_navigation_);
     }

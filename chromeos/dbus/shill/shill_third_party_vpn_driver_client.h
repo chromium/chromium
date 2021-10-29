@@ -59,6 +59,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillThirdPartyVpnDriverClient {
   // Returns the global instance if initialized. May return null.
   static ShillThirdPartyVpnDriverClient* Get();
 
+  ShillThirdPartyVpnDriverClient(const ShillThirdPartyVpnDriverClient&) =
+      delete;
+  ShillThirdPartyVpnDriverClient& operator=(
+      const ShillThirdPartyVpnDriverClient&) = delete;
+
   // Adds an |observer| for the third party vpn driver at |object_path_value|.
   virtual void AddShillThirdPartyVpnObserver(
       const std::string& object_path_value,
@@ -100,9 +105,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillThirdPartyVpnDriverClient {
   // Initialize/Shutdown should be used instead.
   ShillThirdPartyVpnDriverClient();
   virtual ~ShillThirdPartyVpnDriverClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillThirdPartyVpnDriverClient);
 };
 
 }  // namespace chromeos

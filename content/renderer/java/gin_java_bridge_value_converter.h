@@ -16,6 +16,11 @@ namespace content {
 class GinJavaBridgeValueConverter : public content::V8ValueConverter::Strategy {
  public:
   CONTENT_EXPORT GinJavaBridgeValueConverter();
+
+  GinJavaBridgeValueConverter(const GinJavaBridgeValueConverter&) = delete;
+  GinJavaBridgeValueConverter& operator=(const GinJavaBridgeValueConverter&) =
+      delete;
+
   CONTENT_EXPORT ~GinJavaBridgeValueConverter() override;
 
   CONTENT_EXPORT v8::Local<v8::Value> ToV8Value(
@@ -38,8 +43,6 @@ class GinJavaBridgeValueConverter : public content::V8ValueConverter::Strategy {
 
  private:
   std::unique_ptr<V8ValueConverter> converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeValueConverter);
 };
 
 }  // namespace content

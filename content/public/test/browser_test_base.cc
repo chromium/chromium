@@ -224,6 +224,11 @@ class InitialNavigationObserver : public WebContentsObserver {
   InitialNavigationObserver(WebContents* web_contents,
                             base::OnceClosure callback)
       : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+  InitialNavigationObserver(const InitialNavigationObserver&) = delete;
+  InitialNavigationObserver& operator=(const InitialNavigationObserver&) =
+      delete;
+
   // WebContentsObserver implementation:
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
     if (callback_)
@@ -232,8 +237,6 @@ class InitialNavigationObserver : public WebContentsObserver {
 
  private:
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(InitialNavigationObserver);
 };
 
 }  // namespace

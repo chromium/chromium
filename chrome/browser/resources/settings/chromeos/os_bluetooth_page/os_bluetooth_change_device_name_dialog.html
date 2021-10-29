@@ -77,7 +77,9 @@
         on-click="onCancelClick_">
       $i18n{bluetoothDeviceDetailChangeNameDialogCancel}
     </cr-button>
-    <cr-button id="done" class="action-button"
+    <cr-button id="done"
+        disabled$="[[isDoneDisabled_(device.*, deviceName_)]]"
+        class="action-button"
         on-click="onDoneClick_">
       $i18n{bluetoothDeviceDetailChangeNameDialogDone}
     </cr-button>

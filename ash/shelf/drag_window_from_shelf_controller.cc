@@ -686,11 +686,12 @@ void DragWindowFromShelfController::ScaleDownWindowAfterDrag() {
       /*percent_shown=*/100,
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
-  new WindowScaleAnimation(
-      window_, WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
-      base::BindOnce(
-          &DragWindowFromShelfController::OnWindowScaledDownAfterDrag,
-          weak_ptr_factory_.GetWeakPtr()));
+  (new WindowScaleAnimation(
+       window_, WindowScaleAnimation::WindowScaleType::kScaleDownToShelf,
+       base::BindOnce(
+           &DragWindowFromShelfController::OnWindowScaledDownAfterDrag,
+           weak_ptr_factory_.GetWeakPtr())))
+      ->Start();
 }
 
 void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
@@ -704,12 +705,13 @@ void DragWindowFromShelfController::OnWindowScaledDownAfterDrag() {
 }
 
 void DragWindowFromShelfController::ScaleUpToRestoreWindowAfterDrag() {
-  new WindowScaleAnimation(
-      window_, WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
-      base::BindOnce(
-          &DragWindowFromShelfController::OnWindowRestoredToOrignalBounds,
-          weak_ptr_factory_.GetWeakPtr(),
-          /*should_end_overview=*/!started_in_overview_));
+  (new WindowScaleAnimation(
+       window_, WindowScaleAnimation::WindowScaleType::kScaleUpToRestore,
+       base::BindOnce(
+           &DragWindowFromShelfController::OnWindowRestoredToOrignalBounds,
+           weak_ptr_factory_.GetWeakPtr(),
+           /*should_end_overview=*/!started_in_overview_)))
+      ->Start();
 }
 
 void DragWindowFromShelfController::OnWindowRestoredToOrignalBounds(

@@ -21,8 +21,7 @@ const ChromeOSSystemExtensionInfos& getMap() {
   static const ChromeOSSystemExtensionInfos kExtensionIdToExtensionInfoMap{
       // TODO(b/200920331): replace google.com with OEM-specific origin.
       {/*extension_id=*/"gogonhoemckpdpadfnjnpgbjpbjnodgc",
-       {/*manufacturer=*/"HP", /*pwa_origin=*/"*://www.google.com/*",
-        /*host=*/"www.google.com"}}};
+       {/*manufacturer=*/"HP", /*pwa_origin=*/"*://www.google.com/*"}}};
 
   return kExtensionIdToExtensionInfoMap;
 }
@@ -31,9 +30,8 @@ const ChromeOSSystemExtensionInfos& getMap() {
 
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
     const std::string& manufacturer,
-    const std::string& pwa_origin,
-    const std::string& host)
-    : manufacturer(manufacturer), pwa_origin(pwa_origin), host(host) {}
+    const std::string& pwa_origin)
+    : manufacturer(manufacturer), pwa_origin(pwa_origin) {}
 ChromeOSSystemExtensionInfo::ChromeOSSystemExtensionInfo(
     const ChromeOSSystemExtensionInfo& other) = default;
 ChromeOSSystemExtensionInfo::~ChromeOSSystemExtensionInfo() = default;

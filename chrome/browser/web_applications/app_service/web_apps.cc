@@ -204,9 +204,11 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
                                   int32_t event_flags,
                                   apps::mojom::IntentPtr intent,
                                   apps::mojom::LaunchSource launch_source,
-                                  apps::mojom::WindowInfoPtr window_info) {
+                                  apps::mojom::WindowInfoPtr window_info,
+                                  LaunchAppWithIntentCallback callback) {
   publisher_helper().LaunchAppWithIntent(app_id, event_flags, std::move(intent),
-                                         launch_source, std::move(window_info));
+                                         launch_source, std::move(window_info),
+                                         std::move(callback));
 }
 
 void WebApps::SetPermission(const std::string& app_id,

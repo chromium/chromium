@@ -34,7 +34,7 @@ class DlpRulesManager;
 
 class TestRenderViewContextMenu : public RenderViewContextMenu {
  public:
-  TestRenderViewContextMenu(content::RenderFrameHost* render_frame_host,
+  TestRenderViewContextMenu(content::RenderFrameHost& render_frame_host,
                             content::ContextMenuParams params);
 
   TestRenderViewContextMenu(const TestRenderViewContextMenu&) = delete;

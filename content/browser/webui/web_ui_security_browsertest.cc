@@ -47,6 +47,9 @@ class WebUISecurityTest : public ContentBrowserTest {
  public:
   WebUISecurityTest() = default;
 
+  WebUISecurityTest(const WebUISecurityTest&) = delete;
+  WebUISecurityTest& operator=(const WebUISecurityTest&) = delete;
+
   TestWebUIControllerFactory* factory() { return &factory_; }
   ui::TestUntrustedWebUIControllerFactory& untrusted_factory() {
     return untrusted_factory_;
@@ -58,8 +61,6 @@ class WebUISecurityTest : public ContentBrowserTest {
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
   ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
       &untrusted_factory_};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUISecurityTest);
 };
 
 // Verify chrome-untrusted:// have no bindings.

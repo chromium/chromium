@@ -18,6 +18,9 @@ class TtsPlatformImpl : public TtsPlatform {
  public:
   static TtsPlatformImpl* GetInstance();
 
+  TtsPlatformImpl(const TtsPlatformImpl&) = delete;
+  TtsPlatformImpl& operator=(const TtsPlatformImpl&) = delete;
+
   // TtsPlatform overrides.
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override;
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
@@ -40,8 +43,6 @@ class TtsPlatformImpl : public TtsPlatform {
   virtual ~TtsPlatformImpl() {}
 
   std::string error_;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImpl);
 };
 
 }  // namespace content

@@ -105,6 +105,12 @@ class TestConnectToDeviceOperation
 }  // namespace
 
 class SecureChannelConnectToDeviceOperationBaseTest : public testing::Test {
+ public:
+  SecureChannelConnectToDeviceOperationBaseTest(
+      const SecureChannelConnectToDeviceOperationBaseTest&) = delete;
+  SecureChannelConnectToDeviceOperationBaseTest& operator=(
+      const SecureChannelConnectToDeviceOperationBaseTest&) = delete;
+
  protected:
   SecureChannelConnectToDeviceOperationBaseTest()
       : test_device_id_pair_(kTestRemoteDeviceId, kTestLocalDeviceId) {}
@@ -155,8 +161,6 @@ class SecureChannelConnectToDeviceOperationBaseTest : public testing::Test {
   std::string last_failure_detail_;
 
   std::unique_ptr<TestConnectToDeviceOperation> test_operation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectToDeviceOperationBaseTest);
 };
 
 TEST_F(SecureChannelConnectToDeviceOperationBaseTest, Success) {

@@ -40,4 +40,11 @@ class NotificationInteractionHandler {
 }  // namespace phonehub
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+namespace phonehub {
+using ::chromeos::phonehub::NotificationInteractionHandler;
+}  // namespace phonehub
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_INTERACTION_HANDLER_H_

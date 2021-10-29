@@ -134,7 +134,7 @@ struct BackupRefPtrImpl {
     //
     // Such pointers are *not* at risk of accidentally falling into BRP pool,
     // because:
-    // 1) On 64-bit systems, BRP pool is preceded by non-BRP pool.
+    // 1) On 64-bit systems, BRP pool is preceded by a forbidden region.
     // 2) On 32-bit systems, the guard pages and metadata of super pages in BRP
     //    pool aren't considered to be part of that pool.
     //

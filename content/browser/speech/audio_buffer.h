@@ -26,6 +26,9 @@ class CONTENT_EXPORT AudioChunk :
   AudioChunk(size_t length, int bytes_per_sample);
   AudioChunk(const uint8_t* data, size_t length, int bytes_per_sample);
 
+  AudioChunk(const AudioChunk&) = delete;
+  AudioChunk& operator=(const AudioChunk&) = delete;
+
   bool IsEmpty() const;
   int bytes_per_sample() const { return bytes_per_sample_; }
   size_t NumSamples() const;
@@ -42,8 +45,6 @@ class CONTENT_EXPORT AudioChunk :
 
   std::string data_string_;
   const int bytes_per_sample_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioChunk);
 };
 
 // Models an audio buffer. The current implementation relies on on-demand

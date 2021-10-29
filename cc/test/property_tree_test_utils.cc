@@ -205,11 +205,11 @@ void SetScrollOffsetInternal(LayerType* layer,
 // TODO(wangxianzhu): Viewport properties can exist without layers, but for now
 // it's more convenient to create properties based on layers.
 template <typename LayerType>
-LayerTreeHost::ViewportPropertyIds SetupViewportProperties(
+ViewportPropertyIds SetupViewportProperties(
     LayerType* root,
     LayerType* inner_viewport_scroll_layer,
     LayerType* outer_viewport_scroll_layer) {
-  LayerTreeHost::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   auto* property_trees = GetPropertyTrees(root);
 
   viewport_property_ids.overscroll_elasticity_transform =

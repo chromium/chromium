@@ -1780,6 +1780,42 @@ TEST_F(StarterTest, ImplicitInTabTriggeringDoesNotTriggerInCct) {
   task_environment()->RunUntilIdle();
 }
 
+TEST_F(StarterTest, RecordsDependenciesInvalidatedOutsideFlow) {
+  starter_->OnDependenciesInvalidated();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.DependenciesInvalidated",
+      Metrics::DependenciesInvalidated::OUTSIDE_FLOW, 1);
+}
+
+TEST_F(StarterTest, RecordsDependenciesInvalidatedDuringStartup) {
+  SetupPlatformDelegateForFirstTimeUser();
+  std::map<std::string, std::string> script_parameters = {
+      {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}};
+  TriggerContext::Options options;
+  options.initial_url = "https://redirect.com/to/www/example/com";
+  // Empty callback to keep the onboarding open indefinitely.
+  fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters), options));
+
+  starter_->OnDependenciesInvalidated();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.DependenciesInvalidated",
+      Metrics::DependenciesInvalidated::DURING_STARTUP, 1);
+}
+
+TEST_F(StarterTest, RecordsDependenciesInvalidatedDuringFlow) {
+  fake_platform_delegate_.is_regular_script_running_ = true;
+
+  starter_->OnDependenciesInvalidated();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Android.AutofillAssistant.DependenciesInvalidated",
+      Metrics::DependenciesInvalidated::DURING_FLOW, 1);
+}
+
 TEST(MultipleStarterTest, HeuristicUsedByMultipleInstances) {
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);

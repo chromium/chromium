@@ -2408,8 +2408,9 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
 
 // Windowed progressive web apps should have shelf activity indicator showing
 // after install.
+// DISABLED due to flakiness (http://crbug.com/1263228).
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest,
-                       WindowedPwasHaveActivityIndicatorSet) {
+                       DISABLED_WindowedPwasHaveActivityIndicatorSet) {
   // Start server and open test page.
   ASSERT_TRUE(embedded_test_server()->Start());
   AddTabAtIndex(

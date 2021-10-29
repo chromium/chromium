@@ -52,12 +52,14 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -1974,6 +1976,7 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
     return;
 
   std::vector<int32_t> marker_types;
+  std::vector<int32_t> highlight_types;
   std::vector<int32_t> marker_starts;
   std::vector<int32_t> marker_ends;
 
@@ -2006,7 +2009,16 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
       continue;
     }
 
+    int32_t highlight_type =
+        static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone);
+    if (marker->GetType() == DocumentMarker::kHighlight) {
+      const auto& highlight_marker = To<HighlightMarker>(*marker);
+      highlight_type =
+          ToAXHighlightType(highlight_marker.GetHighlight()->type());
+    }
+
     marker_types.push_back(ToAXMarkerType(marker->GetType()));
+    highlight_types.push_back(static_cast<int32_t>(highlight_type));
     auto start_pos =
         AXPosition::FromPosition(start_position, TextAffinity::kDownstream,
                                  AXPositionAdjustmentBehavior::kMoveLeft);
@@ -2022,6 +2034,8 @@ void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
 
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerTypes, marker_types);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kHighlightTypes, highlight_types);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerStarts, marker_starts);
   node_data->AddIntListAttribute(

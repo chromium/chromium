@@ -31,6 +31,10 @@ class TextInputControllerBindings
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  TextInputControllerBindings(const TextInputControllerBindings&) = delete;
+  TextInputControllerBindings& operator=(const TextInputControllerBindings&) =
+      delete;
+
   static void Install(base::WeakPtr<TextInputController> controller,
                       blink::WebLocalFrame* frame);
 
@@ -60,8 +64,6 @@ class TextInputControllerBindings
   void ForceTextInputStateUpdate();
 
   base::WeakPtr<TextInputController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputControllerBindings);
 };
 
 gin::WrapperInfo TextInputControllerBindings::kWrapperInfo = {

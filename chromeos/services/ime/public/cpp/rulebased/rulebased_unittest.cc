@@ -26,6 +26,10 @@ struct KeyVerifyEntry {
 }  // namespace
 
 class RulebasedImeTest : public testing::Test {
+ public:
+  RulebasedImeTest(const RulebasedImeTest&) = delete;
+  RulebasedImeTest& operator=(const RulebasedImeTest&) = delete;
+
  protected:
   RulebasedImeTest() = default;
   ~RulebasedImeTest() override = default;
@@ -44,9 +48,6 @@ class RulebasedImeTest : public testing::Test {
   }
 
   std::unique_ptr<rulebased::Engine> engine_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RulebasedImeTest);
 };
 
 TEST_F(RulebasedImeTest, Arabic) {

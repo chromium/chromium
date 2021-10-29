@@ -244,6 +244,7 @@ js_library("onboarding_update_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

@@ -17,6 +17,9 @@ namespace chromeos {
 // access to the Init function to DBusThreadManager only to prevent
 // incorrect calls. Stub clients may lift that restriction however.
 class DBusClient {
+ public:
+  DBusClient& operator=(const DBusClient&) = delete;
+
  protected:
   virtual ~DBusClient() {}
 
@@ -27,8 +30,6 @@ class DBusClient {
 
  private:
   friend class DBusClientsBrowser;
-
-  DISALLOW_ASSIGN(DBusClient);
 };
 
 }  // namespace chromeos

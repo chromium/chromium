@@ -137,6 +137,10 @@ class CONTENT_EXPORT TextInputManager {
   };
 
   explicit TextInputManager(bool should_do_learning);
+
+  TextInputManager(const TextInputManager&) = delete;
+  TextInputManager& operator=(const TextInputManager&) = delete;
+
   ~TextInputManager();
 
   // Returns the currently active widget, i.e., the RWH which is associated with
@@ -289,8 +293,6 @@ class CONTENT_EXPORT TextInputManager {
   bool should_do_learning_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputManager);
 };
 }
 

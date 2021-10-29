@@ -35,6 +35,9 @@ class RenderWidgetHelper
  public:
   RenderWidgetHelper();
 
+  RenderWidgetHelper(const RenderWidgetHelper&) = delete;
+  RenderWidgetHelper& operator=(const RenderWidgetHelper&) = delete;
+
   void Init(int render_process_id);
 
   // Gets the next available routing id.  This is thread safe.
@@ -94,8 +97,6 @@ class RenderWidgetHelper
 
   // The next routing id to use.
   base::AtomicSequenceNumber next_routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHelper);
 };
 
 }  // namespace content

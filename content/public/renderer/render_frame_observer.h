@@ -62,6 +62,9 @@ class RenderFrameImpl;
 class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
                                            public IPC::Sender {
  public:
+  RenderFrameObserver(const RenderFrameObserver&) = delete;
+  RenderFrameObserver& operator=(const RenderFrameObserver&) = delete;
+
   // A subclass can use this to delete itself. If it does not, the subclass must
   // always null-check each call to render_frame() because the RenderFrame can
   // go away at any time.
@@ -349,8 +352,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   RenderFrame* render_frame_;
   // The routing ID of the associated RenderFrame.
   int routing_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameObserver);
 };
 
 }  // namespace content

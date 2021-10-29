@@ -62,6 +62,9 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
     static Factory* test_factory_;
   };
 
+  CryptAuthV2EnrollerImpl(const CryptAuthV2EnrollerImpl&) = delete;
+  CryptAuthV2EnrollerImpl& operator=(const CryptAuthV2EnrollerImpl&) = delete;
+
   ~CryptAuthV2EnrollerImpl() override;
 
  private:
@@ -189,8 +192,6 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
   // SyncKeysResponse. Information about the newly created keys are sent to
   // CryptAuth in the EnrollKeysRequest.
   std::unique_ptr<CryptAuthKeyCreator> key_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthV2EnrollerImpl);
 };
 
 }  // namespace device_sync

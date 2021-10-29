@@ -62,8 +62,10 @@ bool PaintedOverlayScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return true;
 }
 
-void PaintedOverlayScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
-  ScrollbarLayerBase::PushPropertiesTo(layer);
+void PaintedOverlayScrollbarLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state) {
+  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state);
 
   PaintedOverlayScrollbarLayerImpl* scrollbar_layer =
       static_cast<PaintedOverlayScrollbarLayerImpl*>(layer);
@@ -81,9 +83,11 @@ void PaintedOverlayScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
   }
 
   if (thumb_resource_.get()) {
-    scrollbar_layer->SetImageBounds(
-        layer_tree_host()->GetUIResourceManager()->GetUIResourceSize(
-            thumb_resource_->id()));
+    auto iter = commit_state.ui_resource_sizes.find(thumb_resource_->id());
+    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                 ? gfx::Size()
+                                 : iter->second;
+    scrollbar_layer->SetImageBounds(image_bounds);
     scrollbar_layer->SetAperture(aperture_);
     scrollbar_layer->set_thumb_ui_resource_id(thumb_resource_->id());
   } else {

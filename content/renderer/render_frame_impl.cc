@@ -720,6 +720,10 @@ class MHTMLPartsGenerationDelegate
            params_.digests_of_uris_to_skip.end());
   }
 
+  MHTMLPartsGenerationDelegate(const MHTMLPartsGenerationDelegate&) = delete;
+  MHTMLPartsGenerationDelegate& operator=(const MHTMLPartsGenerationDelegate&) =
+      delete;
+
   bool ShouldSkipResource(const WebURL& url) override {
     std::string digest =
         crypto::SHA256HashString(params_.salt + GURL(url).spec());
@@ -750,8 +754,6 @@ class MHTMLPartsGenerationDelegate
  private:
   const mojom::SerializeAsMHTMLParams& params_;
   std::unordered_set<std::string>* serialized_resources_uri_digests_;
-
-  DISALLOW_COPY_AND_ASSIGN(MHTMLPartsGenerationDelegate);
 };
 
 bool IsHttpPost(const blink::WebURLRequest& request) {
@@ -782,6 +784,10 @@ class MHTMLHandleWriterDelegate {
     }
   }
 
+  MHTMLHandleWriterDelegate(const MHTMLHandleWriterDelegate&) = delete;
+  MHTMLHandleWriterDelegate& operator=(const MHTMLHandleWriterDelegate&) =
+      delete;
+
   void WriteContents(std::vector<WebThreadSafeData> mhtml_contents) {
     // Using base::Unretained is safe, as calls to WriteContents() always
     // deletes |handle| upon Finish().
@@ -801,8 +807,6 @@ class MHTMLHandleWriterDelegate {
 
  private:
   MHTMLHandleWriter* handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(MHTMLHandleWriterDelegate);
 };
 
 // Use this for histograms with dynamically generated names, which otherwise

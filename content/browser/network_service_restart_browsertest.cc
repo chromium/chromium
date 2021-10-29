@@ -125,6 +125,11 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceRestartBrowserTest() {}
 
+  NetworkServiceRestartBrowserTest(const NetworkServiceRestartBrowserTest&) =
+      delete;
+  NetworkServiceRestartBrowserTest& operator=(
+      const NetworkServiceRestartBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(ENABLE_PLUGINS)
     // TODO(lukasza, kmoon): https://crbug.com/702993: Remove this dependency
@@ -266,8 +271,6 @@ class NetworkServiceRestartBrowserTest : public ContentBrowserTest {
  private:
   mutable base::Lock last_request_lock_;
   std::string last_request_relative_url_ GUARDED_BY(last_request_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceRestartBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,

@@ -406,7 +406,7 @@
   {
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 102
   },
   {
     "name": "autofill-enable-virtual-card",
@@ -644,14 +644,9 @@
     "expiry_milestone": 105
   },
   {
-    "name": "cellular-allow-per-network-roaming",
-    "owners": [ "chadduffin", "khorimoto", "cros-connectivity@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "cellular-forbid-attach-apn",
     "owners": [ "hsuregan", "cros-connectivity@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "cellular-use-attach-apn",
@@ -831,6 +826,11 @@
     "name": "contextual-search-debug",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     "expiry_milestone": 99
+  },
+  {
+    "name": "contextual-search-delayed-intelligence",
+    "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
+    "expiry_milestone": 102
   },
   {
     "name": "contextual-search-force-caption",
@@ -1455,7 +1455,7 @@
   {
     "name": "enable-autofill-credit-card-upload-feedback",
     "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 102
   },
   {
     "name": "enable-autofill-manual-fallback",
@@ -2936,7 +2936,7 @@
   {
     "name": "enhanced-network-voices",
     "owners": ["joelriley@google.com", "leileilei@google.com"],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "enterprise-reporting-api-keychain-recreation",
@@ -4640,11 +4640,10 @@
   {
     "name": "safe-browsing-password-protection-for-signed-in-users",
     "owners": [
-      "bdea",
       "xinghuilu",
       "chrome-safebrowsing-core@google.com"
     ],
-    "expiry_milestone": 96
+    "expiry_milestone": 99
   },
   {
     "name": "safety-tips",

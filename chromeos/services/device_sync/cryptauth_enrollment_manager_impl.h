@@ -88,6 +88,11 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   // Registers the prefs used by this class to the given |pref_service|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  CryptAuthEnrollmentManagerImpl(const CryptAuthEnrollmentManagerImpl&) =
+      delete;
+  CryptAuthEnrollmentManagerImpl& operator=(
+      const CryptAuthEnrollmentManagerImpl&) = delete;
+
   ~CryptAuthEnrollmentManagerImpl() override;
 
   // CryptAuthEnrollmentManager:
@@ -188,8 +193,6 @@ class CryptAuthEnrollmentManagerImpl : public CryptAuthEnrollmentManager,
   std::unique_ptr<CryptAuthEnroller> cryptauth_enroller_;
 
   base::WeakPtrFactory<CryptAuthEnrollmentManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthEnrollmentManagerImpl);
 };
 
 }  // namespace device_sync

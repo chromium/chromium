@@ -118,6 +118,7 @@ class CompositorView : public content::CompositorClient,
   void PreserveChildSurfaceControls(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object);
+  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, jboolean enable);
 
   // CompositorClient implementation:
   void RecreateSurface() override;

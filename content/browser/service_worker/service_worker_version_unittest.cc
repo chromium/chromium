@@ -73,6 +73,10 @@ base::Time GetYesterday() {
 }
 
 class ServiceWorkerVersionTest : public testing::Test {
+ public:
+  ServiceWorkerVersionTest(const ServiceWorkerVersionTest&) = delete;
+  ServiceWorkerVersionTest& operator=(const ServiceWorkerVersionTest&) = delete;
+
  protected:
   using FetchHandlerExistence = blink::mojom::FetchHandlerExistence;
 
@@ -201,9 +205,6 @@ class ServiceWorkerVersionTest : public testing::Test {
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
   GURL scope_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerVersionTest);
 };
 
 // An instance client that breaks the Mojo connection upon receiving the
@@ -213,12 +214,12 @@ class FailStartInstanceClient : public FakeEmbeddedWorkerInstanceClient {
   FailStartInstanceClient(EmbeddedWorkerTestHelper* helper)
       : FakeEmbeddedWorkerInstanceClient(helper) {}
 
+  FailStartInstanceClient(const FailStartInstanceClient&) = delete;
+  FailStartInstanceClient& operator=(const FailStartInstanceClient&) = delete;
+
   void StartWorker(blink::mojom::EmbeddedWorkerStartParamsPtr params) override {
     // Don't save the Mojo ptrs. The connection breaks.
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FailStartInstanceClient);
 };
 
 TEST_F(ServiceWorkerVersionTest, ConcurrentStartAndStop) {

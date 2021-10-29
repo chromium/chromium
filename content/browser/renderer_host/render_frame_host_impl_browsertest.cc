@@ -781,6 +781,11 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
  public:
   RenderFrameHostImplBeforeUnloadBrowserTest() {}
 
+  RenderFrameHostImplBeforeUnloadBrowserTest(
+      const RenderFrameHostImplBeforeUnloadBrowserTest&) = delete;
+  RenderFrameHostImplBeforeUnloadBrowserTest& operator=(
+      const RenderFrameHostImplBeforeUnloadBrowserTest&) = delete;
+
   TestJavaScriptDialogManager* dialog_manager() {
     return dialog_manager_.get();
   }
@@ -842,8 +847,6 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
 
  private:
   std::unique_ptr<TestJavaScriptDialogManager> dialog_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostImplBeforeUnloadBrowserTest);
 };
 
 // Check that when a frame performs a browser-initiated navigation, its
@@ -1370,6 +1373,11 @@ class ExecuteScriptBeforeRenderFrameDeletedHelper
                                               const std::string& script)
       : RenderFrameDeletedObserver(observed_frame), script_(script) {}
 
+  ExecuteScriptBeforeRenderFrameDeletedHelper(
+      const ExecuteScriptBeforeRenderFrameDeletedHelper&) = delete;
+  ExecuteScriptBeforeRenderFrameDeletedHelper& operator=(
+      const ExecuteScriptBeforeRenderFrameDeletedHelper&) = delete;
+
  protected:
   // WebContentsObserver:
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
@@ -1381,8 +1389,6 @@ class ExecuteScriptBeforeRenderFrameDeletedHelper
 
  private:
   std::string script_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExecuteScriptBeforeRenderFrameDeletedHelper);
 };
 
 }  // namespace
@@ -1528,6 +1534,10 @@ class DocumentUkmSourceIdObserver : public WebContentsObserver {
   explicit DocumentUkmSourceIdObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  DocumentUkmSourceIdObserver(const DocumentUkmSourceIdObserver&) = delete;
+  DocumentUkmSourceIdObserver& operator=(const DocumentUkmSourceIdObserver&) =
+      delete;
+
   ukm::SourceId GetMainFrameDocumentUkmSourceId() {
     return main_frame_document_ukm_source_id_;
   }
@@ -1553,7 +1563,6 @@ class DocumentUkmSourceIdObserver : public WebContentsObserver {
  private:
   ukm::SourceId main_frame_document_ukm_source_id_ = ukm::kInvalidSourceId;
   ukm::SourceId sub_frame_document_ukm_source_id_ = ukm::kInvalidSourceId;
-  DISALLOW_COPY_AND_ASSIGN(DocumentUkmSourceIdObserver);
 };
 }  // namespace
 
@@ -1908,6 +1917,10 @@ class DidFinishNavigationObserver : public WebContentsObserver {
             WebContents::FromRenderFrameHost(render_frame_host)),
         callback_(callback) {}
 
+  DidFinishNavigationObserver(const DidFinishNavigationObserver&) = delete;
+  DidFinishNavigationObserver& operator=(const DidFinishNavigationObserver&) =
+      delete;
+
  protected:
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
@@ -1916,7 +1929,6 @@ class DidFinishNavigationObserver : public WebContentsObserver {
 
  private:
   base::RepeatingClosure callback_;
-  DISALLOW_COPY_AND_ASSIGN(DidFinishNavigationObserver);
 };
 
 }  // namespace
@@ -4693,6 +4705,9 @@ class DOMContentLoadedObserver : public WebContentsObserver {
                            base::RepeatingClosure callback)
       : WebContentsObserver(web_contents), callback_(callback) {}
 
+  DOMContentLoadedObserver(const DOMContentLoadedObserver&) = delete;
+  DOMContentLoadedObserver& operator=(const DOMContentLoadedObserver&) = delete;
+
  protected:
   // WebContentsObserver:
   void DOMContentLoaded(RenderFrameHost* render_Frame_host) override {
@@ -4701,7 +4716,6 @@ class DOMContentLoadedObserver : public WebContentsObserver {
 
  private:
   base::RepeatingClosure callback_;
-  DISALLOW_COPY_AND_ASSIGN(DOMContentLoadedObserver);
 };
 
 // Calls |callback| whenever a DocumentOnLoad is reached in
@@ -4712,6 +4726,9 @@ class DocumentOnLoadObserver : public WebContentsObserver {
                          base::RepeatingClosure callback)
       : WebContentsObserver(web_contents), callback_(callback) {}
 
+  DocumentOnLoadObserver(const DocumentOnLoadObserver&) = delete;
+  DocumentOnLoadObserver& operator=(const DocumentOnLoadObserver&) = delete;
+
  protected:
   // WebContentsObserver:
   void DocumentOnLoadCompletedInMainFrame(
@@ -4721,7 +4738,6 @@ class DocumentOnLoadObserver : public WebContentsObserver {
 
  private:
   base::RepeatingClosure callback_;
-  DISALLOW_COPY_AND_ASSIGN(DocumentOnLoadObserver);
 };
 
 }  // namespace
@@ -5085,6 +5101,9 @@ class RemoteObjectInjector : public WebContentsObserver {
   explicit RemoteObjectInjector(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
+  RemoteObjectInjector(const RemoteObjectInjector&) = delete;
+  RemoteObjectInjector& operator=(const RemoteObjectInjector&) = delete;
+
   const MockObjectHost& GetObjectHost() const { return host_; }
 
  private:
@@ -5100,8 +5119,6 @@ class RemoteObjectInjector : public WebContentsObserver {
   }
 
   MockObjectHost host_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteObjectInjector);
 };
 
 namespace {

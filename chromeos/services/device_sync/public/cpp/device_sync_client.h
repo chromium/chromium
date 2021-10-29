@@ -54,6 +54,10 @@ class DeviceSyncClient {
                               multidevice::RemoteDeviceRefList)>;
 
   DeviceSyncClient();
+
+  DeviceSyncClient(const DeviceSyncClient&) = delete;
+  DeviceSyncClient& operator=(const DeviceSyncClient&) = delete;
+
   virtual ~DeviceSyncClient();
 
   // Completes initialization. Must be called after connecting the DeviceSync
@@ -114,8 +118,6 @@ class DeviceSyncClient {
  private:
   bool is_ready_ = false;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncClient);
 };
 
 }  // namespace device_sync

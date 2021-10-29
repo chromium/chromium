@@ -52,6 +52,5 @@ group("closure_compile") {
   deps = [
     "//chromeos/components/connectivity_diagnostics:closure_compile",
     "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
-    "//chromeos/components/system_apps:closure_compile",
   ]
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package chromeos.eche_app.proto;
+package ash.eche_app.proto;
 
 option optimize_for = LITE_RUNTIME;
 

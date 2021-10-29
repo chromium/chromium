@@ -37,6 +37,9 @@ export class KeyboardDiagramElement extends PolymerElement {
        * @type {?MechanicalLayout}
        */
       mechanicalLayout: String,
+
+      /** Whether to show a Chrome OS-style number pad.  */
+      showNumberPad: Boolean,
     };
   }
 

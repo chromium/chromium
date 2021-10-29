@@ -9,10 +9,10 @@
 
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
-class GridLayout;
 class Combobox;
 class Textfield;
 class View;
@@ -24,6 +24,7 @@ namespace autofill {
 
 class AddressEditorView : public views::View {
  public:
+  METADATA_HEADER(AddressEditorView);
   explicit AddressEditorView(AddressEditorController* controller);
   AddressEditorView(const AddressEditorView&) = delete;
   AddressEditorView& operator=(const AddressEditorView&) = delete;
@@ -47,8 +48,7 @@ class AddressEditorView : public views::View {
   // Adds some views to |layout|, to represent an input field and its labels.
   // |field| is the field definition, which contains the label and the hint
   // about the length of the input field. Returns the input view for this field.
-  views::View* CreateInputField(views::GridLayout* layout,
-                                const EditorField& field);
+  views::View* CreateInputField(const EditorField& field);
 
   // Will create a country combobox with |label|. Will also keep track of this
   // field to populate the edited model on save.

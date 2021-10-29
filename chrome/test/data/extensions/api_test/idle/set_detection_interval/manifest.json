@@ -1,0 +1,15 @@
+{
+  "name": "chrome.idle.setThreshold",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "chrome.idle API test",
+  "background": {
+    "scripts": [
+      "test.js"
+    ],
+    "persistent": true
+  },
+  "permissions": [
+    "idle"
+  ]
+}

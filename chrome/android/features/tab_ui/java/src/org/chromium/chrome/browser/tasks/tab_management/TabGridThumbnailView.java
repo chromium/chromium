@@ -36,7 +36,7 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
 
         int expectedHeight = (int) (measuredWidth * 1.0 / mAspectRatio);
         if ((TabUiFeatureUtilities.isLaunchPolishEnabled()
-                    || ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled())
+                    || ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(getContext()))
                 && isPlaceHolder()) {
             measureHeight = expectedHeight;
         }

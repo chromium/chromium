@@ -140,6 +140,10 @@ class WrapperTestLauncherDelegate : public base::TestLauncherDelegate {
         switches::kRunManualTestsFlag);
   }
 
+  WrapperTestLauncherDelegate(const WrapperTestLauncherDelegate&) = delete;
+  WrapperTestLauncherDelegate& operator=(const WrapperTestLauncherDelegate&) =
+      delete;
+
   // base::TestLauncherDelegate:
   bool GetTests(std::vector<base::TestIdentifier>* output) override;
 
@@ -169,8 +173,6 @@ class WrapperTestLauncherDelegate : public base::TestLauncherDelegate {
   content::TestLauncherDelegate* launcher_delegate_;
 
   bool run_manual_tests_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WrapperTestLauncherDelegate);
 };
 
 bool WrapperTestLauncherDelegate::GetTests(

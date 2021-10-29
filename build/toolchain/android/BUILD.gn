@@ -15,14 +15,11 @@ declare_args() {
   android_unstripped_runtime_outputs = true
 }
 
-# The Android clang toolchains share most of the same parameters, so we have this
-# wrapper around gcc_toolchain to avoid duplication of logic.
-#
 # Parameters:
 #  - binary_prefix
 #      Prefix of compiler executables.
 template("android_clang_toolchain") {
-  gcc_toolchain(target_name) {
+  clang_toolchain(target_name) {
     assert(defined(invoker.toolchain_args),
            "toolchain_args must be defined for android_clang_toolchain()")
 
@@ -43,23 +40,13 @@ template("android_clang_toolchain") {
     # Output linker map files for binary size analysis.
     enable_linker_map = true
 
-    _android_tool_prefix = "$android_toolchain_root/bin/"
-
-    # The tools should be run relative to the build dir.
-    _tool_prefix = rebase_path("$_android_tool_prefix", root_build_dir)
-    _prefix = rebase_path("$clang_base_path/bin", root_build_dir)
-    cc = "$_prefix/clang"
-    cxx = "$_prefix/clang++"
-    ar = "$_prefix/llvm-ar"
-    ld = cxx
-    readelf = _tool_prefix + "llvm-readobj"
-    nm = "$_prefix/llvm-nm"
-    strip = "$_prefix/llvm-strip"
+    strip = rebase_path("$clang_base_path/bin/llvm-strip", root_build_dir)
     if (_use_debug_fission) {
-      _dwp_tool_prefix =
-          rebase_path("$android_toolchain_root/bin/${invoker.binary_prefix}-",
-                      root_build_dir)
-      dwp = _dwp_tool_prefix + "dwp"
+      # llvm-dwp does not work with thin lto, so use binutils one.
+      # https://crbug.com/1264130
+      dwp = rebase_path(
+              "$android_toolchain_root/bin/${invoker.binary_prefix}-dwp",
+              root_build_dir)
     }
 
     use_unstripped_as_runtime_outputs = android_unstripped_runtime_outputs

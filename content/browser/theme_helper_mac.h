@@ -32,6 +32,9 @@ class ThemeHelperMac : public NotificationObserver {
   // if none.
   static ThemeHelperMac* GetInstance();
 
+  ThemeHelperMac(const ThemeHelperMac&) = delete;
+  ThemeHelperMac& operator=(const ThemeHelperMac&) = delete;
+
   // Duplicates a handle to the read-only copy of the system color table,
   // which can be shared to sandboxed child processes.
   base::ReadOnlySharedMemoryRegion DuplicateReadOnlyColorMapRegion();
@@ -69,8 +72,6 @@ class ThemeHelperMac : public NotificationObserver {
   base::ReadOnlySharedMemoryRegion read_only_color_map_;
 
   NotificationRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThemeHelperMac);
 };
 
 }  // namespace content

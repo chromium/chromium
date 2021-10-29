@@ -22,6 +22,8 @@ buildflag_header("history_clusters_buildflags") {
 
 static_library("core") {
   sources = [
+    "history_clusters_db_tasks.cc",
+    "history_clusters_db_tasks.h",
     "history_clusters_prefs.cc",
     "history_clusters_prefs.h",
     "history_clusters_service.cc",

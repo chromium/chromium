@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Check that capture was requested to be stopped via callback.
   run_loop.Run();
 
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
 
   // Check that capture was not requested to be stopped via callback.
   run_loop.RunUntilIdle();
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Check that capture was requested to be stopped via callback.
   run_loop.Run();
 
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Check that capture was not requested to be stopped via callback.
   run_loop.RunUntilIdle();
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 
   browser2->window()->Close();
   histogram_tester_.ExpectTotalCount(

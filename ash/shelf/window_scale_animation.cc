@@ -136,19 +136,32 @@ WindowScaleAnimation::WindowScaleAnimation(aura::Window* window,
                                            base::OnceClosure opt_callback)
     : window_(window),
       opt_callback_(std::move(opt_callback)),
-      scale_type_(scale_type) {
+      scale_type_(scale_type) {}
+
+WindowScaleAnimation::~WindowScaleAnimation() {
+  if (!opt_callback_.is_null())
+    std::move(opt_callback_).Run();
+}
+
+void WindowScaleAnimation::Start() {
+  // In the destructor of `ScopedLayerAnimationSettings`, it will activate all
+  // of its observers. What we want is to activate the observer for each
+  // transient child window after the for loop is done, otherwise `this` can be
+  // early released via `WindowScaleAnimation::DestroyWindowAnimationObserver`.
+  // Hence creating this vector outside of the for loop.
+  std::vector<std::unique_ptr<ui::ScopedLayerAnimationSettings>> all_settings;
   for (auto* transient_window : GetTransientTreeIterator(window_)) {
     window_animation_observers_.push_back(
         std::make_unique<AnimationObserver>(transient_window, this));
     WindowBackdrop::Get(transient_window)->DisableBackdrop();
-
-    ui::ScopedLayerAnimationSettings settings(
-        transient_window->layer()->GetAnimator());
-    settings.SetTransitionDuration(GetWindowAnimationTime(transient_window));
-    settings.SetPreemptionStrategy(
+    all_settings.push_back(std::make_unique<ui::ScopedLayerAnimationSettings>(
+        transient_window->layer()->GetAnimator()));
+    auto* settings = all_settings.back().get();
+    settings->SetTransitionDuration(GetWindowAnimationTime(transient_window));
+    settings->SetPreemptionStrategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
-    settings.AddObserver(window_animation_observers_.back().get());
+    settings->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+    settings->AddObserver(window_animation_observers_.back().get());
     if (scale_type_ == WindowScaleType::kScaleDownToShelf) {
       transient_window->layer()->GetAnimator()->SchedulePauseForProperties(
           kWindowFadeOutDelay, ui::LayerAnimationElement::OPACITY);
@@ -159,11 +172,6 @@ WindowScaleAnimation::WindowScaleAnimation(aura::Window* window,
       transient_window->layer()->SetTransform(gfx::Transform());
     }
   }
-}
-
-WindowScaleAnimation::~WindowScaleAnimation() {
-  if (!opt_callback_.is_null())
-    std::move(opt_callback_).Run();
 }
 
 // static

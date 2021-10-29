@@ -5,9 +5,12 @@
 #include "components/mirroring/browser/single_client_video_capture_host.h"
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/token.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,6 +46,9 @@ class MockVideoCaptureDevice final
                                       base::OnceClosure done_cb) override {}
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
+  MOCK_METHOD2(Crop,
+               void(const base::Token&,
+                    base::OnceCallback<void(media::mojom::CropRequestResult)>));
   MOCK_METHOD0(RequestRefreshFrame, void());
   MOCK_METHOD2(OnUtilizationReport, void(int, media::VideoCaptureFeedback));
 };

@@ -25,7 +25,7 @@ class WebContentsViewDelegateImpl : public content::WebContentsViewDelegate {
   ~WebContentsViewDelegateImpl() override;
 
   // WebContentsViewDelegate overrides.
-  void ShowContextMenu(content::RenderFrameHost* render_frame_host,
+  void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params) override;
 
  private:

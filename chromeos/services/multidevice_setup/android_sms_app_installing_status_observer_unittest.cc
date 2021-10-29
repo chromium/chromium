@@ -28,6 +28,14 @@ const char kShouldAttemptReenable[] = "android_sms.should_attempt_reenable";
 
 class MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest
     : public testing::Test {
+ public:
+  MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest(
+      const MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest&) =
+      delete;
+  MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest& operator=(
+      const MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest&) =
+      delete;
+
  protected:
   MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest() = default;
 
@@ -102,9 +110,6 @@ class MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest
 
   std::unique_ptr<AndroidSmsAppInstallingStatusObserver>
       android_sms_app_installing_status_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest);
 };
 
 TEST_F(MultiDeviceSetupAndroidSmsAppInstallingStatusObserverTest,

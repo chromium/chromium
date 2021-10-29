@@ -8523,6 +8523,10 @@ class RequestDelayingSitePerProcessBrowserTest
     explicit DelayedResponse(
         RequestDelayingSitePerProcessBrowserTest* test_harness)
         : test_harness_(test_harness) {}
+
+    DelayedResponse(const DelayedResponse&) = delete;
+    DelayedResponse& operator=(const DelayedResponse&) = delete;
+
     void SendResponse(base::WeakPtr<net::test_server::HttpResponseDelegate>
                           delegate) override {
       test_harness_->AddDelayedResponse(delegate);
@@ -8530,8 +8534,6 @@ class RequestDelayingSitePerProcessBrowserTest
 
    private:
     RequestDelayingSitePerProcessBrowserTest* test_harness_;
-
-    DISALLOW_COPY_AND_ASSIGN(DelayedResponse);
   };
 
   // Set of delegates to call which will complete delayed requests. May only be
@@ -10569,6 +10571,9 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
       : outgoing_touch_event_ids_(outgoing_touch_event_ids),
         acked_touch_event_ids_(acked_touch_event_ids) {}
 
+  TouchEventObserver(const TouchEventObserver&) = delete;
+  TouchEventObserver& operator=(const TouchEventObserver&) = delete;
+
   void OnInputEvent(const blink::WebInputEvent& event) override {
     if (!blink::WebInputEvent::IsTouchEventType(event.GetType()))
       return;
@@ -10590,7 +10595,6 @@ class TouchEventObserver : public RenderWidgetHost::InputEventObserver {
  private:
   std::vector<uint32_t>* outgoing_touch_event_ids_;
   std::vector<uint32_t>* acked_touch_event_ids_;
-  DISALLOW_COPY_AND_ASSIGN(TouchEventObserver);
 };
 
 // This test verifies the ability of the TouchEventAckQueue to send TouchEvent
@@ -12717,6 +12721,10 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
   explicit ClosePageBeforeCommitHelper(WebContents* web_contents)
       : DidCommitNavigationInterceptor(web_contents) {}
 
+  ClosePageBeforeCommitHelper(const ClosePageBeforeCommitHelper&) = delete;
+  ClosePageBeforeCommitHelper& operator=(const ClosePageBeforeCommitHelper&) =
+      delete;
+
   void Wait() {
     run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
@@ -12741,8 +12749,6 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClosePageBeforeCommitHelper);
 };
 
 }  // namespace
@@ -12887,6 +12893,10 @@ class EnableForceZoomContentClient : public TestContentBrowserClient {
  public:
   EnableForceZoomContentClient() = default;
 
+  EnableForceZoomContentClient(const EnableForceZoomContentClient&) = delete;
+  EnableForceZoomContentClient& operator=(const EnableForceZoomContentClient&) =
+      delete;
+
   void OverrideWebkitPrefs(WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override {
     DCHECK(old_client_);
@@ -12900,8 +12910,6 @@ class EnableForceZoomContentClient : public TestContentBrowserClient {
 
  private:
   ContentBrowserClient* old_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableForceZoomContentClient);
 };
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
@@ -13375,14 +13383,16 @@ class SitePerProcessAndProcessPerSiteBrowserTest
  public:
   SitePerProcessAndProcessPerSiteBrowserTest() {}
 
+  SitePerProcessAndProcessPerSiteBrowserTest(
+      const SitePerProcessAndProcessPerSiteBrowserTest&) = delete;
+  SitePerProcessAndProcessPerSiteBrowserTest& operator=(
+      const SitePerProcessAndProcessPerSiteBrowserTest&) = delete;
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SitePerProcessBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kProcessPerSite);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessAndProcessPerSiteBrowserTest);
 };
 
 // Verify that when --site-per-process is combined with --process-per-site, a
@@ -13423,6 +13433,10 @@ class SameDocumentCommitObserver : public WebContentsObserver {
     EXPECT_TRUE(web_contents);
   }
 
+  SameDocumentCommitObserver(const SameDocumentCommitObserver&) = delete;
+  SameDocumentCommitObserver& operator=(const SameDocumentCommitObserver&) =
+      delete;
+
   void Wait() { run_loop_.Run(); }
 
   const GURL& last_committed_url() { return last_committed_url_; }
@@ -13437,8 +13451,6 @@ class SameDocumentCommitObserver : public WebContentsObserver {
 
   GURL last_committed_url_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameDocumentCommitObserver);
 };
 
 }  // namespace
@@ -13900,14 +13912,16 @@ class DoubleTapZoomContentBrowserClient : public TestContentBrowserClient {
  public:
   DoubleTapZoomContentBrowserClient() = default;
 
+  DoubleTapZoomContentBrowserClient(const DoubleTapZoomContentBrowserClient&) =
+      delete;
+  DoubleTapZoomContentBrowserClient& operator=(
+      const DoubleTapZoomContentBrowserClient&) = delete;
+
   void OverrideWebkitPrefs(
       content::WebContents* web_contents,
       blink::web_pref::WebPreferences* web_prefs) override {
     web_prefs->double_tap_to_zoom_enabled = true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DoubleTapZoomContentBrowserClient);
 };
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,

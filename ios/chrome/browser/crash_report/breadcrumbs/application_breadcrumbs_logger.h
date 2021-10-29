@@ -22,6 +22,8 @@ class ApplicationBreadcrumbsLogger
   explicit ApplicationBreadcrumbsLogger(
       breadcrumbs::BreadcrumbManager* breadcrumb_manager);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
+  ApplicationBreadcrumbsLogger& operator=(const ApplicationBreadcrumbsLogger&) =
+      delete;
   ~ApplicationBreadcrumbsLogger();
 
  private:

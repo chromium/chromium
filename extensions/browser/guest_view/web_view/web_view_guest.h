@@ -217,7 +217,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
   bool HandleKeyboardEvent(content::WebContents* source,
                            const content::NativeWebKeyboardEvent& event) final;

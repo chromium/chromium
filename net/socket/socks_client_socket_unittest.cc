@@ -226,7 +226,7 @@ TEST_F(SOCKSClientSocketTest, HandshakeFailures) {
   };
 
   //---------------------------------------
-
+  host_resolver_->rules()->AddRule("socks.test", "127.0.0.1");
   for (const auto& test : tests) {
     MockWrite data_writes[] = {
         MockWrite(SYNCHRONOUS, kSOCKS4OkRequestLocalHostPort80,
@@ -236,7 +236,7 @@ TEST_F(SOCKSClientSocketTest, HandshakeFailures) {
     RecordingNetLogObserver log_observer;
 
     user_sock_ = BuildMockSocket(data_reads, data_writes, host_resolver_.get(),
-                                 "localhost", 80, NetLog::Get());
+                                 "socks.test", 80, NetLog::Get());
 
     int rv = user_sock_->Connect(callback_.callback());
     EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -455,10 +455,11 @@ TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
        {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     StaticSocketDataProvider data;
     MockHostResolver host_resolver;
+    host_resolver.rules()->AddRule("doh.test", "127.0.0.1");
     SOCKSClientSocket socket(
         std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
                                               &data),
-        HostPortPair("localhost", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
+        HostPortPair("doh.test", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
         &host_resolver, secure_dns_policy, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     EXPECT_EQ(ERR_IO_PENDING, socket.Connect(callback_.callback()));

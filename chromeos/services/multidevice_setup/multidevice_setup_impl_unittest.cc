@@ -535,6 +535,10 @@ class FakeAndroidSmsAppInstallingStatusObserverFactory
 }  // namespace
 
 class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
+ public:
+  MultiDeviceSetupImplTest(const MultiDeviceSetupImplTest&) = delete;
+  MultiDeviceSetupImplTest& operator=(const MultiDeviceSetupImplTest&) = delete;
+
  protected:
   MultiDeviceSetupImplTest()
       : test_devices_(
@@ -1014,8 +1018,6 @@ class MultiDeviceSetupImplTest : public ::testing::TestWithParam<bool> {
   absl::optional<bool> last_retry_success_;
 
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupImplTest);
 };
 
 TEST_P(MultiDeviceSetupImplTest, AccountStatusChangeDelegate) {

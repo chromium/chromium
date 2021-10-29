@@ -17,6 +17,11 @@ namespace content {
 namespace {
 
 class ResourceSchedulerBrowserTest : public ContentBrowserTest {
+ public:
+  ResourceSchedulerBrowserTest(const ResourceSchedulerBrowserTest&) = delete;
+  ResourceSchedulerBrowserTest& operator=(const ResourceSchedulerBrowserTest&) =
+      delete;
+
  protected:
   ResourceSchedulerBrowserTest() {}
   ~ResourceSchedulerBrowserTest() override {}
@@ -24,9 +29,6 @@ class ResourceSchedulerBrowserTest : public ContentBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceSchedulerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,

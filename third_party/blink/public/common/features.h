@@ -519,6 +519,14 @@ BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecationWillLogToDevToolsIssue;
 
+BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
+
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWebSQLInThirdPartyContextThrowsWhenDisabled;
+
+// https://blog.whatwg.org/newline-normalizations-in-form-submission
+BLINK_COMMON_EXPORT extern const base::Feature kLateFormNewlineNormalization;
+
 }  // namespace features
 }  // namespace blink
 

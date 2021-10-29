@@ -418,8 +418,8 @@ WebUIController* NewWebUI<ash::printing::printing_manager::PrintManagementUI>(
 }
 
 void BindEcheSignalingMessageExchanger(
-    chromeos::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<chromeos::eche_app::mojom::SignalingMessageExchanger>
+    ash::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<ash::eche_app::mojom::SignalingMessageExchanger>
         receiver) {
   if (manager) {
     manager->BindSignalingMessageExchangerInterface(std::move(receiver));
@@ -427,25 +427,24 @@ void BindEcheSignalingMessageExchanger(
 }
 
 void BindSystemInfoProvider(
-    chromeos::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<chromeos::eche_app::mojom::SystemInfoProvider>
-        receiver) {
+    ash::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<ash::eche_app::mojom::SystemInfoProvider> receiver) {
   if (manager) {
     manager->BindSystemInfoProviderInterface(std::move(receiver));
   }
 }
 
 void BindEcheUidGenerator(
-    chromeos::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<chromeos::eche_app::mojom::UidGenerator> receiver) {
+    ash::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<ash::eche_app::mojom::UidGenerator> receiver) {
   if (manager) {
     manager->BindUidGeneratorInterface(std::move(receiver));
   }
 }
 
 void BindEcheNotificationGenerator(
-    chromeos::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<chromeos::eche_app::mojom::NotificationGenerator>
+    ash::eche_app::EcheAppManager* manager,
+    mojo::PendingReceiver<ash::eche_app::mojom::NotificationGenerator>
         receiver) {
   if (manager) {
     manager->BindNotificationGeneratorInterface(std::move(receiver));
@@ -453,12 +452,12 @@ void BindEcheNotificationGenerator(
 }
 
 template <>
-WebUIController* NewWebUI<chromeos::eche_app::EcheAppUI>(WebUI* web_ui,
-                                                         const GURL& url) {
+WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
+                                                    const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  chromeos::eche_app::EcheAppManager* manager =
-      chromeos::eche_app::EcheAppManagerFactory::GetForProfile(profile);
-  return new chromeos::eche_app::EcheAppUI(
+  ash::eche_app::EcheAppManager* manager =
+      ash::eche_app::EcheAppManagerFactory::GetForProfile(profile);
+  return new ash::eche_app::EcheAppUI(
       web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger, manager),
       base::BindRepeating(&BindSystemInfoProvider, manager),
       base::BindRepeating(&BindEcheUidGenerator, manager),
@@ -934,9 +933,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     return &NewWebUI<chromeos::EmojiUI>;
   }
-  if (url.host_piece() == chromeos::eche_app::kChromeUIEcheAppHost &&
-      base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
-    return &NewWebUI<chromeos::eche_app::EcheAppUI>;
+  if (url.host_piece() == ash::eche_app::kChromeUIEcheAppHost &&
+      base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {
+    return &NewWebUI<ash::eche_app::EcheAppUI>;
   }
   if (url.host_piece() == chrome::kChromeUIVmHost) {
     return &NewWebUI<chromeos::VmUI>;

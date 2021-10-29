@@ -1289,6 +1289,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AutocompleteActionPredictor.AccurateCount" units="units"
     expires_after="M85">
+  <obsolete>
+    Removed in M97 as it was expired and it was not not updated on omnibox
+    reverts, which led to incorrect counts.
+    AutocompleteActionPredictor.NoStatePrefetchStatus is the new alternative.
+  </obsolete>
   <owner>tbansal@chromium.org</owner>
   <summary>
     Every time we calculate the confidence for a URL to determine if it should

@@ -108,6 +108,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   // Returns the global instance if initialized. May return null.
   static ShillProfileClient* Get();
 
+  ShillProfileClient(const ShillProfileClient&) = delete;
+  ShillProfileClient& operator=(const ShillProfileClient&) = delete;
+
   // Returns the shared profile path.
   static std::string GetSharedProfilePath();
 
@@ -169,9 +172,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillProfileClient {
   // Initialize/Shutdown should be used instead.
   ShillProfileClient();
   virtual ~ShillProfileClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillProfileClient);
 };
 
 }  // namespace chromeos

@@ -51,14 +51,14 @@ interface AppService {
       FilePaths file_paths);
 
   // Launches an app with |app_id| and Chrome OS generic |intent| irrespective
-  // of app platform.
+  // of app platform. Returns whether the app was successfully launched.
   LaunchAppWithIntent(
       AppType app_type,
       string app_id,
       int32 event_flags,
       Intent intent,
       LaunchSource launch_source,
-      WindowInfo? window_info);
+      WindowInfo? window_info) => (bool success);
 
   SetPermission(
       AppType app_type,
@@ -191,13 +191,13 @@ interface Publisher {
       FilePaths file_paths);
 
   // Launches an app with |app_id| and Chrome OS generic |intent| irrespective
-  // of app platform.
+  // of app platform. Returns whether the app was successfully launched.
   LaunchAppWithIntent(
     string app_id,
     int32 event_flags,
     Intent intent,
     LaunchSource launch_source,
-    WindowInfo? window_info);
+    WindowInfo? window_info) => (bool success);
 
   SetPermission(
       string app_id,

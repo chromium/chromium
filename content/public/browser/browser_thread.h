@@ -80,6 +80,9 @@ class CONTENT_EXPORT BrowserThread {
     ID_COUNT
   };
 
+  BrowserThread(const BrowserThread&) = delete;
+  BrowserThread& operator=(const BrowserThread&) = delete;
+
   // Delete/ReleaseSoon() helpers allow future deletion of an owned object on
   // its associated thread. If you already have a task runner bound to a
   // BrowserThread you should use its SequencedTaskRunner::DeleteSoon() member
@@ -209,8 +212,6 @@ class CONTENT_EXPORT BrowserThread {
  private:
   friend class BrowserThreadImpl;
   BrowserThread() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserThread);
 };
 
 }  // namespace content

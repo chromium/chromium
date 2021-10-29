@@ -97,8 +97,6 @@ extern const base::Feature kCalendarView;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraPrivacySwitchNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kCellularAllowPerNetworkRoaming;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularForbidAttachApn;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularUseAttachApn;
@@ -246,6 +244,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHideShelfControlsInTabletMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHoldingSpaceInProgressDownloadsIntegration;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature
+    kHoldingSpaceInProgressDownloadsNotificationSuppression;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHoldingSpaceIncognitoProfileIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeMojoDecoder;
@@ -516,6 +517,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideArcMediaNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();

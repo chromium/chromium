@@ -46,6 +46,11 @@ class ResetNetworkServiceBetweenTests : public testing::EmptyTestEventListener {
  public:
   ResetNetworkServiceBetweenTests() = default;
 
+  ResetNetworkServiceBetweenTests(const ResetNetworkServiceBetweenTests&) =
+      delete;
+  ResetNetworkServiceBetweenTests& operator=(
+      const ResetNetworkServiceBetweenTests&) = delete;
+
   void OnTestEnd(const testing::TestInfo& test_info) override {
     // If the network::NetworkService object was instantiated during a unit test
     // it will be deleted because network_service_instance.cc has it in a
@@ -54,9 +59,6 @@ class ResetNetworkServiceBetweenTests : public testing::EmptyTestEventListener {
     // later and have other tests use the InterfacePtr that is invalid.
     ResetNetworkServiceForTesting();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResetNetworkServiceBetweenTests);
 };
 
 }  // namespace

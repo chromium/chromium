@@ -200,7 +200,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     params.writing_direction_right_to_left = 0;
 #endif
     auto menu = std::make_unique<TestRenderViewContextMenu>(
-        web_contents->GetMainFrame(), params);
+        *web_contents->GetMainFrame(), params);
     menu->Init();
     return menu;
   }
@@ -362,7 +362,7 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     params.media_type = blink::mojom::ContextMenuDataMediaType::kPlugin;
     params.media_flags |= blink::ContextMenuData::kMediaCanRotate;
     auto menu =
-        std::make_unique<TestRenderViewContextMenu>(extension_frame_, params);
+        std::make_unique<TestRenderViewContextMenu>(*extension_frame_, params);
     menu->Init();
     return menu;
   }
@@ -402,7 +402,7 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
     params.page_url = page_url;
     params.frame_url = frame->GetLastCommittedURL();
     params.media_type = blink::mojom::ContextMenuDataMediaType::kPlugin;
-    TestRenderViewContextMenu menu(frame, params);
+    TestRenderViewContextMenu menu(*frame, params);
     menu.Init();
 
     // The full page related items such as 'reload' should not be displayed.
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, ContextMenuForCanvas) {
   params.media_type = blink::mojom::ContextMenuDataMediaType::kCanvas;
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       params);
   menu.Init();
 
@@ -723,7 +723,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   params.is_editable = true;
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       params);
   menu.Init();
 
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   params.is_editable = false;
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       params);
   menu.Init();
 
@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   std::unique_ptr<content::WebContents> detached_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
-  TestRenderViewContextMenu menu(detached_web_contents->GetMainFrame(), {});
+  TestRenderViewContextMenu menu(*detached_web_contents->GetMainFrame(), {});
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_EMOJI, 0);
 }
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   std::unique_ptr<content::WebContents> detached_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
-  TestRenderViewContextMenu menu(detached_web_contents->GetMainFrame(), {});
+  TestRenderViewContextMenu menu(*detached_web_contents->GetMainFrame(), {});
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_EMOJI, 0);
 }
@@ -781,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   params.is_editable = true;
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       params);
   menu.Init();
 
@@ -876,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenAboutBlankInNewTab) {
 
   // Select "Open Link in New Tab" and wait for the new tab to be added.
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
@@ -905,7 +905,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenDataURLInNewTab) {
 
   // Select "Open Link in New Tab" and wait for the new tab to be added.
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
@@ -939,7 +939,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
 
   // Select "Open Link in New Tab" and wait for the new tab to be added.
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
 
   // Select "Open Link in Incognito Window" and wait for window to be added.
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       context_menu_params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD, 0);
@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInWebApp) {
   content::ContextMenuParams params;
   params.page_url = GURL("https://www.example.com/");
   params.link_url = start_url;
-  TestRenderViewContextMenu menu(initial_tab->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*initial_tab->GetMainFrame(), params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP,
                       0 /* event_flags */);
@@ -1843,7 +1843,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   params.media_flags |= blink::ContextMenuData::kMediaCanPictureInPicture;
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       params);
   menu.Init();
 
@@ -1859,7 +1859,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   params.media_flags |= blink::ContextMenuData::kMediaPictureInPicture;
 
   TestRenderViewContextMenu menu(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+      *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
       params);
   menu.Init();
 

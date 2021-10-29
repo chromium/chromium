@@ -58,6 +58,9 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
         base::BindOnce(&StreamWaiter::OnAborted, base::Unretained(this)));
   }
 
+  StreamWaiter(const StreamWaiter&) = delete;
+  StreamWaiter& operator=(const StreamWaiter&) = delete;
+
   // Implements mojom::ServiceWorkerStreamCallback.
   void OnCompleted() override {
     // Destroys |this|.
@@ -71,8 +74,6 @@ class ServiceWorkerMainResourceLoader::StreamWaiter
  private:
   ServiceWorkerMainResourceLoader* owner_;
   mojo::Receiver<blink::mojom::ServiceWorkerStreamCallback> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamWaiter);
 };
 
 ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(

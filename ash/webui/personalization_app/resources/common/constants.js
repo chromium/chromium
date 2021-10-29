@@ -15,6 +15,7 @@ export const kMaximumLocalImagePreviews = 3;
 /** @enum {string} */
 export const EventType = {
   SEND_COLLECTIONS: 'send_collections',
+  SEND_GOOGLE_PHOTOS_COUNT: 'send_google_photos_count',
   SEND_GOOGLE_PHOTOS_PHOTOS: 'send_google_photos_photos',
   SELECT_COLLECTION: 'select_collection',
   SELECT_GOOGLE_PHOTOS_COLLECTION: 'select_google_photos_collection',
@@ -38,6 +39,14 @@ export const EventType = {
  * }}
  */
 export let SendCollectionsEvent;
+
+/**
+ * @typedef {{
+ *   type: EventType,
+ *   count: ?number,
+ * }}
+ */
+export let SendGooglePhotosCountEvent;
 
 /**
  * @typedef {{

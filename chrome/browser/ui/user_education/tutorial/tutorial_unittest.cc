@@ -20,31 +20,16 @@ const ui::ElementContext kTestContext1(1);
 const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
 }  // namespace
 
-class TestTutorialRegistry : public TutorialRegistry {
- public:
-  void RegisterTutorials() override {
-    {
-      TutorialDescription description;
-      description.steps.emplace_back(TutorialDescription::Step(
-          u"title", u"description", ui::InteractionSequence::StepType::kShown,
-          kTestIdentifier1, TutorialDescription::Step::Arrow::NONE));
-      AddTutorial(kTestTutorial1, description);
-    }
-  }
-};
-
 TEST(TutorialTest, TutorialBuilder) {
-  std::unique_ptr<TestTutorialRegistry> registry =
-      std::make_unique<TestTutorialRegistry>();
-  registry->RegisterTutorials();
-
   std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
       std::make_unique<TutorialBubbleFactoryRegistry>();
 
   std::unique_ptr<TutorialService> service =
-      std::make_unique<TutorialService>(std::move(registry));
+      std::make_unique<TutorialService>();
 
   Tutorial::Builder builder;
+
+  // build a step with an ElementID
   std::unique_ptr<ui::InteractionSequence::Step> step =
       Tutorial::StepBuilder()
           .SetAnchorElementID(kTestIdentifier1)
@@ -54,15 +39,19 @@ TEST(TutorialTest, TutorialBuilder) {
 }
 
 TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
-  std::unique_ptr<TestTutorialRegistry> registry =
-      std::make_unique<TestTutorialRegistry>();
-  registry->RegisterTutorials();
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  {
+    TutorialDescription description;
+    description.steps.emplace_back(TutorialDescription::Step(
+        u"title", u"description", ui::InteractionSequence::StepType::kShown,
+        kTestIdentifier1, TutorialDescription::Step::Arrow::NONE));
+    registry->AddTutorial(kTestTutorial1, description);
+  }
 
   std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
       std::make_unique<TutorialBubbleFactoryRegistry>();
 
-  std::unique_ptr<TutorialService> service =
-      std::make_unique<TutorialService>(std::move(registry));
-
-  service->GetTutorialIdentifiers();
+  registry->GetTutorialIdentifiers();
 }

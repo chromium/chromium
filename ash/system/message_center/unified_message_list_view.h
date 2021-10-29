@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_UNIFIED_MESSAGE_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/unified/unified_system_tray_model.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/message_center/message_center.h"
@@ -105,9 +104,6 @@ class ASH_EXPORT UnifiedMessageListView
   // animation.
   void OnNotificationSlidOut();
 
-  // Nulls pointers to dependencies that are about to be destroyed.
-  void OnShutdown();
-
   // views::View:
   void ChildPreferredSizeChanged(views::View* child) override;
   void PreferredSizeChanged() override;
@@ -161,7 +157,6 @@ class ASH_EXPORT UnifiedMessageListView
  private:
   friend class UnifiedMessageCenterViewTest;
   friend class UnifiedMessageListViewTest;
-  friend class UnifiedMessageCenterBubbleTest;
   class Background;
   class MessageViewContainer;
 
@@ -234,7 +229,7 @@ class ASH_EXPORT UnifiedMessageListView
   void UpdateClearAllAnimation();
 
   UnifiedMessageCenterView* const message_center_view_;
-  UnifiedSystemTrayModel* model_;
+  UnifiedSystemTrayModel* const model_;
 
   // If true, ChildPreferredSizeChanged() will be ignored. This is used in
   // CollapseAllNotifications() to prevent PreferredSizeChanged() triggered

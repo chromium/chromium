@@ -659,10 +659,10 @@ ZoomController::ZoomMode WebViewGuest::GetZoomMode() {
 }
 
 bool WebViewGuest::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return web_view_guest_delegate_ &&
-         web_view_guest_delegate_->HandleContextMenu(params);
+         web_view_guest_delegate_->HandleContextMenu(render_frame_host, params);
 }
 
 bool WebViewGuest::HandleKeyboardEvent(

@@ -44,7 +44,9 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
   if (cloud_policy_store_->has_policy()) {
     const auto* policy = cloud_policy_store_->policy();
     signals.set_obfuscated_customer_id(policy->obfuscated_customer_id());
-    signals.set_enrollment_domain(policy->display_domain());
+    signals.set_enrollment_domain(policy->has_managed_by()
+                                      ? policy->managed_by()
+                                      : policy->display_domain());
   }
 
   // Wrap the done closure to ensure it gets invoked on the calling sequence.

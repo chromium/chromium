@@ -1771,6 +1771,9 @@ class WebContentsConsoleObserver : public WebContentsObserver {
 // renderer. Used to simulate a compromised renderer.
 class PwnMessageHelper {
  public:
+  PwnMessageHelper(const PwnMessageHelper&) = delete;
+  PwnMessageHelper& operator=(const PwnMessageHelper&) = delete;
+
   // Calls Create method in FileSystemHost Mojo interface.
   static void FileSystemCreate(RenderProcessHost* process,
                                int request_id,
@@ -1793,8 +1796,6 @@ class PwnMessageHelper {
 
  private:
   PwnMessageHelper();  // Not instantiable.
-
-  DISALLOW_COPY_AND_ASSIGN(PwnMessageHelper);
 };
 
 #if defined(USE_AURA)

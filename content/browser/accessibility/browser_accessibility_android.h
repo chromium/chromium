@@ -22,13 +22,14 @@ namespace content {
 class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
-  int32_t unique_id() const { return GetUniqueId().Get(); }
+
+  BrowserAccessibilityAndroid(const BrowserAccessibilityAndroid&) = delete;
+  BrowserAccessibilityAndroid& operator=(const BrowserAccessibilityAndroid&) =
+      delete;
 
   ~BrowserAccessibilityAndroid() override;
-  BrowserAccessibilityAndroid(const BrowserAccessibilityAndroid& other) =
-      delete;
-  BrowserAccessibilityAndroid& operator=(
-      const BrowserAccessibilityAndroid& other) = delete;
+
+  int32_t unique_id() const { return GetUniqueId().Get(); }
 
   // BrowserAccessibility Overrides.
   void OnDataChanged() override;

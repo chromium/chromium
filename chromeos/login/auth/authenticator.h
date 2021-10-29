@@ -29,6 +29,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
  public:
   explicit Authenticator(AuthStatusConsumer* consumer);
 
+  Authenticator(const Authenticator&) = delete;
+  Authenticator& operator=(const Authenticator&) = delete;
+
   // Given externally authenticated username and password (part of
   // |user_context|), this method attempts to complete authentication process.
   virtual void CompleteLogin(const UserContext& user_context) = 0;
@@ -88,8 +91,6 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
 
  private:
   friend class base::RefCountedThreadSafe<Authenticator>;
-
-  DISALLOW_COPY_AND_ASSIGN(Authenticator);
 };
 
 }  // namespace chromeos

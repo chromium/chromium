@@ -5,62 +5,56 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
-import("../os_cr_elements.gni")
+
+assert(is_chromeos)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [
-    ":cr_camera",
-    ":cr_picture_list",
-    ":cr_picture_pane",
-    ":png",
-  ]
+  deps = [ ":png" ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      ":cr_camera",
+      ":cr_picture_list",
+      ":cr_picture_pane",
+    ]
+  }
 }
 
 js_library("png") {
 }
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_picture_types") {
-}
+if (is_chromeos_ash) {
+  js_library("cr_picture_types") {
+  }
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_picture_pane") {
-  deps = [
-    ":cr_camera",
-    ":cr_picture_types",
-    ":png",
-  ]
-}
+  js_library("cr_picture_pane") {
+    deps = [
+      ":cr_camera",
+      ":cr_picture_types",
+      ":png",
+    ]
+  }
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_camera") {
-  deps = [ ":png" ]
-}
+  js_library("cr_camera") {
+    deps = [ ":png" ]
+  }
 
-# TODO(crbug.com/1134204): This target should probably only be defined if
-# target_os is "chromos" as it does not include any source files on other
-# platforms.
-js_library("cr_picture_list") {
-  deps = [
-    ":cr_picture_types",
-    ":png",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
+  js_library("cr_picture_list") {
+    deps = [
+      ":cr_picture_types",
+      ":png",
+      "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
+      "//ui/webui/resources/js:assert.m",
+    ]
+  }
 
-html_to_js("web_components") {
-  js_files = [
-    "cr_camera.js",
-    "cr_picture_list.js",
-    "cr_picture_pane.js",
-    "icons.js",
-  ]
+  html_to_js("web_components") {
+    js_files = [
+      "cr_camera.js",
+      "cr_picture_list.js",
+      "cr_picture_pane.js",
+      "icons.js",
+    ]
+  }
 }

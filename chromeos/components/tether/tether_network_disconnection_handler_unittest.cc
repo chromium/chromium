@@ -45,6 +45,12 @@ std::string CreateConnectedWifiConfigurationJsonString() {
 }  // namespace
 
 class TetherNetworkDisconnectionHandlerTest : public testing::Test {
+ public:
+  TetherNetworkDisconnectionHandlerTest(
+      const TetherNetworkDisconnectionHandlerTest&) = delete;
+  TetherNetworkDisconnectionHandlerTest& operator=(
+      const TetherNetworkDisconnectionHandlerTest&) = delete;
+
  protected:
   TetherNetworkDisconnectionHandlerTest() {}
   ~TetherNetworkDisconnectionHandlerTest() override = default;
@@ -131,9 +137,6 @@ class TetherNetworkDisconnectionHandlerTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> test_task_runner_;
 
   std::unique_ptr<TetherNetworkDisconnectionHandler> handler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherNetworkDisconnectionHandlerTest);
 };
 
 TEST_F(TetherNetworkDisconnectionHandlerTest,

@@ -3728,9 +3728,10 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   test_clock_.SetNow(start_time);
   // Env::CreateInstance must be called for test window.
   auto env = aura::Env::CreateInstance();
-  aura::Window* window = aura::test::CreateTestWindowWithId(/*id=*/0, nullptr);
+  std::unique_ptr<aura::Window> window(
+      aura::test::CreateTestWindowWithId(/*id=*/0, nullptr));
   auto instance = std::make_unique<apps::Instance>(
-      "id", apps::Instance::InstanceKey::ForWindowBasedApp(window));
+      "id", apps::Instance::InstanceKey::ForWindowBasedApp(window.get()));
   instance->UpdateState(apps::InstanceState::kStarted, start_time);
   std::vector<std::unique_ptr<apps::Instance>> deltas;
   deltas.push_back(std::move(instance));

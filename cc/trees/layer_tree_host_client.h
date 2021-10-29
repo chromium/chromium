@@ -25,6 +25,7 @@ struct BeginFrameArgs;
 
 namespace cc {
 struct BeginMainFrameMetrics;
+struct CommitState;
 struct WebVitalMetrics;
 
 struct ApplyViewportChangesArgs {
@@ -151,7 +152,7 @@ class LayerTreeHostClient {
   virtual void RequestNewLayerTreeFrameSink() = 0;
   virtual void DidInitializeLayerTreeFrameSink() = 0;
   virtual void DidFailToInitializeLayerTreeFrameSink() = 0;
-  virtual void WillCommit() = 0;
+  virtual void WillCommit(CommitState*) = 0;
   // Report that a commit to the impl thread has completed. The
   // commit_start_time is the time that the impl thread began processing the
   // commit, or base::TimeTicks() if the commit did not require action by the

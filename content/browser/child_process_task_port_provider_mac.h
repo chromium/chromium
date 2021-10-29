@@ -28,6 +28,10 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   // Returns the singleton instance.
   static ChildProcessTaskPortProvider* GetInstance();
 
+  ChildProcessTaskPortProvider(const ChildProcessTaskPortProvider&) = delete;
+  ChildProcessTaskPortProvider& operator=(const ChildProcessTaskPortProvider&) =
+      delete;
+
   // Called by BrowserChildProcessHostImpl and RenderProcessHostImpl when
   // a new child has been created. This will invoke the GetTaskPort() method
   // on |child_control| and will store the returned port as being associated to
@@ -72,8 +76,6 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
 
   // Dispatch source for |notification_port_|.
   std::unique_ptr<base::DispatchSourceMach> notification_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskPortProvider);
 };
 
 }  // namespace content

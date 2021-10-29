@@ -190,7 +190,7 @@ class StorageTest
           return Status(
               error::UNAVAILABLE,
               base::StrCat({"Test uploader not provided by the test, reason=",
-                            base::NumberToString(reason)}));
+                            UploaderInterface::ReasonToString(reason)}));
         }));
     // Encryption is enabled by default.
     ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
@@ -765,7 +765,7 @@ class StorageTest
       // Set uploader expectations for any queue; expect no records and need
       // key. Make sure no uploads happen, and key is requested.
       EXPECT_CALL(set_mock_uploader_expectations_,
-                  Call(Eq(UploaderInterface::KEY_DELIVERY)))
+                  Call(UploaderInterface::UploadReason::KEY_DELIVERY))
           .WillOnce(Invoke([this](UploaderInterface::UploadReason) {
             return TestUploader::SetKeyDelivery(this).Complete();
           }))
@@ -823,7 +823,8 @@ class StorageTest
                UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
                StorageTest* self) {
               auto result = self->set_mock_uploader_expectations_.Call(reason);
-              LOG(ERROR) << "Upload reason=" << reason << " "
+              LOG(ERROR) << "Upload reason="
+                         << UploaderInterface::ReasonToString(reason) << " "
                          << result.status();
               if (!result.ok()) {
                 std::move(start_uploader_cb).Run(result.status());
@@ -838,7 +839,7 @@ class StorageTest
   void AsyncStartMockUploaderFailing(
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-    if (reason == UploaderInterface::KEY_DELIVERY &&
+    if (reason == UploaderInterface::UploadReason::KEY_DELIVERY &&
         key_delivery_failure_.load()) {
       std::move(start_uploader_cb)
           .Run(Status(error::FAILED_PRECONDITION, "Test cannot start upload"));
@@ -986,7 +987,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUpload) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC)))
+              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(FAST_BATCH, &waiter, this)
             .Required(0, kData[0])
@@ -1017,7 +1018,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::KEY_DELIVERY)))
+                Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
         // Called once with empty queue.
         .WillOnce(Invoke([this](UploaderInterface::UploadReason reason) {
           return TestUploader::SetEmpty(this).Complete();
@@ -1027,7 +1028,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
           return Status(error::CANCELLED, "Repeated key delivery rejected");
         }));
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::MANUAL)))
+                Call(Eq(UploaderInterface::UploadReason::MANUAL)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
@@ -1056,7 +1057,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   // Set uploader expectations with encryption key request.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::KEY_DELIVERY)))
+              Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
             .Required(3, kMoreData[0])
@@ -1086,7 +1087,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndUpload) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::PERIODIC)))
+              Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(FAST_BATCH, &waiter, this)
             .Required(0, kData[0])
@@ -1112,7 +1113,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndFlush) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::MANUAL)))
+              Call(Eq(UploaderInterface::UploadReason::MANUAL)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
             .Required(0, kData[0])
@@ -1142,7 +1143,7 @@ TEST_P(StorageTest, WriteIntoNewStorageReopenWriteMoreAndFlush) {
   // Set uploader expectations.
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::MANUAL)))
+              Call(Eq(UploaderInterface::UploadReason::MANUAL)))
       .WillOnce(Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
         return TestUploader::SetUp(MANUAL_BATCH, &waiter, this)
             .Required(0, kData[0])
@@ -1170,7 +1171,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1191,7 +1192,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1210,7 +1211,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     test::TestCallbackAutoWaiter waiter;
     // Set uploader expectations.
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1231,7 +1232,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1251,7 +1252,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadWithConfirmations) {
     // Set uploader expectations.
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1274,7 +1275,7 @@ TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SECURITY, &waiter, this)
@@ -1289,7 +1290,7 @@ TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SECURITY, &waiter, this)
@@ -1305,7 +1306,7 @@ TEST_P(StorageTest, WriteAndRepeatedlySecurityUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SECURITY, &waiter, this)
@@ -1329,7 +1330,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1344,7 +1345,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1360,7 +1361,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUpload) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1385,7 +1386,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1399,7 +1400,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1414,7 +1415,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1437,7 +1438,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1452,7 +1453,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1468,7 +1469,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1489,7 +1490,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1505,7 +1506,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1526,7 +1527,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SLOW_BATCH, &waiter, this)
@@ -1545,7 +1546,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1564,7 +1565,7 @@ TEST_P(StorageTest, WriteAndRepeatedlyUploadMultipleQueues) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(SLOW_BATCH, &waiter, this)
@@ -1585,13 +1586,13 @@ TEST_P(StorageTest, WriteAndImmediateUploadWithFailure) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::IMMEDIATE_FLUSH)))
+                Call(Eq(UploaderInterface::UploadReason::IMMEDIATE_FLUSH)))
         .WillOnce(Invoke([](UploaderInterface::UploadReason reason) {
           return Status(error::UNAVAILABLE, "Test uploader unavailable");
         }))
         .RetiresOnSaturation();
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::FAILURE_RETRY)))
+                Call(Eq(UploaderInterface::UploadReason::FAILURE_RETRY)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(IMMEDIATE, &waiter, this)
@@ -1641,7 +1642,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1661,7 +1662,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1679,7 +1680,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1706,7 +1707,7 @@ TEST_P(StorageTest, ForceConfirm) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1759,7 +1760,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   // key. Make sure no uploads happen, and key is requested.
   key_delivery_failure_.store(false);
   EXPECT_CALL(set_mock_uploader_expectations_,
-              Call(Eq(UploaderInterface::KEY_DELIVERY)))
+              Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
       .WillOnce(Invoke([this](UploaderInterface::UploadReason) {
         return TestUploader::SetKeyDelivery(this).Complete();
       }))
@@ -1777,7 +1778,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)
@@ -1804,7 +1805,7 @@ TEST_P(StorageTest, KeyDeliveryFailureOnNewStorage) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::PERIODIC)))
+                Call(Eq(UploaderInterface::UploadReason::PERIODIC)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
               return TestUploader::SetUp(FAST_BATCH, &waiter, this)

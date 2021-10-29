@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_PUBLIC_MEDIA_SESSION_ITEM_PRODUCER_H_
 
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"

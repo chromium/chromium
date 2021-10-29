@@ -36,6 +36,10 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
       RenderFrameHost*,
       mojo::PendingReceiver<blink::mojom::PictureInPictureService>);
 
+  PictureInPictureServiceImpl(const PictureInPictureServiceImpl&) = delete;
+  PictureInPictureServiceImpl& operator=(const PictureInPictureServiceImpl&) =
+      delete;
+
   // PictureInPictureService implementation.
   void StartSession(
       uint32_t player_id,
@@ -55,8 +59,6 @@ class CONTENT_EXPORT PictureInPictureServiceImpl final
   ~PictureInPictureServiceImpl() override;
 
   PictureInPictureWindowControllerImpl& GetController();
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureServiceImpl);
 };
 
 }  // namespace content

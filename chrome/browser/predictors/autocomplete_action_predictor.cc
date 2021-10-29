@@ -214,9 +214,6 @@ AutocompleteActionPredictor::RecommendAction(
   UMA_HISTOGRAM_BOOLEAN("AutocompleteActionPredictor.MatchIsInDb", is_in_db);
 
   if (is_in_db) {
-    // Multiple enties with the same URL are fine as the confidence may be
-    // different.
-    tracked_urls_.push_back(std::make_pair(match.destination_url, confidence));
     UMA_HISTOGRAM_COUNTS_100("AutocompleteActionPredictor.Confidence",
                              confidence * 100);
   }
@@ -299,18 +296,14 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
         NoStatePrefetchStatus::kNotStarted);
   }
-  const std::u16string lower_user_text(base::i18n::ToLower(log.text));
+  UpdateDatabaseFromTransitionalMatches(opened_url);
+}
 
-  // Traverse transitional matches for those that have a user_text that is a
-  // prefix of |lower_user_text|.
+void AutocompleteActionPredictor::UpdateDatabaseFromTransitionalMatches(
+    const GURL& opened_url) {
   std::vector<AutocompleteActionPredictorTable::Row> rows_to_add;
   std::vector<AutocompleteActionPredictorTable::Row> rows_to_update;
-
   for (const TransitionalMatch& transitional_match : transitional_matches_) {
-    if (!base::StartsWith(lower_user_text, transitional_match.user_text,
-                          base::CompareCase::SENSITIVE))
-      continue;
-
     DCHECK_GE(transitional_match.user_text.length(), kMinimumUserTextLength);
     DCHECK_LE(transitional_match.user_text.length(), kMaximumStringLength);
     // Add entries to the database for those matches.
@@ -318,7 +311,7 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
       DCHECK_LE(url.spec().length(), kMaximumStringLength);
 
       const DBCacheKey key = {transitional_match.user_text, url};
-      const bool is_hit = (url == opened_url);
+      const bool is_hit = !opened_url.is_empty() && (url == opened_url);
 
       AutocompleteActionPredictorTable::Row row;
       row.user_text = key.user_text;
@@ -357,16 +350,6 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   }
 
   ClearTransitionalMatches();
-
-  // Check against tracked urls and log accuracy for the confidence we
-  // predicted.
-  for (const auto& url_and_confidence : tracked_urls_) {
-    if (opened_url == url_and_confidence.first) {
-      UMA_HISTOGRAM_COUNTS_100("AutocompleteActionPredictor.AccurateCount",
-                               url_and_confidence.second * 100);
-    }
-  }
-  tracked_urls_.clear();
 }
 
 void AutocompleteActionPredictor::DeleteAllRows() {

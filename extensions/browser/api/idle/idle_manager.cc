@@ -180,6 +180,13 @@ void IdleManager::SetThreshold(const std::string& extension_id, int threshold) {
   GetMonitor(extension_id)->threshold = threshold;
 }
 
+int IdleManager::GetThresholdForTest(const std::string& extension_id) const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  auto it = monitors_.find(extension_id);
+
+  return it == monitors_.end() ? kDefaultIdleThreshold : it->second.threshold;
+}
+
 base::TimeDelta IdleManager::GetAutoLockDelay() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 #if BUILDFLAG(IS_CHROMEOS_ASH)

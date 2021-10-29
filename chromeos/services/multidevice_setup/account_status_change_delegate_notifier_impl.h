@@ -62,6 +62,11 @@ class AccountStatusChangeDelegateNotifierImpl
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  AccountStatusChangeDelegateNotifierImpl(
+      const AccountStatusChangeDelegateNotifierImpl&) = delete;
+  AccountStatusChangeDelegateNotifierImpl& operator=(
+      const AccountStatusChangeDelegateNotifierImpl&) = delete;
+
   ~AccountStatusChangeDelegateNotifierImpl() override;
 
   void SetAccountStatusChangeDelegateRemote(
@@ -126,8 +131,6 @@ class AccountStatusChangeDelegateNotifierImpl
   HostDeviceTimestampManager* host_device_timestamp_manager_;
   OobeCompletionTracker* oobe_completion_tracker_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountStatusChangeDelegateNotifierImpl);
 };
 
 }  // namespace multidevice_setup

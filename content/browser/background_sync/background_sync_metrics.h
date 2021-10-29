@@ -39,6 +39,10 @@ class CONTENT_EXPORT BackgroundSyncMetrics {
     REGISTRATION_IS_DUPLICATE
   };
 
+  BackgroundSyncMetrics() = delete;
+  BackgroundSyncMetrics(const BackgroundSyncMetrics&) = delete;
+  BackgroundSyncMetrics& operator=(const BackgroundSyncMetrics&) = delete;
+
   // Records the start of a sync event.
   static void RecordEventStarted(blink::mojom::BackgroundSyncType sync_type,
                                  bool startedin_foreground);
@@ -88,9 +92,6 @@ class CONTENT_EXPORT BackgroundSyncMetrics {
   static void RecordEventsFiredFromWakeupTask(
       blink::mojom::BackgroundSyncType sync_type,
       bool fired_events);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BackgroundSyncMetrics);
 };
 
 }  // namespace content

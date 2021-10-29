@@ -59,6 +59,9 @@ class HistogramSynchronizer : public HistogramSubscriber {
   // if none.
   static HistogramSynchronizer* GetInstance();
 
+  HistogramSynchronizer(const HistogramSynchronizer&) = delete;
+  HistogramSynchronizer& operator=(const HistogramSynchronizer&) = delete;
+
   // Contact all processes, and get them to upload to the browser any/all
   // changes to histograms. This method is called from about:histograms.
   static void FetchHistograms();
@@ -143,8 +146,6 @@ class HistogramSynchronizer : public HistogramSubscriber {
   // The sequence number used by the most recent asynchronous update request to
   // contact all processes.
   int async_sequence_number_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramSynchronizer);
 };
 
 }  // namespace content

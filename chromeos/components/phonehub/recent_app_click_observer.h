@@ -24,4 +24,11 @@ class RecentAppClickObserver : public base::CheckedObserver {
 }  // namespace phonehub
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+namespace phonehub {
+using ::chromeos::phonehub::RecentAppClickObserver;
+}  // namespace phonehub
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_PHONEHUB_RECENT_APP_CLICK_OBSERVER_H_

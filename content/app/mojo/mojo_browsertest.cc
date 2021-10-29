@@ -14,15 +14,15 @@ class MojoTest : public ContentBrowserTest {
  public:
   MojoTest() {}
 
+  MojoTest(const MojoTest&) = delete;
+  MojoTest& operator=(const MojoTest&) = delete;
+
  protected:
   bool IsMojoInitialized() {
     // Check |MojoGetTimeTicksNow()| is accessible.
     MojoGetTimeTicksNow();
     return true;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoTest);
 };
 
 // Placeholder test to confirm we are initializing Mojo.

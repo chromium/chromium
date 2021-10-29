@@ -50,7 +50,7 @@ static_assert(
     sizeof(PartitionSuperPageExtentEntry<ThreadSafe>) <= kPageMetadataSize,
     "PartitionSuperPageExtentEntry must be able to fit in a metadata slot");
 static_assert(
-    kMaxSuperPages / kSuperPageSize <=
+    kMaxSuperPagesInPool / kSuperPageSize <=
         std::numeric_limits<
             decltype(PartitionSuperPageExtentEntry<
                      ThreadSafe>::number_of_consecutive_super_pages)>::max(),

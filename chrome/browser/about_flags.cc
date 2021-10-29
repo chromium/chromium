@@ -2659,12 +2659,17 @@ const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
 const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
     {"use_root_bookmark_as_default", "true"},
     {"reading_list_in_app_menu", "true"}};
+const FeatureEntry::FeatureParam kReadLaterAllowTypeSwapping[] = {
+    {"use_root_bookmark_as_default", "true"},
+    {"allow_bookmark_type_swapping", "true"}};
 
 const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
     {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
      base::size(kReadLaterUseRootBookmarkAsDefault), nullptr},
     {"(with app menu item)", kReadLaterInAppMenu,
-     base::size(kReadLaterInAppMenu), nullptr}};
+     base::size(kReadLaterInAppMenu), nullptr},
+    {"(allow type swapping)", kReadLaterAllowTypeSwapping,
+     base::size(kReadLaterAllowTypeSwapping), nullptr}};
 
 const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
     {"bookmark_visuals_enabled", "true"}};
@@ -2844,6 +2849,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-search-debug", flag_descriptions::kContextualSearchDebugName,
      flag_descriptions::kContextualSearchDebugDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextualSearchDebug)},
+    {"contextual-search-delayed-intelligence",
+     flag_descriptions::kContextualSearchDelayedIntelligenceName,
+     flag_descriptions::kContextualSearchDelayedIntelligenceDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kContextualSearchDelayedIntelligence)},
     {"contextual-search-force-caption",
      flag_descriptions::kContextualSearchForceCaptionName,
      flag_descriptions::kContextualSearchForceCaptionDescription, kOsAndroid,
@@ -3092,10 +3102,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"calendar-view", flag_descriptions::kCalendarViewName,
      flag_descriptions::kCalendarViewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCalendarView)},
-    {"cellular-allow-per-network-roaming",
-     flag_descriptions::kCellularAllowPerNetworkRoamingName,
-     flag_descriptions::kCellularAllowPerNetworkRoamingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kCellularAllowPerNetworkRoaming)},
     {"cellular-forbid-attach-apn",
      flag_descriptions::kCellularForbidAttachApnName,
      flag_descriptions::kCellularForbidAttachApnDescription, kOsCrOS,

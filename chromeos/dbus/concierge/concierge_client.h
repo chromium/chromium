@@ -76,6 +76,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
     virtual ~DiskImageObserver() = default;
   };
 
+  ConciergeClient(const ConciergeClient&) = delete;
+  ConciergeClient& operator=(const ConciergeClient&) = delete;
+
   // Adds an observer for monitoring Concierge service.
   virtual void AddObserver(Observer* observer) = 0;
   // Removes an observer if added.
@@ -304,9 +307,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
  protected:
   // Initialize() should be used instead.
   ConciergeClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConciergeClient);
 };
 
 }  // namespace chromeos

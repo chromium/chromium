@@ -85,6 +85,9 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Returns the global instance if initialized. May return null.
   static CrasAudioClient* Get();
 
+  CrasAudioClient(const CrasAudioClient&) = delete;
+  CrasAudioClient& operator=(const CrasAudioClient&) = delete;
+
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -235,9 +238,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   CrasAudioClient();
   virtual ~CrasAudioClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrasAudioClient);
 };
 
 }  // namespace chromeos

@@ -26,6 +26,9 @@ class MockIndexedDBCallbacks : public IndexedDBCallbacks {
   MockIndexedDBCallbacks();
   explicit MockIndexedDBCallbacks(bool expect_connection);
 
+  MockIndexedDBCallbacks(const MockIndexedDBCallbacks&) = delete;
+  MockIndexedDBCallbacks& operator=(const MockIndexedDBCallbacks&) = delete;
+
   void OnError(const IndexedDBDatabaseError& error) override;
 
   void OnSuccess() override;
@@ -67,8 +70,6 @@ class MockIndexedDBCallbacks : public IndexedDBCallbacks {
   base::OnceClosure call_on_upgrade_needed_;
   base::OnceClosure call_on_db_success_;
   base::RepeatingClosure call_on_info_success_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockIndexedDBCallbacks);
 };
 
 }  // namespace content

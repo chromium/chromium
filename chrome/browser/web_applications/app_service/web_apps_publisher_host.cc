@@ -243,8 +243,15 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
                                                     profile_),
         profile_);
     if (launch_params->intent->files.has_value()) {
-      for (const auto& file : launch_params->intent->files.value()) {
-        params.launch_files.push_back(file->file_path);
+      if (base::FeatureList::IsEnabled(
+              features::kDesktopPWAsFileHandlingSettingsGated)) {
+        // File handling may create the WebContents asynchronously.
+        // TODO(crbug/1261263): implement.
+        NOTIMPLEMENTED();
+      } else {
+        for (const auto& file : launch_params->intent->files.value()) {
+          params.launch_files.push_back(file->file_path);
+        }
       }
     }
     web_contents = publisher_helper().LaunchAppWithParams(std::move(params));

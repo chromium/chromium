@@ -110,6 +110,9 @@ class ShillToONCTranslator {
         field_translation_table_(field_translation_table),
         network_state_(network_state) {}
 
+  ShillToONCTranslator(const ShillToONCTranslator&) = delete;
+  ShillToONCTranslator& operator=(const ShillToONCTranslator&) = delete;
+
   // Translates the associated Shill dictionary and creates an ONC object of the
   // given signature.
   std::unique_ptr<base::DictionaryValue> CreateTranslatedONCObject();
@@ -193,8 +196,6 @@ class ShillToONCTranslator {
   const FieldTranslationEntry* field_translation_table_;
   std::unique_ptr<base::Value> onc_object_;
   const NetworkState* network_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShillToONCTranslator);
 };
 
 std::unique_ptr<base::DictionaryValue>
@@ -473,10 +474,9 @@ void ShillToONCTranslator::TranslateCellularWithState() {
     // Do not let any value for |::onc::cellular::kAllowRoaming| that was
     // translated using the device table override the value that was translated
     // using the cellular with state table.
-    // TODO(chadduffin): Remove when the
-    // |ash::features::kCellularAllowPerNetworkRoaming| feature flag has fully
-    // launched and |shill::kCellularAllowRoamingProperty| usage as a Shill
-    // device property is fully deprecated.
+    // TODO(crbug.com/1232818): Remove when
+    // |shill::kCellularAllowRoamingProperty| usage as a Shill device property
+    // is fully deprecated.
     if (onc_object_->FindKey(::onc::cellular::kAllowRoaming)) {
       nested_object->RemoveKey(::onc::cellular::kAllowRoaming);
     }

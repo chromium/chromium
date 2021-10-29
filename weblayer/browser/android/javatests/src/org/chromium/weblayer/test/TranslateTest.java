@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TestWebLayer;
@@ -75,6 +76,7 @@ public class TranslateTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1261207")
     public void testOverridingOfTargetLanguage() throws Exception {
         // Sanity-check that by default the infobar appears with the target language of the user's
         // locale.

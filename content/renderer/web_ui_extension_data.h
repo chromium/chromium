@@ -26,10 +26,17 @@ class WebUIExtensionData
   static void Create(RenderFrame* render_frame,
                      mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
                      mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  WebUIExtensionData() = delete;
+
   // TODO(dcheng): Why is this ctor public?
   explicit WebUIExtensionData(
       RenderFrame* render_frame,
       mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  WebUIExtensionData(const WebUIExtensionData&) = delete;
+  WebUIExtensionData& operator=(const WebUIExtensionData&) = delete;
+
   ~WebUIExtensionData() override;
 
   // Returns value for a given |key|. Will return an empty string if no such key
@@ -49,8 +56,6 @@ class WebUIExtensionData
   std::map<std::string, std::string> variable_map_;
 
   mojo::AssociatedRemote<mojom::WebUIHost> remote_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebUIExtensionData);
 };
 
 }  // namespace content

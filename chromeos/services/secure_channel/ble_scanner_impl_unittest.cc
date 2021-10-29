@@ -47,12 +47,13 @@ class FakeBluetoothDevice : public device::MockBluetoothDevice {
                    [](char character) { return character; });
   }
 
+  FakeBluetoothDevice(const FakeBluetoothDevice&) = delete;
+  FakeBluetoothDevice& operator=(const FakeBluetoothDevice&) = delete;
+
   const std::vector<uint8_t>* service_data() { return &service_data_vector_; }
 
  private:
   std::vector<uint8_t> service_data_vector_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothDevice);
 };
 
 std::vector<std::pair<ConnectionMedium, ConnectionRole>>

@@ -19,6 +19,11 @@ class CATransactionGPUCoordinator
  public:
   static scoped_refptr<CATransactionGPUCoordinator> Create(
       GpuProcessHost* host);
+
+  CATransactionGPUCoordinator(const CATransactionGPUCoordinator&) = delete;
+  CATransactionGPUCoordinator& operator=(const CATransactionGPUCoordinator&) =
+      delete;
+
   void HostWillBeDestroyed();
 
  private:
@@ -47,8 +52,6 @@ class CATransactionGPUCoordinator
 
   // Egregious state tracking to debug https://crbug.com/871430
   bool registered_as_observer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CATransactionGPUCoordinator);
 };
 
 }  // namespace content

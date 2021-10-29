@@ -98,6 +98,12 @@ class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate,
 };
 
 class PepperDeviceEnumerationHostHelperTest : public testing::Test {
+ public:
+  PepperDeviceEnumerationHostHelperTest(
+      const PepperDeviceEnumerationHostHelperTest&) = delete;
+  PepperDeviceEnumerationHostHelperTest& operator=(
+      const PepperDeviceEnumerationHostHelperTest&) = delete;
+
  protected:
   PepperDeviceEnumerationHostHelperTest()
       : ppapi_host_(&sink_, ppapi::PpapiPermissions()),
@@ -149,9 +155,6 @@ class PepperDeviceEnumerationHostHelperTest : public testing::Test {
   PepperDeviceEnumerationHostHelper device_enumeration_;
   base::test::SingleThreadTaskEnvironment
       task_environment_;  // required for async calls to work.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PepperDeviceEnumerationHostHelperTest);
 };
 
 }  // namespace

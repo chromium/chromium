@@ -218,7 +218,6 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/common/plugin_utils.h"
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck crbug.com/1125897
 #else
@@ -915,16 +914,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           render_frame, original_params);
     }
   } else {
-    // Flash is deprecated in M87 and removed in M88+. If a plugin uses flash,
-    // its status will be |PluginStatus::kNotFound|. If for some reason the
-    // status is different, we should not treat it as JavaScript plugin but
-    // return a deprecated message.
-    if (!ShouldUseJavaScriptSettingForPlugin(info)) {
-      return NonLoadablePluginPlaceholder::CreateFlashDeprecatedPlaceholder(
-                 render_frame, original_params)
-          ->plugin();
-    }
-
     // TODO(bauerb): This should be in content/.
     WebPluginParams params(original_params);
     for (const auto& mime_type : info.mime_types) {

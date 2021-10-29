@@ -61,6 +61,9 @@ class CONTENT_EXPORT VideoCaptureManager
       base::RepeatingCallback<void(const std::string&)> emit_log_message_cb,
       ScreenlockMonitor* monitor = nullptr);
 
+  VideoCaptureManager(const VideoCaptureManager&) = delete;
+  VideoCaptureManager& operator=(const VideoCaptureManager&) = delete;
+
   // AddVideoCaptureObserver() can be called only before any devices are opened.
   // RemoveAllVideoCaptureObservers() can be called only after all devices
   // are closed.
@@ -327,8 +330,6 @@ class CONTENT_EXPORT VideoCaptureManager
   // chosen based on UMA metrics. See https://crbug.com/1163105#c28
   base::TimeDelta idle_close_timeout_ = base::Seconds(15);
   base::OneShotTimer idle_close_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureManager);
 };
 
 }  // namespace content

@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
             params.page_url = app_contents->GetLastCommittedURL();
             params.link_url = target_url;
 
-            TestRenderViewContextMenu menu(app_contents->GetMainFrame(),
+            TestRenderViewContextMenu menu(*app_contents->GetMainFrame(),
                                            params);
             menu.Init();
             menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,

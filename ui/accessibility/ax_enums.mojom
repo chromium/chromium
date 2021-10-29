@@ -838,8 +838,8 @@ enum BoolAttribute {
   kTouchPassthrough = 20,
 };
 
-// Next version: 3
-// Next value: 20
+// Next version: 4
+// Next value: 21
 [Extensible, Stable, Uuid="6d1f823f-28a9-4263-bc4a-69fb19a4ef46"]
 enum IntListAttribute {
   [Default]kNone = 0,
@@ -860,10 +860,12 @@ enum IntListAttribute {
 
   // For static text. These int lists must be the same size; they represent
   // the start and end character offset of each marker. Examples of markers
-  // include spelling and grammar errors, and find-in-page matches.
+  // include spelling and grammar errors, highlights, and find-in-page matches.
   kMarkerTypes = 8,
   kMarkerStarts = 9,
   kMarkerEnds = 10,
+  // Types of the custom highlights (if any) (see |HighlightType|).
+  [MinVersion=3] kHighlightTypes = 20,
 
   // Caret bounds in screen coordinates - [left, top, width, height].
   [MinVersion=1] kCaretBounds = 16,
@@ -927,6 +929,13 @@ enum MarkerType {
   kActiveSuggestion = 16,
   kSuggestion = 32,
   kHighlight = 64,
+};
+
+enum HighlightType {
+  kNone = 0,
+  kHighlight = 1,
+  kSpellingError = 2,
+  kGrammarError = 3,
 };
 
 // Describes a move direction in the accessibility tree that is independent of

@@ -17,12 +17,13 @@ class CrOSTracingAgent : public tracing::BaseAgent {
  public:
   CrOSTracingAgent();
 
+  CrOSTracingAgent(const CrOSTracingAgent&) = delete;
+  CrOSTracingAgent& operator=(const CrOSTracingAgent&) = delete;
+
  private:
   friend std::default_delete<CrOSTracingAgent>;
 
   ~CrOSTracingAgent() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSTracingAgent);
 };
 
 }  // namespace content

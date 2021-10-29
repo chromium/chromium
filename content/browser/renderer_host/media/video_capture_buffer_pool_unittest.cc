@@ -55,6 +55,11 @@ static const int kTestBufferPoolSize = 3;
 // this test must live here and not in media/capture/video.
 class VideoCaptureBufferPoolTest
     : public testing::TestWithParam<media::VideoPixelFormat> {
+ public:
+  VideoCaptureBufferPoolTest(const VideoCaptureBufferPoolTest&) = delete;
+  VideoCaptureBufferPoolTest& operator=(const VideoCaptureBufferPoolTest&) =
+      delete;
+
  protected:
   // This is a generic Buffer tracker
   class Buffer {
@@ -110,9 +115,6 @@ class VideoCaptureBufferPoolTest
   base::test::SingleThreadTaskEnvironment task_environment_;
   int expected_dropped_id_;
   scoped_refptr<media::VideoCaptureBufferPool> pool_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureBufferPoolTest);
 };
 
 TEST_P(VideoCaptureBufferPoolTest, BufferPool) {

@@ -300,6 +300,16 @@ enum ProvisioningStep {
   kProvisioningComplete = 2,
 };
 
+// This must remain in sync with FinalizeStatus::Status in
+// //third_party/cros_system_api/dbus/rmad/rmad.proto.
+// See shimless_rma_mojom_traits.cc\h.
+enum FinalizationStatus {
+  kInProgress = 1,
+  kComplete = 2,
+  kFailedBlocking = 3,
+  kFailedNonBlocking = 4,
+};
+
 // Implemented by clients to receive errors from the rmad service.
 // rmad runs a lot of asynchronous processing and errors can occur at any time.
 interface ErrorObserver {
@@ -353,12 +363,10 @@ interface PowerCableStateObserver {
   OnPowerCableStateChanged(bool plugged_in);
 };
 
-// Implemented by clients to receive status of finalization (hardware
-// verification).
+// Implemented by clients to receive status of finalization progress.
 interface FinalizationObserver {
-  // OnHardwareVerificationResult is called to report if hardware verification
-  // succeeded or failed. With an optional error message for failures.
-  OnHardwareVerificationResult(bool is_compliant, string error_message);
+  // OnFinalizationUpdated is called to report progress of device finalization.
+  OnFinalizationUpdated(FinalizationStatus status, float progress);
 };
 
 // Enables clients in the webui to manage the RMA flow.
@@ -656,6 +664,6 @@ interface ShimlessRmaService {
   // The power cable state is needed to indicate if the device is ready for
   // battery cutoff.
   ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
-  // Registers an observer for completion of hardware finalization.
+  // Registers an observer for status of finalization.
   ObserveFinalizationStatus(pending_remote<FinalizationObserver> observer);
 };

@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 FakeFeatureStatusProvider::FakeFeatureStatusProvider()
@@ -29,4 +29,4 @@ FeatureStatus FakeFeatureStatusProvider::GetStatus() const {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

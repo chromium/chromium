@@ -19,11 +19,11 @@ class FakeWireMessage : public WireMessage {
  public:
   FakeWireMessage(const std::string& payload, const std::string& feature);
 
+  FakeWireMessage(const FakeWireMessage&) = delete;
+  FakeWireMessage& operator=(const FakeWireMessage&) = delete;
+
   // WireMessage:
   std::string Serialize() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeWireMessage);
 };
 
 }  // namespace secure_channel

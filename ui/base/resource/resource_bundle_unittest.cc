@@ -728,16 +728,14 @@ TEST_F(ResourceBundleImageTest, Lottie) {
             GetSupportedResourceScaleFactor(image_rep.scale()));
 
   // Requesting the 1.4x resource should return either the 1x or the 2x
-  // resource.
+  // resource, rasterized at a scale of exactly 1.4.
+  EXPECT_TRUE(image_skia->HasRepresentation(1.4f));
   image_rep = image_skia->GetRepresentation(1.4f);
   ResourceScaleFactor scale_factor =
       GetSupportedResourceScaleFactor(image_rep.scale());
   EXPECT_TRUE(scale_factor == ui::k100Percent ||
               scale_factor == ui::k200Percent);
-
-  // ImageSkia scales image if the one for the requested scale factor is not
-  // available.
-  EXPECT_EQ(1.4f, image_skia->GetRepresentation(1.4f).scale());
+  EXPECT_EQ(1.4f, image_rep.scale());
 }
 #endif
 

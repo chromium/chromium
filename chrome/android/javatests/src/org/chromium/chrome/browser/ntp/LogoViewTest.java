@@ -32,6 +32,7 @@ import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+/** Instrumentation tests for {@link LogoView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class LogoViewTest extends DummyUiChromeActivityTestCase {

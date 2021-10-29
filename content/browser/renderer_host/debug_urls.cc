@@ -55,22 +55,6 @@ const char kAsanCorruptHeapBlock[] = "/browser-corrupt-heap-block";
 const char kAsanCorruptHeap[] = "/browser-corrupt-heap";
 #endif
 
-void HandlePpapiFlashDebugURL(const GURL& url) {
-#if BUILDFLAG(ENABLE_PLUGINS)
-  bool crash = url == blink::kChromeUIPpapiFlashCrashURL;
-
-  std::vector<PpapiPluginProcessHost*> hosts;
-  PpapiPluginProcessHost::FindByName(base::UTF8ToUTF16(kFlashPluginName),
-                                     &hosts);
-  for (auto iter = hosts.begin(); iter != hosts.end(); ++iter) {
-    if (crash)
-      (*iter)->Send(new PpapiMsg_Crash());
-    else
-      (*iter)->Send(new PpapiMsg_Hang());
-  }
-#endif
-}
-
 bool IsAsanDebugURL(const GURL& url) {
   if (!(url.is_valid() && url.SchemeIs(kChromeUIScheme) &&
         url.DomainIs(kAsanCrashDomain) && url.has_path())) {
@@ -209,13 +193,6 @@ bool HandleDebugURL(const GURL& url,
                                if (host)
                                  host->gpu_service()->Hang();
                              }));
-    return true;
-  }
-
-  if (url == blink::kChromeUIPpapiFlashCrashURL ||
-      url == blink::kChromeUIPpapiFlashHangURL) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&HandlePpapiFlashDebugURL, url));
     return true;
   }
 

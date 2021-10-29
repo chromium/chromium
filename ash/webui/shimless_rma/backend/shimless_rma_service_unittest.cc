@@ -2736,15 +2736,15 @@ TEST_F(ShimlessRmaServiceTest, ObservePowerCableStateAfterSignal) {
 class FakeFinalizationObserver : public mojom::FinalizationObserver {
  public:
   struct Observation {
-    bool is_compliant;
-    std::string error_message;
+    rmad::FinalizeStatus::Status status;
+    float progress;
   };
 
-  void OnHardwareVerificationResult(bool is_compliant,
-                                    const std::string& error_message) override {
+  void OnFinalizationUpdated(rmad::FinalizeStatus::Status status,
+                             float progress) override {
     Observation observation;
-    observation.is_compliant = is_compliant;
-    observation.error_message = error_message;
+    observation.status = status;
+    observation.progress = progress;
     observations.push_back(observation);
   }
 
@@ -2757,23 +2757,27 @@ TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
   shimless_rma_provider_->ObserveFinalizationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  fake_rmad_client_()->TriggerFinalizationProgressObservation(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+  EXPECT_EQ(fake_observer.observations[0].status,
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS);
+  EXPECT_EQ(fake_observer.observations[0].progress, 0.5f);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveFinalizationAfterSignal) {
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  fake_rmad_client_()->TriggerFinalizationProgressObservation(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING, 0.75);
   FakeFinalizationObserver fake_observer;
   shimless_rma_provider_->ObserveFinalizationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+  EXPECT_EQ(fake_observer.observations[0].status,
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING);
+  EXPECT_EQ(fake_observer.observations[0].progress, 0.75f);
 }
 
 }  // namespace shimless_rma

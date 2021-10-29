@@ -44,8 +44,12 @@ class FileManagerApp {
    * the files app foreground scripts.
    */
   async run() {
-    const win = await promisify(chrome.windows.getCurrent);
-    window.appID = win.id;
+    try {
+      const win = await promisify(chrome.windows.getCurrent);
+      window.appID = win.id;
+    } catch (e) {
+      console.warn('Failed to get the app ID', e);
+    }
 
     await new ScriptLoader('file_manager_fakes.js', {type: 'module'}).load();
 

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Stores system information for Eche app.
@@ -42,6 +42,13 @@ class SystemInfo {
   std::string board_name_;
 };
 
+}  // namespace eche_app
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace eche_app {
+using ::ash::eche_app::SystemInfo;
 }  // namespace eche_app
 }  // namespace chromeos
 

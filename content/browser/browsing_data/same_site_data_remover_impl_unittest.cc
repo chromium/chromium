@@ -79,6 +79,10 @@ class SameSiteDataRemoverImplTest : public testing::Test {
             std::make_unique<SameSiteDataRemoverImpl>(browser_context_.get())) {
   }
 
+  SameSiteDataRemoverImplTest(const SameSiteDataRemoverImplTest&) = delete;
+  SameSiteDataRemoverImplTest& operator=(const SameSiteDataRemoverImplTest&) =
+      delete;
+
   void TearDown() override { browser_context_.reset(); }
 
   SameSiteDataRemoverImpl* GetSameSiteDataRemoverImpl() {
@@ -117,8 +121,6 @@ class SameSiteDataRemoverImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<SameSiteDataRemoverImpl> same_site_remover_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverImplTest);
 };
 
 TEST_F(SameSiteDataRemoverImplTest, TestRemoveSameSiteNoneCookies) {

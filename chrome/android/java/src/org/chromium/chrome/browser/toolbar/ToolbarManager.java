@@ -911,8 +911,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mToolbar.setIncognitoStateProvider(mIncognitoStateProvider);
 
         ChromeAccessibilityUtil.get().addObserver(this);
-        mLocationBarModel.setShouldShowOmniboxInOverviewMode(
-                ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
+        mLocationBarModel.setShouldShowOmniboxInOverviewMode(mIsStartSurfaceEnabled);
 
         mFindToolbarManager = findToolbarManager;
         mFindToolbarManager.addObserver(mFindToolbarObserver);
@@ -922,7 +921,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
             mStartSurface = startSurface;
             mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-                assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+                assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
                 mStartSurfaceState = newState;
                 mToolbar.updateStartSurfaceToolbarState(newState, shouldShowToolbar, toolbarHeight);
 
@@ -934,7 +933,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mStartSurface.addStateChangeObserver(mStartSurfaceStateObserver);
 
             mStartSurfaceHeaderOffsetChangeListener = (appbarLayout, verticalOffset) -> {
-                assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+                assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
                 mToolbar.onStartSurfaceHeaderOffsetChanged(verticalOffset, toolbarHeight);
             };
             mStartSurface.addHeaderOffsetChangeListener(mStartSurfaceHeaderOffsetChangeListener);
@@ -1025,7 +1024,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mHomepageStateListener.onHomepageStateUpdated();
 
         if (toolbarLayout instanceof ToolbarPhone
-                && ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
+                && ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity)) {
             identityDiscController.addObserver(
                     (canShowHint) -> mIdentityDiscStateSupplier.set(canShowHint));
         }
@@ -1063,7 +1062,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // Without this check, ToolbarPhone#computeVisualState may return
             // VisualState.NEW_TAB_NORMAL even if it's in start surface homepage, which leads
             // ToolbarPhone#getToolbarColorForVisualState to return transparent color.
-            if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
+            if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity)
                     && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                 return false;
             }

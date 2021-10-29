@@ -45,14 +45,15 @@ class NoTransferRequestDelegate : public WebContentsDelegate {
  public:
   NoTransferRequestDelegate() {}
 
+  NoTransferRequestDelegate(const NoTransferRequestDelegate&) = delete;
+  NoTransferRequestDelegate& operator=(const NoTransferRequestDelegate&) =
+      delete;
+
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
       bool is_main_frame_navigation) override {
     // Intentionally cancel the transfer.
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoTransferRequestDelegate);
 };
 
 class CrossSiteTransferTest : public ContentBrowserTest {

@@ -354,7 +354,7 @@ const base::Feature kServiceWorkerUpdateDelay{
 // Enable the use of Speculation Rules in access the private prefetch proxy
 // (chrome/browser/prefetch/prefetch_proxy/).
 // https://crbug.com/1190167
-const base::Feature kSpeculationRulesPrefetchProxy{
+const base::Feature kSpeculationRulesPrefetchProxy {
   "SpeculationRulesPrefetchProxy",
 #if defined(OS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -642,7 +642,7 @@ const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
 // TODO(crbug.com/920069): Remove this once the feature has
 // landed and no compat issues are reported.
 const base::Feature kOffsetParentNewSpecBehavior{
-    "OffsetParentNewSpecBehavior", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OffsetParentNewSpecBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Slightly delays rendering if there are fonts being preloaded, so that
 // they don't miss the first paint if they can be loaded fast enough (e.g.,
@@ -1105,6 +1105,20 @@ const base::Feature kDeprecationWillLogToConsole{
     "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDeprecationWillLogToDevToolsIssue{
     "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables reporting and web-exposure (respectively) of the time the first frame
+// of an animated image was painted.
+const base::Feature kLCPAnimatedImagesReporting{
+    "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Throws when `kWebSQLInThirdPartyContextEnabled` is disabled.
+const base::Feature kWebSQLInThirdPartyContextThrowsWhenDisabled{
+    "WebSQLInThirdPartyContextThrowsWhenDisabled",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// https://blog.whatwg.org/newline-normalizations-in-form-submission
+const base::Feature kLateFormNewlineNormalization{
+    "LateFormNewlineNormalization", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

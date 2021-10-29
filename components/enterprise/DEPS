@@ -5,6 +5,7 @@ include_rules = [
   "+components/safe_browsing/core/common/proto",
   "+components/strings/grit",
   "+components/version_info",
+  "+crypto/sha2.h",
   "+net",
   "+services/network/public",
   "+third_party/protobuf"

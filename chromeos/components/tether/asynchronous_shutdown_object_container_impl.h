@@ -69,6 +69,11 @@ class AsynchronousShutdownObjectContainerImpl
     static Factory* factory_instance_;
   };
 
+  AsynchronousShutdownObjectContainerImpl(
+      const AsynchronousShutdownObjectContainerImpl&) = delete;
+  AsynchronousShutdownObjectContainerImpl& operator=(
+      const AsynchronousShutdownObjectContainerImpl&) = delete;
+
   ~AsynchronousShutdownObjectContainerImpl() override;
 
   // AsynchronousShutdownObjectContainer:
@@ -110,8 +115,6 @@ class AsynchronousShutdownObjectContainerImpl
 
   // Not set until Shutdown() is invoked.
   base::OnceClosure shutdown_complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainerImpl);
 };
 
 }  // namespace tether

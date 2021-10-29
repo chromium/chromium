@@ -572,8 +572,9 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Saves network transaction info using |transaction|.
   void SaveNetworkTransactionInfo(const HttpTransaction& transaction);
 
-  // Disables caching for large content when running on battery.
-  bool ShouldDisableCaching(const HttpResponseHeaders* headers) const;
+  // Determines whether caching should be disabled for a response, given its
+  // headers.
+  bool ShouldDisableCaching(const HttpResponseHeaders& headers) const;
 
   State next_state_;
 

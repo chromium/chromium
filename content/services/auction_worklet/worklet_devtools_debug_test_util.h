@@ -5,6 +5,7 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_DEVTOOLS_DEBUG_TEST_UTIL_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_DEVTOOLS_DEBUG_TEST_UTIL_H_
 
+#include <list>
 #include <string>
 
 #include "base/callback.h"

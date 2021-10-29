@@ -43,6 +43,9 @@ using ProtoCalibrationOverallStatus = rmad::CalibrationOverallStatus;
 using MojomCalibrationStatus = ash::shimless_rma::mojom::CalibrationStatus;
 using ProtoCalibrationStatus =
     rmad::CalibrationComponentStatus_CalibrationStatus;
+
+using MojomFinalizationStatus = ash::shimless_rma::mojom::FinalizationStatus;
+using ProtoFinalizationStatus = rmad::FinalizeStatus_Status;
 }  // namespace
 
 // The rmad state does not map 1:1 with UI app state, the UI handles more states
@@ -797,6 +800,50 @@ bool EnumTraits<MojomCalibrationStatus, ProtoCalibrationStatus>::FromMojom(
       return true;
     case MojomCalibrationStatus::kCalibrationSkip:
       *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static// static
+MojomFinalizationStatus
+EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::ToMojom(
+    ProtoFinalizationStatus step) {
+  switch (step) {
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS:
+      return MojomFinalizationStatus::kInProgress;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE:
+      return MojomFinalizationStatus::kComplete;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING:
+      return MojomFinalizationStatus::kFailedBlocking;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING:
+      return MojomFinalizationStatus::kFailedNonBlocking;
+
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_UNKNOWN:
+    default:
+      NOTREACHED();
+      return MojomFinalizationStatus::kInProgress;
+  }
+  NOTREACHED();
+  return MojomFinalizationStatus::kInProgress;
+}
+
+bool EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::FromMojom(
+    MojomFinalizationStatus step,
+    ProtoFinalizationStatus* out) {
+  switch (step) {
+    case MojomFinalizationStatus::kInProgress:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS;
+      return true;
+    case MojomFinalizationStatus::kComplete:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE;
+      return true;
+    case MojomFinalizationStatus::kFailedBlocking:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING;
+      return true;
+    case MojomFinalizationStatus::kFailedNonBlocking:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING;
       return true;
   }
   NOTREACHED();

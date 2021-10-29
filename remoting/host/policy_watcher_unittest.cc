@@ -326,6 +326,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetBoolKey(key::kRemoteAccessHostAllowGnubbyAuth, true);
     dict.SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                     false);
+    dict.SetInteger(key::kRemoteAccessHostClipboardSizeBytes, -1);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     dict.SetBoolKey(key::kRemoteAccessHostAllowFileTransfer, true);
     dict.SetBoolKey(key::kRemoteAccessHostEnableUserInterface, true);
@@ -764,6 +765,13 @@ TEST_F(PolicyWatcherTest, SchemaTypeCheck) {
       schema->GetKnownProperty("RemoteAccessHostUdpPortRange");
   EXPECT_TRUE(string_schema.valid());
   EXPECT_EQ(string_schema.type(), base::Value::Type::STRING);
+
+  // Check one, random "integer" policy to see if the type propagated correctly
+  // from policy_templates.json file.
+  const policy::Schema int_schema =
+      schema->GetKnownProperty("RemoteAccessHostClipboardSizeBytes");
+  EXPECT_TRUE(int_schema.valid());
+  EXPECT_EQ(int_schema.type(), base::Value::Type::INTEGER);
 
   // And check one, random "boolean" policy to see if the type propagated
   // correctly from policy_templates.json file.

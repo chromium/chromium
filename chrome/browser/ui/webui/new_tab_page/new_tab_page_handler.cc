@@ -67,12 +67,15 @@ new_tab_page::mojom::ThemePtr MakeTheme(
     const ui::ThemeProvider* theme_provider,
     ThemeService* theme_service,
     NtpCustomBackgroundService* ntp_custom_background_service) {
+  if (ntp_custom_background_service) {
+    ntp_custom_background_service->RefreshBackgroundIfNeeded();
+  }
   auto theme = new_tab_page::mojom::Theme::New();
   auto most_visited = most_visited::mojom::MostVisitedTheme::New();
   auto custom_background =
       ntp_custom_background_service
           ? ntp_custom_background_service->GetCustomBackground()
-          : absl::optional<CustomBackground>();
+          : absl::nullopt;
   theme->is_default = theme_service->UsingDefaultTheme();
   theme->background_color =
       theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);

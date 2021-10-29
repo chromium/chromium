@@ -194,6 +194,9 @@ class MockCallbacks : public IndexedDBCallbacks {
                            mojo::NullAssociatedRemote(),
                            base::ThreadTaskRunnerHandle::Get()) {}
 
+  MockCallbacks(const MockCallbacks&) = delete;
+  MockCallbacks& operator=(const MockCallbacks&) = delete;
+
   void OnBlocked(int64_t existing_version) override { blocked_called_ = true; }
   void OnSuccess(int64_t result) override { success_called_ = true; }
   void OnError(const IndexedDBDatabaseError& error) override {
@@ -210,8 +213,6 @@ class MockCallbacks : public IndexedDBCallbacks {
   bool blocked_called_ = false;
   bool success_called_ = false;
   bool error_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCallbacks);
 };
 
 }  // namespace
@@ -464,6 +465,11 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
         commit_success_(leveldb::Status::OK()),
         factory_(std::make_unique<MockIndexedDBFactory>()) {}
 
+  IndexedDBDatabaseOperationTest(const IndexedDBDatabaseOperationTest&) =
+      delete;
+  IndexedDBDatabaseOperationTest& operator=(
+      const IndexedDBDatabaseOperationTest&) = delete;
+
   void SetUp() override {
     backing_store_ = std::make_unique<IndexedDBFakeBackingStore>();
     std::unique_ptr<FakeIndexedDBMetadataCoding> metadata_coding =
@@ -555,8 +561,6 @@ class IndexedDBDatabaseOperationTest : public testing::Test {
 
  private:
   std::unique_ptr<MockIndexedDBFactory> factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDatabaseOperationTest);
 };
 
 TEST_F(IndexedDBDatabaseOperationTest, CreateObjectStore) {
@@ -604,8 +608,10 @@ class IndexedDBDatabaseOperationAbortTest
     commit_success_ = leveldb::Status::NotFound("Bummer.");
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDatabaseOperationAbortTest);
+  IndexedDBDatabaseOperationAbortTest(
+      const IndexedDBDatabaseOperationAbortTest&) = delete;
+  IndexedDBDatabaseOperationAbortTest& operator=(
+      const IndexedDBDatabaseOperationAbortTest&) = delete;
 };
 
 TEST_F(IndexedDBDatabaseOperationAbortTest, CreateObjectStore) {

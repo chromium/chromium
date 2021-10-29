@@ -193,14 +193,16 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(
     int32_t event_flags,
     apps::mojom::IntentPtr intent,
     apps::mojom::LaunchSource launch_source,
-    apps::mojom::WindowInfoPtr window_info) {
-  auto* tab = LaunchAppWithIntentImpl(app_id, event_flags, std::move(intent),
-                                      launch_source, std::move(window_info));
+    apps::mojom::WindowInfoPtr window_info,
+    LaunchAppWithIntentCallback callback) {
+  content::WebContents* web_contents = LaunchAppWithIntentImpl(
+      app_id, event_flags, std::move(intent), launch_source,
+      std::move(window_info), std::move(callback));
 
-  if (launch_source == apps::mojom::LaunchSource::kFromArc && tab) {
-    // Add a flag to remember this tab originated in the ARC context.
-    tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
-                     std::make_unique<arc::ArcWebContentsData>());
+  if (launch_source == apps::mojom::LaunchSource::kFromArc && web_contents) {
+    // Add a flag to remember this web_contents originated in the ARC context.
+    web_contents->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,
+                              std::make_unique<arc::ArcWebContentsData>());
   }
 }
 

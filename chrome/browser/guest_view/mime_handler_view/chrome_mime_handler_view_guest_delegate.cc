@@ -20,14 +20,16 @@ ChromeMimeHandlerViewGuestDelegate::~ChromeMimeHandlerViewGuestDelegate() {
 }
 
 bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
-    content::WebContents* web_contents,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host);
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(web_contents);
   DCHECK(menu_delegate);
 
   std::unique_ptr<RenderViewContextMenuBase> menu = menu_delegate->BuildMenu(
-      web_contents,
+      render_frame_host,
       AddContextMenuParamsPropertiesFromPreferences(web_contents, params));
   menu_delegate->ShowMenu(std::move(menu));
   return true;

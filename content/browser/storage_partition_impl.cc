@@ -765,6 +765,11 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
       bool corb_enabled)
       : storage_partition_(storage_partition), corb_enabled_(corb_enabled) {}
 
+  URLLoaderFactoryForBrowserProcess(const URLLoaderFactoryForBrowserProcess&) =
+      delete;
+  URLLoaderFactoryForBrowserProcess& operator=(
+      const URLLoaderFactoryForBrowserProcess&) = delete;
+
   // mojom::URLLoaderFactory implementation:
 
   void CreateLoaderAndStart(
@@ -809,8 +814,6 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
 
   StoragePartitionImpl* storage_partition_;
   const bool corb_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForBrowserProcess);
 };
 
 // Static.
@@ -876,6 +879,11 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
            !storage_origin_->GetURL().is_empty());
   }
 
+  QuotaManagedDataDeletionHelper(const QuotaManagedDataDeletionHelper&) =
+      delete;
+  QuotaManagedDataDeletionHelper& operator=(
+      const QuotaManagedDataDeletionHelper&) = delete;
+
   void IncrementTaskCountOnIO();
   void DecrementTaskCountOnIO();
 
@@ -905,8 +913,6 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   absl::optional<url::Origin> storage_origin_;
   base::OnceClosure callback_;
   int task_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaManagedDataDeletionHelper);
 };
 
 // Helper for deleting all sorts of data from a partition, keeps track of

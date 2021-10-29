@@ -28,6 +28,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_WM) DesksHelper {
   // But window must be passed to get DesksHelper when called from lacros.
   static DesksHelper* Get(aura::Window* window);
 
+  DesksHelper(const DesksHelper&) = delete;
+  DesksHelper& operator=(const DesksHelper&) = delete;
+
   // Returns true if |window| exists on the currently active desk.
   virtual bool BelongsToActiveDesk(aura::Window* window) = 0;
 
@@ -48,9 +51,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_WM) DesksHelper {
  protected:
   DesksHelper();
   virtual ~DesksHelper();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DesksHelper);
 };
 
 }  // namespace chromeos

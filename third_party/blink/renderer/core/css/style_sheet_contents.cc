@@ -85,6 +85,8 @@ StyleSheetContents::StyleSheetContents(const CSSParserContext* context,
 StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
     : owner_rule_(nullptr),
       original_url_(o.original_url_),
+      pre_import_layer_statement_rules_(
+          o.pre_import_layer_statement_rules_.size()),
       import_rules_(o.import_rules_.size()),
       namespace_rules_(o.namespace_rules_.size()),
       child_rules_(o.child_rules_.size()),
@@ -100,6 +102,11 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
       has_single_owner_document_(true),
       is_used_from_text_cache_(false),
       parser_context_(o.parser_context_) {
+  for (unsigned i = 0; i < pre_import_layer_statement_rules_.size(); ++i) {
+    pre_import_layer_statement_rules_[i] = To<StyleRuleLayerStatement>(
+        o.pre_import_layer_statement_rules_[i]->Copy());
+  }
+
   // FIXME: Copy import rules.
   DCHECK(o.import_rules_.IsEmpty());
 
@@ -201,6 +208,11 @@ void StyleSheetContents::SetHasMediaQueries() {
 StyleRuleBase* StyleSheetContents::RuleAt(unsigned index) const {
   SECURITY_DCHECK(index < RuleCount());
 
+  if (index < pre_import_layer_statement_rules_.size())
+    return pre_import_layer_statement_rules_[index].Get();
+
+  index -= pre_import_layer_statement_rules_.size();
+
   if (index < import_rules_.size())
     return import_rules_[index].Get();
 
@@ -215,10 +227,12 @@ StyleRuleBase* StyleSheetContents::RuleAt(unsigned index) const {
 }
 
 unsigned StyleSheetContents::RuleCount() const {
-  return import_rules_.size() + namespace_rules_.size() + child_rules_.size();
+  return pre_import_layer_statement_rules_.size() + import_rules_.size() +
+         namespace_rules_.size() + child_rules_.size();
 }
 
 void StyleSheetContents::ClearRules() {
+  pre_import_layer_statement_rules_.clear();
   for (unsigned i = 0; i < import_rules_.size(); ++i) {
     DCHECK_EQ(import_rules_.at(i)->ParentStyleSheet(), this);
     import_rules_[i]->ClearParentStyleSheet();
@@ -232,6 +246,30 @@ bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
                                            unsigned index) {
   DCHECK(is_mutable_);
   SECURITY_DCHECK(index <= RuleCount());
+
+  // If the sheet starts with empty layer statements without any import or
+  // namespace rules, we should be able to insert any rule before and between
+  // the empty layer statements. To support this case, we move any existing
+  // empty layer statement to child_rules_ first.
+  if (pre_import_layer_statement_rules_.size() && !import_rules_.size() &&
+      !namespace_rules_.size()) {
+    child_rules_.PrependVector(pre_import_layer_statement_rules_);
+    pre_import_layer_statement_rules_.clear();
+  }
+
+  if (index < pre_import_layer_statement_rules_.size() ||
+      (index == pre_import_layer_statement_rules_.size() &&
+       rule->IsLayerStatementRule())) {
+    // Empty layer statements before import rules should be a continuous block.
+    auto* layer_statement_rule = DynamicTo<StyleRuleLayerStatement>(rule);
+    if (!layer_statement_rule)
+      return false;
+
+    pre_import_layer_statement_rules_.insert(index, layer_statement_rule);
+    return true;
+  }
+
+  index -= pre_import_layer_statement_rules_.size();
 
   if (index < import_rules_.size() ||
       (index == import_rules_.size() && rule->IsImportRule())) {
@@ -292,6 +330,12 @@ bool StyleSheetContents::WrapperInsertRule(StyleRuleBase* rule,
 bool StyleSheetContents::WrapperDeleteRule(unsigned index) {
   DCHECK(is_mutable_);
   SECURITY_DCHECK(index < RuleCount());
+
+  if (index < pre_import_layer_statement_rules_.size()) {
+    pre_import_layer_statement_rules_.EraseAt(index);
+    return true;
+  }
+  index -= pre_import_layer_statement_rules_.size();
 
   if (index < import_rules_.size()) {
     import_rules_[index]->ClearParentStyleSheet();

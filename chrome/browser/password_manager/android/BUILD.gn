@@ -24,6 +24,7 @@ if (enable_chrome_android_internal) {
     ]
 
     sources = [
+      "android_backend_error.cc",
       "android_backend_error.h",
       "password_store_android_backend.cc",
       "password_store_android_backend.h",
@@ -116,6 +117,7 @@ junit_binary("password_manager_junit_tests") {
   deps = [
     ":android_backend_java_enums",
     ":java",
+    "$google_play_services_package:google_play_services_basement_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

@@ -2664,6 +2664,9 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TAB_SWITCHER_NO_LOCAL_NON_INCOGNITO_TABS_TITLE" desc="Title explaining that there are no opened tabs. [iOS only]">
         No Open Tabs
       </message>
+      <message name="IDS_IOS_TAB_SWITCHER_PRICE_CARD" desc="Acessibility label to describe the UI which displays a price drop in the Tab Switching UI when it is identified. [iOS only]">
+        Now <ph name="PRICE">$1<ex>$42</ex></ph> was <ph name="PREVIOUS_PRICE">$2<ex>$50</ex></ph>.
+      </message>
       <message name="IDS_IOS_TAB_SWITCHER_SYNC_IN_PROGRESS_PROMO" desc="Label explaining that the tabs are currently being synced. [iOS only]">
         Syncing your tabs...
       </message>

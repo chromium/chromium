@@ -53,7 +53,7 @@ class ExtensionOptionsGuest
       content::WebContents* source,
       const content::OpenURLParams& params) final;
   void CloseContents(content::WebContents* source) final;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
   bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,

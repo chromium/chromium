@@ -2043,9 +2043,14 @@ IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest, InspectSharedWorker) {
   CloseDevToolsWindow();
 }
 
-// Flaky on multiple platforms. See http://crbug.com/432444
+// Flaky on multiple platforms. See http://crbug.com/1263230
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_PauseInSharedWorkerInitialization DISABLED_PauseInSharedWorkerInitialization
+#else
+#define MAYBE_PauseInSharedWorkerInitialization PauseInSharedWorkerInitialization
+#endif
 IN_PROC_BROWSER_TEST_F(WorkerDevToolsTest,
-                       PauseInSharedWorkerInitialization) {
+                       MAYBE_PauseInSharedWorkerInitialization) {
   GURL url = embedded_test_server()->GetURL(kReloadSharedWorkerTestPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 

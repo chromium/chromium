@@ -34,6 +34,12 @@ const size_t kNumTestDevices = 2;
 
 class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
     : public ::testing::Test {
+ public:
+  MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest(
+      const MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest&) = delete;
+  MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest& operator=(
+      const MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest&) = delete;
+
  protected:
   MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest()
       : test_devices_(
@@ -208,9 +214,6 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
 
   std::unique_ptr<GrandfatheredEasyUnlockHostDisabler>
       grandfathered_easy_unlock_host_disabler_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest);
 };
 
 // Situation #1:

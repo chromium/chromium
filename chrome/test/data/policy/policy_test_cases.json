@@ -518,70 +518,73 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostClientDomain": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostClientDomainList": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostFirewallTraversal": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostRequireTwoFactor": {
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostDomain": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostDomainList": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTalkGadgetPrefix": {
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostRequireCurtain": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowClientPairing": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowGnubbyAuth": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowRelayedConnection": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostUdpPortRange": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostMatchUsername": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTokenUrl": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTokenValidationUrl": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostTokenValidationCertificateIssuer": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostDebugOverridePolicies": {
     "reason_for_missing_test": "Policy was removed"
   },
   "RemoteAccessHostAllowUiAccessForRemoteAssistance": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowFileTransfer": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostEnableUserInterface": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostAllowRemoteAccessConnections": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "RemoteAccessHostMaximumSessionDurationMinutes": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
+  },
+  "RemoteAccessHostClipboardSizeBytes": {
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
   "PrintingEnabled": {
     "os": [
@@ -1605,7 +1608,59 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "ForceYouTubeSafetyMode": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "linux",
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "If only the deprecated ForceYouTubeSafetyMode policy is set, but not ForceYouTubeRestrict, set to Moderate (1).",
+        "policies": {
+          "ForceYouTubeSafetyMode": true
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "ForceYouTubeRestrict overrides deprecated ForceYouTubeSafetyMode when it is less strict.",
+        "policies": {
+          "ForceYouTubeSafetyMode": true,
+          "ForceYouTubeRestrict": 0
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "ForceYouTubeRestrict overrides deprecated ForceYouTubeSafetyMode when it is more strict.",
+        "policies": {
+          "ForceYouTubeSafetyMode": true,
+          "ForceYouTubeRestrict": 2
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 2
+          }
+        }
+      }
+    ]
   },
   "ForceYouTubeRestrict": {
     "os": [
@@ -1617,11 +1672,21 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "default_value": 0
+          }
+        }
+      },
+      {
         "policies": {
           "ForceYouTubeRestrict": 1
         },
         "prefs": {
-          "settings.force_youtube_restrict": {}
+          "settings.force_youtube_restrict": {
+            "value": 1
+          }
         }
       }
     ]
@@ -9167,7 +9232,88 @@
     ]
   },
   "ManagedBookmarks": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "linux",
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "bookmarks.managed_bookmarks_folder_name": {
+            "default_value": ""
+          },
+          "bookmarks.managed_bookmarks": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Managed bookmarks together with folder name.",
+        "policies": {
+          "ManagedBookmarks": [
+            {
+              "toplevel_name": "My managed bookmarks folder"
+            },
+            {
+              "name": "Google",
+              "url": "google.com"
+            },
+            {
+              "name": "Youtube",
+              "url": "youtube.com"
+            },
+            {
+              "name": "Chrome links",
+              "children": [
+                {
+                  "name": "Chromium",
+                  "url": "chromium.org"
+                },
+                {
+                  "name": "Chromium Developers",
+                  "url": "dev.chromium.org"
+                }
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "bookmarks.managed_bookmarks_folder_name": {
+            "value": "My managed bookmarks folder"
+          },
+          "bookmarks.managed_bookmarks": {
+            "value": [
+              {
+                "name": "Google",
+                "url": "http://google.com/"
+              },
+              {
+                "name": "Youtube",
+                "url": "http://youtube.com/"
+              },
+              {
+                "name": "Chrome links",
+                "children": [
+                  {
+                    "name": "Chromium",
+                    "url": "http://chromium.org/"
+                  },
+                  {
+                    "name": "Chromium Developers",
+                    "url": "http://dev.chromium.org/"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    ]
   },
   "FullscreenAllowed": {
     "os": [
@@ -11942,7 +12088,49 @@
     "reason_for_missing_test": "Policy was removed"
   },
   "PasswordProtectionWarningTrigger": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check the default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.password_protection_warning_trigger": {
+            "location": "user_profile",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: 1",
+        "policies": {
+          "PasswordProtectionWarningTrigger": 1
+        },
+        "prefs": {
+          "safebrowsing.password_protection_warning_trigger": {
+            "location": "user_profile",
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: 2",
+        "policies": {
+          "PasswordProtectionWarningTrigger": 2
+        },
+        "prefs": {
+          "safebrowsing.password_protection_warning_trigger": {
+            "location": "user_profile",
+            "value": 2
+          }
+        }
+      }
+    ]
   },
   "DeviceOffHours": {
     "reason_for_missing_test": "Maps into CrosSettings"
@@ -12274,10 +12462,72 @@
     ]
   },
   "PasswordProtectionLoginURLs": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.password_protection_login_urls": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "PasswordProtectionLoginURLs": [
+            "https://mydomain.com/login.html",
+            "https://login.mydomain.com"
+          ]
+        },
+        "prefs": {
+          "safebrowsing.password_protection_login_urls": {
+            "value": [
+              "https://mydomain.com/login.html",
+              "https://login.mydomain.com"
+            ]
+          }
+        }
+      }
+    ]
   },
   "PasswordProtectionChangePasswordURL": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.password_protection_change_password_url": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "PasswordProtectionChangePasswordURL": "https://mydomain.com/change_password.html"
+        },
+        "prefs": {
+          "safebrowsing.password_protection_change_password_url": {
+            "value": "https://mydomain.com/change_password.html"
+          }
+        }
+      }
+    ]
   },
   "AutoplayAllowed": {
     "os": [

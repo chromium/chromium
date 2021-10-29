@@ -56,6 +56,10 @@ void CaptureModeTestApi::PerformCapture() {
   controller_->PerformCapture();
 }
 
+bool CaptureModeTestApi::IsVideoRecordingInProgress() const {
+  return controller_->is_recording_in_progress();
+}
+
 void CaptureModeTestApi::StopVideoRecording() {
   DCHECK(controller_->is_recording_in_progress());
   controller_->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
@@ -64,6 +68,11 @@ void CaptureModeTestApi::StopVideoRecording() {
 void CaptureModeTestApi::SetOnCaptureFileSavedCallback(
     OnFileSavedCallback callback) {
   controller_->on_file_saved_callback_for_test_ = std::move(callback);
+}
+
+void CaptureModeTestApi::SetOnCaptureFileDeletedCallback(
+    OnFileDeletedCallback callback) {
+  controller_->on_file_deleted_callback_for_test_ = std::move(callback);
 }
 
 void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {

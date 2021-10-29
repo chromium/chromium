@@ -52,6 +52,9 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
     // Called when hardware verification completes.
     virtual void HardwareVerificationResult(
         const rmad::HardwareVerificationResult& result) {}
+
+    // Called when finalization progress is updated.
+    virtual void FinalizationProgress(const rmad::FinalizeStatus& status) {}
   };
 
   // Creates and initializes a global instance. |bus| must not be null.

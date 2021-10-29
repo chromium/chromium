@@ -23,13 +23,13 @@ struct CONTENT_EXPORT BackgroundFetchResponse {
       const std::vector<GURL>& url_chain,
       const scoped_refptr<const net::HttpResponseHeaders>& headers);
 
+  BackgroundFetchResponse(const BackgroundFetchResponse&) = delete;
+  BackgroundFetchResponse& operator=(const BackgroundFetchResponse&) = delete;
+
   ~BackgroundFetchResponse();
 
   const std::vector<GURL> url_chain;
   const scoped_refptr<const net::HttpResponseHeaders> headers;  // May be null.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchResponse);
 };
 
 struct CONTENT_EXPORT BackgroundFetchResult {
@@ -69,6 +69,9 @@ struct CONTENT_EXPORT BackgroundFetchResult {
                         absl::optional<storage::BlobDataHandle> blob_handle,
                         uint64_t file_size);
 
+  BackgroundFetchResult(const BackgroundFetchResult&) = delete;
+  BackgroundFetchResult& operator=(const BackgroundFetchResult&) = delete;
+
   ~BackgroundFetchResult();
 
   std::unique_ptr<BackgroundFetchResponse> response;
@@ -77,9 +80,6 @@ struct CONTENT_EXPORT BackgroundFetchResult {
   absl::optional<storage::BlobDataHandle> blob_handle;
   const uint64_t file_size = 0;
   FailureReason failure_reason;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchResult);
 };
 
 }  // namespace content

@@ -46,6 +46,9 @@ class ClientChannelImpl : public ClientChannel,
     static Factory* test_factory_;
   };
 
+  ClientChannelImpl(const ClientChannelImpl&) = delete;
+  ClientChannelImpl& operator=(const ClientChannelImpl&) = delete;
+
   ~ClientChannelImpl() override;
 
  private:
@@ -107,8 +110,6 @@ class ClientChannelImpl : public ClientChannel,
       file_transfer_update_callbacks_;
 
   base::WeakPtrFactory<ClientChannelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientChannelImpl);
 };
 
 }  // namespace secure_channel

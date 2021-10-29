@@ -23,6 +23,9 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
   // Returns the CdmRegistryImpl singleton.
   static CdmRegistryImpl* GetInstance();
 
+  CdmRegistryImpl(const CdmRegistryImpl&) = delete;
+  CdmRegistryImpl& operator=(const CdmRegistryImpl&) = delete;
+
   // CdmRegistry implementation.
   void Init() override;
   void RegisterCdm(const CdmInfo& info) override;
@@ -62,8 +65,6 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry {
 
   base::Lock lock_;
   std::vector<CdmInfo> cdms_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(CdmRegistryImpl);
 };
 
 }  // namespace content

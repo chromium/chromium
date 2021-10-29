@@ -1090,6 +1090,8 @@ const char* ToString(ax::mojom::IntListAttribute int_list_attribute) {
       return "markerStarts";
     case ax::mojom::IntListAttribute::kMarkerEnds:
       return "markerEnds";
+    case ax::mojom::IntListAttribute::kHighlightTypes:
+      return "highlightTypes";
     case ax::mojom::IntListAttribute::kCaretBounds:
       return "caretBounds";
     case ax::mojom::IntListAttribute::kCharacterOffsets:
@@ -1164,6 +1166,19 @@ const char* ToString(ax::mojom::MarkerType marker_type) {
   }
 
   return "";
+}
+
+const char* ToString(ax::mojom::HighlightType highlight_type) {
+  switch (highlight_type) {
+    case ax::mojom::HighlightType::kNone:
+      return "none";
+    case ax::mojom::HighlightType::kHighlight:
+      return "highlight";
+    case ax::mojom::HighlightType::kSpellingError:
+      return "spelling-error";
+    case ax::mojom::HighlightType::kGrammarError:
+      return "grammar-error";
+  }
 }
 
 const char* ToString(ax::mojom::MoveDirection move_direction) {

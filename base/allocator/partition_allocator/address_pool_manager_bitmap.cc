@@ -22,8 +22,8 @@ PartitionLock& AddressPoolManagerBitmap::GetLock() {
   return g_lock;
 }
 
-std::bitset<AddressPoolManagerBitmap::kNonBRPPoolBits>
-    AddressPoolManagerBitmap::non_brp_pool_bits_;  // GUARDED_BY(GetLock())
+std::bitset<AddressPoolManagerBitmap::kRegularPoolBits>
+    AddressPoolManagerBitmap::regular_pool_bits_;  // GUARDED_BY(GetLock())
 std::bitset<AddressPoolManagerBitmap::kBRPPoolBits>
     AddressPoolManagerBitmap::brp_pool_bits_;  // GUARDED_BY(GetLock())
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

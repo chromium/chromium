@@ -171,17 +171,10 @@ class AppListPresenterTest
   void SetUp() override {
     feature_list_.InitWithFeatureState(
         app_list_features::kNewDragSpecInLauncher, std::get<1>(GetParam()));
-    AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
-  }
-
-  // testing::Test:
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
   void SetAppListStateAndWait(AppListViewState new_state) {
@@ -327,7 +320,6 @@ class AppListBubbleAndTabletTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
                                               productivity_launcher_param());
-    AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
 
     auto model = std::make_unique<test::AppListTestModel>();
@@ -337,12 +329,6 @@ class AppListBubbleAndTabletTest
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
-  }
-
-  // testing::Test:
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
   // Whether we should use the ProductivityLauncher flag.
@@ -452,11 +438,6 @@ class PopulatedAppListTest : public AshTestBase,
         std::move(app_list_test_model));
   }
 
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
-  }
-
  protected:
   void OpenAppListInFullscreen() {
     AppListPresenterImpl* presenter =
@@ -533,15 +514,13 @@ class PopulatedAppListTest : public AshTestBase,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Subclass of PopuplatedAppListTest which enables the animation and the virtual
-// keyboard.
+// Subclass of PopuplatedAppListTest which enables the virtual keyboard.
 class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
  public:
   PopulatedAppListWithVKEnabledTest() = default;
   ~PopulatedAppListWithVKEnabledTest() override = default;
 
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
     PopulatedAppListTest::SetUp();
@@ -664,7 +643,6 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
   // called when animation ends.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -781,7 +759,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
             result_selection_controller->selected_location_details());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
-      {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};
+      {kTestResultId, SearchResultActionType::kRemove}};
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       GetAppListTestHelper()
           ->app_list_client()
@@ -848,7 +826,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
   EXPECT_FALSE(result_view->selected());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
-      {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};
+      {kTestResultId, SearchResultActionType::kRemove}};
 
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       GetAppListTestHelper()
@@ -885,7 +863,6 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Transition to fullscreen search state.
   GetAppListView()->SetState(AppListViewState::kFullscreenSearch);
@@ -902,9 +879,8 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
   EXPECT_EQ(gfx::RectF(initial_dialog_bounds), current_bounds);
 }
 
-// DISABLED for: https://crbug.com/1263380
 TEST_P(AppListPresenterTest,
-       DISABLED_RemoveSuggestionDialogBoundsUpdateWithAppListState) {
+       RemoveSuggestionDialogBoundsUpdateWithAppListState) {
   ShowZeroStateSearchInHalfState();
 
   // Add a zero state suggestion result.
@@ -912,6 +888,7 @@ TEST_P(AppListPresenterTest,
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
@@ -981,9 +958,7 @@ TEST_P(AppListPresenterTest,
   widget_close_waiter.Wait();
 }
 
-// DISABLED for: https://crbug.com/1263380
-TEST_P(AppListPresenterTest,
-       DISABLED_RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
+TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   // Enable virtual keyboard for this test.
   KeyboardController* const keyboard_controller =
       Shell::Get()->keyboard_controller();
@@ -997,6 +972,7 @@ TEST_P(AppListPresenterTest,
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
@@ -1337,7 +1313,6 @@ TEST_P(PopulatedAppListTest,
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -2252,7 +2227,6 @@ TEST_P(AppListPresenterTest, AppListShownWhileClosing) {
   // finishes).
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Dismiss and immediately show the app list (before close animation is done).
   GetAppListTestHelper()->Dismiss();
@@ -2301,7 +2275,6 @@ TEST_P(AppListPresenterTest, AppListWithMaximizedShelf) {
   // finishes).
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Start closing the app list view.
   GetAppListTestHelper()->Dismiss();
@@ -3213,7 +3186,6 @@ TEST_P(AppListPresenterTest, DragUpdateWhileAppListClosing) {
   // immediately.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Start drag and press escape to close the app list view.
   ui::test::EventGenerator* generator = GetEventGenerator();

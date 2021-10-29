@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +61,7 @@ class RenameHandlerCreateTestBase : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   TestingProfile* profile_;
@@ -840,6 +842,7 @@ class RenameHandlerOAuth2Test : public testing::Test,
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfileManager profile_manager_;
   TestingProfile* profile_;
   std::unique_ptr<base::RunLoop> run_loop_;

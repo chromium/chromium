@@ -114,6 +114,9 @@ class MHTMLGenerationManager::Job {
       const MHTMLGenerationParams& params,
       MHTMLGenerationResult::GenerateMHTMLCallback callback);
 
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
  private:
   Job(WebContents* web_contents,
       const MHTMLGenerationParams& params,
@@ -299,8 +302,6 @@ class MHTMLGenerationManager::Job {
   std::unique_ptr<crypto::SecureHash> secure_hash_;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 MHTMLGenerationManager::Job::Job(

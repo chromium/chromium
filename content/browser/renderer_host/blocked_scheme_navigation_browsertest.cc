@@ -168,6 +168,11 @@ class BlockedSchemeNavigationBrowserTest
   BlockedSchemeNavigationBrowserTest() {}
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+  BlockedSchemeNavigationBrowserTest(
+      const BlockedSchemeNavigationBrowserTest&) = delete;
+  BlockedSchemeNavigationBrowserTest& operator=(
+      const BlockedSchemeNavigationBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -560,8 +565,6 @@ class BlockedSchemeNavigationBrowserTest
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   GURL data_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockedSchemeNavigationBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

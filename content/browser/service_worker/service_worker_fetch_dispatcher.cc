@@ -460,6 +460,9 @@ class ServiceWorkerFetchDispatcher::URLLoaderAssets
       : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
         url_loader_client_(std::move(url_loader_client)) {}
 
+  URLLoaderAssets(const URLLoaderAssets&) = delete;
+  URLLoaderAssets& operator=(const URLLoaderAssets&) = delete;
+
   void MaybeReportToDevTools(std::pair<int, int> worker_id,
                              int fetch_event_id) {
     url_loader_client_->MaybeReportToDevTools(worker_id, fetch_event_id);
@@ -477,8 +480,6 @@ class ServiceWorkerFetchDispatcher::URLLoaderAssets
 
   // Both:
   std::unique_ptr<DelegatingURLLoaderClient> url_loader_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderAssets);
 };
 
 ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher(

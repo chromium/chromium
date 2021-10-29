@@ -700,6 +700,10 @@ class SetMouseCaptureInterceptor
         host_(host),
         impl_(receiver().internal_state()->SwapImplForTesting(this)) {}
 
+  SetMouseCaptureInterceptor(const SetMouseCaptureInterceptor&) = delete;
+  SetMouseCaptureInterceptor& operator=(const SetMouseCaptureInterceptor&) =
+      delete;
+
   bool Capturing() const { return capturing_; }
 
   void Wait() {
@@ -744,8 +748,6 @@ class SetMouseCaptureInterceptor
   bool capturing_;
   RenderWidgetHostImpl* host_;
   blink::mojom::WidgetInputHandlerHost* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetMouseCaptureInterceptor);
 };
 
 #if defined(USE_AURA)
@@ -5770,7 +5772,7 @@ class ContextMenuObserverDelegate : public WebContentsDelegate {
 
   ~ContextMenuObserverDelegate() override {}
 
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     context_menu_created_ = true;
     menu_params_ = params;
@@ -6268,6 +6270,11 @@ class SitePerProcessGestureHitTestBrowserTest
  public:
   SitePerProcessGestureHitTestBrowserTest() {}
 
+  SitePerProcessGestureHitTestBrowserTest(
+      const SitePerProcessGestureHitTestBrowserTest&) = delete;
+  SitePerProcessGestureHitTestBrowserTest& operator=(
+      const SitePerProcessGestureHitTestBrowserTest&) = delete;
+
   // This functions simulates a sequence of events that are typical of a
   // gesture pinch at |position|. We need this since machinery in the event
   // codepath will require GesturePinch* to be enclosed in
@@ -6472,9 +6479,6 @@ class SitePerProcessGestureHitTestBrowserTest
   RenderWidgetHostViewAura* rwhva_root_;
   RenderWidgetHostImpl* rwhi_child_;
   RenderWidgetHostImpl* rwhi_root_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessGestureHitTestBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessGestureHitTestBrowserTest,

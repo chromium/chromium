@@ -41,6 +41,12 @@ const bool kIsSmartLockEligibleDefault = true;
 }  //  namespace
 
 class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
+ public:
+  ProximityAuthLocalStatePrefManagerTest(
+      const ProximityAuthLocalStatePrefManagerTest&) = delete;
+  ProximityAuthLocalStatePrefManagerTest& operator=(
+      const ProximityAuthLocalStatePrefManagerTest&) = delete;
+
  protected:
   ProximityAuthLocalStatePrefManagerTest()
       : user1_(AccountId::FromUserEmail(kUser1)),
@@ -91,9 +97,6 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
   AccountId user2_;
   AccountId unknown_user_;
   TestingPrefServiceSimple local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthLocalStatePrefManagerTest);
 };
 
 TEST_F(ProximityAuthLocalStatePrefManagerTest, RegisterPrefs) {

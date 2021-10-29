@@ -25,6 +25,10 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
   SpeechRecognizerImplAndroid(SpeechRecognitionEventListener* listener,
                               int session_id);
 
+  SpeechRecognizerImplAndroid(const SpeechRecognizerImplAndroid&) = delete;
+  SpeechRecognizerImplAndroid& operator=(const SpeechRecognizerImplAndroid&) =
+      delete;
+
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
   void AbortRecognition() override;
@@ -68,8 +72,6 @@ class CONTENT_EXPORT SpeechRecognizerImplAndroid : public SpeechRecognizer {
 
   base::android::ScopedJavaGlobalRef<jobject> j_recognition_;
   State state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerImplAndroid);
 };
 
 }  // namespace content

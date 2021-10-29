@@ -186,7 +186,9 @@ class DeviceTarget(target.Target):
                                   stdout=subprocess.PIPE,
                                   stderr=devnull)
 
-    output = set(proc.communicate()[0].strip().split('\n'))
+    # TODO(crbug.com/1198733): Switch to encoding='utf-8' once we drop Python 2
+    # support.
+    output = set(proc.communicate()[0].decode('utf-8').strip().split('\n'))
     if proc.returncode != 0:
       return False
 
@@ -215,16 +217,7 @@ class DeviceTarget(target.Target):
     if self._host:
       self._WaitUntilReady()
     else:
-      try:
-        device_found = self._Discover()
-      except target.FuchsiaTargetException:
-        logging.info('Could not detect device.')
-        if self._node_name and self._os_check == 'update':
-          logging.info('Assuming it is in zedboot. Continuing with paving...')
-          self._ProvisionDevice()
-          return
-        else:
-          raise
+      device_found = self._Discover()
 
       if device_found:
         self._WaitUntilReady()
@@ -247,6 +240,12 @@ class DeviceTarget(target.Target):
                                stderr=subprocess.STDOUT)
           self._ProvisionDevice()
       else:
+        if self._node_name:
+          logging.info('Could not detect device %s.' % self._node_name)
+          if self._os_check == 'update':
+            logging.info('Assuming it is in zedboot. Continuing with paving...')
+            self._ProvisionDevice()
+            return
         raise Exception('Could not find device. If the device is connected '
                         'to the host remotely, make sure that --host flag '
                         'is set and that remote serving is set up.')

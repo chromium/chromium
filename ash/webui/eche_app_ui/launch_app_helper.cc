@@ -10,20 +10,17 @@
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/screen_lock_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 LaunchAppHelper::NotificationInfo::NotificationInfo(
     Category category,
-    absl::variant<NotificationType,
-                  chromeos::eche_app::mojom::WebNotificationType> type)
+    absl::variant<NotificationType, mojom::WebNotificationType> type)
     : category_(category), type_(type) {
   DCHECK(nullptr != absl::get_if<NotificationType>(&type)
              ? category == Category::kNative
              : category == Category::kWebUI);
-  DCHECK(nullptr !=
-                 absl::get_if<chromeos::eche_app::mojom::WebNotificationType>(
-                     &type)
+  DCHECK(nullptr != absl::get_if<mojom::WebNotificationType>(&type)
              ? category == Category::kWebUI
              : category == Category::kNative);
 }
@@ -77,4 +74,4 @@ void LaunchAppHelper::CloseEcheApp() const {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

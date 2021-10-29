@@ -194,7 +194,15 @@ void DecompressIfNeeded(base::StringPiece data, std::string* output) {
 class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
  public:
   ResourceBundleImageSource(ResourceBundle* rb, int resource_id)
-      : rb_(rb), resource_id_(resource_id) {}
+      : rb_(rb),
+        resource_id_(resource_id)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        ,
+        is_lottie_(rb->GetRawDataResourceForScale(resource_id, k100Percent)
+                       .substr(0u, base::size(kLottiePrefix)) == kLottiePrefix)
+#endif
+  {
+  }
 
   ResourceBundleImageSource(const ResourceBundleImageSource&) = delete;
   ResourceBundleImageSource& operator=(const ResourceBundleImageSource&) =
@@ -209,9 +217,14 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
     // TODO(https://crbug.com/1128684): Consolidate |LoadBitmap| and
     // |LoadLottie|.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    gfx::ImageSkiaRep rep_from_lottie;
-    if (rb_->LoadLottie(resource_id_, scale_factor, &rep_from_lottie))
-      return rep_from_lottie;
+    if (is_lottie_) {
+      gfx::ImageSkiaRep rep_from_lottie;
+      if (rb_->LoadLottie(resource_id_, scale, scale_factor, &rep_from_lottie))
+        return rep_from_lottie;
+      NOTREACHED() << "Unable to load Lottie image with id " << resource_id_
+                   << ", scale=" << scale;
+      return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
+    }
 #endif
 
     SkBitmap image;
@@ -223,7 +236,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
       // TODO(oshima): Android unit_tests runs at DSF=3 with 100P assets.
       return gfx::ImageSkiaRep();
 #else
-      NOTREACHED() << "Unable to load image with id " << resource_id_
+      NOTREACHED() << "Unable to load bitmap image with id " << resource_id_
                    << ", scale=" << scale;
       return gfx::ImageSkiaRep(CreateEmptyBitmap(), scale);
 #endif
@@ -247,9 +260,16 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
     return gfx::ImageSkiaRep(image, scale);
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool HasRepresentationAtAllScales() const override { return is_lottie_; }
+#endif
+
  private:
   ResourceBundle* rb_;
   const int resource_id_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool is_lottie_;
+#endif
 };
 
 ResourceBundle::FontDetails::FontDetails(std::string typeface,
@@ -1162,6 +1182,7 @@ bool ResourceBundle::DecodePNG(const unsigned char* buf,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ResourceBundle::LoadLottie(int resource_id,
+                                float scale,
                                 ResourceScaleFactor scale_factor,
                                 gfx::ImageSkiaRep* rep) const {
   const base::StringPiece potential_lottie =
@@ -1172,8 +1193,7 @@ bool ResourceBundle::LoadLottie(int resource_id,
   auto bytes_string = base::MakeRefCounted<base::RefCountedString>();
   DecompressIfNeeded(potential_lottie.substr(base::size(kLottiePrefix)),
                      &(bytes_string->data()));
-  *rep = (*g_parse_lottie_as_still_image_)(
-      *bytes_string, GetScaleForResourceScaleFactor(scale_factor));
+  *rep = (*g_parse_lottie_as_still_image_)(*bytes_string, scale);
   return true;
 }
 #endif

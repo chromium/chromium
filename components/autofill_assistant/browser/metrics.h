@@ -400,6 +400,26 @@ class Metrics {
     kMaxValue = TRIGGER_SCRIPT_REQUESTED
   };
 
+  // Used for logging when the platform-specific dependencies are invalidated.
+  // For example: When the activity is changed on Android.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantWindowAttachmentChange enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class DependenciesInvalidated {
+    // The dependencies were invalidated while the starter existed but before
+    // Start() was called.
+    OUTSIDE_FLOW = 0,
+    // The dependencies were invalidated while the flow was trying to start. For
+    // example during onboarding or during the execution of the trigger script.
+    DURING_STARTUP = 1,
+    // The dependencies were invalidated during the execution of a flow.
+    DURING_FLOW = 2,
+
+    kMaxValue = DURING_FLOW
+  };
+
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
   static void RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success);
@@ -439,6 +459,8 @@ class Metrics {
       ukm::UkmRecorder* ukm_recorder,
       ukm::SourceId source_id,
       base::TimeDelta evaluation_time);
+  static void RecordDependenciesInvalidated(
+      DependenciesInvalidated dependencies_invalidated);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.

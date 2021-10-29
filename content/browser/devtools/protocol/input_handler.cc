@@ -362,6 +362,9 @@ class InputHandler::InputInjector
     widget_host->AddInputEventObserver(this);
   }
 
+  InputInjector(const InputInjector&) = delete;
+  InputInjector& operator=(const InputInjector&) = delete;
+
   void Cleanup() {
     for (auto& callback : pending_key_callbacks_)
       callback->sendSuccess();
@@ -520,8 +523,6 @@ class InputHandler::InputInjector
   base::circular_deque<std::unique_ptr<DispatchMouseEventCallback>>
       pending_mouse_callbacks_;
   base::WeakPtrFactory<InputHandler::InputInjector> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputInjector);
 };
 
 InputHandler::InputHandler(bool allow_file_access)

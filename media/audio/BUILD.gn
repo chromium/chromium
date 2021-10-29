@@ -451,6 +451,10 @@ source_set("unit_tests") {
     }
   }
 
+  if (is_chromeos_lacros && use_cras) {
+    sources += [ "cras/audio_manager_cras_unittest.cc" ]
+  }
+
   if (is_win) {
     sources += [
       "win/audio_device_listener_win_unittest.cc",

@@ -16,7 +16,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Implements AppsAccessManager by persisting the last-known
@@ -68,6 +68,13 @@ class AppsAccessManagerImpl : public AppsAccessManager,
   bool initialized_ = false;
 };
 
+}  // namespace eche_app
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace eche_app {
+using ::ash::eche_app::AppsAccessManagerImpl;
 }  // namespace eche_app
 }  // namespace chromeos
 

@@ -541,6 +541,10 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
       : current_channel_(kReleaseChannelBeta),
         target_channel_(kReleaseChannelBeta) {}
 
+  UpdateEngineClientStubImpl(const UpdateEngineClientStubImpl&) = delete;
+  UpdateEngineClientStubImpl& operator=(const UpdateEngineClientStubImpl&) =
+      delete;
+
   // UpdateEngineClient implementation:
   void Init(dbus::Bus* bus) override {}
 
@@ -692,8 +696,6 @@ class UpdateEngineClientStubImpl : public UpdateEngineClient {
   update_engine::StatusResult last_status_;
 
   base::WeakPtrFactory<UpdateEngineClientStubImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateEngineClientStubImpl);
 };
 
 UpdateEngineClient::UpdateEngineClient() = default;

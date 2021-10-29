@@ -79,7 +79,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
   PluginInfoHostImplTest()
       : foo_plugin_path_(FILE_PATH_LITERAL("/path/to/foo")),
         bar_plugin_path_(FILE_PATH_LITERAL("/path/to/bar")),
-        fake_flash_path_(FILE_PATH_LITERAL("/path/to/fake/flash")),
         context_(0, &profile_),
         host_content_settings_map_(
             HostContentSettingsMapFactory::GetForProfile(&profile_)) {}
@@ -101,14 +100,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
     bar_plugin.mime_types.push_back(mime_type);
     bar_plugin.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_IN_PROCESS;
     PluginService::GetInstance()->RegisterInternalPlugin(bar_plugin, false);
-
-    content::WebPluginInfo fake_flash(
-        base::ASCIIToUTF16(content::kFlashPluginName), fake_flash_path_,
-        u"100.0", u"Fake Flash Description.");
-    mime_type.mime_type = "application/x-shockwave-flash";
-    fake_flash.mime_types.push_back(mime_type);
-    fake_flash.type = content::WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
-    PluginService::GetInstance()->RegisterInternalPlugin(fake_flash, false);
 
     PluginService::GetInstance()->SetFilter(&filter_);
 
@@ -136,7 +127,6 @@ class PluginInfoHostImplTest : public ::testing::Test {
 
   base::FilePath foo_plugin_path_;
   base::FilePath bar_plugin_path_;
-  base::FilePath fake_flash_path_;
   FakePluginServiceFilter filter_;
 
  private:

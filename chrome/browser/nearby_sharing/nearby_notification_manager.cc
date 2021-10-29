@@ -1039,6 +1039,13 @@ void NearbyNotificationManager::OnNearbyDeviceTryingToShareClicked() {
   std::string path =
       std::string(chromeos::settings::mojom::kNearbyShareSubpagePath) +
       "?receive&entrypoint=notification&";
+
+  // Append a timestamp to ensure that the URL that we use to open the receive
+  // dialog on the Nearby Share subpage is unique each time the user clicks on
+  // an instance of this notification. This ensures that the page will reload
+  // and we will restart high visibility mode. Since we don't actually read this
+  // timestamp, it will not cause a problem if the user manually reloads the
+  // page with a stale timestamp.
   path += "&time=" + GetTimestampString();
   settings_opener_->ShowSettingsPage(profile_, path);
 }

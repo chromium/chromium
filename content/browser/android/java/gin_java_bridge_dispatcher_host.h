@@ -40,6 +40,10 @@ class GinJavaBridgeDispatcherHost
       WebContents* web_contents,
       const base::android::JavaRef<jobject>& retained_object_set);
 
+  GinJavaBridgeDispatcherHost(const GinJavaBridgeDispatcherHost&) = delete;
+  GinJavaBridgeDispatcherHost& operator=(const GinJavaBridgeDispatcherHost&) =
+      delete;
+
   void AddNamedObject(
       const std::string& name,
       const base::android::JavaRef<jobject>& object,
@@ -122,8 +126,6 @@ class GinJavaBridgeDispatcherHost
 
   // The following objects are only used on the background thread.
   bool allow_object_contents_inspection_;
-
-  DISALLOW_COPY_AND_ASSIGN(GinJavaBridgeDispatcherHost);
 };
 
 }  // namespace content

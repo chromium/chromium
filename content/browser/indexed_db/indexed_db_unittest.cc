@@ -216,6 +216,9 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
         idb_context_(idb_context),
         storage_key_(storage_key) {}
 
+  ForceCloseDBCallbacks(const ForceCloseDBCallbacks&) = delete;
+  ForceCloseDBCallbacks& operator=(const ForceCloseDBCallbacks&) = delete;
+
   void OnSuccess() override {}
   void OnSuccess(std::unique_ptr<IndexedDBConnection> connection,
                  const IndexedDBDatabaseMetadata& metadata) override {
@@ -232,7 +235,6 @@ class ForceCloseDBCallbacks : public IndexedDBCallbacks {
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   blink::StorageKey storage_key_;
   std::unique_ptr<IndexedDBConnection> connection_;
-  DISALLOW_COPY_AND_ASSIGN(ForceCloseDBCallbacks);
 };
 
 TEST_F(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {

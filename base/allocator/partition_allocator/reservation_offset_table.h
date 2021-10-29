@@ -165,7 +165,7 @@ ALWAYS_INLINE uintptr_t ComputeReservationStart(void* address,
 ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
 #if DCHECK_IS_ON()
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
-  bool is_in_non_brp_pool = IsManagedByPartitionAllocNonBRPPool(address);
+  bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!is_in_brp_pool);
@@ -180,7 +180,7 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
 #if DCHECK_IS_ON()
   // Make sure the reservation start is in the same pool as |address|.
   // In the 32-bit mode, the beginning of a reservation may be excluded from the
-  // BRP pool, so shift the pointer. Non-BRP pool doesn't have logic.
+  // BRP pool, so shift the pointer. The other pools don't have this logic.
   PA_DCHECK(is_in_brp_pool ==
             IsManagedByPartitionAllocBRPPool(reinterpret_cast<void*>(
                 reservation_start
@@ -189,8 +189,8 @@ ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(void* address) {
                       AddressPoolManagerBitmap::kGuardOffsetOfBRPPoolBitmap
 #endif  // !defined(PA_HAS_64_BITS_POINTERS)
                 )));
-  PA_DCHECK(is_in_non_brp_pool ==
-            IsManagedByPartitionAllocNonBRPPool(
+  PA_DCHECK(is_in_regular_pool ==
+            IsManagedByPartitionAllocRegularPool(
                 reinterpret_cast<void*>(reservation_start)));
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
 #endif  // DCHECK_IS_ON()

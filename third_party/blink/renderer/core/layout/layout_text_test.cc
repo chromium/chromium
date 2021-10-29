@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -14,9 +15,12 @@
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+using testing::ElementsAre;
 
 namespace {
 
@@ -215,6 +219,47 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
   EXPECT_EQ(OnlyWhitespaceOrNbsp::kNo,
             GetBasicText()->ContainsOnlyWhitespaceOrNbsp());
 }
+
+#if defined(OS_WIN)
+TEST_F(LayoutTextTest, PrewarmFamily) {
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container { font-family: testfont; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre("testfont"));
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
+
+// Test `@font-face` fonts are NOT prewarmed.
+TEST_F(LayoutTextTest, PrewarmFontFace) {
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    @font-face {
+      font-family: testfont;
+      src: local(Arial);
+    }
+    #container { font-family: testfont; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_FALSE(container->StyleRef()
+                   .GetFont()
+                   .GetFontDescription()
+                   .Family()
+                   .IsPrewarmed());
+}
+#endif
 
 struct NGOffsetMappingTestData {
   const char* text;

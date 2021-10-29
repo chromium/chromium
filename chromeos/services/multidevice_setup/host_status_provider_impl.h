@@ -48,6 +48,9 @@ class HostStatusProviderImpl : public HostStatusProvider,
     static Factory* test_factory_;
   };
 
+  HostStatusProviderImpl(const HostStatusProviderImpl&) = delete;
+  HostStatusProviderImpl& operator=(const HostStatusProviderImpl&) = delete;
+
   ~HostStatusProviderImpl() override;
 
  private:
@@ -85,8 +88,6 @@ class HostStatusProviderImpl : public HostStatusProvider,
   device_sync::DeviceSyncClient* device_sync_client_;
   HostStatusWithDevice current_status_and_device_;
   base::RepeatingTimer host_status_metric_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostStatusProviderImpl);
 };
 
 }  // namespace multidevice_setup

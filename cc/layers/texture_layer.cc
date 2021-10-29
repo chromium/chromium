@@ -191,8 +191,9 @@ bool TextureLayer::IsSnappedToPixelGridInTarget() {
   return true;
 }
 
-void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void TextureLayer::PushPropertiesTo(LayerImpl* layer,
+                                    const CommitState& commit_state) {
+  Layer::PushPropertiesTo(layer, commit_state);
   TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
 
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);

@@ -18,6 +18,8 @@ namespace zucchini {
 // This disassembler works on any file and does not look for reference.
 class DisassemblerNoOp : public Disassembler {
  public:
+  static constexpr uint16_t kVersion = 1;
+
   DisassemblerNoOp();
   DisassemblerNoOp(const DisassemblerNoOp&) = delete;
   const DisassemblerNoOp& operator=(const DisassemblerNoOp&) = delete;

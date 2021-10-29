@@ -176,14 +176,14 @@ export function onboardingUpdatePageTest() {
 
     const progressComponent =
         component.shadowRoot.querySelector('#progressMessage');
-    assertEquals('', progressComponent.textContent);
+    assertEquals('', progressComponent.textContent.trim());
     await clickPerformUpdateButton();
 
     service.triggerOsUpdateObserver(OsUpdateOperation.kDownloading, 0.5, 0);
     await flushTasks();
 
     // TODO(gavindodd): update with i18n string
-    assertTrue(progressComponent.textContent.startsWith(
+    assertTrue(progressComponent.textContent.trim().startsWith(
         'OS update progress received '));
   });
 }

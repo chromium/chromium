@@ -23,6 +23,11 @@ class AndroidSmsPairingStateTracker {
   };
 
   AndroidSmsPairingStateTracker();
+
+  AndroidSmsPairingStateTracker(const AndroidSmsPairingStateTracker&) = delete;
+  AndroidSmsPairingStateTracker& operator=(
+      const AndroidSmsPairingStateTracker&) = delete;
+
   virtual ~AndroidSmsPairingStateTracker();
 
   void AddObserver(Observer* observer);
@@ -36,8 +41,6 @@ class AndroidSmsPairingStateTracker {
 
  private:
   base::ObserverList<Observer> observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidSmsPairingStateTracker);
 };
 
 }  // namespace multidevice_setup

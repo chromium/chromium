@@ -72,6 +72,11 @@ TestPasswordsPrivateDelegate::GetUrlCollection(const std::string& url) {
       api::passwords_private::UrlCollection());
 }
 
+bool TestPasswordsPrivateDelegate::IsAccountStoreDefault(
+    content::WebContents* web_contents) {
+  return is_account_store_default_;
+}
+
 bool TestPasswordsPrivateDelegate::AddPassword(const std::string& url,
                                                const std::u16string& username,
                                                const std::u16string& password,
@@ -305,6 +310,10 @@ void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
 
 void TestPasswordsPrivateDelegate::SetOptedInForAccountStorage(bool opted_in) {
   is_opted_in_for_account_storage_ = opted_in;
+}
+
+void TestPasswordsPrivateDelegate::SetIsAccountStoreDefault(bool is_default) {
+  is_account_store_default_ = is_default;
 }
 
 void TestPasswordsPrivateDelegate::AddCompromisedCredential(int id) {

@@ -102,7 +102,7 @@ class ArcApps : public KeyedService,
                apps::mojom::ConnectOptionsPtr opts) override;
   void LoadIcon(const std::string& app_id,
                 apps::mojom::IconKeyPtr icon_key,
-                apps::mojom::IconType icon_type,
+                apps::mojom::IconType mojom_icon_type,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 LoadIconCallback callback) override;
@@ -114,7 +114,8 @@ class ArcApps : public KeyedService,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info) override;
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission) override;
   void SetResizeLocked(const std::string& app_id,
@@ -189,10 +190,10 @@ class ArcApps : public KeyedService,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* instance_registry) override;
 
-  void LoadPlayStoreIcon(apps::mojom::IconType icon_type,
+  void LoadPlayStoreIcon(apps::IconType icon_type,
                          int32_t size_hint_in_dip,
                          IconEffects icon_effects,
-                         LoadIconCallback callback);
+                         apps::LoadIconCallback callback);
 
   std::unique_ptr<App> CreateApp(ArcAppListPrefs* prefs,
                                  const std::string& app_id,

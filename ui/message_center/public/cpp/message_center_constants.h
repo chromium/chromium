@@ -50,7 +50,7 @@ const int kContextMessageViewWidth =
     kNotificationWidth - kTextLeftPadding - kTextRightPadding;
 // space between buttons and frame.
 const int kControlButtonPadding = 2;
-const int kControlButtonBorderSize = 6;
+const int kControlButtonBorderSize = 4;
 
 // Text sizes.
 const int kTitleFontSize = 14;        // For title only.

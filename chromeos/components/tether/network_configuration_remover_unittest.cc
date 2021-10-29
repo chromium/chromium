@@ -25,6 +25,12 @@ const char kWifiNetworkPath[] = "wifiNetworkPath";
 }  // namespace
 
 class NetworkConfigurationRemoverTest : public testing::Test {
+ public:
+  NetworkConfigurationRemoverTest(const NetworkConfigurationRemoverTest&) =
+      delete;
+  NetworkConfigurationRemoverTest& operator=(
+      const NetworkConfigurationRemoverTest&) = delete;
+
  protected:
   NetworkConfigurationRemoverTest() = default;
   ~NetworkConfigurationRemoverTest() override = default;
@@ -42,9 +48,6 @@ class NetworkConfigurationRemoverTest : public testing::Test {
       mock_managed_network_configuration_manager_;
 
   std::unique_ptr<NetworkConfigurationRemover> network_configuration_remover_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConfigurationRemoverTest);
 };
 
 TEST_F(NetworkConfigurationRemoverTest, TestRemoveNetworkConfiguration) {

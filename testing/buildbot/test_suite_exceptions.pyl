@@ -2679,9 +2679,6 @@
       'chromeos-amd64-generic-rel (reclient)': {
         'ci_only': True,
       },
-      'chromeos-amd64-generic-rel-dchecks': {
-        'ci_only': True,
-      },
     },
   },
   'skia_renderer_telemetry_unittests': {
@@ -2698,9 +2695,6 @@
         'ci_only': True,
       },
       'chromeos-amd64-generic-rel (reclient)': {
-        'ci_only': True,
-      },
-      'chromeos-amd64-generic-rel-dchecks': {
         'ci_only': True,
       },
     },

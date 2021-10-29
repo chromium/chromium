@@ -142,6 +142,29 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
   RunUntilIdle();
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, OnExternalError) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run(_)).Times(0);
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  error.api_error_code = absl::optional<int>(11004);
+  consumer().OnError(kJobId, std::move(error));
+  RunUntilIdle();
+
+  const char kErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const char kAPIErrorMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.APIErros";
+
+  histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
+  histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
+}
+
 class PasswordStoreAndroidBackendTestForMetrics
     : public PasswordStoreAndroidBackendTest,
       public testing::WithParamInterface<bool> {
@@ -172,7 +195,8 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
   if (ShouldSucceed())
     consumer().OnCompleteWithLogins(kJobId, {});
   else
-    consumer().OnError(kJobId, AndroidBackendErrorType::kUncategorized);
+    consumer().OnError(
+        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
   RunUntilIdle();
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
   histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);

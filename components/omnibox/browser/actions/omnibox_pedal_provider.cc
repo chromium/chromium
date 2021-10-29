@@ -310,6 +310,15 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     ignore_group_ = LoadSynonymGroupString(
         false, false,
         l10n_util::GetStringUTF16(IDS_OMNIBOX_PEDALS_IGNORE_GROUP));
+    if (tokenize_characters_.empty()) {
+      // Translation console sourced data has lots of spaces, but in practice
+      // the ignore group doesn't include a single space sequence. Rather than
+      // burden l10n with getting this nuance in the data precisely specified,
+      // we simply hardcode to ignore spaces. This applies for all languages
+      // that don't tokenize on spaces (see `tokenize_characters_` above).
+      ignore_group_.AddSynonym(
+          OmniboxPedal::TokenSequence(std::vector<int>({dictionary_[u" "]})));
+    }
   } else {
     const base::Value* ignore_group_value =
         concept_data->FindKey("ignore_group");

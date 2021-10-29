@@ -12,7 +12,6 @@
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
@@ -38,9 +37,7 @@ void ChromeAppListModelUpdater::SetActive(bool active) {
   if (was_active == active)
     return;
 
-  app_list_controller_ =
-      active ? AppListClientImpl::GetInstance()->GetAppListController()
-             : nullptr;
+  app_list_controller_ = active ? ash::AppListController::Get() : nullptr;
   if (!app_list_controller_)
     return;
 

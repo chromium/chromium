@@ -530,6 +530,9 @@ struct LegacyCacheStorageCache::QueryCacheContext {
         query_types(query_types),
         matches(std::make_unique<QueryCacheResults>()) {}
 
+  QueryCacheContext(const QueryCacheContext&) = delete;
+  QueryCacheContext& operator=(const QueryCacheContext&) = delete;
+
   ~QueryCacheContext() = default;
 
   // Input to QueryCache
@@ -544,9 +547,6 @@ struct LegacyCacheStorageCache::QueryCacheContext {
 
   // Output of QueryCache
   std::unique_ptr<std::vector<QueryCacheResult>> matches;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryCacheContext);
 };
 
 struct LegacyCacheStorageCache::BatchInfo {

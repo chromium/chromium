@@ -21,6 +21,10 @@ class CONTENT_EXPORT ScopedSurfaceRequestManager
  public:
   static ScopedSurfaceRequestManager* GetInstance();
 
+  ScopedSurfaceRequestManager(const ScopedSurfaceRequestManager&) = delete;
+  ScopedSurfaceRequestManager& operator=(const ScopedSurfaceRequestManager&) =
+      delete;
+
   using ScopedSurfaceRequestCB =
       base::OnceCallback<void(gl::ScopedJavaSurface)>;
 
@@ -76,8 +80,6 @@ class CONTENT_EXPORT ScopedSurfaceRequestManager
 
   ScopedSurfaceRequestManager();
   ~ScopedSurfaceRequestManager() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSurfaceRequestManager);
 };
 
 }  // namespace content

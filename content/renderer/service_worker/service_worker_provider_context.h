@@ -102,6 +102,10 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory);
 
+  ServiceWorkerProviderContext(const ServiceWorkerProviderContext&) = delete;
+  ServiceWorkerProviderContext& operator=(const ServiceWorkerProviderContext&) =
+      delete;
+
   blink::mojom::ServiceWorkerContainerType container_type() const {
     return container_type_;
   }
@@ -341,8 +345,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   WorkerTimingContainerReceiverMap worker_timing_container_receivers_;
 
   base::WeakPtrFactory<ServiceWorkerProviderContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerProviderContext);
 };
 
 struct ServiceWorkerProviderContextDeleter {

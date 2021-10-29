@@ -54,6 +54,9 @@ class CONTENT_EXPORT WebContentsViewAura
   WebContentsViewAura(WebContentsImpl* web_contents,
                       WebContentsViewDelegate* delegate);
 
+  WebContentsViewAura(const WebContentsViewAura&) = delete;
+  WebContentsViewAura& operator=(const WebContentsViewAura&) = delete;
+
   // Allow the WebContentsViewDelegate to be set explicitly.
   void SetDelegateForTesting(WebContentsViewDelegate* delegate);
 
@@ -161,7 +164,7 @@ class CONTENT_EXPORT WebContentsViewAura
   void SetOverscrollControllerEnabled(bool enabled) override;
 
   // Overridden from RenderViewHostDelegateView:
-  void ShowContextMenu(RenderFrameHost* render_frame_host,
+  void ShowContextMenu(RenderFrameHost& render_frame_host,
                        const ContextMenuParams& params) override;
   void StartDragging(const DropData& drop_data,
                      blink::DragOperationsMask operations,
@@ -346,8 +349,6 @@ class CONTENT_EXPORT WebContentsViewAura
   bool init_rwhv_with_null_parent_for_testing_;
 
   base::WeakPtrFactory<WebContentsViewAura> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewAura);
 };
 
 }  // namespace content

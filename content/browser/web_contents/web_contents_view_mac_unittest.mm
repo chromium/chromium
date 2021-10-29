@@ -41,6 +41,10 @@ TEST_F(WebContentsNSViewTest, NonWebDragSourceTest) {
 namespace {
 
 class WebContentsViewMacTest : public RenderViewHostTestHarness {
+ public:
+  WebContentsViewMacTest(const WebContentsViewMacTest&) = delete;
+  WebContentsViewMacTest& operator=(const WebContentsViewMacTest&) = delete;
+
  protected:
   WebContentsViewMacTest() = default;
 
@@ -52,9 +56,6 @@ class WebContentsViewMacTest : public RenderViewHostTestHarness {
   }
 
   base::scoped_nsobject<CocoaTestHelperWindow> window_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebContentsViewMacTest);
 };
 
 }  // namespace

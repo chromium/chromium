@@ -37,21 +37,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Determine if the DNS lookup returns synchronously or asynchronously,
   // succeeds or fails, and returns an IPv4 or IPv6 address.
   net::MockHostResolver mock_host_resolver;
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
   mock_host_resolver.set_synchronous_mode(data_provider.ConsumeBool());
   switch (data_provider.ConsumeIntegralInRange(0, 2)) {
     case 0:
-      rules->AddRule("*", "127.0.0.1");
+      mock_host_resolver.rules()->AddRule("*", "127.0.0.1");
       break;
     case 1:
-      rules->AddRule("*", "::1");
+      mock_host_resolver.rules()->AddRule("*", "::1");
       break;
     case 2:
-      rules->AddSimulatedFailure("*");
+      mock_host_resolver.rules()->AddRule("*", net::ERR_NAME_NOT_RESOLVED);
       break;
   }
-  mock_host_resolver.set_rules(rules.get());
 
   net::TestCompletionCallback callback;
   std::unique_ptr<net::FuzzedSocket> fuzzed_socket(

@@ -20,7 +20,14 @@ BluetoothPrefStateObserver::BluetoothPrefStateObserver() {
   session_observation_.Observe(session_manager::SessionManager::Get());
 }
 
-BluetoothPrefStateObserver::~BluetoothPrefStateObserver() = default;
+BluetoothPrefStateObserver::~BluetoothPrefStateObserver() {
+  // Reset the pref services. We are explicitly setting device_prefs to null
+  // instead of calling SetPrefs(nullptr) to ensure g_browser_process's
+  // local_state isn't used, in case it's in a bad state. See
+  // https://crbug.com/1261338.
+  chromeos::bluetooth_config::SetPrefs(/*logged_in_profile_prefs=*/nullptr,
+                                       /*device_prefs=*/nullptr);
+}
 
 void BluetoothPrefStateObserver::OnUserProfileLoaded(
     const AccountId& account_id) {
@@ -32,6 +39,7 @@ void BluetoothPrefStateObserver::OnUserProfileLoaded(
     return;
 
   SetPrefs(profile);
+  session_observation_.Reset();
 }
 
 void BluetoothPrefStateObserver::SetPrefs(Profile* profile) {

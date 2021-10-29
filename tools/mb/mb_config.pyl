@@ -116,7 +116,7 @@
       'Android arm64 Builder (dbg) (reclient)': 'android_webview_google_debug_static_bot_arm64_reclient',
       'Android WebView P FYI (rel)': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-12-x64-fyi-rel': 'android_release_bot_minimal_symbols_x64_fastbuild_webview_google',
-      'android-annotator-rel': 'release_bot',
+      'android-annotator-rel': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_google',
       'android-web-platform-pie-x86-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google',
@@ -178,6 +178,8 @@
       'ToTAndroid x64': 'android_clang_tot_x64',
       'ToTAndroid x86': 'android_clang_tot_x86',
       'ToTAndroidCoverage x86': 'android_clang_tot_coverage_x86',
+      'ToTChromeOS': 'lacros_on_linux_tot_release',
+      'ToTChromeOS (dbg)': 'lacros_on_linux_tot_debug',
       'ToTFuchsia x64': 'fuchsia_clang_tot_release_x64',
       'ToTFuchsiaOfficial': 'fuchsia_clang_tot_official_arm64',
       'ToTLinuxOfficial': 'clang_tot_official',
@@ -302,7 +304,7 @@
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
-      'Mojo Linux': 'release_trybot_minimal_symbols_reclient',
+      'Mojo Linux (reclient shadow)': 'release_trybot_minimal_symbols_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
       'VR Linux': 'vr_release_bot',
       'VR Linux (reclient)': 'vr_release_bot_reclient',
@@ -316,7 +318,6 @@
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm',
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64',
-      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
@@ -935,7 +936,6 @@
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
-      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
@@ -2489,8 +2489,16 @@
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome', 'clang', 'use_clang_coverage', 'no_symbols',
     ],
 
+    'lacros_on_linux_tot_release': [
+      'lacros_on_linux', 'release', 'also_build_ash_chrome', 'clang_tot',
+    ],
+
     'lacros_on_linux_release_bot': [
       'lacros_on_linux', 'release_bot', 'also_build_ash_chrome',
+    ],
+
+    'lacros_on_linux_tot_debug': [
+      'lacros_on_linux', 'debug', 'also_build_ash_chrome', 'clang_tot',
     ],
 
     'lacros_on_linux_debug_bot': [
@@ -3216,7 +3224,7 @@
 
     'chromeos_device_reclient': {
       'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
-      'mixins': ['reclient'],
+      'mixins': ['dcheck_off', 'reclient'],
     },
 
     'chromeos_amd64-generic': {
@@ -3244,7 +3252,7 @@
     },
 
     'chromeos_amd64-generic_reclient': {
-      'mixins': ['chromeos_device_reclient', 'amd64-generic',]
+      'mixins': ['chromeos_device_reclient', 'amd64-generic-vm',]
     },
 
     'clang_tot': {

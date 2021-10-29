@@ -488,9 +488,11 @@ void CreditCardAccessManager::Authenticate() {
       // UnmaskResponseDetails while for masked server cards, it comes from the
       // UnmaskDetails.
       base::Value fido_request_options;
+      absl::optional<std::string> context_token;
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableVirtualCardsRiskBasedAuthentication) &&
           card_->record_type() == CreditCard::VIRTUAL_CARD) {
+        context_token = virtual_card_unmask_response_details_.context_token;
         fido_request_options = std::move(
             virtual_card_unmask_response_details_.fido_request_options.value());
       } else {
@@ -499,7 +501,7 @@ void CreditCardAccessManager::Authenticate() {
       }
       GetOrCreateFIDOAuthenticator()->Authenticate(
           card_.get(), weak_ptr_factory_.GetWeakPtr(),
-          std::move(fido_request_options));
+          std::move(fido_request_options), context_token);
 #endif
       break;
     }

@@ -54,6 +54,9 @@ class MediaImageGetterHelper {
                        base::Unretained(this)));
   }
 
+  MediaImageGetterHelper(const MediaImageGetterHelper&) = delete;
+  MediaImageGetterHelper& operator=(const MediaImageGetterHelper&) = delete;
+
   void Wait() {
     if (bitmap_.has_value())
       return;
@@ -71,8 +74,6 @@ class MediaImageGetterHelper {
 
   base::RunLoop run_loop_;
   absl::optional<SkBitmap> bitmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaImageGetterHelper);
 };
 
 // Integration tests for content::MediaSession that do not take into
@@ -84,6 +85,10 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &MediaSessionBrowserTestBase::OnServerRequest, base::Unretained(this)));
   }
+
+  MediaSessionBrowserTestBase(const MediaSessionBrowserTestBase&) = delete;
+  MediaSessionBrowserTestBase& operator=(const MediaSessionBrowserTestBase&) =
+      delete;
 
   void SetUp() override {
     ContentBrowserTest::SetUp();
@@ -175,8 +180,6 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
   // locked.
   base::Lock visited_urls_lock_;
   std::set<GURL> visited_urls_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionBrowserTestBase);
 };
 
 class MediaSessionBrowserTest : public MediaSessionBrowserTestBase {

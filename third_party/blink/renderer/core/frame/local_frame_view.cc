@@ -2947,18 +2947,12 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
         visual_viewport_or_overlay_needs_repaint_) {
       GraphicsContext graphics_context(*paint_controller_);
 
-      bool painted_full_screen_overlay = false;
-      if (frame_->IsMainFrame()) {
-        PaintLayer* full_screen_layer = GetFullScreenOverlayLayer();
-        if (full_screen_layer) {
-          PaintLayerPainter(*full_screen_layer)
-              .Paint(graphics_context, CullRect::Infinite(),
-                     kGlobalPaintNormalPhase, 0);
-          painted_full_screen_overlay = true;
-        }
-      }
-
-      if (!painted_full_screen_overlay) {
+      // Draw the overlay layer (video or WebXR DOM overlay) if present.
+      if (PaintLayer* full_screen_layer = GetFullScreenOverlayLayer()) {
+        PaintLayerPainter(*full_screen_layer)
+            .Paint(graphics_context, CullRect::Infinite(),
+                   kGlobalPaintNormalPhase, 0);
+      } else {
         PaintInternal(graphics_context, kGlobalPaintNormalPhase,
                       CullRect::Infinite());
 
@@ -5002,7 +4996,8 @@ PaintLayer* LocalFrameView::GetFullScreenOverlayLayer() const {
     return GetXrOverlayLayer(*doc);
 
   // Fullscreen overlay video layers are only used for the main frame.
-  DCHECK(frame_->IsMainFrame());
+  if (!frame_->IsMainFrame())
+    return nullptr;
   return GetFullScreenOverlayVideoLayer(*doc);
 }
 

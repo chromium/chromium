@@ -257,7 +257,7 @@ void UnmapNow(void* reservation_start,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pool == GetBRPPool()) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
-    // BRP pool, so shift the pointer. Non-BRP pool doesn't have logic.
+    // BRP pool, so shift the pointer. Other pools don't have this logic.
     PA_DCHECK(IsManagedByPartitionAllocBRPPool(
 #if defined(PA_HAS_64_BITS_POINTERS)
         reservation_start
@@ -270,10 +270,10 @@ void UnmapNow(void* reservation_start,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(pool == GetNonBRPPool() ||
+    PA_DCHECK(pool == GetRegularPool() ||
               (IsConfigurablePoolAvailable() && pool == GetConfigurablePool()));
     // Non-BRP pools don't need adjustment that BRP needs in 32-bit mode.
-    PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(reservation_start) ||
+    PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
               IsManagedByPartitionAllocConfigurablePool(reservation_start));
   }
 #endif  // DCHECK_IS_ON()

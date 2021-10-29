@@ -160,16 +160,17 @@ bool RenderViewContextMenuBase::IsContentCustomCommandId(int id) {
 }
 
 RenderViewContextMenuBase::RenderViewContextMenuBase(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : params_(params),
-      source_web_contents_(WebContents::FromRenderFrameHost(render_frame_host)),
+      source_web_contents_(
+          WebContents::FromRenderFrameHost(&render_frame_host)),
       browser_context_(source_web_contents_->GetBrowserContext()),
       menu_model_(this),
-      render_frame_id_(render_frame_host->GetRoutingID()),
-      render_frame_token_(render_frame_host->GetFrameToken()),
-      render_process_id_(render_frame_host->GetProcess()->GetID()),
-      site_instance_(render_frame_host->GetSiteInstance()),
+      render_frame_id_(render_frame_host.GetRoutingID()),
+      render_frame_token_(render_frame_host.GetFrameToken()),
+      render_process_id_(render_frame_host.GetProcess()->GetID()),
+      site_instance_(render_frame_host.GetSiteInstance()),
       command_executed_(false) {}
 
 RenderViewContextMenuBase::~RenderViewContextMenuBase() {

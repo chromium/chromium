@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 AppsAccessManager::AppsAccessManager() = default;
@@ -88,4 +88,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

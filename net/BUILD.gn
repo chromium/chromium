@@ -379,6 +379,8 @@ component("net") {
     "cert/symantec_certs.h",
     "cert/test_root_certs.cc",
     "cert/test_root_certs.h",
+    "cert/trial_comparison_cert_verifier_util.cc",
+    "cert/trial_comparison_cert_verifier_util.h",
     "cert/x509_cert_types.cc",
     "cert/x509_cert_types.h",
     "cert/x509_certificate.cc",

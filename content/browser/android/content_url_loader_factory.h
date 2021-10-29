@@ -26,6 +26,9 @@ class CONTENT_EXPORT ContentURLLoaderFactory
   // mojo::PendingRemote and the receivers bound by the Clone method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
+  ContentURLLoaderFactory(const ContentURLLoaderFactory&) = delete;
+  ContentURLLoaderFactory& operator=(const ContentURLLoaderFactory&) = delete;
+
  private:
   // SequencedTaskRunner must be allowed to block and should have background
   // priority since it will be used to schedule synchronous file I/O tasks.
@@ -45,8 +48,6 @@ class CONTENT_EXPORT ContentURLLoaderFactory
       override;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentURLLoaderFactory);
 };
 
 }  // namespace content

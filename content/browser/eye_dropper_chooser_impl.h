@@ -24,6 +24,9 @@ class EyeDropperChooserImpl final
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::EyeDropperChooser>);
 
+  EyeDropperChooserImpl(const EyeDropperChooserImpl&) = delete;
+  EyeDropperChooserImpl& operator=(const EyeDropperChooserImpl&) = delete;
+
   // EyeDropperChooser:
   void Choose(ChooseCallback) override;
 
@@ -39,8 +42,6 @@ class EyeDropperChooserImpl final
 
   ChooseCallback callback_;
   std::unique_ptr<EyeDropper> eye_dropper_;
-
-  DISALLOW_COPY_AND_ASSIGN(EyeDropperChooserImpl);
 };
 
 }  // namespace content

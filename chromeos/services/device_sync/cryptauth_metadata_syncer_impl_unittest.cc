@@ -75,6 +75,12 @@ const cryptauthv2::RequestContext& GetRequestContext() {
 class DeviceSyncCryptAuthMetadataSyncerImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthMetadataSyncerImplTest(
+      const DeviceSyncCryptAuthMetadataSyncerImplTest&) = delete;
+  DeviceSyncCryptAuthMetadataSyncerImplTest& operator=(
+      const DeviceSyncCryptAuthMetadataSyncerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthMetadataSyncerImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -469,8 +475,6 @@ class DeviceSyncCryptAuthMetadataSyncerImplTest
 
   absl::optional<CryptAuthKey> initial_group_key_;
   std::unique_ptr<CryptAuthMetadataSyncer> metadata_syncer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthMetadataSyncerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthMetadataSyncerImplTest,

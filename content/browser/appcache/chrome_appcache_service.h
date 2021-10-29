@@ -51,6 +51,9 @@ class CONTENT_EXPORT ChromeAppCacheService
   ChromeAppCacheService(scoped_refptr<storage::QuotaManagerProxy> proxy,
                         base::WeakPtr<StoragePartitionImpl> partition);
 
+  ChromeAppCacheService(const ChromeAppCacheService&) = delete;
+  ChromeAppCacheService& operator=(const ChromeAppCacheService&) = delete;
+
   // If |cache_path| is empty we will use in-memory structs.
   void Initialize(
       const base::FilePath& cache_path,
@@ -89,8 +92,6 @@ class CONTENT_EXPORT ChromeAppCacheService
   BrowserContext* browser_context_ = nullptr;
   base::FilePath cache_path_;
   mojo::UniqueReceiverSet<blink::mojom::AppCacheBackend> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppCacheService);
 };
 
 struct ChromeAppCacheServiceDeleter {

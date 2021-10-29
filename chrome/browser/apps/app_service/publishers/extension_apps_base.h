@@ -80,7 +80,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
       int32_t event_flags,
       apps::mojom::IntentPtr intent,
       apps::mojom::LaunchSource launch_source,
-      apps::mojom::WindowInfoPtr window_info);
+      apps::mojom::WindowInfoPtr window_info,
+      LaunchAppWithIntentCallback callback);
 
   virtual content::WebContents* LaunchImpl(AppLaunchParams&& params);
 
@@ -103,6 +104,19 @@ class ExtensionAppsBase : public apps::PublisherBase,
   }
 
  private:
+  // Holds onto a success/failure callback and invokes it with `false` if the
+  // holding object is deleted before the callback is otherwise invoked.
+  struct CallbackWrapper {
+   public:
+    explicit CallbackWrapper(base::OnceCallback<void(bool)> callback);
+    CallbackWrapper(const CallbackWrapper&) = delete;
+    CallbackWrapper& operator=(const CallbackWrapper&) = delete;
+    CallbackWrapper(CallbackWrapper&&);
+    ~CallbackWrapper();
+
+    base::OnceCallback<void(bool)> callback;
+  };
+
   void Initialize(const mojo::Remote<apps::mojom::AppService>& app_service);
 
   // Determines whether the given extension should be treated as type app_type_,
@@ -130,7 +144,8 @@ class ExtensionAppsBase : public apps::PublisherBase,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info) override;
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void Uninstall(const std::string& app_id,
                  apps::mojom::UninstallSource uninstall_source,
                  bool clear_site_data,
@@ -178,7 +193,13 @@ class ExtensionAppsBase : public apps::PublisherBase,
                      apps::mojom::Readiness readiness,
                      std::vector<apps::mojom::AppPtr>* apps_out);
 
- private:
+  void ExtensionWasEnabled(const std::string& app_id,
+                           int32_t event_flags,
+                           apps::mojom::IntentPtr intent,
+                           apps::mojom::LaunchSource launch_source,
+                           apps::mojom::WindowInfoPtr window_info,
+                           CallbackWrapper callback);
+
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
   Profile* const profile_;

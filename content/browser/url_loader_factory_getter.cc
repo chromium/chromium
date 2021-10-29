@@ -73,6 +73,10 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
   }
 
+  URLLoaderFactoryForIOThread(const URLLoaderFactoryForIOThread&) = delete;
+  URLLoaderFactoryForIOThread& operator=(const URLLoaderFactoryForIOThread&) =
+      delete;
+
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -112,8 +116,6 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
 
   scoped_refptr<URLLoaderFactoryGetter> factory_getter_;
   bool is_corb_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForIOThread);
 };
 
 scoped_refptr<network::SharedURLLoaderFactory>

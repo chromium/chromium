@@ -68,6 +68,9 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
     EXPECT_NE(nullptr, manager_);
   }
 
+  PaymentManagerTest(const PaymentManagerTest&) = delete;
+  PaymentManagerTest& operator=(const PaymentManagerTest&) = delete;
+
   PaymentManager* payment_manager() const { return manager_; }
 
   void DeletePaymentInstrument(const std::string& instrument_key,
@@ -120,8 +123,6 @@ class PaymentManagerTest : public PaymentAppContentUnitTestBase {
  private:
   // Owned by payment_app_context_.
   PaymentManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManagerTest);
 };
 
 TEST_F(PaymentManagerTest, SetAndGetPaymentInstrument) {

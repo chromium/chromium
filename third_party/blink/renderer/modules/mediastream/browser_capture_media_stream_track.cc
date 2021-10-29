@@ -55,9 +55,13 @@ void ResolveCropPromise(ScriptPromiseResolver* resolver,
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unknown error.");
       return;
+    case media::mojom::CropRequestResult::kUnsupportedCaptureDevice:
+      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
+                         "Unsupported device.");
+      return;
     case media::mojom::CropRequestResult::kErrorUnknownDeviceId:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
-                         "Unknown device-ID.");
+                         "Unknown device.");
       return;
     case media::mojom::CropRequestResult::kNotImplemented:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,

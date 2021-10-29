@@ -442,13 +442,16 @@ Polymer({
    * @return {void}
    */
   updatePosition: function() {
-    if (!this._target || !this.offsetParent)
+    if (!this._target)
+      return;
+    var offsetParent = this._composedOffsetParent();
+    if (!offsetParent)
       return;
     var offset = this.offset;
     // If a marginTop has been provided by the user (pre 1.0.3), use it.
     if (this.marginTop != 14 && this.offset == 14)
       offset = this.marginTop;
-    var parentRect = this.offsetParent.getBoundingClientRect();
+    var parentRect = offsetParent.getBoundingClientRect();
     var targetRect = this._target.getBoundingClientRect();
     var thisRect = this.getBoundingClientRect();
     var horizontalCenterOffset = (targetRect.width - thisRect.width) / 2;
@@ -594,5 +597,44 @@ Polymer({
     }
     this.unlisten(this.$.tooltip, 'animationend', '_onAnimationEnd');
     this.unlisten(this, 'mouseenter', 'hide');
+  },
+
+  /**
+   * Polyfills the old offsetParent behavior from before the spec was changed:
+   * https://github.com/w3c/csswg-drafts/issues/159
+   */
+  _composedOffsetParent: function() {
+    let offsetParent = this.offsetParent;
+    let ancestor = this;
+    let foundInsideSlot = false;
+    while (ancestor && ancestor !== offsetParent) {
+      const assignedSlot = ancestor.assignedSlot;
+      if (assignedSlot) {
+        let newOffsetParent = assignedSlot.offsetParent;
+
+        if (getComputedStyle(assignedSlot)['display'] === 'contents') {
+          const hadStyleAttribute = assignedSlot.hasAttribute('style');
+          const oldDisplay = assignedSlot.style.display;
+          assignedSlot.style.display = getComputedStyle(ancestor).display;
+
+          newOffsetParent = assignedSlot.offsetParent;
+
+          assignedSlot.style.display = oldDisplay;
+          if (!hadStyleAttribute) {
+            assignedSlot.removeAttribute('style');
+          }
+        }
+
+        ancestor = assignedSlot;
+        if (offsetParent !== newOffsetParent) {
+          offsetParent = newOffsetParent;
+          foundInsideSlot = true;
+        }
+      } else if (ancestor.host && foundInsideSlot) {
+        break;
+      }
+      ancestor = ancestor.host || ancestor.parentNode;
+    }
+    return offsetParent;
   }
 });

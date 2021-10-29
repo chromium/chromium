@@ -36,7 +36,7 @@ class EcheAppIntegrationTest : public SystemWebAppIntegrationTest {
 // Test that the Eche App installs and launches correctly. Runs some spot checks
 // on the manifest.
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, EcheApp) {
-  const GURL url(chromeos::eche_app::kChromeUIEcheAppURL);
+  const GURL url(ash::eche_app::kChromeUIEcheAppURL);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::ECHE, url, "Eche App"));
 }

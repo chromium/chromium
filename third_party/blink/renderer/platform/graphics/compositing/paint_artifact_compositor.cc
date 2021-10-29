@@ -730,7 +730,7 @@ static void UpdateCompositorViewportProperties(
   DCHECK(!properties.outer_clip ||
          static_cast<bool>(properties.inner_scroll_translation));
 
-  cc::LayerTreeHost::ViewportPropertyIds ids;
+  cc::ViewportPropertyIds ids;
   if (properties.overscroll_elasticity_transform) {
     ids.overscroll_elasticity_transform =
         property_tree_manager.EnsureCompositorTransformNode(

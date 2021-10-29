@@ -103,6 +103,9 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
    public:
     explicit ClosureTask(base::OnceClosure closure);
 
+    ClosureTask(const ClosureTask&) = delete;
+    ClosureTask& operator=(const ClosureTask&) = delete;
+
     // Overridden from cc::Task:
     void RunOnWorkerThread() override;
 
@@ -111,8 +114,6 @@ class CONTENT_EXPORT CategorizedWorkerPool : public base::TaskRunner,
 
    private:
     base::OnceClosure closure_;
-
-    DISALLOW_COPY_AND_ASSIGN(ClosureTask);
   };
 
   void ScheduleTasksWithLockAcquired(cc::NamespaceToken token,

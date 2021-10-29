@@ -79,8 +79,8 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   }
 
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
-  for (const auto& record : records) {
-    builder.AddRecord(record);
+  for (auto record : records) {
+    builder.AddRecord(std::move(record));
   }
   auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
@@ -96,8 +96,9 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   EXPECT_EQ(record_list->GetList().size(), records.size());
 
   size_t counter = 0;
-  for (const auto& record : records) {
-    auto record_value_result = EncryptedRecordDictionaryBuilder(record).Build();
+  for (auto record : records) {
+    auto record_value_result =
+        EncryptedRecordDictionaryBuilder(std::move(record)).Build();
     ASSERT_TRUE(record_value_result.has_value());
     EXPECT_EQ(record_list->GetList()[counter++], record_value_result.value());
   }
@@ -118,8 +119,8 @@ TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
       ->clear_generation_id();
 
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
-  for (const auto& record : records) {
-    builder.AddRecord(record);
+  for (auto record : records) {
+    builder.AddRecord((std::move(record)));
   }
   auto request_payload = builder.Build();
   ASSERT_FALSE(request_payload.has_value()) << request_payload.value();
@@ -165,7 +166,8 @@ TEST_P(RecordUploadRequestBuilderTest,
   EXPECT_FALSE(compressionless_record.has_compression_information());
 
   absl::optional<base::Value> compressionless_payload =
-      EncryptedRecordDictionaryBuilder(compressionless_record).Build();
+      EncryptedRecordDictionaryBuilder(std::move(compressionless_record))
+          .Build();
   DCHECK(compressionless_payload.has_value());
 
   EXPECT_FALSE(compressionless_payload.value().FindKey(
@@ -176,7 +178,7 @@ TEST_P(RecordUploadRequestBuilderTest,
   EXPECT_TRUE(compressed_record.has_compression_information());
 
   absl::optional<base::Value> compressed_record_payload =
-      EncryptedRecordDictionaryBuilder(compressed_record).Build();
+      EncryptedRecordDictionaryBuilder(std::move(compressed_record)).Build();
   DCHECK(compressed_record_payload.has_value());
 
   EXPECT_TRUE(compressed_record_payload.value().FindKey(

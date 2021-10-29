@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/fake_eche_message_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 FakeEcheMessageReceiver::FakeEcheMessageReceiver() = default;
@@ -36,4 +36,4 @@ void FakeEcheMessageReceiver::FakeStatusChange(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

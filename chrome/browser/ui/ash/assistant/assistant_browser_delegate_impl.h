@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class AssistantSetup;
-class AssistantWebViewFactoryImpl;
 class Profile;
 
 // Class to handle all Assistant in-browser-process functionalities.
@@ -104,7 +103,6 @@ class AssistantBrowserDelegateImpl
   std::unique_ptr<DeviceActions> device_actions_;
   std::unique_ptr<chromeos::assistant::Service> service_;
   std::unique_ptr<AssistantSetup> assistant_setup_;
-  std::unique_ptr<AssistantWebViewFactoryImpl> assistant_web_view_factory_;
 
   bool initialized_ = false;
 

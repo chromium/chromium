@@ -23,6 +23,9 @@ class PPB_Buffer_Impl : public ppapi::Resource,
   static scoped_refptr<PPB_Buffer_Impl> CreateResource(PP_Instance instance,
                                                        uint32_t size);
 
+  PPB_Buffer_Impl(const PPB_Buffer_Impl&) = delete;
+  PPB_Buffer_Impl& operator=(const PPB_Buffer_Impl&) = delete;
+
   virtual PPB_Buffer_Impl* AsPPB_Buffer_Impl();
 
   const base::UnsafeSharedMemoryRegion& shared_memory() const {
@@ -52,8 +55,6 @@ class PPB_Buffer_Impl : public ppapi::Resource,
   base::WritableSharedMemoryMapping shared_mapping_;
   uint32_t size_;
   int map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_Buffer_Impl);
 };
 
 // Ensures that the given buffer is mapped, and returns it to its previous

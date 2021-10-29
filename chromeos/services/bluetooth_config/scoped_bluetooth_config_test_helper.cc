@@ -42,7 +42,8 @@ ScopedBluetoothConfigTestHelper::CreateDeviceNameManager(
 
 std::unique_ptr<DeviceCache> ScopedBluetoothConfigTestHelper::CreateDeviceCache(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceNameManager* device_name_manager) {
   auto fake_device_cache =
       std::make_unique<FakeDeviceCache>(adapter_state_controller);
   fake_device_cache_ = fake_device_cache.get();

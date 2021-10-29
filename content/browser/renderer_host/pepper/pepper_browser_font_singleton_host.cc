@@ -24,6 +24,9 @@ class FontMessageFilter : public ppapi::host::ResourceMessageFilter {
  public:
   FontMessageFilter();
 
+  FontMessageFilter(const FontMessageFilter&) = delete;
+  FontMessageFilter& operator=(const FontMessageFilter&) = delete;
+
   // ppapi::host::ResourceMessageFilter implementation.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& msg) override;
@@ -36,8 +39,6 @@ class FontMessageFilter : public ppapi::host::ResourceMessageFilter {
 
   // Message handler.
   int32_t OnHostMsgGetFontFamilies(ppapi::host::HostMessageContext* context);
-
-  DISALLOW_COPY_AND_ASSIGN(FontMessageFilter);
 };
 
 FontMessageFilter::FontMessageFilter() {}

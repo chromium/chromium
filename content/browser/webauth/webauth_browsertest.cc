@@ -385,6 +385,11 @@ class WebAuthBrowserTestClientDelegate
   explicit WebAuthBrowserTestClientDelegate(WebAuthBrowserTestState* test_state)
       : test_state_(test_state) {}
 
+  WebAuthBrowserTestClientDelegate(const WebAuthBrowserTestClientDelegate&) =
+      delete;
+  WebAuthBrowserTestClientDelegate& operator=(
+      const WebAuthBrowserTestClientDelegate&) = delete;
+
   void ShouldReturnAttestation(
       const std::string& relying_party_id,
       const ::device::FidoAuthenticator* authenticator,
@@ -396,8 +401,6 @@ class WebAuthBrowserTestClientDelegate
 
  private:
   WebAuthBrowserTestState* const test_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestClientDelegate);
 };
 
 // Implements ContentBrowserClient and allows webauthn-related calls to be
@@ -407,6 +410,11 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
   explicit WebAuthBrowserTestContentBrowserClient(
       WebAuthBrowserTestState* test_state)
       : test_state_(test_state) {}
+
+  WebAuthBrowserTestContentBrowserClient(
+      const WebAuthBrowserTestContentBrowserClient&) = delete;
+  WebAuthBrowserTestContentBrowserClient& operator=(
+      const WebAuthBrowserTestContentBrowserClient&) = delete;
 
   WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
     return &web_authentication_delegate_;
@@ -423,12 +431,14 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
   WebAuthBrowserTestState* const test_state_;
   WebAuthBrowserTestWebAuthenticationDelegate web_authentication_delegate_{
       test_state_};
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestContentBrowserClient);
 };
 
 // Test fixture base class for common tasks.
 class WebAuthBrowserTestBase : public content::ContentBrowserTest {
+ public:
+  WebAuthBrowserTestBase(const WebAuthBrowserTestBase&) = delete;
+  WebAuthBrowserTestBase& operator=(const WebAuthBrowserTestBase&) = delete;
+
  protected:
   WebAuthBrowserTestBase() = default;
 
@@ -497,8 +507,6 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
   ContentBrowserClient* old_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestBase);
 };
 
 // WebAuthLocalClientBrowserTest ----------------------------------------------

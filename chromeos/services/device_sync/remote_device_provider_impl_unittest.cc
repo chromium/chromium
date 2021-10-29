@@ -232,6 +232,11 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
  public:
   DeviceSyncRemoteDeviceProviderImplTest() = default;
 
+  DeviceSyncRemoteDeviceProviderImplTest(
+      const DeviceSyncRemoteDeviceProviderImplTest&) = delete;
+  DeviceSyncRemoteDeviceProviderImplTest& operator=(
+      const DeviceSyncRemoteDeviceProviderImplTest&) = delete;
+
   void SetUp() override {
     fake_device_manager_ = std::make_unique<FakeCryptAuthDeviceManager>();
     fake_v2_device_manager_ = std::make_unique<FakeCryptAuthV2DeviceManager>();
@@ -464,8 +469,6 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
       fake_remote_device_v2_loader_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<RemoteDeviceProviderImpl> remote_device_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncRemoteDeviceProviderImplTest);
 };
 
 // ---------------------------------- V1 Only ----------------------------------

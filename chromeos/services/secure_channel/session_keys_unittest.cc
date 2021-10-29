@@ -28,10 +28,13 @@ const char kResponderKeyHex[] =
 }  // namespace
 
 class SecureChannelSessionKeysTest : public testing::Test {
+ public:
+  SecureChannelSessionKeysTest(const SecureChannelSessionKeysTest&) = delete;
+  SecureChannelSessionKeysTest& operator=(const SecureChannelSessionKeysTest&) =
+      delete;
+
  protected:
   SecureChannelSessionKeysTest() {}
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelSessionKeysTest);
 };
 
 TEST_F(SecureChannelSessionKeysTest, GenerateKeys) {

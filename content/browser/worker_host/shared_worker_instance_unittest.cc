@@ -20,6 +20,9 @@ class SharedWorkerInstanceTest : public testing::Test {
  protected:
   SharedWorkerInstanceTest() {}
 
+  SharedWorkerInstanceTest(const SharedWorkerInstanceTest&) = delete;
+  SharedWorkerInstanceTest& operator=(const SharedWorkerInstanceTest&) = delete;
+
   SharedWorkerInstance CreateInstance(const GURL& script_url,
                                       const std::string& name,
                                       const blink::StorageKey& storage_key) {
@@ -42,9 +45,6 @@ class SharedWorkerInstanceTest : public testing::Test {
     }
     return instance.Matches(GURL(url), std::string(name), storage_key);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerInstanceTest);
 };
 
 TEST_F(SharedWorkerInstanceTest, MatchesTest) {

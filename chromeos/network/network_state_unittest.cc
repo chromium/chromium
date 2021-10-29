@@ -33,6 +33,9 @@ class NetworkStateTest : public testing::Test {
  public:
   NetworkStateTest() : network_state_("test_path") {}
 
+  NetworkStateTest(const NetworkStateTest&) = delete;
+  NetworkStateTest& operator=(const NetworkStateTest&) = delete;
+
   // testing::Test:
   void SetUp() override { AddCellularDevice(); }
 
@@ -69,8 +72,6 @@ class NetworkStateTest : public testing::Test {
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
 
   base::DictionaryValue properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateTest);
 };
 
 }  // namespace

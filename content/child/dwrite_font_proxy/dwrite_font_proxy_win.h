@@ -57,6 +57,10 @@ class DWriteFontCollectionProxy
   // are an error - it is only public because a WRL helper function creates the
   // objects.
   DWriteFontCollectionProxy();
+
+  DWriteFontCollectionProxy& operator=(const DWriteFontCollectionProxy&) =
+      delete;
+
   ~DWriteFontCollectionProxy() override;
 
   // IDWriteFontCollection:
@@ -135,8 +139,6 @@ class DWriteFontCollectionProxy
       font_proxy_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_ASSIGN(DWriteFontCollectionProxy);
 };
 
 // Implements the DirectWrite font family interface. This class is just a
@@ -149,6 +151,9 @@ class DWriteFontFamilyProxy
           IDWriteFontFamily> {
  public:
   DWriteFontFamilyProxy();
+
+  DWriteFontFamilyProxy& operator=(const DWriteFontFamilyProxy&) = delete;
+
   ~DWriteFontFamilyProxy() override;
 
   // IDWriteFontFamily:
@@ -195,8 +200,6 @@ class DWriteFontFamilyProxy
       GUARDED_BY(family_lock_);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_ASSIGN(DWriteFontFamilyProxy);
 };
 
 // Implements the DirectWrite font file enumerator interface, backed by a list
@@ -207,6 +210,9 @@ class FontFileEnumerator
           IDWriteFontFileEnumerator> {
  public:
   FontFileEnumerator();
+
+  FontFileEnumerator& operator=(const FontFileEnumerator&) = delete;
+
   ~FontFileEnumerator() override;
 
   // IDWriteFontFileEnumerator:
@@ -224,8 +230,6 @@ class FontFileEnumerator
   std::vector<HANDLE> files_;
   UINT32 next_file_ = 0;
   UINT32 current_file_ = UINT_MAX;
-
-  DISALLOW_ASSIGN(FontFileEnumerator);
 };
 
 // Implements the DirectWrite font file stream interface that maps the file to
@@ -237,6 +241,9 @@ class FontFileStream
           IDWriteFontFileStream> {
  public:
   FontFileStream();
+
+  FontFileStream& operator=(const FontFileStream&) = delete;
+
   ~FontFileStream() override;
 
   // IDWriteFontFileStream:
@@ -252,8 +259,6 @@ class FontFileStream
 
  private:
   base::MemoryMappedFile data_;
-
-  DISALLOW_ASSIGN(FontFileStream);
 };
 
 }  // namespace content

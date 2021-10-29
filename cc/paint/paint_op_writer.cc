@@ -14,6 +14,8 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_shader.h"
+#include "cc/paint/skottie_transfer_cache_entry.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -21,11 +23,6 @@
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-
-#if !defined(OS_ANDROID)
-#include "cc/paint/skottie_transfer_cache_entry.h"
-#include "cc/paint/skottie_wrapper.h"
-#endif
 
 namespace cc {
 namespace {
@@ -282,9 +279,6 @@ void PaintOpWriter::Write(const DrawImage& draw_image,
   WriteImage(decoded_draw_image);
 }
 
-// Android does not use skottie. Remove below section to keep binary size to a
-// minimum.
-#if !defined(OS_ANDROID)
 void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   uint32_t id = skottie->id();
   Write(id);
@@ -309,7 +303,6 @@ void PaintOpWriter::Write(scoped_refptr<SkottieWrapper> skottie) {
   memory_ += bytes_written;
   remaining_bytes_ -= bytes_written;
 }
-#endif  // !defined(OS_ANDROID)
 
 void PaintOpWriter::WriteImage(const DecodedDrawImage& decoded_draw_image) {
   if (!decoded_draw_image.mailbox().IsZero()) {

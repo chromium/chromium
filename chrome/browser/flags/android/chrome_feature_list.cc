@@ -210,6 +210,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextMenuTranslateWithGoogleLens,
     &kContextMenuPopupStyle,
     &kContextualSearchDebug,
+    &kContextualSearchDelayedIntelligence,
     &kContextualSearchForceCaption,
     &kContextualSearchLegacyHttpPolicy,
     &kContextualSearchLiteralSearchTap,
@@ -536,6 +537,9 @@ const base::Feature kLensCameraAssistedSearch{
 
 const base::Feature kContextualSearchDebug{"ContextualSearchDebug",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualSearchDelayedIntelligence{
+    "ContextualSearchDelayedIntelligence", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchForceCaption{
     "ContextualSearchForceCaption", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -83,7 +83,7 @@ class RegisterProtocolHandlerBrowserTest : public InProcessBrowserTest {
     params.writing_direction_right_to_left = 0;
 #endif  // OS_MAC
     TestRenderViewContextMenu* menu = new TestRenderViewContextMenu(
-        browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
+        *browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame(),
         params);
     menu->Init();
     return menu;

@@ -92,12 +92,13 @@ class SSLManagerSet : public base::SupportsUserData::Data {
   SSLManagerSet() {
   }
 
+  SSLManagerSet(const SSLManagerSet&) = delete;
+  SSLManagerSet& operator=(const SSLManagerSet&) = delete;
+
   std::set<SSLManager*>& get() { return set_; }
 
  private:
   std::set<SSLManager*> set_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLManagerSet);
 };
 
 void LogMixedContentMetrics(MixedContentType type,

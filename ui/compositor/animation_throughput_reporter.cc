@@ -49,8 +49,11 @@ class AnimationThroughputReporter::AnimationTracker
 
   ~AnimationTracker() override = default;
 
-  // Whether there are/will be animations to track.
-  bool HasAnimationsToTrack() const { return !attached_sequences().empty(); }
+  // Whether there are/will be animations to track and the track is actively
+  // tracking them.
+  bool HasAnimationsToTrack() const {
+    return active() && !attached_sequences().empty();
+  }
 
   void set_should_delete(bool should_delete) { should_delete_ = should_delete; }
 

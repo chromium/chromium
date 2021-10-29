@@ -29,6 +29,10 @@ class CompositorDependenciesAndroid {
  public:
   static CompositorDependenciesAndroid& Get();
 
+  CompositorDependenciesAndroid(const CompositorDependenciesAndroid&) = delete;
+  CompositorDependenciesAndroid& operator=(
+      const CompositorDependenciesAndroid&) = delete;
+
   cc::TaskGraphRunner* GetTaskGraphRunner();
 
   viz::HostFrameSinkManager* host_frame_sink_manager() {
@@ -70,8 +74,6 @@ class CompositorDependenciesAndroid {
   base::flat_set<CompositorImpl*> visible_compositors_;
 
   std::unique_ptr<cc::TaskGraphRunner> task_graph_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorDependenciesAndroid);
 };
 
 }  // namespace content

@@ -397,4 +397,9 @@ void CompositorView::PreserveChildSurfaceControls(
   compositor_->PreserveChildSurfaceControls();
 }
 
+void CompositorView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
+                                                      jboolean enable) {
+  compositor_->SetDidSwapBuffersCallbackEnabled(enable);
+}
+
 }  // namespace android

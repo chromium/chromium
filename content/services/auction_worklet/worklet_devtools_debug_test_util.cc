@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
+
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"

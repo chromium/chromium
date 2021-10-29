@@ -17,6 +17,9 @@ class ContentClient;
 // for details.
 class ContentTestSuiteBase : public base::TestSuite {
  public:
+  ContentTestSuiteBase(const ContentTestSuiteBase&) = delete;
+  ContentTestSuiteBase& operator=(const ContentTestSuiteBase&) = delete;
+
   // Registers content's schemes. During this call, the given content_client is
   // registered temporarily so that it can provide additional schemes.
   static void RegisterContentSchemes(ContentClient* content_client);
@@ -32,9 +35,6 @@ class ContentTestSuiteBase : public base::TestSuite {
   ContentTestSuiteBase(int argc, char** argv);
 
   void Initialize() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentTestSuiteBase);
 };
 
 } //  namespace content

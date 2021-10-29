@@ -49,6 +49,9 @@ class CONTENT_EXPORT StreamTextureWrapperImpl
       scoped_refptr<StreamTextureFactory> factory,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
+  StreamTextureWrapperImpl(const StreamTextureWrapperImpl&) = delete;
+  StreamTextureWrapperImpl& operator=(const StreamTextureWrapperImpl&) = delete;
+
   // Creates the underlying StreamTexture, and binds |stream_texture_proxy_| to
   // |compositor_task_runner|.
   //
@@ -123,8 +126,6 @@ class CONTENT_EXPORT StreamTextureWrapperImpl
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 
   base::WeakPtrFactory<StreamTextureWrapperImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StreamTextureWrapperImpl);
 };
 
 }  // namespace media

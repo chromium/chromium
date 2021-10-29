@@ -130,6 +130,9 @@ class WebDragSourceAura : public content::WebContentsObserver {
   WebDragSourceAura(aura::Window* window, WebContentsImpl* contents)
       : WebContentsObserver(contents), window_(window) {}
 
+  WebDragSourceAura(const WebDragSourceAura&) = delete;
+  WebDragSourceAura& operator=(const WebDragSourceAura&) = delete;
+
   // content::WebContentsObserver
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
@@ -155,8 +158,6 @@ class WebDragSourceAura : public content::WebContentsObserver {
 
  private:
   aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDragSourceAura);
 };
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
@@ -448,6 +449,10 @@ class WebContentsViewAura::AsyncDropNavigationObserver
                               const gfx::PointF& screen_pt,
                               int key_modifiers);
 
+  AsyncDropNavigationObserver(const AsyncDropNavigationObserver&) = delete;
+  AsyncDropNavigationObserver& operator=(const AsyncDropNavigationObserver&) =
+      delete;
+
   // WebContentsObserver:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
@@ -472,8 +477,6 @@ class WebContentsViewAura::AsyncDropNavigationObserver
   const gfx::PointF client_pt_;
   const gfx::PointF screen_pt_;
   const int key_modifiers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDropNavigationObserver);
 };
 
 WebContentsViewAura::AsyncDropNavigationObserver::AsyncDropNavigationObserver(
@@ -1015,7 +1018,7 @@ void WebContentsViewAura::SetOverscrollControllerEnabled(bool enabled) {
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 
-void WebContentsViewAura::ShowContextMenu(RenderFrameHost* render_frame_host,
+void WebContentsViewAura::ShowContextMenu(RenderFrameHost& render_frame_host,
                                           const ContextMenuParams& params) {
   TouchSelectionControllerClientAura* selection_controller_client =
       GetSelectionControllerClient();

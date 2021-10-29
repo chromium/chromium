@@ -128,7 +128,10 @@ instrumentation_test_apk("chrome_java_test_feed_test") {
   apk_name = "ChromeFeedTests"
   apk_under_test = "//chrome/android:chrome_public_apk"
   android_manifest = "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/AndroidManifest.xml"
-  sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/feedmanagement/FeedManagementTest.java" ]
+  sources = [
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedSurfaceCoordinatorIntegrationTest.java",
+    "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/feedmanagement/FeedManagementTest.java",
+  ]
 
   # Skia Gold dependency
   data_deps = [ "//ui/base:goldctl" ]

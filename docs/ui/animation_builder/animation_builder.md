@@ -17,6 +17,12 @@ The following code will create a repeating cross-fading animation shown below.
 
 ![animation_step1](images/animation_builder1.png)  ![animation_step2](images/animation_builder1.png)  ![animation_step3](images/animation_builder1.png)
 
+You can see this animation by running `views_examples` on Windows or Linux:
+
+``` shell
+$ autoninja -C out\Default views_examples
+$ out\Default\views_examples --enable-examples="Fade Animation"
+```
 
 Traditionally this would be how the above animation would be created.
 

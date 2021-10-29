@@ -34,6 +34,10 @@ class PaymentAppInfoFetcher {
   using PaymentAppInfoFetchCallback =
       base::OnceCallback<void(std::unique_ptr<PaymentAppInfo> app_info)>;
 
+  PaymentAppInfoFetcher() = delete;
+  PaymentAppInfoFetcher(const PaymentAppInfoFetcher&) = delete;
+  PaymentAppInfoFetcher& operator=(const PaymentAppInfoFetcher&) = delete;
+
   static void Start(
       const GURL& context_url,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
@@ -81,8 +85,6 @@ class PaymentAppInfoFetcher {
     PaymentAppInfoFetchCallback callback_;
     base::WeakPtrFactory<SelfDeleteFetcher> weak_ptr_factory_{this};
   };
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PaymentAppInfoFetcher);
 };
 
 }  // namespace content

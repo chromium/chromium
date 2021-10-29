@@ -48,6 +48,9 @@ class TestUtilityServiceImpl : public mojom::TestService {
                                 std::move(receiver));
   }
 
+  TestUtilityServiceImpl(const TestUtilityServiceImpl&) = delete;
+  TestUtilityServiceImpl& operator=(const TestUtilityServiceImpl&) = delete;
+
   // mojom::TestService implementation:
   void DoSomething(DoSomethingCallback callback) override {
     std::move(callback).Run();
@@ -112,8 +115,6 @@ class TestUtilityServiceImpl : public mojom::TestService {
 
  private:
   TestUtilityServiceImpl() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUtilityServiceImpl);
 };
 
 auto RunEchoService(mojo::PendingReceiver<echo::mojom::EchoService> receiver) {

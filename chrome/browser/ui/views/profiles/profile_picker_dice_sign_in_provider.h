@@ -77,7 +77,7 @@ class ProfilePickerDiceSignInProvider
 
  private:
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,

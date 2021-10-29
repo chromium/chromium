@@ -847,6 +847,15 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params));
 
+  display_private_->SetSwapCompletionCallbackEnabled(
+      enable_swap_completion_callbacks_);
+  display_private_->SetDisplayVisible(true);
+  display_private_->Resize(size_);
+  display_private_->SetDisplayColorSpaces(display_color_spaces_);
+  display_private_->SetVSyncPaused(vsync_paused_);
+  display_private_->SetSupportedRefreshRates(
+      root_window_->GetSupportedRefreshRates());
+
   // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.compositor_task_runner = task_runner;
@@ -859,12 +868,6 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider), nullptr, &params);
   host_->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink));
-  display_private_->SetDisplayVisible(true);
-  display_private_->Resize(size_);
-  display_private_->SetDisplayColorSpaces(display_color_spaces_);
-  display_private_->SetVSyncPaused(vsync_paused_);
-  display_private_->SetSupportedRefreshRates(
-      root_window_->GetSupportedRefreshRates());
 }
 
 viz::LocalSurfaceId CompositorImpl::GenerateLocalSurfaceId() {
@@ -921,6 +924,16 @@ void CompositorImpl::PreserveChildSurfaceControls() {
 void CompositorImpl::RequestPresentationTimeForNextFrame(
     PresentationTimeCallback callback) {
   host_->RequestPresentationTimeForNextFrame(std::move(callback));
+}
+
+void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
+  if (enable_swap_completion_callbacks_ == enable)
+    return;
+  enable_swap_completion_callbacks_ = enable;
+  if (display_private_) {
+    display_private_->SetSwapCompletionCallbackEnabled(
+        enable_swap_completion_callbacks_);
+  }
 }
 
 void CompositorImpl::DecrementPendingReadbacks() {

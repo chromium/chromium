@@ -286,6 +286,12 @@ SyncKeysResponse BuildSyncKeysResponse(
 class DeviceSyncCryptAuthV2EnrollerImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthV2EnrollerImplTest(
+      const DeviceSyncCryptAuthV2EnrollerImplTest&) = delete;
+  DeviceSyncCryptAuthV2EnrollerImplTest& operator=(
+      const DeviceSyncCryptAuthV2EnrollerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthV2EnrollerImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -528,8 +534,6 @@ class DeviceSyncCryptAuthV2EnrollerImplTest
   absl::optional<CryptAuthEnrollmentResult> enrollment_result_;
 
   std::unique_ptr<CryptAuthV2Enroller> enroller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthV2EnrollerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthV2EnrollerImplTest, SuccessfulEnrollment) {

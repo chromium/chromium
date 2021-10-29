@@ -32,6 +32,9 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   static void Shutdown();
   static SystemSaltGetter* Get();
 
+  SystemSaltGetter(const SystemSaltGetter&) = delete;
+  SystemSaltGetter& operator=(const SystemSaltGetter&) = delete;
+
   // Converts |salt| to a hex encoded string.
   static std::string ConvertRawSaltToHexString(const RawSalt& salt);
 
@@ -71,8 +74,6 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   std::vector<base::OnceClosure> on_system_salt_ready_;
 
   base::WeakPtrFactory<SystemSaltGetter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSaltGetter);
 };
 
 }  // namespace chromeos

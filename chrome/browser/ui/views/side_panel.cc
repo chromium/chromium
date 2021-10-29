@@ -10,6 +10,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/layer.h"
@@ -49,7 +50,8 @@ constexpr gfx::Insets kBorderInsets(kBorderThickness -
 // a roundrect viewport around the side panel content.
 class SidePanelBorder : public views::Border {
  public:
-  SidePanelBorder() : Border(gfx::kPlaceholderColor) {}
+  explicit SidePanelBorder(BrowserView* browser_view)
+      : Border(gfx::kPlaceholderColor), browser_view_(browser_view) {}
 
   SidePanelBorder(const SidePanelBorder&) = delete;
   SidePanelBorder& operator=(const SidePanelBorder&) = delete;
@@ -65,30 +67,48 @@ class SidePanelBorder : public views::Border {
     gfx::RectF scaled_bounds = gfx::ConvertRectToPixels(
         view.GetLocalBounds(), view.layer()->device_scale_factor());
 
-    const float corner_radius = view.GetLayoutProvider()->GetCornerRadiusMetric(
-        views::Emphasis::kMedium, view.GetContentsBounds().size());
+    const float corner_radius =
+        view.GetLayoutProvider()->GetCornerRadiusMetric(
+            views::Emphasis::kMedium, view.GetContentsBounds().size()) *
+        dsf;
     gfx::Insets insets_in_pixels =
         gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(GetInsets(), dsf));
     scaled_bounds.Inset(insets_in_pixels);
     SkRRect rect = SkRRect::MakeRectXY(gfx::RectFToSkRect(scaled_bounds),
                                        corner_radius, corner_radius);
 
-    // Paint the solid color around the side panel content.
+    // Clip out the content area from the background about to be painted.
     canvas->sk_canvas()->clipRRect(rect, SkClipOp::kDifference, true);
-    // TODO(pbos): Handle user themes with toolbar background images here. This
-    // would paint a few rows more of the background outside the toolbar and
-    // then transition down to COLOR_TOOLBAR below using a gradient.
-    canvas->DrawColor(
-        view.GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+
+    // Draw the top-container background.
+    {
+      // Redo device-scale factor, the theme background is drawn in DIPs. Note
+      // that the clip area above is in pixels, hence the
+      // UndoDeviceScaleFactor() call before this.
+      gfx::ScopedCanvas scoped(canvas);
+      canvas->Scale(dsf, dsf);
+
+      TopContainerBackground::PaintBackground(
+          canvas, &view, browser_view_,
+          /*translate_view_coordinates=*/true);
+    }
 
     // Paint the inner border around SidePanel content.
-    // TODO(pbos): Revisit adding shadows here.
+    const float stroke_thickness = views::Separator::kThickness * dsf;
+
     cc::PaintFlags flags;
-    flags.setStrokeWidth(floor(views::Separator::kThickness * dsf));
-    flags.setColor(view.GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR));
+    const ui::ThemeProvider* const theme_provider = view.GetThemeProvider();
+    flags.setStrokeWidth(stroke_thickness);
+    flags.setColor(color_utils::GetResultingPaintColor(
+        theme_provider->GetColor(
+            ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR),
+        theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR)));
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setAntiAlias(true);
+
+    // Outset half of the stroke thickness so that it's painted fully on the
+    // outside of the clipping region.
+    scaled_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
     canvas->DrawRoundRect(scaled_bounds, corner_radius, flags);
   }
 
@@ -101,14 +121,17 @@ class SidePanelBorder : public views::Border {
   gfx::Size GetMinimumSize() const override {
     return gfx::Size(GetInsets().width(), GetInsets().height());
   }
+
+ private:
+  BrowserView* const browser_view_;
 };
 
 class BorderView : public views::View {
  public:
-  BorderView() {
+  explicit BorderView(BrowserView* browser_view) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    SetBorder(std::make_unique<SidePanelBorder>());
+    SetBorder(std::make_unique<SidePanelBorder>(browser_view));
     // Don't allow the view to process events.
     SetCanProcessEventsWithinSubtree(false);
   }
@@ -130,10 +153,11 @@ class BorderView : public views::View {
 
 }  // namespace
 
-SidePanel::SidePanel()
-    : border_view_(base::FeatureList::IsEnabled(features::kSidePanelBorder)
-                       ? AddChildView(std::make_unique<BorderView>())
-                       : nullptr) {
+SidePanel::SidePanel(BrowserView* browser_view)
+    : border_view_(
+          base::FeatureList::IsEnabled(features::kSidePanelBorder)
+              ? AddChildView(std::make_unique<BorderView>(browser_view))
+              : nullptr) {
   SetVisible(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 

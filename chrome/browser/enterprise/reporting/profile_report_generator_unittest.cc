@@ -22,6 +22,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -119,7 +120,7 @@ class ProfileReportGeneratorTest : public ::testing::Test {
       const base::FilePath& path,
       const std::string& name) {
     std::unique_ptr<em::ChromeUserProfileInfo> report =
-        generator_.MaybeGenerate(path, name);
+        generator_.MaybeGenerate(path, name, ReportType::kFull);
     return report;
   }
 
@@ -190,7 +191,7 @@ TEST_F(ProfileReportGeneratorTest, ProfileNotActivated) {
   profile_manager()->profile_attributes_storage()->AddProfile(
       std::move(params));
   std::unique_ptr<em::ChromeUserProfileInfo> response =
-      generator_.MaybeGenerate(profile_path, kIdleProfile);
+      generator_.MaybeGenerate(profile_path, kIdleProfile, ReportType::kFull);
   ASSERT_FALSE(response.get());
 }
 
@@ -209,6 +210,31 @@ TEST_F(ProfileReportGeneratorTest, SignedInProfile) {
   EXPECT_EQ(expected_info.email, report->chrome_signed_in_user().email());
   EXPECT_EQ(expected_info.gaia,
             report->chrome_signed_in_user().obfuscated_gaia_id());
+}
+
+TEST_F(ProfileReportGeneratorTest, ProfileIdObfuscate) {
+  auto report = generator_.MaybeGenerate(profile()->GetPath(),
+                                         profile()->GetProfileUserName(),
+                                         ReportType::kProfileReport);
+  ASSERT_TRUE(report);
+  EXPECT_EQ(profile()->GetProfileUserName(), report->name());
+  EXPECT_NE(profile()->GetPath().AsUTF8Unsafe(), report->id());
+  EXPECT_TRUE(report->is_detail_available());
+
+  auto report2 = generator_.MaybeGenerate(profile()->GetPath(),
+                                          profile()->GetProfileUserName(),
+                                          ReportType::kProfileReport);
+  // Profile id is obfuscated with `kProfileReport` type, but the obfuscated
+  // result is consistent.
+  EXPECT_EQ(report->id(), report2->id());
+
+  TestingProfile* another_profile =
+      profile_manager()->CreateTestingProfile("another_profile");
+  auto report3 = generator_.MaybeGenerate(another_profile->GetPath(),
+                                          another_profile->GetProfileUserName(),
+                                          ReportType::kProfileReport);
+  // Different profiles' id will be different even after obfuscation.
+  EXPECT_NE(report->id(), report3->id());
 }
 
 #if !defined(OS_ANDROID)

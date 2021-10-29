@@ -7,15 +7,12 @@
 
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/callback.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace chromeos {
-
-namespace phonehub {
-class PhoneHubManager;
-}
-
+namespace ash {
 namespace eche_app {
 
 // A helper class for launching/closing the app or show a notification.
@@ -39,22 +36,17 @@ class LaunchAppHelper {
 
     NotificationInfo(
         Category category,
-        absl::variant<NotificationType,
-                      chromeos::eche_app::mojom::WebNotificationType> type);
+        absl::variant<NotificationType, mojom::WebNotificationType> type);
     ~NotificationInfo();
 
     Category category() const { return category_; }
-    absl::variant<NotificationType,
-                  chromeos::eche_app::mojom::WebNotificationType>
-    type() const {
+    absl::variant<NotificationType, mojom::WebNotificationType> type() const {
       return type_;
     }
 
    private:
     Category category_;
-    absl::variant<NotificationType,
-                  chromeos::eche_app::mojom::WebNotificationType>
-        type_;
+    absl::variant<NotificationType, mojom::WebNotificationType> type_;
   };
 
   using LaunchNotificationFunction = base::RepeatingCallback<void(
@@ -103,6 +95,13 @@ class LaunchAppHelper {
   LaunchNotificationFunction launch_notification_function_;
 };
 
+}  // namespace eche_app
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace eche_app {
+using ::ash::eche_app::LaunchAppHelper;
 }  // namespace eche_app
 }  // namespace chromeos
 

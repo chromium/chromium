@@ -27,6 +27,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // not empty.
   absl::optional<api::passwords_private::UrlCollection> GetUrlCollection(
       const std::string& url) override;
+  // Fake implementation. This returns value set by SetIsAccountStoreDefault.
+  bool IsAccountStoreDefault(content::WebContents* web_contents) override;
   // Fake implementation of AddPassword. This returns true if |url| and
   // |password| aren't empty.
   bool AddPassword(const std::string& url,
@@ -84,6 +86,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   void SetProfile(Profile* profile);
   void SetOptedInForAccountStorage(bool opted_in);
+  void SetIsAccountStoreDefault(bool is_default);
   void AddCompromisedCredential(int id);
 
   void ClearSavedPasswordsList() { current_entries_.clear(); }
@@ -133,6 +136,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   Profile* profile_ = nullptr;
 
   bool is_opted_in_for_account_storage_ = false;
+  bool is_account_store_default_ = false;
 
   // Flags for detecting whether import/export operations have been invoked.
   bool import_passwords_triggered_ = false;

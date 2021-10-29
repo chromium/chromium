@@ -89,7 +89,7 @@ namespace {
 // Non-abstract RenderViewContextMenu class.
 class PlatformAppContextMenu : public RenderViewContextMenu {
  public:
-  PlatformAppContextMenu(content::RenderFrameHost* render_frame_host,
+  PlatformAppContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params)
       : RenderViewContextMenu(render_frame_host, params) {}
 
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, EmptyContextMenu) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   ASSERT_TRUE(menu->HasCommandWithId(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
   ASSERT_TRUE(
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenu) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int first_extensions_command_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, InstalledAppWithContextMenu) {
   ASSERT_TRUE(web_contents);
   content::ContextMenuParams params;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   content::ContextMenuParams params;
   params.is_editable = true;
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuSelection) {
   content::ContextMenuParams params;
   params.selection_text = u"Hello World";
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
@@ -458,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWithContextMenuClicked) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.bar");
   auto menu = std::make_unique<PlatformAppContextMenu>(
-      web_contents->GetMainFrame(), params);
+      *web_contents->GetMainFrame(), params);
   menu->Init();
   int extensions_custom_id =
       ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);

@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_URL_CONSTANTS_H_
 #define ASH_WEBUI_ECHE_APP_UI_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 extern const char kChromeUIEcheAppHost[];
@@ -14,6 +14,6 @@ extern const char kChromeUIEcheAppGuestHost[];
 extern const char kChromeUIEcheAppGuestURL[];
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_URL_CONSTANTS_H_

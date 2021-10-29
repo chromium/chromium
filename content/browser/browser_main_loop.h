@@ -165,6 +165,9 @@ class CONTENT_EXPORT BrowserMainLoop {
 
   int GetResultCode() const { return result_code_; }
 
+  // Needed by some embedders.
+  void SetResultCode(int code) { result_code_ = code; }
+
   media::AudioManager* audio_manager() const;
   bool AudioServiceOutOfProcess() const;
   media::AudioSystem* audio_system() const { return audio_system_.get(); }

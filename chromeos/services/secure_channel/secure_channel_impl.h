@@ -61,6 +61,9 @@ class SecureChannelImpl : public mojom::SecureChannel,
     static Factory* test_factory_;
   };
 
+  SecureChannelImpl(const SecureChannelImpl&) = delete;
+  SecureChannelImpl& operator=(const SecureChannelImpl&) = delete;
+
   ~SecureChannelImpl() override;
 
  private:
@@ -190,8 +193,6 @@ class SecureChannelImpl : public mojom::SecureChannel,
   base::flat_map<ConnectionDetails,
                  std::vector<ConnectionRequestWaitingForDisconnection>>
       disconnecting_details_to_requests_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelImpl);
 };
 
 std::ostream& operator<<(std::ostream& stream,

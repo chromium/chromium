@@ -40,6 +40,12 @@ std::string CreateWifiConfigurationJsonString(const std::string& guid) {
 }  // namespace
 
 class ActiveHostNetworkStateUpdaterTest : public testing::Test {
+ public:
+  ActiveHostNetworkStateUpdaterTest(const ActiveHostNetworkStateUpdaterTest&) =
+      delete;
+  ActiveHostNetworkStateUpdaterTest& operator=(
+      const ActiveHostNetworkStateUpdaterTest&) = delete;
+
  protected:
   ActiveHostNetworkStateUpdaterTest() {}
   ~ActiveHostNetworkStateUpdaterTest() override = default;
@@ -105,9 +111,6 @@ class ActiveHostNetworkStateUpdaterTest : public testing::Test {
   std::unique_ptr<FakeActiveHost> fake_active_host_;
 
   std::unique_ptr<ActiveHostNetworkStateUpdater> updater_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveHostNetworkStateUpdaterTest);
 };
 
 TEST_F(ActiveHostNetworkStateUpdaterTest, TestActiveHostUpdates) {

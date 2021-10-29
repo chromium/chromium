@@ -291,10 +291,10 @@ void ElementInternals::SetElementAttribute(const QualifiedName& name,
 }
 
 Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
-  HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      explicitly_set_attr_elements_map_.at(name);
-  if (!stored_elements)
+  const auto& iter = explicitly_set_attr_elements_map_.find(name);
+  if (iter == explicitly_set_attr_elements_map_.end())
     return nullptr;
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
   DCHECK_EQ(stored_elements->size(), 1u);
   return *(stored_elements->begin());
 }
@@ -302,18 +302,16 @@ Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
 HeapVector<Member<Element>>* ElementInternals::GetElementArrayAttribute(
     const QualifiedName& name) const {
   const auto& iter = explicitly_set_attr_elements_map_.find(name);
-  if (iter == explicitly_set_attr_elements_map_.end()) {
+  if (iter == explicitly_set_attr_elements_map_.end())
     return nullptr;
-  }
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
 
   // Convert from our internal HeapLinkedHashSet of weak references to a
   // HeapVector of strong references so that V8 can implicitly convert to a
   // FrozenArray.
   HeapVector<Member<Element>>* results =
-      MakeGarbageCollected<HeapVector<Member<Element>>>();
-
-  blink::HeapLinkedHashSet<blink::WeakMember<blink::Element>>* stored_elements =
-      iter->value;
+      MakeGarbageCollected<HeapVector<Member<Element>>>(
+          stored_elements->size());
   for (auto item : *stored_elements) {
     results->push_back(item);
   }

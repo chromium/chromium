@@ -182,4 +182,37 @@ export function fakeObservablesTestSuite() {
     observables.triggerWithArg('ObserveFoo_OnFooUpdated', 'foo');
     return resolver.promise;
   });
+
+  test('ObservableTriggeredOnInterval', () => {
+    observables.register('ObserveFoo_OnFooUpdated');
+    /** @type !Array<string> */
+    const expected = ['bar'];
+    observables.setObservableData('ObserveFoo_OnFooUpdated', expected);
+
+    let resolver = new PromiseResolver();
+    observables.observe('ObserveFoo_OnFooUpdated', (foo) => {
+      assertEquals(expected[0], foo);
+      resolver.resolve();
+    });
+    observables.startTriggerOnInterval('ObserveFoo_OnFooUpdated', 0);
+
+    return resolver.promise;
+  });
+
+  test('ObservableTriggeredOnIntervalWithArg', () => {
+    observables.registerObservableWithArg('ObserveFoo_OnFooUpdated');
+    /** @type !Array<string> */
+    const expected = ['bar'];
+    observables.setObservableDataForArg(
+        'ObserveFoo_OnFooUpdated', 'foo', expected);
+
+    let resolver = new PromiseResolver();
+    observables.observeWithArg('ObserveFoo_OnFooUpdated', 'foo', (foo) => {
+      assertEquals(expected[0], foo);
+      resolver.resolve();
+    });
+    observables.startTriggerOnIntervalWithArg(
+        'ObserveFoo_OnFooUpdated', 'foo', 0);
+    return resolver.promise;
+  });
 }

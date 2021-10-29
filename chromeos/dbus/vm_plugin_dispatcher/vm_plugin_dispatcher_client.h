@@ -77,14 +77,14 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
   // Creates an instance of VmPluginDispatcherClient.
   static std::unique_ptr<VmPluginDispatcherClient> Create();
 
+  VmPluginDispatcherClient(const VmPluginDispatcherClient&) = delete;
+  VmPluginDispatcherClient& operator=(const VmPluginDispatcherClient&) = delete;
+
   ~VmPluginDispatcherClient() override;
 
  protected:
   // Create() should be used instead.
   VmPluginDispatcherClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VmPluginDispatcherClient);
 };
 
 }  // namespace chromeos

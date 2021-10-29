@@ -37,10 +37,16 @@ namespace content {
 class CONTENT_EXPORT StreamTextureHost
     : public gpu::mojom::StreamTextureClient {
  public:
+  StreamTextureHost() = delete;
+
   explicit StreamTextureHost(
       scoped_refptr<gpu::GpuChannelHost> channel,
       int32_t route_id,
       mojo::PendingAssociatedRemote<gpu::mojom::StreamTexture> texture);
+
+  StreamTextureHost(const StreamTextureHost&) = delete;
+  StreamTextureHost& operator=(const StreamTextureHost&) = delete;
+
   ~StreamTextureHost() override;
 
   // Listener class that is listening to the stream texture updates. It is
@@ -93,8 +99,6 @@ class CONTENT_EXPORT StreamTextureHost
   mojo::AssociatedRemote<gpu::mojom::StreamTexture> texture_remote_;
 
   base::WeakPtrFactory<StreamTextureHost> weak_ptr_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(StreamTextureHost);
 };
 
 }  // namespace content

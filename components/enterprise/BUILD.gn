@@ -30,6 +30,8 @@ static_library("enterprise") {
     "browser/reporting/report_type.h",
     "browser/reporting/report_uploader.cc",
     "browser/reporting/report_uploader.h",
+    "browser/reporting/report_util.cc",
+    "browser/reporting/report_util.h",
     "browser/reporting/reporting_delegate_factory.h",
   ]
 
@@ -54,6 +56,7 @@ static_library("enterprise") {
     "//components/reporting/client:report_queue_provider",
     "//components/strings",
     "//components/version_info",
+    "//crypto",
     "//net",
     "//services/network/public/cpp",
   ]

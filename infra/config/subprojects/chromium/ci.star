@@ -4,7 +4,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builders.star", "cpu", "goma", "os", "sheriff_rotations", "xcode")
-load("//lib/chromium_tests_builder_config.star", "ctbc")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 load("//console-header.star", "HEADER")
@@ -2460,6 +2460,22 @@ ci.clang_builder(
 )
 
 ci.clang_builder(
+    name = "ToTChromeOS",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT ChromeOS",
+        short_name = "rel",
+    ),
+)
+
+ci.clang_builder(
+    name = "ToTChromeOS (dbg)",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT ChromeOS",
+        short_name = "dbg",
+    ),
+)
+
+ci.clang_builder(
     name = "ToTFuchsia x64",
     console_view_entry = [
         consoles.console_view_entry(
@@ -3427,17 +3443,6 @@ ci.fyi_builder(
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
-)
-
-# TODO(crbug.com/1189748): Remove this builder once flaky DCHECKs have been
-# resolved and DCHECKs are enabled on the CQ bot.
-ci.fyi_builder(
-    name = "chromeos-amd64-generic-rel-dchecks",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "chromeos|dcheck",
-        short_name = "cros",
-    ),
 )
 
 ci.fyi_builder(
@@ -5850,14 +5855,14 @@ ci.linux_builder(
 ci.infra_builder(
     name = "linux-bootstrap",
     bootstrap = True,
-    builder_spec = ctbc.builder_spec(
-        chromium_config = ctbc.chromium_config(
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
-            build_config = ctbc.build_config.RELEASE,
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
-        gclient_config = ctbc.gclient_config(
+        gclient_config = builder_config.gclient_config(
             config = "chromium",
         ),
     ),
@@ -5872,16 +5877,16 @@ ci.infra_builder(
 ci.infra_builder(
     name = "linux-bootstrap-tests",
     bootstrap = True,
-    builder_spec = ctbc.builder_spec(
-        execution_mode = ctbc.execution_mode.TEST,
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         parent = "ci/linux-bootstrap",
-        chromium_config = ctbc.chromium_config(
+        chromium_config = builder_config.chromium_config(
             config = "chromium",
             apply_configs = ["mb"],
-            build_config = ctbc.build_config.RELEASE,
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
         ),
-        gclient_config = ctbc.gclient_config(
+        gclient_config = builder_config.gclient_config(
             config = "chromium",
         ),
     ),

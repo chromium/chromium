@@ -39,7 +39,7 @@ class EcheAppNotificationController {
       const absl::optional<std::u16string>& title,
       const absl::optional<std::u16string>& message,
       absl::variant<LaunchAppHelper::NotificationInfo::NotificationType,
-                    chromeos::eche_app::mojom::WebNotificationType> type);
+                    ash::eche_app::mojom::WebNotificationType> type);
 
  protected:
   // Exposed for testing.

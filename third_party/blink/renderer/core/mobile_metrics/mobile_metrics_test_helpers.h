@@ -31,7 +31,7 @@ struct MobileFriendlinessTree {
         ScrollOffset(0, scroll_y_offset));
 
     // Do MobileFriendliness evaluation recursively.
-    view->GetMobileFriendlinessChecker()->EvaluateNow(nullptr);
+    view->GetMobileFriendlinessChecker()->DidFinishLifecycleUpdate(*view);
     result.mf = view->GetMobileFriendlinessChecker()->GetMobileFriendliness();
     for (Frame* child = view->GetFrame().FirstChild(); child;
          child = child->NextSibling()) {

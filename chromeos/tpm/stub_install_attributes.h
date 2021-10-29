@@ -18,6 +18,9 @@ class StubInstallAttributes : public InstallAttributes {
   // The default StubInstallAttributes has a DeviceMode of PENDING.
   StubInstallAttributes();
 
+  StubInstallAttributes(const StubInstallAttributes&) = delete;
+  StubInstallAttributes& operator=(const StubInstallAttributes&) = delete;
+
   // Creates a StubInstallAttributes and Clears it.
   static std::unique_ptr<StubInstallAttributes> CreateUnset();
   // Creates a StubInstallAttributes and calls SetConsumerOwned.
@@ -50,9 +53,6 @@ class StubInstallAttributes : public InstallAttributes {
   void SetDemoMode(const std::string& device_id);
 
   void set_device_locked(bool is_locked) { device_locked_ = is_locked; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubInstallAttributes);
 };
 
 // Helper class to set install attributes in tests. Using one of the Create*

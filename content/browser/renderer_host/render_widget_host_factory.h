@@ -23,6 +23,9 @@ class RenderWidgetHostImpl;
 // specialized RenderWidgetHostImpl class.
 class RenderWidgetHostFactory {
  public:
+  RenderWidgetHostFactory(const RenderWidgetHostFactory&) = delete;
+  RenderWidgetHostFactory& operator=(const RenderWidgetHostFactory&) = delete;
+
   // Creates a RenderWidgetHostImpl using the currently registered factory, or
   // the default one if no factory is registered. Ownership of the returned
   // pointer will be passed to the caller.
@@ -64,8 +67,6 @@ class RenderWidgetHostFactory {
   // The current globally registered factory. This is NULL when we should
   // create the default RenderWidgetHostImpls.
   CONTENT_EXPORT static RenderWidgetHostFactory* factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostFactory);
 };
 
 }  // namespace content

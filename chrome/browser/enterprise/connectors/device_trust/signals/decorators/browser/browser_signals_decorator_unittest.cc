@@ -39,7 +39,7 @@ class BrowserSignalsDecoratorTest : public testing::Test {
     mock_cloud_policy_store_.InitPolicyData();
     mock_cloud_policy_store_.GetMutablePolicyData()->set_obfuscated_customer_id(
         kFakeCustomerId);
-    mock_cloud_policy_store_.GetMutablePolicyData()->set_display_domain(
+    mock_cloud_policy_store_.GetMutablePolicyData()->set_managed_by(
         kFakeEnrollmentDomain);
   }
 

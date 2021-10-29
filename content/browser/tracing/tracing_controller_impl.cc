@@ -289,8 +289,7 @@ absl::optional<base::Value> TracingControllerImpl::GenerateMetadataDict() {
 #if defined(OS_WIN)
   if (base::win::OSInfo::GetArchitecture() ==
       base::win::OSInfo::X64_ARCHITECTURE) {
-    if (base::win::OSInfo::GetInstance()->wow64_status() ==
-        base::win::OSInfo::WOW64_ENABLED) {
+    if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
       metadata_dict.SetStringKey("os-wow64", "enabled");
     } else {
       metadata_dict.SetStringKey("os-wow64", "disabled");

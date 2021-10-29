@@ -40,6 +40,9 @@ class CONTENT_EXPORT QuotaReservation
       const GURL& origin_url,
       storage::FileSystemType file_system_type);
 
+  QuotaReservation(const QuotaReservation&) = delete;
+  QuotaReservation& operator=(const QuotaReservation&) = delete;
+
   // Opens a file with the given id and path and returns its current size.
   int64_t OpenFile(int32_t id, const storage::FileSystemURL& url);
   // Closes the file opened by OpenFile with the given id.
@@ -85,8 +88,6 @@ class CONTENT_EXPORT QuotaReservation
   scoped_refptr<storage::QuotaReservation> quota_reservation_;
   typedef std::map<int32_t, storage::OpenFileHandle*> FileMap;
   FileMap files_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservation);
 };
 
 struct QuotaReservationDeleter {

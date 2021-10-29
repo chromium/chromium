@@ -104,6 +104,12 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
 }  // namespace
 
 class ServiceWorkerContainerHostTest : public testing::Test {
+ public:
+  ServiceWorkerContainerHostTest(const ServiceWorkerContainerHostTest&) =
+      delete;
+  ServiceWorkerContainerHostTest& operator=(
+      const ServiceWorkerContainerHostTest&) = delete;
+
  protected:
   ServiceWorkerContainerHostTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {
@@ -360,8 +366,6 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   }
 
   url::ScopedSchemeRegistryForTests scoped_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContainerHostTest);
 };
 
 // Run tests with PlzDedicatedWorker.

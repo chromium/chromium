@@ -5,6 +5,7 @@
 #include "cc/resources/ui_resource_manager.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "cc/resources/scoped_ui_resource.h"
 
@@ -62,13 +63,12 @@ void UIResourceManager::RecreateUIResources() {
   }
 }
 
-gfx::Size UIResourceManager::GetUIResourceSize(UIResourceId uid) const {
-  const auto iter = ui_resource_client_map_.find(uid);
-  if (iter == ui_resource_client_map_.end())
-    return gfx::Size();
-
-  const UIResourceClientData& data = iter->second;
-  return data.size;
+base::flat_map<UIResourceId, gfx::Size> UIResourceManager::GetUIResourceSizes()
+    const {
+  base::flat_map<UIResourceId, gfx::Size> result;
+  for (const auto pair : ui_resource_client_map_)
+    result.emplace(pair.first, pair.second.size);
+  return result;
 }
 
 std::vector<UIResourceRequest> UIResourceManager::TakeUIResourcesRequests() {

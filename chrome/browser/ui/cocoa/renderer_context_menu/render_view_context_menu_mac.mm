@@ -24,7 +24,7 @@
 // Relies on the tag being set to the command id.
 
 RenderViewContextMenuMac::RenderViewContextMenuMac(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
       text_services_context_menu_(this) {}

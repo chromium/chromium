@@ -17,6 +17,10 @@ class CONTENT_EXPORT ContentWebUIControllerFactory
  public:
   static ContentWebUIControllerFactory* GetInstance();
 
+  ContentWebUIControllerFactory(const ContentWebUIControllerFactory&) = delete;
+  ContentWebUIControllerFactory& operator=(
+      const ContentWebUIControllerFactory&) = delete;
+
   // WebUIControllerFactory:
   WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
                              const GURL& url) override;
@@ -32,8 +36,6 @@ class CONTENT_EXPORT ContentWebUIControllerFactory
 
  private:
   friend struct base::DefaultSingletonTraits<ContentWebUIControllerFactory>;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentWebUIControllerFactory);
 };
 
 }  // namespace content

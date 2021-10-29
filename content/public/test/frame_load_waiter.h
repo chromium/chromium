@@ -18,6 +18,9 @@ class FrameLoadWaiter : public RenderFrameObserver {
  public:
   explicit FrameLoadWaiter(RenderFrame* frame);
 
+  FrameLoadWaiter(const FrameLoadWaiter&) = delete;
+  FrameLoadWaiter& operator=(const FrameLoadWaiter&) = delete;
+
   // Note: single-process browser tests need to enable nestable tasks by
   // instantiating a base::CurrentThread::ScopedNestableTaskAllower or this
   // method will never return.
@@ -30,8 +33,6 @@ class FrameLoadWaiter : public RenderFrameObserver {
 
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   bool did_load_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameLoadWaiter);
 };
 
 }  // namespace content

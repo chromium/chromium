@@ -28,6 +28,11 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
   // on the UI thread.
   static NotificationEventDispatcherImpl* GetInstance();
 
+  NotificationEventDispatcherImpl(const NotificationEventDispatcherImpl&) =
+      delete;
+  NotificationEventDispatcherImpl& operator=(
+      const NotificationEventDispatcherImpl&) = delete;
+
   // NotificationEventDispatcher implementation.
   void DispatchNotificationClickEvent(
       BrowserContext* browser_context,
@@ -82,8 +87,6 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
   std::map<std::string,
            mojo::Remote<blink::mojom::NonPersistentNotificationListener>>
       non_persistent_notification_listeners_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationEventDispatcherImpl);
 };
 
 }  // namespace content

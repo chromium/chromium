@@ -17,6 +17,8 @@ import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -48,9 +50,12 @@ public class BookmarkSaveFlowCoordinator {
     /**
      * @param context The {@link Context} associated with this cooridnator.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
+     * @param subscriptionsManager Allows un/subscribing for product updates, used for
+     *         price-tracking.
      */
-    public BookmarkSaveFlowCoordinator(
-            @NonNull Context context, @NonNull BottomSheetController bottomSheetController) {
+    public BookmarkSaveFlowCoordinator(@NonNull Context context,
+            @NonNull BottomSheetController bottomSheetController,
+            @NonNull SubscriptionsManager subscriptionsManager) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mBookmarkModel = new BookmarkModel();
@@ -58,22 +63,40 @@ public class BookmarkSaveFlowCoordinator {
 
         mBookmarkSaveFlowView = LayoutInflater.from(mContext).inflate(
                 org.chromium.chrome.R.layout.bookmark_save_flow, /*root=*/null);
-        mMediator =
-                new BookmarkSaveFlowMediator(mBookmarkModel, mPropertyModel, mContext, this::close);
+        mMediator = new BookmarkSaveFlowMediator(
+                mBookmarkModel, mPropertyModel, mContext, this::close, subscriptionsManager);
         mChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
                 (ViewLookupCachingFrameLayout) mBookmarkSaveFlowView,
                 new BookmarkSaveFlowViewBinder());
     }
 
     /**
-     * Shows the bookmark save flow sheet.
+     * Shows the save flow for a normal bookmark.
+     * @param bookmarkId The {@link BookmarkId} which was saved.
      */
     public void show(BookmarkId bookmarkId) {
-        mDestroyChecker.checkNotDestroyed();
+        show(bookmarkId, /*fromExplicitTrackUi=*/false);
+    }
+
+    /**
+     * Shows the bookmark save flow sheet.
+     * @param bookmarkId The {@link BookmarkId} which was saved.
+     * @param fromExplicitTrackUi Whether the bookmark was added via a dedicated tracking entry
+     *         point. This will change the UI of the bookmark save flow, either adding type-specific
+     *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
+     *         bookmark. This will be false when adding a normal bookmark.
+     */
+    public void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi) {
         assert mBookmarkModel.isBookmarkModelLoaded();
+        show(bookmarkId, fromExplicitTrackUi, mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
+    }
+
+    void show(
+            BookmarkId bookmarkId, boolean fromExplicitTrackUi, @Nullable PowerBookmarkMeta meta) {
+        mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
-        mMediator.show(bookmarkId);
+        mMediator.show(bookmarkId, meta, fromExplicitTrackUi);
 
         setupAutodismiss();
     }

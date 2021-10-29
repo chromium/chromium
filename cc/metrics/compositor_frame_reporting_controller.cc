@@ -651,6 +651,8 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
         old_args.frame_id.sequence_number + i, timestamp,
         timestamp + old_args.interval, old_args.interval,
         viz::BeginFrameArgs::NORMAL);
+    devtools_instrumentation::DidBeginFrame(
+        layer_tree_host_id_, args.frame_time, args.frame_id.sequence_number);
     // ThreadType::kUnknown is used here for scrolling thread, because the
     // frames reported here could have a scroll interaction active at their
     // start time, but they were skipped and history of scrolling thread might

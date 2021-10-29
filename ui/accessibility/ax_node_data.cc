@@ -66,14 +66,24 @@ std::string ActionsBitfieldToString(uint64_t actions) {
   return str;
 }
 
-std::string IntVectorToString(const std::vector<int>& items) {
+template <typename ItemType, typename ItemToStringFunction>
+std::string VectorToString(const std::vector<ItemType>& items,
+                           ItemToStringFunction itemToStringFunction) {
   std::string str;
   for (size_t i = 0; i < items.size(); ++i) {
+    std::string item_str = itemToStringFunction(items[i]);
+    if (item_str.empty())
+      continue;
     if (i > 0)
       str += ",";
-    str += base::NumberToString(items[i]);
+    str += itemToStringFunction(items[i]);
   }
   return str;
+}
+
+std::string IntVectorToString(const std::vector<int32_t>& items) {
+  return VectorToString(
+      items, [](const int32_t item) { return base::NumberToString(item); });
 }
 
 // Predicate that returns true if the first value of a pair is |first|.
@@ -198,6 +208,7 @@ bool IsNodeIdIntListAttribute(ax::mojom::IntListAttribute attr) {
     case ax::mojom::IntListAttribute::kMarkerTypes:
     case ax::mojom::IntListAttribute::kMarkerStarts:
     case ax::mojom::IntListAttribute::kMarkerEnds:
+    case ax::mojom::IntListAttribute::kHighlightTypes:
     case ax::mojom::IntListAttribute::kCaretBounds:
     case ax::mojom::IntListAttribute::kCharacterOffsets:
     case ax::mojom::IntListAttribute::kLineStarts:
@@ -1698,33 +1709,33 @@ std::string AXNodeData::ToString() const {
         result += " radio_group_ids=" + IntVectorToString(values);
         break;
       case ax::mojom::IntListAttribute::kMarkerTypes: {
-        std::string types_str;
-        for (size_t i = 0; i < values.size(); ++i) {
-          int32_t type = values[i];
+        std::string types_str = VectorToString(values, [](const int32_t type) {
+          std::string type_str;
           if (type == static_cast<int32_t>(ax::mojom::MarkerType::kNone))
-            continue;
-
-          if (i > 0)
-            types_str += ',';
+            return type_str;
 
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSpelling))
-            types_str += "spelling&";
+            type_str += "spelling&";
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kGrammar))
-            types_str += "grammar&";
+            type_str += "grammar&";
+          if (type & static_cast<int32_t>(ax::mojom::MarkerType::kHighlight))
+            type_str += "highlight&";
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kTextMatch))
-            types_str += "text_match&";
+            type_str += "text_match&";
           if (type &
               static_cast<int32_t>(ax::mojom::MarkerType::kActiveSuggestion))
-            types_str += "active_suggestion&";
+            type_str += "active_suggestion&";
           if (type & static_cast<int32_t>(ax::mojom::MarkerType::kSuggestion))
-            types_str += "suggestion&";
+            type_str += "suggestion&";
 
-          if (!types_str.empty())
-            types_str = types_str.substr(0, types_str.size() - 1);
+          return type_str;
+        });
+
+        if (!types_str.empty()) {
+          types_str = types_str.substr(0, types_str.size() - 1);
+          result += " marker_types=" + types_str;
         }
 
-        if (!types_str.empty())
-          result += " marker_types=" + types_str;
         break;
       }
       case ax::mojom::IntListAttribute::kMarkerStarts:
@@ -1733,6 +1744,20 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::IntListAttribute::kMarkerEnds:
         result += " marker_ends=" + IntVectorToString(values);
         break;
+      case ax::mojom::IntListAttribute::kHighlightTypes: {
+        std::string highlight_types_str =
+            VectorToString(values, [](const int32_t highlight_type) {
+              if (static_cast<ax::mojom::HighlightType>(highlight_type) ==
+                  ax::mojom::HighlightType::kNone)
+                return "";
+              return ui::ToString(
+                  static_cast<ax::mojom::HighlightType>(highlight_type));
+            });
+
+        if (!highlight_types_str.empty())
+          result += " highlight_types=" + highlight_types_str;
+        break;
+      }
       case ax::mojom::IntListAttribute::kCaretBounds:
         result += " caret_bounds=" + IntVectorToString(values);
         break;

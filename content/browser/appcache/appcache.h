@@ -66,6 +66,9 @@ class CONTENT_EXPORT AppCache
 
   AppCache(AppCacheStorage* storage, int64_t cache_id);
 
+  AppCache(const AppCache&) = delete;
+  AppCache& operator=(const AppCache&) = delete;
+
   int64_t cache_id() const { return cache_id_; }
 
   AppCacheGroup* owning_group() const { return owning_group_.get(); }
@@ -247,7 +250,6 @@ class CONTENT_EXPORT AppCache
 
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheTest, InitializeWithManifest);
   FRIEND_TEST_ALL_PREFIXES(content::AppCacheTest, ToFromDatabaseRecords);
-  DISALLOW_COPY_AND_ASSIGN(AppCache);
 };
 
 }  // namespace content

@@ -314,7 +314,7 @@ class BrowserCompositorInvalidateLayerTreePerfTest
     ASSERT_TRUE(tab_contents_.get());
   }
 
-  void WillCommit() override {
+  void WillCommit(CommitState*) override {
     if (CleanUpStarted())
       return;
     gpu::Mailbox gpu_mailbox;

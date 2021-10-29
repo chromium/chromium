@@ -155,16 +155,21 @@ void ScenicWindow::PrepareForShutdown() {
 }
 
 void ScenicWindow::SetCapture() {
+  // TODO(crbug.com/1231516): Use Scenic capture APIs.
   NOTIMPLEMENTED_LOG_ONCE();
+  has_capture_ = true;
 }
 
 void ScenicWindow::ReleaseCapture() {
+  // TODO(crbug.com/1231516): Use Scenic capture APIs.
   NOTIMPLEMENTED_LOG_ONCE();
+  has_capture_ = false;
 }
 
 bool ScenicWindow::HasCapture() const {
+  // TODO(crbug.com/1231516): Use Scenic capture APIs.
   NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return has_capture_;
 }
 
 void ScenicWindow::ToggleFullscreen() {

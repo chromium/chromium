@@ -209,6 +209,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.Glitch" enum="FileManagerGlitch"
+    expires_after="M108">
+  <owner>majewski@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: this records errors and rejected promises that
+    occurred during regular use of File Manager. The purpose of this metric is
+    to report unexpected errors caught by the global window.onerror handler or
+    global unhandledrejection listener. In normal conditions this should never
+    happen. However, if it occurs, it is a sign of significant and unexpected
+    errors which must not go undetected.
+  </summary>
+</histogram>
+
 <histogram
     name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
     units="ms" expires_after="2022-04-10">

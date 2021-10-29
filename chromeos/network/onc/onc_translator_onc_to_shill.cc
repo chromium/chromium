@@ -99,6 +99,9 @@ class LocalTranslator {
     field_translation_table_ = GetFieldTranslationTable(onc_signature);
   }
 
+  LocalTranslator(const LocalTranslator&) = delete;
+  LocalTranslator& operator=(const LocalTranslator&) = delete;
+
   void TranslateFields();
 
  private:
@@ -139,8 +142,6 @@ class LocalTranslator {
   const FieldTranslationEntry* field_translation_table_;
   const base::Value* onc_object_;
   base::Value* shill_dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalTranslator);
 };
 
 void LocalTranslator::TranslateFields() {

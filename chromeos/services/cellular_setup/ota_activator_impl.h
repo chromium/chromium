@@ -71,6 +71,9 @@ class OtaActivatorImpl : public OtaActivator,
         scoped_refptr<base::TaskRunner> task_runner) = 0;
   };
 
+  OtaActivatorImpl(const OtaActivatorImpl&) = delete;
+  OtaActivatorImpl& operator=(const OtaActivatorImpl&) = delete;
+
   ~OtaActivatorImpl() override;
 
  private:
@@ -146,8 +149,6 @@ class OtaActivatorImpl : public OtaActivator,
   size_t connect_retry_attempts_ = 0;
 
   base::WeakPtrFactory<OtaActivatorImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OtaActivatorImpl);
 };
 
 std::ostream& operator<<(std::ostream& stream,

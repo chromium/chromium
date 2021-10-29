@@ -11,10 +11,11 @@ namespace content {
 
 class AppCacheHistograms {
  public:
-  static void CountReinitAttempt(bool repeated_attempt);
+  AppCacheHistograms() = delete;
+  AppCacheHistograms(const AppCacheHistograms&) = delete;
+  AppCacheHistograms& operator=(const AppCacheHistograms&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AppCacheHistograms);
+  static void CountReinitAttempt(bool repeated_attempt);
 };
 
 }  // namespace content

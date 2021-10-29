@@ -551,21 +551,21 @@ std::unique_ptr<MediaQueryExpNode> MediaQueryFeatureExpNode::Copy() const {
 
 void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append("(");
-  child_->SerializeTo(builder);
+  Operand().SerializeTo(builder);
   builder.Append(")");
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryNestedExpNode::Copy() const {
-  return std::make_unique<MediaQueryNestedExpNode>(child_->Copy());
+  return std::make_unique<MediaQueryNestedExpNode>(Operand().Copy());
 }
 
 void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append("not ");
-  operand_->SerializeTo(builder);
+  Operand().SerializeTo(builder);
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryNotExpNode::Copy() const {
-  return std::make_unique<MediaQueryNotExpNode>(operand_->Copy());
+  return std::make_unique<MediaQueryNotExpNode>(Operand().Copy());
 }
 
 void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {

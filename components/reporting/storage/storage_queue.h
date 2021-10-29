@@ -34,6 +34,18 @@
 
 namespace reporting {
 
+namespace test {
+
+// Storage Queue operation kind used to associate operations with failures for
+// testing purposes
+enum class StorageQueueOperationKind {
+  kReadBlock,
+  kWriteBlock,
+  kWriteMetadata
+};
+
+}  // namespace test
+
 // Storage queue represents single queue of data to be collected and stored
 // persistently. It allows to add whole data records as necessary,
 // flush previously collected records and confirm records up to certain
@@ -102,8 +114,10 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // CollectFilesForUpload.
   void Flush();
 
-  // Test only: makes specified records fail on reading.
-  void TestInjectBlockReadErrors(std::initializer_list<int64_t> sequencing_ids);
+  // Test only: makes specified records fail on specified operation kind.
+  void TestInjectErrorsForOperation(
+      const test::StorageQueueOperationKind operation_kind,
+      std::initializer_list<int64_t> sequencing_ids);
 
   // Access queue options.
   const QueueOptions& options() const { return options_; }
@@ -371,8 +385,9 @@ class StorageQueue : public base::RefCountedDeleteOnSequence<StorageQueue> {
   // Compression module.
   scoped_refptr<CompressionModule> compression_module_;
 
-  // Test only: records specified to fail on reading.
-  base::flat_set<int64_t> test_injected_fail_sequencing_ids_;
+  // Test only: records specified to fail for a given operation kind.
+  base::flat_map<test::StorageQueueOperationKind, base::flat_set<int64_t>>
+      test_injected_failures_;
 
   // Weak pointer factory (must be last member in class).
   base::WeakPtrFactory<StorageQueue> weakptr_factory_{this};

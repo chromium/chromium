@@ -352,7 +352,7 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
   }
 
  protected:
-  MockHostResolver resolver_{/*require_matching_rule=*/true};
+  MockHostResolver resolver_;
   Rules rules_;
   Rules::Rule rule_;
   TestCompletionCallback callback_;
@@ -368,8 +368,7 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
 // Fails if a synchronous DNS lookup success for wpad causes QuickCheck to fail.
 TEST_F(PacFileDeciderQuickCheckTest, SyncSuccess) {
   resolver_.set_synchronous_mode(true);
-  resolver_.rules_map()[HostResolverSource::SYSTEM]->AddRuleWithFlags(
-      "wpad", "1.2.3.4", HOST_RESOLVER_AVOID_MULTICAST);
+  resolver_.rules()->AddRule("wpad", "1.2.3.4");
 
   EXPECT_THAT(StartDecider(), IsOk());
   EXPECT_EQ(rule_.text(), decider_->script_data().data->utf16());
@@ -383,8 +382,7 @@ TEST_F(PacFileDeciderQuickCheckTest, SyncSuccess) {
 // fail.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
   resolver_.set_ondemand_mode(true);
-  resolver_.rules_map()[HostResolverSource::SYSTEM]->AddRuleWithFlags(
-      "wpad", "1.2.3.4", HOST_RESOLVER_AVOID_MULTICAST);
+  resolver_.rules()->AddRule("wpad", "1.2.3.4");
 
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(resolver_.has_pending_requests());
@@ -409,8 +407,7 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
 // PacFileDecider to yield a PAC URL.
 TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
   resolver_.set_ondemand_mode(true);
-  resolver_.rules_map()[HostResolverSource::SYSTEM]->AddSimulatedFailure(
-      "wpad", HOST_RESOLVER_AVOID_MULTICAST);
+  resolver_.rules()->AddRule("wpad", ERR_NAME_NOT_RESOLVED);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   ASSERT_TRUE(resolver_.has_pending_requests());
 
@@ -472,10 +469,8 @@ TEST_F(PacFileDeciderQuickCheckTest, ExplicitPacUrl) {
   const char* kCustomUrl = "http://custom/proxy.pac";
   config_.set_pac_url(GURL(kCustomUrl));
   Rules::Rule rule = rules_.AddSuccessRule(kCustomUrl);
-  resolver_.rules_map()[HostResolverSource::SYSTEM]->AddSimulatedFailure(
-      "wpad", HOST_RESOLVER_AVOID_MULTICAST);
-  resolver_.rules_map()[HostResolverSource::SYSTEM]->AddRuleWithFlags(
-      "custom", "1.2.3.4", HOST_RESOLVER_AVOID_MULTICAST);
+  resolver_.rules()->AddRule("wpad", ERR_NAME_NOT_RESOLVED);
+  resolver_.rules()->AddRule("custom", "1.2.3.4");
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   callback_.WaitForResult();
   EXPECT_TRUE(decider_->effective_config().value().has_pac_url());

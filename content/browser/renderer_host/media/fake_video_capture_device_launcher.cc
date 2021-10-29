@@ -5,8 +5,11 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
+#include "base/token.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/fake_video_capture_device_launcher.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
@@ -40,6 +43,11 @@ class FakeLaunchedVideoCaptureDevice
   }
   void MaybeSuspendDevice() override { device_->MaybeSuspend(); }
   void ResumeDevice() override { device_->Resume(); }
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override {
+    device_->Crop(crop_id, std::move(callback));
+  }
   void RequestRefreshFrame() override { device_->RequestRefreshFrame(); }
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
                                       base::OnceClosure done_cb) override {

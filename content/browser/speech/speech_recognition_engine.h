@@ -113,6 +113,10 @@ class CONTENT_EXPORT SpeechRecognitionEngine
   SpeechRecognitionEngine(
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const std::string& accept_language);
+
+  SpeechRecognitionEngine(const SpeechRecognitionEngine&) = delete;
+  SpeechRecognitionEngine& operator=(const SpeechRecognitionEngine&) = delete;
+
   ~SpeechRecognitionEngine() override;
 
   // Sets the URL requests are sent to for tests.
@@ -166,6 +170,10 @@ class CONTENT_EXPORT SpeechRecognitionEngine
 
   struct FSMEventArgs {
     explicit FSMEventArgs(FSMEvent event_value);
+
+    FSMEventArgs(const FSMEventArgs&) = delete;
+    FSMEventArgs& operator=(const FSMEventArgs&) = delete;
+
     ~FSMEventArgs();
 
     FSMEvent event;
@@ -175,9 +183,6 @@ class CONTENT_EXPORT SpeechRecognitionEngine
 
     // In case of EVENT_DOWNSTREAM_RESPONSE, hold the current chunk bytes.
     std::unique_ptr<std::vector<uint8_t>> response;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(FSMEventArgs);
   };
 
   // speech::UpstreamLoaderClient
@@ -231,8 +236,6 @@ class CONTENT_EXPORT SpeechRecognitionEngine
   FSMState state_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionEngine);
 };
 
 }  // namespace content

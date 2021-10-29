@@ -185,6 +185,13 @@ class FeedApi {
   // reporting function above..
   virtual void ReportOtherUserAction(const StreamType& stream_type,
                                      FeedUserActionType action_type) = 0;
+  // The notice identified by |key| is viewed (fully visible in the viewport).
+  virtual void ReportNoticeViewed(const std::string& key) = 0;
+  // The notice identified by |key| has been clicked/tapped to perform an open
+  // action.
+  virtual void ReportNoticeOpenAction(const std::string& key) = 0;
+  // The notice identified by |key| is dismissed.
+  virtual void ReportNoticeDismissed(const std::string& key) = 0;
 
   // The following methods are used for the internals page.
 

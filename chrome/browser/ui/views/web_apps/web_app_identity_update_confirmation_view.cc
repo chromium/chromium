@@ -18,18 +18,17 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
 
 namespace {
 const int kArrowIconSizeDp = 32;
-
-// The width of the column right below the title of the dialog.
-const int kMessageColumnWidth = 380;
 
 // The width of the columns left and right of the arrow (containing the name
 // of the app (before and after).
@@ -57,135 +56,97 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
     web_app::AppIdentityDialogCallback callback)
     : profile_(profile), app_id_(app_id), callback_(std::move(callback)) {
   DCHECK(!callback_.is_null());
-
-  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
-                 l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON));
-  SetModalType(ui::MODAL_TYPE_WINDOW);
   DCHECK(title_change || icon_change);
-  SetTitle(title_change
-               ? (icon_change ? IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON
-                              : IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME)
-               : IDS_WEBAPP_UPDATE_DIALOG_TITLE_ICON);
-
-  SetAcceptCallback(
-      base::BindOnce(&WebAppIdentityUpdateConfirmationView::OnDialogAccepted,
-                     weak_factory_.GetWeakPtr()));
 
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  set_margins(layout_provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kControl));
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  const int distance_related_horizontal = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_HORIZONTAL);
+  const gfx::Size image_size(web_app::kWebAppIconSmall,
+                             web_app::kWebAppIconSmall);
 
-  // The headline column set is simply a single column that fills up the row.
-  constexpr int kColumnSetIdHeadline = 0;
-  views::ColumnSet* column_set_headline =
-      layout->AddColumnSet(kColumnSetIdHeadline);
-  column_set_headline->AddColumn(
-      views::GridLayout::FILL, views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  // The main column set is |padding|col1|padding|arrow|padding|col2|padding|,
-  // where col1 and col2 contain the 'before' and 'after' values (either text or
-  // icon) and the first and last columns grow as needed to fill upp the rest.
-  constexpr int kColumnSetIdMain = 1;
-  views::ColumnSet* column_set_main = layout->AddColumnSet(kColumnSetIdMain);
-
-  // Padding column on the far left side of the dialog. Grows as needed to keep
-  // the views centered.
-  column_set_main->AddPaddingColumn(/*resize_percent= */ 100, /* width= */ 0);
-  // Column showing the 'before' icon/text.
-  column_set_main->AddColumn(
-      /* h_align= */ views::GridLayout::CENTER,
-      /* v_align= */ views::GridLayout::LEADING,
-      /* resize_percent= */ views::GridLayout::kFixedSize,
-      /* size_type= */ views::GridLayout::ColumnSize::kUsePreferred,
-      /* fixed_width= */ kNameColumnWidth, /* min_width= */ 0);
-  // Padding between the left side and the arrow.
-  column_set_main->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  // Column showing the arrow to indicate what is before and what is after.
-  column_set_main->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                             views::GridLayout::kFixedSize,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             /* fixed_width= */ 0,
-                             /* min_width= */ 0);
-  // Padding between the arrow and the right side.
-  column_set_main->AddPaddingColumn(
-      views::GridLayout::FILL, layout_provider->GetDistanceMetric(
-                                   views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  // Column showing the 'after' icon/text.
-  column_set_main->AddColumn(
-      /* h_align= */ views::GridLayout::CENTER,
-      /* v_align= */ views::GridLayout::LEADING,
-      /* resize_percent= */ views::GridLayout::kFixedSize,
-      /* size_type= */ views::GridLayout::ColumnSize::kUsePreferred,
-      /* fixed_width= */ kNameColumnWidth, /* min_width= */ 0);
-  // Padding column on the far right side of the dialog. Grows as needed to keep
-  // the views centered.
-  column_set_main->AddPaddingColumn(/*resize_percent= */ 100, /* width= */ 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdHeadline);
-
-  auto message_label = std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_EXPLANATION),
-      views::style::CONTEXT_LABEL);
-  message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message_label->SetMultiLine(true);
-  message_label->SizeToFit(kMessageColumnWidth);
-  layout->AddView(std::move(message_label));
-
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      2 * layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
-
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdMain);
-
-  auto old_icon_image_view = std::make_unique<views::ImageView>();
-  gfx::Size image_size(web_app::kWebAppIconSmall, web_app::kWebAppIconSmall);
-  old_icon_image_view->SetImageSize(image_size);
-  old_icon_image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(old_icon));
-  old_icon_image_view->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_CURRENT_ICON));
-  layout->AddView(std::move(old_icon_image_view));
-
-  auto arrow =
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kForwardArrowIcon, ui::kColorIcon, kArrowIconSizeDp));
-  layout->AddView(std::move(arrow));
-
-  auto new_icon_image_view = std::make_unique<views::ImageView>();
-  new_icon_image_view->SetImageSize(image_size);
-  new_icon_image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(new_icon));
-  new_icon_image_view->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEW_ICON));
-  layout->AddView(std::move(new_icon_image_view));
-
-  layout->AddPaddingRow(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
-
-  auto old_title_label =
-      std::make_unique<views::Label>(old_title, views::style::CONTEXT_LABEL);
-  auto new_title_label =
-      std::make_unique<views::Label>(new_title, views::style::CONTEXT_LABEL);
-  old_title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  new_title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  old_title_label->SetMultiLine(true);
-  new_title_label->SetMultiLine(true);
-  old_title_label->SizeToFit(kNameColumnWidth);
-  new_title_label->SizeToFit(kNameColumnWidth);
-
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdMain);
-  layout->AddView(std::move(old_title_label));
-  layout->SkipColumns(1);
-  layout->AddView(std::move(new_title_label));
+  views::Builder<WebAppIdentityUpdateConfirmationView>(this)
+      .set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH))
+      .SetButtonLabel(
+          ui::DIALOG_BUTTON_CANCEL,
+          l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_NEGATIVE_BUTTON))
+      .SetModalType(ui::MODAL_TYPE_WINDOW)
+      .SetTitle(title_change
+                    ? (icon_change
+                           ? IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_ICON
+                           : IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME)
+                    : IDS_WEBAPP_UPDATE_DIALOG_TITLE_ICON)
+      .SetAcceptCallback(base::BindOnce(
+          &WebAppIdentityUpdateConfirmationView::OnDialogAccepted,
+          weak_factory_.GetWeakPtr()))
+      .set_margins(layout_provider->GetDialogInsetsForContentType(
+          views::DialogContentType::kText, views::DialogContentType::kControl))
+      .SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+          2 * layout_provider->GetDistanceMetric(
+                  DISTANCE_CONTROL_LIST_VERTICAL)))
+      .AddChildren(
+          views::Builder<views::Label>()
+              .SetTextContext(views::style::CONTEXT_LABEL)
+              .SetText(l10n_util::GetStringUTF16(IDS_WEBAPP_UPDATE_EXPLANATION))
+              .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetMultiLine(true),
+          views::Builder<views::TableLayoutView>()
+              .AddPaddingColumn(100, 0)
+              .AddColumn(views::LayoutAlignment::kCenter,
+                         views::LayoutAlignment::kStart,
+                         views::TableLayout::kFixedSize,
+                         views::TableLayout::ColumnSize::kUsePreferred,
+                         kNameColumnWidth, 0)
+              .AddPaddingColumn(views::TableLayout::kFixedSize,
+                                distance_related_horizontal)
+              .AddColumn(views::LayoutAlignment::kStretch,
+                         views::LayoutAlignment::kCenter,
+                         views::TableLayout::kFixedSize,
+                         views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+              .AddPaddingColumn(views::TableLayout::kFixedSize,
+                                distance_related_horizontal)
+              .AddColumn(views::LayoutAlignment::kCenter,
+                         views::LayoutAlignment::kStart,
+                         views::TableLayout::kFixedSize,
+                         views::TableLayout::ColumnSize::kUsePreferred,
+                         kNameColumnWidth, 0)
+              .AddPaddingColumn(100, 0)
+              .AddRows(1, views::TableLayout::kFixedSize, 0)
+              .AddChildren(
+                  views::Builder<views::ImageView>()
+                      .SetImageSize(image_size)
+                      .SetImage(gfx::ImageSkia::CreateFrom1xBitmap(old_icon))
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_WEBAPP_UPDATE_CURRENT_ICON)),
+                  views::Builder<views::ImageView>().SetImage(
+                      ui::ImageModel::FromVectorIcon(
+                          vector_icons::kForwardArrowIcon, ui::kColorIcon,
+                          kArrowIconSizeDp)),
+                  views::Builder<views::ImageView>()
+                      .SetImageSize(image_size)
+                      .SetImage(gfx::ImageSkia::CreateFrom1xBitmap(new_icon))
+                      .SetAccessibleName(l10n_util::GetStringUTF16(
+                          IDS_WEBAPP_UPDATE_NEW_ICON)))
+              .AddPaddingRow(views::TableLayout::kFixedSize,
+                             layout_provider->GetDistanceMetric(
+                                 DISTANCE_CONTROL_LIST_VERTICAL))
+              .AddRows(1, views::TableLayout::kFixedSize, 0)
+              .AddChildren(
+                  views::Builder<views::Label>()
+                      .SetTextContext(views::style::CONTEXT_LABEL)
+                      .SetText(old_title)
+                      .SetMultiLine(true)
+                      .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                      .SizeToFit(kNameColumnWidth),
+                  views::Builder<views::View>(),  // Skip the center column.
+                  views::Builder<views::Label>()
+                      .SetTextContext(views::style::CONTEXT_LABEL)
+                      .SetText(new_title)
+                      .SetMultiLine(true)
+                      .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+                      .SizeToFit(kNameColumnWidth)))
+      .BuildChildren();
 
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::APP_IDENTITY_UPDATE_CONFIRMATION);

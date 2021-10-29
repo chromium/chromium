@@ -50,6 +50,12 @@ class TestPendingBleConnectionRequestBase
 }  // namespace
 
 class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
+ public:
+  SecureChannelPendingBleConnectionRequestBaseTest(
+      const SecureChannelPendingBleConnectionRequestBaseTest&) = delete;
+  SecureChannelPendingBleConnectionRequestBaseTest& operator=(
+      const SecureChannelPendingBleConnectionRequestBaseTest&) = delete;
+
  protected:
   SecureChannelPendingBleConnectionRequestBaseTest() = default;
   ~SecureChannelPendingBleConnectionRequestBaseTest() override = default;
@@ -107,8 +113,6 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
 
   std::unique_ptr<TestPendingBleConnectionRequestBase>
       test_pending_ble_connection_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelPendingBleConnectionRequestBaseTest);
 };
 
 TEST_F(SecureChannelPendingBleConnectionRequestBaseTest,

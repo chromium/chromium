@@ -78,6 +78,10 @@ class CONTENT_EXPORT ServiceWorkerRegistration
       int64_t registration_id,
       base::WeakPtr<ServiceWorkerContextCore> context);
 
+  ServiceWorkerRegistration(const ServiceWorkerRegistration&) = delete;
+  ServiceWorkerRegistration& operator=(const ServiceWorkerRegistration&) =
+      delete;
+
   int64_t id() const { return registration_id_; }
   const GURL& scope() const { return scope_; }
   const blink::StorageKey& key() const { return key_; }
@@ -291,8 +295,6 @@ class CONTENT_EXPORT ServiceWorkerRegistration
 
   // TODO(crbug.com/1159778): Remove once the bug is fixed.
   bool in_activate_waiting_version_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistration);
 };
 
 }  // namespace content

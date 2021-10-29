@@ -166,10 +166,7 @@ public class NoteCreationDialog extends DialogFragment {
                 }
                 unFocus(mSelectedItemIndex);
                 mSelectedItemIndex = newSelectedItemIndex;
-                ((TextView) mContentView.findViewById(R.id.title))
-                        .setText(carouselItems.get(mSelectedItemIndex)
-                                         .model.get(NoteProperties.TEMPLATE)
-                                         .localizedName);
+                setSelectedItemTitle(carouselItems.get(mSelectedItemIndex).model);
                 focus(mSelectedItemIndex);
             }
         });
@@ -201,6 +198,11 @@ public class NoteCreationDialog extends DialogFragment {
     }
 
     private void bindCarouselItem(PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
+        // If we are creating the first card and it is the selected one, we should update the title.
+        if (model.get(NoteProperties.IS_FIRST) && mSelectedItemIndex == 0) {
+            setSelectedItemTitle(model);
+        }
+
         NoteTemplate template = model.get(NoteProperties.TEMPLATE);
 
         View carouselItemView = parent.findViewById(R.id.item);
@@ -383,5 +385,11 @@ public class NoteCreationDialog extends DialogFragment {
         if (dialogHeight > screenHeight && mContentView.findViewById(R.id.scrollview) == null) {
             addScrollView();
         }
+    }
+
+    private void setSelectedItemTitle(PropertyModel model) {
+        assert mContentView != null;
+        ((TextView) mContentView.findViewById(R.id.title))
+                .setText(model.get(NoteProperties.TEMPLATE).localizedName);
     }
 }

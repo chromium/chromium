@@ -33,6 +33,9 @@ class CONTENT_EXPORT BackgroundSyncScheduler
 
   BackgroundSyncScheduler();
 
+  BackgroundSyncScheduler(const BackgroundSyncScheduler&) = delete;
+  BackgroundSyncScheduler& operator=(const BackgroundSyncScheduler&) = delete;
+
   // Schedules delayed_processing for |sync_type| for |storage_partition|.
   // On non-Android platforms, runs |delayed_task| after |delay| has passed.
   // TODO(crbug.com/996166): Add logic to schedule browser wakeup on Android.
@@ -79,8 +82,6 @@ class CONTENT_EXPORT BackgroundSyncScheduler
       };
 
   base::WeakPtrFactory<BackgroundSyncScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncScheduler);
 };
 
 }  // namespace content

@@ -83,6 +83,7 @@ source_set("browser_tests") {
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/browser:test_support",
+    "//extensions/common",
     "//url",
   ]
 }

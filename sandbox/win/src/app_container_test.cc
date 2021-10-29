@@ -468,6 +468,15 @@ HANDLE UDPEchoServer::GetProcessSignalEvent() {
   return trigger_event_.Get();
 }
 
+// Queries WSAGetLastError for a real error and returns that, otherwise returns
+// `alternative`.
+int GetWSALastErrorOrAlternative(SboxTestResult alternative) {
+  int last_error = ::WSAGetLastError();
+  if (last_error != ERROR_SUCCESS)
+    return last_error;
+  return alternative;
+}
+
 }  // namespace
 
 TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
@@ -645,28 +654,37 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
 // port to connect to. Third parameter indicates whether the socket should be
 // brokered (1) or created in-process (0).
 //
-// SBOX_TEST_FAILED_TO_RUN_TEST - Test failed to run e.g. invalid parameters.
+// SBOX_TEST_INVALID_PARAMETER - Invalid number of parameters.
 //
 // SBOX_TEST_FIRST_ERROR - Could not create socket from call to WSASocket or
-// socket broker operation.
+// socket broker operation, and ::WSAGetLastError() is ERROR_SUCCESS. In this
+// instance WSAGetLastError can be returned if it's set.
 //
 // SBOX_TEST_SECOND_ERROR - Could not call successfully perform a non-blocking
 // TCP connect().
 //
+// SBOX_TEST_FIFTH_ERROR - Could not acquire target services.
+//
+// SBOX_TEST_SIXTH_ERROR - Could not create necessary event for overlapped
+// Connect operation.
+//
+// SBOX_TEST_SEVENTH_ERROR - Could not call WSAEventSelect on connect event.
+//
 // SBOX_TEST_TIMED_OUT - The connect timed out. This might be the correct result
 // for certain types of tests e.g. when App Container is blocking either a TCP
 // connect.
+
 SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
   InitWinsock();
   SOCKET socket_handle = INVALID_SOCKET;
 
   if (argc < 3)
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
+    return SBOX_TEST_INVALID_PARAMETER;
 
   if (::_wtoi(argv[2]) == 1) {
     TargetServices* target_services = SandboxFactory::GetTargetServices();
     if (!target_services)
-      return SBOX_TEST_FAILED_TO_RUN_TEST;
+      return SBOX_TEST_FIFTH_ERROR;
     socket_handle = target_services->CreateBrokeredSocket(AF_INET, SOCK_STREAM,
                                                           IPPROTO_TCP);
   } else {
@@ -675,7 +693,7 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
   }
 
   if (socket_handle == INVALID_SOCKET)
-    return SBOX_TEST_FIRST_ERROR;
+    return GetWSALastErrorOrAlternative(SBOX_TEST_FIRST_ERROR);
 
   ScopedSocketHandle socket(socket_handle);
 
@@ -687,14 +705,16 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 
   HANDLE connect_event_handle = WSACreateEvent();
   if (connect_event_handle == WSA_INVALID_EVENT)
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
+    return SBOX_TEST_SIXTH_ERROR;
+
   ScopedWSAEventHandle connect_event(connect_event_handle);
   // For TCP sockets, wait on the connect.
   int event_select =
       WSAEventSelect(socket.Get(), connect_event.Get(), FD_CONNECT);
 
   if (event_select)
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
+    return SBOX_TEST_SEVENTH_ERROR;
+
   int ret = ::connect(socket.Get(), reinterpret_cast<sockaddr*>(&local_service),
                       sizeof(local_service));
   if (ret != SOCKET_ERROR || WSAGetLastError() != WSAEWOULDBLOCK) {
@@ -722,10 +742,10 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 //
 // Returns:
 //
-// SBOX_TEST_FAILED_TO_RUN_TEST - Test failed to run e.g. invalid parameters.
+// SBOX_TEST_INVALID_PARAMETER - Invalid number of parameters.
 //
 // SBOX_TEST_FIRST_ERROR - Could not create socket from call to WSASocket or
-// socket broker operation.
+// socket broker operation and WSAGetLastError() was ERROR_SUCCESS.
 //
 // SBOX_TEST_THIRD_ERROR - Could not successfully perform a non-blocking UDP
 // sendto().
@@ -733,15 +753,26 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 // SBOX_TEST_FOURTH_ERROR - Could not successfully perform a non-blocking UDP
 // recv().
 //
+// SBOX_TEST_FIFTH_ERROR - Could not acquire target services.
+//
+// SBOX_TEST_SIXTH_ERROR - Could not create necessary event for overlapped
+// SendTo operation.
+//
+// SBOX_TEST_SEVENTH_ERROR - Could not create necessary event for overlapped
+// Recv operation.
+//
 // SBOX_TEST_TIMED_OUT - One of the above operations (connect, sendto, recv)
 // timed out. This might be the correct result for certain types of tests e.g.
 // when App Container is blocking either a TCP connect or UDP recv.
+//
+// If a socket creation call fails then ::WSAGetLastError() will be returned
+// if it is not ERROR_SUCCESS, otherwise SBOX_TEST_FIRST_ERROR is returned.
 SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   InitWinsock();
   SOCKET socket_handle = INVALID_SOCKET;
 
   if (argc < 4)
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
+    return SBOX_TEST_INVALID_PARAMETER;
 
   // Set the event that the UDP server is waiting for.
   ::SetEvent(base::win::Uint32ToHandle(::_wtoi(argv[2])));
@@ -749,7 +780,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   if (::_wtoi(argv[3]) == 1) {
     TargetServices* target_services = SandboxFactory::GetTargetServices();
     if (!target_services)
-      return SBOX_TEST_FAILED_TO_RUN_TEST;
+      return SBOX_TEST_FIFTH_ERROR;
     socket_handle =
         target_services->CreateBrokeredSocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   } else {
@@ -758,7 +789,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   }
 
   if (socket_handle == INVALID_SOCKET)
-    return SBOX_TEST_FIRST_ERROR;
+    return GetWSALastErrorOrAlternative(SBOX_TEST_FIRST_ERROR);
 
   ScopedSocketHandle socket(socket_handle);
   sockaddr_in local_service = {};
@@ -774,7 +805,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   write_buffer.len = sizeof(data);
   HANDLE send_event_handle = WSACreateEvent();
   if (send_event_handle == WSA_INVALID_EVENT)
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
+    return SBOX_TEST_SIXTH_ERROR;
   ScopedWSAEventHandle send_event(send_event_handle);
   OVERLAPPED write_overlapped = {};
   write_overlapped.hEvent = send_event.Get();
@@ -800,7 +831,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   read_buffer.len = sizeof(recv_buf);
   HANDLE read_event_handle = WSACreateEvent();
   if (read_event_handle == WSA_INVALID_EVENT)
-    return SBOX_TEST_FAILED_TO_RUN_TEST;
+    return SBOX_TEST_SEVENTH_ERROR;
   ScopedWSAEventHandle read_event(read_event_handle);
   OVERLAPPED read_overlapped = {};
   read_overlapped.hEvent = read_event.Get();

@@ -14,8 +14,12 @@ namespace optimization_guide {
 // The metadata associated with a single entity.
 struct EntityMetadata {
   EntityMetadata();
-  ~EntityMetadata();
+  EntityMetadata(
+      const std::string& entity_id,
+      const std::string& human_readable_name,
+      const base::flat_map<std::string, float>& human_readable_categories);
   EntityMetadata(const EntityMetadata&);
+  ~EntityMetadata();
 
   // The opaque entity id.
   std::string entity_id;
@@ -37,6 +41,11 @@ struct EntityMetadata {
 
 // The metadata with its score as output of the model execution.
 struct ScoredEntityMetadata {
+  ScoredEntityMetadata();
+  ScoredEntityMetadata(float score, const EntityMetadata& md);
+  ScoredEntityMetadata(const ScoredEntityMetadata&);
+  ~ScoredEntityMetadata();
+
   // The metadata.
   EntityMetadata metadata;
 

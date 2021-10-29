@@ -57,6 +57,9 @@ class FeatureStateManagerImpl : public FeatureStateManager,
     static Factory* test_factory_;
   };
 
+  FeatureStateManagerImpl(const FeatureStateManagerImpl&) = delete;
+  FeatureStateManagerImpl& operator=(const FeatureStateManagerImpl&) = delete;
+
   ~FeatureStateManagerImpl() override;
 
  private:
@@ -127,8 +130,6 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   base::RepeatingTimer feature_state_metric_timer_;
 
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureStateManagerImpl);
 };
 
 }  // namespace multidevice_setup

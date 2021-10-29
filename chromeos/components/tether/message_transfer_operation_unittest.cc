@@ -140,6 +140,11 @@ TetherAvailabilityResponse CreateTetherAvailabilityResponse() {
 }  // namespace
 
 class MessageTransferOperationTest : public testing::Test {
+ public:
+  MessageTransferOperationTest(const MessageTransferOperationTest&) = delete;
+  MessageTransferOperationTest& operator=(const MessageTransferOperationTest&) =
+      delete;
+
  protected:
   MessageTransferOperationTest()
       : test_local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -262,9 +267,6 @@ class MessageTransferOperationTest : public testing::Test {
       fake_secure_channel_client_;
   TestTimerFactory* test_timer_factory_;
   std::unique_ptr<TestOperation> operation_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MessageTransferOperationTest);
 };
 
 TEST_F(MessageTransferOperationTest, TestFailedConnection) {

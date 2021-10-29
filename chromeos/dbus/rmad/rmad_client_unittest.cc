@@ -178,6 +178,20 @@ class RmadClientTest : public testing::Test {
     EmitSignal(&signal);
   }
 
+  // Passes a finalization status signal to |client_|.
+  void EmitFinalizationProgressSignal(rmad::FinalizeStatus::Status status,
+                                      double progress) {
+    dbus::Signal signal(rmad::kRmadInterfaceName,
+                        rmad::kFinalizeProgressSignal);
+    dbus::MessageWriter writer(&signal);
+    dbus::MessageWriter struct_writer(nullptr);
+    writer.OpenStruct(&struct_writer);
+    struct_writer.AppendInt32(static_cast<int32_t>(status));
+    struct_writer.AppendDouble(progress);
+    writer.CloseContainer(&struct_writer);
+    EmitSignal(&signal);
+  }
+
  protected:
   // Maps from rmad signal name to the corresponding callback provided by
   // |client_|.
@@ -254,6 +268,10 @@ class TestObserver : public RmadClient::Observer {
       const {
     return last_hardware_verification_result_;
   }
+  int num_finalization_progress() const { return num_finalization_progress_; }
+  const rmad::FinalizeStatus& last_finalization_progress() const {
+    return last_finalization_progress_;
+  }
 
   // Called when an error occurs outside of state transitions.
   // e.g. while calibrating devices.
@@ -302,6 +320,12 @@ class TestObserver : public RmadClient::Observer {
     last_hardware_verification_result_ = result;
   }
 
+  // Called when hardware verification completes.
+  void FinalizationProgress(const rmad::FinalizeStatus& status) override {
+    num_finalization_progress_++;
+    last_finalization_progress_ = status;
+  }
+
  private:
   RmadClient* client_;  // Not owned.
   int num_error_ = 0;
@@ -321,6 +345,8 @@ class TestObserver : public RmadClient::Observer {
   bool last_power_cable_state_ = true;
   int num_hardware_verification_result_ = 0;
   rmad::HardwareVerificationResult last_hardware_verification_result_;
+  int num_finalization_progress_ = 0;
+  rmad::FinalizeStatus last_finalization_progress_;
 };  // namespace chromeos
 
 TEST_F(RmadClientTest, GetCurrentState) {
@@ -731,6 +757,26 @@ TEST_F(RmadClientTest, HardwareVerificationResult) {
   EXPECT_EQ(true,
             observer_1.last_hardware_verification_result().is_compliant());
   EXPECT_EQ("ok", observer_1.last_hardware_verification_result().error_str());
+}
+
+// Tests that synchronous observers are notified about hardware verification
+// status.
+TEST_F(RmadClientTest, FinalizationProgress) {
+  TestObserver observer_1(client_);
+
+  EmitFinalizationProgressSignal(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5);
+  EXPECT_EQ(1, observer_1.num_finalization_progress());
+  EXPECT_EQ(rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS,
+            observer_1.last_finalization_progress().status());
+  EXPECT_EQ(0.5, observer_1.last_finalization_progress().progress());
+
+  EmitFinalizationProgressSignal(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE, 1.0);
+  EXPECT_EQ(2, observer_1.num_finalization_progress());
+  EXPECT_EQ(rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE,
+            observer_1.last_finalization_progress().status());
+  EXPECT_EQ(1.0, observer_1.last_finalization_progress().progress());
 }
 
 }  // namespace chromeos

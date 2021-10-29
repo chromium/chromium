@@ -43,6 +43,9 @@ class CONTENT_EXPORT RenderFrameHostFactory {
       bool renderer_initiated_creation,
       RenderFrameHostImpl::LifecycleStateImpl lifecycle_state);
 
+  RenderFrameHostFactory(const RenderFrameHostFactory&) = delete;
+  RenderFrameHostFactory& operator=(const RenderFrameHostFactory&) = delete;
+
   // Returns true if there is currently a globally-registered factory.
   static bool has_factory() { return !!factory_; }
 
@@ -77,8 +80,6 @@ class CONTENT_EXPORT RenderFrameHostFactory {
   // The current globally registered factory. This is null when we should create
   // regular RenderFrameHostImpls.
   static RenderFrameHostFactory* factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostFactory);
 };
 
 }  // namespace content

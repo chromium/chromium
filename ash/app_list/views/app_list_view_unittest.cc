@@ -176,7 +176,6 @@ class AppListViewTest : public views::ViewsTestBase,
   ~AppListViewTest() override = default;
 
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       // Setup right to left environment if necessary.
       is_rtl_ = GetParam();
@@ -184,6 +183,9 @@ class AppListViewTest : public views::ViewsTestBase,
         base::i18n::SetICUDefaultLocale("he");
     }
     views::ViewsTestBase::SetUp();
+    zero_duration_mode_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
   }
@@ -192,8 +194,8 @@ class AppListViewTest : public views::ViewsTestBase,
     ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     view_->GetWidget()->Close();
+    zero_duration_mode_.reset();
     views::ViewsTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
  protected:
@@ -414,6 +416,9 @@ class AppListViewTest : public views::ViewsTestBase,
 
   // Restores the locale to default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
+
+  // Sets animation durations to zero.
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
 
@@ -2076,7 +2081,8 @@ TEST_F(AppListViewTest, AppsGridViewVisibilityOnReopening) {
 }
 
 TEST_F(AppListViewTest, AppsGridViewExpandHintingOnReopening) {
-  AppListView::SetShortAnimationForTesting(false);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -2092,8 +2098,6 @@ TEST_F(AppListViewTest, AppsGridViewExpandHintingOnReopening) {
   view_->SetState(ash::AppListViewState::kPeeking);
   EXPECT_TRUE(
       contents_view()->expand_arrow_view()->IsHintingAnimationRunningForTest());
-
-  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that going into a folder view, then setting the AppListState to PEEKING
@@ -2267,7 +2271,8 @@ TEST_F(AppListViewTest, DisplayTest) {
 
 // Tests switching rapidly between multiple pages of the launcher.
 TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
-  AppListView::SetShortAnimationForTesting(false);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   Initialize(false /*is_tablet_mode*/);
   Show();
@@ -2294,8 +2299,6 @@ TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
   // page.
   contents_view->ShowSearchResults(true);
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateSearchResults));
-
-  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that the correct views are displayed for showing search results.
@@ -2782,7 +2785,6 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
-  AppListView::SetShortAnimationForTesting(false);
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -2811,8 +2813,6 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   EXPECT_EQ(1.0f,
             contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-
-  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that search box is not visible when showing embedded Assistant UI.

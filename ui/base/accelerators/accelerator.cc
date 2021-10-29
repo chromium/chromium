@@ -498,7 +498,7 @@ std::u16string Accelerator::ApplyShortFormModifiers(
     // clear how to determine if a Mac has one of these newer keyboards. See
     // https://crbug.com/1263737 which tracks finding and displaying these
     // glyphs.
-    result.append(u"fn ");
+    result.append(u"(fn) ");
   }
 
   result.append(shortcut);

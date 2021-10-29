@@ -4,7 +4,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_item.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -29,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 
@@ -55,13 +55,15 @@ class SpokenFeedbackAppListTest
   void SetUp() override {
     // Do not run expand arrow hinting animation to avoid msan test crash.
     // (See https://crbug.com/926038)
-    AppListView::SetShortAnimationForTesting(true);
+    zero_duration_mode_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     LoggedInSpokenFeedbackTest::SetUp();
   }
 
   void TearDown() override {
     LoggedInSpokenFeedbackTest::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
+    zero_duration_mode_.reset();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -117,6 +119,9 @@ class SpokenFeedbackAppListTest
     }
     return nullptr;
   }
+
+ private:
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
 INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,

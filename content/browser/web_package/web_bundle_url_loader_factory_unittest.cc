@@ -31,6 +31,10 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
  public:
   WebBundleURLLoaderFactoryTest() {}
 
+  WebBundleURLLoaderFactoryTest(const WebBundleURLLoaderFactoryTest&) = delete;
+  WebBundleURLLoaderFactoryTest& operator=(
+      const WebBundleURLLoaderFactoryTest&) = delete;
+
   void SetUp() override {
     mock_factory_ = MockWebBundleReaderFactory::Create();
     auto reader = mock_factory_->CreateReader(body_);
@@ -172,8 +176,6 @@ class WebBundleURLLoaderFactoryTest : public testing::Test {
   network::TestURLLoaderClient test_client_;
   const std::string body_ = std::string("present day, present time");
   const GURL primary_url_ = GURL("https://test.example.org/");
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleURLLoaderFactoryTest);
 };
 
 TEST_F(WebBundleURLLoaderFactoryTest, CreateEntryLoader) {

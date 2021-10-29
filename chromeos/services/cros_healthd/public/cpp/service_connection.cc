@@ -29,6 +29,9 @@ class ServiceConnectionImpl : public ServiceConnection {
  public:
   ServiceConnectionImpl();
 
+  ServiceConnectionImpl(const ServiceConnectionImpl&) = delete;
+  ServiceConnectionImpl& operator=(const ServiceConnectionImpl&) = delete;
+
  protected:
   ~ServiceConnectionImpl() override = default;
 
@@ -232,8 +235,6 @@ class ServiceConnectionImpl : public ServiceConnection {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ServiceConnectionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConnectionImpl);
 };
 
 void ServiceConnectionImpl::GetAvailableRoutines(

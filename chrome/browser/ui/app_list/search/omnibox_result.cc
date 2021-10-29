@@ -244,8 +244,8 @@ void OmniboxResult::Remove() {
 
 void OmniboxResult::InvokeAction(int action_index) {
   DCHECK(is_zero_suggestion_);
-  switch (ash::GetOmniBoxZeroStateAction(action_index)) {
-    case ash::OmniBoxZeroStateAction::kRemoveSuggestion:
+  switch (ash::GetSearchResultActionType(action_index)) {
+    case ash::SearchResultActionType::kRemove:
       Remove();
       break;
     default:
@@ -494,10 +494,11 @@ void OmniboxResult::OnFaviconFetched(const gfx::Image& icon) {
 void OmniboxResult::SetZeroSuggestionActions() {
   Actions zero_suggestion_actions;
 
-  constexpr int kMaxButtons = ash::OmniBoxZeroStateAction::kZeroStateActionMax;
+  constexpr int kMaxButtons =
+      ash::SearchResultActionType::kSearchResultActionTypeMax;
   for (int i = 0; i < kMaxButtons; ++i) {
-    ash::OmniBoxZeroStateAction button_action =
-        ash::GetOmniBoxZeroStateAction(i);
+    ash::SearchResultActionType button_action =
+        ash::GetSearchResultActionType(i);
     gfx::ImageSkia button_image;
     std::u16string button_tooltip;
     bool visible_on_hover = false;
@@ -505,14 +506,14 @@ void OmniboxResult::SetZeroSuggestionActions() {
         ash::SharedAppListConfig::instance().search_list_badge_icon_dimension();
 
     switch (button_action) {
-      case ash::OmniBoxZeroStateAction::kRemoveSuggestion:
+      case ash::SearchResultActionType::kRemove:
         button_image = gfx::CreateVectorIcon(
             ash::kSearchResultRemoveIcon, kImageButtonIconSize, kListIconColor);
         button_tooltip = l10n_util::GetStringFUTF16(
             IDS_APP_LIST_REMOVE_SUGGESTION_ACCESSIBILITY_NAME, title());
         visible_on_hover = true;  // visible upon hovering
         break;
-      case ash::OmniBoxZeroStateAction::kAppendSuggestion:
+      case ash::SearchResultActionType::kAppend:
         button_image = gfx::CreateVectorIcon(
             ash::kSearchResultAppendIcon, kImageButtonIconSize, kListIconColor);
         button_tooltip = l10n_util::GetStringFUTF16(

@@ -54,6 +54,9 @@ class DragDownloadFile::DragDownloadFileUI
     // Do not call weak_ptr_factory_.GetWeakPtr() outside the UI thread.
   }
 
+  DragDownloadFileUI(const DragDownloadFileUI&) = delete;
+  DragDownloadFileUI& operator=(const DragDownloadFileUI&) = delete;
+
   void InitiateDownload(base::File file,
                         const base::FilePath& file_path) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -178,8 +181,6 @@ class DragDownloadFile::DragDownloadFileUI
 
   // Only used in the callback from DownloadManager::DownloadUrl().
   base::WeakPtrFactory<DragDownloadFileUI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragDownloadFileUI);
 };
 
 DragDownloadFile::DragDownloadFile(const base::FilePath& file_path,

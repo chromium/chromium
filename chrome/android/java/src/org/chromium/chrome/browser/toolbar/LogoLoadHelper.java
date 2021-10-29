@@ -55,7 +55,7 @@ public class LogoLoadHelper {
      * homepage, destroy mLogoDelegate.
      */
     void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
-        assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             if (mProfileSupplier.hasValue()) {
                 loadSearchProviderLogo();
@@ -99,7 +99,7 @@ public class LogoLoadHelper {
      * Load the search provider logo on Start surface.
      */
     private void loadSearchProviderLogo() {
-        assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+        assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity);
 
         // If logo is already updated for the current search provider, or profile is null or off the
         // record, don't bother loading the logo image.

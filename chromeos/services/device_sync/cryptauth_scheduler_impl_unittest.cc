@@ -40,6 +40,12 @@ const char kSessionId[] = "sessionId";
 }  // namespace
 
 class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthSchedulerImplTest(
+      const DeviceSyncCryptAuthSchedulerImplTest&) = delete;
+  DeviceSyncCryptAuthSchedulerImplTest& operator=(
+      const DeviceSyncCryptAuthSchedulerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthSchedulerImplTest() = default;
 
@@ -357,8 +363,6 @@ class DeviceSyncCryptAuthSchedulerImplTest : public testing::Test {
       false /* use_default_devices_and_services */};
   std::string wifi_network_service_path_;
   std::unique_ptr<CryptAuthScheduler> scheduler_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthSchedulerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthSchedulerImplTest,

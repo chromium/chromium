@@ -75,6 +75,9 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
   // Returns the global instance if initialized. May return null.
   static BiodClient* Get();
 
+  BiodClient(const BiodClient&) = delete;
+  BiodClient& operator=(const BiodClient&) = delete;
+
   // Adds and removes the observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -153,9 +156,6 @@ class COMPONENT_EXPORT(BIOD_CLIENT) BiodClient {
   // Initialize/Shutdown should be used instead.
   BiodClient();
   virtual ~BiodClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BiodClient);
 };
 
 }  // namespace chromeos

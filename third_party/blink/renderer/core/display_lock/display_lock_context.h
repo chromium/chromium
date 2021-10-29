@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 
+#include <utility>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -132,6 +134,10 @@ class CORE_EXPORT DisplayLockContext final
     blocked_child_recalc_change_ = blocked_child_recalc_change_.Combine(change);
   }
 
+  StyleRecalcChange TakeBlockedStyleRecalcChange() {
+    return std::exchange(blocked_child_recalc_change_, StyleRecalcChange());
+  }
+
   void NotifyReattachLayoutTreeWasBlocked() {
     blocked_child_recalc_change_ =
         blocked_child_recalc_change_.ForceReattachLayoutTree();
@@ -177,12 +183,6 @@ class CORE_EXPORT DisplayLockContext final
         needs_blocking_wheel_event_handler_update;
     needs_prepaint_subtree_walk_ = true;
   }
-
-  // This is called by the style recalc code in lieu of
-  // MarkForStyleRecalcIfNeeded() in order to adjust the child change if we need
-  // to recalc children nodes here.
-  StyleRecalcChange AdjustStyleRecalcChangeForChildren(
-      StyleRecalcChange change);
 
   void DidForceActivatableDisplayLocks() {
     if (IsLocked() && IsActivatable(DisplayLockActivationReason::kAny)) {

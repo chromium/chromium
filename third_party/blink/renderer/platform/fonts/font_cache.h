@@ -180,8 +180,8 @@ class PLATFORM_EXPORT FontCache {
   static void SetFontManager(sk_sp<SkFontMgr>);
 
 #if defined(OS_WIN)
+  static WebFontPrewarmer* GetFontPrewarmer() { return prewarmer_; }
   static void SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
-    DCHECK(!prewarmer_);
     prewarmer_ = prewarmer;
   }
   static void PrewarmFamily(const AtomicString& family_name);

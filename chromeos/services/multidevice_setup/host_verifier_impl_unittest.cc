@@ -71,6 +71,12 @@ enum class HostState {
 
 class MultiDeviceSetupHostVerifierImplTest
     : public ::testing::TestWithParam<TestType> {
+ public:
+  MultiDeviceSetupHostVerifierImplTest(
+      const MultiDeviceSetupHostVerifierImplTest&) = delete;
+  MultiDeviceSetupHostVerifierImplTest& operator=(
+      const MultiDeviceSetupHostVerifierImplTest&) = delete;
+
  protected:
   MultiDeviceSetupHostVerifierImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
@@ -278,8 +284,6 @@ class MultiDeviceSetupHostVerifierImplTest
   std::unique_ptr<HostVerifier> host_verifier_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupHostVerifierImplTest);
 };
 
 TEST_P(MultiDeviceSetupHostVerifierImplTest, StartWithoutHost_SetAndVerify) {

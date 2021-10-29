@@ -26,6 +26,7 @@ class Rel32FinderX86;
 class Rel32FinderX64;
 
 struct Win32X86Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit32;
   static constexpr ExecutableType kExeType = kExeTypeWin32X86;
   enum : uint16_t { kMagic = 0x10B };
@@ -39,6 +40,7 @@ struct Win32X86Traits {
 };
 
 struct Win32X64Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit64;
   static constexpr ExecutableType kExeType = kExeTypeWin32X64;
   enum : uint16_t { kMagic = 0x20B };
@@ -55,6 +57,7 @@ template <class TRAITS>
 class DisassemblerWin32 : public Disassembler {
  public:
   using Traits = TRAITS;
+  static constexpr uint16_t kVersion = Traits::kVersion;
   enum ReferenceType : uint8_t { kReloc, kAbs32, kRel32, kTypeCount };
 
   // Applies quick checks to determine whether |image| *may* point to the start

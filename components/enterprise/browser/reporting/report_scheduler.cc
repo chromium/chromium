@@ -228,7 +228,7 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   }
 
   active_trigger_ = trigger;
-  ReportType report_type = kFull;
+  ReportType report_type = ReportType::kFull;
   switch (trigger) {
     case kTriggerNone:
     case kTriggerExtensionRequestRealTime:
@@ -239,11 +239,11 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
       break;
     case kTriggerUpdate:
       VLOG(1) << "Generating basic enterprise report upon update.";
-      report_type = kBrowserVersion;
+      report_type = ReportType::kBrowserVersion;
       break;
     case kTriggerNewVersion:
       VLOG(1) << "Generating basic enterprise report upon new version.";
-      report_type = kBrowserVersion;
+      report_type = ReportType::kBrowserVersion;
       break;
   }
 

@@ -394,6 +394,23 @@ void Starter::CheckSettings() {
   }
 }
 
+void Starter::RecordDependenciesInvalidated() const {
+  Metrics::DependenciesInvalidated dependencies_invalidated =
+      Metrics::DependenciesInvalidated::OUTSIDE_FLOW;
+  if (platform_delegate_->IsRegularScriptRunning()) {
+    dependencies_invalidated = Metrics::DependenciesInvalidated::DURING_FLOW;
+  } else if (IsStartupPending()) {
+    dependencies_invalidated = Metrics::DependenciesInvalidated::DURING_STARTUP;
+  }
+
+  Metrics::RecordDependenciesInvalidated(dependencies_invalidated);
+}
+
+void Starter::OnDependenciesInvalidated() {
+  RecordDependenciesInvalidated();
+  CheckSettings();
+}
+
 void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(trigger_context);
   DCHECK(!trigger_context->GetDirectAction());
@@ -429,6 +446,7 @@ void Starter::Start(std::unique_ptr<TriggerContext> trigger_context) {
     OnStartDone(/* start_regular_script = */ false);
     return;
   }
+
   if (IsTriggerScriptContext(*pending_trigger_context_) &&
       !url_utils::IsSamePublicSuffixDomain(
           web_contents()->GetMainFrame()->GetLastCommittedURL(),

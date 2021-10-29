@@ -160,6 +160,9 @@ class RemoveCookieTester {
   explicit RemoveCookieTester(StoragePartition* storage_partition)
       : storage_partition_(storage_partition) {}
 
+  RemoveCookieTester(const RemoveCookieTester&) = delete;
+  RemoveCookieTester& operator=(const RemoveCookieTester&) = delete;
+
   // Returns true, if the given cookie exists in the cookie store.
   bool ContainsCookie(const url::Origin& origin) {
     get_cookie_success_ = false;
@@ -208,14 +211,16 @@ class RemoveCookieTester {
   bool get_cookie_success_;
   AwaitCompletionHelper await_completion_;
   StoragePartition* storage_partition_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveCookieTester);
 };
 
 class RemoveInterestGroupTester {
  public:
   explicit RemoveInterestGroupTester(StoragePartitionImpl* storage_partition)
       : storage_partition_(storage_partition) {}
+
+  RemoveInterestGroupTester(const RemoveInterestGroupTester&) = delete;
+  RemoveInterestGroupTester& operator=(const RemoveInterestGroupTester&) =
+      delete;
 
   // Returns true, if the given interest group owner has any interest groups in
   // InterestGroupStorage.
@@ -249,8 +254,6 @@ class RemoveInterestGroupTester {
   bool get_interest_group_success_ = false;
   AwaitCompletionHelper await_completion_;
   StoragePartitionImpl* storage_partition_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveInterestGroupTester);
 };
 
 class RemoveLocalStorageTester {
@@ -405,6 +408,9 @@ class RemoveCodeCacheTester {
   explicit RemoveCodeCacheTester(GeneratedCodeCacheContext* code_cache_context)
       : code_cache_context_(code_cache_context) {}
 
+  RemoveCodeCacheTester(const RemoveCodeCacheTester&) = delete;
+  RemoveCodeCacheTester& operator=(const RemoveCodeCacheTester&) = delete;
+
   enum Cache { kJs, kWebAssembly, kWebUiJs };
 
   bool ContainsEntry(Cache cache, const GURL& url, const GURL& origin_lock) {
@@ -504,7 +510,6 @@ class RemoveCodeCacheTester {
   AwaitCompletionHelper await_completion_;
   GeneratedCodeCacheContext* code_cache_context_;
   std::string received_data_;
-  DISALLOW_COPY_AND_ASSIGN(RemoveCodeCacheTester);
 };
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -513,6 +518,10 @@ class RemovePluginPrivateDataTester {
   explicit RemovePluginPrivateDataTester(
       storage::FileSystemContext* filesystem_context)
       : filesystem_context_(filesystem_context) {}
+
+  RemovePluginPrivateDataTester(const RemovePluginPrivateDataTester&) = delete;
+  RemovePluginPrivateDataTester& operator=(
+      const RemovePluginPrivateDataTester&) = delete;
 
   // Add some files to the PluginPrivateFileSystem. They are created as follows:
   //   url1 - ClearKey - 1 file - timestamp 10 days ago
@@ -694,8 +703,6 @@ class RemovePluginPrivateDataTester {
   // Keep track of the URL for the ClearKey file so that it can be written to
   // or deleted.
   storage::FileSystemURL clearkey_file_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovePluginPrivateDataTester);
 };
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -882,6 +889,9 @@ class StoragePartitionImplTest : public testing::Test {
                                    {});
   }
 
+  StoragePartitionImplTest(const StoragePartitionImplTest&) = delete;
+  StoragePartitionImplTest& operator=(const StoragePartitionImplTest&) = delete;
+
   storage::MockQuotaManager* GetMockManager() {
     if (!quota_manager_.get()) {
       quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
@@ -914,8 +924,6 @@ class StoragePartitionImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(StoragePartitionImplTest);
 };
 
 class StoragePartitionShaderClearTest : public testing::Test {

@@ -162,53 +162,6 @@ public class FeedStream implements Stream {
             FeedStream.this.dismissBottomSheet();
         }
 
-        @VisibleForTesting
-        String getSliceIdFromView(View view) {
-            View childOfRoot = findChildViewContainingDescendant(mRecyclerView, view);
-
-            if (childOfRoot != null) {
-                // View is a child of the recycler view, find slice using the index.
-                int position = mRecyclerView.getChildAdapterPosition(childOfRoot);
-                if (position >= 0 && position < mContentManager.getItemCount()) {
-                    return mContentManager.getContent(position).getKey();
-                }
-            } else if (mBottomSheetContent != null
-                    && findChildViewContainingDescendant(mBottomSheetContent.getContentView(), view)
-                            != null) {
-                // View is a child of the bottom sheet, return slice associated with the bottom
-                // sheet.
-                return mBottomSheetOriginatingSliceId;
-            }
-            return "";
-        }
-
-        /**
-         * Returns the immediate child of parentView which contains descendantView.
-         * If descendantView is not in parentView's view hierarchy, this returns null.
-         * Note that the returned view may be descendantView, or descendantView.getParent(),
-         * or descendantView.getParent().getParent(), etc...
-         */
-        View findChildViewContainingDescendant(View parentView, View descendantView) {
-            if (parentView == null || descendantView == null) return null;
-            // Find the direct child of parentView which owns view.
-            if (parentView == descendantView.getParent()) {
-                return descendantView;
-            } else {
-                // One of the view's ancestors might be the child.
-                ViewParent p = descendantView.getParent();
-                while (true) {
-                    if (p == null) {
-                        return null;
-                    }
-                    if (p.getParent() == parentView) {
-                        if (p instanceof View) return (View) p;
-                        return null;
-                    }
-                    p = p.getParent();
-                }
-            }
-        }
-
         private void openSuggestionUrl(String url, int disposition) {
             boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                     || disposition == WindowOpenDisposition.OFF_THE_RECORD);
@@ -332,9 +285,34 @@ public class FeedStream implements Stream {
         @Override
         public void openAutoplaySettings() {
             assert ThreadUtils.runningOnUiThread();
-            FeedStreamJni.get().reportOtherUserAction(
-                    mNativeFeedStream, FeedStream.this, FeedUserActionType.OPENED_CONTEXT_MENU);
+            FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
+                    FeedUserActionType.OPENED_AUTOPLAY_SETTINGS);
             mFeedAutoplaySettingsDelegate.launchAutoplaySettings();
+        }
+
+        @Override
+        public void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {
+            assert ThreadUtils.runningOnUiThread();
+            mSliceViewTracker.watchForFirstVisible(
+                    getSliceIdFromView(view), viewedThreshold, runnable);
+        }
+
+        @Override
+        public void reportNoticeViewed(String key) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportNoticeViewed(mNativeFeedStream, FeedStream.this, key);
+        }
+
+        @Override
+        public void reportNoticeOpenAction(String key) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportNoticeOpenAction(mNativeFeedStream, FeedStream.this, key);
+        }
+
+        @Override
+        public void reportNoticeDismissed(String key) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportNoticeDismissed(mNativeFeedStream, FeedStream.this, key);
         }
 
         // Since the XSurface client strings are slightly different than the Feed strings, convert
@@ -977,6 +955,53 @@ public class FeedStream implements Stream {
     }
 
     @VisibleForTesting
+    String getSliceIdFromView(View view) {
+        View childOfRoot = findChildViewContainingDescendant(mRecyclerView, view);
+
+        if (childOfRoot != null) {
+            // View is a child of the recycler view, find slice using the index.
+            int position = mRecyclerView.getChildAdapterPosition(childOfRoot);
+            if (position >= 0 && position < mContentManager.getItemCount()) {
+                return mContentManager.getContent(position).getKey();
+            }
+        } else if (mBottomSheetContent != null
+                && findChildViewContainingDescendant(mBottomSheetContent.getContentView(), view)
+                        != null) {
+            // View is a child of the bottom sheet, return slice associated with the bottom
+            // sheet.
+            return mBottomSheetOriginatingSliceId;
+        }
+        return "";
+    }
+
+    /**
+     * Returns the immediate child of parentView which contains descendantView.
+     * If descendantView is not in parentView's view hierarchy, this returns null.
+     * Note that the returned view may be descendantView, or descendantView.getParent(),
+     * or descendantView.getParent().getParent(), etc...
+     */
+    private View findChildViewContainingDescendant(View parentView, View descendantView) {
+        if (parentView == null || descendantView == null) return null;
+        // Find the direct child of parentView which owns view.
+        if (parentView == descendantView.getParent()) {
+            return descendantView;
+        } else {
+            // One of the view's ancestors might be the child.
+            ViewParent p = descendantView.getParent();
+            while (true) {
+                if (p == null) {
+                    return null;
+                }
+                if (p.getParent() == parentView) {
+                    if (p instanceof View) return (View) p;
+                    return null;
+                }
+                p = p.getParent();
+            }
+        }
+    }
+
+    @VisibleForTesting
     void setHelpAndFeedbackLauncherForTest(HelpAndFeedbackLauncher launcher) {
         mHelpAndFeedbackLauncher = launcher;
     }
@@ -1100,5 +1125,8 @@ public class FeedStream implements Stream {
         void surfaceClosed(long nativeFeedStream, FeedStream caller);
         int getSurfaceId(long nativeFeedStream, FeedStream caller);
         long getLastFetchTimeMs(long nativeFeedStream, FeedStream caller);
+        void reportNoticeViewed(long nativeFeedStream, FeedStream caller, String key);
+        void reportNoticeOpenAction(long nativeFeedStream, FeedStream caller, String key);
+        void reportNoticeDismissed(long nativeFeedStream, FeedStream caller, String key);
     }
 }

@@ -165,6 +165,10 @@ class DescriptionSource {
 // for serializing into AXNodeData.
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type);
 
+// Returns a ax::mojom::blink::HighlightType cast to an int, suitable
+// for serializing into AXNodeData.
+int32_t ToAXHighlightType(const AtomicString& highlight_type);
+
 }  // namespace blink
 
 WTF_ALLOW_INIT_WITH_MEM_FUNCTIONS(blink::IgnoredReason)

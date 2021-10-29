@@ -288,6 +288,11 @@ class DownloadTestItemCreationObserver
  public:
   DownloadTestItemCreationObserver();
 
+  DownloadTestItemCreationObserver(const DownloadTestItemCreationObserver&) =
+      delete;
+  DownloadTestItemCreationObserver& operator=(
+      const DownloadTestItemCreationObserver&) = delete;
+
   void WaitForDownloadItemCreation();
 
   uint32_t download_id() const { return download_id_; }
@@ -320,8 +325,6 @@ class DownloadTestItemCreationObserver
 
   // We are in the message loop.
   bool waiting_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTestItemCreationObserver);
 };
 
 // Class for mornitoring whether a save package download finishes.

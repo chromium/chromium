@@ -240,6 +240,11 @@ class NonSpareRendererContentBrowserClient : public TestContentBrowserClient {
  public:
   NonSpareRendererContentBrowserClient() = default;
 
+  NonSpareRendererContentBrowserClient(
+      const NonSpareRendererContentBrowserClient&) = delete;
+  NonSpareRendererContentBrowserClient& operator=(
+      const NonSpareRendererContentBrowserClient&) = delete;
+
   bool IsSuitableHost(RenderProcessHost* process_host,
                       const GURL& site_url) override {
     return RenderProcessHostImpl::GetSpareRenderProcessHostForTesting() !=
@@ -255,9 +260,6 @@ class NonSpareRendererContentBrowserClient : public TestContentBrowserClient {
                                        const GURL& site_url) override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NonSpareRendererContentBrowserClient);
 };
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,

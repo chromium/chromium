@@ -234,6 +234,20 @@ void NativeViewHost::SetVisible(bool visible) {
   View::SetVisible(visible);
 }
 
+bool NativeViewHost::OnMousePressed(const ui::MouseEvent& event) {
+  NOTREACHED()
+      << "This view is not expected to receive events directly. Event "
+         "targeting should find the native view as target window instead of "
+         "the view hierarchy. This is likely due to an overlapping View that "
+         "receives but is not handling this event. See crbug.com/1263413 and "
+         "Widget::ShouldDescendIntoChildForEventHandling() for some more "
+         "leads. If the overlapping view was not intended to receive events, "
+         "call SetCanProcessEventsWithinSubtree(false) on the overlapping "
+         "View that paints to a layer. If it's intended to receive some, but "
+         "not this event, event targeting needs to be fixed for this case.";
+  return View::OnMousePressed(event);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, private:
 

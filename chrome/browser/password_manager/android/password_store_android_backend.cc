@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -286,12 +287,19 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(
 }
 
 void PasswordStoreAndroidBackend::OnError(JobId job_id,
-                                          AndroidBackendErrorType error) {
+                                          AndroidBackendError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
   base::UmaHistogramEnumeration(
-      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode", error);
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode", error.type);
+  if (error.type == AndroidBackendErrorType::kExternalError) {
+    DCHECK(error.api_error_code.has_value());
+    base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
+        "PasswordManager.PasswordStoreAndroidBackend.APIErros",
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(error.api_error_code.value());
+  }
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

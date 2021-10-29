@@ -279,6 +279,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     int child_id_;
   };
 
+  ChildProcessSecurityPolicyImpl(const ChildProcessSecurityPolicyImpl&) =
+      delete;
+  ChildProcessSecurityPolicyImpl& operator=(
+      const ChildProcessSecurityPolicyImpl&) = delete;
+
   // Object can only be created through GetInstance() so the constructor is
   // private.
   ~ChildProcessSecurityPolicyImpl() override;
@@ -1024,8 +1029,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // improvement, and with it the BrowsingInstance cleanup here can also be
   // improved.
   base::TimeDelta browsing_instance_cleanup_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessSecurityPolicyImpl);
 };
 
 }  // namespace content

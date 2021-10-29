@@ -27,6 +27,10 @@ class CONTENT_EXPORT SharedWorkerDevToolsManager {
   // Returns the SharedWorkerDevToolsManager singleton.
   static SharedWorkerDevToolsManager* GetInstance();
 
+  SharedWorkerDevToolsManager(const SharedWorkerDevToolsManager&) = delete;
+  SharedWorkerDevToolsManager& operator=(const SharedWorkerDevToolsManager&) =
+      delete;
+
   void AddAllAgentHosts(
       std::vector<scoped_refptr<SharedWorkerDevToolsAgentHost>>* result);
   void AgentHostDestroyed(SharedWorkerDevToolsAgentHost* agent_host);
@@ -55,8 +59,6 @@ class CONTENT_EXPORT SharedWorkerDevToolsManager {
   // Clients may retain agent host for the terminated shared worker,
   // and we reconnect them when shared worker is restarted.
   base::flat_set<SharedWorkerDevToolsAgentHost*> terminated_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerDevToolsManager);
 };
 
 }  // namespace content

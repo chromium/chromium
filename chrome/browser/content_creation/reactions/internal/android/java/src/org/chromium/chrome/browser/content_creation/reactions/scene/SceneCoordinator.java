@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.widget.RelativeLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsMediator;
 import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
@@ -19,6 +20,7 @@ import org.chromium.ui.base.ViewUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Manages the scene UI and the reactions on the scene.
@@ -76,6 +78,25 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
             addReaction(reactionLayout, lp);
         });
+    }
+
+    /**
+     * Advances all reactions to the next frame. The given callback is invoked when all reactions
+     * have decoded their next frame and are ready to be drawn.
+     */
+    public void stepReactions(Callback<Void> cb) {
+        AtomicInteger expectedCallbacks = new AtomicInteger(mReactionLayouts.size());
+
+        for (ReactionLayout rl : mReactionLayouts) {
+            rl.getReaction().step(new Callback<Void>() {
+                @Override
+                public void onResult(Void v) {
+                    if (expectedCallbacks.decrementAndGet() == 0) {
+                        cb.onResult(null);
+                    }
+                }
+            });
+        }
     }
 
     private void addReaction(

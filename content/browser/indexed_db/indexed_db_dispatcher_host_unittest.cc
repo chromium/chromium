@@ -110,6 +110,9 @@ struct TestDatabaseConnection {
             std::make_unique<
                 StrictMock<MockMojoIndexedDBDatabaseCallbacks>>()) {}
 
+  TestDatabaseConnection(const TestDatabaseConnection&) = delete;
+  TestDatabaseConnection& operator=(const TestDatabaseConnection&) = delete;
+
   TestDatabaseConnection(TestDatabaseConnection&&) noexcept = default;
   TestDatabaseConnection& operator=(TestDatabaseConnection&&) noexcept =
       default;
@@ -140,9 +143,6 @@ struct TestDatabaseConnection {
 
   std::unique_ptr<MockMojoIndexedDBCallbacks> open_callbacks;
   std::unique_ptr<MockMojoIndexedDBDatabaseCallbacks> connection_callbacks;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestDatabaseConnection);
 };
 
 void TestStatusCallback(base::OnceClosure callback,
@@ -197,6 +197,10 @@ class IndexedDBDispatcherHostTest : public testing::Test {
             task_environment_.GetMainThreadTaskRunner(),
             nullptr)) {}
 
+  IndexedDBDispatcherHostTest(const IndexedDBDispatcherHostTest&) = delete;
+  IndexedDBDispatcherHostTest& operator=(const IndexedDBDispatcherHostTest&) =
+      delete;
+
   void SetUp() override {
     base::RunLoop loop;
     context_impl_->IDBTaskRunner()->PostTask(
@@ -244,8 +248,6 @@ class IndexedDBDispatcherHostTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<IndexedDBContextImpl> context_impl_;
   mojo::Remote<blink::mojom::IDBFactory> idb_mojo_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBDispatcherHostTest);
 };
 
 TEST_F(IndexedDBDispatcherHostTest, CloseConnectionBeforeUpgrade) {

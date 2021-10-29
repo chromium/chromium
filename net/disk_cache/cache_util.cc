@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -174,12 +175,13 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
   else if (percent_relative_size < 100)
     percent_relative_size = 100;
 
-  int64_t scaled_default_disk_cache_size =
-      (static_cast<int64_t>(disk_cache::kDefaultCacheSize) *
+  base::ClampedNumeric<int64_t> scaled_default_disk_cache_size =
+      (base::ClampedNumeric<int64_t>(disk_cache::kDefaultCacheSize) *
        percent_relative_size) /
       100;
 
-  int64_t preferred_cache_size = scaled_default_disk_cache_size;
+  base::ClampedNumeric<int64_t> preferred_cache_size =
+      scaled_default_disk_cache_size;
 
   // If available disk space is known, use it to compute a better value for
   // preferred_cache_size.
@@ -190,8 +192,10 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
     // scale for the field trial, capping the scaled value at 20% of the
     // available space.
     if (preferred_cache_size < available / 5) {
-      preferred_cache_size = std::min(
-          (preferred_cache_size * percent_relative_size) / 100, available / 5);
+      const base::ClampedNumeric<int64_t> clamped_available(available);
+      preferred_cache_size =
+          std::min((preferred_cache_size * percent_relative_size) / 100,
+                   clamped_available / 5);
     }
   }
 
@@ -202,14 +206,14 @@ int PreferredCacheSize(int64_t available, net::CacheType type) {
   // from the blockfile backend with the following explanation:
   // "Let's not use more than the default size while we tune-up the performance
   // of bigger caches. "
-  int64_t size_limit = scaled_default_disk_cache_size * 4;
+  base::ClampedNumeric<int64_t> size_limit = scaled_default_disk_cache_size * 4;
   // Native code entries can be large, so we would like a larger cache.
   // Make the size limit 50% larger in that case.
   if (type == net::GENERATED_NATIVE_CODE_CACHE) {
     size_limit = (size_limit / 2) * 3;
   } else if (type == net::GENERATED_WEBUI_BYTE_CODE_CACHE) {
-    size_limit =
-        std::min(size_limit, static_cast<int64_t>(kMaxWebUICodeCacheSize));
+    size_limit = std::min(
+        size_limit, base::ClampedNumeric<int64_t>(kMaxWebUICodeCacheSize));
   }
 
   DCHECK_LT(size_limit, std::numeric_limits<int32_t>::max());

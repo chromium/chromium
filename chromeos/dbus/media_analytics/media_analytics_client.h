@@ -44,6 +44,9 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
   // Returns the global instance if initialized. May return null.
   static MediaAnalyticsClient* Get();
 
+  MediaAnalyticsClient(const MediaAnalyticsClient&) = delete;
+  MediaAnalyticsClient& operator=(const MediaAnalyticsClient&) = delete;
+
   // Adds or removes an observer.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
@@ -75,9 +78,6 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
   // Initialize/Shutdown should be used instead.
   MediaAnalyticsClient();
   virtual ~MediaAnalyticsClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaAnalyticsClient);
 };
 
 }  // namespace chromeos

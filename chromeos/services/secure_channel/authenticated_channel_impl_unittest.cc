@@ -36,6 +36,12 @@ const int32_t kTestRssi = -24;
 const char kTestChannelBindingData[] = "channel_binding_data";
 
 class SecureChannelAuthenticatedChannelImplTest : public testing::Test {
+ public:
+  SecureChannelAuthenticatedChannelImplTest(
+      const SecureChannelAuthenticatedChannelImplTest&) = delete;
+  SecureChannelAuthenticatedChannelImplTest& operator=(
+      const SecureChannelAuthenticatedChannelImplTest&) = delete;
+
  protected:
   SecureChannelAuthenticatedChannelImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefForTest()) {}
@@ -141,8 +147,6 @@ class SecureChannelAuthenticatedChannelImplTest : public testing::Test {
   std::unique_ptr<FakeAuthenticatedChannelObserver> test_observer_;
 
   std::unique_ptr<AuthenticatedChannel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelAuthenticatedChannelImplTest);
 };
 
 TEST_F(SecureChannelAuthenticatedChannelImplTest, ConnectionMetadata) {

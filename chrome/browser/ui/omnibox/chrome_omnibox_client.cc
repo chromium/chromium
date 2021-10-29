@@ -354,7 +354,7 @@ void ChromeOmniboxClient::OnTextChanged(const AutocompleteMatch& current_match,
 void ChromeOmniboxClient::OnRevert() {
   AutocompleteActionPredictor* action_predictor =
       predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_);
-  action_predictor->ClearTransitionalMatches();
+  action_predictor->UpdateDatabaseFromTransitionalMatches(GURL());
   action_predictor->CancelPrerender();
 }
 

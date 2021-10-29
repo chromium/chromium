@@ -7,7 +7,7 @@
 
 #include "ash/webui/eche_app_ui/eche_message_receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class FakeEcheMessageReceiver : public EcheMessageReceiver {
@@ -28,6 +28,6 @@ class FakeEcheMessageReceiver : public EcheMessageReceiver {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_FAKE_ECHE_MESSAGE_RECEIVER_H_
