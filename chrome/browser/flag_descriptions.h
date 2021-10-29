@@ -1434,6 +1434,9 @@ extern const char kTabOutlinesInLowContrastThemesDescription[];
 extern const char kTabRestoreSubMenusName[];
 extern const char kTabRestoreSubMenusDescription[];
 
+extern const char kTabSearchFuzzySearchName[];
+extern const char kTabSearchFuzzySearchDescription[];
+
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 

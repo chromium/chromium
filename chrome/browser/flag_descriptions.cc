@@ -2489,6 +2489,10 @@ const char kTabRestoreSubMenusDescription[] =
     "Show app menu history sub menus for the contents of recently closed tab "
     "groups and windows.";
 
+const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
+const char kTabSearchFuzzySearchDescription[] =
+    "Enable fuzzy search for Tab Search.";
+
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";

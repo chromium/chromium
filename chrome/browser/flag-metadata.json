@@ -5161,6 +5161,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "tab-search-fuzzy-search",
+    "owners": [ "yuhengh", "chrome-cros@google.com" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "tabs-bulkactions-ios",
     "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
     "expiry_milestone": 98

@@ -7660,6 +7660,52 @@
             ]
         }
     ],
+    "TabSearchFuzzySearch": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "TabSearchFuzzySearch"
+                    ]
+                },
+                {
+                    "name": "Enabled_Small",
+                    "params": {
+                        "TabSearchSearchThreshold": "0.3"
+                    },
+                    "enable_features": [
+                        "TabSearchFuzzySearch"
+                    ]
+                },
+                {
+                    "name": "Enabled_Medium",
+                    "params": {
+                        "TabSearchSearchThreshold": "0.6"
+                    },
+                    "enable_features": [
+                        "TabSearchFuzzySearch"
+                    ]
+                },
+                {
+                    "name": "Enabled_Large",
+                    "params": {
+                        "TabSearchSearchThreshold": "0.8"
+                    },
+                    "enable_features": [
+                        "TabSearchFuzzySearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSearchIPH": [
         {
             "platforms": [
