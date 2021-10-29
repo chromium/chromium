@@ -965,7 +965,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Count of credentials analyzed when the password bulk check completed
-    successfully.
+    successfully. Note that this counts unique username+password pairs, so in
+    the case of password reuse, this does not correspond to the number of
+    user-visible credentials.
   </summary>
 </histogram>
 
@@ -982,6 +984,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Count of leaked credentials found when the password bulk check completed.
+    Note that this counts unique username+password pairs, so in the case of
+    password reuse, this does not correspond to the number of user-visible
+    credentials.
   </summary>
 </histogram>
 
