@@ -1,6 +1,26 @@
 This directory contains hard coded preinstalled web app configs to be default
 installed in Chrome branded builds.
 
+### Configs
+
+Preinstalled web apps are configured in two ways:
+- A hard coded set of apps in
+  [`GetPreinstalledWebApps()`](preinstalled_web_apps.h).
+- JSON configs on device:
+  - Command line arg `--preinstalled-web-apps-dir`
+    - Only used for testing.
+    - Works on all platforms.
+  - [`chrome::DIR_STANDALONE_EXTERNAL_EXTENSIONS`](https://source.chromium.org/search?q=DIR_STANDALONE_EXTERNAL_EXTENSIONS)/web_apps
+    - Chrome OS only (ozone included).
+    - `/usr/share/google-chrome/extensions/web_apps` for branded builds.
+    - `/usr/share/chromium/extensions/web_apps` for unbranded builds.
+    - Configs come from:
+      https://chrome-internal.googlesource.com/chromeos/overlays/chromeos-overlay/+/main/chromeos-base/chromeos-default-apps
+  - Command line arg `--extra-web-apps-dir`
+    - Used as subdirectory of above directory.
+    - Chrome OS only.
+    - Used by specific board images to add board specific default web apps.
+
 ### Icons
 
 The icon bitmaps bundled with the configs are not suitable to include in an open
