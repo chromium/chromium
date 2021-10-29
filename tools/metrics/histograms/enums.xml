@@ -61,6 +61,20 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="LoadEventEnd+LoadEventStart+FinishAllLoads+FinishDoc missing"/>
 </enum>
 
+<enum name="AboutThisSiteStatus">
+  <summary>Tracks status of AboutThisSite queries.</summary>
+  <int value="0" label="kValid">kValid</int>
+  <int value="1" label="kNoResult">kNoResult</int>
+  <int value="2" label="kMissingSiteInfo">kMissingSiteInfo</int>
+  <int value="3" label="kEmptySiteData">kEmptySiteData</int>
+  <int value="4" label="kIncompleteDescription">kIncompleteDescription</int>
+  <int value="5" label="kIncompleteSource">kIncompleteSource</int>
+  <int value="6" label="kInvalidSource">kInvalidSource</int>
+  <int value="7" label="kIncompleteTimeStamp">kIncompleteTimeStamp</int>
+  <int value="8" label="kInvalidTimeStamp">kInvalidTimeStamp</int>
+  <int value="9" label="kUnknown">kUnknown</int>
+</enum>
+
 <enum name="AcceleratedFixedRootBackground">
   <int value="0" label="ScrolledMainFrame"/>
   <int value="1" label="ScrolledMainFrameWithAcceleratedFixedRootBackground"/>

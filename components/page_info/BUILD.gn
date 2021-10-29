@@ -90,13 +90,18 @@ if (is_android) {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "about_this_site_validation_unittest.cc" ]
+  sources = [
+    "about_this_site_service_unittest.cc",
+    "about_this_site_validation_unittest.cc",
+  ]
 
   deps = [
     ":page_info",
     ":proto",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
+    "//url:url",
   ]
 }

@@ -4,7 +4,9 @@
 
 #include "components/page_info/about_this_site_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/page_info/about_this_site_validation.h"
 #include "components/page_info/features.h"
@@ -13,6 +15,7 @@
 
 namespace page_info {
 using ProtoValidation = about_this_site_validation::ProtoValidation;
+using OptimizationGuideDecision = optimization_guide::OptimizationGuideDecision;
 
 AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client)
     : client_(std::move(client)) {}
@@ -20,13 +23,16 @@ AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client)
 absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
     const GURL& url) const {
   optimization_guide::OptimizationMetadata metadata;
-  client_->CanApplyOptimization(url, &metadata);
+  auto decision = client_->CanApplyOptimization(url, &metadata);
   absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata =
       metadata.ParsedMetadata<proto::AboutThisSiteMetadata>();
 
-  // TODO(crbug.com/1250653): Log histogram with status
-  ProtoValidation status =
-      about_this_site_validation::ValidateMetadata(about_this_site_metadata);
+  ProtoValidation status = decision == OptimizationGuideDecision::kUnknown
+                               ? ProtoValidation::kUnknown
+                               : about_this_site_validation::ValidateMetadata(
+                                     about_this_site_metadata);
+  base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteStatus",
+                                status);
   if (status == ProtoValidation::kValid) {
     return about_this_site_metadata->site_info();
   }
