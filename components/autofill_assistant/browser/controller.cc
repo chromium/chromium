@@ -83,7 +83,7 @@ Controller::Controller(
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
       tts_controller_(std::move(tts_controller)) {
   user_model_.AddObserver(this);
-  tts_controller_->SetTtsEventDelegate(this);
+  tts_controller_->SetTtsEventDelegate(weak_ptr_factory_.GetWeakPtr());
 }
 
 Controller::~Controller() {
