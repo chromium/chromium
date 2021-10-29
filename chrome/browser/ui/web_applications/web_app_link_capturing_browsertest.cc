@@ -391,15 +391,6 @@ IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
 
-  if (IsIntentPickerPersistenceEnabled()) {
-    // No link capturing should happen until the user turns it on.
-    Navigate(browser(), start_url_);
-    EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
-    ExpectTabs(browser(), {start_url_});
-
-    TurnOnLinkCapturing();
-  }
-
   // In scope navigation should open an app window.
   Navigate(browser(), out_of_scope_);
   Browser* app_browser_1 = GetNewBrowserFromNavigation(browser(), in_scope_1_);
