@@ -71,6 +71,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     // Fallback study name used for experiments ids.
     public static final String GSA_FALLBACK_STUDY_NAME = "GsaExperiments";
 
+    protected BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
     protected CustomTabDelegateFactory mDelegateFactory;
     protected CustomTabToolbarCoordinator mToolbarCoordinator;
@@ -149,7 +150,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
         // clang-format off
-        return new BaseCustomTabRootUiCoordinator(this, getShareDelegateSupplier(),
+        mBaseCustomTabRootUiCoordinator = new BaseCustomTabRootUiCoordinator(this,
+                getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 this::getContextualSearchManager, getTabModelSelectorSupplier(),
                 getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
@@ -161,8 +163,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
                 this::isInOverviewMode, this::isWarmOnResume,
                 /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
-                getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController);
+                getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController,
+                () -> mIntentDataProvider, getMultiWindowModeStateDispatcher());
         // clang-format on
+        return mBaseCustomTabRootUiCoordinator;
     }
 
     @Override
