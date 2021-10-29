@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_features.h"
+#include "ui/gl/gl_surface_egl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
@@ -328,8 +329,10 @@ bool IsDrDcEnabled() {
   if (!IsAImageReaderEnabled())
     return false;
 
-  // Currently not supported when passthrough command decoder is enabled.
-  if (UsePassthroughCommandDecoder())
+  // Do not enable DrDc if angle context virtualization group is not supported.
+  // Both gpu main thread and compositor gpu thread should be mapped to a
+  // different angle's backend context and hence different virtualization group.
+  if (!gl::GLSurfaceEGL::IsANGLEContextVirtualizationSupported())
     return false;
 
   return base::FeatureList::IsEnabled(kEnableDrDc);

@@ -69,6 +69,13 @@ enum ContextPriority {
   ContextPriorityHigh
 };
 
+// Angle allows selecting context virtualization group at context creation time.
+// This enum is used to specify the group number to use for a given context.
+// Currently all contexts which does not specify any group number are part of
+// default angle context virtualization group. DrDc will use below enum to
+// become part of different virtualization group.
+enum class AngleContextVirtualizationGroup { kDefault = -1, kDrDc = 1 };
+
 struct GL_EXPORT GLContextAttribs {
   GLContextAttribs();
   GLContextAttribs(const GLContextAttribs& other);
@@ -104,6 +111,9 @@ struct GL_EXPORT GLContextAttribs {
   // called, ANGLE will restore the GL state of the native EGL context to the
   // state when MakeCurrent was previously called.
   bool angle_restore_external_context_state = false;
+
+  AngleContextVirtualizationGroup angle_context_virtualization_group_number =
+      AngleContextVirtualizationGroup::kDefault;
 
   ContextPriority context_priority = ContextPriorityMedium;
 };
