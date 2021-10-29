@@ -709,7 +709,7 @@ void ArcApps::LoadIcon(const std::string& app_id,
     }
 
     arc_icon_once_loader_.LoadIcon(
-        app_id, size_hint_in_dip, mojom_icon_type,
+        app_id, size_hint_in_dip, icon_type,
         base::BindOnce(&OnArcAppIconCompletelyLoaded, icon_type,
                        size_hint_in_dip, icon_effects,
                        IconValueToMojomIconValueCallback(std::move(callback))));
