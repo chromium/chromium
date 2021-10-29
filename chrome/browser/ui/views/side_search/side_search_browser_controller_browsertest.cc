@@ -83,7 +83,7 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
  public:
   // InProcessBrowserTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(GetEnabledFeatures(), {});
+    InitializeFeatureList(scoped_feature_list_);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -109,8 +109,10 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  virtual std::vector<base::Feature> GetEnabledFeatures() {
-    return {features::kSideSearch};
+  virtual void InitializeFeatureList(
+      base::test::ScopedFeatureList& feature_list) {
+    feature_list.InitWithFeatures({features::kSideSearch},
+                                  {features::kSideSearchStatePerTab});
   }
 
   void ActivateTabAt(Browser* browser, int index) {
@@ -157,12 +159,14 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
   void NotifyButtonClick(Browser* browser) {
     views::test::ButtonTestApi(GetSidePanelButtonFor(browser))
         .NotifyClick(GetDummyEvent());
+    BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   void NotifyCloseButtonClick(Browser* browser) {
     ASSERT_TRUE(GetSidePanelFor(browser)->GetVisible());
     views::test::ButtonTestApi(GetSideButtonClosePanelFor(browser))
         .NotifyClick(GetDummyEvent());
+    BrowserViewFor(browser)->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   void SetIsSidePanelSRPAvailableAt(Browser* browser,
@@ -833,10 +837,10 @@ class SideSearchStatePerTabBrowserControllerTest
     : public SideSearchBrowserControllerTest {
  public:
   // SideSearchBrowserControllerTest:
-  std::vector<base::Feature> GetEnabledFeatures() override {
-    auto features = SideSearchBrowserControllerTest::GetEnabledFeatures();
-    features.push_back(features::kSideSearchStatePerTab);
-    return features;
+  void InitializeFeatureList(
+      base::test::ScopedFeatureList& feature_list) override {
+    feature_list.InitWithFeatures(
+        {features::kSideSearch, features::kSideSearchStatePerTab}, {});
   }
 };
 
