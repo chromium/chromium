@@ -43,6 +43,17 @@ public interface PasswordStoreAndroidBackend {
             Callback<Exception> failureCallback){};
 
     /**
+     * Triggers an async call to update a login in the store.
+     *
+     * @param pwWithLocalData Serialised PasswordWithLocalData identifying the login to be updated.
+     * @param successCallback Callback that is called on success.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     */
+    // TODO(crbug.com/1229655): Make this method abstract after landing its implementation in Clank.
+    default void updateLogin(byte[] pwdWithLocalData, Runnable successCallback,
+            Callback<Exception> failureCallback){};
+
+    /**
      * Triggers an async call to remove a login from store.
      *
      * @param pwdSpecificsData Serialized PasswordSpecificsData identifying the login to be deleted.
