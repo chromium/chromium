@@ -541,12 +541,27 @@ String MediaQueryExpNode::Serialize() const {
   return builder.ToString();
 }
 
+PhysicalAxes MediaQueryFeatureExpNode::QueriedAxes() const {
+  PhysicalAxes axes(kPhysicalAxisNone);
+
+  if (exp_.IsWidthDependent())
+    axes |= PhysicalAxes(kPhysicalAxisHorizontal);
+  if (exp_.IsHeightDependent())
+    axes |= PhysicalAxes(kPhysicalAxisVertical);
+
+  return axes;
+}
+
 void MediaQueryFeatureExpNode::SerializeTo(StringBuilder& builder) const {
   builder.Append(exp_.Serialize());
 }
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryFeatureExpNode::Copy() const {
   return std::make_unique<MediaQueryFeatureExpNode>(exp_);
+}
+
+PhysicalAxes MediaQueryUnaryExpNode::QueriedAxes() const {
+  return operand_->QueriedAxes();
 }
 
 void MediaQueryNestedExpNode::SerializeTo(StringBuilder& builder) const {
@@ -566,6 +581,10 @@ void MediaQueryNotExpNode::SerializeTo(StringBuilder& builder) const {
 
 std::unique_ptr<MediaQueryExpNode> MediaQueryNotExpNode::Copy() const {
   return std::make_unique<MediaQueryNotExpNode>(Operand().Copy());
+}
+
+PhysicalAxes MediaQueryCompoundExpNode::QueriedAxes() const {
+  return left_->QueriedAxes() | right_->QueriedAxes();
 }
 
 void MediaQueryAndExpNode::SerializeTo(StringBuilder& builder) const {

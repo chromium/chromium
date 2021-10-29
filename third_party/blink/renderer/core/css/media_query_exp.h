@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -271,6 +272,7 @@ class CORE_EXPORT MediaQueryExpNode {
   String Serialize() const;
 
   virtual Type GetType() const = 0;
+  virtual PhysicalAxes QueriedAxes() const = 0;
   virtual void SerializeTo(StringBuilder&) const = 0;
   virtual std::unique_ptr<MediaQueryExpNode> Copy() const = 0;
 };
@@ -284,6 +286,7 @@ class CORE_EXPORT MediaQueryFeatureExpNode : public MediaQueryExpNode {
   MediaQueryExp Expression() const { return exp_; }
 
   Type GetType() const override { return Type::kFeature; }
+  PhysicalAxes QueriedAxes() const override;
   void SerializeTo(StringBuilder&) const override;
   std::unique_ptr<MediaQueryExpNode> Copy() const override;
 
@@ -300,6 +303,7 @@ class CORE_EXPORT MediaQueryUnaryExpNode : public MediaQueryExpNode {
     DCHECK(operand_);
   }
 
+  PhysicalAxes QueriedAxes() const override;
   const MediaQueryExpNode& Operand() const { return *operand_; }
 
  private:
@@ -341,6 +345,7 @@ class CORE_EXPORT MediaQueryCompoundExpNode : public MediaQueryExpNode {
     DCHECK(right_);
   }
 
+  PhysicalAxes QueriedAxes() const override;
   const MediaQueryExpNode& Left() const { return *left_; }
   const MediaQueryExpNode& Right() const { return *right_; }
 

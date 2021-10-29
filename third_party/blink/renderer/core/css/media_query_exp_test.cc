@@ -261,4 +261,33 @@ TEST(MediaQueryExpTest, SerializeNode) {
                 ->Serialize());
 }
 
+TEST(MediaQueryExpTest, QueriedAxes) {
+  MediaQueryExp color = RightExp("color", NoCmp(InvalidValue()));
+  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
+  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
+
+  // (color)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), FeatureNode(color)->QueriedAxes());
+  // (width < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            FeatureNode(width_lt10)->QueriedAxes());
+  // (height < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
+            FeatureNode(height_lt10)->QueriedAxes());
+  // (width < 10px) and (height < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
+            AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+                ->QueriedAxes());
+  // (width < 10px) or (height < 10px)
+  EXPECT_EQ(
+      PhysicalAxes(kPhysicalAxisBoth),
+      OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10))->QueriedAxes());
+  // ((width < 10px))
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            NestedNode(FeatureNode(width_lt10))->QueriedAxes());
+  // not (width < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            NotNode(FeatureNode(width_lt10))->QueriedAxes());
+}
+
 }  // namespace blink
