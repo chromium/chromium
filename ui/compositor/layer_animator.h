@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_delegate.h"
@@ -453,6 +454,8 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   std::vector<std::unique_ptr<ImplicitAnimationObserver>> owned_observer_list_;
 
   SequenceScheduledCallbacks sequence_scheduled_callbacks_;
+
+  base::WeakPtrFactory<LayerAnimator> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

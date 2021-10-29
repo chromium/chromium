@@ -83,8 +83,10 @@ LayerAnimator* LayerAnimator::CreateImplicitAnimator() {
     base::TimeDelta duration = GetTransitionDuration();                \
     if (duration.is_zero() && delegate() &&                            \
         (preemption_strategy_ != ENQUEUE_NEW_ANIMATION)) {             \
+      /* Stopping an animation may result in destruction of `this`. */ \
+      const auto weak_ptr = weak_ptr_factory_.GetWeakPtr();            \
       StopAnimatingProperty(LayerAnimationElement::property);          \
-      if (!delegate())                                                 \
+      if (!weak_ptr || !delegate())                                    \
         return;                                                        \
       delegate()->Set##name##FromAnimation(                            \
           value, PropertyChangeReason::NOT_FROM_ANIMATION);            \
