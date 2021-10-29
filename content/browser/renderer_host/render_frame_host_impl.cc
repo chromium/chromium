@@ -16,6 +16,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/i18n/character_encoding.h"
 #include "base/lazy_instance.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -7519,16 +7520,10 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     // Only run beforeunload in frames that have registered a beforeunload
     // handler.
     bool should_run_beforeunload = rfh->has_before_unload_handler_;
-    // TODO(alexmos): Many tests, as well as some DevTools cases, currently
-    // assume that beforeunload for a navigating/closing frame is always sent
-    // to the renderer. For now, keep this assumption by checking |rfh ==
-    // this|. In the future, this condition should be removed, and beforeunload
-    // should only be sent when a handler is registered.  For subframes of a
-    // navigating/closing frame, this assumption was never present, so
-    // subframes are included only if they have registered a beforeunload
-    // handler.
-    if (rfh == this)
+    if (rfh == this && !base::FeatureList::IsEnabled(
+                           features::kAvoidUnnecessaryBeforeUnloadCheck)) {
       should_run_beforeunload = true;
+    }
 
     if (!should_run_beforeunload)
       continue;
