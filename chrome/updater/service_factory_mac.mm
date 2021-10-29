@@ -9,12 +9,13 @@
 
 namespace updater {
 
-scoped_refptr<UpdateService> CreateUpdateService() {
-  return base::MakeRefCounted<UpdateServiceProxy>(GetUpdaterScope());
+scoped_refptr<UpdateService> CreateUpdateService(UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
 }
 
-scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal() {
-  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetUpdaterScope());
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
 }
 
 }  // namespace updater

@@ -124,13 +124,13 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void Update(const std::string& app_id) const override {
-    updater::test::Update(app_id);
+    updater::test::Update(kUpdaterScope, app_id);
   }
 
-  void UpdateAll() const override { updater::test::UpdateAll(); }
+  void UpdateAll() const override { updater::test::UpdateAll(kUpdaterScope); }
 
   void RegisterApp(const std::string& app_id) const override {
-    updater::test::RegisterApp(app_id);
+    updater::test::RegisterApp(kUpdaterScope, app_id);
   }
 
   void WaitForServerExit() const override {
