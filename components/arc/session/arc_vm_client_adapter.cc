@@ -280,12 +280,11 @@ std::vector<std::string> GenerateKernelCmdline(
       break;
   }
 
-  // Check if enabled.
-  if (base::FeatureList::IsEnabled(arc::kUseHighMemoryDalvikProfile)) {
+  if (base::FeatureList::IsEnabled(arc::kUseDalvikMemoryProfile)) {
     switch (start_params.dalvik_memory_profile) {
       case StartParams::DalvikMemoryProfile::DEFAULT:
-        break;
       case StartParams::DalvikMemoryProfile::M4G:
+        // Use the 4G profile for devices with 4GB RAM or less.
         result.push_back("androidboot.arc_dalvik_memory_profile=4G");
         break;
       case StartParams::DalvikMemoryProfile::M8G:
@@ -296,8 +295,8 @@ std::vector<std::string> GenerateKernelCmdline(
         break;
     }
   } else {
-    VLOG(1) << "High-memory dalvik profile is not enabled, default low-memory "
-               "is used.";
+    VLOG(1) << "Dalvik memory profile is not enabled, the default setting is "
+            << "used.";
   }
 
   std::string log_profile_name;

@@ -2957,6 +2957,10 @@ crbug.com/626703 fast/animation/scroll-animations/scrolltimeline-root-scroller-q
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/navigation-timing-extended.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-getStats.https.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/protocol/handover-datachannel.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-createDataChannel.html [ Skip Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/candidate-exchange.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/workers/modules/shared-worker-import-csp.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.14 ] wpt_internal/fenced_frame/create-credential.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/FileAPI/blob/Blob-constructor-dom.window.html [ Timeout ]
@@ -6258,11 +6262,13 @@ crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iter
 # Sheriff 2021-04-07
 crbug.com/1196620 [ Mac ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Failure Pass ]
 
-# QuicTransport tests should be eventually deleted.
-crbug.com/1196989 external/wpt/webtransport/quic/* [ Skip ]
-
 # WebTransport tests should eventually run when the WebTransport WPT server is added.
 crbug.com/1201569 external/wpt/webtransport/* [ Skip ]
+# WebTransport server infra tests pass on python3 but fail on python2.
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.html [ Pass Failure ]
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.serviceworker.html [ Pass Failure ]
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.sharedworker.html [ Pass Failure ]
+crbug.com/1201569 external/wpt/infrastructure/server/webtransport-h3.https.sub.any.worker.html [ Pass Failure ]
 
 crbug.com/1194958 fast/events/mouse-event-buttons-attribute.html [ Failure Pass ]
 
@@ -7252,3 +7258,6 @@ crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-fr
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/report-only-require-corp.https.html [ Failure Pass ]
 crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-image.js [ Failure Pass ]
+
+# Sheriff 2021-10-29
+crbug.com/1264670 [ Linux ] http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]

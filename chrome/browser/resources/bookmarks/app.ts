@@ -25,6 +25,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {setSearchResults} from './actions.js';
 import {destroy as destroyApiListener, init as initApiListener} from './api_listener.js';
+import {BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {LOCAL_STORAGE_FOLDER_STATE_KEY, LOCAL_STORAGE_TREE_WIDTH_KEY, ROOT_NODE_ID} from './constants.js';
 import {DNDManager} from './dnd_manager.js';
 import {MouseFocusMixin} from './mouse_focus_behavior.js';
@@ -108,7 +109,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       return state.folderOpenState;
     });
 
-    chrome.bookmarks.getTree((results) => {
+    BookmarksApiProxyImpl.getInstance().getTree().then(results => {
       const nodeMap = normalizeNodes(results[0]!);
       const initialState = createEmptyState();
       initialState.nodes = nodeMap;
@@ -184,21 +185,21 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       return;
     }
 
-    chrome.bookmarks.search(this.searchTerm_, (results) => {
-      const ids = results.map(function(node) {
-        return node.id;
-      });
-      this.dispatch(setSearchResults(ids));
-      this.dispatchEvent(new CustomEvent('iron-announce', {
-        bubbles: true,
-        composed: true,
-        detail: {
-          text: ids.length > 0 ?
-              loadTimeData.getStringF('searchResults', this.searchTerm_) :
-              loadTimeData.getString('noSearchResults')
-        }
-      }));
-    });
+    BookmarksApiProxyImpl.getInstance()
+        .search(this.searchTerm_)
+        .then(results => {
+          const ids = results.map(node => node.id);
+          this.dispatch(setSearchResults(ids));
+          this.dispatchEvent(new CustomEvent('iron-announce', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              text: ids.length > 0 ?
+                  loadTimeData.getStringF('searchResults', this.searchTerm_) :
+                  loadTimeData.getString('noSearchResults')
+            }
+          }));
+        });
   }
 
   private folderOpenStateChanged_(): void {
@@ -235,6 +236,12 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-app': BookmarksAppElement;
   }
 }
 

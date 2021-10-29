@@ -36,7 +36,7 @@ ModuleScript::ModuleScript(Modulator* settings_object,
   DCHECK(settings_object);
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
   v8::HandleScope scope(isolate);
-  record_.Set(isolate, record);
+  record_.Reset(isolate, record);
 }
 
 v8::Local<v8::Module> ModuleScript::V8Module() const {
@@ -45,7 +45,7 @@ v8::Local<v8::Module> ModuleScript::V8Module() const {
   }
   v8::Isolate* isolate = settings_object_->GetScriptState()->GetIsolate();
 
-  return record_.NewLocal(isolate);
+  return record_.Get(isolate);
 }
 
 bool ModuleScript::HasEmptyRecord() const {
@@ -55,7 +55,7 @@ bool ModuleScript::HasEmptyRecord() const {
 void ModuleScript::SetParseErrorAndClearRecord(ScriptValue error) {
   DCHECK(!error.IsEmpty());
 
-  record_.Clear();
+  record_.Reset();
   parse_error_.Set(settings_object_->GetScriptState()->GetIsolate(),
                    error.V8Value());
 }

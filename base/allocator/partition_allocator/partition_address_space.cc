@@ -96,14 +96,14 @@ void PartitionAddressSpace::Init() {
   // is a valid pointer, and having a "forbidden zone" before the BRP pool
   // prevents such a pointer from "sneaking into" the pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
-  setup_.brp_pool_base_address_ =
-      reinterpret_cast<uintptr_t>(AllocPagesWithAlignOffset(
-          nullptr, kBRPPoolSize + kForbiddenZoneSize, kBRPPoolSize,
-          kBRPPoolSize - kForbiddenZoneSize, base::PageInaccessible,
-          PageTag::kPartitionAlloc)) +
-      kForbiddenZoneSize;
-  if (!setup_.brp_pool_base_address_)
+  void* ptr = AllocPagesWithAlignOffset(
+      nullptr, kBRPPoolSize + kForbiddenZoneSize, kBRPPoolSize,
+      kBRPPoolSize - kForbiddenZoneSize, base::PageInaccessible,
+      PageTag::kPartitionAlloc);
+  if (!ptr)
     HandleGigaCageAllocFailure();
+  setup_.brp_pool_base_address_ =
+      reinterpret_cast<uintptr_t>(ptr) + kForbiddenZoneSize;
   PA_DCHECK(!(setup_.brp_pool_base_address_ & (kBRPPoolSize - 1)));
   setup_.brp_pool_ = internal::AddressPoolManager::GetInstance()->Add(
       setup_.brp_pool_base_address_, kBRPPoolSize);

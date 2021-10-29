@@ -22,7 +22,7 @@ MultiWorldsV8Reference::MultiWorldsV8Reference(v8::Isolate* isolate,
 
 v8::Local<v8::Value> MultiWorldsV8Reference::GetValue(
     ScriptState* script_state) {
-  v8::Local<v8::Value> value = value_.NewLocal(script_state->GetIsolate());
+  v8::Local<v8::Value> value = value_.Get(script_state->GetIsolate());
   if (value->IsObject()) {
     return GetObject(script_state);
   } else {
@@ -38,7 +38,7 @@ void MultiWorldsV8Reference::Trace(Visitor* visitor) const {
 v8::Local<v8::Object> MultiWorldsV8Reference::GetObject(
     ScriptState* script_state) {
   if (&script_state->World() == &script_state_->World()) {
-    return value_.NewLocal(script_state->GetIsolate()).As<v8::Object>();
+    return value_.Get(script_state->GetIsolate()).As<v8::Object>();
   }
 
   V8ObjectDataStore& map = script_state->World().GetV8ObjectDataStore();

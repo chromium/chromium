@@ -79,6 +79,8 @@ void CompositorGpuThread::Init() {
       gpu_preferences.use_passthrough_cmd_decoder;
   gl::GLContextAttribs attribs = gpu::gles2::GenerateGLContextAttribs(
       gpu::ContextCreationAttribs(), use_passthrough_decoder);
+  attribs.angle_context_virtualization_group_number =
+      gl::AngleContextVirtualizationGroup::kDrDc;
 
   // Create a new gl context. Note that this gl context is not part of same
   // share group which gpu main thread uses. Hence this context does not share

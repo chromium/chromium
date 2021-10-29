@@ -103,6 +103,10 @@ void PCScan::FinishScanForTesting() {
   PCScanInternal::Instance().FinishScanForTesting();  // IN-TEST
 }
 
+void PCScan::RegisterStatsReporter(StatsReporter* reporter) {
+  PCScanInternal::Instance().RegisterStatsReporter(reporter);
+}
+
 PCScan PCScan::instance_ CONSTINIT;
 
 }  // namespace internal

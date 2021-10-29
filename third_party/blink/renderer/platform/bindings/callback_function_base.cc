@@ -14,7 +14,7 @@ CallbackFunctionBase::CallbackFunctionBase(
   DCHECK(!callback_function.IsEmpty());
 
   v8::Isolate* isolate = callback_function->GetIsolate();
-  callback_function_.Set(isolate, callback_function);
+  callback_function_.Reset(isolate, callback_function);
 
   incumbent_script_state_ = ScriptState::From(isolate->GetIncumbentContext());
 

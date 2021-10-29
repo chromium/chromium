@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -41,7 +42,6 @@ class CompositorTest : public testing::Test {
 
   void SetUp() override {
     context_factories_ = std::make_unique<TestContextFactories>(false);
-
     compositor_ = std::make_unique<Compositor>(
         context_factories_->GetContextFactory()->AllocateFrameSinkId(),
         context_factories_->GetContextFactory(), CreateTaskRunner(),
@@ -77,7 +77,17 @@ class CompositorTestWithMockedTime : public CompositorTest {
   base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
 
  protected:
+  void AdvanceBy(base::TimeDelta delta) {
+    task_environment_.AdvanceClock(delta);
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // For tests that run on a real MessageLoop with real time.
@@ -100,7 +110,81 @@ class CompositorTestWithMessageLoop : public CompositorTest {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
+class TestCompositorAnimationObserver : public CompositorAnimationObserver {
+ public:
+  TestCompositorAnimationObserver() = default;
+  TestCompositorAnimationObserver(const TestCompositorAnimationObserver&) =
+      delete;
+  TestCompositorAnimationObserver& operator=(
+      const TestCompositorAnimationObserver&) = delete;
+  ~TestCompositorAnimationObserver() override = default;
+
+  // CompositorAnimationObserver:
+  void OnAnimationStep(base::TimeTicks timestamp) override {}
+  void OnCompositingShuttingDown(Compositor* compositor) override {}
+
+  void NotifyFailure() override { failed_ = true; }
+
+  bool failed() const { return failed_; }
+
+ private:
+  bool failed_ = false;
+};
+
 }  // namespace
+
+TEST_F(CompositorTestWithMockedTime, AnimationObserverBasic) {
+  TestCompositorAnimationObserver test;
+  compositor()->AddAnimationObserver(&test);
+
+  test.Start();
+  test.Check();
+  AdvanceBy(base::Seconds(59));
+  EXPECT_FALSE(test.failed());
+
+  AdvanceBy(base::Seconds(2));
+  test.Check();
+  EXPECT_TRUE(test.failed());
+
+  compositor()->RemoveAnimationObserver(&test);
+}
+
+TEST_F(CompositorTestWithMockedTime, AnimationObserverResetAfterResume) {
+  TestCompositorAnimationObserver test;
+  compositor()->AddAnimationObserver(&test);
+  test.Start();
+  test.Check();
+  AdvanceBy(base::Seconds(59));
+  EXPECT_TRUE(test.is_active_for_test());
+  EXPECT_FALSE(test.failed());
+
+  test_power_monitor_source_.Suspend();
+  base::RunLoop().RunUntilIdle();
+  AdvanceBy(base::Seconds(32));
+  test_power_monitor_source_.Resume();
+  base::RunLoop().RunUntilIdle();
+  test.Check();
+  EXPECT_TRUE(test.is_active_for_test());
+  EXPECT_FALSE(test.failed());
+  AdvanceBy(base::Seconds(29));
+  test.Check();
+  EXPECT_TRUE(test.is_active_for_test());
+  EXPECT_FALSE(test.failed());
+
+  AdvanceBy(base::Seconds(32));
+  test.Check();
+  EXPECT_FALSE(test.is_active_for_test());
+  EXPECT_TRUE(test.failed());
+
+  // Make sure another suspend/resume will not reactivate it.
+  test_power_monitor_source_.Suspend();
+  base::RunLoop().RunUntilIdle();
+  test_power_monitor_source_.Resume();
+  EXPECT_FALSE(test.is_active_for_test());
+  EXPECT_TRUE(test.failed());
+
+  compositor()->RemoveAnimationObserver(&test);
+}
 
 TEST_F(CompositorTestWithMessageLoop, ShouldUpdateDisplayProperties) {
   auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);

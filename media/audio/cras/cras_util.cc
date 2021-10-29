@@ -130,6 +130,13 @@ CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
     device_name = nullptr;
   }
 
+  rc = libcras_node_info_get_max_supported_channels(node,
+                                                    &max_supported_channels);
+  if (rc) {
+    LOG(ERROR) << "Failed to get max supported channels: " << rc;
+    max_supported_channels = 0;
+  }
+
   name = std::string(node_name);
   if (name.empty() || name == "(default)")
     name = device_name;

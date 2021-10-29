@@ -116,6 +116,7 @@ enum class StatusCode : StatusCodeType {
   kEncoderUnsupportedConfig = 0x0606,
   kEncoderInitializationError = 0x0607,
   kEncoderFailedFlush = 0x0608,
+  kEncoderMojoConnectionError = 0x0609,
 
   // Format Errors: 0x08
   kH264ParsingError = 0x0801,

@@ -25,10 +25,10 @@ class PLATFORM_EXPORT TraceWrapperV8String final {
   ~TraceWrapperV8String() = default;
 
   bool IsEmpty() const { return string_.IsEmpty(); }
-  void Clear() { string_.Clear(); }
+  void Clear() { string_.Reset(); }
 
   v8::Local<v8::String> V8Value(v8::Isolate* isolate) {
-    return string_.NewLocal(isolate);
+    return string_.Get(isolate);
   }
 
   void Concat(v8::Isolate*, const String&);

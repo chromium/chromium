@@ -68,7 +68,7 @@ void ScriptPromiseResolver::Detach() {
   deferred_resolve_task_.Cancel();
   state_ = kDetached;
   resolver_.Clear();
-  value_.Clear();
+  value_.Reset();
   keep_alive_.Clear();
 }
 
@@ -89,10 +89,10 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextPaused());
   {
     if (state_ == kResolving) {
-      resolver_.Resolve(value_.NewLocal(script_state_->GetIsolate()));
+      resolver_.Resolve(value_.Get(script_state_->GetIsolate()));
     } else {
       DCHECK_EQ(state_, kRejecting);
-      resolver_.Reject(value_.NewLocal(script_state_->GetIsolate()));
+      resolver_.Reject(value_.Get(script_state_->GetIsolate()));
     }
   }
   Detach();

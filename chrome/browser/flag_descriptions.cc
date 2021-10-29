@@ -2647,6 +2647,11 @@ const char kVerticalSnapDescription[] =
     "This feature allows users to snap windows to top and bottom in portrait "
     "display orientation and maintains left/right snap for landscape display.";
 
+const char kVp9kSVCHWDecodingName[] =
+    "Hardware decode acceleration for k-SVC VP9";
+const char kVp9kSVCHWDecodingDescription[] =
+    "Enable or disable k-SVC VP9 hardware decode acceleration";
+
 const char kWalletServiceUseSandboxName[] =
     "Use Google Payments sandbox servers";
 const char kWalletServiceUseSandboxDescription[] =
@@ -4042,12 +4047,6 @@ const char kArcUsbDeviceDefaultAttachToVmName[] =
 const char kArcUsbDeviceDefaultAttachToVmDescription[] =
     "When ARCVM is enabled, always attach unclaimed USB devices to ARCVM";
 
-const char kArcUseHighMemoryDalvikProfileName[] =
-    "Enable ARC high-memory dalvik profile";
-const char kArcUseHighMemoryDalvikProfileDesc[] =
-    "Allow Android to use high-memory dalvik profile when applicable for "
-    "high-memory devices.";
-
 const char kArcVmBalloonPolicyName[] =
     "Enable ARCVM limit cache balloon policy";
 const char kArcVmBalloonPolicyDesc[] =
@@ -4186,6 +4185,10 @@ const char kCrosRegionsModeDescription[] =
 const char kCrosRegionsModeDefault[] = "Default";
 const char kCrosRegionsModeOverride[] = "Override VPD values.";
 const char kCrosRegionsModeHide[] = "Hide VPD values.";
+
+const char kSystemExtensionsName[] = "Chrome OS System Extensions";
+const char kSystemExtensionsDescription[] =
+    "Enable the Chrome OS System Extension platform.";
 
 const char kCrostiniBullseyeUpgradeName[] = "Upgrade Crostini to Bullseye";
 const char kCrostiniBullseyeUpgradeDescription[] =

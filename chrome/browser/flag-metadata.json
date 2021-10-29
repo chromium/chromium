@@ -78,9 +78,10 @@
     "name": "allow-default-web-app-migration-for-chrome-os-managed-users",
     "owners": [
       "alancutter@chromium.org",
+      "giovax@chromium.org",
       "chromeos-web-apps-platform-syd@google.com"
     ],
-    "expiry_milestone": 96
+    "expiry_milestone": 120
   },
   {
     "name": "allow-disable-mouse-acceleration",
@@ -2754,6 +2755,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-vp9-kSVC-decode-acceleration",
+    "owners": [ "hiroh", "chromeos-gfx-webrtc@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-vulkan",
     "owners": [ "penghuang" ],
     "expiry_milestone": 100
@@ -5083,6 +5089,11 @@
     "name": "sync-trusted-vault-passphrase-recovery",
     "owners": [ "mastiz", "mmoskvitin" ],
     "expiry_milestone": 100
+  },
+  {
+    "name": "system-extensions",
+    "owners": [ "calamity", "dominicschulz" ],
+    "expiry_milestone": 110
   },
   {
     "name": "system-keyboard-lock",

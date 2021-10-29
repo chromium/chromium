@@ -31,7 +31,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   virtual void Trace(Visitor* visitor) const;
 
   v8::Local<v8::Object> CallbackObject() {
-    return callback_function_.NewLocal(GetIsolate());
+    return callback_function_.Get(GetIsolate());
   }
 
   v8::Isolate* GetIsolate() const {
@@ -85,14 +85,14 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // really need V8 *Scavenger* GC to collect the V8 function before V8 Full GC
   // runs.
   void DisposeV8FunctionImmediatelyToReduceMemoryFootprint() {
-    callback_function_.Clear();
+    callback_function_.Reset();
   }
 
  protected:
   explicit CallbackFunctionBase(v8::Local<v8::Object>);
 
   v8::Local<v8::Function> CallbackFunction() const {
-    return callback_function_.NewLocal(GetIsolate()).As<v8::Function>();
+    return callback_function_.Get(GetIsolate()).As<v8::Function>();
   }
 
  private:

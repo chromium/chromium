@@ -4,7 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 
-#include "base/test/scoped_mock_clock_override.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -46,6 +46,8 @@ class BackForwardCachePageLoadMetricsObserverTest
     observer_with_fake_delegate_->has_ever_entered_back_forward_cache_ = true;
     observer_with_fake_delegate_->back_forward_cache_navigation_ids_.push_back(
         123456);
+    test_clock_ = std::make_unique<base::SimpleTestTickClock>();
+    test_clock_->SetNowTicks(base::TimeTicks() + base::Milliseconds(25000));
   }
 
   void AssertHistoryNavigationRecordedAmpNavigation(bool was_amp) {
@@ -92,7 +94,7 @@ class BackForwardCachePageLoadMetricsObserverTest
       BackForwardCachePageLoadMetricsObserver* observer,
       bool simulate_app_backgrounding) {
     observer->MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
-        simulate_app_backgrounding);
+        test_clock_.get(), simulate_app_backgrounding);
   }
 
   void SetObserverHidden() { observer_with_fake_delegate_->was_hidden_ = true; }
@@ -110,6 +112,7 @@ class BackForwardCachePageLoadMetricsObserverTest
   std::unique_ptr<FakePageLoadMetricsObserverDelegate> fake_delegate_;
 
   content::MockNavigationHandle navigation_handle_;
+  std::unique_ptr<base::SimpleTestTickClock> test_clock_;
 };
 
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
@@ -324,16 +327,13 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 
 // TODO(crbug.com/1255496): Flaky under TSan.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
-       DISABLED_TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+       TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
   // In the case that there is no page end time and the page has never
   // backgrounded, the observer falls back to using Now as the end point of
   // the time in foreground. So override what 'Now' means.
-  base::ScopedMockClockOverride clock_override;
-  base::TimeTicks scoped_clock_start_time =
-      base::ScopedMockClockOverride::NowTicks();
-
   base::TimeTicks navigation_start =
-      scoped_clock_start_time + base::Milliseconds(100);
+      test_clock_->NowTicks() - base::Milliseconds(1000);
+  base::TimeTicks() + base::Milliseconds(100);
   auto in_foreground_bf_state =
       PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
           /*was_in_foreground=*/true, navigation_start);
@@ -350,7 +350,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
       HistoryNavigation::kEntryName,
       HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
   EXPECT_EQ(0U, result_metrics.size());
-  clock_override.Advance(base::Milliseconds(250));
+  test_clock_->Advance(base::Milliseconds(250));
   // This time the app is entering the background, so a metric should be
   // logged.
   InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
@@ -363,7 +363,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   // The recorded time has been bucketed, so the test needs to figure out what
   // the bucketed version of the over-ridden Now is.
   base::TimeDelta expected_foreground_time =
-      base::ScopedMockClockOverride::NowTicks() - navigation_start;
+      test_clock_->NowTicks() - navigation_start;
   int64_t bucketed_expected_time = ukm::GetSemanticBucketMinForDurationTiming(
       expected_foreground_time.InMilliseconds());
   EXPECT_EQ(bucketed_expected_time, result_metrics.begin()->begin()->second);
@@ -445,10 +445,9 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        TestPageEndWhenBackgrounding) {
   // Give the stored BackForwardCacheRestoreState a starting navigation time of
-  // twenty seconds ago, because later in the test we'll need a page_end_time,
-  // and we can use base::TimeTicks::Now for that.
+  // twenty seconds ago, because later in the test we'll need a page_end_time.
   auto bf_state = PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
-      /*was_in_foreground=*/true, base::TimeTicks::Now() - base::Seconds(20));
+      /*was_in_foreground=*/true, test_clock_->NowTicks() - base::Seconds(20));
 
   fake_delegate_->AddBackForwardCacheRestore(bf_state);
   // 'END_NONE' is the default, but set it explicitly because this test needs to

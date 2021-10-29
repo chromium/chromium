@@ -284,8 +284,7 @@ public class CriticalPersistedTabDataTest {
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
-                new CriticalPersistedTabData(tab, config.getStorage(), config.getId());
-        deserialized.deserializeAndLog(serialized);
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertNotNull(deserialized);
         Assert.assertEquals(PARENT_ID, deserialized.getParentId());
         Assert.assertEquals(ROOT_ID, deserialized.getRootId());
@@ -312,9 +311,8 @@ public class CriticalPersistedTabDataTest {
             ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
             PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                     ShoppingPersistedTabData.class, tab.isIncognito());
-            CriticalPersistedTabData deserialized =
-                    new CriticalPersistedTabData(tab, config.getStorage(), config.getId());
-            deserialized.deserializeAndLog(serialized);
+            CriticalPersistedTabData deserialized = new CriticalPersistedTabData(
+                    tab, serialized, config.getStorage(), config.getId());
             Assert.assertEquals(
                     EXPECTED_TITLE, deserialized.getWebContentsState().getDisplayTitleFromState());
             Assert.assertEquals(url, deserialized.getWebContentsState().getVirtualUrlFromState());
@@ -333,8 +331,7 @@ public class CriticalPersistedTabDataTest {
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
-                new CriticalPersistedTabData(tab, config.getStorage(), config.getId());
-        deserialized.deserializeAndLog(serialized);
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertEquals(null, deserialized.getOpenerAppId());
     }
 

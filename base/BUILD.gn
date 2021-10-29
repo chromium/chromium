@@ -1888,6 +1888,8 @@ component("base") {
         # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
         "allocator/partition_alloc_features.cc",
         "allocator/partition_alloc_features.h",
+        "allocator/partition_alloc_support.cc",
+        "allocator/partition_alloc_support.h",
         "allocator/partition_allocator/address_pool_manager.cc",
         "allocator/partition_allocator/address_pool_manager.h",
         "allocator/partition_allocator/address_pool_manager_bitmap.cc",
@@ -1961,6 +1963,7 @@ component("base") {
         "allocator/partition_allocator/starscan/state_bitmap.h",
         "allocator/partition_allocator/starscan/stats_collector.cc",
         "allocator/partition_allocator/starscan/stats_collector.h",
+        "allocator/partition_allocator/starscan/stats_reporter.h",
         "allocator/partition_allocator/starscan/write_protector.cc",
         "allocator/partition_allocator/starscan/write_protector.h",
         "allocator/partition_allocator/thread_cache.cc",

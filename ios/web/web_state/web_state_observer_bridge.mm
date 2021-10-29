@@ -35,6 +35,15 @@ void WebStateObserverBridge::DidStartNavigation(
   }
 }
 
+void WebStateObserverBridge::DidRedirectNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  SEL selector = @selector(webState:didRedirectNavigation:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ webState:web_state didRedirectNavigation:navigation_context];
+  }
+}
+
 void WebStateObserverBridge::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -144,15 +153,6 @@ void WebStateObserverBridge::WebStateDestroyed(web::WebState* web_state) {
     // |webStateDestroyed:| may delete |this|, so don't expect |this| to be
     // valid afterwards.
     [observer_ webStateDestroyed:web_state];
-  }
-}
-
-void WebStateObserverBridge::DidRedirectNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  SEL selector = @selector(webState:didRedirectNavigation:);
-  if ([observer_ respondsToSelector:selector]) {
-    [observer_ webState:web_state didRedirectNavigation:navigation_context];
   }
 }
 

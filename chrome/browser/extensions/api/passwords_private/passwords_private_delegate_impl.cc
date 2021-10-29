@@ -51,7 +51,7 @@
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils_chromeos.h"
 #endif
 
@@ -343,6 +343,8 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
   bool result =
       IsOsReauthAllowedAsh(profile_, GetAuthTokenLifetimeForPurpose(purpose));
   std::move(callback).Run(result);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  IsOsReauthAllowedLacrosAsync(purpose, std::move(callback));
 #else
   std::move(callback).Run(true);
 #endif

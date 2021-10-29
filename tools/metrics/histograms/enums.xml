@@ -48190,6 +48190,7 @@ from previous Chrome versions.
       label="PasswordsAccountStorageRevisedOptInFlow:disabled"/>
   <int value="-2011532551" label="SignedExchangeSubresourcePrefetch:disabled"/>
   <int value="-2011428140" label="RelatedSearchesAlternateUx:disabled"/>
+  <int value="-2011079494" label="Vp9kSVCHWDecoding:enabled"/>
   <int value="-2010634516" label="OmniboxLocalEntitySuggestions:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
@@ -49636,6 +49637,7 @@ from previous Chrome versions.
   <int value="-963683462" label="EnablePalmSuppression:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
   <int value="-960077963" label="EnableAuraTooltipsOnWindows:enabled"/>
+  <int value="-959746153" label="SystemExtensions:disabled"/>
   <int value="-959173180" label="AccessibilityPageZoom:disabled"/>
   <int value="-958950214" label="AllowDisableMouseAcceleration:disabled"/>
   <int value="-958372962" label="LacrosSupport:enabled"/>
@@ -50617,7 +50619,9 @@ from previous Chrome versions.
       label="EnableEphemeralGuestProfilesOnDesktop:disabled"/>
   <int value="-176524053"
       label="VmCameraMicIndicatorsAndNotifications:disabled"/>
+  <int value="-176163507" label="SystemExtensions:enabled"/>
   <int value="-175696105" label="MessagesForAndroidUpdatePassword:enabled"/>
+  <int value="-175692563" label="Vp9kSVCHWDecoding:disabled"/>
   <int value="-175666252" label="Portals:disabled"/>
   <int value="-175574799" label="finch-seed-no-charging-requirement"/>
   <int value="-174829803" label="TabOutlinesInLowContrastThemes:enabled"/>

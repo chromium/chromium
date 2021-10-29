@@ -699,6 +699,16 @@ void FormStructure::DetermineHeuristicTypes(
         field->set_heuristic_type(iter->second.BestHeuristicType());
       }
     }
+  } else if (ShouldRunPromoCodeHeuristics()) {
+    const FieldCandidatesMap field_type_map =
+        FormField::ParseFormFieldsForPromoCodes(fields_, current_page_language_,
+                                                is_form_tag_, log_manager);
+    for (const auto& field : fields_) {
+      const auto iter = field_type_map.find(field->global_id());
+      if (iter != field_type_map.end()) {
+        field->set_heuristic_type(iter->second.BestHeuristicType());
+      }
+    }
   }
 
   UpdateAutofillCount();
@@ -1126,6 +1136,12 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
 bool FormStructure::ShouldRunHeuristics() const {
   return active_field_count() >= kMinRequiredFieldsForHeuristics &&
          HasAllowedScheme(source_url_);
+}
+
+bool FormStructure::ShouldRunPromoCodeHeuristics() const {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillParseMerchantPromoCodeFields) &&
+         active_field_count() > 0 && HasAllowedScheme(source_url_);
 }
 
 bool FormStructure::ShouldBeQueried() const {

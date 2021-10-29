@@ -44,7 +44,7 @@ class PLATFORM_EXPORT CallbackInterfaceBase
   }
 
   v8::Local<v8::Object> CallbackObject() {
-    return callback_object_.NewLocal(GetIsolate());
+    return callback_object_.Get(GetIsolate());
   }
 
   // Returns true iff the callback interface is a single operation callback

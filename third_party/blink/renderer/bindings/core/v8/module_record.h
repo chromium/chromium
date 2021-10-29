@@ -44,7 +44,7 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
     return produce_cache_options_;
   }
   v8::Local<v8::UnboundModuleScript> UnboundScript(v8::Isolate* isolate) const {
-    return unbound_script_.NewLocal(isolate);
+    return unbound_script_.Get(isolate);
   }
 
  private:

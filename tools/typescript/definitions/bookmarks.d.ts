@@ -54,9 +54,9 @@ declare global {
 
       export function search(
           query: string|{
-            query: string | undefined,
-            url: string|undefined,
-            title: string|undefined
+            query?: string,
+            url?: string,
+            title?: string,
           },
           callback: (p1: BookmarkTreeNode[]) => void): void;
 
@@ -85,7 +85,7 @@ declare global {
 
       export interface ChangeInfo {
         title: string;
-        url: string;
+        url?: string;
       }
 
       export const onChanged:

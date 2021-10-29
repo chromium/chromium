@@ -119,6 +119,19 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     `;
   }
 
+  get comboBoxDoc() {
+    return `
+      <div id="combo-box-label">Choose an item</div>
+      <div aria-labelledby="combo-box-label" role="combobox">
+        <input type="text" aria-controls="combo-box-list-box">
+        <ul role="listbox" id="combo-box-list-box" hidden>
+          <li role="option" tabindex="-1">Item 1</li>
+          <li role="option" tabindex="-1">Item 2</li>
+        </ul>
+      </div>
+    `;
+  }
+
   /**
    * Fires an onCustomSpokenFeedbackToggled event with enabled state of
    * |enabled|.
@@ -774,6 +787,14 @@ TEST_F('ChromeVoxBackgroundTest', 'EditText', function() {
         .expectSpeech('Combo box')
         .call(previousEditText)
         .expectSpeech('Edit text')
+        .replay();
+  });
+});
+
+TEST_F('ChromeVoxBackgroundTest', 'ComboBox', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.comboBoxDoc, function() {
+    mockFeedback.expectSpeech('Edit text', 'Choose an item', 'Combo box')
         .replay();
   });
 });

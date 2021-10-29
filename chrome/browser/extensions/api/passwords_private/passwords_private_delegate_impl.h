@@ -29,6 +29,7 @@
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "extensions/browser/extension_function.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

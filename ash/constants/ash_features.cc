@@ -1079,6 +1079,10 @@ const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
 const base::Feature kSystemChinesePhysicalTyping{
     "SystemChinesePhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables or disables the System Extensions platform.
+const base::Feature kSystemExtensions{"SystemExtensions",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables using the system input engine for physical typing in
 // Japanese.
 const base::Feature kSystemJapanesePhysicalTyping{

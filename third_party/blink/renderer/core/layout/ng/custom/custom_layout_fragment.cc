@@ -26,7 +26,7 @@ CustomLayoutFragment::CustomLayoutFragment(
   // Immediately store the result data, so that it remains immutable between
   // layout calls to the child.
   if (SerializedScriptValue* data = layout_result_->CustomLayoutData())
-    layout_worklet_world_v8_data_.Set(isolate, data->Deserialize(isolate));
+    layout_worklet_world_v8_data_.Reset(isolate, data->Deserialize(isolate));
 }
 
 const NGLayoutResult& CustomLayoutFragment::GetLayoutResult() const {
@@ -50,7 +50,7 @@ ScriptValue CustomLayoutFragment::data(ScriptState* script_state) const {
 
   return ScriptValue(
       script_state->GetIsolate(),
-      layout_worklet_world_v8_data_.NewLocal(script_state->GetIsolate()));
+      layout_worklet_world_v8_data_.Get(script_state->GetIsolate()));
 }
 
 void CustomLayoutFragment::Trace(Visitor* visitor) const {

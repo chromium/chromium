@@ -549,7 +549,7 @@ void OverviewSession::InitiateDrag(OverviewItem* item,
 
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragStarted(item);
-    grid->UpdateCreateDeskTemplateButton();
+    grid->UpdateSaveDeskAsTemplateButton();
   }
 }
 
@@ -572,7 +572,7 @@ void OverviewSession::CompleteDrag(OverviewItem* item,
                     OverviewWindowDragController::DragResult::kSnap;
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragEnded(snap);
-    grid->UpdateCreateDeskTemplateButton();
+    grid->UpdateSaveDeskAsTemplateButton();
   }
 }
 
@@ -595,7 +595,7 @@ void OverviewSession::Fling(OverviewItem* item,
                     OverviewWindowDragController::DragResult::kSnap;
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragEnded(snap);
-    grid->UpdateCreateDeskTemplateButton();
+    grid->UpdateSaveDeskAsTemplateButton();
   }
 }
 
@@ -607,7 +607,7 @@ void OverviewSession::ResetDraggedWindowGesture() {
   window_drag_controller_->ResetGesture();
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
     grid->OnSelectorItemDragEnded(/*snap=*/false);
-    grid->UpdateCreateDeskTemplateButton();
+    grid->UpdateSaveDeskAsTemplateButton();
   }
 }
 

@@ -37,7 +37,8 @@ namespace {
 
 const base::Feature kTwoCopyCanvasCapture {
   "TwoCopyCanvasCapture",
-#if defined(OS_MAC)
+// For ChromeOS, currently just enable this feature on X86 CPU, see b/203695564.
+#if defined(OS_MAC) || (defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

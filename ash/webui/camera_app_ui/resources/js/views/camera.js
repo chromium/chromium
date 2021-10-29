@@ -23,6 +23,7 @@ import * as dom from '../dom.js';
 import * as error from '../error.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
+import {Filenamer} from '../models/file_namer.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
 // eslint-disable-next-line no-unused-vars
@@ -826,6 +827,19 @@ export class Camera extends View {
             new review.Option(
                 I18nString.LABEL_SAVE_PHOTO_DOCUMENT,
                 {exitValue: MimeType.JPEG}),
+            new review.Option(I18nString.LABEL_SHARE, {
+              callback: async () => {
+                metrics.sendCaptureEvent({
+                  facing: this.facingMode_,
+                  resolution: originImage.resolution,
+                  shutterType: this.shutterType_,
+                  docResult: metrics.DocResultType.SHARE,
+                });
+                const type = MimeType.JPEG;
+                const name = (new Filenamer()).newDocumentName(type);
+                await util.share(new File([docBlob], name, {type}));
+              },
+            }),
         );
         const negative = new review.Options(
             new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
@@ -920,18 +934,7 @@ export class Camera extends View {
           new review.Option(I18nString.LABEL_SHARE, {
             callback: async () => {
               sendEvent(metrics.GifResultType.SHARE);
-              const file = new File([blob], name, {type: MimeType.GIF});
-              const shareData = {files: [file]};
-              try {
-                if (!navigator.canShare(shareData)) {
-                  throw new Error('cannot share');
-                }
-                await navigator.share(shareData);
-              } catch (e) {
-                // TODO(b/191950622): Handles all share error case, e.g. no
-                // share target, share abort... with right treatment like toast
-                // message.
-              }
+              await util.share(new File([blob], name, {type: MimeType.GIF}));
             },
           }),
       );

@@ -36,6 +36,10 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   bool should_show_templates_ui() { return should_show_templates_ui_; }
 
+  size_t GetEntryCount() const;
+
+  size_t GetMaxEntryCount() const;
+
   // Calls the DeskModel to get all the template entries, with a callback to
   // `OnGetAllEntries`.
   void GetAllEntries();
@@ -45,6 +49,10 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
 
   // Launches the desk template with 'template_uuid' as a new desk.
   void LaunchDeskTemplate(const std::string& template_uuid);
+
+  // Calls the DeskModel to capture the active desk as a template entry, with a
+  // callback to `OnAddOrUpdateEntry`.
+  void SaveActiveDeskAsTemplate();
 
   // desks_storage::DeskModelObserver:
   // TODO(sammiequon): Implement these once the model starts sending these
@@ -74,6 +82,9 @@ class ASH_EXPORT DesksTemplatesPresenter : desks_storage::DeskModelObserver {
   void OnGetTemplateForDeskLaunch(
       desks_storage::DeskModel::GetEntryByUuidStatus status,
       std::unique_ptr<DeskTemplate> entry);
+
+  void OnAddOrUpdateEntry(
+      desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
   // Pointer to the session which owns `this`.
   OverviewSession* const overview_session_;

@@ -10,13 +10,13 @@
     <!-- TODO(joonbug): Update strings for i18n -->
     <h1>Make sure Chrome OS is up to date</h1>
     <p>Update to the latest version of Chrome OS for an optimized repair process.</p>
-    <p id="versionInfo">{{currentVersionText_}}</p>
+    <p id="versionInfo">[[currentVersionText_]]</p>
     <div id="progressMessage">
       <paper-spinner-lite hidden$="[[!updateInProgress_]]" active>
       </paper-spinner-lite>
       [[updateProgressMessage_]]
     </div>
-    <p id="networkUnavailable" hidden$="{{networkAvailable}}">
+    <p id="networkUnavailable" hidden$="[[networkAvailable]]">
       To check if OS is up to date, connect to the internet in previous screen
     </p>
     <cr-button disabled="[[updateInProgress_]]"

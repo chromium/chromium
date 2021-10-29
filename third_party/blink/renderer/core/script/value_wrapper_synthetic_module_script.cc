@@ -201,7 +201,7 @@ v8::MaybeLocal<v8::Value> ValueWrapperSyntheticModuleScript::EvaluationSteps(
   v8::TryCatch try_catch(isolate);
   v8::Maybe<bool> result = module->SetSyntheticModuleExport(
       isolate, V8String(isolate, "default"),
-      value_wrapper_synthetic_module_script->export_value_.NewLocal(isolate));
+      value_wrapper_synthetic_module_script->export_value_.Get(isolate));
 
   // Setting the default export should never fail.
   DCHECK(!try_catch.HasCaught());

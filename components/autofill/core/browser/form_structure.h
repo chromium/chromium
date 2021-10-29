@@ -146,6 +146,10 @@ class FormStructure {
   // this form.
   bool ShouldRunHeuristics() const;
 
+  // Returns true if heuristic autofill type detection for promo codes should be
+  // attempted for this form.
+  bool ShouldRunPromoCodeHeuristics() const;
+
   // Returns true if we should query the crowd-sourcing server to determine this
   // form's field types. If the form includes author-specified types, this will
   // return false unless there are password fields in the form. If there are no

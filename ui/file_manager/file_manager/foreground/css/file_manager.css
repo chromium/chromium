@@ -137,7 +137,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 }
 
 #directory-tree[files-ng] .tree-item[section-start]::before {
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
+  border-bottom: 1px solid var(--cros-separator-color);
   content: '';
   display: block;
   margin: 8px 0;
@@ -156,7 +156,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   border-inline-start-width: 0 !important;
   border-radius: 0 20px 20px 0;
   box-sizing: border-box;
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   display: flex;
   height: 32px;
   margin-inline-end: 6px;
@@ -193,7 +193,7 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 #directory-tree .tree-row > .file-row > .item-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: currentColor;
+  background-color: var(--cros-icon-color-primary);
   background-image: none;
   flex: none;
   height: 20px;
@@ -201,6 +201,10 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   position: relative;
   right: -4px;
   width: 20px;
+}
+
+#directory-tree .tree-row[active] > .file-row > .item-icon {
+  background-color: var(--cros-icon-color-selection);
 }
 
 #directory-tree .tree-row > .file-row > .item-icon[style*='background-image'] {
@@ -270,12 +274,12 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 
 html:not(.col-resize) #directory-tree
     .tree-row:not([active]):not([selected]):hover > .file-row {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active #directory-tree
     .tree-row:not([active]):not([selected]) > .file-row:active {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active #directory-tree
@@ -292,16 +296,16 @@ html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row 
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row[active] > .file-row {
-  background-color: var(--google-blue-50);
-  color: var(--google-blue-600);
+  background-color: var(--cros-highlight-color);
+  color: var(--cros-text-color-selection);
 }
 
 #directory-tree .tree-row > .align-right-icon {
@@ -2346,10 +2350,9 @@ body.files-ng #drag-container {
 }
 
 body.files-ng #drag-container .drag-box {
-  background-color: white;
+  background-color: var(--cros-bg-color-elevation-2);
   border-radius: 2px;
-  box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 30%),
-              0 2px 6px 2px rgba(var(--google-grey-800-rgb), 15%);
+  box-shadow: var(--cros-elevation-2-shadow);
   box-sizing: border-box;
   height: 40px;
   position: absolute;
@@ -2378,11 +2381,11 @@ body.files-ng #drag-container .detail-icon {
 }
 
 body.files-ng #drag-container .detail-icon[file-type-icon] {
-  color: var(--google-grey-700);
+  color: var(--cros-icon-color-primary);
 }
 
 body.files-ng #drag-container .label {
-  color: var(--google-grey-900);
+  color: var(--cros-text-color-primary);
   overflow: hidden;
   padding: 0 10px;
   text-overflow: ellipsis;
@@ -2390,9 +2393,9 @@ body.files-ng #drag-container .label {
 }
 
 body.files-ng #drag-container .drag-bubble {
-  background-color: var(--google-blue-600);
+  background-color: var(--cros-icon-color-prominent);
   border-radius: 12px;
-  color: white;
+  color: var(--cros-bg-color);
   font-size: 14px;
   font-weight: 700;
   height: 24px;
@@ -2968,8 +2971,7 @@ files-tooltip:not(:defined) {
 
 #banners > *:not([hidden]) {
   border-radius: 8px;
-  box-shadow: 0 1px 2px 0 rgba(var(--google-grey-800-rgb), 0.3),
-              0 1px 3px 1px rgba(var(--google-grey-800-rgb), 0.15);
+  box-shadow: var(--cros-elevation-1-shadow);
   height: auto;
   margin-bottom: 4px;
   margin-inline-end: 16px;

@@ -22,6 +22,7 @@ class SystemExtensionsProvider : public KeyedService {
  public:
   // May return nullptr if there is no provider associated with this profile.
   static SystemExtensionsProvider* Get(Profile* profile);
+  static bool IsEnabled();
 
   SystemExtensionsProvider();
   SystemExtensionsProvider(const SystemExtensionsProvider&) = delete;

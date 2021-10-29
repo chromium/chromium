@@ -9,6 +9,7 @@
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
@@ -62,6 +63,7 @@ bool EnablePCScanForMallocPartitionsIfNeeded() {
   using Config = base::internal::PCScan::InitConfig;
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
+    base::allocator::RegisterPCScanStatsReporter();
     base::allocator::EnablePCScan({Config::WantedWriteProtectionMode::kEnabled,
                                    Config::SafepointMode::kEnabled});
     return true;
@@ -84,6 +86,7 @@ bool EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
+    base::allocator::RegisterPCScanStatsReporter();
     base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kEnabled});
     return true;
   }
@@ -105,6 +108,7 @@ bool EnablePCScanForMallocPartitionsInRendererProcessIfNeeded() {
     CHECK_EQ(Config::WantedWriteProtectionMode::kDisabled, wp_mode)
         << "DCScan is currently only supported on Linux based systems";
 #endif
+    base::allocator::RegisterPCScanStatsReporter();
     base::allocator::EnablePCScan({wp_mode, Config::SafepointMode::kDisabled});
     return true;
   }

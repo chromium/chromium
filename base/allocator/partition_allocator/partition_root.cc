@@ -522,6 +522,13 @@ void PartitionRoot<thread_safe>::DecommitEmptySlotSpans() {
 template <bool thread_safe>
 void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
   {
+#if defined(OS_APPLE)
+    // Needed to statically bound page size, which is a runtime constant on
+    // apple OSes.
+    PA_CHECK((SystemPageSize() == (size_t{1} << 12)) ||
+             (SystemPageSize() == (size_t{1} << 14)));
+#endif
+
     ScopedGuard guard{lock_};
     if (initialized)
       return;
@@ -969,8 +976,13 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
       DecommitEmptySlotSpans();
     if (flags & PartitionPurgeDiscardUnusedSystemPages) {
       for (Bucket& bucket : buckets) {
+        if (bucket.slot_size == kInvalidBucketSize)
+          continue;
+
         if (bucket.slot_size >= SystemPageSize())
           internal::PartitionPurgeBucket(&bucket);
+        else
+          bucket.SortSlotSpanFreelists();
       }
     }
   }

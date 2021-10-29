@@ -410,6 +410,8 @@ extern const base::Feature kSyncSettingsCategorization;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemChinesePhysicalTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSystemExtensions;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemJapanesePhysicalTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemKoreanPhysicalTyping;

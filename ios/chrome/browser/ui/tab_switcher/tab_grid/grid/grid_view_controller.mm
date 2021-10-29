@@ -62,6 +62,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 }  // namespace
 
+@interface BidirectionalCollectionViewTransitionLayout
+    : UICollectionViewTransitionLayout
+@end
+
+@implementation BidirectionalCollectionViewTransitionLayout
+- (BOOL)flipsHorizontallyInOppositeLayoutDirection {
+  return UseRTLLayout() ? YES : NO;
+}
+@end
+
 @interface GridViewController () <GridCellDelegate,
                                   UICollectionViewDataSource,
                                   UICollectionViewDelegate,
@@ -464,6 +474,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider contextMenuConfigurationForGridCell:cell];
+}
+
+- (UICollectionViewTransitionLayout*)
+                  collectionView:(UICollectionView*)collectionView
+    transitionLayoutForOldLayout:(UICollectionViewLayout*)fromLayout
+                       newLayout:(UICollectionViewLayout*)toLayout {
+  return [[BidirectionalCollectionViewTransitionLayout alloc]
+      initWithCurrentLayout:fromLayout
+                 nextLayout:toLayout];
 }
 
 #pragma mark - UIPointerInteractionDelegate

@@ -162,7 +162,7 @@ void LocalWindowProxy::Initialize() {
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();
   if (global_proxy_.IsEmpty()) {
-    global_proxy_.Set(GetIsolate(), context->Global());
+    global_proxy_.Reset(GetIsolate(), context->Global());
     CHECK(!global_proxy_.IsEmpty());
   }
 
@@ -238,7 +238,7 @@ void LocalWindowProxy::CreateContext() {
         V8PerIsolateData::From(isolate));
     Document* document = GetFrame()->GetDocument();
 
-    v8::Local<v8::Object> global_proxy = global_proxy_.NewLocal(isolate);
+    v8::Local<v8::Object> global_proxy = global_proxy_.Get(isolate);
     context = V8ContextSnapshot::CreateContextFromSnapshot(
         isolate, World(), &extension_configuration, global_proxy, document);
     context_was_created_from_snapshot_ = !context.IsEmpty();

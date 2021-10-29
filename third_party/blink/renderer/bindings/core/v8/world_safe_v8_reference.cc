@@ -19,13 +19,13 @@ v8::Local<v8::Value> WorldSafeV8ReferenceInternal::ToWorldSafeValue(
   v8::Isolate* isolate = target_script_state->GetIsolate();
 
   if (&v8_reference_world == &target_script_state->World())
-    return v8_reference.NewLocal(isolate);
+    return v8_reference.Get(isolate);
 
   // If |v8_reference| is a v8::Object, clones |v8_reference| in the context of
   // |target_script_state| and returns it.  Otherwise returns |v8_reference|
   // itself that is already safe to access in |target_script_state|.
 
-  v8::Local<v8::Value> value = v8_reference.NewLocal(isolate);
+  v8::Local<v8::Value> value = v8_reference.Get(isolate);
   if (!value->IsObject())
     return value;
 

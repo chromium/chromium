@@ -29,11 +29,6 @@ class WebUIExtensionData
 
   WebUIExtensionData() = delete;
 
-  // TODO(dcheng): Why is this ctor public?
-  explicit WebUIExtensionData(
-      RenderFrame* render_frame,
-      mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
-
   WebUIExtensionData(const WebUIExtensionData&) = delete;
   WebUIExtensionData& operator=(const WebUIExtensionData&) = delete;
 
@@ -47,11 +42,15 @@ class WebUIExtensionData
                    std::unique_ptr<base::ListValue> args);
 
  private:
-  // mojom::WebUI
+  // Use Create() instead.
+  WebUIExtensionData(RenderFrame* render_frame,
+                     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  // mojom::WebUI:
   void SetProperty(const std::string& name, const std::string& value) override;
 
-  // RenderFrameObserver
-  void OnDestruct() override {}
+  // RenderFrameObserver:
+  void OnDestruct() override;
 
   std::map<std::string, std::string> variable_map_;
 

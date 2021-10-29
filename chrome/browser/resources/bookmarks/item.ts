@@ -101,6 +101,10 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
     this.updateFromStore();
   }
 
+  setIsSelectedItemForTesting(selected: boolean) {
+    this.isSelectedItem_ = selected;
+  }
+
   focusMenuButton() {
     focusWithoutInk(this.$.menuButton);
   }
@@ -284,6 +288,12 @@ export class BookmarksItemElement extends BookmarksItemElementBase {
    */
   private isMultiSelectMenu_(): boolean {
     return this.isSelectedItem_ && this.isMultiSelect_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'bookmarks-item': BookmarksItemElement;
   }
 }
 

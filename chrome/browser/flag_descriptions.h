@@ -1507,6 +1507,9 @@ extern const char kV8VmFutureDescription[];
 extern const char kVerticalSnapName[];
 extern const char kVerticalSnapDescription[];
 
+extern const char kVp9kSVCHWDecodingName[];
+extern const char kVp9kSVCHWDecodingDescription[];
+
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
@@ -2325,9 +2328,6 @@ extern const char kArcRtVcpuQuadCoreDesc[];
 extern const char kArcUsbDeviceDefaultAttachToVmName[];
 extern const char kArcUsbDeviceDefaultAttachToVmDescription[];
 
-extern const char kArcUseHighMemoryDalvikProfileName[];
-extern const char kArcUseHighMemoryDalvikProfileDesc[];
-
 extern const char kArcVmBalloonPolicyName[];
 extern const char kArcVmBalloonPolicyDesc[];
 
@@ -2405,6 +2405,9 @@ extern const char kCrosRegionsModeDescription[];
 extern const char kCrosRegionsModeDefault[];
 extern const char kCrosRegionsModeOverride[];
 extern const char kCrosRegionsModeHide[];
+
+extern const char kSystemExtensionsName[];
+extern const char kSystemExtensionsDescription[];
 
 extern const char kCrostiniBullseyeUpgradeName[];
 extern const char kCrostiniBullseyeUpgradeDescription[];

@@ -74,6 +74,7 @@ class ASH_EXPORT CaptureModeSession
   views::Widget* capture_mode_bar_widget() {
     return capture_mode_bar_widget_.get();
   }
+  views::Widget* capture_label_widget() { return capture_label_widget_.get(); }
   views::Widget* capture_mode_settings_widget() {
     return capture_mode_settings_widget_.get();
   }
@@ -175,7 +176,6 @@ class ASH_EXPORT CaptureModeSession
   friend class CaptureModeSessionTestApi;
   friend class CaptureModeTestApi;
   class CursorSetter;
-  class ScopedA11yOverrideWindowSetter;
 
   enum class CaptureLabelAnimation {
     // No animation on the capture label.
@@ -437,10 +437,6 @@ class ASH_EXPORT CaptureModeSession
 
   // The object which handles tab focus while in a capture session.
   std::unique_ptr<CaptureModeSessionFocusCycler> focus_cycler_;
-
-  // Accessibility features will focus on the capture bar widget while this
-  // object is alive.
-  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 
   // This is guarded by the |ImprovedScreenCaptureSettings| feature flag.
   // TODO(conniekxu): remove it when the work of capture mode new settings

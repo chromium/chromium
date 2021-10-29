@@ -728,8 +728,6 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
      switches::kTopChromeTouchUiEnabled}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kArcUseHighMemoryDalvikProfileInternalName[] =
-    "arc-use-high-memory-dalvik-profile";
 const char kLacrosAvailabilityIgnoreInternalName[] =
     "lacros-availability-ignore";
 const char kLacrosPrimaryInternalName[] = "lacros-primary";
@@ -3585,6 +3583,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kLockScreenNotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"system-extensions", flag_descriptions::kSystemExtensionsName,
+     flag_descriptions::kSystemExtensionsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSystemExtensions)},
     {"crostini-bullseye-upgrade",
      flag_descriptions::kCrostiniBullseyeUpgradeName,
      flag_descriptions::kCrostiniBullseyeUpgradeDescription, kOsCrOS,
@@ -4329,10 +4330,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcUsbDeviceDefaultAttachToVmName,
      flag_descriptions::kArcUsbDeviceDefaultAttachToVmDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kUsbDeviceDefaultAttachToArcVm)},
-    {kArcUseHighMemoryDalvikProfileInternalName,
-     flag_descriptions::kArcUseHighMemoryDalvikProfileName,
-     flag_descriptions::kArcUseHighMemoryDalvikProfileDesc, kOsCrOS,
-     FEATURE_VALUE_TYPE(arc::kUseHighMemoryDalvikProfile)},
     {kArcVmBalloonPolicyInternalName,
      flag_descriptions::kArcVmBalloonPolicyName,
      flag_descriptions::kArcVmBalloonPolicyDesc, kOsCrOS,
@@ -7087,6 +7084,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"enable-vp9-kSVC-decode-acceleration",
+     flag_descriptions::kVp9kSVCHWDecodingName,
+     flag_descriptions::kVp9kSVCHWDecodingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(media::kVp9kSVCHWDecoding)},
+
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     defined(OS_MAC)
     {
@@ -7769,12 +7771,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kWebAppsCrosapiInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel);
-  }
-
-  // Leave the feature only for ARCVM.
-  if (!strcmp(kArcUseHighMemoryDalvikProfileInternalName,
-              entry.internal_name)) {
-    return !arc::IsArcVmEnabled();
   }
 
   if (!strcmp(kArcVmBalloonPolicyInternalName, entry.internal_name)) {

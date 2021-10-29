@@ -15,6 +15,7 @@ AudioEncoder::Options::Options() = default;
 AudioEncoder::Options::Options(const Options&) = default;
 AudioEncoder::Options::~Options() = default;
 
+EncodedAudioBuffer::EncodedAudioBuffer() = default;
 EncodedAudioBuffer::EncodedAudioBuffer(const AudioParameters& params,
                                        std::unique_ptr<uint8_t[]> data,
                                        size_t size,
@@ -27,6 +28,8 @@ EncodedAudioBuffer::EncodedAudioBuffer(const AudioParameters& params,
       duration(duration) {}
 
 EncodedAudioBuffer::EncodedAudioBuffer(EncodedAudioBuffer&&) = default;
+EncodedAudioBuffer& EncodedAudioBuffer::operator=(EncodedAudioBuffer&&) =
+    default;
 
 EncodedAudioBuffer::~EncodedAudioBuffer() = default;
 

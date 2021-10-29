@@ -539,9 +539,6 @@ const base::Feature kVaapiVP9Encoder{"VaapiVP9Encoder",
 // Enable H264 temporal layer encoding with HW encoder on ChromeOS.
 const base::Feature kVaapiH264TemporalLayerHWEncoding{
     "VaapiH264TemporalLayerEncoding", base::FEATURE_ENABLED_BY_DEFAULT};
-// Enable VP9 k-SVC decoding with HW decoder for webrtc use case on ChromeOS.
-const base::Feature kVaapiVp9kSVCHWDecoding{"VaapiVp9kSVCHWDecoding",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
 const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
@@ -551,6 +548,16 @@ const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
 // Inform video blitter of video color space.
 const base::Feature kVideoBlitColorAccuracy{"video-blit-color-accuracy",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
+const base::Feature kVp9kSVCHWDecoding {
+  "Vp9kSVCHWDecoding",
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Takes a reference on a video frame, keeping it alive during the duration of a
 // video.requestVideoFrameCallback call. Doesn't change anything to the API for

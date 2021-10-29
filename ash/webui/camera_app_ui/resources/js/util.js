@@ -293,3 +293,22 @@ export class DelayInterval {
     }
   }
 }
+
+/**
+ * Share file with share API.
+ * @param {!File} file
+ * @return {!Promise}
+ */
+export async function share(file) {
+  const shareData = {files: [file]};
+  try {
+    if (!navigator.canShare(shareData)) {
+      throw new Error('cannot share');
+    }
+    await navigator.share(shareData);
+  } catch (e) {
+    // TODO(b/191950622): Handles all share error case, e.g. no
+    // share target, share abort... with right treatment like toast
+    // message.
+  }
+}

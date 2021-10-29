@@ -96,6 +96,14 @@ MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
   return MediaQuery::kNone;
 }
 
+String MediaQueryParser::ConsumeType(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kIdentToken)
+    return g_null_atom;
+  if (IsRestrictorOrLogicalOperator(range.Peek()))
+    return g_null_atom;
+  return range.ConsumeIncludingWhitespace().Value().ToString();
+}
+
 bool MediaQueryParser::ConsumeFeature(CSSParserTokenRange& range) {
   if (range.Peek().GetType() != kLeftParenthesisToken)
     return false;
@@ -170,14 +178,11 @@ void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
 void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
   DCHECK_EQ(state_, kReadMediaType);
 
-  if (range.Peek().GetType() == kIdentToken) {
-    if (IsRestrictorOrLogicalOperator(range.Peek())) {
-      state_ = kSkipUntilComma;
-    } else {
-      CSSParserToken token = range.Consume();
-      media_query_data_.SetMediaType(token.Value().ToString());
-      state_ = kReadAnd;
-    }
+  String type = ConsumeType(range);
+
+  if (!type.IsNull()) {
+    media_query_data_.SetMediaType(type);
+    state_ = kReadAnd;
   } else if (range.AtEnd()) {
     state_ = kDone;
   } else {

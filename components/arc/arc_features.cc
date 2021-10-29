@@ -123,18 +123,17 @@ const base::Feature kRtVcpuQuadCore{"ArcRtVcpuQuadCore",
 const base::Feature kUsbDeviceDefaultAttachToArcVm{
     "UsbDeviceDefaultAttachToArcVm", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls ARC high-memory dalvik profile in ARCVM.
-// When enabled, Android tries to use dalvik memory profile tuned for
-// high-memory devices like 8G and 16G. This is enabled without conditions
-// in ARC container.
-const base::Feature kUseHighMemoryDalvikProfile{
-    "ArcUseHighMemoryDalvikProfile", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
 // to expose USB storage devices to ARC.
 const base::Feature kUsbStorageUIFeature{"ArcUsbStorageUI",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls ARC dalvik memory profile in ARCVM.
+// When enabled, Android tries to use dalvik memory profile tuned based on the
+// device memory size.
+const base::Feature kUseDalvikMemoryProfile{"ArcUseDalvikMemoryProfile",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether ARC uses VideoDecoder-backed video decoding.
 // When enabled, GpuArcVideoDecodeAccelerator will use VdVideoDecodeAccelerator

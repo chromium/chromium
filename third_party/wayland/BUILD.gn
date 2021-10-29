@@ -21,7 +21,7 @@ if (!use_system_libwayland) {
     cflags = [ "-Wno-macro-redefined" ]
   }
 
-  static_library("wayland_util") {
+  source_set("wayland_util") {
     sources = [
       "src/src/wayland-private.h",
       "src/src/wayland-util.c",

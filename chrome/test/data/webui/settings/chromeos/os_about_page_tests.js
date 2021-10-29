@@ -566,6 +566,17 @@ cr.define('settings_about_page', function() {
       const {checkForUpdates} = page.$;
       assertFalse(checkForUpdates.hidden);
     });
+
+    test('Update button click moves focus', async () => {
+      await initNewPage();
+
+      const {checkForUpdates, updateStatusMessageInner} = page.$;
+      checkForUpdates.click();
+      await aboutBrowserProxy.whenCalled('requestUpdate');
+      assertEquals(
+          updateStatusMessageInner, getDeepActiveElement(),
+          'Update status message should be focused.');
+    });
   });
 
   suite('DetailedBuildInfoTest', function() {

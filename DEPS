@@ -393,7 +393,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libcxxabi_revision':    '1876d9993041bd6960d3abd6dfe5a94acd3a9703',
+  'libcxxabi_revision':    '4c6e0991b109638204f08c93600b008c21f01da5',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -791,7 +791,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'ZL_lqua0jT_rOyaT_vxlLg3cj8ldsz2psGnMAeZNz6wC',
+          'version': 'Dewv4glpYqPtnvaOzHgVF6074yDsYzzDFiv0dO1ijwgC',
       },
     ],
     'condition': 'checkout_android',
@@ -1416,7 +1416,7 @@ deps = {
   },
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '1332f5e78082d16a82e4b78a9adedab256f28b5e',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'e5fc9f62634b179a6ced07fd2f565a9cee70f5bd',
 
   'src/third_party/perl': {
       'url': Var('chromium_git') + '/chromium/deps/perl.git' + '@' + '6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3',
@@ -1494,7 +1494,7 @@ deps = {
       'packages': [
           {
               'package': 'fuchsia/third_party/aemu/linux-amd64',
-              'version': 'ed-NOx1j5-wX3SbRi_OHyHn-6tFz33VbLDCFga8JWFwC'
+              'version': 'oGlyr7Yd3bVAIOk9ix9USsqpL5HzLbxt5CyB54MmvJ4C'
           },
       ],
       'condition': 'host_os == "linux" and checkout_fuchsia',
@@ -1695,7 +1695,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@4018bcd9149c2f03f9bf15fd3ddf3f36b2d16008',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@67b898a9ac17d02ad5917576c6099a91fca22295',
     'condition': 'checkout_src_internal',
   },
 

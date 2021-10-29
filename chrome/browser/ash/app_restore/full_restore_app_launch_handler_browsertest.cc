@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
 
   EXPECT_TRUE(wm::CanActivateWindow(window));
 
-  EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));
+  EXPECT_EQ(0, ::app_restore::FetchRestoreWindowId(extension->id()));
 
   // Close the window.
   CloseAppWindow(app_window);

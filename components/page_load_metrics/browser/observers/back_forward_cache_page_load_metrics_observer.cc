@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/observers/back_forward_cache_page_load_metrics_observer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/default_tick_clock.h"
 
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -138,6 +139,7 @@ BackForwardCachePageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!in_back_forward_cache_) {
     MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+        base::DefaultTickClock::GetInstance(),
         /*app_entering_background=*/false);
   }
   was_hidden_ = true;
@@ -298,7 +300,7 @@ void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
   MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
   MaybeRecordPageEndAfterBackForwardCacheRestore(app_entering_background);
   MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
-      app_entering_background);
+      base::DefaultTickClock::GetInstance(), app_entering_background);
   MaybeRecordNormalizedResponsivenessMetrics();
 }
 
@@ -549,6 +551,7 @@ void BackForwardCachePageLoadMetricsObserver::
 
 void BackForwardCachePageLoadMetricsObserver::
     MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+        const base::TickClock* clock,
         bool app_entering_background) const {
   if (!was_hidden_ && has_ever_entered_back_forward_cache_) {
     // This logic for finding the foreground duration is intended to mimic
@@ -578,7 +581,7 @@ void BackForwardCachePageLoadMetricsObserver::
 
     if (!foreground_duration && app_entering_background) {
       foreground_duration =
-          base::TimeTicks::Now() - back_forward_state.navigation_start_time;
+          clock->NowTicks() - back_forward_state.navigation_start_time;
     }
 
     if (foreground_duration.has_value()) {

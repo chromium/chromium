@@ -39,8 +39,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // If |compatible_with_win7| is true, MediaFoundationVideoEncoderAccelerator
   // works on Windows 7. Some attributes of the encoder are not supported on old
   // systems, which may impact the performance or quality of the output.
-  explicit MediaFoundationVideoEncodeAccelerator(bool compatible_with_win7,
-                                                 bool use_async_h264);
+  explicit MediaFoundationVideoEncodeAccelerator(bool compatible_with_win7);
 
   MediaFoundationVideoEncodeAccelerator(
       const MediaFoundationVideoEncodeAccelerator&) = delete;
@@ -95,10 +94,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // |main_client_task_runner_|.
   void NotifyError(VideoEncodeAccelerator::Error error);
 
-  // Encoding tasks to be run on |encoder_thread_|.
+  // Encoding task to be run on |encoder_thread_|.
   void EncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
-  void AsyncEncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
-  void SyncEncodeTask(scoped_refptr<VideoFrame> frame, bool force_keyframe);
 
   // Processes the input video frame for the encoder.
   HRESULT ProcessInput(scoped_refptr<VideoFrame> frame, bool force_keyframe);
@@ -110,8 +107,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool temporalScalableCoding() { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output on |encoder_thread_|.
-  void ProcessOutputAsync();
-  void ProcessOutputSync();
+  void ProcessOutput();
 
   // Drains pending output samples on |encoder_thread_|.
   void DrainPendingOutputs();
@@ -144,12 +140,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
 
   const bool compatible_with_win7_;
-
-  // Flag to enable the usage of MFTEnumEx for H.264.
-  const bool use_async_h264_;
-
-  // Whether asynchronous hardware encoder enabled or not.
-  bool is_async_mft_;
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>

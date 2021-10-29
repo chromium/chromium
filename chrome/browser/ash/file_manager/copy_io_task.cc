@@ -235,10 +235,11 @@ void CopyIOTask::OnCopyProgress(
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& destination_url,
     int64_t size) {
-  // The storage layer sometimes sends the progress with size=0.
-  if (size > 0)
-    progress_.bytes_transferred += size - last_progress_size_;
+  // |size| is only valid for kProgress.
+  if (type != storage::FileSystemOperation::CopyOrMoveProgressType::kProgress)
+    return;
 
+  progress_.bytes_transferred += size - last_progress_size_;
   last_progress_size_ = size;
   progress_callback_.Run(progress_);
 }

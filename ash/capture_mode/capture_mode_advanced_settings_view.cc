@@ -142,6 +142,17 @@ void CaptureModeAdvancedSettingsView::OnDefaultCaptureFolderSelectionChanged() {
     save_to_menu_group_->RefreshOptionsSelections();
 }
 
+std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+CaptureModeAdvancedSettingsView::GetHighlightableItems() {
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+      highlightable_items;
+  DCHECK(audio_input_menu_group_);
+  audio_input_menu_group_->AppendHighlightableItems(highlightable_items);
+  if (save_to_menu_group_)
+    save_to_menu_group_->AppendHighlightableItems(highlightable_items);
+  return highlightable_items;
+}
+
 void CaptureModeAdvancedSettingsView::OnOptionSelected(int option_id) const {
   auto* controller = CaptureModeController::Get();
   switch (option_id) {

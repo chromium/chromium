@@ -12,11 +12,10 @@ void TraceWrapperV8String::Concat(v8::Isolate* isolate, const String& string) {
   DCHECK(isolate);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::String> target_string =
-      (string_.IsEmpty())
-          ? V8String(isolate, string)
-          : v8::String::Concat(isolate, string_.NewLocal(isolate),
-                               V8String(isolate, string));
-  string_.Set(isolate, target_string);
+      (string_.IsEmpty()) ? V8String(isolate, string)
+                          : v8::String::Concat(isolate, string_.Get(isolate),
+                                               V8String(isolate, string));
+  string_.Reset(isolate, target_string);
 }
 
 String TraceWrapperV8String::Flatten(v8::Isolate* isolate) const {
@@ -24,7 +23,7 @@ String TraceWrapperV8String::Flatten(v8::Isolate* isolate) const {
     return String();
   DCHECK(isolate);
   v8::HandleScope handle_scope(isolate);
-  return ToBlinkString<String>(string_.NewLocal(isolate), kExternalize);
+  return ToBlinkString<String>(string_.Get(isolate), kExternalize);
 }
 
 }  // namespace blink

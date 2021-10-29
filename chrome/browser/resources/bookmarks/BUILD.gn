@@ -56,6 +56,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "actions.ts",
     "api_listener.ts",
+    "bookmarks_api_proxy.ts",
     "bookmarks.ts",
     "browser_proxy.ts",
     "constants.ts",
@@ -130,6 +131,7 @@ ts_library("build_ts") {
     "actions.ts",
     "api_listener.ts",
     "app.ts",
+    "bookmarks_api_proxy.ts",
     "bookmarks.ts",
     "browser_proxy.ts",
     "command_manager.ts",

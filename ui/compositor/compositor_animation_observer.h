@@ -25,6 +25,12 @@ class COMPOSITOR_EXPORT CompositorAnimationObserver {
 
   void Start();
   void Check();
+  void ResetIfActive();
+
+  bool is_active_for_test() const { return !!start_; }
+
+ protected:
+  virtual void NotifyFailure();
 
  private:
   base::Location location_;

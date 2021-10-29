@@ -85,9 +85,9 @@
         </div>
         <div class="start padded">
           <div id="updateStatusMessage" hidden="[[!showUpdateStatus_]]">
-            <div
+            <div id="updateStatusMessageInner" tabindex="-1"
                 inner-h-t-m-l="[[getUpdateStatusMessage_(
-                    currentUpdateStatusEvent_, targetChannel_)]]"></div>
+                currentUpdateStatusEvent_, targetChannel_)]]"></div>
             <a hidden$="[[!shouldShowLearnMoreLink_(
                 currentUpdateStatusEvent_)]]" target="_blank"
                 href="https://support.google.com/chrome?p=update_error">
