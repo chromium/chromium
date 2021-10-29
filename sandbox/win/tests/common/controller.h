@@ -23,24 +23,43 @@ namespace sandbox {
 // All the possible error codes returned by the child process in
 // the sandbox.
 enum SboxTestResult {
+  // First Result. (0x25B10000 or 632356864)
   SBOX_TEST_FIRST_RESULT = CUSTOMER_CODE | SBOX_TESTS_FACILITY,
+  // Second result. (0x25B10001 or 632356865)
   SBOX_TEST_SUCCEEDED,
+  // Ping OK. (0x25B10002 or 632356866)
   SBOX_TEST_PING_OK,
+  // First info. (0x65B10000 or 1706098688)
   SBOX_TEST_FIRST_INFO = SBOX_TEST_FIRST_RESULT | SEVERITY_INFO_FLAGS,
-  SBOX_TEST_DENIED,     // Access was denied.
-  SBOX_TEST_NOT_FOUND,  // The resource was not found.
+  // Access was denied. (0x65B10001 or 1706098689)
+  SBOX_TEST_DENIED,
+  // The resource was not found. (0x65B10002 or 1706098690)
+  SBOX_TEST_NOT_FOUND,
+  // First error. (0xE5B10000 or -441384960)
   SBOX_TEST_FIRST_ERROR = SBOX_TEST_FIRST_RESULT | SEVERITY_ERROR_FLAGS,
+  // Second error. (0xE5B10001 or -441384959)
   SBOX_TEST_SECOND_ERROR,
+  // Third error. (0xE5B10002 or -441384958)
   SBOX_TEST_THIRD_ERROR,
+  // Fourth error. (0xE5B10003 or -441384957)
   SBOX_TEST_FOURTH_ERROR,
+  // Fifth error. (0xE5B10004 or -441384956)
   SBOX_TEST_FIFTH_ERROR,
+  // Sixth error. (0xE5B10005 or -441384955)
   SBOX_TEST_SIXTH_ERROR,
+  // Seventh error. (0xE5B10006 or -441384954)
   SBOX_TEST_SEVENTH_ERROR,
+  // Invalid Parameter. (0xE5B10007 or -441384953)
   SBOX_TEST_INVALID_PARAMETER,
+  // Failed to run test. (0xE5B10008 or -441384952)
   SBOX_TEST_FAILED_TO_RUN_TEST,
+  // Failed to execute command. (0xE5B10009 or -441384951)
   SBOX_TEST_FAILED_TO_EXECUTE_COMMAND,
+  // Test timed out. (0xE5B1000A or -441384950)
   SBOX_TEST_TIMED_OUT,
+  // Test failed. (0xE5B1000B or -441384949)
   SBOX_TEST_FAILED,
+  // Last Result. (0xE5B1000C or -441384948)
   SBOX_TEST_LAST_RESULT
 };
 
