@@ -8,6 +8,7 @@ import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/app_service.mojom";
 import "chromeos/crosapi/mojom/app_window_tracker.mojom";
+import "chromeos/crosapi/mojom/authentication.mojom";
 import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/browser_app_instance_registry.mojom";
 import "chromeos/crosapi/mojom/browser_version.mojom";
@@ -83,8 +84,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 58
-// Next method id: 62
+// Next version: 59
+// Next method id: 63
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -92,6 +93,12 @@ interface Crosapi {
   // Added in M91.
   [MinVersion=18]
   BindAutomationDeprecated@23(pending_receiver<Automation> receiver);
+
+  // Binds the authenticate profile handler service which allows authentication
+  // of profiles by Ash.
+  // Added in M97.
+  [MinVersion=58] BindAuthentication@62(
+      pending_receiver<Authentication> receiver);
 
   // Binds the automation factory interface which allows ash to enableautomation
   // for Lacros and Lacros to send automation data to Ash.

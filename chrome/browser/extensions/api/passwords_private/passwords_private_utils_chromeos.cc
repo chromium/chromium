@@ -16,6 +16,10 @@
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 constexpr base::TimeDelta kShowPasswordAuthTokenLifetime =
@@ -35,7 +39,7 @@ base::TimeDelta GetAuthTokenLifetimeForPurpose(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsOsReauthAllowedAsh(Profile* profile,
-                          base::TimeDelta auth_token_lifespan) {
+                          base::TimeDelta auth_token_lifetime) {
   const bool user_cannot_manually_enter_password =
       !chromeos::password_visibility::AccountHasUserFacingPassword(
           chromeos::ProfileHelper::Get()
@@ -51,8 +55,28 @@ bool IsOsReauthAllowedAsh(Profile* profile,
   if (!auth_token || !auth_token->GetAge().has_value())
     return false;
 
-  return auth_token->GetAge() <= auth_token_lifespan;
+  return auth_token->GetAge() <= auth_token_lifetime;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void IsOsReauthAllowedLacrosAsync(
+    password_manager::ReauthPurpose purpose,
+    password_manager::PasswordAccessAuthenticator::AuthResultCallback
+        callback) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service->IsAvailable<crosapi::mojom::Authentication>()) {
+    // Use crosapi to call IsOsReauthAllowedAsh() in Ash, injecting auth token
+    // lifetime from Lacros (instead using the values defined in Ash) for more
+    // flexibility. Pass |callback| directly since it's compatible.
+    lacros_service->GetRemote<crosapi::mojom::Authentication>()
+        ->IsOsReauthAllowedForActiveUserProfile(
+            GetAuthTokenLifetimeForPurpose(purpose), std::move(callback));
+  } else {
+    // No crosapi: Fallback to pre-crosapi behavior.
+    std::move(callback).Run(true);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace extensions
