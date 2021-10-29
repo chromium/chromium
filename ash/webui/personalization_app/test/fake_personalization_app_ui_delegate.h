@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,6 +56,7 @@ class FakePersonalizationAppUiDelegate
                        SelectWallpaperCallback callback) override;
 
   void SelectLocalImage(const base::FilePath& path,
+                        ash::WallpaperLayout layout,
                         bool preview_mode,
                         SelectLocalImageCallback callback) override;
 
