@@ -100,9 +100,11 @@ class PasswordGenerationAgent::DeferringPasswordGenerationDriver
  private:
   template <typename F, typename... Args>
   void SendMsg(F fn, Args&&... args) {
-    DCHECK(agent_->password_generation_client_);
-    (agent_->password_generation_client_.get()->*fn)(
-        std::forward<Args>(args)...);
+    DCHECK(!agent_->IsPrerendering());
+    mojom::PasswordGenerationDriver& password_generation_client =
+        agent_->GetPasswordGenerationDriver();
+    DCHECK_NE(&password_generation_client, this);
+    (password_generation_client.*fn)(std::forward<Args>(args)...);
   }
   template <typename F, typename... Args>
   void DeferMsg(F fn, Args... args) {
@@ -712,17 +714,18 @@ PasswordGenerationAgent::GetPasswordManagerDriver() {
 
 mojom::PasswordGenerationDriver&
 PasswordGenerationAgent::GetPasswordGenerationDriver() {
-  if (!password_generation_client_) {
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &password_generation_client_);
-  }
-
   if (IsPrerendering()) {
     if (!deferring_password_generation_driver_) {
       deferring_password_generation_driver_ =
           std::make_unique<DeferringPasswordGenerationDriver>(this);
     }
     return *deferring_password_generation_driver_;
+  }
+
+  // Lazily bind this interface.
+  if (!password_generation_client_) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &password_generation_client_);
   }
 
   return *password_generation_client_;

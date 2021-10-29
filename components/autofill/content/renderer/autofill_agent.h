@@ -87,6 +87,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAgent> pending_receiver);
 
+  // Callers should not store the returned value longer than a function scope.
   mojom::AutofillDriver& GetAutofillDriver();
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
