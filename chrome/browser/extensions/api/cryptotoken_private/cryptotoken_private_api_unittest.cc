@@ -48,11 +48,12 @@ bool GetSingleBooleanResult(ExtensionFunction* function, bool* result) {
     return false;
   }
 
-  if (!result_list->GetBoolean(0, result)) {
+  if (!result_list->GetList()[0].is_bool()) {
     ADD_FAILURE() << "Result is not boolean.";
     return false;
   }
 
+  *result = result_list->GetList()[0].GetBool();
   return true;
 }
 
