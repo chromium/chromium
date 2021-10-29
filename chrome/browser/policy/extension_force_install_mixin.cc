@@ -598,11 +598,28 @@ bool ExtensionForceInstallMixin::ServeExistingCrx(
     const base::Version& extension_version) {
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  // First copy the CRX into a temporary location.
+  base::FilePath temp_crx_path;
+  if (!base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_crx_path)) {
+    ADD_FAILURE() << "Failed to create a temporary file.";
+    return false;
+  }
+  if (!base::CopyFile(source_crx_path, temp_crx_path)) {
+    ADD_FAILURE() << "Failed to copy CRX from " << source_crx_path.value()
+                  << " to " << temp_crx_path.value();
+    return false;
+  }
+
+  // Then atomically move the created file into the served directory. This is
+  // important as the embedded test server is reading files on a different
+  // thread (IO) and, for example, we can be asked to re-serve the same version
+  // again.
   const base::FilePath served_crx_path =
       GetPathInServedDir(GetServedCrxFileName(extension_id, extension_version));
-  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-  if (!base::CopyFile(source_crx_path, served_crx_path)) {
-    ADD_FAILURE() << "Failed to copy CRX from " << source_crx_path.value()
+  if (!base::Move(temp_crx_path, served_crx_path)) {
+    ADD_FAILURE() << "Failed to move CRX from " << temp_crx_path.value()
                   << " to " << served_crx_path.value();
     return false;
   }
