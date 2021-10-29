@@ -375,12 +375,12 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
   if (desks_templates_util::AreDesksTemplatesEnabled()) {
-    // TODO(sophiewen): u"Templates" should be replaced with the localized name
-    // for the "Templates" desk label.
     expanded_state_desks_templates_button_ =
         scroll_view_contents_->AddChildView(
             std::make_unique<ExpandedDesksBarButton>(
-                this, &kDesksTemplatesIcon, u"Templates",
+                this, &kDesksTemplatesIcon,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON),
                 base::BindRepeating(
                     &DesksBarView::OnDesksTemplatesButtonPressed,
                     base::Unretained(this))));

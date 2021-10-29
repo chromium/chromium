@@ -990,8 +990,9 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
     save_desk_as_template_widget_->SetContentsView(new PillButton(
         base::BindRepeating(&OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
                             base::Unretained(this)),
-        u"Save desk as a template", PillButton::Type::kIcon,
-        &kSaveDeskAsTemplateIcon));
+        l10n_util::GetStringUTF16(
+            IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON),
+        PillButton::Type::kIcon, &kSaveDeskAsTemplateIcon));
   }
   save_desk_as_template_widget_->Show();
 
