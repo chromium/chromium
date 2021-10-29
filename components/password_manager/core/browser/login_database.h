@@ -199,12 +199,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
 
   FieldInfoTable& field_info_table() { return field_info_table_; }
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
-  void enable_encryption() { use_encryption_ = true; }
-  // This instance should not encrypt/decrypt password values using OSCrypt.
-  void disable_encryption() { use_encryption_ = false; }
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE)
-
  private:
   struct PrimaryKeyAndPassword;
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseTest, AddLoginWithEncryptedPassword);
@@ -359,13 +353,6 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   std::string blocklisted_statement_;
   std::string encrypted_password_statement_by_id_;
   std::string id_and_password_statement_;
-
-#if defined(OS_POSIX) && !defined(OS_APPLE)
-  // Whether password values should be encrypted.
-  // TODO(crbug.com/571003) Only linux doesn't use encryption. Remove this once
-  // Linux is fully migrated into LoginDatabase.
-  bool use_encryption_ = true;
-#endif  // defined(OS_POSIX)
 
   // A callback to be invoked whenever all pending deletions have been processed
   // by Sync - see
