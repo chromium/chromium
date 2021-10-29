@@ -189,6 +189,11 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   return _overflowMenuModel;
 }
 
+- (void)setIsIncognito:(BOOL)isIncognito {
+  _isIncognito = isIncognito;
+  [self updateModel];
+}
+
 - (void)setWebState:(web::WebState*)webState {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserver.get());
@@ -408,16 +413,8 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
                                                    self.helpAction,
                                                  ]];
 
-  return [[OverflowMenuModel alloc] initWithDestinations:@[
-    self.bookmarksDestination,
-    self.historyDestination,
-    self.readingListDestination,
-    self.passwordsDestination,
-    self.downloadsDestination,
-    self.recentTabsDestination,
-    self.siteInfoDestination,
-    self.settingsDestination,
-  ]
+  // Destinations vary based on state, so they're set in -updateModel.
+  return [[OverflowMenuModel alloc] initWithDestinations:@[]
                                             actionGroups:@[
                                               self.appActionsGroup,
                                               self.pageActionsGroup,
@@ -433,6 +430,29 @@ OverflowMenuDestination* CreateOverflowMenuDestination(int nameID,
   if (!_overflowMenuModel) {
     return;
   }
+
+  NSArray<OverflowMenuDestination*>* baseDestinations = @[
+    self.bookmarksDestination,
+    self.historyDestination,
+    self.readingListDestination,
+    self.passwordsDestination,
+    self.downloadsDestination,
+    self.recentTabsDestination,
+    self.siteInfoDestination,
+    self.settingsDestination,
+  ];
+
+  self.overflowMenuModel.destinations = [baseDestinations
+      filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
+                                                   id object,
+                                                   NSDictionary* bindings) {
+        // All destinations are displayed in regular mode.
+        if (!self.isIncognito) {
+          return true;
+        }
+        return object != self.historyDestination &&
+               object != self.recentTabsDestination;
+      }]];
 
   NSMutableArray<OverflowMenuAction*>* appActions =
       [[NSMutableArray alloc] init];
