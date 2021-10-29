@@ -315,7 +315,8 @@ function captureEvent(name, details, callback) {
     chrome.test.assertTrue('tabId' in details &&
                             typeof details.tabId === 'number');
     var key = details.tabId + "-" + details.frameId;
-    if (details.type == "main_frame" || details.type == "sub_frame") {
+    if (details.type == 'main_frame' || details.type == 'sub_frame' ||
+        details.type == 'webtransport') {
       tabAndFrameUrls[key] = details.url;
     }
     details.frameUrl = tabAndFrameUrls[key] || "unknown frame URL";
