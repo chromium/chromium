@@ -42,8 +42,9 @@ export class TabSearchApiProxy {
    * @param {number} id
    * @param {boolean} withSearch
    * @param {boolean} isTab
+   * @param {number} index
    */
-  openRecentlyClosedEntry(id, withSearch, isTab) {}
+  openRecentlyClosedEntry(id, withSearch, isTab, index) {}
 
   /**
    * @param {!SwitchToTabInfo} info
@@ -91,14 +92,18 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  openRecentlyClosedEntry(id, withSearch, isTab) {
+  openRecentlyClosedEntry(id, withSearch, isTab, index) {
     chrome.metricsPrivate.recordEnumerationValue(
         isTab ? 'Tabs.TabSearch.WebUI.RecentlyClosedTabOpenAction' :
                 'Tabs.TabSearch.WebUI.RecentlyClosedGroupOpenAction',
         withSearch ? RecentlyClosedItemOpenAction.WITH_SEARCH :
                      RecentlyClosedItemOpenAction.WITHOUT_SEARCH,
         Object.keys(RecentlyClosedItemOpenAction).length);
-
+    chrome.metricsPrivate.recordSmallCount(
+        withSearch ?
+            'Tabs.TabSearch.WebUI.IndexOfOpenRecentlyClosedEntryInFilteredList' :
+            'Tabs.TabSearch.WebUI.IndexOfOpenRecentlyClosedEntryInUnfilteredList',
+        index);
     this.handler.openRecentlyClosedEntry(id);
   }
 
