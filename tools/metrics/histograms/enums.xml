@@ -35110,6 +35110,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4065" label="V8FragmentDirective_CreateSelectorDirective_Method"/>
   <int value="4066" label="CSSTransitionBlockedByAnimation"/>
   <int value="4067" label="WebAppManifestHasComments"/>
+  <int value="4068" label="AutoExpandedDetailsForFindInPage"/>
+  <int value="4069" label="AutoExpandedDetailsForScrollToTextFragment"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
