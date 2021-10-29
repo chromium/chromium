@@ -401,6 +401,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="DevTools.SettingChanged" enum="DevToolsSetting"
     expires_after="2021-12-05">
+  <obsolete>
+    Instrumentation was removed before M76.
+  </obsolete>
   <owner>alph@chromium.org</owner>
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>

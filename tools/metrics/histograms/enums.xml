@@ -20617,6 +20617,9 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DevToolsSetting">
+  <obsolete>
+    Instrumentation was removed before M76.
+  </obsolete>
   <int value="1" label="Elements DOM wrap on"/>
   <int value="2" label="Elements DOM wrap off"/>
   <int value="3" label="Console monitor XHR on"/>
