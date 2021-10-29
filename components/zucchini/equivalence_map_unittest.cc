@@ -252,28 +252,28 @@ TEST(EquivalenceMapTest, ExtendEquivalenceBackward) {
 
 TEST(EquivalenceMapTest, PruneEquivalencesAndSortBySource) {
   auto PruneEquivalencesAndSortBySourceTest =
-      [](std::vector<Equivalence>&& equivalences) {
+      [](std::deque<Equivalence>&& equivalences) {
         OffsetMapper::PruneEquivalencesAndSortBySource(&equivalences);
         return std::move(equivalences);
       };
 
-  EXPECT_EQ(std::vector<Equivalence>(),
+  EXPECT_EQ(std::deque<Equivalence>(),
             PruneEquivalencesAndSortBySourceTest({}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 1}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 1}}),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 1}}));
-  EXPECT_EQ(std::vector<Equivalence>(),
+  EXPECT_EQ(std::deque<Equivalence>(),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 0}}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 1}, {1, 11, 1}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 1}, {1, 11, 1}}),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 1}, {1, 11, 1}}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 2}, {2, 13, 1}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 2}, {2, 13, 1}}),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 2}, {1, 12, 2}}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 2}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 2}}),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 2}, {1, 12, 1}}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 2}, {2, 14, 1}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 2}, {2, 14, 1}}),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 2}, {1, 13, 2}}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 1}, {1, 12, 3}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 1}, {1, 12, 3}}),
             PruneEquivalencesAndSortBySourceTest({{0, 10, 2}, {1, 12, 3}}));
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, 3}, {3, 16, 2}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, 3}, {3, 16, 2}}),
             PruneEquivalencesAndSortBySourceTest(
                 {{0, 10, 3}, {1, 13, 3}, {3, 16, 2}}));  // Pruning is greedy
 
@@ -288,9 +288,9 @@ TEST(EquivalenceMapTest, PruneEquivalencesAndSortBySource) {
   //                 ***************
   // This test case makes sure the function does not stall on a large instance
   // of this pattern.
-  EXPECT_EQ(std::vector<Equivalence>({{0, 10, +300000}, {300000, 30, +300000}}),
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, +300000}, {300000, 30, +300000}}),
             PruneEquivalencesAndSortBySourceTest([] {
-              std::vector<Equivalence> equivalenses;
+              std::deque<Equivalence> equivalenses;
               equivalenses.push_back({0, 10, +300000});
               for (offset_t i = 0; i < 100000; ++i)
                 equivalenses.push_back({200000 + i, 20, +200000 - 2 * i});
@@ -302,7 +302,7 @@ TEST(EquivalenceMapTest, PruneEquivalencesAndSortBySource) {
 TEST(EquivalenceMapTest, NaiveExtendedForwardProject) {
   constexpr size_t kOldImageSize = 1000U;
   constexpr size_t kNewImageSize = 1000U;
-  OffsetMapper offset_mapper(std::vector<Equivalence>(), kOldImageSize,
+  OffsetMapper offset_mapper(std::deque<Equivalence>(), kOldImageSize,
                              kNewImageSize);
 
   // Convenience function to declutter.
@@ -417,7 +417,7 @@ TEST(EquivalenceMapTest, ExtendedForwardProjectEncoding) {
   // - '.' are "new" offsets that appear as output.
   // - '(' and ')' surround a single "new" location that are repeated as output.
   int case_no = 0;
-  auto run_test = [&case_no](std::vector<Equivalence>&& equivalences,
+  auto run_test = [&case_no](std::deque<Equivalence>&& equivalences,
                              const std::string& old_spec,
                              const std::string& new_spec) {
     const size_t old_size = old_spec.length();
