@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/policy_extension_reinstaller.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -14,10 +14,10 @@ namespace extensions {
 
 namespace {
 
-PolicyExtensionReinstaller::ReinstallCallback* g_reinstall_action_for_test =
+CorruptedExtensionReinstaller::ReinstallCallback* g_reinstall_action_for_test =
     nullptr;
 
-const net::BackoffEntry::Policy kPolicyReinstallBackoffPolicy = {
+const net::BackoffEntry::Policy kCorruptedReinstallBackoffPolicy = {
     // num_errors_to_ignore
     1,
 
@@ -43,23 +43,23 @@ const net::BackoffEntry::Policy kPolicyReinstallBackoffPolicy = {
 
 }  // namespace
 
-PolicyExtensionReinstaller::PolicyExtensionReinstaller(
+CorruptedExtensionReinstaller::CorruptedExtensionReinstaller(
     content::BrowserContext* context)
-    : context_(context), backoff_entry_(&kPolicyReinstallBackoffPolicy) {}
+    : context_(context), backoff_entry_(&kCorruptedReinstallBackoffPolicy) {}
 
-PolicyExtensionReinstaller::~PolicyExtensionReinstaller() {}
+CorruptedExtensionReinstaller::~CorruptedExtensionReinstaller() {}
 
 // static
-void PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(
+void CorruptedExtensionReinstaller::set_reinstall_action_for_test(
     ReinstallCallback* action) {
   g_reinstall_action_for_test = action;
 }
 
-void PolicyExtensionReinstaller::NotifyExtensionDisabledDueToCorruption() {
+void CorruptedExtensionReinstaller::NotifyExtensionDisabledDueToCorruption() {
   ScheduleNextReinstallAttempt();
 }
 
-void PolicyExtensionReinstaller::Fire() {
+void CorruptedExtensionReinstaller::Fire() {
   scheduled_fire_pending_ = false;
   ExtensionSystem* system = ExtensionSystem::Get(context_);
   ExtensionService* service = system->extension_service();
@@ -73,19 +73,19 @@ void PolicyExtensionReinstaller::Fire() {
   ScheduleNextReinstallAttempt();
 }
 
-base::TimeDelta PolicyExtensionReinstaller::GetNextFireDelay() {
+base::TimeDelta CorruptedExtensionReinstaller::GetNextFireDelay() {
   backoff_entry_.InformOfRequest(false);
   return backoff_entry_.GetTimeUntilRelease();
 }
 
-void PolicyExtensionReinstaller::ScheduleNextReinstallAttempt() {
+void CorruptedExtensionReinstaller::ScheduleNextReinstallAttempt() {
   if (scheduled_fire_pending_)
     return;
 
   scheduled_fire_pending_ = true;
   base::TimeDelta reinstall_delay = GetNextFireDelay();
-  base::OnceClosure callback = base::BindOnce(&PolicyExtensionReinstaller::Fire,
-                                              weak_factory_.GetWeakPtr());
+  base::OnceClosure callback = base::BindOnce(
+      &CorruptedExtensionReinstaller::Fire, weak_factory_.GetWeakPtr());
   if (g_reinstall_action_for_test) {
     g_reinstall_action_for_test->Run(std::move(callback), reinstall_delay);
   } else {

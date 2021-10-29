@@ -23,9 +23,9 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
-#include "chrome/browser/extensions/policy_extension_reinstaller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/disable_reason.h"
@@ -141,8 +141,8 @@ ChromeContentVerifierDelegate::ChromeContentVerifierDelegate(
     content::BrowserContext* context)
     : context_(context),
       default_mode_(GetDefaultMode()),
-      policy_extension_reinstaller_(
-          std::make_unique<PolicyExtensionReinstaller>(context_)) {}
+      corrupted_extension_reinstaller_(
+          std::make_unique<CorruptedExtensionReinstaller>(context_)) {}
 
 ChromeContentVerifierDelegate::~ChromeContentVerifierDelegate() {
 }
@@ -262,7 +262,7 @@ void ChromeContentVerifierDelegate::VerifyFailed(
         extension->location());
     service->DisableExtension(extension_id, disable_reason::DISABLE_CORRUPTED);
     // Attempt to reinstall.
-    policy_extension_reinstaller_->NotifyExtensionDisabledDueToCorruption();
+    corrupted_extension_reinstaller_->NotifyExtensionDisabledDueToCorruption();
     return;
   }
 
@@ -276,10 +276,10 @@ void ChromeContentVerifierDelegate::VerifyFailed(
 }
 
 void ChromeContentVerifierDelegate::Shutdown() {
-  // Shut down |policy_extension_reinstaller_| on its creation thread. |this|
+  // Shut down |corrupted_extension_reinstaller_| on its creation thread. |this|
   // can be destroyed through InfoMap on IO thread, we do not want to destroy
-  // |policy_extension_reinstaller_| there.
-  policy_extension_reinstaller_.reset();
+  // |corrupted_extension_reinstaller_| there.
+  corrupted_extension_reinstaller_.reset();
 }
 
 bool ChromeContentVerifierDelegate::IsFromWebstore(
