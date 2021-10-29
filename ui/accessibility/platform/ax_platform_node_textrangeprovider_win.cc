@@ -1594,6 +1594,18 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   }
 }
 
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
+    AXTree* tree,
+    AXNodeID node_id) {
+  // When the deleted node is a descendant of the common anchor of our range,
+  // it might create an invalid position. Ensure that our position is valid when
+  // necessary.
+  if (tree->GetAXTreeID() == start_->tree_id())
+    SetStart(start_->AsValidPosition());
+  if (tree->GetAXTreeID() == end_->tree_id())
+    SetEnd(end_->AsValidPosition());
+}
+
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
   if (start_->tree_id() == previous_tree_id ||
