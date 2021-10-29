@@ -7354,8 +7354,6 @@ test("unit_tests") {
         "../browser/printing/print_view_manager_unittest.cc",
         "../browser/printing/test_print_job.cc",
         "../browser/printing/test_print_job.h",
-        "../browser/printing/test_printer_query.cc",
-        "../browser/printing/test_printer_query.h",
         "../browser/ui/webui/print_preview/data_request_filter_unittest.cc",
         "../browser/ui/webui/print_preview/extension_printer_handler_unittest.cc",
         "../browser/ui/webui/print_preview/fake_print_render_frame.cc",
@@ -7371,7 +7369,7 @@ test("unit_tests") {
       if (is_win) {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_win_unittest.cc" ]
 
-        # Needed by test_print_job.h, test_printer_query.h.
+        # Needed by test_print_job.h.
         public_deps += [ "//printing/mojom" ]
       }
 
