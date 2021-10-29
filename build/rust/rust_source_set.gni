@@ -111,6 +111,11 @@ import("//build/config/rust.gni")
 #     crates.io. Each feature in the list will be passed to rustc as
 #     '--cfg feature=XXX'
 #
+#   visibility (optional)
+#   rustflags (optional)
+#   crate_name (optional)
+#     Per the usual gn meaning for Rust targets.
+#
 # Example of usage:
 #
 #   rust_source_set("foo_bar") {
@@ -128,6 +133,10 @@ import("//build/config/rust.gni")
 
 template("rust_source_set") {
   _target_name = target_name
+  _crate_name = _target_name
+  if (defined(invoker.crate_name)) {
+    _crate_name = invoker.crate_name
+  }
   if (defined(invoker.crate_root)) {
     _crate_root = invoker.crate_root
   } else {
@@ -135,10 +144,13 @@ template("rust_source_set") {
   }
   crate_root = _crate_root
 
-  _features = []
+  _rustflags = []
+  if (defined(invoker.rustflags)) {
+    _rustflags += invoker.rustflags
+  }
   if (defined(invoker.features)) {
     foreach(i, invoker.features) {
-      _features += [ "--cfg=feature=\"${i}\"" ]
+      _rustflags += [ "--cfg=feature=\"${i}\"" ]
     }
   }
   if (defined(invoker.edition) && invoker.edition == "2015") {
@@ -149,8 +161,6 @@ template("rust_source_set") {
   if (defined(invoker.configs)) {
     _configs += invoker.configs
   }
-  assert(!defined(invoker.rustflags),
-         "rustflags not supported by rust_source_set")
   _deps_for_rust_targets = []
   if (defined(invoker.mutually_dependent_target)) {
     _deps_for_rust_targets += [ invoker.mutually_dependent_target ]
@@ -183,6 +193,7 @@ template("rust_source_set") {
   group(target_name) {
     deps = [ ":${_target_name}_rlib" ]
     deps += _deps_for_rust_targets
+    forward_variables_from(invoker, [ "visibility" ])
   }
 
   # Downstream C++ targets should include this in their deps.
@@ -196,14 +207,16 @@ template("rust_source_set") {
     ]
     if (defined(invoker.mutually_dependent_target)) {
       visibility = [ invoker.mutually_dependent_target ]
+    } else {
+      forward_variables_from(invoker, [ "visibility" ])
     }
   }
 
   rust_library("${target_name}_rlib") {
-    crate_name = _target_name
+    crate_name = _crate_name
     configs += _configs
     deps = _deps
-    rustflags = _features
+    rustflags = _rustflags
     rustflags += [ string_join("",
                                [
                                  "-Cmetadata=",
@@ -217,9 +230,9 @@ template("rust_source_set") {
                              "rustflags",
                              "configs",
                              "output_name",
-                             "crate_name",
                              "crate_root",
                              "unit_test_target",
+                             "visibility",
                            ])
     visibility = [
       ":${_target_name}",
@@ -256,7 +269,7 @@ template("rust_source_set") {
         "--test",
       ]
       crate_root = _crate_root
-      rustflags += _features
+      rustflags += _rustflags
       configs += _configs
       deps = _deps
       if (defined(invoker.test_deps)) {
