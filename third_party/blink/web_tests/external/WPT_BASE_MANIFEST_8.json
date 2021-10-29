@@ -121699,7 +121699,7 @@
        ]
       ],
       "marker-text-matches-circle.html": [
-       "138f73cc514a02274b08dc0636250950c5d58d6a",
+       "0086de0ad489ad117d0622b01339a1b1b3220cb2",
        [
         null,
         [
@@ -121738,7 +121738,7 @@
        ]
       ],
       "marker-text-matches-disc.html": [
-       "e2456cb8f34e6b9df0cf3b499c6088661e505384",
+       "dfbfeee1c3219d73045002b5f3ed38cd02e83098",
        [
         null,
         [
@@ -121803,7 +121803,7 @@
        ]
       ],
       "marker-text-matches-square.html": [
-       "9095017b2469dd1b4abdf0207846dc2292d59fbd",
+       "247e00ebd230d999787ac118fc0640e0035ecc2d",
        [
         null,
         [
@@ -246825,6 +246825,10 @@
       "list-style-type-valid-expected.txt": [
        "9eced2532c23038d3d5203bb26dbb2516f081b9e",
        []
+      ],
+      "list-style-valid-expected.txt": [
+       "512fdc5a8cf3907782479c4c8e2dc6e6d77d7967",
+       []
       ]
      },
      "resources": {
@@ -288730,39 +288734,7 @@
        "d17588a18f053ec2b6b257f2785b0effb553d190",
        []
       ]
-     },
-     "webtransport-h3.https.sub.any-expected.txt": [
-      "6b34f70cf89a9c4f45443f4982cda7aaf3f2630a",
-      []
-     ],
-     "webtransport-h3.https.sub.any.serviceworker-expected.txt": [
-      "6b34f70cf89a9c4f45443f4982cda7aaf3f2630a",
-      []
-     ],
-     "webtransport-h3.https.sub.any.sharedworker-expected.txt": [
-      "6b34f70cf89a9c4f45443f4982cda7aaf3f2630a",
-      []
-     ],
-     "webtransport-h3.https.sub.any.worker-expected.txt": [
-      "6b34f70cf89a9c4f45443f4982cda7aaf3f2630a",
-      []
-     ],
-     "webtransport-h3.sub.any-expected.txt": [
-      "f78bdd8fe7d1a5ab05976915d5157e21a067571c",
-      []
-     ],
-     "webtransport-h3.sub.any.serviceworker-expected.txt": [
-      "6b34f70cf89a9c4f45443f4982cda7aaf3f2630a",
-      []
-     ],
-     "webtransport-h3.sub.any.sharedworker-expected.txt": [
-      "f78bdd8fe7d1a5ab05976915d5157e21a067571c",
-      []
-     ],
-     "webtransport-h3.sub.any.worker-expected.txt": [
-      "f78bdd8fe7d1a5ab05976915d5157e21a067571c",
-      []
-     ]
+     }
     },
     "testdriver": {
      "actions": {
@@ -303908,7 +303880,7 @@
     ],
     "resources": {
      "check-accept-header-and-return-bundle.py": [
-      "c2c8ebb601de7f53e2b9c3208d45093da1bf8cb5",
+      "1fb63a57cbf98961c7737f107cf1d7dd45bc02c4",
       []
      ],
      "check-cookie-and-return-bundle.py": [
@@ -307134,20 +307106,6 @@
      "6ca7abd355ea362d5411d6311284903a83d67240",
      []
     ],
-    "quic": {
-     "client-indication.any-expected.txt": [
-      "ada0fed66b44c13bb2df2bdd545a0963ab1ff967",
-      []
-     ],
-     "client-indication.any.worker-expected.txt": [
-      "ada0fed66b44c13bb2df2bdd545a0963ab1ff967",
-      []
-     ],
-     "client-indication.sub.any.worker-expected.txt": [
-      "ef7377a17d73161e78b5127022b451012c0ca872",
-      []
-     ]
-    },
     "resources": {
      "webtransport-test-helpers.sub.js": [
       "61ea1e4f80411aa4233548403ac61fb7a418363e",
@@ -351714,7 +351672,7 @@
        ]
       ],
       "list-style-valid.html": [
-       "6f6c344f305d84d8334fc38f07484ebc95266643",
+       "55124521f8daca21072fab063c968ec8f3b599df",
        [
         null,
         {}
