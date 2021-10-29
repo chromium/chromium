@@ -323,7 +323,7 @@ FetchManager::Loader::Loader(ExecutionContext* execution_context,
   // to the fetch() call.
   v8::Local<v8::Value> exception =
       V8ThrowException::CreateTypeError(isolate, "Failed to fetch");
-  exception_.Set(isolate, exception);
+  exception_.Reset(isolate, exception);
 }
 
 FetchManager::Loader::~Loader() {
@@ -916,8 +916,8 @@ void FetchManager::Loader::Failed(
     if (dom_exception) {
       resolver_->Reject(dom_exception);
     } else {
-      v8::Local<v8::Value> value = exception_.NewLocal(state->GetIsolate());
-      exception_.Clear();
+      v8::Local<v8::Value> value = exception_.Get(state->GetIsolate());
+      exception_.Reset();
       if (RuntimeEnabledFeatures::ExceptionMetaDataForDevToolsEnabled()) {
         ThreadDebugger* debugger = ThreadDebugger::From(state->GetIsolate());
         if (devtools_request_id) {

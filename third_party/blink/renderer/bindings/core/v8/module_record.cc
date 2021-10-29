@@ -38,7 +38,7 @@ ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
     v8::Local<v8::UnboundModuleScript> unbound_script =
         module->GetUnboundModuleScript();
     if (!unbound_script.IsEmpty())
-      unbound_script_.Set(isolate, unbound_script);
+      unbound_script_.Reset(isolate, unbound_script);
   }
 }
 

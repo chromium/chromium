@@ -30,40 +30,28 @@ class TraceWrapperV8Reference {
  public:
   TraceWrapperV8Reference() = default;
 
-  TraceWrapperV8Reference(v8::Isolate* isolate, v8::Local<T> handle) {
-    InternalSet(isolate, handle);
+  TraceWrapperV8Reference(v8::Isolate* isolate, v8::Local<T> handle)
+      : handle_(isolate, handle) {
+    WriteBarrier();
   }
 
   bool operator==(const TraceWrapperV8Reference& other) const {
     return handle_ == other.handle_;
   }
 
-  void Set(v8::Isolate* isolate, v8::Local<T> handle) {
-    InternalSet(isolate, handle);
+  void Reset(v8::Isolate* isolate, v8::Local<T> handle) {
+    handle_.Reset(isolate, handle);
+    WriteBarrier();
   }
 
-  ALWAYS_INLINE v8::Local<T> NewLocal(v8::Isolate* isolate) const {
+  ALWAYS_INLINE v8::Local<T> Get(v8::Isolate* isolate) const {
     return handle_.Get(isolate);
   }
 
   bool IsEmpty() const { return handle_.IsEmpty(); }
-  bool IsEmptySafe() const { return handle_.IsEmptyThreadSafe(); }
-  void Clear() { handle_.Reset(); }
+  void Reset() { handle_.Reset(); }
   ALWAYS_INLINE const v8::TracedReference<T>& Get() const { return handle_; }
   ALWAYS_INLINE v8::TracedReference<T>& Get() { return handle_; }
-
-  template <typename S>
-  const TraceWrapperV8Reference<S>& Cast() const {
-    static_assert(std::is_base_of<S, T>::value, "T must inherit from S");
-    return reinterpret_cast<const TraceWrapperV8Reference<S>&>(
-        const_cast<const TraceWrapperV8Reference<T>&>(*this));
-  }
-
-  template <typename S>
-  const TraceWrapperV8Reference<S>& UnsafeCast() const {
-    return reinterpret_cast<const TraceWrapperV8Reference<S>&>(
-        const_cast<const TraceWrapperV8Reference<T>&>(*this));
-  }
 
   // Move support.
   TraceWrapperV8Reference(TraceWrapperV8Reference&& other) noexcept {
@@ -115,9 +103,10 @@ class TraceWrapperV8Reference {
   }
 
  protected:
-  ALWAYS_INLINE void InternalSet(v8::Isolate* isolate, v8::Local<T> handle) {
-    handle_.Reset(isolate, handle);
-    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>().Get());
+  template <typename S>
+  const TraceWrapperV8Reference<S>& UnsafeCast() const {
+    return reinterpret_cast<const TraceWrapperV8Reference<S>&>(
+        const_cast<const TraceWrapperV8Reference<T>&>(*this));
   }
 
   ALWAYS_INLINE void WriteBarrier() const {

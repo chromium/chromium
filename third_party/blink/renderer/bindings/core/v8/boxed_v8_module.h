@@ -28,7 +28,7 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
   void Trace(Visitor* visitor) const { visitor->Trace(record_); }
 
   v8::Local<v8::Module> NewLocal(v8::Isolate* isolate) const {
-    return record_.NewLocal(isolate);
+    return record_.Get(isolate);
   }
 
  private:

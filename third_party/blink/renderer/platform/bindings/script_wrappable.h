@@ -122,7 +122,7 @@ class PLATFORM_EXPORT ScriptWrappable
       wrapper = MainWorldWrapper(isolate);
       return false;
     }
-    main_world_wrapper_.Set(isolate, wrapper);
+    main_world_wrapper_.Reset(isolate, wrapper);
     DCHECK(ContainsWrapper());
     wrapper_type_info->ConfigureWrapper(&main_world_wrapper_.Get());
     return true;
@@ -144,7 +144,7 @@ class PLATFORM_EXPORT ScriptWrappable
 
  private:
   v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
-    return main_world_wrapper_.NewLocal(isolate);
+    return main_world_wrapper_.Get(isolate);
   }
 
   // Clear the main world wrapper if it is set to |handle|.
@@ -168,7 +168,7 @@ class PLATFORM_EXPORT ScriptWrappable
 inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
     const v8::TracedReference<v8::Object>& handle) {
   if (main_world_wrapper_.Get() == handle) {
-    main_world_wrapper_.Clear();
+    main_world_wrapper_.Reset();
     return true;
   }
   return false;

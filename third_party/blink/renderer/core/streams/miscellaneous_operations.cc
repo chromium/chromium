@@ -76,8 +76,8 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
 
     // https://streams.spec.whatwg.org/#make-size-algorithm-from-size-function
     // 3.a. Return ? Call(size, undefined, « chunk »).
-    v8::MaybeLocal<v8::Value> result_maybe = function_.NewLocal(isolate)->Call(
-        context, v8::Undefined(isolate), 1, argv);
+    v8::MaybeLocal<v8::Value> result_maybe =
+        function_.Get(isolate)->Call(context, v8::Undefined(isolate), 1, argv);
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
       exception_state.RethrowV8Exception(trycatch.Exception());
@@ -136,8 +136,8 @@ class JavaScriptStreamAlgorithmWithoutExtraArg final : public StreamAlgorithm {
     // 6.b.i. Return ! PromiseCall(method, underlyingObject, extraArgs).
     // In this class extraArgs is always empty, but there may be other arguments
     // supplied to the method.
-    return PromiseCall(script_state, method_.NewLocal(isolate),
-                       recv_.NewLocal(isolate), argc, argv);
+    return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
+                       argc, argv);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -177,12 +177,12 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
     if (argc != 0) {
       full_argv[0] = argv[0];
     }
-    full_argv[argc] = extra_arg_.NewLocal(isolate);
+    full_argv[argc] = extra_arg_.Get(isolate);
     int full_argc = argc + 1;
 
     //     ii. Return ! PromiseCall(method, underlyingObject, fullArgs).
-    return PromiseCall(script_state, method_.NewLocal(isolate),
-                       recv_.NewLocal(isolate), full_argc, full_argv);
+    return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
+                       full_argc, full_argv);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -213,8 +213,8 @@ class JavaScriptByteStreamStartAlgorithm : public StreamStartAlgorithm {
     auto* isolate = script_state->GetIsolate();
 
     auto value_maybe =
-        Call1(script_state, method_.NewLocal(isolate), recv_.NewLocal(isolate),
-              controller_.NewLocal(isolate), exception_state);
+        Call1(script_state, method_.Get(isolate), recv_.Get(isolate),
+              controller_.Get(isolate), exception_state);
     if (exception_state.HadException()) {
       return v8::MaybeLocal<v8::Promise>();
     }
@@ -256,9 +256,9 @@ class JavaScriptStreamStartAlgorithm : public StreamStartAlgorithm {
     // https://streams.spec.whatwg.org/#set-up-writable-stream-default-controller-from-underlying-sink
     // 3. Let startAlgorithm be the following steps:
     //    a. Return ? InvokeOrNoop(underlyingSink, "start", « controller »).
-    auto value_maybe = CallOrNoop1(
-        script_state, recv_.NewLocal(isolate), "start", method_name_for_error_,
-        controller_.NewLocal(isolate), exception_state);
+    auto value_maybe = CallOrNoop1(script_state, recv_.Get(isolate), "start",
+                                   method_name_for_error_,
+                                   controller_.Get(isolate), exception_state);
     if (exception_state.HadException()) {
       return v8::MaybeLocal<v8::Promise>();
     }

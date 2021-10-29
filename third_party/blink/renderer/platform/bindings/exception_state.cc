@@ -163,7 +163,7 @@ void ExceptionState::RethrowV8Exception(v8::Local<v8::Value> value) {
 void ExceptionState::ClearException() {
   code_ = 0;
   message_ = String();
-  exception_.Clear();
+  exception_.Reset();
 }
 
 void ExceptionState::SetException(ExceptionCode exception_code,
@@ -174,10 +174,10 @@ void ExceptionState::SetException(ExceptionCode exception_code,
   code_ = exception_code;
   message_ = message;
   if (exception.IsEmpty()) {
-    exception_.Clear();
+    exception_.Reset();
   } else {
     DCHECK(isolate_);
-    exception_.Set(isolate_, exception);
+    exception_.Reset(isolate_, exception);
   }
 }
 
@@ -266,7 +266,7 @@ void ExceptionState::PropagateException() {
   // size and results in better performance due to improved code locality in
   // the bindings for the most frequently used code path (cases where no
   // exception is thrown).
-  V8ThrowException::ThrowException(isolate_, exception_.NewLocal(isolate_));
+  V8ThrowException::ThrowException(isolate_, exception_.Get(isolate_));
 }
 
 NonThrowableExceptionState::NonThrowableExceptionState()

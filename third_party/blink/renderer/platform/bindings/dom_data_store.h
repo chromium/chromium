@@ -119,7 +119,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->MainWorldWrapper(isolate);
     auto it = wrapper_map_.find(object);
     if (it != wrapper_map_.end())
-      return it->value.NewLocal(isolate);
+      return it->value.Get(isolate);
     return v8::Local<v8::Object>();
   }
 
@@ -138,7 +138,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       wrapper_type_info->ConfigureWrapper(&result.stored_value->value.Get());
     } else {
       DCHECK(!result.stored_value->value.IsEmpty());
-      wrapper = result.stored_value->value.NewLocal(isolate);
+      wrapper = result.stored_value->value.Get(isolate);
     }
     return result.is_new_entry;
   }
@@ -150,7 +150,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     const auto& it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
       if (it->value.Get() == handle) {
-        it->value.Clear();
+        it->value.Reset();
         wrapper_map_.erase(it);
         return true;
       }

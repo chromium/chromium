@@ -50,7 +50,7 @@ class WritableStream::PendingAbortRequest final
 
   StreamPromiseResolver* GetPromise() { return promise_; }
   v8::Local<v8::Value> Reason(v8::Isolate* isolate) {
-    return reason_.NewLocal(isolate);
+    return reason_.Get(isolate);
   }
 
   bool WasAlreadyErroring() { return was_already_erroring_; }
@@ -493,7 +493,7 @@ void WritableStream::StartErroring(ScriptState* script_state,
   stream->state_ = kErroring;
 
   //  6. Set stream.[[storedError]] to reason.
-  stream->stored_error_.Set(script_state->GetIsolate(), reason);
+  stream->stored_error_.Reset(script_state->GetIsolate(), reason);
 
   //  7. Let writer be stream.[[writer]].
   WritableStreamDefaultWriter* writer = stream->writer_;
@@ -530,7 +530,7 @@ void WritableStream::FinishErroring(ScriptState* script_state,
 
   //  5. Let storedError be stream.[[storedError]].
   auto* isolate = script_state->GetIsolate();
-  const auto stored_error = stream->stored_error_.NewLocal(isolate);
+  const auto stored_error = stream->stored_error_.Get(isolate);
 
   //  6. Repeat for each writeRequest that is an element of
   //     stream.[[writeRequests]],
@@ -692,7 +692,7 @@ void WritableStream::FinishInFlightClose(ScriptState* script_state,
   //  6. If state is "erroring",
   if (state == kErroring) {
     //      a. Set stream.[[storedError]] to undefined.
-    stream->stored_error_.Clear();
+    stream->stored_error_.Reset();
 
     //      b. If stream.[[pendingAbortRequest]] is not undefined,
     if (stream->pending_abort_request_) {
@@ -826,7 +826,7 @@ void WritableStream::UpdateBackpressure(ScriptState* script_state,
 
 v8::Local<v8::Value> WritableStream::GetStoredError(
     v8::Isolate* isolate) const {
-  return stored_error_.NewLocal(isolate);
+  return stored_error_.Get(isolate);
 }
 
 void WritableStream::SetCloseRequest(StreamPromiseResolver* close_request) {
@@ -982,7 +982,7 @@ void WritableStream::RejectCloseAndClosedPromiseIfNeeded(
 
     //      b. Reject stream.[[closeRequest]] with stream.[[storedError]].
     stream->close_request_->Reject(script_state,
-                                   stream->stored_error_.NewLocal(isolate));
+                                   stream->stored_error_.Get(isolate));
 
     //      c. Set stream.[[closeRequest]] to undefined.
     stream->close_request_ = nullptr;
@@ -995,7 +995,7 @@ void WritableStream::RejectCloseAndClosedPromiseIfNeeded(
   if (writer) {
     //      a. Reject writer.[[closedPromise]] with stream.[[storedError]].
     writer->ClosedPromise()->Reject(script_state,
-                                    stream->stored_error_.NewLocal(isolate));
+                                    stream->stored_error_.Get(isolate));
 
     //      b. Set writer.[[closedPromise]].[[PromiseIsHandled]] to true.
     writer->ClosedPromise()->MarkAsHandled(isolate);

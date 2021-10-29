@@ -133,8 +133,8 @@ class CORE_EXPORT ScriptPromiseResolver
       v8::Isolate* isolate = script_state_->GetIsolate();
       v8::MicrotasksScope microtasks_scope(
           isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
-      value_.Set(isolate, ToV8(value, script_state_->GetContext()->Global(),
-                               script_state_->GetIsolate()));
+      value_.Reset(isolate, ToV8(value, script_state_->GetContext()->Global(),
+                                 script_state_->GetIsolate()));
     }
 
     if (GetExecutionContext()->IsContextPaused()) {

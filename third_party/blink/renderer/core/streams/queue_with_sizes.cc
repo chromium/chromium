@@ -27,7 +27,7 @@ class QueueWithSizes::ValueSizePair final
       : value_(isolate, value), size_(size) {}
 
   v8::Local<v8::Value> Value(v8::Isolate* isolate) {
-    return value_.NewLocal(isolate);
+    return value_.Get(isolate);
   }
 
   double Size() { return size_; }
