@@ -259512,7 +259512,7 @@
       []
      ],
      "acos-asin-atan-atan2-computed-expected.txt": [
-      "2ba4cc738545190856f16d4bda9dee144cb62a24",
+      "4135567068fde7bc4d613da97e23907b9a45253c",
       []
      ],
      "acos-asin-atan-atan2-serialize-expected.txt": [
@@ -259660,11 +259660,15 @@
       []
      ],
      "exp-log-compute-expected.txt": [
-      "4e1e50ca14f202c8256ecd55d7188d43be56d118",
+      "1764e8e252ccd42753f222768151f9f0589fad66",
       []
      ],
      "exp-log-serialize-expected.txt": [
       "4538042081cdc199458994b3e4d607970d94f58d",
+      []
+     ],
+     "hypot-pow-sqrt-computed-expected.txt": [
+      "68c1dc897e7b274aa6efdae0b2b2b75c5e9bca23",
       []
      ],
      "hypot-pow-sqrt-serialize-expected.txt": [
@@ -259673,6 +259677,10 @@
      ],
      "minmax-angle-serialize-expected.txt": [
       "14d29fed17d1ef8eb55aa32757008bfa21a1bd87",
+      []
+     ],
+     "minmax-length-computed-expected.txt": [
+      "f445fe8735d6f8018f96339b629dcd845e895657",
       []
      ],
      "minmax-length-percent-serialize-expected.txt": [
@@ -259687,12 +259695,16 @@
       "68dc883aa6123ea113fd8520932dd072b4620f05",
       []
      ],
+     "minmax-percentage-computed-expected.txt": [
+      "024a14f1a30d6f67e0a090274c7b72ae2348e7bf",
+      []
+     ],
      "minmax-percentage-serialize-expected.txt": [
       "a25b56c10bb709e56feaec784bde34303cba8ebd",
       []
      ],
      "minmax-time-computed-expected.txt": [
-      "82045eac4b7acc67d97fb5a67d2f3964f77ba255",
+      "49b7498fbbbecde32e739a50584b0c393c19514d",
       []
      ],
      "minmax-time-serialize-expected.txt": [
@@ -259800,11 +259812,19 @@
       ]
      },
      "round-function-expected.txt": [
-      "8b1783d785c1cbd71cbeecb58bd21dcb18edf763",
+      "0cb255c5a60ee90fa85d0794b012a62623070277",
+      []
+     ],
+     "round-mod-rem-computed-expected.txt": [
+      "896b861b0161fcf4ecbe2fcb48eeb58b9e65bc30",
       []
      ],
      "round-mod-rem-serialize-expected.txt": [
       "f5c09a5539f1cb221d6827eed1ac0656775af532",
+      []
+     ],
+     "signs-abs-computed-expected.txt": [
+      "757d9cce3afb3e94a62ea97877d50d7d8a924d79",
       []
      ],
      "signs-abs-serialize-expected.txt": [
@@ -259812,7 +259832,7 @@
       []
      ],
      "sin-cos-tan-computed-expected.txt": [
-      "30a56d770fdd6004c52441c671c5f27ee5ad1758",
+      "962de573e86b0e1facc8952076b8a5ef95648e58",
       []
      ],
      "sin-cos-tan-serialize-expected.txt": [
@@ -264528,7 +264548,7 @@
       []
      ],
      "numeric-testcommon.js": [
-      "534d379fe4ae6623dcd88a26c30071b6d7edd9da",
+      "3a39e2a973a6f7ab688379635f8fe714027c863d",
       []
      ],
      "parsing-testcommon.js": [
@@ -265763,14 +265783,6 @@
      []
     ],
     "events": {
-     "AddEventListenerOptions-passive.any-expected.txt": [
-      "4a54687b14ef2f967666fff52b93d7cb4cd643d0",
-      []
-     ],
-     "AddEventListenerOptions-passive.any.worker-expected.txt": [
-      "d16fb1d7a79fa8d4b3077e81afa0c68bc5944be4",
-      []
-     ],
      "Event-constructors.any.worker-expected.txt": [
       "94a22a415036c307832b453ceab3c18b94d78f24",
       []
@@ -265793,10 +265805,6 @@
      ],
      "EventListener-incumbent-global-subsubframe.sub.html": [
       "dd683f6f65f89f097ca70594e4a02c2027fdb66b",
-      []
-     ],
-     "EventTarget-removeEventListener.any.worker-expected.txt": [
-      "508aed3c76668ea54864c83cf2bb73e571c92133",
       []
      ],
      "event-global-extra.window-expected.txt": [
@@ -274065,6 +274073,18 @@
          []
         ]
        },
+       "open-features-is-popup-condition_combination-expected.txt": [
+        "cc108eb3d4b9345e1f6037fcf5c14c9e98af3d22",
+        []
+       ],
+       "open-features-is-popup-condition_single-1-expected.txt": [
+        "06fc00ce52b6f1c54c4dac39d307fc2a2d4eab09",
+        []
+       ],
+       "open-features-is-popup-condition_single-2-expected.txt": [
+        "8ead92f03ff2632fb5f3f63a09e763ccbe373907",
+        []
+       ],
        "open-features-non-integer-left-expected.txt": [
         "62b1506da1c9b363345ccfdd989590ac6ec30d5c",
         []
@@ -274092,6 +274112,10 @@
        "resources": {
         "close-self.html": [
          "0c0cf9fc4911de2404a6b9247c862297c22038f1",
+         []
+        ],
+        "is-popup-barprop.html": [
+         "5636e2987893740e4cf942ed81c75ba04a3eb997",
          []
         ],
         "message-opener.html": [
@@ -296944,10 +296968,6 @@
     ],
     "OWNERS": [
      "fc6bc8634586ded123fed22ca840e5d1128f7302",
-     []
-    ],
-    "element-set-sanitized-html.https.tentative-expected.txt": [
-     "5c5070b6c2d3174a26a7e74b7f60cd98274a0d77",
      []
     ],
     "support": {
@@ -371042,7 +371062,7 @@
       ]
      ],
      "AddEventListenerOptions-passive.any.js": [
-      "78fb0162179221330351425e4a0f80e902f89651",
+      "8e59cf5b379f2e806fa52b82d87dd09f90c212d7",
       [
        "dom/events/AddEventListenerOptions-passive.any.html",
        {
@@ -371516,7 +371536,7 @@
       ]
      ],
      "EventTarget-removeEventListener.any.js": [
-      "96202c4d90279bb69757bc6959ab2912a9c9ab04",
+      "289dfcfbabde0f68d739a093985f4f2601665126",
       [
        "dom/events/EventTarget-removeEventListener.any.html",
        {
@@ -405354,6 +405374,33 @@
         [
          "html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/no_window_open_when_term_nesting_level_nonzero.window.html",
          {}
+        ]
+       ],
+       "open-features-is-popup-condition.html": [
+        "3959b618e1d0babd14c36c20fcfa6cb497397aa5",
+        [
+         "html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-is-popup-condition.html?combination",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-is-popup-condition.html?position",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-is-popup-condition.html?single-1",
+         {
+          "timeout": "long"
+         }
+        ],
+        [
+         "html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-is-popup-condition.html?single-2",
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "open-features-negative-innerwidth-innerheight.html": [
@@ -476718,7 +476765,7 @@
    },
    "sanitizer-api": {
     "element-set-sanitized-html.https.tentative.html": [
-     "ae2c47f2ba1f4f8663f2359cebefb8cf02c632e2",
+     "560e9cd63523287bacafa1b23a2ab3ea4bd21288",
      [
       null,
       {}
@@ -493307,6 +493354,13 @@
       ],
       "SVGGraphicsElement.getBBox-02.html": [
        "0efd590710c693db36da4ebc4f9b948e875d6363",
+       [
+        null,
+        {}
+       ]
+      ],
+      "SVGGraphicsElement.getBBox-03.html": [
+       "0bb8a11fe7a50c1c1ef2dc55da10f471346e0ec8",
        [
         null,
         {}
