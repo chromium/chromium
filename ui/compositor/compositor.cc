@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -265,6 +266,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   // See: http://crbug.com/956264.
   host_->SetVisible(true);
 
+  if (base::PowerMonitor::IsInitialized())
+    base::PowerMonitor::AddPowerSuspendObserver(this);
+
   if (command_line->HasSwitch(switches::kUISlowAnimations)) {
     slow_animations_ = std::make_unique<ScopedAnimationDurationScaleMode>(
         ScopedAnimationDurationScaleMode::SLOW_DURATION);
@@ -273,6 +277,8 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 
 Compositor::~Compositor() {
   TRACE_EVENT0("shutdown,viz", "Compositor::destructor");
+  if (base::PowerMonitor::IsInitialized())
+    base::PowerMonitor::RemovePowerSuspendObserver(this);
 
   for (auto& observer : observer_list_)
     observer.OnCompositingShuttingDown(this);
@@ -820,6 +826,12 @@ void Compositor::CancelThroughtputTracker(TrackerId tracker_id) {
 
   if (should_stop)
     animation_host_->StopThroughputTracking(tracker_id);
+}
+
+void Compositor::OnResume() {
+  // Restart the time upon resume.
+  for (auto& obs : animation_observer_list_)
+    obs.ResetIfActive();
 }
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

@@ -38,14 +38,23 @@ void CompositorAnimationObserver::Start() {
 
 void CompositorAnimationObserver::Check() {
   if (start_ && (base::TimeTicks::Now() - *start_ > kThreshold)) {
-    if (!base::debug::BeingDebugged() &&
-        !base::subtle::ScopedTimeClockOverrides::overrides_active()) {
-      NOTREACHED_OR_WARN()
-          << "CompositorAnimationObserver is active for too long ("
-          << (base::TimeTicks::Now() - *start_).InSecondsF()
-          << "s) location=" << location_.ToString();
-    }
+    NotifyFailure();
     start_.reset();
+  }
+}
+
+void CompositorAnimationObserver::ResetIfActive() {
+  if (start_)
+    start_.emplace(base::TimeTicks::Now());
+}
+
+void CompositorAnimationObserver::NotifyFailure() {
+  if (!base::debug::BeingDebugged() &&
+      !base::subtle::ScopedTimeClockOverrides::overrides_active()) {
+    NOTREACHED_OR_WARN()
+        << "CompositorAnimationObserver is active for too long ("
+        << (base::TimeTicks::Now() - *start_).InSecondsF()
+        << "s) location=" << location_.ToString();
   }
 }
 
