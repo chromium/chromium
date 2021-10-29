@@ -132,6 +132,7 @@ blink_core_sources_bindings =
                     "core/v8/use_counter_callback.h",
                     "core/v8/v8_binding_for_core.cc",
                     "core/v8/v8_binding_for_core.h",
+                    "core/v8/v8_ctype_traits.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
                     "core/v8/v8_context_snapshot.cc",

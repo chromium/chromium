@@ -2285,13 +2285,57 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
             self.symbol_node = symbol_node
 
     def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
-        if argument.idl_type.unwrap().is_interface:
+        unwrapped_idl_type = argument.idl_type.unwrap()
+        if unwrapped_idl_type.is_interface:
             return ("v8::Local<v8::Value>",
                     make_v8_to_blink_value(blink_arg_name,
                                            "${{{}}}".format(v8_arg_name),
                                            argument.idl_type,
                                            argument=argument,
                                            cg_context=cg_context))
+        elif unwrapped_idl_type.is_sequence:
+
+            def create_definition(symbol_node):
+                binds = {
+                    "v8_arg_name":
+                    v8_arg_name,
+                    "blink_arg_name":
+                    blink_arg_name,
+                    "native_value_tag":
+                    native_value_tag(argument.idl_type, argument=argument),
+                    "element_native_value_tag":
+                    native_value_tag(unwrapped_idl_type.element_type,
+                                     argument=argument),
+                }
+                try_convert = F(
+                    "!v8::TryToCopyAndConvertArrayToCppBuffer<"
+                    "V8CTypeTraits<"
+                    "{element_native_value_tag}>::kCTypeInfo.GetId()"
+                    ">({v8_arg_name}, {blink_arg_name}.data(),"
+                    "{blink_arg_name}.size())", **binds)
+                nodes = [
+                    F(
+                        "typename NativeValueTraits<"
+                        "{native_value_tag}"
+                        ">::ImplType {blink_arg_name}("
+                        "{v8_arg_name}->Length());", **binds),
+                    CxxUnlikelyIfNode(
+                        cond=try_convert,
+                        body=[
+                            T("${v8_arg_callback_options}.fallback = true;"),
+                            T("return;")
+                        ])
+                ]
+                symbol_def_node = SymbolDefinitionNode(symbol_node, nodes)
+                symbol_def_node.accumulate(
+                    CodeGenAccumulator.require_include_headers([
+                        "third_party/blink/renderer/bindings/core/v8/v8_ctype_traits.h",
+                    ]))
+                return symbol_def_node
+
+            return ("v8::Local<v8::Array>",
+                    S(blink_arg_name,
+                      definition_constructor=create_definition))
         else:
             return (blink_type_info(argument.idl_type).value_t,
                     S(blink_arg_name,
@@ -2307,6 +2351,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                        argument.identifier)
         v8_type, symbol_node = v8_type_and_symbol_node(argument, v8_arg_name,
                                                        blink_arg_name)
+
         arg_list.append(
             ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
 
