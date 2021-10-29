@@ -319,6 +319,13 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
                              /*expanded_state_shown=*/false,
                              /*trace_string=*/"one-desk-one-entry");
 
+  // Click on the templates button. It should expand the desks bar.
+  ClickOnView(GetDesksTemplatesButtonForRoot(Shell::GetPrimaryRootWindow(),
+                                             /*zero_state=*/true));
+  verify_button_visibilities(/*zero_state_shown=*/false,
+                             /*expanded_state_shown=*/true,
+                             /*trace_string=*/"expand-from-zero-state");
+
   // Exit overview and create a new desk.
   ToggleOverview();
   DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);

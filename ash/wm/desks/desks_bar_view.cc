@@ -510,7 +510,10 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
 }
 
 bool DesksBarView::IsZeroState() const {
-  return mini_views_.empty() && DesksController::Get()->desks().size() == 1;
+  if (!mini_views_.empty() || DesksController::Get()->desks().size() > 1)
+    return false;
+  return !desks_templates_util::AreDesksTemplatesEnabled() ||
+         !overview_grid_->desks_templates_grid_widget();
 }
 
 void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
@@ -946,10 +949,6 @@ void DesksBarView::OnNewDeskButtonPressed(
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
-  // TODO(chinsenj): When the grid is shown, we should expand the zero state
-  // desks bar so `IsZeroState()` should never be true here. Currently the
-  // aforementioned behavior is WIP so leave this as an early return for now to
-  // satisfy tests.
   if (IsZeroState() || !desks_templates_util::AreDesksTemplatesEnabled())
     return;
 
@@ -1171,10 +1170,9 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
-  // TODO(chinsenj): Expand out of zero state if we are in it.
   // TODO(sammiequon): The button might be changed to be a toggle and this
   // callback will need to be updated to reflect that.
-  overview_grid_->overview_session()->ShowDesksTemplatesGrids();
+  overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState());
 }
 
 void DesksBarView::OnContentsScrolled() {

@@ -873,7 +873,7 @@ void OverviewGrid::OnSelectorItemDragStarted(OverviewItem* item) {
     overview_mode_item->OnSelectorItemDragStarted(item);
 }
 
-void OverviewGrid::ShowDesksTemplatesGrid() {
+void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   if (!desks_templates_grid_widget_) {
     desks_templates_grid_widget_ =
         DesksTemplatesGridView::CreateDesksTemplatesGridWidget(root_window_);
@@ -901,6 +901,11 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
     overview_mode_item->HideForDesksTemplatesGrid();
 
   desks_templates_grid_widget_->Show();
+
+  if (was_zero_state) {
+    desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
+                                        /*expanded_desks_bar_button=*/true);
+  }
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
 
