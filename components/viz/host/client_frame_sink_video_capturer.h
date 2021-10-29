@@ -156,8 +156,7 @@ class VIZ_HOST_EXPORT ClientFrameSinkVideoCapturer
   absl::optional<ResolutionConstraints> resolution_constraints_;
   absl::optional<bool> auto_throttling_enabled_;
   absl::optional<FrameSinkId> target_;
-  SubtreeCaptureId subtree_capture_id_;
-  RegionCaptureCropId crop_id_;
+  mojom::SubTargetPtr sub_target_;
   // Overlays are owned by the callers of CreateOverlay().
   std::vector<Overlay*> overlays_;
   bool is_started_ = false;
