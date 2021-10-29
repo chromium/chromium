@@ -344,6 +344,124 @@ WGPUTextureFormat AsDawnEnum<WGPUTextureFormat>(
     return WGPUTextureFormat_BC7RGBAUnormSrgb;
   }
 
+  // Ericsson Compression (ETC2) formats
+  if (webgpu_enum == "etc2-rgb8unorm") {
+    return WGPUTextureFormat_ETC2RGB8Unorm;
+  }
+  if (webgpu_enum == "etc2-rgb8unorm-srgb") {
+    return WGPUTextureFormat_ETC2RGB8UnormSrgb;
+  }
+  if (webgpu_enum == "etc2-rgb8a1unorm") {
+    return WGPUTextureFormat_ETC2RGB8A1Unorm;
+  }
+  if (webgpu_enum == "etc2-rgb8a1unorm-srgb") {
+    return WGPUTextureFormat_ETC2RGB8A1UnormSrgb;
+  }
+  if (webgpu_enum == "etc2-rgba8unorm") {
+    return WGPUTextureFormat_ETC2RGBA8Unorm;
+  }
+  if (webgpu_enum == "etc2-rgba8unorm-srgb") {
+    return WGPUTextureFormat_ETC2RGBA8UnormSrgb;
+  }
+  if (webgpu_enum == "eac-r11unorm") {
+    return WGPUTextureFormat_EACR11Unorm;
+  }
+  if (webgpu_enum == "eac-r11snorm") {
+    return WGPUTextureFormat_EACR11Snorm;
+  }
+  if (webgpu_enum == "eac-rg11unorm") {
+    return WGPUTextureFormat_EACRG11Unorm;
+  }
+  if (webgpu_enum == "eac-rg11snorm") {
+    return WGPUTextureFormat_EACRG11Snorm;
+  }
+
+  // Adaptable Scalable Compression (ASTC) formats
+  if (webgpu_enum == "astc-4x4-unorm") {
+    return WGPUTextureFormat_ASTC4x4Unorm;
+  }
+  if (webgpu_enum == "astc-4x4-unorm-srgb") {
+    return WGPUTextureFormat_ASTC4x4UnormSrgb;
+  }
+  if (webgpu_enum == "astc-5x4-unorm") {
+    return WGPUTextureFormat_ASTC5x4Unorm;
+  }
+  if (webgpu_enum == "astc-5x4-unorm-srgb") {
+    return WGPUTextureFormat_ASTC5x4UnormSrgb;
+  }
+  if (webgpu_enum == "astc-5x5-unorm") {
+    return WGPUTextureFormat_ASTC5x5Unorm;
+  }
+  if (webgpu_enum == "astc-5x5-unorm-srgb") {
+    return WGPUTextureFormat_ASTC5x5UnormSrgb;
+  }
+  if (webgpu_enum == "astc-6x5-unorm") {
+    return WGPUTextureFormat_ASTC6x5Unorm;
+  }
+  if (webgpu_enum == "astc-6x5-unorm-srgb") {
+    return WGPUTextureFormat_ASTC6x5UnormSrgb;
+  }
+  if (webgpu_enum == "astc-6x6-unorm") {
+    return WGPUTextureFormat_ASTC6x6Unorm;
+  }
+  if (webgpu_enum == "astc-6x6-unorm-srgb") {
+    return WGPUTextureFormat_ASTC6x6UnormSrgb;
+  }
+  if (webgpu_enum == "astc-8x5-unorm") {
+    return WGPUTextureFormat_ASTC8x5Unorm;
+  }
+  if (webgpu_enum == "astc-8x5-unorm-srgb") {
+    return WGPUTextureFormat_ASTC8x5UnormSrgb;
+  }
+  if (webgpu_enum == "astc-8x6-unorm") {
+    return WGPUTextureFormat_ASTC8x6Unorm;
+  }
+  if (webgpu_enum == "astc-8x6-unorm-srgb") {
+    return WGPUTextureFormat_ASTC8x6UnormSrgb;
+  }
+  if (webgpu_enum == "astc-8x8-unorm") {
+    return WGPUTextureFormat_ASTC8x8Unorm;
+  }
+  if (webgpu_enum == "astc-8x8-unorm-srgb") {
+    return WGPUTextureFormat_ASTC8x8UnormSrgb;
+  }
+  if (webgpu_enum == "astc-10x5-unorm") {
+    return WGPUTextureFormat_ASTC10x5Unorm;
+  }
+  if (webgpu_enum == "astc-10x5-unorm-srgb") {
+    return WGPUTextureFormat_ASTC10x5UnormSrgb;
+  }
+  if (webgpu_enum == "astc-10x6-unorm") {
+    return WGPUTextureFormat_ASTC10x6Unorm;
+  }
+  if (webgpu_enum == "astc-10x6-unorm-srgb") {
+    return WGPUTextureFormat_ASTC10x6UnormSrgb;
+  }
+  if (webgpu_enum == "astc-10x8-unorm") {
+    return WGPUTextureFormat_ASTC10x8Unorm;
+  }
+  if (webgpu_enum == "astc-10x8-unorm-srgb") {
+    return WGPUTextureFormat_ASTC10x8UnormSrgb;
+  }
+  if (webgpu_enum == "astc-10x10-unorm") {
+    return WGPUTextureFormat_ASTC10x10Unorm;
+  }
+  if (webgpu_enum == "astc-10x10-unorm-srgb") {
+    return WGPUTextureFormat_ASTC10x10UnormSrgb;
+  }
+  if (webgpu_enum == "astc-12x10-unorm") {
+    return WGPUTextureFormat_ASTC12x10Unorm;
+  }
+  if (webgpu_enum == "astc-12x10-unorm-srgb") {
+    return WGPUTextureFormat_ASTC12x10UnormSrgb;
+  }
+  if (webgpu_enum == "astc-12x12-unorm") {
+    return WGPUTextureFormat_ASTC12x12Unorm;
+  }
+  if (webgpu_enum == "astc-12x12-unorm-srgb") {
+    return WGPUTextureFormat_ASTC12x12UnormSrgb;
+  }
+
   return WGPUTextureFormat_Force32;
 }
 
