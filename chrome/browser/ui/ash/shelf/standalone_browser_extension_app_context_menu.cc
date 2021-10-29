@@ -17,7 +17,9 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
@@ -122,10 +124,25 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
 
 void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
     GetMenuModelCallback callback) {
-  // TODO(https://crbug.com/1225848): These values should come from Lacros.
-  bool lacros_allows_pin_unpin = true;
-  bool allows_uninstall = true;
-  bool allow_app_info = true;
+  bool allow_uninstall = false;
+  bool allow_app_info = false;
+  apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  proxy->AppRegistryCache().ForOneApp(
+      app_id_,
+      [&allow_app_info, &allow_uninstall](const apps::AppUpdate& update) {
+        allow_app_info =
+            update.ShowInManagement() == apps::mojom::OptionalBool::kTrue;
+        allow_uninstall =
+            update.AllowUninstall() == apps::mojom::OptionalBool::kTrue;
+      });
+
+  std::string sync_id =
+      ChromeShelfController::instance()->shelf_prefs()->GetSyncId(app_id_);
+  bool allow_pin_unpin =
+      GetPinnableForAppID(sync_id, ProfileManager::GetPrimaryUserProfile()) ==
+      AppListControllerDelegate::PIN_EDITABLE;
 
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
 
@@ -151,7 +168,7 @@ void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
     }
   }
 
-  if (lacros_allows_pin_unpin) {
+  if (allow_pin_unpin) {
     // This context menu is used by both the shelf and app list. We choose to
     // use the app list IDS string since it's clearer.
     bool currently_pinned = item_in_shelf && model->IsAppPinned(app_id_);
@@ -179,7 +196,7 @@ void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
   }
 
   // Add an uninstall menu item.
-  if (allows_uninstall) {
+  if (allow_uninstall) {
     menu_model->AddItemWithStringIdAndIcon(
         ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM,
         GetMenuItemIcon(views::kUninstallIcon));
