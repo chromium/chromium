@@ -215,6 +215,15 @@ id<GREYMatcher> EditConfirmationButton() {
                     grey_interactable(), nullptr);
 }
 
+// Matcher for the "View Password" Button presented when a duplicated credential
+// is found in the add credential flow.
+id<GREYMatcher> DuplicateCredentialViewPasswordButton() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_IOS_PASSWORD_SETTINGS_VIEW_PASSWORD_BUTTON)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton),
+                    nullptr);
+}
+
 // Matches the pop-up (call-out) menu item with accessibility label equal to the
 // translated string identified by |label|.
 id<GREYMatcher> PopUpMenuItemWithLabel(int label) {
@@ -1826,12 +1835,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              @"Test View Password"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          nullptr)] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:DuplicateCredentialViewPasswordButton()]
+      performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"new username")];
@@ -1887,24 +1892,14 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_replaceText(@"https://www.example.com")];
 
   // Test that the section alert for duplicated credential is shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              @"Test View Password"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          nullptr)]
+  [[EarlGrey selectElementWithMatcher:DuplicateCredentialViewPasswordButton()]
       assertWithMatcher:grey_enabled()];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"new username")];
 
   // Test that the section alert for duplicated credential is removed.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
-                                              @"Test View Password"),
-                                          grey_accessibilityTrait(
-                                              UIAccessibilityTraitButton),
-                                          nullptr)]
+  [[EarlGrey selectElementWithMatcher:DuplicateCredentialViewPasswordButton()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
@@ -1948,8 +1943,10 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"concrete username")];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
-                                          @"Did you mean website.com?")]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSStringF(
+                     IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
+                     u"example.com"))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

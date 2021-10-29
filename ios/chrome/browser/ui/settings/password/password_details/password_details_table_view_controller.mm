@@ -147,8 +147,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   self.tableView.allowsSelectionDuringEditing = YES;
 
   if (self.credentialType == CredentialTypeNew) {
-    // TODO(crbug.com/1226006): Use i18n strings for the buttons.
-    self.navigationItem.title = @"Add Password";
+    self.navigationItem.title = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_ADD_PASSWORD_MANUALLY_TITLE);
 
     // Adds 'Cancel' and 'Save' buttons to Navigation bar.
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
@@ -160,11 +160,12 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
         kPasswordsAddPasswordCancelButtonId;
 
-    self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:@"Save"
-                                         style:UIBarButtonItemStyleDone
-                                        target:self
-                                        action:@selector(didTapSaveButton:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_PASSWORD_SETTINGS_SAVE_BUTTON)
+                style:UIBarButtonItemStyleDone
+               target:self
+               action:@selector(didTapSaveButton:)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
         kPasswordsAddPasswordSaveButtonId;
@@ -305,8 +306,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.keyboardType = UIKeyboardTypeURL;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // TODO(crbug.com/1226006): Use i18n string for the placeholder.
-    item.textFieldPlaceholder = @"example.com";
+    item.textFieldPlaceholder = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_WEBSITE_PLACEHOLDER_TEXT);
   }
   if (self.credentialType == CredentialTypeNew) {
     item.delegate = self;
@@ -337,8 +338,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.textFieldEnabled |= (self.credentialType == CredentialTypeNew);
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // TODO(crbug.com/1226006): Use i18n string for the placeholder.
-    item.textFieldPlaceholder = @"optional";
+    item.textFieldPlaceholder = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT);
   }
   return item;
 }
@@ -366,8 +367,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   item.delegate = self;
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
-    // TODO(crbug.com/1226006): Use i18n string for the placeholder.
-    item.textFieldPlaceholder = @"password";
+    item.textFieldPlaceholder = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_SETTINGS_PASSWORD_PLACEHOLDER_TEXT);
   }
 
   // During editing password is exposed so eye icon shouldn't be shown.
@@ -418,8 +419,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewTextItem*)duplicatePasswordViewButtonItem {
   TableViewTextItem* item = [[TableViewTextItem alloc]
       initWithType:ItemTypeDuplicateCredentialButton];
-  // TODO(crbug.com/1226006): Use i18n string.
-  item.text = @"Test View Password";
+  item.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_VIEW_PASSWORD_BUTTON);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
@@ -428,8 +429,17 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (SettingsImageDetailTextItem*)duplicatePasswordMessageItem {
   SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
       initWithType:ItemTypeDuplicateCredentialMessage];
-  // TODO(crbug.com/1226006): Use i18n string.
-  item.detailText = @"Test You already saved a password";
+  if (self.usernameTextItem &&
+      [self.usernameTextItem.textFieldValue length] > 0) {
+    item.detailText = l10n_util::GetNSStringF(
+        IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION,
+        base::SysNSStringToUTF16(self.usernameTextItem.textFieldValue),
+        base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
+  } else {
+    item.detailText = l10n_util::GetNSStringF(
+        IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME,
+        base::SysNSStringToUTF16(self.websiteTextItem.textFieldValue));
+  }
   item.image = [[UIImage imageNamed:@"table_view_cell_error_icon"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   item.imageViewTintColor = [UIColor colorNamed:kRedColor];
@@ -439,16 +449,17 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 - (TableViewLinkHeaderFooterItem*)footerItem {
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  // TODO(crbug.com/1226006): Use i18n string.
-  item.text = @"Make sure you're saving your current password for this site";
+  item.text = l10n_util::GetNSString(IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION);
   return item;
 }
 
 - (TableViewLinkHeaderFooterItem*)TLDMessageFooterItem {
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  // TODO(crbug.com/1226006): Use i18n string.
-  item.text = @"Did you mean website.com?";
+  item.text = l10n_util::GetNSStringF(
+      IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
+      base::SysNSStringToUTF16([self.websiteTextItem.textFieldValue
+          stringByAppendingString:@".com"]));
   return item;
 }
 
@@ -1013,9 +1024,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                                          .textFieldValue];
         };
 
-    // TODO(crbug.com/1226006): Use i18n string.
     [self.reauthModule
-        attemptReauthWithLocalizedReason:@"Test Show Existing Credential"
+        attemptReauthWithLocalizedReason:
+            [self localizedStringForReason:ReauthenticationReasonShow]
                     canReusePreviousAuth:YES
                                  handler:viewExistingPasswordHandler];
   } else {

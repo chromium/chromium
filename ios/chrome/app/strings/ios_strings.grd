@@ -1865,6 +1865,39 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SAVE_PASSWORDS" desc="Title for the switch item in Settings that can be toggled to enable or disable saving passwords. [Length: 15em] [iOS only]">
         Save Passwords
       </message>
+      <message name="IDS_IOS_OFFER_TO_SAVE_PASSWORDS" desc="Title for the switch item in Settings that can be toggled allowing users to be prompted if they want to save their passwords when logging into webpages. [Length: 25em] [iOS only]">
+        Offer To Save Passwords
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ADD_PASSWORD_MANUALLY_TITLE" desc="Title of the view that allow user to enter the details for a new password credential to add it to the list the passwords. [iOS only]">
+        Add Password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_SAVE_BUTTON" desc="Save button text for adding a new credential manually via settings [Length: 10em]">
+        Save
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_WEBSITE_PLACEHOLDER_TEXT" desc="Placeholder text for the website field when adding a new credential manually via settings [Length: 10em]">
+        example.com
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT" desc="Placeholder text for the username field indicating that the field is optional when adding a new credential manually via settings [Length: 10em]">
+        optional
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_PASSWORD_PLACEHOLDER_TEXT" desc="Placeholder text for the password field when adding a new credential manually via settings [Length: 10em]">
+        password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_VIEW_PASSWORD_BUTTON" desc="View Password button text for viewing an existing credential. [Length: 10em]">
+        View Password
+      </message>
+      <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
+        Make sure you're saving your current password for this site.
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION" desc="Footer text shown when the website field data misses the top-level domain when creating a new credential via settings [iOS only]" meaning="Suggesting user to add the top-level domain in the website text.">
+        Did you mean <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION" desc="Text shown alerting the user that a similar credential exists with the same username/website combination when adding a new credential [iOS only]">
+        You already saved a password for "<ph name="USERNAME">$1<ex>johndoe</ex></ph>" at <ph name="WEBSITE">$2<ex>twitter.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_DUPLICATE_SECTION_ALERT_DESCRIPTION_WITHOUT_USERNAME" desc="Text shown alerting the user that a similar credential exists with the same website combination when adding a new credential [iOS only]">
+        You already saved a password for <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>
+      </message>
       <message name="IDS_IOS_LEAK_CHECK_SWITCH" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn you if passwords are exposed in a data breach
       </message>
