@@ -233,7 +233,11 @@ void WebAppProtocolHandlerIntentPickerView::RunCloseCallback(
     bool allowed,
     bool remember_user_choice) {
   if (close_callback_) {
-    std::move(close_callback_).Run(allowed, remember_user_choice);
+    // Give the stack a chance to unwind in case `close_callback_` deletes
+    // `this`.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(close_callback_), allowed,
+                                  remember_user_choice));
   }
 }
 

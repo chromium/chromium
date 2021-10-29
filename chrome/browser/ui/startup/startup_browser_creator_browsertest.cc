@@ -2709,6 +2709,7 @@ IN_PROC_BROWSER_TEST_F(
   // The waiter will get the dialog when it shows up and accepts it.
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked);
+  base::RunLoop().RunUntilIdle();
 
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       false);
