@@ -16,6 +16,9 @@
 #include "base/compiler_specific.h"
 
 namespace base {
+
+class StatsReporter;
+
 namespace internal {
 
 [[noreturn]] BASE_EXPORT NOINLINE NOT_TAIL_CALLED void DoubleFreeAttempt();
@@ -132,6 +135,9 @@ class BASE_EXPORT PCScan final {
   static void UninitForTesting();
 
   inline static PCScanScheduler& scheduler();
+
+  // Registers reporting class.
+  static void RegisterStatsReporter(StatsReporter* reporter);
 
  private:
   class PCScanThread;

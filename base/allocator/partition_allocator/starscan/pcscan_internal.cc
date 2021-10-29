@@ -35,6 +35,7 @@
 #include "base/allocator/partition_allocator/starscan/snapshot.h"
 #include "base/allocator/partition_allocator/starscan/stack/stack.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
+#include "base/allocator/partition_allocator/starscan/stats_reporter.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
@@ -1014,7 +1015,7 @@ void PCScanTask::SweepQuarantine() {
 }
 
 void PCScanTask::FinishScanner() {
-  stats_.ReportTracesAndHists();
+  stats_.ReportTracesAndHists(PCScanInternal::Instance().GetReporter());
 
   pcscan_.scheduler_.scheduling_backend().UpdateScheduleAfterScan(
       stats_.survived_quarantine_size(), stats_.GetOverallTime(),
@@ -1513,6 +1514,16 @@ void PCScanInternal::FinishScanForTesting() {
   auto current_task = CurrentPCScanTask();
   PA_CHECK(current_task.get());
   current_task->RunFromScanner();
+}
+
+void PCScanInternal::RegisterStatsReporter(StatsReporter* reporter) {
+  PA_DCHECK(reporter);
+  stats_reporter_ = reporter;
+}
+
+StatsReporter& PCScanInternal::GetReporter() {
+  static StatsReporter s_no_op_reporter;  // simple class
+  return stats_reporter_ ? *stats_reporter_ : s_no_op_reporter;
 }
 
 }  // namespace internal
