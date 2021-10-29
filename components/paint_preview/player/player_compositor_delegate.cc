@@ -203,7 +203,7 @@ void PlayerCompositorDelegate::InitializeInternal(
                      weak_factory_.GetWeakPtr()));
 
   memory_pressure_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
+      FROM_HERE, base::DoNothing(),
       base::BindRepeating(&PlayerCompositorDelegate::OnMemoryPressure,
                           weak_factory_.GetWeakPtr()));
   if (!timeout_duration.is_inf() && !timeout_duration.is_zero()) {
@@ -293,9 +293,12 @@ void PlayerCompositorDelegate::OnMemoryPressure(
       paint_preview_compositor_service_.reset();
 
     if (compositor_error_) {
-      std::move(compositor_error_)
-          .Run(static_cast<int>(
-              CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              std::move(compositor_error_),
+              static_cast<int>(
+                  CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE)));
     }
   }
 }
