@@ -173,16 +173,19 @@ std::unique_ptr<base::MessagePump> CreateMessagePumpForUIStub() {
   return std::unique_ptr<base::MessagePump>(new MessagePumpForUIStub());
 }
 
-// Provides the test path for DIR_SOURCE_ROOT and DIR_ANDROID_APP_DATA.
+// Provides the test path for paths overridden during tests.
 bool GetTestProviderPath(int key, base::FilePath* result) {
   switch (key) {
+    // On Android, our tests don't have permission to write to DIR_MODULE.
+    // gtest/test_runner.py pushes data to external storage.
     // TODO(agrieve): Stop overriding DIR_ANDROID_APP_DATA.
     // https://crbug.com/617734
     // Instead DIR_ASSETS should be used to discover assets file location in
     // tests.
     case base::DIR_ANDROID_APP_DATA:
     case base::DIR_ASSETS:
-    case base::DIR_SOURCE_ROOT:
+    case base::DIR_SRC_TEST_DATA_ROOT:
+    case base::DIR_GEN_TEST_DATA_ROOT:
       CHECK(g_test_data_dir != nullptr);
       *result = *g_test_data_dir;
       return true;
@@ -210,9 +213,10 @@ void InitAndroidTestPaths(const FilePath& test_data_dir) {
     return;
   }
   g_test_data_dir = new FilePath(test_data_dir);
-  InitPathProvider(DIR_SOURCE_ROOT);
   InitPathProvider(DIR_ANDROID_APP_DATA);
   InitPathProvider(DIR_ASSETS);
+  InitPathProvider(DIR_SRC_TEST_DATA_ROOT);
+  InitPathProvider(DIR_GEN_TEST_DATA_ROOT);
 }
 
 void InitAndroidTestMessageLoop() {

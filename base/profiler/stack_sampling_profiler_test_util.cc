@@ -394,6 +394,7 @@ NativeLibrary LoadOtherLibrary() {
   // macros in a function returning non-null.
   const auto load = [](NativeLibrary* library) {
     FilePath other_library_path;
+    // The module is next to the test module rather than with test data.
     ASSERT_TRUE(PathService::Get(DIR_MODULE, &other_library_path));
     other_library_path = other_library_path.AppendASCII(
         GetLoadableModuleName("base_profiler_test_support_library"));

@@ -12,6 +12,8 @@
 
 #if defined(OS_WIN)
 #include "base/base_paths_win.h"
+#elif defined(OS_FUCHSIA)
+#include "base/base_paths_fuchsia.h"
 #elif defined(OS_APPLE)
 #include "base/base_paths_mac.h"
 #elif defined(OS_ANDROID)
@@ -37,17 +39,29 @@ enum BasePathKey {
   DIR_HOME,          // User's root home directory. On Windows this will look
                      // like "C:\Users\<user>"  which isn't necessarily a great
                      // place to put files.
+  DIR_USER_DESKTOP,  // The current user's Desktop.
   FILE_EXE,          // Path and filename of the current executable.
   FILE_MODULE,       // Path and filename of the module containing the code for
                      // the PathService (which could differ from FILE_EXE if the
                      // PathService were compiled into a shared object, for
                      // example).
-  DIR_SOURCE_ROOT,   // Returns the root of the source tree. This key is useful
-                     // for tests that need to locate various resources. It
-                     // should not be used outside of test code.
-  DIR_USER_DESKTOP,  // The current user's Desktop.
 
-  DIR_TEST_DATA,  // Used only for testing.
+  // The following are only for use in tests.
+  // On some platforms, such as Android and Fuchsia, tests do not have access to
+  // the build file system so the necessary files are bundled with the test
+  // binary. On such platforms, these will return an appropriate path inside the
+  // bundle.
+  DIR_SRC_TEST_DATA_ROOT,  // The root of files in the source tree that are
+                           // made available to tests. Useful for tests that use
+                           // resources that exist in the source tree.
+  DIR_SOURCE_ROOT = DIR_SRC_TEST_DATA_ROOT,  // Legacy name still widely used.
+                                             // TODO(crbug.com/1264897): Replace
+                                             // all instances and remove alias.
+  DIR_GEN_TEST_DATA_ROOT,  // The root of files created by the build that are
+                           // made available to tests. On platforms that do
+                           // not bundle test files, this is usually the
+                           // directory containing the test binary.
+  DIR_TEST_DATA,           // Directory containing test data for //base tests.
 
   PATH_END
 };

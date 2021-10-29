@@ -28,7 +28,12 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       *result = base::FilePath(base::kPersistedDataDirectoryPath);
       return true;
     case DIR_ASSETS:
-    case DIR_SOURCE_ROOT:
+      *result = base::FilePath(base::kPackageRootDirectoryPath);
+      return true;
+    case DIR_SRC_TEST_DATA_ROOT:
+    case DIR_GEN_TEST_DATA_ROOT:
+      // These are only used by tests.
+      // Test binaries are added to the package root via GN deps.
       *result = base::FilePath(base::kPackageRootDirectoryPath);
       return true;
     case DIR_USER_DESKTOP:
@@ -44,6 +49,7 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       NOTIMPLEMENTED_LOG_ONCE() << "for DIR_HOME. Will use temporary dir.";
       return false;
   }
+
   return false;
 }
 

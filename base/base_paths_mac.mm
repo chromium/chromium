@@ -40,8 +40,8 @@ void GetNSExecutablePath(base::FilePath* path) {
 
   // _NSGetExecutablePath may return paths containing ./ or ../ which makes
   // FilePath::DirName() work incorrectly, convert it to absolute path so that
-  // paths such as DIR_SOURCE_ROOT can work, since we expect absolute paths to
-  // be returned here.
+  // paths such as DIR_SRC_TEST_DATA_ROOT can work, since we expect absolute
+  // paths to be returned here.
   // TODO(bauerb): http://crbug.com/259796, http://crbug.com/373477
   base::ThreadRestrictions::ScopedAllowIO allow_io;
   *path = base::MakeAbsoluteFilePath(base::FilePath(executable_path));
@@ -82,7 +82,7 @@ bool PathProviderMac(int key, base::FilePath* result) {
 #endif  // defined(OS_IOS)
       return success;
     }
-    case base::DIR_SOURCE_ROOT:
+    case base::DIR_SRC_TEST_DATA_ROOT:
 #if defined(OS_IOS)
       // On iOS, there is no access to source root, however, the necessary
       // resources are packaged into the test as assets.

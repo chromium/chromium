@@ -35,14 +35,8 @@ const base::FilePath kEmptyFilePath = kTestDataPath.AppendASCII("empty.pb");
 const base::FilePath kFileReadFailedPath =
     base::FilePath(FILE_PATH_LITERAL(".."));
 
-base::FilePath GetModulePath() {
-  base::FilePath module_dir;
-#if defined(OS_ANDROID)
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &module_dir));
-#else
-  EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &module_dir));
-#endif
-  return module_dir;
+base::FilePath GeneratedTestDataRoot() {
+  return base::PathService::CheckedGet(base::DIR_GEN_TEST_DATA_ROOT);
 }
 
 }  // namespace
@@ -68,8 +62,8 @@ class MediaEngagementPreloadedListTest : public ::testing::Test {
            MediaEngagementPreloadedList::DafsaResult::kNotFound;
   }
 
-  base::FilePath GetFilePathRelativeToModule(base::FilePath path) {
-    return GetModulePath().Append(path);
+  base::FilePath GetAbsolutePathToGeneratedTestFile(base::FilePath path) {
+    return GeneratedTestDataRoot().Append(path);
   }
 
   bool IsLoaded() { return preloaded_list_->loaded(); }
@@ -157,7 +151,8 @@ class MediaEngagementPreloadedListTest : public ::testing::Test {
 };
 
 TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent) {
-  ASSERT_TRUE(LoadFromFile(GetFilePathRelativeToModule(kSampleDataPath)));
+  ASSERT_TRUE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kSampleDataPath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_FALSE(IsEmpty());
 
@@ -193,7 +188,8 @@ TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadMissingFile) {
-  ASSERT_FALSE(LoadFromFile(GetFilePathRelativeToModule(kMissingFilePath)));
+  ASSERT_FALSE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kMissingFilePath)));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
@@ -223,7 +219,8 @@ TEST_F(MediaEngagementPreloadedListTest, LoadFileReadFailed) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadBadFormatFile) {
-  ASSERT_FALSE(LoadFromFile(GetFilePathRelativeToModule(kBadFormatFilePath)));
+  ASSERT_FALSE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kBadFormatFilePath)));
   EXPECT_FALSE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
@@ -238,7 +235,7 @@ TEST_F(MediaEngagementPreloadedListTest, LoadBadFormatFile) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, LoadEmptyFile) {
-  ASSERT_TRUE(LoadFromFile(GetFilePathRelativeToModule(kEmptyFilePath)));
+  ASSERT_TRUE(LoadFromFile(GetAbsolutePathToGeneratedTestFile(kEmptyFilePath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_TRUE(IsEmpty());
 
@@ -253,7 +250,8 @@ TEST_F(MediaEngagementPreloadedListTest, LoadEmptyFile) {
 }
 
 TEST_F(MediaEngagementPreloadedListTest, CheckOriginIsPresent_UnsecureSchemes) {
-  ASSERT_TRUE(LoadFromFile(GetFilePathRelativeToModule(kSampleDataPath)));
+  ASSERT_TRUE(
+      LoadFromFile(GetAbsolutePathToGeneratedTestFile(kSampleDataPath)));
   EXPECT_TRUE(IsLoaded());
   EXPECT_FALSE(IsEmpty());
 
