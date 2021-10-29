@@ -7197,9 +7197,6 @@ crbug.com/1258618 virtual/portals/http/tests/devtools/portals/portals-elements-n
 # Sheriff 2021-10-06
 crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 
-# DevTools roll
-crbug.com/1127902 http/tests/devtools/components/cookies-table.js [ Skip ]
-
 # Sheriff 2021-10-07
 crbug.com/896194 plugins/focus-change-1-no-change.html [ Failure Pass ]
 crbug.com/1257570 [ Win7 ] fast/dom/vertical-scrollbar-in-rtl.html [ Failure Pass ]
