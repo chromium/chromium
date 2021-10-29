@@ -79,13 +79,14 @@ void SetPtracerAtFork() {
 
 namespace internal {
 
-base::FilePath PlatformCrashpadInitialization(
+bool PlatformCrashpadInitialization(
     bool initial_client,
     bool browser_process,
     bool embedded_handler,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments) {
+    const std::vector<std::string>& initial_arguments,
+    base::FilePath* database_path) {
   DCHECK_EQ(initial_client, browser_process);
   DCHECK(initial_arguments.empty());
 
@@ -111,13 +112,13 @@ base::FilePath PlatformCrashpadInitialization(
 
   if (initial_client) {
     CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
-    base::FilePath database_path, metrics_path;
-    crash_reporter_client->GetCrashDumpLocation(&database_path);
+    base::FilePath metrics_path;
+    crash_reporter_client->GetCrashDumpLocation(database_path);
     crash_reporter_client->GetCrashMetricsLocation(&metrics_path);
 
     base::FilePath handler_path;
     if (!base::PathService::Get(base::DIR_EXE, &handler_path)) {
-      return database_path;
+      return false;
     }
     handler_path = handler_path.Append("chrome_crashpad_handler");
 
@@ -194,18 +195,18 @@ base::FilePath PlatformCrashpadInitialization(
 
     if (crash_reporter_client->IsRunningUnattended()) {
       arguments.push_back(base::StringPrintf("--minidump-dir-for-tests=%s",
-                                             database_path.value().c_str()));
+                                             database_path->value().c_str()));
       arguments.push_back("--always-allow-feedback");
     }
 #endif
 
     bool result =
-        client.StartHandler(handler_path, database_path, metrics_path, url,
+        client.StartHandler(handler_path, *database_path, metrics_path, url,
                             annotations, arguments, false, false);
     DCHECK(result);
 
     pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
-    return database_path;
+    return true;
   }
 
   int fd = base::GlobalDescriptors::GetInstance()->Get(kCrashDumpSignal);
@@ -225,7 +226,8 @@ base::FilePath PlatformCrashpadInitialization(
   client.SetHandlerSocket(crashpad::ScopedFileHandle(fd), pid);
 
   pthread_atfork(nullptr, nullptr, SetPtracerAtFork);
-  return base::FilePath();
+  *database_path = base::FilePath();
+  return true;
 }
 
 }  // namespace internal

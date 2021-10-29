@@ -29,7 +29,7 @@ bool CanCrashpadStart();
 base::FilePath CrashpadDumpLocation();
 
 // Initialize Crashpad.
-void StartCrashpad();
+bool StartCrashpad();
 
 }  // namespace common
 }  // namespace crash_helper
