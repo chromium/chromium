@@ -105,6 +105,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/window_modality_controller.h"
 #include "ui/wm/core/window_util.h"
@@ -307,6 +308,11 @@ class CaptureModeSessionTestApi {
 
   size_t GetCurrentFocusIndex() const {
     return session_->focus_cycler_->focus_index_;
+  }
+
+  CaptureModeSessionFocusCycler::HighlightableView* GetCurrentFocusedView() {
+    return session_->focus_cycler_->GetGroupItems(
+        GetCurrentFocusGroup())[GetCurrentFocusIndex()];
   }
 
   bool HasFocus() const { return session_->focus_cycler_->HasFocus(); }
@@ -4803,6 +4809,50 @@ TEST_F(ProjectorCaptureModeIntegrationTests, WithAdvancedSettings) {
   EXPECT_TRUE(controller->enable_audio_recording());
 }
 
+// Tests the keyboard navigation for projector mode with advanced capture mode
+// settings enabled. The `image_toggle_button_` in `CaptureModeTypeView` and the
+// `Off` audio input option in `CaptureModeAdvancedSettingsView` are disabled in
+// projector mode, thus they should be skipped while tabbing though.
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       KeyboardNavigationWithAdvancedSettings) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kImprovedScreenCaptureSettings};
+  ASSERT_TRUE(features::AreImprovedScreenCaptureSettingsEnabled());
+  auto* controller = CaptureModeController::Get();
+  // Use `kFullscreen` here to minimize the number of tabs to reach the setting
+  // button.
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  EXPECT_FALSE(GetImageToggleButton()->GetEnabled());
+  // Tab once, check the image toggle button is skipped and the current focused
+  // view is the video toggle button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            GetVideoToggleButton());
+
+  // Now tab four times to focus the settings button and enter space to open the
+  // setting menu.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/4);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+  CaptureModeAdvancedSettingsView* settings_menu =
+      test_api.capture_mode_advanced_settings_view();
+  ASSERT_TRUE(settings_menu);
+
+  CaptureModeAdvancedSettingsTestApi advanced_settings_test_api;
+  // Tab once, check the `Off` option is skipped and remains disabled. The
+  // current focused view is the `Microphone` option.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_FALSE(advanced_settings_test_api.GetAudioOffOption()->GetEnabled());
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            advanced_settings_test_api.GetMicrophoneOption());
+}
+
 TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   auto* controller = CaptureModeController::Get();
   StartProjectorModeSession();
@@ -5593,6 +5643,117 @@ TEST_F(CaptureModeAdvancedSettingsTest,
   // Tests that capture label widget is visible after settings widget is closed.
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(capture_label_widget->IsVisible());
+}
+
+// Tests the basic keyboard navigation functions for the settings menu.
+TEST_F(CaptureModeAdvancedSettingsTest, KeyboardNavigationForSettingsMenu) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab six times to focus the settings button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+
+  // Enter space to open the settings menu. The current focus group should be
+  // `kPendingSettings`.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  ASSERT_TRUE(GetCaptureModeAdvancedSettingsView());
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+
+  CaptureModeAdvancedSettingsTestApi advanced_settings_test_api;
+  CaptureModeMenuGroup* audio_input_menu_group =
+      advanced_settings_test_api.GetAudioInputMenuGroup();
+  // Tab once to focus the first item on the settings menu (`Off` option). Check
+  // `Off` option is the checked option not the `Microphone`.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsMenu, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioOff));
+  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
+
+  // Now tab once to focus the `Microphone` option and enter space to select it.
+  // Check now `Microphone` option is the checked option not the `Off`.
+  SendKey(ui::VKEY_TAB, event_generator);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
+  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
+
+  // Tab twice to focus the `Select folder...` menu item and enter space to open
+  // the selection window.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/2);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+
+  // Close selection window.
+  dialog_factory->CancelDialog();
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+
+  // Now tab once to focus on the settings button and enter space on it to close
+  // the settings menu.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_FALSE(GetCaptureModeAdvancedSettingsView());
+}
+
+// Tests that the disabled option in the settings menu will be skipped while
+// tabbing through.
+TEST_F(CaptureModeAdvancedSettingsTest,
+       KeyboardNavigationForSettingsMenuWithDisabledOption) {
+  // Begin a new session with a pre-configured unavailable custom folder.
+  auto* controller = CaptureModeController::Get();
+  const base::FilePath custom_folder(FILE_PATH_LITERAL("/home/random"));
+  controller->SetCustomCaptureFolder(custom_folder);
+  StartImageRegionCapture();
+
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  // Tab six times to focus the settings button and enter space to open the
+  // setting menu.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/6);
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+  CaptureModeAdvancedSettingsView* settings_menu =
+      GetCaptureModeAdvancedSettingsView();
+  ASSERT_TRUE(settings_menu);
+
+  // Since the custom folder is unavailable, the `kCustomFolder` should be
+  // disabled and won't be returned via
+  // `CaptureModeAdvancedSettingsViews::GetHighlightableItems`.
+  CaptureModeAdvancedSettingsTestApi advanced_settings_test_api;
+  auto* custom_folder_view =
+      advanced_settings_test_api.GetCustomFolderOptionIfAny();
+  ASSERT_TRUE(custom_folder_view);
+  EXPECT_FALSE(custom_folder_view->GetEnabled());
+
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+      highlightable_items = settings_menu->GetHighlightableItems();
+  EXPECT_TRUE(
+      std::find_if(highlightable_items.begin(), highlightable_items.end(),
+                   [custom_folder_view](
+                       CaptureModeSessionFocusCycler::HighlightableView* item) {
+                     return item->GetView() == custom_folder_view;
+                   }) == highlightable_items.end());
+
+  // Tab three times to focus the default `Downloads` option.
+  SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/3);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            advanced_settings_test_api.GetDefaultDownloadsOption());
+
+  // Tab once to check the disabled `kCustomFolder` option is skipped and now
+  // the `Select folder...` menu item gets focused.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            advanced_settings_test_api.GetSelectFolderMenuItem());
 }
 
 // -----------------------------------------------------------------------------

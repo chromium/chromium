@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
+#include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -67,6 +68,11 @@ class ASH_EXPORT CaptureModeAdvancedSettingsView
   // as the save folder. This results in updating which folder menu option is
   // currently selected.
   void OnDefaultCaptureFolderSelectionChanged();
+
+  // Gets the highlightable `CaptureModeOption` and `CaptureModeMenuItem` inside
+  // this view.
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+  GetHighlightableItems();
 
   // CaptureModeMenuGroup::Delegate:
   void OnOptionSelected(int option_id) const override;
