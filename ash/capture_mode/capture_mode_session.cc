@@ -483,34 +483,6 @@ class CaptureModeSession::CursorSetter {
 };
 
 // -----------------------------------------------------------------------------
-// CaptureModeSession::ScopedA11yOverrideWindowSetter:
-
-// Scoped class that sets the capture mode bar widget window as the window for
-// accessibility focus for the duration of a capture mode session. Clears the
-// accessibility focus window when destructed.
-class CaptureModeSession::ScopedA11yOverrideWindowSetter
-    : public aura::WindowObserver {
- public:
-  explicit ScopedA11yOverrideWindowSetter(aura::Window* a11y_focus_window) {
-    SetA11yOverrideWindow(a11y_focus_window);
-  }
-  ScopedA11yOverrideWindowSetter(const ScopedA11yOverrideWindowSetter&) =
-      delete;
-  ScopedA11yOverrideWindowSetter& operator=(
-      const ScopedA11yOverrideWindowSetter&) = delete;
-  ~ScopedA11yOverrideWindowSetter() override { SetA11yOverrideWindow(nullptr); }
-
- private:
-  // Sets a window as the a11y override window. Accessiblity features will check
-  // for a a11y override window to focus before getting the window with actual
-  // focus.
-  void SetA11yOverrideWindow(aura::Window* a11y_override_window) {
-    Shell::Get()->accessibility_controller()->SetA11yOverrideWindow(
-        a11y_override_window);
-  }
-};
-
-// -----------------------------------------------------------------------------
 // CaptureModeSession:
 
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
@@ -572,9 +544,6 @@ void CaptureModeSession::Initialize() {
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       std::make_unique<CaptureModeBarView>(is_in_projector_mode_));
   capture_mode_bar_widget_->Show();
-
-  scoped_a11y_overrider_ = std::make_unique<ScopedA11yOverrideWindowSetter>(
-      capture_mode_bar_widget_->GetNativeWindow());
 
   // Advance focus once if spoken feedback is on so that the capture bar takes
   // spoken feedback focus.
