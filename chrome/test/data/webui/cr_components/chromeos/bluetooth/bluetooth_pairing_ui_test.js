@@ -57,6 +57,67 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
   }
 
   /**
+   * This function tests display PIN or passKey UI functionality.
+   * @param {!PairingAuthType} pairingAuthType
+   */
+  async function displayPinOrPasskey(pairingAuthType) {
+    const getDeviceSelectionPage = () =>
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceSelectionPage');
+    const getEnterCodePage = () =>
+        bluetoothPairingUi.shadowRoot.querySelector('#deviceEnterCodePage');
+
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
+    await flushAsync();
+    const pairingCode = '123456';
+
+    // By default device selection page should be shown.
+    assertTrue(!!getDeviceSelectionPage());
+    assertFalse(!!getEnterCodePage());
+
+    await selectDevice(device.deviceProperties);
+    let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.requireAuthentication(pairingAuthType, pairingCode);
+    await flushAsync();
+
+    assertTrue(!!getEnterCodePage());
+
+    // Simulate pairing cancelation.
+    await simulateCancelation();
+    deviceHandler.completePairDevice(/*success=*/ false);
+    await flushAsync();
+
+    assertFalse(!!getEnterCodePage());
+
+    // Retry pairing.
+    await selectDevice(device.deviceProperties);
+    deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+    deviceHandler.requireAuthentication(pairingAuthType, pairingCode);
+    await flushAsync();
+
+    let keyEnteredHandler = deviceHandler.getLastKeyEnteredHandlerRemote();
+    keyEnteredHandler.handleKeyEntered(2);
+    await flushAsync();
+
+    assertEquals(getEnterCodePage().numKeysEntered, 2);
+    assertEquals(getEnterCodePage().code, pairingCode);
+
+    let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+    // Finished event is fired on successful pairing.
+    deviceHandler.completePairDevice(/*success=*/ true);
+    await finishedPromise;
+  }
+
+  /**
    * This function tests request PIN or request passKey UI functionality.
    * @param {!PairingAuthType} pairingAuthType
    */
@@ -300,7 +361,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
         /*opt_deviceType=*/ mojom.DeviceType.kMouse);
-    const passkey = '123456';
+    const pairingCode = '123456';
 
     bluetoothConfig.appendToDiscoveredDeviceList([device.deviceProperties]);
     await flushAsync();
@@ -314,11 +375,11 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await selectDevice(device.deviceProperties);
     let deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
     deviceHandler.requireAuthentication(
-        PairingAuthType.CONFIRM_PASSKEY, passkey);
+        PairingAuthType.CONFIRM_PASSKEY, pairingCode);
     await flushAsync();
 
     assertTrue(!!getDeviceConfirmCodePage());
-    assertEquals(getDeviceConfirmCodePage().code, passkey);
+    assertEquals(getDeviceConfirmCodePage().code, pairingCode);
 
     // Simulate pairing cancelation.
     await simulateCancelation();
@@ -333,12 +394,12 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await selectDevice(device.deviceProperties);
     deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
     deviceHandler.requireAuthentication(
-        PairingAuthType.CONFIRM_PASSKEY, passkey);
+        PairingAuthType.CONFIRM_PASSKEY, pairingCode);
     await flushAsync();
 
     // When Confirm code page is shown.
     assertTrue(!!getDeviceConfirmCodePage());
-    assertEquals(getDeviceConfirmCodePage().code, passkey);
+    assertEquals(getDeviceConfirmCodePage().code, pairingCode);
     let event = new CustomEvent('confirm-code');
     getDeviceConfirmCodePage().dispatchEvent(event);
     await flushAsync();
@@ -358,7 +419,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await selectDevice(device.deviceProperties);
     deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
     deviceHandler.requireAuthentication(
-        PairingAuthType.CONFIRM_PASSKEY, passkey);
+        PairingAuthType.CONFIRM_PASSKEY, pairingCode);
     await flushAsync();
 
     event = new CustomEvent('confirm-code');
@@ -372,4 +433,13 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     deviceHandler.completePairDevice(/*success=*/ true);
     await finishedPromise;
   });
+
+  test('Display PIN test', async function() {
+    await displayPinOrPasskey(PairingAuthType.DISPLAY_PIN_CODE);
+  });
+
+  test('Display passkey test', async function() {
+    await displayPinOrPasskey(PairingAuthType.DISPLAY_PASSKEY);
+  });
+
 });

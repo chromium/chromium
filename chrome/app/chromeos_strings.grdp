@@ -830,6 +830,9 @@
   <message name="IDS_BLUETOOTH_PAIRING_CONFIRM_CODE_MESSAGE" desc="Bluetooth pairing dialog: Message informing the user to confirm the code displayed is the same as the code displayed on the device being paired to.">
     Before pairing, make sure this code is the same on both devices
   </message>
+  <message name="IDS_BLUETOOTH_PAIRING_ENTER_KEYS" desc="Bluetooth pairing dialog: Message displayed informing the user to enter the keys below on the device being paired.">
+    Enter these keys on <ph name="DEVICE_NAME">$1<ex>Nexus S</ex></ph>
+  </message>
 
   <!-- Strings for the OOBE packaged license screen -->
   <message name="IDS_OOBE_PACKAGED_LICENSE_TITLE" desc="Title of the screen which advertises use of packaged license.">

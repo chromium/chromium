@@ -36,10 +36,18 @@
       </bluetooth-pairing-confirm-code-page>
     </template>
     <template is="dom-if" if="[[shouldShowSubpage_(
+        SubpageId.DEVICE_ENTER_CODE_PAGE, selectedPageId_)]]" restamp>
+      <bluetooth-pairing-enter-code-page
+          code="[[pairingCode_]]"
+          num-keys-entered="[[numKeysEntered_]]"
+          device="[[devicePendingPairing_]]"
+          id="deviceEnterCodePage">
+      </bluetooth-pairing-enter-code-page>
+    </template>
+    <template is="dom-if" if="[[shouldShowSubpage_(
         SubpageId.SPINNER_PAGE, selectedPageId_)]]" restamp>
       <bluetooth-spinner-page id="spinnerPage">
       </bluetooth-spinner-page>
     </template>
-    <!-- TODO(crbug.com/1010321): Add other bluetooth pairing subpage UI elements. -->
   </iron-pages>
 </div>
