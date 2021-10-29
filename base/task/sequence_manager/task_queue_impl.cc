@@ -572,11 +572,18 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
 
   // TODO(crbug.com/1264069): Try to remove the duplication between this and
   // TaskReadyDelayedTasks.
+
+  // Because task destructors could have a side-effect of posting new tasks, we
+  // move all the cancelled tasks into a temporary container before deleting
+  // them. This is to avoid the queue from changing while iterating over it.
+  StackVector<Task, 8> tasks_to_delete;
+
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task* task =
         const_cast<Task*>(&main_thread_only().delayed_incoming_queue.top());
     CHECK(task->task);
     if (task->task.IsCancelled()) {
+      tasks_to_delete->push_back(std::move(*task));
       main_thread_only().delayed_incoming_queue.pop();
       continue;
     }
@@ -586,15 +593,24 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
     delayed_work_queue_task_pusher.Push(task);
     main_thread_only().delayed_incoming_queue.pop();
   }
+
+  // Explicitly delete tasks last.
+  tasks_to_delete->clear();
 }
 
 void TaskQueueImpl::TakeReadyDelayedTasks(
     LazyNow& lazy_now,
     std::vector<ReadyDelayedTask>& tasks) {
+  // Because task destructors could have a side-effect of posting new tasks, we
+  // move all the cancelled tasks into a temporary container before deleting
+  // them. This is to avoid the queue from changing while iterating over it.
+  StackVector<Task, 8> tasks_to_delete;
+
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task* task =
         const_cast<Task*>(&main_thread_only().delayed_incoming_queue.top());
     if (!task->task || task->task.IsCancelled()) {
+      tasks_to_delete->push_back(std::move(*task));
       main_thread_only().delayed_incoming_queue.pop();
       continue;
     }
@@ -603,6 +619,9 @@ void TaskQueueImpl::TakeReadyDelayedTasks(
     tasks.emplace_back(this, std::move(*task));
     main_thread_only().delayed_incoming_queue.pop();
   }
+
+  // Explicitly delete tasks last.
+  tasks_to_delete->clear();
 }
 
 void TaskQueueImpl::MoveReadyDelayedTaskToWorkQueue(Task task) {

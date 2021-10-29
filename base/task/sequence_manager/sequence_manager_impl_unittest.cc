@@ -2640,16 +2640,16 @@ TEST_P(SequenceManagerTest, SweepLastTaskInQueue) {
   sequence_manager()->ReclaimMemory();
 }
 
-TEST_P(SequenceManagerTest, CancelledTaskPostAnother) {
+TEST_P(SequenceManagerTest, CancelledTaskPostAnother_ReclaimMemory) {
   // This check ensures that a task whose destruction causes another task to be
   // posted as a side-effect doesn't cause us to access invalid iterators while
   // sweeping away cancelled tasks.
   auto queue = CreateTaskQueue();
-  bool did_post = false;
+  bool did_destroy = false;
   auto on_destroy = BindLambdaForTesting([&] {
     queue->task_runner()->PostDelayedTask(
         FROM_HERE, BindLambdaForTesting([] {}), base::Seconds(1));
-    did_post = true;
+    did_destroy = true;
   });
 
   DestructionCallback destruction_observer(std::move(on_destroy));
@@ -2662,9 +2662,42 @@ TEST_P(SequenceManagerTest, CancelledTaskPostAnother) {
       base::Seconds(1));
 
   task.weak_factory_.InvalidateWeakPtrs();
-  EXPECT_FALSE(did_post);
+  EXPECT_FALSE(did_destroy);
   sequence_manager()->ReclaimMemory();
-  EXPECT_TRUE(did_post);
+  EXPECT_TRUE(did_destroy);
+}
+
+// Regression test to ensure that posting a new task from the destructor of a
+// canceled task doesn't crash.
+TEST_P(SequenceManagerTest,
+       CancelledTaskPostAnother_MoveReadyDelayedTasksToWorkQueues) {
+  // This check ensures that a task whose destruction causes another task to be
+  // posted as a side-effect doesn't cause us to access invalid iterators while
+  // sweeping away cancelled tasks.
+  auto queue = CreateTaskQueue();
+  bool did_destroy = false;
+  auto on_destroy = BindLambdaForTesting([&] {
+    queue->task_runner()->PostDelayedTask(
+        FROM_HERE, BindLambdaForTesting([] {}), base::Seconds(1));
+    did_destroy = true;
+  });
+
+  DestructionCallback destruction_observer(std::move(on_destroy));
+  CancelableTask task(mock_tick_clock());
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&CancelableTask::FailTask<DestructionCallback>,
+               task.weak_factory_.GetWeakPtr(),
+               std::move(destruction_observer)),
+      base::Seconds(1));
+
+  AdvanceMockTickClock(base::Seconds(1));
+
+  task.weak_factory_.InvalidateWeakPtrs();
+  EXPECT_FALSE(did_destroy);
+  LazyNow lazy_now(mock_tick_clock());
+  sequence_manager()->MoveReadyDelayedTasksToWorkQueues(&lazy_now);
+  EXPECT_TRUE(did_destroy);
 }
 
 TEST_P(SequenceManagerTest, CancelledImmediateTaskShutsDownQueue) {
