@@ -8,8 +8,12 @@
 
 #include "base/bind.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/null_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,6 +103,77 @@ TEST_F(SequencedTaskRunnerTest, OnTaskRunnerDeleterTargetStoppedEarly) {
 
   delete raw;
   EXPECT_TRUE(deleted_on_main_thread);
+}
+
+TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_RunTask) {
+  auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
+
+  bool task_ran = false;
+  DelayedTaskHandle delayed_task_handle =
+      task_runner->PostCancelableDelayedTask(
+          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+          Seconds(1));
+  EXPECT_TRUE(delayed_task_handle.IsValid());
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  // Run the delayed task.
+  task_runner->FastForwardUntilNoTasksRemain();
+
+  EXPECT_FALSE(delayed_task_handle.IsValid());
+  EXPECT_FALSE(task_runner->HasPendingTask());
+  EXPECT_TRUE(task_ran);
+}
+
+TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_CancelTask) {
+  auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
+
+  bool task_ran = false;
+  DelayedTaskHandle delayed_task_handle =
+      task_runner->PostCancelableDelayedTask(
+          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+          Seconds(1));
+  EXPECT_TRUE(delayed_task_handle.IsValid());
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  // Cancel the delayed task.
+  delayed_task_handle.CancelTask();
+
+  EXPECT_FALSE(delayed_task_handle.IsValid());
+  EXPECT_FALSE(task_runner->HasPendingTask());
+  EXPECT_FALSE(task_ran);
+}
+
+TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_DestroyTask) {
+  auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
+
+  bool task_ran = false;
+  DelayedTaskHandle delayed_task_handle =
+      task_runner->PostCancelableDelayedTask(
+          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+          Seconds(1));
+  EXPECT_TRUE(delayed_task_handle.IsValid());
+  EXPECT_TRUE(task_runner->HasPendingTask());
+
+  // Destroy the pending task.
+  task_runner->ClearPendingTasks();
+
+  EXPECT_FALSE(delayed_task_handle.IsValid());
+  EXPECT_FALSE(task_runner->HasPendingTask());
+  EXPECT_FALSE(task_ran);
+}
+
+// Tests that if PostCancelableDelayedTask() fails, the returned handle will be
+// invalid.
+TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_PostTaskFailed) {
+  auto task_runner = MakeRefCounted<NullTaskRunner>();
+
+  bool task_ran = false;
+  DelayedTaskHandle delayed_task_handle =
+      task_runner->PostCancelableDelayedTask(
+          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+          Seconds(1));
+  EXPECT_FALSE(delayed_task_handle.IsValid());
+  EXPECT_FALSE(task_ran);
 }
 
 }  // namespace
