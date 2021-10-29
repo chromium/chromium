@@ -32,25 +32,6 @@ void SaveWindowInfo(const app_restore::WindowInfo& window_info) {
   FullRestoreSaveHandler::GetInstance()->SaveWindowInfo(window_info);
 }
 
-int32_t FetchRestoreWindowId(const std::string& app_id) {
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return 0;
-
-  // If full restore is not running, check if desk templates can get a viable
-  // window id, otherwise default to checking full restore.
-  // TODO(sammiequon): Separate full restore and desk templates logic.
-  auto* full_restore_read_handler = FullRestoreReadHandler::GetInstance();
-  if (!full_restore_read_handler->IsFullRestoreRunning()) {
-    const int32_t desk_template_restore_window_id =
-        app_restore::DeskTemplateReadHandler::Get()->FetchRestoreWindowId(
-            app_id);
-    if (desk_template_restore_window_id > 0)
-      return desk_template_restore_window_id;
-  }
-
-  return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
-}
-
 void SetActiveProfilePath(const base::FilePath& profile_path) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return;

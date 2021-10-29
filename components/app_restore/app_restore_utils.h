@@ -38,6 +38,11 @@ COMPONENT_EXPORT(APP_RESTORE)
 void ModifyWidgetParams(int32_t restore_window_id,
                         views::Widget::InitParams* out_params);
 
+// Fetches the restore window id from the restore data for the given `app_id`.
+// `app_id` should be a Chrome app id.
+COMPONENT_EXPORT(APP_RESTORE)
+int32_t FetchRestoreWindowId(const std::string& app_id);
+
 // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
 // apps.
 COMPONENT_EXPORT(APP_RESTORE) int32_t GetArcSessionId();
