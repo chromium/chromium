@@ -39,11 +39,13 @@ bool UrlMatchesGlobs(const std::vector<std::string>* globs,
 namespace extensions {
 
 // The bitmask for valid user script injectable schemes used by URLPattern.
+// TODO(https://crbug.com/1257045): Remove urn: scheme support.
 enum {
   kValidUserScriptSchemes = URLPattern::SCHEME_CHROMEUI |
                             URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS |
                             URLPattern::SCHEME_FILE | URLPattern::SCHEME_FTP |
-                            URLPattern::SCHEME_URN
+                            URLPattern::SCHEME_URN |
+                            URLPattern::SCHEME_UUID_IN_PACKAGE
 };
 
 // static
