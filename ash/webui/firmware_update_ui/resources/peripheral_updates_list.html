@@ -1,1 +1,7 @@
-<div id="container"></div>
+<div id="container">
+  <dom-repeat id="updateList" items="[[firmwareUpdates_]]" as="update">
+    <template>
+      <update-card update="[[update]]"></update-card>
+    </template>
+  </dom-repeat>
+</div>
