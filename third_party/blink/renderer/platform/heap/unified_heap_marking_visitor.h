@@ -18,18 +18,6 @@ class PLATFORM_EXPORT UnifiedHeapMarkingVisitor final {
   STATIC_ONLY(UnifiedHeapMarkingVisitor);
 
  public:
-  static ALWAYS_INLINE void WriteBarrier(
-      const v8::TracedReference<v8::Value>& ref) {
-    v8::JSHeapConsistency::WriteBarrierParams params;
-    if (v8::JSHeapConsistency::GetWriteBarrierType(
-            ref, params, []() -> cppgc::HeapHandle& {
-              return ThreadState::Current()->heap_handle();
-            }) == v8::JSHeapConsistency::WriteBarrierType::kMarking) {
-      v8::JSHeapConsistency::DijkstraMarkingBarrier(
-          params, ThreadState::Current()->heap_handle(), ref);
-    }
-  }
-
   static ALWAYS_INLINE void WriteBarrier(v8::Isolate*,
                                          v8::Local<v8::Object>& wrapper,
                                          const WrapperTypeInfo*,

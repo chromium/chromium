@@ -6638,10 +6638,16 @@ def make_wrapper_type_info(cg_context, function_name,
 
     member_var_def = TextNode(
         "static const WrapperTypeInfo wrapper_type_info_;")
+    member_var_def.accumulate(
+        CodeGenAccumulator.require_struct_decls(["WrapperTypeInfo"]))
 
     wrapper_type_info_def = ListNode()
     wrapper_type_info_def.set_base_template_vars(
         cg_context.template_bindings())
+    wrapper_type_info_def.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+        ]))
 
     pattern = """\
 // Construction of WrapperTypeInfo may require non-trivial initialization due
