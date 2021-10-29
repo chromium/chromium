@@ -5,7 +5,6 @@
 """Creates a table of unwind information in Android Chrome's bespoke format."""
 
 import abc
-import ctypes
 import enum
 import re
 import collections
@@ -112,33 +111,32 @@ def ReadFunctionCfi(stream: TextIO) -> Iterable[FunctionCfi]:
   yield FunctionCfi(current_function_size, tuple(current_function_address_cfi))
 
 
-def EncodeAsCUbytes(*values: int) -> List[ctypes.c_ubyte]:
-  """Encodes the argument ints as a list of ctypes.c_ubyte.
+def EncodeAsBytes(*values: int) -> bytes:
+  """Encodes the argument ints as bytes.
 
-  We encode as ctypes.c_ubyte because that type is guaranteed to be one byte in
-  size when encoded as binary. This function validates that the inputs are
-  within the range that can be represented as bytes.
+  This function validates that the inputs are within the range that can be
+  represented as bytes.
 
   Argument:
     values: Integers in range [0, 255].
 
   Returns:
-    List of c_ubyte.
+    The values encoded as bytes.
   """
   for i, value in enumerate(values):
     if not 0 <= value <= 255:
       raise ValueError('value = %d out of bounds at byte %d' % (value, i))
-  return [ctypes.c_ubyte(value) for value in values]
+  return bytes(values)
 
 
-def Uleb128Encode(value: int) -> List[ctypes.c_ubyte]:
+def Uleb128Encode(value: int) -> bytes:
   """Encodes the argument int to ULEB128 format.
 
   Argument:
     value: Unsigned integer.
 
   Returns:
-    List of c_ubyte.
+    The values encoded as ULEB128 bytes.
   """
   if value < 0:
     raise ValueError(f'Cannot uleb128 encode negative value ({value}).')
@@ -149,17 +147,17 @@ def Uleb128Encode(value: int) -> List[ctypes.c_ubyte]:
     value, lowest_seven_bits = divmod(value, 0x80)
     done = value == 0
     uleb128_bytes.append(lowest_seven_bits | (0x80 if not done else 0x00))
-  return EncodeAsCUbytes(*uleb128_bytes)
+  return EncodeAsBytes(*uleb128_bytes)
 
 
-def EncodeStackPointerUpdate(offset: int) -> List[ctypes.c_ubyte]:
+def EncodeStackPointerUpdate(offset: int) -> bytes:
   """Encodes a stack pointer update as arm unwind instructions.
 
   Argument:
     offset: Offset to apply on stack pointer. Should be in range [-0x204, inf).
 
   Returns:
-    A list of arm unwind instructions in c_ubyte format.
+    A list of arm unwind instructions as bytes.
   """
   assert offset % 4 == 0
 
@@ -174,18 +172,18 @@ def EncodeStackPointerUpdate(offset: int) -> List[ctypes.c_ubyte]:
     if abs_offset > 0x104:
       instructions.append(instruction_code | ((abs_offset - 0x100 - 4) >> 2))
     try:
-      return EncodeAsCUbytes(*instructions)
+      return EncodeAsBytes(*instructions)
     except ValueError as e:
       raise RuntimeError('offset = %d produced out of range value' %
                          offset) from e
   else:
     # This only encodes positive sp movement.
     assert offset > 0, offset
-    return EncodeAsCUbytes(0b10110010  # vsp = vsp + 0x204 + (uleb128 << 2)
-                           ) + Uleb128Encode((offset - 0x204) >> 2)
+    return EncodeAsBytes(0b10110010  # vsp = vsp + 0x204 + (uleb128 << 2)
+                         ) + Uleb128Encode((offset - 0x204) >> 2)
 
 
-def EncodePop(registers: Sequence[int]) -> List[ctypes.c_ubyte]:
+def EncodePop(registers: Sequence[int]) -> bytes:
   """Encodes popping of a sequence of registers as arm unwind instructions.
 
   Argument:
@@ -194,7 +192,7 @@ def EncodePop(registers: Sequence[int]) -> List[ctypes.c_ubyte]:
       popped based on register index order.
 
   Returns:
-    A list of arm unwind instructions in c_ubyte format.
+    A list of arm unwind instructions as bytes.
   """
   assert all(
       r in range(4, 16)
@@ -226,7 +224,7 @@ def EncodePop(registers: Sequence[int]) -> List[ctypes.c_ubyte]:
         register_bits & 0xff
     ])
 
-  return EncodeAsCUbytes(*instructions)
+  return EncodeAsBytes(*instructions)
 
 
 class UnwindType(enum.Enum):
@@ -253,7 +251,7 @@ class AddressUnwind(NamedTuple):
   """Record representing unwind information for an address within a function.
 
   Attributes:
-      address_offset: The offset of the address from the start of the function..
+      address_offset: The offset of the address from the start of the function.
       unwind_type: The type of unwind to perform from the address.
       sp_offset: The offset to apply to the stack pointer.
       registers: The registers involved in the unwind.
@@ -278,7 +276,7 @@ class FunctionUnwind(NamedTuple):
   address_unwinds: Tuple[AddressUnwind, ...]
 
 
-def EncodeAddressUnwind(address_unwind: AddressUnwind) -> List[ctypes.c_ubyte]:
+def EncodeAddressUnwind(address_unwind: AddressUnwind) -> bytes:
   """Encodes an `AddressUnwind` object as arm unwind instructions.
 
   Argument:
@@ -286,29 +284,29 @@ def EncodeAddressUnwind(address_unwind: AddressUnwind) -> List[ctypes.c_ubyte]:
       a function.
 
   Returns:
-    A list of arm unwind instructions in c_ubyte format.
+    A list of arm unwind instructions as bytes.
   """
   if address_unwind.unwind_type == UnwindType.RETURN_TO_LR:
-    return EncodeAsCUbytes(0b10110000  # Finish.
-                           )
+    return EncodeAsBytes(0b10110000)  # Finish.
   if address_unwind.unwind_type == UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS:
     return ((EncodeStackPointerUpdate(address_unwind.sp_offset)
-             if address_unwind.sp_offset else []) + (EncodePop(
-                 address_unwind.registers) if address_unwind.registers else []))
+             if address_unwind.sp_offset else b'') +
+            (EncodePop(address_unwind.registers)
+             if address_unwind.registers else b''))
 
   if address_unwind.unwind_type == UnwindType.RESTORE_SP_FROM_REGISTER:
     assert len(address_unwind.registers) == 1
-    return (EncodeAsCUbytes(0b10010000
-                            | address_unwind.registers[0]  # Set vsp = r[nnnn].
-                            ) +
+    return (EncodeAsBytes(0b10010000
+                          | address_unwind.registers[0]  # Set vsp = r[nnnn].
+                          ) +
             (EncodeStackPointerUpdate(address_unwind.sp_offset)
-             if address_unwind.sp_offset else []))
+             if address_unwind.sp_offset else b''))
 
   if address_unwind.unwind_type == UnwindType.NO_ACTION:
-    return []
+    return b''
 
   assert False, 'unknown unwind type'
-  return []
+  return b''
 
 
 class UnwindInstructionsParser(abc.ABC):
@@ -473,7 +471,7 @@ def EncodeUnwindInstructionTable(complete_instruction_sequences: Iterable[bytes]
 
   Returns:
     A tuple containing:
-    - The unwind instruction table in bytes format.
+    - The unwind instruction table as bytes.
     - The mapping from the instruction sequence to the offset in the unwind
       instruction table. This mapping is used to construct the function offset
       table, which references entries in the unwind instruction table.

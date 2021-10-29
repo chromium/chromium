@@ -8,16 +8,14 @@ This test suite contains tests for the custom unwind table creation for 32-bit
 arm builds.
 """
 
-import ctypes
 import io
 import unittest
 
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
-    FunctionUnwind, EncodeAddressUnwind, EncodeAsCUbytes,
-    EncodeStackPointerUpdate, EncodePop, EncodeUnwindInstructionTable,
-    NullParser, PushOrSubSpParser, ReadFunctionCfi, StoreSpParser,
-    Uleb128Encode, UnwindType, VPushParser)
+    EncodeAddressUnwind, EncodeAsBytes, EncodeStackPointerUpdate, EncodePop,
+    EncodeUnwindInstructionTable, NullParser, PushOrSubSpParser,
+    ReadFunctionCfi, StoreSpParser, Uleb128Encode, UnwindType, VPushParser)
 
 
 class _TestReadFunctionCfi(unittest.TestCase):
@@ -95,70 +93,58 @@ class _TestReadFunctionCfi(unittest.TestCase):
     ], list(ReadFunctionCfi(f)))
 
 
-class _TestEncodeAsCUbytes(unittest.TestCase):
-  def assertEncodingEqual(self, expected_values, encoded_c_ubytes):
-    self.assertEqual(expected_values,
-                     [ubyte.value for ubyte in encoded_c_ubytes])
-
+class _TestEncodeAsBytes(unittest.TestCase):
   def testOutOfBounds(self):
-    self.assertRaises(ValueError, lambda: EncodeAsCUbytes(1024))
-    self.assertRaises(ValueError, lambda: EncodeAsCUbytes(256))
-    self.assertRaises(ValueError, lambda: EncodeAsCUbytes(-1))
+    self.assertRaises(ValueError, lambda: EncodeAsBytes(1024))
+    self.assertRaises(ValueError, lambda: EncodeAsBytes(256))
+    self.assertRaises(ValueError, lambda: EncodeAsBytes(-1))
 
   def testEncode(self):
-    self.assertEncodingEqual([0], EncodeAsCUbytes(0))
-    self.assertEncodingEqual([255], EncodeAsCUbytes(255))
-    self.assertEncodingEqual([0, 1], EncodeAsCUbytes(0, 1))
+    self.assertEqual(bytes([0]), EncodeAsBytes(0))
+    self.assertEqual(bytes([255]), EncodeAsBytes(255))
+    self.assertEqual(bytes([0, 1]), EncodeAsBytes(0, 1))
 
 
 class _TestUleb128Encode(unittest.TestCase):
-  def assertEncodingEqual(self, expected_values, encoded_c_ubytes):
-    self.assertEqual(expected_values,
-                     [ubyte.value for ubyte in encoded_c_ubytes])
-
   def testNegativeValue(self):
     self.assertRaises(ValueError, lambda: Uleb128Encode(-1))
 
   def testSingleByte(self):
-    self.assertEncodingEqual([0], Uleb128Encode(0))
-    self.assertEncodingEqual([1], Uleb128Encode(1))
-    self.assertEncodingEqual([127], Uleb128Encode(127))
+    self.assertEqual(bytes([0]), Uleb128Encode(0))
+    self.assertEqual(bytes([1]), Uleb128Encode(1))
+    self.assertEqual(bytes([127]), Uleb128Encode(127))
 
   def testMultiBytes(self):
-    self.assertEncodingEqual([0b10000000, 0b1], Uleb128Encode(128))
-    self.assertEncodingEqual([0b10000000, 0b10000000, 0b1],
-                             Uleb128Encode(128**2))
+    self.assertEqual(bytes([0b10000000, 0b1]), Uleb128Encode(128))
+    self.assertEqual(bytes([0b10000000, 0b10000000, 0b1]),
+                     Uleb128Encode(128**2))
 
 
 class _TestEncodeStackPointerUpdate(unittest.TestCase):
-  def assertEncodingEqual(self, expected_values, encoded_c_ubytes):
-    self.assertEqual(expected_values,
-                     [ubyte.value for ubyte in encoded_c_ubytes])
-
   def testSingleByte(self):
-    self.assertEncodingEqual([0b00000000 | 0], EncodeStackPointerUpdate(4))
-    self.assertEncodingEqual([0b01000000 | 0], EncodeStackPointerUpdate(-4))
+    self.assertEqual(bytes([0b00000000 | 0]), EncodeStackPointerUpdate(4))
+    self.assertEqual(bytes([0b01000000 | 0]), EncodeStackPointerUpdate(-4))
 
-    self.assertEncodingEqual([0b00000000 | 0b00111111],
-                             EncodeStackPointerUpdate(0x100))
-    self.assertEncodingEqual([0b01000000 | 0b00111111],
-                             EncodeStackPointerUpdate(-0x100))
+    self.assertEqual(bytes([0b00000000 | 0b00111111]),
+                     EncodeStackPointerUpdate(0x100))
+    self.assertEqual(bytes([0b01000000 | 0b00111111]),
+                     EncodeStackPointerUpdate(-0x100))
 
-    self.assertEncodingEqual([0b00000000 | 3], EncodeStackPointerUpdate(16))
-    self.assertEncodingEqual([0b01000000 | 3], EncodeStackPointerUpdate(-16))
+    self.assertEqual(bytes([0b00000000 | 3]), EncodeStackPointerUpdate(16))
+    self.assertEqual(bytes([0b01000000 | 3]), EncodeStackPointerUpdate(-16))
 
     # 10110010 uleb128
     # vsp = vsp + 0x204 + (uleb128 << 2)
-    self.assertEncodingEqual([0b10110010, 0b00000000],
-                             EncodeStackPointerUpdate(0x204))
-    self.assertEncodingEqual([0b10110010, 0b00000001],
-                             EncodeStackPointerUpdate(0x208))
+    self.assertEqual(bytes([0b10110010, 0b00000000]),
+                     EncodeStackPointerUpdate(0x204))
+    self.assertEqual(bytes([0b10110010, 0b00000001]),
+                     EncodeStackPointerUpdate(0x208))
 
     # For vsp increments of 0x104-0x200, use 00xxxxxx twice.
-    self.assertEncodingEqual([0b00111111, 0b00111111],
-                             EncodeStackPointerUpdate(0x200))
-    self.assertEncodingEqual([0b01111111, 0b01111111],
-                             EncodeStackPointerUpdate(-0x200))
+    self.assertEqual(bytes([0b00111111, 0b00111111]),
+                     EncodeStackPointerUpdate(0x200))
+    self.assertEqual(bytes([0b01111111, 0b01111111]),
+                     EncodeStackPointerUpdate(-0x200))
 
     # Not multiple of 4.
     self.assertRaises(AssertionError, lambda: EncodeStackPointerUpdate(101))
@@ -167,10 +153,6 @@ class _TestEncodeStackPointerUpdate(unittest.TestCase):
 
 
 class _TestEncodePop(unittest.TestCase):
-  def assertEncodingEqual(self, expected_values, encoded_c_ubytes):
-    self.assertEqual(expected_values,
-                     [ubyte.value for ubyte in encoded_c_ubytes])
-
   def testSingleRegister(self):
     # Should reject registers outside r4 ~ r15 range.
     for r in 0, 1, 2, 3, 16:
@@ -178,71 +160,68 @@ class _TestEncodePop(unittest.TestCase):
     # Should use
     # 1000iiii iiiiiiii
     # Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}.
-    self.assertEncodingEqual([0b10000000, 0b00000001], EncodePop([4]))
-    self.assertEncodingEqual([0b10000000, 0b00001000], EncodePop([7]))
-    self.assertEncodingEqual([0b10000100, 0b00000000], EncodePop([14]))
-    self.assertEncodingEqual([0b10001000, 0b00000000], EncodePop([15]))
+    self.assertEqual(bytes([0b10000000, 0b00000001]), EncodePop([4]))
+    self.assertEqual(bytes([0b10000000, 0b00001000]), EncodePop([7]))
+    self.assertEqual(bytes([0b10000100, 0b00000000]), EncodePop([14]))
+    self.assertEqual(bytes([0b10001000, 0b00000000]), EncodePop([15]))
 
   def testContinuousRegisters(self):
     # 10101nnn
     # Pop r4-r[4+nnn], r14.
-    self.assertEncodingEqual([0b10101000], EncodePop([4, 14]))
-    self.assertEncodingEqual([0b10101001], EncodePop([4, 5, 14]))
-    self.assertEncodingEqual([0b10101111],
-                             EncodePop([4, 5, 6, 7, 8, 9, 10, 11, 14]))
+    self.assertEqual(bytes([0b10101000]), EncodePop([4, 14]))
+    self.assertEqual(bytes([0b10101001]), EncodePop([4, 5, 14]))
+    self.assertEqual(bytes([0b10101111]),
+                     EncodePop([4, 5, 6, 7, 8, 9, 10, 11, 14]))
 
   def testDiscontinuousRegisters(self):
     # 1000iiii iiiiiiii
     # Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}.
-    self.assertEncodingEqual([0b10001000, 0b00000001], EncodePop([4, 15]))
-    self.assertEncodingEqual([0b10000100, 0b00011000], EncodePop([7, 8, 14]))
-    self.assertEncodingEqual([0b10000111, 0b11111111],
-                             EncodePop([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]))
-    self.assertEncodingEqual([0b10000100, 0b10111111],
-                             EncodePop([4, 5, 6, 7, 8, 9, 11, 14]))
+    self.assertEqual(bytes([0b10001000, 0b00000001]), EncodePop([4, 15]))
+    self.assertEqual(bytes([0b10000100, 0b00011000]), EncodePop([7, 8, 14]))
+    self.assertEqual(bytes([0b10000111, 0b11111111]),
+                     EncodePop([4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]))
+    self.assertEqual(bytes([0b10000100, 0b10111111]),
+                     EncodePop([4, 5, 6, 7, 8, 9, 11, 14]))
 
 
 class _TestEncodeAddressUnwind(unittest.TestCase):
-  def assertEncodingEqual(self, expected_values, encoded_c_ubytes):
-    self.assertEqual(expected_values,
-                     [ubyte.value for ubyte in encoded_c_ubytes])
-
   def testReturnToLr(self):
-    self.assertEncodingEqual([0b10110000],
-                             EncodeAddressUnwind(
-                                 AddressUnwind(
-                                     address_offset=0,
-                                     unwind_type=UnwindType.RETURN_TO_LR,
-                                     sp_offset=0,
-                                     registers=tuple())))
+    self.assertEqual(
+        bytes([0b10110000]),
+        EncodeAddressUnwind(
+            AddressUnwind(address_offset=0,
+                          unwind_type=UnwindType.RETURN_TO_LR,
+                          sp_offset=0,
+                          registers=tuple())))
 
   def testNoAction(self):
-    self.assertEncodingEqual([],
-                             EncodeAddressUnwind(
-                                 AddressUnwind(address_offset=0,
-                                               unwind_type=UnwindType.NO_ACTION,
-                                               sp_offset=0,
-                                               registers=tuple())))
+    self.assertEqual(
+        bytes([]),
+        EncodeAddressUnwind(
+            AddressUnwind(address_offset=0,
+                          unwind_type=UnwindType.NO_ACTION,
+                          sp_offset=0,
+                          registers=tuple())))
 
   def testUpdateSpAndOrPopRegisters(self):
-    self.assertEncodingEqual(
-        [0b0, 0b10101000],
+    self.assertEqual(
+        bytes([0b0, 0b10101000]),
         EncodeAddressUnwind(
             AddressUnwind(address_offset=0,
                           unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
                           sp_offset=0x4,
                           registers=(4, 14))))
 
-    self.assertEncodingEqual(
-        [0b0],
+    self.assertEqual(
+        bytes([0b0]),
         EncodeAddressUnwind(
             AddressUnwind(address_offset=0,
                           unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
                           sp_offset=0x4,
                           registers=tuple())))
 
-    self.assertEncodingEqual(
-        [0b10101000],
+    self.assertEqual(
+        bytes([0b10101000]),
         EncodeAddressUnwind(
             AddressUnwind(address_offset=0,
                           unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
@@ -250,16 +229,16 @@ class _TestEncodeAddressUnwind(unittest.TestCase):
                           registers=(4, 14))))
 
   def testRestoreSpFromRegisters(self):
-    self.assertEncodingEqual(
-        [0b10010100, 0b0],
+    self.assertEqual(
+        bytes([0b10010100, 0b0]),
         EncodeAddressUnwind(
             AddressUnwind(address_offset=0,
                           unwind_type=UnwindType.RESTORE_SP_FROM_REGISTER,
                           sp_offset=0x4,
                           registers=(4, ))))
 
-    self.assertEncodingEqual(
-        [0b10010100],
+    self.assertEqual(
+        bytes([0b10010100]),
         EncodeAddressUnwind(
             AddressUnwind(address_offset=0,
                           unwind_type=UnwindType.RESTORE_SP_FROM_REGISTER,
