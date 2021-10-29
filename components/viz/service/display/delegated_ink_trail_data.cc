@@ -13,24 +13,45 @@
 #include "components/viz/common/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/prediction/kalman_predictor.h"
+#include "ui/base/prediction/least_squares_predictor.h"
+#include "ui/base/prediction/linear_predictor.h"
+#include "ui/base/prediction/linear_resampling.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
 
 namespace viz {
 
 DelegatedInkTrailData::DelegatedInkTrailData() {
-  unsigned int predictor_options =
-      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
-      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  std::string predictor = features::InkPredictor();
   std::string full_name = "Renderer.DelegatedInkTrail.PredictionExperiment";
   for (int i = 0; i < kNumberOfPredictionConfigs; ++i) {
     prediction_handlers_[i].metrics_handler =
         std::make_unique<ui::PredictionMetricsHandler>(
             base::StrCat({full_name, base::NumberToString(i)}));
-    prediction_handlers_[i].predictor =
-        std::make_unique<ui::KalmanPredictor>(predictor_options);
+    prediction_handlers_[i].predictor = CreatePredictor(predictor);
   }
   should_draw_predicted_ink_points_ = features::ShouldDrawPredictedInkPoints();
+}
+
+std::unique_ptr<ui::InputPredictor> DelegatedInkTrailData::CreatePredictor(
+    std::string predictor) {
+  if (predictor == features::kPredictorLinearResampling) {
+    return std::make_unique<ui::LinearResampling>();
+  } else if (predictor == features::kPredictorLinear1) {
+    return std::make_unique<ui::LinearPredictor>(
+        ui::LinearPredictor::EquationOrder::kFirstOrder);
+  } else if (predictor == features::kPredictorLinear2) {
+    return std::make_unique<ui::LinearPredictor>(
+        ui::LinearPredictor::EquationOrder::kSecondOrder);
+  } else if (predictor == features::kPredictorLsq) {
+    return std::make_unique<ui::LeastSquaresPredictor>();
+  }
+
+  // if `kPredictorKalman` or default, create Kalman predictor
+  unsigned int predictor_options =
+      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
+      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  return std::make_unique<ui::KalmanPredictor>(predictor_options);
 }
 
 DelegatedInkTrailData::~DelegatedInkTrailData() = default;

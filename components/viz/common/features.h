@@ -5,9 +5,12 @@
 #ifndef COMPONENTS_VIZ_COMMON_FEATURES_H_
 #define COMPONENTS_VIZ_COMMON_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "components/viz/common/delegated_ink_prediction_configuration.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,6 +53,11 @@ VIZ_COMMON_EXPORT extern const char kDraw1Point12Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points6Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw1Point6Ms[];
 VIZ_COMMON_EXPORT extern const char kDraw2Points3Ms[];
+VIZ_COMMON_EXPORT extern const char kPredictorKalman[];
+VIZ_COMMON_EXPORT extern const char kPredictorLinearResampling[];
+VIZ_COMMON_EXPORT extern const char kPredictorLinear1[];
+VIZ_COMMON_EXPORT extern const char kPredictorLinear2[];
+VIZ_COMMON_EXPORT extern const char kPredictorLsq[];
 
 VIZ_COMMON_EXPORT bool IsAdpfEnabled();
 VIZ_COMMON_EXPORT bool IsSimpleFrameRateThrottlingEnabled();
@@ -70,6 +78,7 @@ VIZ_COMMON_EXPORT bool ShouldWebRtcLogCapturePipeline();
 VIZ_COMMON_EXPORT bool ShouldUseSetPresentDuration();
 #endif  // OS_WIN
 VIZ_COMMON_EXPORT absl::optional<int> ShouldDrawPredictedInkPoints();
+VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
