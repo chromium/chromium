@@ -242,6 +242,10 @@ AshNotificationView::ExpandButton::ExpandButton(PressedCallback callback)
 
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kNotificationExpandButtonCornerRadius);
+
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
+                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
 }
 
 AshNotificationView::ExpandButton::~ExpandButton() = default;
@@ -255,10 +259,14 @@ void AshNotificationView::ExpandButton::SetExpanded(bool expanded) {
   label_->SetVisible(ShouldShowLabel());
 
   image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
-
-  SetTooltipText(l10n_util::GetStringUTF16(
+  image_->SetTooltipText(l10n_util::GetStringUTF16(
       expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
                 : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
+
+  SetAccessibleName(l10n_util::GetStringUTF16(
+      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
+                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
+
   SchedulePaint();
 }
 
