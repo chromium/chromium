@@ -12,6 +12,8 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
+  "firmware_shared_css.js",
+  "firmware_shared_fonts.js",
   "firmware_update_app.js",
   "peripheral_updates_list.js",
   "update_card.js",
