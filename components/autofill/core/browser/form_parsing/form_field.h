@@ -51,6 +51,14 @@ class FormField {
       bool is_form_tag,
       LogManager* log_manager = nullptr);
 
+  // Looks for a promo code field in |fields|. Each field has a derived unique
+  // name that is used as the key into the returned FieldCandidatesMap.
+  static FieldCandidatesMap ParseFormFieldsForPromoCodes(
+      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const LanguageCode& page_language,
+      bool is_form_tag,
+      LogManager* log_manager = nullptr);
+
 #if defined(UNIT_TEST)
   // Assign types to the fields for the testing purposes.
   void AddClassificationsForTesting(
@@ -164,6 +172,11 @@ class FormField {
       AutofillScanner* scanner,
       const LanguageCode& page_language,
       LogManager* log_manager);
+
+  // Removes checkable fields and returns fields to be processed for field
+  // detection.
+  static std::vector<AutofillField*> RemoveCheckableFields(
+      const std::vector<std::unique_ptr<AutofillField>>& fields);
 
   // Matches |pattern| to the contents of the field at the head of the
   // |scanner|.
