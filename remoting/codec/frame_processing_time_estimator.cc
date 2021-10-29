@@ -62,24 +62,16 @@ FrameProcessingTimeEstimator::FrameProcessingTimeEstimator()
 
 FrameProcessingTimeEstimator::~FrameProcessingTimeEstimator() = default;
 
-void FrameProcessingTimeEstimator::StartFrame() {
-  start_time_ = Now();
-}
-
 void FrameProcessingTimeEstimator::FinishFrame(
     const WebrtcVideoEncoder::EncodedFrame& frame) {
-  base::TimeTicks end_time;
-  if (frame.stats) {
-    start_time_ = frame.stats->capture_started_time;
-    end_time = frame.stats->encode_ended_time;
-    DCHECK(!start_time_.is_null());
-    DCHECK(!end_time.is_null());
-  } else {
-    if (start_time_.is_null()) {
-      return;
-    }
-    end_time = Now();
+  if (!frame.stats) {
+    return;
   }
+
+  base::TimeTicks start_time = frame.stats->capture_started_time;
+  base::TimeTicks end_time = frame.stats->encode_ended_time;
+  DCHECK(!start_time.is_null());
+  DCHECK(!end_time.is_null());
 
   if (frame_finish_ticks_.size() == kFrameFinishTicksCount) {
     frame_finish_ticks_.pop_front();
@@ -87,16 +79,14 @@ void FrameProcessingTimeEstimator::FinishFrame(
   frame_finish_ticks_.push_back(end_time);
   DCHECK(frame_finish_ticks_.size() <= kFrameFinishTicksCount);
   if (frame.key_frame) {
-    key_frame_processing_us_.Record((end_time - start_time_).InMicroseconds());
+    key_frame_processing_us_.Record((end_time - start_time).InMicroseconds());
     key_frame_size_.Record(frame.data.length());
     key_frame_count_++;
   } else {
-    delta_frame_processing_us_.Record(
-        (end_time - start_time_).InMicroseconds());
+    delta_frame_processing_us_.Record((end_time - start_time).InMicroseconds());
     delta_frame_size_.Record(frame.data.length());
     delta_frame_count_++;
   }
-  start_time_ = base::TimeTicks();
 }
 
 void FrameProcessingTimeEstimator::SetBandwidthKbps(int bandwidth_kbps) {

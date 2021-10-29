@@ -114,7 +114,7 @@ class MockVideoChannelStateObserver : public VideoChannelStateObserver {
   MOCK_METHOD(void,
               OnFrameEncoded,
               (WebrtcVideoEncoder::EncodeResult encode_result,
-               WebrtcVideoEncoder::EncodedFrame* frame),
+               const WebrtcVideoEncoder::EncodedFrame* frame),
               (override));
   MOCK_METHOD(void,
               OnEncodedFrameSent,

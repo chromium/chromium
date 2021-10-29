@@ -207,7 +207,7 @@ void WebrtcVideoStream::CaptureNextFrame() {
 
 void WebrtcVideoStream::OnFrameEncoded(
     WebrtcVideoEncoder::EncodeResult encode_result,
-    WebrtcVideoEncoder::EncodedFrame* frame) {
+    const WebrtcVideoEncoder::EncodedFrame* frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   scheduler_->OnFrameEncoded(encode_result, frame);
