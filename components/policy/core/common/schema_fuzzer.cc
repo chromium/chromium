@@ -5,9 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
@@ -20,12 +21,47 @@ namespace {
 // Holds the state and performs initialization that's shared across fuzzer runs.
 struct Environment {
   Environment() {
-    schema = Schema::Wrap(GetChromeSchemaData());
-    CHECK(schema.valid());
+    chrome_policy_schema = Schema::Wrap(GetChromeSchemaData());
+    CHECK(chrome_policy_schema.valid());
   }
 
-  Schema schema;
+  Schema chrome_policy_schema;
 };
+
+// Test schema parsing.
+void TestParsing(const Environment& env, const std::string& data) {
+  std::string error;
+  Schema::Parse(data, &error);
+}
+
+// Test validation and normalization against the Chrome policy schema.
+void TestValidation(const Environment& env, const base::Value& parsed_json) {
+  // Exercise with every possible strategy.
+  for (auto strategy : {SCHEMA_STRICT, SCHEMA_ALLOW_UNKNOWN,
+                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY}) {
+    env.chrome_policy_schema.Validate(parsed_json, strategy,
+                                      /*out_error_path=*/nullptr,
+                                      /*out_error=*/nullptr);
+
+    base::Value copy = parsed_json.Clone();
+    if (env.chrome_policy_schema.Normalize(&copy, strategy,
+                                           /*out_error_path=*/nullptr,
+                                           /*out_error=*/nullptr,
+                                           /*out_changed=*/nullptr)) {
+      // If normalization succeeded, the validation of the result should succeed
+      // too.
+      CHECK(env.chrome_policy_schema.Validate(copy, strategy,
+                                              /*out_error_path=*/nullptr,
+                                              /*out_error=*/nullptr));
+    }
+  }
+}
+
+// Test masking sensitive values.
+void TestMasking(const Environment& env, const base::Value& parsed_json) {
+  base::Value copy = parsed_json.Clone();
+  env.chrome_policy_schema.MaskSensitiveValues(&copy);
+}
 
 }  // namespace
 
@@ -33,33 +69,15 @@ struct Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
-  absl::optional<base::Value> parsed_json = base::JSONReader::Read(
-      base::StringPiece(reinterpret_cast<const char*>(data), size));
-  if (!parsed_json)
-    return 0;
+  const std::string data_string(reinterpret_cast<const char*>(data), size);
 
-  // Exercise validation/normalization with every possible strategy.
-  for (auto strategy : {SCHEMA_STRICT, SCHEMA_ALLOW_UNKNOWN,
-                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY}) {
-    env.schema.Validate(*parsed_json, strategy,
-                        /*out_error_path=*/nullptr,
-                        /*out_error=*/nullptr);
+  TestParsing(env, data_string);
 
-    base::Value copy = parsed_json->Clone();
-    if (env.schema.Normalize(&copy, strategy,
-                             /*out_error_path=*/nullptr,
-                             /*out_error=*/nullptr, /*out_changed=*/nullptr)) {
-      // If normalization succeeded, the validation of the result should succeed
-      // too.
-      CHECK(env.schema.Validate(copy, strategy,
-                                /*out_error_path=*/nullptr,
-                                /*out_error=*/nullptr));
-    }
+  absl::optional<base::Value> parsed_json = base::JSONReader::Read(data_string);
+  if (parsed_json) {
+    TestValidation(env, *parsed_json);
+    TestMasking(env, *parsed_json);
   }
-
-  // Exercise the sensitive masking logic.
-  base::Value copy2 = parsed_json->Clone();
-  env.schema.MaskSensitiveValues(&copy2);
 
   return 0;
 }
