@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/url_pattern_index/closed_hash_map.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
@@ -129,7 +130,7 @@ class UrlPatternIndexBuilder {
   MutableUrlRuleList fallback_rules_;
 
   // Must outlive this instance.
-  flatbuffers::FlatBufferBuilder* flat_builder_;
+  raw_ptr<flatbuffers::FlatBufferBuilder> flat_builder_;
 };
 
 // Encapsulates a read-only index built over the URL patterns of a set of URL

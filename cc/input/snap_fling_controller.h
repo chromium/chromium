@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -98,7 +99,7 @@ class CC_EXPORT SnapFlingController {
 
   void SetActiveStateForTest() { state_ = State::kActive; }
 
-  SnapFlingClient* client_;
+  raw_ptr<SnapFlingClient> client_;
   State state_ = State::kIdle;
   std::unique_ptr<SnapFlingCurve> curve_;
 };

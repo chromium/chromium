@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_DATABASE_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_DATABASE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/model/model_type_store.h"
 
 class Profile;
@@ -28,7 +29,7 @@ class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace web_app

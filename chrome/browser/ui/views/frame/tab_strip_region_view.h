@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -66,13 +67,13 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // whenever any input of the computation of the border's sizing changes.
   void UpdateNewTabButtonBorder();
 
-  views::FlexLayout* layout_manager_ = nullptr;
-  views::View* tab_strip_container_;
-  views::View* reserved_grab_handle_space_;
-  TabStrip* tab_strip_;
-  NewTabButton* new_tab_button_ = nullptr;
-  TabSearchButton* tab_search_button_ = nullptr;
-  TipMarqueeView* tip_marquee_view_ = nullptr;
+  raw_ptr<views::FlexLayout> layout_manager_ = nullptr;
+  raw_ptr<views::View> tab_strip_container_;
+  raw_ptr<views::View> reserved_grab_handle_space_;
+  raw_ptr<TabStrip> tab_strip_;
+  raw_ptr<NewTabButton> new_tab_button_ = nullptr;
+  raw_ptr<TabSearchButton> tab_search_button_ = nullptr;
+  raw_ptr<TipMarqueeView> tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -92,7 +93,7 @@ class ChromeCTPolicyEnforcer : public net::CTPolicyEnforcer {
   // List of SHA-256(SPKI) for logs operated by Google.
   std::vector<std::string> operated_by_google_logs_;
 
-  const base::Clock* clock_;
+  raw_ptr<const base::Clock> clock_;
 
   // The time at which |disqualified_logs_| and |operated_by_google_logs_| were
   // generated.

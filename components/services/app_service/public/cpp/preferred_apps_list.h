@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

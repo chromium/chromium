@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
@@ -126,11 +127,11 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
   void ReleaseSharedWorkerThreads();
 
   const TrackedRef<TaskTracker> task_tracker_;
-  DelayedTaskManager* const delayed_task_manager_;
+  const raw_ptr<DelayedTaskManager> delayed_task_manager_;
 
   // Optional observer notified when a worker enters and exits its main
   // function. Set in Start() and never modified afterwards.
-  WorkerThreadObserver* worker_thread_observer_ = nullptr;
+  raw_ptr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
 
   CheckedLock lock_;
   std::vector<scoped_refptr<WorkerThread>> workers_ GUARDED_BY(lock_);

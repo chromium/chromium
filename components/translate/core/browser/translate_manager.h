@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -350,10 +351,10 @@ class TranslateManager {
   // Preference name for the Accept-Languages HTTP header.
   std::string accept_languages_pref_name_;
 
-  TranslateClient* translate_client_;        // Weak.
-  TranslateDriver* translate_driver_;        // Weak.
-  TranslateRanker* translate_ranker_;        // Weak.
-  language::LanguageModel* language_model_;  // Weak.
+  raw_ptr<TranslateClient> translate_client_;        // Weak.
+  raw_ptr<TranslateDriver> translate_driver_;        // Weak.
+  raw_ptr<TranslateRanker> translate_ranker_;        // Weak.
+  raw_ptr<language::LanguageModel> language_model_;  // Weak.
 
   base::WeakPtr<TranslateMetricsLogger> active_translate_metrics_logger_;
   std::unique_ptr<NullTranslateMetricsLogger> null_translate_metrics_logger_;

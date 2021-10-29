@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 
@@ -61,7 +62,7 @@ class QuotaTask {
 
   void Abort();
 
-  QuotaTaskObserver* observer_;
+  raw_ptr<QuotaTaskObserver> observer_;
   const scoped_refptr<base::SingleThreadTaskRunner> original_task_runner_;
   bool delete_scheduled_;
 };

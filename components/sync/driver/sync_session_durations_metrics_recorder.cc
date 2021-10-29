@@ -39,9 +39,9 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
     : sync_service_(sync_service), identity_manager_(identity_manager) {
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_) {
-    sync_observation_.Observe(sync_service_);
+    sync_observation_.Observe(sync_service_.get());
   }
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 
   // Since this is created after the profile itself is created, we need to
   // handle the initial state.

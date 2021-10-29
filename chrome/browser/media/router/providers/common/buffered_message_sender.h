@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
@@ -49,7 +50,7 @@ class BufferedMessageSender {
       buffered_messages_;
 
   // Non-owned pointer provided by DialMediaRouteProvider.
-  mojom::MediaRouter* const media_router_;
+  const raw_ptr<mojom::MediaRouter> media_router_;
 };
 
 }  // namespace media_router

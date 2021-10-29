@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id_allocator.h"
@@ -124,11 +125,11 @@ class VizProcessTransportFactory : public ui::ContextFactory,
   gpu::ContextResult TryCreateContextsForGpuCompositing(
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
 
-  gpu::GpuChannelEstablishFactory* const gpu_channel_establish_factory_;
+  const raw_ptr<gpu::GpuChannelEstablishFactory> gpu_channel_establish_factory_;
 
   // Controls the compositing mode based on what mode the display compositors
   // are using.
-  viz::CompositingModeReporterImpl* const compositing_mode_reporter_;
+  const raw_ptr<viz::CompositingModeReporterImpl> compositing_mode_reporter_;
 
   // ContextProvider used on worker threads for rasterization.
   scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
@@ -143,7 +144,7 @@ class VizProcessTransportFactory : public ui::ContextFactory,
 
   viz::FrameSinkIdAllocator frame_sink_id_allocator_;
   viz::SubtreeCaptureIdAllocator subtree_capture_id_allocator_;
-  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  const raw_ptr<viz::HostFrameSinkManager> host_frame_sink_manager_;
 
   scoped_refptr<base::SingleThreadTaskRunner> const resize_task_runner_;
 

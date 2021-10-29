@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,8 +54,8 @@ class PDFiumAPIStringBufferAdapter {
   }
 
  private:
-  StringType* const str_;
-  void* const data_;
+  const raw_ptr<StringType> str_;
+  const raw_ptr<void> data_;
   const size_t expected_size_;
   const bool check_expected_size_;
   bool is_closed_;

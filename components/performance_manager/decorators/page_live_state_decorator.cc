@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
@@ -188,7 +189,7 @@ class PageLiveStateDataImpl
   bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  const PageNode* const page_node_;
+  const raw_ptr<const PageNode> page_node_;
 };
 
 const char kDescriberName[] = "PageLiveStateDecorator";

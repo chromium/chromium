@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_HOME_BUTTON_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -36,7 +37,7 @@ class HomeButton : public ToolbarButton {
   void UpdateHomePage(const ui::DropTargetEvent& event,
                       ui::mojom::DragOperation& output_drag_op);
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   base::WeakPtrFactory<HomeButton> weak_ptr_factory_{this};
 };

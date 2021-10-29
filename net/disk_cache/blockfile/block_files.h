@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/addr.h"
@@ -85,7 +86,7 @@ class NET_EXPORT_PRIVATE BlockHeader {
   BlockFileHeader* Header();
 
  private:
-  BlockFileHeader* header_;
+  raw_ptr<BlockFileHeader> header_;
 };
 
 typedef std::vector<BlockHeader> BlockFilesBitmaps;
@@ -152,7 +153,7 @@ class NET_EXPORT_PRIVATE BlockFiles {
   base::FilePath Name(int index);
 
   bool init_;
-  char* zero_buffer_;  // Buffer to speed-up cleaning deleted entries.
+  raw_ptr<char> zero_buffer_;  // Buffer to speed-up cleaning deleted entries.
   base::FilePath path_;  // Path to the backing folder.
   std::vector<scoped_refptr<MappedFile>> block_files_;  // The actual files.
   std::unique_ptr<base::ThreadChecker> thread_checker_;

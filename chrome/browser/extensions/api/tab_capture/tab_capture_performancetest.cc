@@ -217,7 +217,7 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     double sqr_sum = 0.0;
     int count = 0;
     for (const auto* begin_event : events_to_analyze) {
-      const auto* end_event = begin_event->other_event;
+      const auto* end_event = begin_event->other_event.get();
       if (!end_event)
         continue;
       const double latency = end_event->timestamp - begin_event->timestamp;

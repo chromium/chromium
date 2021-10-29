@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -2990,7 +2991,7 @@ class TabBlockedStateTestBrowser
     tab_strip_model_->SetTabBlocked(index, blocked);
   }
 
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 class DummySingleWebContentsDialogManager
@@ -3015,7 +3016,7 @@ class DummySingleWebContentsDialogManager
   gfx::NativeWindow dialog() override { return dialog_; }
 
  private:
-  web_modal::SingleWebContentsDialogManagerDelegate* delegate_;
+  raw_ptr<web_modal::SingleWebContentsDialogManagerDelegate> delegate_;
   gfx::NativeWindow dialog_;
 };
 
@@ -4240,7 +4241,7 @@ class TabStripModelTestWithReadLaterEnabled : public BrowserWithTestWindowTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 
-  MockFeaturePromoController* mock_promo_controller_ = nullptr;
+  raw_ptr<MockFeaturePromoController> mock_promo_controller_ = nullptr;
 };
 
 TEST_F(TabStripModelTestWithReadLaterEnabled, AddToReadLater) {

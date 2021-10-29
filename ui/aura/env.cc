@@ -8,6 +8,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
@@ -82,8 +83,8 @@ class EventObserverAdapter : public ui::EventHandler,
   }
 
  private:
-  ui::EventObserver* observer_;
-  ui::EventTarget* target_;
+  raw_ptr<ui::EventObserver> observer_;
+  raw_ptr<ui::EventTarget> target_;
   const std::set<ui::EventType> types_;
 };
 

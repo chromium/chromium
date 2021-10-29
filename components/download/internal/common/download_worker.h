@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/public/common/download_export.h"
@@ -69,7 +70,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
   void OnUrlDownloadHandlerCreated(
       UrlDownloadHandler::UniqueUrlDownloadHandlerPtr downloader) override;
 
-  DownloadWorker::Delegate* const delegate_;
+  const raw_ptr<DownloadWorker::Delegate> delegate_;
 
   // The starting position of the content for this worker to download.
   int64_t offset_;

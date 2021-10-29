@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -87,7 +88,7 @@ class CONTENT_EXPORT IndexedDBPreCloseTaskQueue {
     bool set_metadata_was_called_ = false;
     // Raw pointer is safe because |database_| is owned by the
     // IndexedDBStorageKeyState.
-    leveldb::DB* const database_;
+    const raw_ptr<leveldb::DB> database_;
   };
 
   // |on_complete| must not contain a refptr to the IndexedDBBackingStore, as

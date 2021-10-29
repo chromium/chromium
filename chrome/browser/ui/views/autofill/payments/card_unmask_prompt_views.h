@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -79,34 +80,34 @@ class CardUnmaskPromptViews : public CardUnmaskPromptView,
 
   void DateChanged();
 
-  CardUnmaskPromptController* controller_;
-  content::WebContents* web_contents_;
+  raw_ptr<CardUnmaskPromptController> controller_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Expository language at the top of the dialog.
-  views::Label* instructions_ = nullptr;
+  raw_ptr<views::Label> instructions_ = nullptr;
 
   // Holds the cvc and expiration inputs.
-  View* input_row_ = nullptr;
-  views::Textfield* cvc_input_ = nullptr;
-  views::Combobox* month_input_ = nullptr;
-  views::Combobox* year_input_ = nullptr;
+  raw_ptr<View> input_row_ = nullptr;
+  raw_ptr<views::Textfield> cvc_input_ = nullptr;
+  raw_ptr<views::Combobox> month_input_ = nullptr;
+  raw_ptr<views::Combobox> year_input_ = nullptr;
 
   MonthComboboxModel month_combobox_model_;
   YearComboboxModel year_combobox_model_;
 
-  views::View* new_card_link_ = nullptr;
+  raw_ptr<views::View> new_card_link_ = nullptr;
 
   // The error row view and label for most errors, which live beneath the
   // inputs.
-  views::View* temporary_error_ = nullptr;
-  views::Label* error_label_ = nullptr;
+  raw_ptr<views::View> temporary_error_ = nullptr;
+  raw_ptr<views::Label> error_label_ = nullptr;
 
-  views::View* controls_container_ = nullptr;
+  raw_ptr<views::View> controls_container_ = nullptr;
 
   // Elements related to progress or error when the request is being made.
-  views::View* overlay_ = nullptr;
-  views::Label* overlay_label_ = nullptr;
-  views::Throbber* progress_throbber_ = nullptr;
+  raw_ptr<views::View> overlay_ = nullptr;
+  raw_ptr<views::Label> overlay_label_ = nullptr;
+  raw_ptr<views::Throbber> progress_throbber_ = nullptr;
 
   base::WeakPtrFactory<CardUnmaskPromptViews> weak_ptr_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -59,8 +60,8 @@ class DataUseTrackerPrefs {
   void UpdateUsagePref(const std::string& pref_name,
                        int64_t message_size_bytes);
 
-  const base::Clock* time_clock_;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<const base::Clock> time_clock_;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

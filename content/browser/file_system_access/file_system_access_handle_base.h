@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
@@ -140,7 +141,7 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   }
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  FileSystemAccessManagerImpl* const manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_;
   base::WeakPtr<WebContents> web_contents_;
   const BindingContext context_;
   storage::FileSystemURL url_;

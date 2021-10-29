@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -236,15 +237,15 @@ class AutocompleteActionPredictor
   void OnHistoryServiceLoaded(
       history::HistoryService* history_service) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Set when this is a predictor for an incognito profile.
-  AutocompleteActionPredictor* main_profile_predictor_;
+  raw_ptr<AutocompleteActionPredictor> main_profile_predictor_;
 
   // Set when this is a predictor for a non-incognito profile, and the incognito
   // profile creates a predictor.  If this is non-NULL when we finish
   // initialization, we should call CopyFromMainProfile() on it.
-  AutocompleteActionPredictor* incognito_predictor_;
+  raw_ptr<AutocompleteActionPredictor> incognito_predictor_;
 
   // The backing data store.  This is nullptr for incognito-owned predictors.
   scoped_refptr<AutocompleteActionPredictorTable> table_;

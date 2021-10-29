@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/i18n/string_search.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/variant_vector.h"
@@ -85,7 +86,7 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
   }
 
  private:
-  AXPlatformNodeTextRangeProviderWin* host_;
+  raw_ptr<AXPlatformNodeTextRangeProviderWin> host_;
 };
 
 AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin() {

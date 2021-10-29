@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -167,7 +168,7 @@ class ReadingListModel {
     void ReadingListModelBeingShutdown(const ReadingListModel* model) override;
 
    private:
-    ReadingListModel* model_;
+    raw_ptr<ReadingListModel> model_;
   };
 
  protected:

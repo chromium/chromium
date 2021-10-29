@@ -5,6 +5,7 @@
 #include "chrome/browser/android/explore_sites/image_helper.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -47,7 +48,7 @@ class ImageHelper::Job {
   std::unique_ptr<SkBitmap> CombineImages();
 
  private:
-  ImageHelper* const image_helper_;
+  const raw_ptr<ImageHelper> image_helper_;
   const ImageJobType job_type_;
   ImageJobFinishedCallback job_finished_callback_;
   BitmapCallback bitmap_callback_;

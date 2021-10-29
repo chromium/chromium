@@ -17,6 +17,7 @@
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -413,7 +414,7 @@ class TestRectangleBuffer {
 
  private:
   const char* string_;
-  const SkColor* buffer_;
+  raw_ptr<const SkColor> buffer_;
   int stride_;
   int row_count_;
 };

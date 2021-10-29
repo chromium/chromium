@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
@@ -149,7 +150,7 @@ class ThumbnailTabHelperBrowserTest : public InProcessBrowserTest {
   GURL url1_;
   GURL url2_;
 
-  const BrowserList* active_browser_list_ = nullptr;
+  raw_ptr<const BrowserList> active_browser_list_ = nullptr;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

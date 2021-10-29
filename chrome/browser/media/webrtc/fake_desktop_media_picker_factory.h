@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"
@@ -55,8 +56,8 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
       override;
 
  private:
-  FakeDesktopMediaPicker* picker_;
-  TestFlags* test_flags_;
+  raw_ptr<FakeDesktopMediaPicker> picker_;
+  raw_ptr<TestFlags> test_flags_;
   int tests_count_;
   int current_test_;
 };
@@ -81,7 +82,7 @@ class FakeDesktopMediaPicker : public DesktopMediaPicker {
  private:
   void CallCallback(DoneCallback done_callback);
 
-  FakeDesktopMediaPickerFactory::TestFlags* expectation_;
+  raw_ptr<FakeDesktopMediaPickerFactory::TestFlags> expectation_;
   DoneCallback done_callback_;
   DesktopMediaPicker::Params picker_params_;
 

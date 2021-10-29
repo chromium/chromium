@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 #define UI_VIEWS_CONTROLS_VIEWS_TEXT_SERVICES_CONTEXT_MENU_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
@@ -41,7 +42,7 @@ class VIEWS_EXPORT ViewsTextServicesContextMenuBase
 
  private:
   // The view associated with the menu. Weak. Owns |this|.
-  Textfield* const client_;
+  const raw_ptr<Textfield> client_;
 };
 
 }  // namespace views

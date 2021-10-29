@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -168,8 +169,8 @@ class CaptivePortalTabReloader {
   // Has |captive_portal_service_| (if present) start a captive portal check.
   virtual void CheckForCaptivePortal();
 
-  CaptivePortalService* captive_portal_service_;
-  content::WebContents* web_contents_;
+  raw_ptr<CaptivePortalService> captive_portal_service_;
+  raw_ptr<content::WebContents> web_contents_;
 
   State state_;
 

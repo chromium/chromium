@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/hid/hid_test_utils.h"
 #include "content/public/browser/content_browser_client.h"
@@ -76,7 +77,7 @@ class HidTest : public ContentBrowserTest {
 
  private:
   HidTestContentBrowserClient test_client_;
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   device::FakeHidManager hid_manager_;
 };
 

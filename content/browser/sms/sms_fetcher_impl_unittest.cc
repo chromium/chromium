@@ -5,6 +5,7 @@
 #include "content/browser/sms/sms_fetcher_impl.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/public/browser/content_browser_client.h"
@@ -86,7 +87,7 @@ class SmsFetcherImplTest : public RenderViewHostTestHarness {
   MockSmsProvider* provider() { return &provider_; }
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   NiceMock<MockContentBrowserClient> client_;
   NiceMock<MockSmsProvider> provider_;
 };

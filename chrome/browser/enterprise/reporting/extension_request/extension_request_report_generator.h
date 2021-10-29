@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 
 class Profile;
@@ -24,7 +25,7 @@ class ExtensionRequestReportGenerator {
  public:
   struct ExtensionRequestData : public RealTimeReportGenerator::Data {
     explicit ExtensionRequestData(Profile* profile) : profile(profile) {}
-    Profile* profile;
+    raw_ptr<Profile> profile;
   };
 
   // Extension request are moved out of the pending list once user confirm the

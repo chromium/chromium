@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -37,7 +38,7 @@ class HSTSStateManager {
   ~HSTSStateManager();
 
  private:
-  net::TransportSecurityState* state_;
+  raw_ptr<net::TransportSecurityState> state_;
   const bool is_hsts_;
   const std::string host_;
 };

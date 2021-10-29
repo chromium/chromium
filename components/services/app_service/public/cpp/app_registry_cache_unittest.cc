@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

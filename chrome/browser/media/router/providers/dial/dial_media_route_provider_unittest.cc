@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -418,7 +419,7 @@ class DialMediaRouteProviderTest : public ::testing::Test {
   std::unique_ptr<mojo::Receiver<mojom::MediaRouter>> router_receiver_;
 
   TestDialMediaSinkServiceImpl mock_sink_service_;
-  TestDialActivityManager* activity_manager_ = nullptr;
+  raw_ptr<TestDialActivityManager> activity_manager_ = nullptr;
   std::unique_ptr<DialMediaRouteProvider> provider_;
 
   MediaSinkInternal sink_{CreateDialSink(1)};

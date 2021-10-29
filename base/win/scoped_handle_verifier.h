@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/debug/stack_trace.h"
 #include "base/hash/hash.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/threading/thread_local.h"
 #include "base/win/windows_types.h"
@@ -38,9 +39,9 @@ struct ScopedHandleVerifierInfo {
   ScopedHandleVerifierInfo(ScopedHandleVerifierInfo&&) noexcept;
   ScopedHandleVerifierInfo& operator=(ScopedHandleVerifierInfo&&) noexcept;
 
-  const void* owner;
-  const void* pc1;
-  const void* pc2;
+  raw_ptr<const void> owner;
+  raw_ptr<const void> pc1;
+  raw_ptr<const void> pc2;
   std::unique_ptr<debug::StackTrace> stack;
   DWORD thread_id;
 };
@@ -95,7 +96,7 @@ class [[clang::lto_visibility_public]] ScopedHandleVerifier {
   base::debug::StackTrace creation_stack_;
   bool enabled_;
   base::ThreadLocalBoolean closing_;
-  base::internal::LockImpl* lock_;
+  raw_ptr<base::internal::LockImpl> lock_;
   std::unordered_map<HANDLE, ScopedHandleVerifierInfo, HandleHash> map_;
 };
 

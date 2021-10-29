@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -175,9 +176,9 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
         views::PlatformStyle::kIsOkButtonLeading ? 0 : 1);
   }
 
-  NiceMock<feature_engagement::test::MockTracker>* mock_tracker_;
-  FeaturePromoControllerViews* promo_controller_;
-  FeaturePromoSnoozeService* snooze_service_;
+  raw_ptr<NiceMock<feature_engagement::test::MockTracker>> mock_tracker_;
+  raw_ptr<FeaturePromoControllerViews> promo_controller_;
+  raw_ptr<FeaturePromoSnoozeService> snooze_service_;
 
  private:
   static void RegisterMockTracker(content::BrowserContext* context) {

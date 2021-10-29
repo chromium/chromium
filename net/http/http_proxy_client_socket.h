@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
@@ -169,7 +170,7 @@ class NET_EXPORT_PRIVATE HttpProxyClientSocket : public ProxyClientSocket {
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  ProxyDelegate* proxy_delegate_;
+  raw_ptr<ProxyDelegate> proxy_delegate_;
 
   // Network traffic annotation for handshaking and setup.
   const NetworkTrafficAnnotationTag traffic_annotation_;

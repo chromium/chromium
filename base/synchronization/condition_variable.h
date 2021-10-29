@@ -62,6 +62,7 @@
 #ifndef BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 #define BASE_SYNCHRONIZATION_CONDITION_VARIABLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
@@ -114,14 +115,15 @@ class BASE_EXPORT ConditionVariable {
  private:
 #if defined(OS_WIN)
   CHROME_CONDITION_VARIABLE cv_;
-  CHROME_SRWLOCK* const srwlock_;
+  const raw_ptr<CHROME_SRWLOCK> srwlock_;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   pthread_cond_t condition_;
-  pthread_mutex_t* user_mutex_;
+  raw_ptr<pthread_mutex_t> user_mutex_;
 #endif
 
 #if DCHECK_IS_ON()
-  base::Lock* const user_lock_;  // Needed to adjust shadow lock state on wait.
+  const raw_ptr<base::Lock>
+      user_lock_;  // Needed to adjust shadow lock state on wait.
 #endif
 
   // Whether a thread invoking Wait() on this ConditionalVariable should be

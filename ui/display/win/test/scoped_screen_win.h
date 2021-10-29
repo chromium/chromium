@@ -6,6 +6,7 @@
 #define UI_DISPLAY_WIN_TEST_SCOPED_SCREEN_WIN_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/win/screen_win.h"
 
 namespace display {
@@ -26,7 +27,7 @@ class ScopedScreenWin : public ScreenWin {
   ~ScopedScreenWin() override;
 
  private:
-  Screen* old_screen_ = Screen::SetScreenInstance(this);
+  raw_ptr<Screen> old_screen_ = Screen::SetScreenInstance(this);
 };
 
 }  // namespace test

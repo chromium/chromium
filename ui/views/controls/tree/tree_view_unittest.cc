@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -149,7 +150,7 @@ class TreeViewTest : public ViewsTestBase {
   PrefixSelector* selector() { return tree_->GetPrefixSelector(); }
 
   ui::TreeNodeModel<TestNode> model_;
-  TreeView* tree_;
+  raw_ptr<TreeView> tree_;
   UniqueWidgetPtr widget_;
 
  private:

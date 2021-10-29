@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/image_fetcher/core/cache/image_metadata_store.h"
@@ -108,7 +109,7 @@ class ImageMetadataStoreLevelDB : public ImageMetadataStore {
   std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>
       database_;
   // Clock is owned by the service that creates this object.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
   base::WeakPtrFactory<ImageMetadataStoreLevelDB> weak_ptr_factory_{this};
 };
 

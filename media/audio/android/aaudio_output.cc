@@ -6,6 +6,7 @@
 
 #include "base/android/build_info.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -30,7 +31,7 @@ class LOCKABLE AAudioDestructionHelper {
 
   AAudioOutputStream* GetAndLockStream() EXCLUSIVE_LOCK_FUNCTION() {
     lock_.Acquire();
-    return is_closing_ ? nullptr : output_stream_;
+    return is_closing_ ? nullptr : output_stream_.get();
   }
 
   void UnlockStream() UNLOCK_FUNCTION() { lock_.Release(); }
@@ -45,8 +46,8 @@ class LOCKABLE AAudioDestructionHelper {
 
  private:
   base::Lock lock_;
-  AAudioOutputStream* output_stream_ GUARDED_BY(lock_) = nullptr;
-  AAudioStream* aaudio_stream_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<AAudioOutputStream> output_stream_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<AAudioStream> aaudio_stream_ GUARDED_BY(lock_) = nullptr;
   bool is_closing_ GUARDED_BY(lock_) = false;
 };
 

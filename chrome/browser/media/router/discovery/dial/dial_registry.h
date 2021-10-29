@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -207,11 +208,12 @@ class DialRegistry
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Set just after construction, only used on the IO thread.
-  net::NetLog* net_log_ = nullptr;
+  raw_ptr<net::NetLog> net_log_ = nullptr;
 
-  network::NetworkConnectionTracker* network_connection_tracker_ = nullptr;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_ =
+      nullptr;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   friend class DialMediaSinkServiceImplTest;
   friend class DialRegistryTest;

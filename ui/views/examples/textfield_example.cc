@@ -105,7 +105,8 @@ void TextfieldExample::CreateExampleView(View* container) {
   container->AddChildView(std::make_unique<View>());
   set_background_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&Textfield::SetBackgroundColor,
-                          base::Unretained(password_), gfx::kGoogleRed300),
+                          base::Unretained(password_.get()),
+                          gfx::kGoogleRed300),
       GetStringUTF16(IDS_TEXTFIELD_BACKGROUND_LABEL)));
   container->AddChildView(std::make_unique<View>());
   clear_all_ = container->AddChildView(std::make_unique<LabelButton>(

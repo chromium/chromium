@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/host/host_display_client.h"
@@ -45,7 +46,7 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   }
 
  private:
-  ui::WindowAndroid* root_window_;
+  raw_ptr<ui::WindowAndroid> root_window_;
 };
 }  // namespace
 

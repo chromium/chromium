@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -61,7 +62,7 @@ class SendTabToSelfSubMenuModel : public ui::SimpleMenuModel,
 
   // Injected on construction and set to null if the WebContents is being
   // destroyed.
-  content::WebContents* tab_;
+  raw_ptr<content::WebContents> tab_;
   const SendTabToSelfMenuType menu_type_;
   const GURL link_url_;
   std::vector<ValidDeviceItem> valid_device_items_;

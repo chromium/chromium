@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"
@@ -55,17 +56,17 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   std::u16string GetOkButtonLabel() const;
   std::u16string GetCancelButtonLabel() const;
 
-  LocalCardMigrationDialogController* controller_;
+  raw_ptr<LocalCardMigrationDialogController> controller_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Pointer points to the LocalCardMigrationOfferView. Can be null when the
   // dialog is not in the 'offer' state.
-  LocalCardMigrationOfferView* offer_view_ = nullptr;
+  raw_ptr<LocalCardMigrationOfferView> offer_view_ = nullptr;
 
   // The view containing a list of cards. It is the content of the scroll bar.
   // Owned by the LocalCardMigrationOfferView.
-  views::View* card_list_view_;
+  raw_ptr<views::View> card_list_view_;
 };
 
 }  // namespace autofill

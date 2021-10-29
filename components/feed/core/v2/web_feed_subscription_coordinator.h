@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
@@ -168,8 +169,8 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void IsWebFeedSubscriberDone(base::OnceCallback<void(bool)> callback);
   void SubscribedWebFeedCountDone(base::OnceCallback<void(int)> callback);
 
-  Delegate* delegate_;       // Always non-null.
-  FeedStream* feed_stream_;  // Always non-null, it owns this.
+  raw_ptr<Delegate> delegate_;       // Always non-null.
+  raw_ptr<FeedStream> feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
   // Whether `Populate()` has been called.
   bool populated_ = false;

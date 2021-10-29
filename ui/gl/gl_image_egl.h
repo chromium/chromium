@@ -8,6 +8,7 @@
 #include <EGL/eglplatform.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
@@ -47,7 +48,7 @@ class GL_EXPORT GLImageEGL : public GLImage {
                   void* buffer /* EGLClientBuffer */,
                   const EGLint* attrs);
 
-  void* egl_image_ /* EGLImageKHR */;
+  raw_ptr<void> egl_image_ /* EGLImageKHR */;
   const gfx::Size size_;
   base::ThreadChecker thread_checker_;
 };

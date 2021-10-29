@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -58,7 +59,7 @@ class RecoveryInstallGlobalError : public GlobalErrorWithStandardBubble,
   bool elevation_needed_;
 
   // The Profile this service belongs to.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Monitors registry change for recovery component install.
   PrefChangeRegistrar pref_registrar_;

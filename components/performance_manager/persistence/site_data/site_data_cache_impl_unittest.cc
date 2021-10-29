@@ -8,6 +8,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
@@ -47,7 +48,7 @@ class SiteDataCacheImplTest : public ::testing::Test {
     data_cache_ = std::make_unique<SiteDataCacheImpl>(
         browser_context_.UniqueId(), browser_context_.GetPath());
     mock_db_ = new ::testing::StrictMock<MockSiteCache>();
-    data_cache_->SetDataStoreForTesting(base::WrapUnique(mock_db_));
+    data_cache_->SetDataStoreForTesting(base::WrapUnique(mock_db_.get()));
     WaitForAsyncOperationsToComplete();
   }
 
@@ -113,18 +114,18 @@ class SiteDataCacheImplTest : public ::testing::Test {
   content::TestBrowserContext browser_context_;
 
   // Owned by |data_cache_|.
-  ::testing::StrictMock<MockSiteCache>* mock_db_ = nullptr;
+  raw_ptr<::testing::StrictMock<MockSiteCache>> mock_db_ = nullptr;
   std::unique_ptr<SiteDataCacheFactory> data_cache_factory_;
   std::unique_ptr<SiteDataCacheImpl> data_cache_;
 
   std::unique_ptr<SiteDataReader> reader_;
   std::unique_ptr<SiteDataWriter> writer_;
-  internal::SiteDataImpl* data_ = nullptr;
+  raw_ptr<internal::SiteDataImpl> data_ = nullptr;
   url::Origin origin_ = url::Origin::Create(GURL("http://www.foo.com"));
 
   std::unique_ptr<SiteDataReader> reader2_;
   std::unique_ptr<SiteDataWriter> writer2_;
-  internal::SiteDataImpl* data2_ = nullptr;
+  raw_ptr<internal::SiteDataImpl> data2_ = nullptr;
   url::Origin origin2_ = url::Origin::Create(GURL("http://www.bar.com"));
 };
 

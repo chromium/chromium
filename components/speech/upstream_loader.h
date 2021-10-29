@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -66,7 +67,7 @@ class UpstreamLoader : public network::mojom::ChunkedDataPipeGetter {
   network::mojom::ChunkedDataPipeGetter::GetSizeCallback get_size_callback_;
 
   // The UpstreamLoaderClient must outlive the UpstreamLoader.
-  UpstreamLoaderClient* const upstream_loader_client_;
+  const raw_ptr<UpstreamLoaderClient> upstream_loader_client_;
 
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   mojo::ReceiverSet<network::mojom::ChunkedDataPipeGetter> receiver_set_;

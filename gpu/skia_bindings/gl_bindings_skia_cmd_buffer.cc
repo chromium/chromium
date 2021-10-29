@@ -5,6 +5,7 @@
 #include "gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
@@ -23,7 +24,7 @@ class ScopedCallingGLFromSkia {
   ~ScopedCallingGLFromSkia() { context_support_->DidCallGLFromSkia(); }
 
  private:
-  ContextSupport* context_support_;
+  raw_ptr<ContextSupport> context_support_;
 };
 
 template <typename R, typename... Args>

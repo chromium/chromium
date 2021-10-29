@@ -4,6 +4,7 @@
 
 #include "content/test/did_commit_navigation_interceptor.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,9 +40,9 @@ class DidCommitNavigationInterceptor::FrameAgent
   }
 
  private:
-  DidCommitNavigationInterceptor* interceptor_;
+  raw_ptr<DidCommitNavigationInterceptor> interceptor_;
 
-  RenderFrameHostImpl* rfhi_;
+  raw_ptr<RenderFrameHostImpl> rfhi_;
 };
 
 DidCommitNavigationInterceptor::DidCommitNavigationInterceptor(

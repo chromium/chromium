@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/test/test_views.h"
@@ -74,7 +75,7 @@ class InterpolatingLayoutManagerTest : public testing::Test {
   views::View* host_view() { return host_view_.get(); }
 
  private:
-  InterpolatingLayoutManager* layout_manager_ = nullptr;
+  raw_ptr<InterpolatingLayoutManager> layout_manager_ = nullptr;
   std::unique_ptr<views::View> host_view_;
 };
 

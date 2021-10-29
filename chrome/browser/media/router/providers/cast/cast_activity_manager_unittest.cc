@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -495,8 +496,8 @@ class CastActivityManagerTest : public testing::Test,
   MockCastAppDiscoveryService app_discovery_service_;
   std::unique_ptr<CastActivityManager> manager_;
   std::unique_ptr<CastSessionTracker> session_tracker_;
-  MockAppActivity* app_activity_ = nullptr;
-  MockMirroringActivity* mirroring_activity_ = nullptr;
+  raw_ptr<MockAppActivity> app_activity_ = nullptr;
+  raw_ptr<MockMirroringActivity> mirroring_activity_ = nullptr;
   MockAppActivityCallback app_activity_callback_ = base::DoNothing();
   MockMirroringActivityCallback mirroring_activity_callback_ =
       base::DoNothing();

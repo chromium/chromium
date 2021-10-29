@@ -308,7 +308,7 @@ void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
   DCHECK(graph()->NodeInGraph(opener));
   DCHECK_NE(this, opener->page_node());
 
-  auto* previous_opener = opener_frame_node_;
+  auto* previous_opener = opener_frame_node_.get();
   if (previous_opener)
     previous_opener->RemoveOpenedPage(PassKey(), this);
   opener_frame_node_ = opener;
@@ -322,7 +322,7 @@ void PageNodeImpl::ClearOpenerFrameNode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(nullptr, opener_frame_node_);
 
-  auto* previous_opener = opener_frame_node_;
+  auto* previous_opener = opener_frame_node_.get();
 
   opener_frame_node_->RemoveOpenedPage(PassKey(), this);
   opener_frame_node_ = nullptr;
@@ -340,7 +340,7 @@ void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
   DCHECK_NE(this, embedder->page_node());
   DCHECK_NE(EmbeddingType::kInvalid, embedding_type);
 
-  auto* previous_embedder = embedder_frame_node_;
+  auto* previous_embedder = embedder_frame_node_.get();
   auto previous_type = embedding_type_;
 
   if (previous_embedder)
@@ -359,7 +359,7 @@ void PageNodeImpl::ClearEmbedderFrameNodeAndEmbeddingType() {
   DCHECK_NE(nullptr, embedder_frame_node_);
   DCHECK_NE(EmbeddingType::kInvalid, embedding_type_);
 
-  auto* previous_embedder = embedder_frame_node_;
+  auto* previous_embedder = embedder_frame_node_.get();
   auto previous_type = embedding_type_;
 
   embedder_frame_node_->RemoveEmbeddedPage(PassKey(), this);

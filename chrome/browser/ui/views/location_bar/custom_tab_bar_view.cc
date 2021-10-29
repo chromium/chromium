@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -192,9 +193,9 @@ class CustomTabBarTitleOriginView : public views::View {
 
  private:
   // Can be nullptr.
-  views::Label* title_label_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
 
-  views::Label* location_label_ = nullptr;
+  raw_ptr<views::Label> location_label_ = nullptr;
 };
 
 BEGIN_METADATA(CustomTabBarTitleOriginView, views::View)

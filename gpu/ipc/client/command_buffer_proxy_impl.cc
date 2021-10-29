@@ -141,7 +141,7 @@ ContextResult CommandBufferProxyImpl::Initialize(
 }
 
 void CommandBufferProxyImpl::OnDisconnect() {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   base::AutoLock last_state_lock(last_state_lock_);
 
   gpu::error::ContextLostReason context_lost_reason =
@@ -163,7 +163,7 @@ void CommandBufferProxyImpl::BindMediaReceiver(
 
 void CommandBufferProxyImpl::OnDestroyed(gpu::error::ContextLostReason reason,
                                          gpu::error::Error error) {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   base::AutoLock last_state_lock(last_state_lock_);
   OnGpuAsyncMessageError(reason, error);
 }
@@ -180,19 +180,19 @@ void CommandBufferProxyImpl::OnGpuSwitched(
 }
 
 void CommandBufferProxyImpl::AddDeletionObserver(DeletionObserver* observer) {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   deletion_observers_.AddObserver(observer);
 }
 
 void CommandBufferProxyImpl::RemoveDeletionObserver(
     DeletionObserver* observer) {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   deletion_observers_.RemoveObserver(observer);
 }
 
 void CommandBufferProxyImpl::OnSignalAck(uint32_t id,
                                          const CommandBuffer::State& state) {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   {
     base::AutoLock last_state_lock(last_state_lock_);
     SetStateFromMessageReply(state);
@@ -776,7 +776,7 @@ void CommandBufferProxyImpl::OnSwapBuffersCompleted(
 void CommandBufferProxyImpl::OnBufferPresented(
     uint64_t swap_id,
     const gfx::PresentationFeedback& feedback) {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   if (gpu_control_client_)
     gpu_control_client_->OnSwapBufferPresented(swap_id, feedback);
 
@@ -845,7 +845,7 @@ void CommandBufferProxyImpl::DisconnectChannelInFreshCallStack() {
 }
 
 void CommandBufferProxyImpl::LockAndDisconnectChannel() {
-  base::AutoLockMaybe lock(lock_);
+  base::AutoLockMaybe lock(lock_.get());
   DisconnectChannel();
 }
 

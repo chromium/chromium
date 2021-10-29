@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/image_fetcher/core/fake_image_decoder.h"
@@ -145,15 +146,15 @@ class NtpSnippetsCachedImageFetcherTest
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   std::unique_ptr<CachedImageFetcher> cached_image_fetcher_;
-  image_fetcher::FakeImageDecoder* fake_image_decoder_;
+  raw_ptr<image_fetcher::FakeImageDecoder> fake_image_decoder_;
 
   std::unique_ptr<RemoteSuggestionsDatabase> database_;
   std::map<std::string, SnippetProto> suggestion_db_storage_;
   std::map<std::string, SnippetImageProto> image_db_storage_;
 
   // Owned by |database_|.
-  FakeDB<SnippetProto>* suggestion_db_;
-  FakeDB<SnippetImageProto>* image_db_;
+  raw_ptr<FakeDB<SnippetProto>> suggestion_db_;
+  raw_ptr<FakeDB<SnippetImageProto>> image_db_;
 
   TestingPrefServiceSimple pref_service_;
   base::test::TaskEnvironment task_environment_;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test.h"
@@ -38,7 +39,7 @@ class ToolbarActionsModelBrowserTest : public extensions::ExtensionBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-  ToolbarActionsModel* toolbar_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel> toolbar_model_ = nullptr;
   base::HistogramTester histogram_tester_;
 };
 

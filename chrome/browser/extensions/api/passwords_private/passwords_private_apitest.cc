@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece_forward.h"
@@ -111,7 +112,7 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
   }
 
  private:
-  TestPasswordsPrivateDelegate* s_test_delegate_ = nullptr;
+  raw_ptr<TestPasswordsPrivateDelegate> s_test_delegate_ = nullptr;
 };
 
 }  // namespace

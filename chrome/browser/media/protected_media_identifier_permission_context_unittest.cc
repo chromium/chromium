@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/common/chrome_switches.h"
 #include "media/base/media_switches.h"
@@ -26,7 +27,7 @@ class ProtectedMediaIdentifierPermissionContextTest : public testing::Test {
   GURL requesting_sub_domain_origin_;
 
   base::test::ScopedCommandLine scoped_command_line_;
-  base::CommandLine* command_line_;
+  raw_ptr<base::CommandLine> command_line_;
 };
 
 TEST_F(ProtectedMediaIdentifierPermissionContextTest,

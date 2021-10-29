@@ -52,7 +52,7 @@ void MessageBoxExample::CreateExampleView(View* container) {
             message_box->SetCheckBoxSelected(
                 !message_box->IsCheckBoxSelected());
           },
-          base::Unretained(message_box_view_)),
+          base::Unretained(message_box_view_.get())),
       GetStringUTF16(IDS_MESSAGE_TOGGLE_LABEL)));
 }
 

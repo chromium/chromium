@@ -11,6 +11,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "base/memory/raw_ptr.h"
+
 namespace device {
 
 class BluetoothTestWinrt;
@@ -64,7 +66,7 @@ class FakeGattSessionWinrt
   IFACEMETHODIMP Close() override;
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
   bool maintain_connection_ = false;
 
   ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::GattSessionStatus
@@ -99,7 +101,7 @@ class FakeGattSessionStaticsWinrt
               GattSession*>** operation) override;
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
 };
 
 }  // namespace device

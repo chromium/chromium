@@ -8,6 +8,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
@@ -145,7 +146,7 @@ class TSFBridgeImpl : public TSFBridge {
   TfClientId client_id_ = TF_CLIENTID_NULL;
 
   // Current focused text input client. Do not free |client_|.
-  TextInputClient* client_ = nullptr;
+  raw_ptr<TextInputClient> client_ = nullptr;
 
   // Input Type of current focused text input client.
   TextInputType input_type_ = TEXT_INPUT_TYPE_NONE;

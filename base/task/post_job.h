@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 
 namespace base {
@@ -70,8 +71,9 @@ class BASE_EXPORT JobDelegate {
  private:
   static constexpr uint8_t kInvalidTaskId = std::numeric_limits<uint8_t>::max();
 
-  internal::JobTaskSource* const task_source_;
-  internal::PooledTaskRunnerDelegate* const pooled_task_runner_delegate_;
+  const raw_ptr<internal::JobTaskSource> task_source_;
+  const raw_ptr<internal::PooledTaskRunnerDelegate>
+      pooled_task_runner_delegate_;
   uint8_t task_id_ = kInvalidTaskId;
 
 #if DCHECK_IS_ON()

@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -141,7 +142,7 @@ class HostedAppsCounterTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
 
   bool finished_;
   browsing_data::BrowsingDataCounter::ResultInt num_apps_;

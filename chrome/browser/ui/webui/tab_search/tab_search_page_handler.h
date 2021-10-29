@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_PAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -137,8 +138,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
-  content::WebUI* const web_ui_;
-  ui::MojoBubbleWebUIController* const webui_controller_;
+  const raw_ptr<content::WebUI> web_ui_;
+  const raw_ptr<ui::MojoBubbleWebUIController> webui_controller_;
   BrowserTabStripTracker browser_tab_strip_tracker_{this, this};
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
 

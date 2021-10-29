@@ -6,6 +6,7 @@
 #define UI_EVENTS_SCOPED_TARGET_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
@@ -37,13 +38,13 @@ class EVENTS_EXPORT ScopedTargetHandler : public EventHandler {
 
   // An EventTarget that has its target handler replaced with |this| for a life
   // time of |this|.
-  EventTarget* target_;
+  raw_ptr<EventTarget> target_;
 
   // An EventHandler that gets restored on |view_| when |this| is destroyed.
-  EventHandler* original_handler_;
+  raw_ptr<EventHandler> original_handler_;
 
   // A new handler that gets events in addition to the |original_handler_|.
-  EventHandler* new_handler_;
+  raw_ptr<EventHandler> new_handler_;
 
   // Used to detect if handling an event has caused |this| to be deleted. Must
   // be last.

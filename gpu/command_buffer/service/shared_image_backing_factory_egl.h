@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_common.h"
@@ -91,7 +92,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
       uint32_t usage,
       base::span<const uint8_t> pixel_data);
 
-  SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
+  raw_ptr<SharedImageBatchAccessManager> batch_access_manager_ = nullptr;
 };
 
 }  // namespace gpu

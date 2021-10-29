@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -112,8 +113,8 @@ class BinaryFCMService : public gcm::GCMAppHandler {
 
   // References to the profile's GCMDriver and InstanceIDDriver. Both are
   // unowned.
-  gcm::GCMDriver* gcm_driver_;
-  instance_id::InstanceIDDriver* instance_id_driver_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
+  raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
 
   // Queue of pending GetToken calls.
   std::deque<base::OnceClosure> pending_token_calls_;

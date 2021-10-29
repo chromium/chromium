@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 
@@ -68,7 +69,7 @@ class ShortcutsProvider : public AutocompleteProvider,
   // The default max relevance unless overridden by a field trial.
   static const int kShortcutsProviderDefaultMaxRelevance;
 
-  AutocompleteProviderClient* client_;
+  raw_ptr<AutocompleteProviderClient> client_;
   bool initialized_;
 };
 

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
 
@@ -49,7 +50,7 @@ class InkDropRippleTestApi
 
  private:
   // The InkDropedRipple to provide internal access to.
-  InkDropRipple* ink_drop_ripple_;
+  raw_ptr<InkDropRipple> ink_drop_ripple_;
 };
 
 }  // namespace test

@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -126,9 +127,9 @@ class FamilyInfoFetcher {
   void FamilyProfileFetched(const std::string& response);
   void FamilyMembersFetched(const std::string& response);
 
-  Consumer* consumer_;
+  raw_ptr<Consumer> consumer_;
   const CoreAccountId primary_account_id_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::string request_path_;

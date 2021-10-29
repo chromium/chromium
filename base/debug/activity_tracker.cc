@@ -380,13 +380,13 @@ bool ActivityUserData::CreateSnapshot(Snapshot* output_snapshot) const {
     switch (entry.second.type) {
       case RAW_VALUE:
       case STRING_VALUE:
-        value.long_value_ =
-            std::string(reinterpret_cast<char*>(entry.second.memory), size);
+        value.long_value_ = std::string(
+            reinterpret_cast<char*>(entry.second.memory.get()), size);
         break;
       case RAW_VALUE_REFERENCE:
       case STRING_VALUE_REFERENCE: {
         ReferenceRecord* ref =
-            reinterpret_cast<ReferenceRecord*>(entry.second.memory);
+            reinterpret_cast<ReferenceRecord*>(entry.second.memory.get());
         value.ref_value_ = StringPiece(
             reinterpret_cast<char*>(static_cast<uintptr_t>(ref->address)),
             static_cast<size_t>(ref->size));
@@ -394,13 +394,13 @@ bool ActivityUserData::CreateSnapshot(Snapshot* output_snapshot) const {
       case BOOL_VALUE:
       case CHAR_VALUE:
         value.short_value_ =
-            reinterpret_cast<std::atomic<char>*>(entry.second.memory)
+            reinterpret_cast<std::atomic<char>*>(entry.second.memory.get())
                 ->load(std::memory_order_relaxed);
         break;
       case SIGNED_VALUE:
       case UNSIGNED_VALUE:
         value.short_value_ =
-            reinterpret_cast<std::atomic<uint64_t>*>(entry.second.memory)
+            reinterpret_cast<std::atomic<uint64_t>*>(entry.second.memory.get())
                 ->load(std::memory_order_relaxed);
         break;
       case END_OF_VALUES:  // Included for completeness purposes.
@@ -503,7 +503,7 @@ void* ActivityUserData::Set(StringPiece name,
     }
 
     // Allocate a chunk of memory.
-    FieldHeader* header = reinterpret_cast<FieldHeader*>(memory_);
+    FieldHeader* header = reinterpret_cast<FieldHeader*>(memory_.get());
     memory_ += full_size;
     available_ -= full_size;
 
@@ -563,7 +563,7 @@ void ActivityUserData::ImportExistingData() const {
     return;
 
   while (available_ > sizeof(FieldHeader)) {
-    FieldHeader* header = reinterpret_cast<FieldHeader*>(memory_);
+    FieldHeader* header = reinterpret_cast<FieldHeader*>(memory_.get());
     ValueType type =
         static_cast<ValueType>(header->type.load(std::memory_order_acquire));
     if (type == END_OF_VALUES)

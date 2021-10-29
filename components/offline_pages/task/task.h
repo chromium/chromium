@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 
 namespace offline_pages {
 class TaskQueue;
@@ -52,7 +53,7 @@ class Task {
   };
   // TaskQueue outlives and owns this task. Non-null only when this task is
   // owned by a task queue.
-  TaskQueue* task_queue_ = nullptr;
+  raw_ptr<TaskQueue> task_queue_ = nullptr;
   // Reports completion or suspension to the caller.
   base::OnceClosure task_completion_callback_;
   TaskState state_ = TaskState::kWaiting;

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -131,7 +132,7 @@ class MockNetwork {
 
  private:
   // |mock_server_| is owned by ServiceWorkerNewScriptLoaderTest.
-  MockHTTPServer* const mock_server_;
+  const raw_ptr<MockHTTPServer> mock_server_;
 
   // The most recent request received.
   network::ResourceRequest last_request_;

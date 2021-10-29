@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 
@@ -37,7 +38,7 @@ class ReadHandleImpl
   }
 
  private:
-  void* ptr_;
+  raw_ptr<void> ptr_;
   uint32_t size_;
 };
 
@@ -69,7 +70,7 @@ class WriteHandleImpl
   }
 
  private:
-  const void* ptr_;  // Pointer to client-visible shared memory.
+  raw_ptr<const void> ptr_;  // Pointer to client-visible shared memory.
   uint32_t size_;
 };
 

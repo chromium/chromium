@@ -5,6 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/notification_view_base.h"
 
@@ -70,7 +71,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   std::vector<views::View*> GetChildrenForLayerAdjustment();
 
   // Notification title, which is dynamically created inside view hierarchy.
-  views::Label* title_view_ = nullptr;
+  raw_ptr<views::Label> title_view_ = nullptr;
 
   // Views for inline settings.
   views::RadioButton* block_all_button_ = nullptr;

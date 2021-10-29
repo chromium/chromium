@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_observer.h"
@@ -54,7 +55,7 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
    private:
     friend FontPrefChangeNotifier;
 
-    FontPrefChangeNotifier* notifier_ = nullptr;
+    raw_ptr<FontPrefChangeNotifier> notifier_ = nullptr;
     FontPrefChangeNotifier::Callback callback_;
   };
 
@@ -76,7 +77,7 @@ class FontPrefChangeNotifier : public PrefObserver, public KeyedService {
   void OnPreferenceChanged(PrefService* service,
                            const std::string& pref_name) override;
 
-  PrefService* pref_service_;  // Non-owning.
+  raw_ptr<PrefService> pref_service_;  // Non-owning.
 
   // Non-owning pointers to the Registrars that have registered themselves
   // with us. We expect few registrars.

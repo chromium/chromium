@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -152,7 +153,7 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
 
   const uint64_t acquire_next_image_timeout_ns_;
 
-  VulkanDeviceQueue* device_queue_ = nullptr;
+  raw_ptr<VulkanDeviceQueue> device_queue_ = nullptr;
   bool is_incremental_present_supported_ = false;
   VkSwapchainKHR swap_chain_ GUARDED_BY(lock_) = VK_NULL_HANDLE;
   gfx::Size size_;

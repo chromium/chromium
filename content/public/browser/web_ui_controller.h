@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 
@@ -85,7 +86,7 @@ class CONTENT_EXPORT WebUIController {
   PerWebUIBrowserInterfaceBroker* broker_for_testing() { return broker_.get(); }
 
  private:
-  WebUI* web_ui_;
+  raw_ptr<WebUI> web_ui_;
 
   // The interface broker that handles Mojo.bindInterface requests from the
   // renderer.

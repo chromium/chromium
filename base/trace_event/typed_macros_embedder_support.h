@@ -6,6 +6,7 @@
 #define BASE_TRACE_EVENT_TYPED_MACROS_EMBEDDER_SUPPORT_H_
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
@@ -91,7 +92,7 @@ class BASE_EXPORT TracePacketHandle {
 
  private:
   PerfettoPacketHandle packet_;
-  CompletionListener* listener_;
+  raw_ptr<CompletionListener> listener_;
 };
 
 using PrepareTrackEventFunction = TrackEventHandle (*)(TraceEvent*);

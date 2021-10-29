@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_LOADER_CACHED_NAVIGATION_URL_LOADER_H_
 #define CONTENT_BROWSER_LOADER_CACHED_NAVIGATION_URL_LOADER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/loader/navigation_url_loader.h"
 
 namespace content {
@@ -43,7 +44,7 @@ class CachedNavigationURLLoader : public NavigationURLLoader {
 
   const LoaderType loader_type_;
   std::unique_ptr<NavigationRequestInfo> request_info_;
-  NavigationURLLoaderDelegate* delegate_;
+  raw_ptr<NavigationURLLoaderDelegate> delegate_;
   network::mojom::URLResponseHeadPtr cached_response_head_;
   base::WeakPtrFactory<CachedNavigationURLLoader> weak_factory_{this};
 };

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
@@ -61,7 +62,7 @@ class IntentPickerAutoDisplayPref final {
   std::unique_ptr<base::DictionaryValue> pref_dict_;
 
   // Content settings map used to persist the local values.
-  HostContentSettingsMap* settings_map_;
+  raw_ptr<HostContentSettingsMap> settings_map_;
 };
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_AUTO_DISPLAY_PREF_H_

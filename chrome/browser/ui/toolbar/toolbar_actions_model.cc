@@ -70,7 +70,7 @@ ToolbarActionsModel::ToolbarActionsModel(
 
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile_));
+      content::Source<Profile>(profile_.get()));
 }
 
 ToolbarActionsModel::~ToolbarActionsModel() {}
@@ -168,8 +168,8 @@ void ToolbarActionsModel::OnReady() {
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
-  extension_registry_observation_.Observe(extension_registry_);
-  extension_action_observation_.Observe(extension_action_api_);
+  extension_registry_observation_.Observe(extension_registry_.get());
+  extension_action_observation_.Observe(extension_action_api_.get());
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);

@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_channel_handle.h"
@@ -128,7 +129,7 @@ class IpcDesktopEnvironmentFactory
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // IPC channel connected to the daemon process.
-  IPC::Sender* daemon_channel_;
+  raw_ptr<IPC::Sender> daemon_channel_;
 
   // List of DesktopEnvironment instances we've told the daemon process about.
   typedef std::map<int, DesktopSessionProxy*> ActiveConnectionsList;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "components/cast_channel/cast_message_util.h"
@@ -120,7 +121,7 @@ class CastSessionTrackerTest : public testing::Test {
   NiceMock<MockCastSessionObserver> observer_;
 
   MediaSinkInternal sink_ = CreateCastSink(1);
-  CastSession* session_;
+  raw_ptr<CastSession> session_;
 };
 
 TEST_F(CastSessionTrackerTest, QueryReceiverOnSinkAdded) {

@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -230,7 +231,7 @@ class CastMessageHandlerTest : public testing::Test {
   CastMessageHandler handler_;
   MockCastSocket cast_socket_;
   const int channel_id_ = cast_socket_.id();
-  MockCastTransport* const transport_ = cast_socket_.mock_transport();
+  const raw_ptr<MockCastTransport> transport_ = cast_socket_.mock_transport();
   int session_launch_response_count_ = 0;
   CastMessage last_request_;
   base::MockCallback<LaunchSessionCallback> launch_session_callback_;

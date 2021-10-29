@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -20,7 +21,6 @@
 #include "ui/android/resources/system_ui_resource_type.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
-
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -113,7 +113,7 @@ class ResourceManagerTest : public testing::Test {
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  WindowAndroid* window_android_;
+  raw_ptr<WindowAndroid> window_android_;
 
  protected:
   MockUIResourceManager ui_resource_manager_;

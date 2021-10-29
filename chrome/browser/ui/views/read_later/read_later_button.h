@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_READ_LATER_READ_LATER_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
@@ -68,7 +69,7 @@ class ReadLaterButton : public views::LabelButton,
                               SkColor original_color) const;
     void ClearHighlightColor();
 
-    ReadLaterButton* const parent_;
+    const raw_ptr<ReadLaterButton> parent_;
 
     SkColor highlight_color_ = SK_ColorTRANSPARENT;
 
@@ -95,11 +96,11 @@ class ReadLaterButton : public views::LabelButton,
 
   void UpdateColors();
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
-  views::DotIndicator* dot_indicator_ = nullptr;
+  raw_ptr<views::DotIndicator> dot_indicator_ = nullptr;
 
-  ReadingListModel* reading_list_model_ = nullptr;
+  raw_ptr<ReadingListModel> reading_list_model_ = nullptr;
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_model_scoped_observation_{this};
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
@@ -65,7 +66,7 @@ class BlockedActionWaiter
   // ExtensionActionRunner::TestObserver:
   void OnBlockedActionAdded() override { run_loop_->Quit(); }
 
-  extensions::ExtensionActionRunner* runner_;
+  raw_ptr<extensions::ExtensionActionRunner> runner_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

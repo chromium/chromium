@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/importer/importer_progress_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/common/importer/importer_data_types.h"
@@ -72,7 +73,7 @@ class ImportDataHandler : public SettingsPageUIHandler,
 
   // If non-null it means importing is in progress. ImporterHost takes care
   // of deleting itself when import is complete.
-  ExternalProcessImporterHost* importer_host_;  // weak
+  raw_ptr<ExternalProcessImporterHost> importer_host_;  // weak
 
   bool import_did_succeed_{false};
   bool importer_list_loaded_{false};

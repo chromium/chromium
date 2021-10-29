@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_confirm_delegate.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 
@@ -50,8 +51,8 @@ class SaveCardMessageConfirmController {
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
-  SaveCardMessageConfirmDelegate* delegate_;
-  content::WebContents* web_contents_;
+  raw_ptr<SaveCardMessageConfirmDelegate> delegate_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace autofill

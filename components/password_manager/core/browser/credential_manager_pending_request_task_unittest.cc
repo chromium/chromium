@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/credential_manager_pending_request_task.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -43,8 +44,8 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   std::vector<std::unique_ptr<PasswordForm>> forms_passed_to_ui_;
-  PasswordStoreInterface* profile_store_;
-  PasswordStoreInterface* account_store_;
+  raw_ptr<PasswordStoreInterface> profile_store_;
+  raw_ptr<PasswordStoreInterface> account_store_;
 };
 
 class CredentialManagerPendingRequestTaskDelegateMock

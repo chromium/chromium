@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_ACCOUNT_STORAGE_SETTINGS_WATCHER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -36,7 +37,7 @@ class PasswordAccountStorageSettingsWatcher
   void OnStateChanged(syncer::SyncService* sync_service) override;
 
  private:
-  syncer::SyncService* const sync_service_;
+  const raw_ptr<syncer::SyncService> sync_service_;
   base::RepeatingClosure change_callback_;
 
   PrefChangeRegistrar pref_change_registrar_;

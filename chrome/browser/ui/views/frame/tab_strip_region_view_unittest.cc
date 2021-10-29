@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -71,9 +72,9 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
   void CompleteAnimationAndLayout() { tab_strip_region_view_->Layout(); }
 
   // Owned by TabStrip.
-  FakeBaseTabStripController* controller_ = nullptr;
-  TabStrip* tab_strip_ = nullptr;
-  TabStripRegionView* tab_strip_region_view_ = nullptr;
+  raw_ptr<FakeBaseTabStripController> controller_ = nullptr;
+  raw_ptr<TabStrip> tab_strip_ = nullptr;
+  raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
   std::unique_ptr<views::Widget> widget_;
 
  private:

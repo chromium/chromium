@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -172,7 +173,7 @@ class ExtensionMetricsProviderInstallsTest
   }
 
  private:
-  extensions::ExtensionPrefs* prefs_ = nullptr;
+  raw_ptr<extensions::ExtensionPrefs> prefs_ = nullptr;
   base::Time last_sample_time_;
 };
 

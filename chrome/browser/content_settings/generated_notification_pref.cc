@@ -43,7 +43,7 @@ GeneratedNotificationPref::GeneratedNotificationPref(Profile* profile)
 
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile_);
-  content_setting_observation_.Observe(host_content_settings_map_);
+  content_setting_observation_.Observe(host_content_settings_map_.get());
 }
 
 GeneratedNotificationPref::~GeneratedNotificationPref() = default;

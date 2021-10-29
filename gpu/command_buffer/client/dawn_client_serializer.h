@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
 namespace gpu {
@@ -54,9 +55,9 @@ class DawnClientSerializer : public dawn_wire::CommandSerializer {
   // dawn_wire::CommandSerializer implementation
   bool Flush() final;
 
-  WebGPUImplementation* client_;
-  WebGPUCmdHelper* helper_;
-  DawnClientMemoryTransferService* memory_transfer_service_;
+  raw_ptr<WebGPUImplementation> client_;
+  raw_ptr<WebGPUCmdHelper> helper_;
+  raw_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
   uint32_t put_offset_ = 0;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   uint32_t buffer_initial_size_;

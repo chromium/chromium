@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 
 namespace remoting {
@@ -26,7 +27,7 @@ class AudioReader : public ChannelDispatcherBase {
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
-  AudioStub* audio_stub_;
+  raw_ptr<AudioStub> audio_stub_;
 };
 
 }  // namespace protocol

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -95,7 +96,7 @@ class ExpandDeviceSelectorButton : public IconLabelBubbleView {
 
  private:
   bool ShouldShowSeparator() const override { return false; }
-  IconLabelBubbleView::Delegate* delegate_;
+  raw_ptr<IconLabelBubbleView::Delegate> delegate_;
 };
 
 }  // anonymous namespace
@@ -242,7 +243,7 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
     auto device_entry_view = std::make_unique<AudioDeviceEntryView>(
         base::BindRepeating(
             &MediaItemUIDeviceSelectorDelegate::OnAudioSinkChosen,
-            base::Unretained(delegate_), item_id_, description.unique_id),
+            base::Unretained(delegate_.get()), item_id_, description.unique_id),
         foreground_color_, background_color_, description.unique_id,
         description.device_name);
     device_entry_view->set_tag(next_tag_++);

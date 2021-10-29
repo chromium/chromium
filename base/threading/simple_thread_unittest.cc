@@ -6,6 +6,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/gtest_util.h"
@@ -28,7 +29,7 @@ class SetIntRunner : public DelegateSimpleThread::Delegate {
  private:
   void Run() override { *ptr_ = val_; }
 
-  int* ptr_;
+  raw_ptr<int> ptr_;
   int val_;
 };
 
@@ -85,7 +86,7 @@ class WaitEventRunner : public DelegateSimpleThread::Delegate {
     EXPECT_TRUE(event_->IsSignaled());
   }
 
-  WaitableEvent* event_;
+  raw_ptr<WaitableEvent> event_;
 };
 
 class SeqRunner : public DelegateSimpleThread::Delegate {
@@ -98,7 +99,7 @@ class SeqRunner : public DelegateSimpleThread::Delegate {
  private:
   void Run() override { seq_->GetNext(); }
 
-  AtomicSequenceNumber* seq_;
+  raw_ptr<AtomicSequenceNumber> seq_;
 };
 
 // We count up on a sequence number, firing on the event when we've hit our
@@ -122,9 +123,9 @@ class VerifyPoolRunner : public DelegateSimpleThread::Delegate {
     }
   }
 
-  AtomicSequenceNumber* seq_;
+  raw_ptr<AtomicSequenceNumber> seq_;
   int total_;
-  WaitableEvent* event_;
+  raw_ptr<WaitableEvent> event_;
 };
 
 }  // namespace

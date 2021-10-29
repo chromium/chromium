@@ -6,6 +6,7 @@
 #define CHROME_TEST_DATA_WEBUI_HISTORY_UI_BROWSERTEST_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/web_ui_browser_test.h"
 
 namespace history {
@@ -29,7 +30,7 @@ class HistoryUIBrowserTest : public WebUIBrowserTest {
 
  private:
   // The HistoryService is owned by the profile.
-  history::HistoryService* history_;
+  raw_ptr<history::HistoryService> history_;
 };
 
 #endif  // CHROME_TEST_DATA_WEBUI_HISTORY_UI_BROWSERTEST_H_

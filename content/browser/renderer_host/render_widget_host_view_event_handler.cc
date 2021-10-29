@@ -665,7 +665,7 @@ void RenderWidgetHostViewEventHandler::ForwardMouseEventToParent(
   // event.
   std::unique_ptr<ui::Event> event_copy = ui::Event::Clone(*event);
   ui::MouseEvent* mouse_event = static_cast<ui::MouseEvent*>(event_copy.get());
-  mouse_event->ConvertLocationToTarget(window_, window_->parent());
+  mouse_event->ConvertLocationToTarget(window_.get(), window_->parent());
   window_->parent()->delegate()->OnMouseEvent(mouse_event);
   if (mouse_event->handled())
     event->SetHandled();

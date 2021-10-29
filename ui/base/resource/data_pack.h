@@ -19,6 +19,7 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/base/resource/data_pack_export.h"
 #include "ui/base/resource/resource_handle.h"
@@ -106,9 +107,9 @@ class UI_DATA_PACK_EXPORT DataPack : public ResourceHandle {
 
   std::unique_ptr<DataSource> data_source_;
 
-  const Entry* resource_table_;
+  raw_ptr<const Entry> resource_table_;
   size_t resource_count_;
-  const Alias* alias_table_;
+  raw_ptr<const Alias> alias_table_;
   size_t alias_count_;
 
   // Type of encoding for text resources.

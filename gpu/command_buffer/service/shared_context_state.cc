@@ -535,7 +535,7 @@ bool SharedContextState::MakeCurrent(gl::GLSurface* surface, bool needs_gl) {
   const bool using_gl = GrContextIsGL() || needs_gl;
   if (using_gl) {
     gl::GLSurface* dont_care_surface =
-        last_current_surface_ ? last_current_surface_ : surface_.get();
+        last_current_surface_ ? last_current_surface_.get() : surface_.get();
     surface = surface ? surface : dont_care_surface;
 
     if (!context_->MakeCurrent(surface)) {

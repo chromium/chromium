@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
@@ -149,7 +150,7 @@ class DownloadPrefs {
 
   void UpdateAllowedURLsForOpenByPolicy();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   BooleanPrefMember prompt_for_download_;
 #if defined(OS_ANDROID)

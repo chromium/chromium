@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -112,15 +113,15 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
       network::mojom::URLResponseHead* response_head) const;
 
   // The NavigationRequest which owns this object.
-  NavigationRequest* const navigation_request_;
+  const raw_ptr<NavigationRequest> navigation_request_;
 
   // Tracks the FrameTreeNode in which this navigation is taking place.
-  const FrameTreeNode* frame_tree_node_;
+  raw_ptr<const FrameTreeNode> frame_tree_node_;
 
   // Track the previous document's RenderProcessHost. This instance acquires
   // reporting endpoints from it, and will use it to release them in its
   // destructor.
-  RenderProcessHost* previous_document_rph_;
+  raw_ptr<RenderProcessHost> previous_document_rph_;
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       previous_document_rph_observation_{this};
 

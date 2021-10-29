@@ -5,6 +5,7 @@
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/xr/metrics/session_timer.h"
 #include "content/browser/xr/metrics/webxr_session_tracker.h"
@@ -44,7 +45,7 @@ class SessionMetricsHelperData : public base::SupportsUserData::Data {
   SessionMetricsHelper* get() const { return session_metrics_helper_; }
 
  private:
-  SessionMetricsHelper* session_metrics_helper_;
+  raw_ptr<SessionMetricsHelper> session_metrics_helper_;
 };
 
 // Helper method to log out both the mode and the initially requested features

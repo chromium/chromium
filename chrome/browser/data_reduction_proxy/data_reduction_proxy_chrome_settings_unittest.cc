@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
@@ -50,7 +51,7 @@ class DataReductionProxyChromeSettingsTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  DataReductionProxyChromeSettings* drp_chrome_settings_;
+  raw_ptr<DataReductionProxyChromeSettings> drp_chrome_settings_;
   std::unique_ptr<base::DictionaryValue> dict_;
   std::unique_ptr<data_reduction_proxy::DataReductionProxyTestContext>
       test_context_;

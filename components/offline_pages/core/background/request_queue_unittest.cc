@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/background/device_conditions.h"
@@ -142,7 +143,7 @@ class RequestQueueTest : public testing::Test {
   std::vector<std::unique_ptr<SavePageRequest>> last_requests_;
 
   std::unique_ptr<RequestQueue> queue_;
-  TestRequestQueueStore* store_;  // Owned by queue_.
+  raw_ptr<TestRequestQueueStore> store_;  // Owned by queue_.
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle task_runner_handle_;
 };

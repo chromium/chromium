@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_FILE_HANDLERS_PERMISSION_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_FILE_HANDLERS_PERMISSION_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -74,7 +75,7 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   // `pattern`.
   void UpdateAppsMatchingPattern(const ContentSettingsPattern& pattern);
 
-  WebAppInstallFinalizer* finalizer_;
+  raw_ptr<WebAppInstallFinalizer> finalizer_;
 
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observer_{this};

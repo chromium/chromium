@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
 
 #ifndef NDEBUG
@@ -108,7 +109,7 @@ class FileMapping {
   bool InitializeView(size_t size);
 
   HANDLE mapping_;
-  void* view_;
+  raw_ptr<void> view_;
 };
 
 // Manages a temporary file and a memory mapping of the temporary file.
@@ -498,7 +499,7 @@ class NoThrowBuffer {
   }
 
  protected:
-  T* buffer_;
+  raw_ptr<T> buffer_;
   size_t size_;  // how much of the buffer we're using.
   size_t alloc_size_;  // how much space we have allocated.
   Allocator alloc_;

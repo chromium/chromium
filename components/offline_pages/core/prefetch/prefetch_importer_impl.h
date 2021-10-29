@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_importer.h"
 
@@ -41,7 +42,7 @@ class PrefetchImporterImpl : public PrefetchImporter {
   void OnMoveFileDone(const OfflinePageItem& offline_page, bool success);
   void OnPageAdded(AddPageResult result, int64_t offline_id);
 
-  OfflinePageModel* offline_page_model_;
+  raw_ptr<OfflinePageModel> offline_page_model_;
   scoped_refptr<base::TaskRunner> background_task_runner_;
   std::set<int64_t> outstanding_import_offline_ids_;
   base::WeakPtrFactory<PrefetchImporterImpl> weak_ptr_factory_{this};

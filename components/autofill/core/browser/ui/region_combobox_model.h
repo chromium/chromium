@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -67,7 +68,7 @@ class RegionComboboxModel : public ui::ComboboxModel {
 
   // Lifespan not owned by RegionComboboxModel, but guaranteed to be alive up to
   // a call to OnRegionDataLoaded where soft ownership must be released.
-  RegionDataLoader* region_data_loader_;
+  raw_ptr<RegionDataLoader> region_data_loader_;
 
   // List of <code, name> pairs for ADDRESS_HOME_STATE combobox values;
   std::vector<std::pair<std::string, std::string>> regions_;

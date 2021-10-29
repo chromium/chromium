@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/ring_buffer.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sorter.h"
 #include "cc/metrics/ukm_smoothness_data.h"
@@ -152,9 +153,9 @@ class CC_EXPORT DroppedFrameCounter {
   absl::optional<double> sliding_window_max_percent_dropped_After_5_sec_;
   base::TimeTicks time_fcp_received_;
   base::TimeDelta time_max_delta_;
-  UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
+  raw_ptr<UkmSmoothnessDataShared> ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
-  TotalFrameCounter* total_counter_ = nullptr;
+  raw_ptr<TotalFrameCounter> total_counter_ = nullptr;
 
   struct {
     double max_window = 0;

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
@@ -86,7 +87,7 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<ShellUpdateQueryParamsDelegate> update_query_params_delegate_;
 
   // Owned by the KeyedService system.
-  ShellExtensionSystem* extension_system_;
+  raw_ptr<ShellExtensionSystem> extension_system_;
 
   // For running app browsertests.
   const content::MainFunctionParams parameters_;

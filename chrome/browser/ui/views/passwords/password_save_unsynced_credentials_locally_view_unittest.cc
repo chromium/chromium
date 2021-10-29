@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
@@ -36,7 +37,7 @@ class PasswordSaveUnsyncedCredentialsLocallyViewTest
   void TearDown() override;
 
  protected:
-  PasswordSaveUnsyncedCredentialsLocallyView* view_;
+  raw_ptr<PasswordSaveUnsyncedCredentialsLocallyView> view_;
   std::vector<password_manager::PasswordForm> unsynced_credentials_;
 };
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -76,7 +77,7 @@ class UserDMTokenRetrieverTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   MockFunction<Profile*()> profile_retrieval_cb_;
   std::unique_ptr<UserDMTokenRetriever> user_dm_token_retriever_;
 };

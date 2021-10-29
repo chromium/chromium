@@ -5,6 +5,7 @@
 #include "services/video_capture/device_media_to_mojo_adapter.h"
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
@@ -48,7 +49,7 @@ class DeviceMediaToMojoAdapterTest : public ::testing::Test {
   }
 
  protected:
-  media::MockDevice* mock_device_ptr_;
+  raw_ptr<media::MockDevice> mock_device_ptr_;
   std::unique_ptr<DeviceMediaToMojoAdapter> adapter_;
   std::unique_ptr<MockVideoFrameHandler> mock_video_frame_handler_;
   mojo::PendingRemote<mojom::VideoFrameHandler> video_frame_handler_;

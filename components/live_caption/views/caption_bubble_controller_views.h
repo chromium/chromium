@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "components/live_caption/caption_bubble_controller.h"
 
 namespace views {
@@ -64,11 +65,11 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
 
-  CaptionBubble* caption_bubble_;
-  views::Widget* caption_widget_;
+  raw_ptr<CaptionBubble> caption_bubble_;
+  raw_ptr<views::Widget> caption_widget_;
 
   // A pointer to the currently active CaptionBubbleModel.
-  CaptionBubbleModel* active_model_ = nullptr;
+  raw_ptr<CaptionBubbleModel> active_model_ = nullptr;
 
   // A map of media player ids and their corresponding CaptionBubbleModel. New
   // entries are added to this map when a previously unseen media player id is

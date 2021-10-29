@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_FOCUS_MANAGER_EVENT_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
 
@@ -33,10 +34,10 @@ class FocusManagerEventHandler : public ui::EventHandler {
   base::StringPiece GetLogContext() const override;
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   // |window_| is the event target that is associated with this class.
-  aura::Window* window_;
+  raw_ptr<aura::Window> window_;
 };
 
 }  // namespace views

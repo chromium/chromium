@@ -9,6 +9,7 @@
 #include "base/android/java_exception_reporter.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/android/test_jni_headers/PolicyServiceTestSupporter_jni.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ class PolicyServiceAndroidTest : public ::testing::Test {
     Java_PolicyServiceTestSupporter_verifyNoMoreInteractions(env_, j_support_);
   }
 
-  JNIEnv* env_ = base::android::AttachCurrentThread();
+  raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
   MockPolicyService policy_service_;
   policy::PolicyMap policies;
   std::unique_ptr<PolicyServiceAndroid> policy_service_android_;

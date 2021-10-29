@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -147,7 +148,7 @@ class TopBackgroundView : public views::View {
 #endif  // !USE_AURA
 
  private:
-  const LocationBarView* location_bar_;
+  raw_ptr<const LocationBarView> location_bar_;
 };
 
 BEGIN_METADATA(TopBackgroundView, views::View)
@@ -178,8 +179,8 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetIsFastRoundedCorner(true);
 
   top_background_ = new TopBackgroundView(location_bar);
-  contents_host_->AddChildView(top_background_);
-  contents_host_->AddChildView(contents_);
+  contents_host_->AddChildView(top_background_.get());
+  contents_host_->AddChildView(contents_.get());
 
   // Initialize the shadow.
   auto border = std::make_unique<views::BubbleBorder>(
@@ -189,7 +190,7 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   border->set_md_shadow_elevation(kElevation);
   SetBorder(std::move(border));
 
-  AddChildView(contents_host_);
+  AddChildView(contents_host_.get());
 }
 
 RoundedOmniboxResultsFrame::~RoundedOmniboxResultsFrame() = default;

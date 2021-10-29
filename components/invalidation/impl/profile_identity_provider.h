@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_PROFILE_IDENTITY_PROVIDER_H_
 #define COMPONENTS_INVALIDATION_IMPL_PROFILE_IDENTITY_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -40,7 +41,7 @@ class ProfileIdentityProvider : public IdentityProvider,
       const CoreAccountId& account_id) override;
 
  private:
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   CoreAccountId active_account_id_;
 };

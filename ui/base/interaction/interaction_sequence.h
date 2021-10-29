@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_piece_forward.h"
@@ -138,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // SafeElementReference here, but there are cases where we want to do
     // additional processing if this element goes away, so we'll add the
     // listeners manually instead.
-    TrackedElement* element = nullptr;
+    raw_ptr<TrackedElement> element = nullptr;
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.

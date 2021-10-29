@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_SITE_INSTANCE_GROUP_MANAGER_H_
 #define CONTENT_BROWSER_SITE_INSTANCE_GROUP_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
@@ -73,7 +74,7 @@ class SiteInstanceGroupManager final : private RenderProcessHostObserver {
 
   // The process to use for any SiteInstance in this BrowsingInstance that
   // doesn't require a dedicated process.
-  RenderProcessHost* default_process_ = nullptr;
+  raw_ptr<RenderProcessHost> default_process_ = nullptr;
 };
 }  // namespace content
 

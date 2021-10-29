@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -237,7 +238,7 @@ class RendererController final : public mojom::RemotingSource,
   SessionMetricsRecorder metrics_recorder_;
 
   // Not owned by this class. Can only be set once by calling SetClient().
-  MediaObserverClient* client_ = nullptr;
+  raw_ptr<MediaObserverClient> client_ = nullptr;
 
   // When this is running, it indicates that remoting will be started later
   // when the timer gets fired. The start will be canceled if there is any
@@ -246,7 +247,7 @@ class RendererController final : public mojom::RemotingSource,
   // remote the content while this timer is running.
   base::OneShotTimer delayed_start_stability_timer_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<RendererController> weak_factory_{this};
 };

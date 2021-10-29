@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -229,8 +230,8 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> anchor_widget_;
-  MockTranslateBubbleModel* mock_model_;
-  TranslateBubbleView* bubble_;
+  raw_ptr<MockTranslateBubbleModel> mock_model_;
+  raw_ptr<TranslateBubbleView> bubble_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

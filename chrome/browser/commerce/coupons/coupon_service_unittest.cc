@@ -4,6 +4,7 @@
 
 #include "chrome/browser/commerce/coupons/coupon_service.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "chrome/browser/commerce/coupons/coupon_service_factory.h"
@@ -186,8 +187,8 @@ class CouponServiceTest : public testing::Test {
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  CouponService* service_;
-  CouponDB* coupon_db_;
+  raw_ptr<CouponService> service_;
+  raw_ptr<CouponDB> coupon_db_;
 };
 
 TEST_F(CouponServiceTest, TestGetCouponForUrl) {

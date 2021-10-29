@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -90,7 +91,7 @@ class AsyncPolicyProviderTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   SchemaRegistry schema_registry_;
   PolicyBundle initial_bundle_;
-  MockPolicyLoader* loader_;
+  raw_ptr<MockPolicyLoader> loader_;
   std::unique_ptr<AsyncPolicyProvider> provider_;
 };
 

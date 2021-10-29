@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_MENU_MENU_PRE_TARGET_HANDLER_AURA_H_
 #define UI_VIEWS_CONTROLS_MENU_MENU_PRE_TARGET_HANDLER_AURA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/menu/menu_pre_target_handler.h"
@@ -52,8 +53,8 @@ class VIEWS_EXPORT MenuPreTargetHandlerAura
  private:
   void Cleanup();
 
-  MenuController* controller_;
-  aura::Window* root_;
+  raw_ptr<MenuController> controller_;
+  raw_ptr<aura::Window> root_;
 };
 
 }  // namespace views

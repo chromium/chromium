@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -125,7 +126,7 @@ class TestOption : public InProcessBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   MockObserver holder_;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 

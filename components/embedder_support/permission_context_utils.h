@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_EMBEDDER_SUPPORT_PERMISSION_CONTEXT_UTILS_H_
 #define COMPONENTS_EMBEDDER_SUPPORT_PERMISSION_CONTEXT_UTILS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/contexts/geolocation_permission_context.h"
@@ -42,7 +43,7 @@ struct PermissionContextDelegates {
 #if defined(OS_MAC)
   device::GeolocationManager* geolocation_manager;
 #endif  // defined(OS_MAC)
-  webrtc::MediaStreamDeviceEnumerator* media_stream_device_enumerator;
+  raw_ptr<webrtc::MediaStreamDeviceEnumerator> media_stream_device_enumerator;
   std::unique_ptr<permissions::NfcPermissionContext::Delegate>
       nfc_permission_context_delegate;
 };

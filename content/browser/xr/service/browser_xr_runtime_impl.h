@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
@@ -124,7 +125,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   std::set<VRServiceImpl*> services_;
   device::mojom::VRDisplayInfoPtr display_info_;
 
-  VRServiceImpl* presenting_service_ = nullptr;
+  raw_ptr<VRServiceImpl> presenting_service_ = nullptr;
 
   mojo::AssociatedReceiver<device::mojom::XRRuntimeEventListener> receiver_{
       this};

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -109,7 +110,7 @@ class ProfileInfoHandlerTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TestProfileInfoHandler> handler_;
 };
 

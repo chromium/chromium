@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -229,7 +230,7 @@ class OfflineContentProviderObserver final
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;
-  BackgroundFetchDelegateImpl* delegate_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
   bool pause_ = false;
   bool resume_ = false;
 
@@ -462,8 +463,8 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  BackgroundFetchDelegateImpl* delegate_ = nullptr;
-  download::BackgroundDownloadService* download_service_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
+  raw_ptr<download::BackgroundDownloadService> download_service_ = nullptr;
   base::OnceClosure click_event_closure_;
 
   std::unique_ptr<WaitableDownloadLoggerObserver> download_observer_;
@@ -492,7 +493,7 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 
-  Browser* active_browser_ = nullptr;
+  raw_ptr<Browser> active_browser_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundFetchBrowserTest, DownloadService_Acceptance) {

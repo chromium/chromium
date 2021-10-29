@@ -12,6 +12,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
@@ -138,7 +139,7 @@ class TabStripSceneLayer : public SceneLayer {
   float brightness_;
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;
-  SceneLayer* content_tree_;
+  raw_ptr<SceneLayer> content_tree_;
 };
 
 }  // namespace android

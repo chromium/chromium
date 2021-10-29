@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -109,7 +110,7 @@ class DownloadDBCacheTest : public testing::Test {
 
  protected:
   std::map<std::string, download_pb::DownloadDBEntry> db_entries_;
-  leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>* db_;
+  raw_ptr<leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>> db_;
   std::unique_ptr<DownloadDBCache> db_cache_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::test::TaskEnvironment task_environment_;

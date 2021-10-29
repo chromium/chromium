@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -183,7 +184,7 @@ class CdmAdapterTestBase : public testing::Test,
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   StrictMock<MockCdmClient> cdm_client_;
-  StrictMock<MockCdmAuxiliaryHelper>* cdm_helper_ = nullptr;
+  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper_ = nullptr;
 
   // Keep track of the loaded CDM.
   scoped_refptr<ContentDecryptionModule> cdm_;
@@ -354,8 +355,8 @@ class CdmAdapterTestWithMockCdm : public CdmAdapterTestBase {
     ASSERT_TRUE(cdm_host_proxy_);
   }
 
-  MockLibraryCdm* mock_library_cdm_ = nullptr;
-  CdmHostProxy* cdm_host_proxy_ = nullptr;
+  raw_ptr<MockLibraryCdm> mock_library_cdm_ = nullptr;
+  raw_ptr<CdmHostProxy> cdm_host_proxy_ = nullptr;
 };
 
 // Instantiate test cases

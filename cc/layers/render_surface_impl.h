@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/document_transition/document_transition_shared_element_id.h"
 #include "cc/layers/draw_mode.h"
@@ -232,7 +233,7 @@ class CC_EXPORT RenderSurfaceImpl {
                      viz::SharedQuadState* shared_quad_state,
                      const gfx::Rect& unoccluded_content_rect);
 
-  LayerTreeImpl* layer_tree_impl_;
+  raw_ptr<LayerTreeImpl> layer_tree_impl_;
   uint64_t stable_id_;
   int effect_tree_index_;
 
@@ -283,7 +284,7 @@ class CC_EXPORT RenderSurfaceImpl {
 
   // The nearest ancestor target surface that will contain the contents of this
   // surface, and that ignores outside occlusion. This can point to itself.
-  const RenderSurfaceImpl* nearest_occlusion_immune_ancestor_;
+  raw_ptr<const RenderSurfaceImpl> nearest_occlusion_immune_ancestor_;
 
   std::unique_ptr<DamageTracker> damage_tracker_;
 };

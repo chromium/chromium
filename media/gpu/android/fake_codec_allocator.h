@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/mock_media_codec_bridge.h"
 #include "media/gpu/android/codec_allocator.h"
@@ -53,7 +54,7 @@ class FakeCodecAllocator : public testing::NiceMock<CodecAllocator> {
 
   // Most recent codec that we've created via CreateMockCodec, since we have
   // to assign ownership.  It may be freed already.
-  MockMediaCodecBridge* most_recent_codec = nullptr;
+  raw_ptr<MockMediaCodecBridge> most_recent_codec = nullptr;
 
   // The DestructionObserver for |most_recent_codec|.
   std::unique_ptr<DestructionObserver> most_recent_codec_destruction_observer;

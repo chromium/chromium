@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/i18n/base_i18n_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 // The BreakIterator class iterates through the words, word breaks, and
@@ -176,7 +177,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // This is actually an ICU UBreakiterator* type, which turns out to be
   // a typedef for a void* in the ICU headers. Using void* directly prevents
   // callers from needing access to the ICU public headers directory.
-  void* iter_;
+  raw_ptr<void> iter_;
 
   // The string we're iterating over. Can be changed with SetText(...)
   StringPiece16 string_;

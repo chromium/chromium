@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -70,7 +71,7 @@ class CONTENT_EXPORT TouchpadPinchEventQueue {
   void TryForwardNextEventToRenderer();
 
   const bool touchpad_async_pinch_events_;
-  TouchpadPinchEventQueueClient* client_;
+  raw_ptr<TouchpadPinchEventQueueClient> client_;
 
   base::circular_deque<std::unique_ptr<QueuedTouchpadPinchEvent>> pinch_queue_;
   std::unique_ptr<QueuedTouchpadPinchEvent> pinch_event_awaiting_ack_;

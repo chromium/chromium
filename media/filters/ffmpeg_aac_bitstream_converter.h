@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
@@ -44,7 +45,7 @@ class MEDIA_EXPORT FFmpegAACBitstreamConverter
  private:
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
-  AVCodecParameters* stream_codec_parameters_;
+  raw_ptr<AVCodecParameters> stream_codec_parameters_;
 
   bool header_generated_;
   uint8_t hdr_[kAdtsHeaderSize];

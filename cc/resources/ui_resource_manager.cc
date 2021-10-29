@@ -66,7 +66,7 @@ void UIResourceManager::RecreateUIResources() {
 base::flat_map<UIResourceId, gfx::Size> UIResourceManager::GetUIResourceSizes()
     const {
   base::flat_map<UIResourceId, gfx::Size> result;
-  for (const auto pair : ui_resource_client_map_)
+  for (const auto& pair : ui_resource_client_map_)
     result.emplace(pair.first, pair.second.size);
   return result;
 }

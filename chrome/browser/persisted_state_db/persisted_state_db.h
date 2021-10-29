@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERSISTED_STATE_DB_PERSISTED_STATE_DB_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -62,7 +63,8 @@ class PersistedStateDB {
   void Destroy(JNIEnv* env);
 
  private:
-  ProfileProtoDB<persisted_state_db::PersistedStateContentProto>* proto_db_;
+  raw_ptr<ProfileProtoDB<persisted_state_db::PersistedStateContentProto>>
+      proto_db_;
 
   base::WeakPtrFactory<PersistedStateDB> weak_ptr_factory_{this};
 };

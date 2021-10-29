@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -185,7 +186,7 @@ class RestrictedCookieManagerSync {
   }
 
  private:
-  mojom::RestrictedCookieManager* cookie_service_;
+  raw_ptr<mojom::RestrictedCookieManager> cookie_service_;
 };
 
 namespace {
@@ -224,7 +225,7 @@ class TestCookieChangeListener : public network::mojom::CookieChangeListener {
   mojo::Receiver<network::mojom::CookieChangeListener> receiver_;
 
   // If not null, will be stopped when a cookie change notification is received.
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 }  // namespace

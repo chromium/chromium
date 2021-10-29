@@ -5,6 +5,7 @@
 #ifndef CC_RASTER_SCOPED_GPU_RASTER_H_
 #define CC_RASTER_SCOPED_GPU_RASTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 
 namespace viz {
@@ -28,7 +29,7 @@ class CC_EXPORT ScopedGpuRaster {
   void BeginGpuRaster();
   void EndGpuRaster();
 
-  viz::ContextProvider* context_provider_;
+  raw_ptr<viz::ContextProvider> context_provider_;
 };
 
 }  // namespace cc

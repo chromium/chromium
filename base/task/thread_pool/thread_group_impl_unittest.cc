@@ -19,6 +19,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"
@@ -203,7 +204,7 @@ class ThreadPostingTasksWaitIdle : public SimpleThread {
     }
   }
 
-  ThreadGroupImpl* const thread_group_;
+  const raw_ptr<ThreadGroupImpl> thread_group_;
   const scoped_refptr<TaskRunner> task_runner_;
   test::TestTaskFactory factory_;
 };

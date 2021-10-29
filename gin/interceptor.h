@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-forward.h"
 
@@ -36,8 +37,8 @@ class GIN_EXPORT NamedPropertyInterceptor {
       v8::Isolate* isolate);
 
  private:
-  v8::Isolate* isolate_;
-  WrappableBase* base_;
+  raw_ptr<v8::Isolate> isolate_;
+  raw_ptr<WrappableBase> base_;
 };
 
 class GIN_EXPORT IndexedPropertyInterceptor {
@@ -58,8 +59,8 @@ class GIN_EXPORT IndexedPropertyInterceptor {
       v8::Isolate* isolate);
 
  private:
-  v8::Isolate* isolate_;
-  WrappableBase* base_;
+  raw_ptr<v8::Isolate> isolate_;
+  raw_ptr<WrappableBase> base_;
 };
 
 }  // namespace gin

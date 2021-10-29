@@ -61,7 +61,7 @@ void EnterpriseMemoryLimitEvaluator::Stop() {
                        // returns a unique_ptr.
                        graph->TakeFromGraph(observer);
                      },
-                     base::Unretained(observer_)));
+                     base::Unretained(observer_.get())));
   observer_ = nullptr;
 }
 

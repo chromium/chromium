@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -168,11 +169,11 @@ class OptOutBlocklist {
   // completed.
   base::queue<base::OnceClosure> pending_callbacks_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // The delegate listening to this blocklist. |blocklist_delegate_| lifetime is
   // guaranteed to outlive |this|.
-  OptOutBlocklistDelegate* blocklist_delegate_;
+  raw_ptr<OptOutBlocklistDelegate> blocklist_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

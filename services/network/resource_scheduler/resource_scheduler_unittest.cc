@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -141,7 +142,7 @@ class TestRequest {
   std::unique_ptr<net::URLRequest> url_request_;
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       scheduled_request_;
-  ResourceScheduler* scheduler_;
+  raw_ptr<ResourceScheduler> scheduler_;
 };
 
 class CancelingTestRequest : public TestRequest {

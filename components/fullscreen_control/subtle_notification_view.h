@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/view.h"
@@ -45,7 +46,7 @@ class SubtleNotificationView : public views::View {
   class InstructionView;
 
   // Text displayed in the bubble, with optional keyboard keys.
-  InstructionView* instruction_view_;
+  raw_ptr<InstructionView> instruction_view_;
 };
 
 #endif  // COMPONENTS_FULLSCREEN_CONTROL_SUBTLE_NOTIFICATION_VIEW_H_

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
@@ -86,7 +87,7 @@ class RequestCoordinatorStubTaco {
   // This is null if the request coordinator was given to the
   // RequestCoordinatorFactory through the factory function.
   std::unique_ptr<RequestCoordinator> owned_request_coordinator_;
-  RequestCoordinator* request_coordinator_ = nullptr;
+  raw_ptr<RequestCoordinator> request_coordinator_ = nullptr;
 
   base::WeakPtrFactory<RequestCoordinatorStubTaco> weak_ptr_factory_{this};
 };

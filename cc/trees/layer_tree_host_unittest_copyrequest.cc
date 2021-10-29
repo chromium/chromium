@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -630,7 +631,7 @@ class LayerTreeHostTestHiddenSurfaceNotAllocatedForSubtreeCopyRequest
 
   viz::AggregatedRenderPassId parent_render_pass_id;
   viz::AggregatedRenderPassId copy_layer_render_pass_id;
-  TestLayerTreeFrameSink* frame_sink_ = nullptr;
+  raw_ptr<TestLayerTreeFrameSink> frame_sink_ = nullptr;
   bool did_swap_ = false;
   FakeContentLayerClient client_;
   scoped_refptr<FakePictureLayer> root_;

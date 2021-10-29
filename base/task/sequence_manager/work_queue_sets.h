@@ -13,6 +13,7 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
@@ -149,7 +150,7 @@ class BASE_EXPORT WorkQueueSets {
   mutable uint64_t last_rand_;
 #endif
 
-  Observer* const observer_;
+  const raw_ptr<Observer> observer_;
 };
 
 }  // namespace internal

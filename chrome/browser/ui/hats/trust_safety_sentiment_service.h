@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_HATS_TRUST_SAFETY_SENTIMENT_SERVICE_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/profiles/profile.h"
@@ -137,7 +138,7 @@ class TrustSafetySentimentService : public KeyedService,
    private:
     void TimerComplete();
 
-    content::WebContents* web_contents_;
+    raw_ptr<content::WebContents> web_contents_;
     base::OnceCallback<void()> success_callback_;
     base::OnceCallback<void()> complete_callback_;
     base::WeakPtrFactory<SettingsWatcher> weak_ptr_factory_{this};
@@ -167,7 +168,7 @@ class TrustSafetySentimentService : public KeyedService,
 
   static bool ShouldBlockSurvey(const PendingTrigger& trigger);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   std::map<FeatureArea, PendingTrigger> pending_triggers_;
   std::unique_ptr<SettingsWatcher> settings_watcher_;
   std::unique_ptr<PageInfoState> page_info_state_;
