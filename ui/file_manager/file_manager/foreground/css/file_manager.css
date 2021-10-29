@@ -137,7 +137,7 @@ html.breadcrumb-elider-expanded #directory-tree {
 }
 
 #directory-tree[files-ng] .tree-item[section-start]::before {
-  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
+  border-bottom: 1px solid var(--cros-separator-color);
   content: '';
   display: block;
   margin: 8px 0;
@@ -156,7 +156,7 @@ html.breadcrumb-elider-expanded #directory-tree {
   border-inline-start-width: 0 !important;
   border-radius: 0 20px 20px 0;
   box-sizing: border-box;
-  color: var(--google-grey-700);
+  color: var(--cros-text-color-primary);
   display: flex;
   height: 32px;
   margin-inline-end: 6px;
@@ -193,7 +193,7 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 #directory-tree .tree-row > .file-row > .item-icon {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: currentColor;
+  background-color: var(--cros-icon-color-primary);
   background-image: none;
   flex: none;
   height: 20px;
@@ -201,6 +201,10 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
   position: relative;
   right: -4px;
   width: 20px;
+}
+
+#directory-tree .tree-row[active] > .file-row > .item-icon {
+  background-color: var(--cros-icon-color-selection);
 }
 
 #directory-tree .tree-row > .file-row > .item-icon[style*='background-image'] {
@@ -270,12 +274,12 @@ html[dir='rtl'] #directory-tree .tree-row > .file-row {
 
 html:not(.col-resize) #directory-tree
     .tree-row:not([active]):not([selected]):hover > .file-row {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active #directory-tree
     .tree-row:not([active]):not([selected]) > .file-row:active {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.pointer-active #directory-tree
@@ -292,16 +296,16 @@ html.drag-drop-active #directory-tree .tree-item.denies > .tree-row > .file-row 
 }
 
 html.drag-drop-active #directory-tree .tree-item.accepts > .tree-row > .file-row {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-ripple-color);
 }
 
 html.focus-outline-visible #directory-tree:focus .tree-row[selected] > .file-row {
-  border: 1px solid var(--google-blue-600);
+  border: 1px solid var(--cros-focus-ring-color);
 }
 
 #directory-tree .tree-row[active] > .file-row {
-  background-color: var(--google-blue-50);
-  color: var(--google-blue-600);
+  background-color: var(--cros-highlight-color);
+  color: var(--cros-text-color-selection);
 }
 
 #directory-tree .tree-row > .align-right-icon {
