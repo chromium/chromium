@@ -9,7 +9,7 @@
 #include "base/macros.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // The WebUI for chrome://eche-app/.
@@ -53,6 +53,6 @@ class EcheAppUI : public ui::MojoWebUIController {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_APP_UI_H_

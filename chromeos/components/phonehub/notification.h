@@ -184,4 +184,11 @@ std::ostream& operator<<(std::ostream& stream,
 }  // namespace phonehub
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+namespace phonehub {
+using ::chromeos::phonehub::Notification;
+}  // namespace phonehub
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_PHONEHUB_NOTIFICATION_H_

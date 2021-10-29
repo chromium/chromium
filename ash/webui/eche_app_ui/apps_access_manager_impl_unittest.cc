@@ -13,7 +13,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 namespace {
 class FakeObserver : public AppsAccessManager::Observer {
@@ -421,4 +421,4 @@ TEST_F(AppsAccessManagerImplTest, AccessNotChanged) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

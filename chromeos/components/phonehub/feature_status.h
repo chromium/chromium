@@ -65,4 +65,11 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status);
 }  // namespace phonehub
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+namespace phonehub {
+using ::chromeos::phonehub::FeatureStatus;
+}  // namespace phonehub
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_PHONEHUB_FEATURE_STATUS_H_

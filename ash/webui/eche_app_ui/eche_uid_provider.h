@@ -15,7 +15,7 @@
 
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 extern const char kEcheAppSeedPref[];
@@ -49,6 +49,13 @@ class EcheUidProvider : public mojom::UidGenerator {
   PrefService* pref_service_;
 };
 
+}  // namespace eche_app
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace eche_app {
+using ::ash::eche_app::kEcheAppSeedPref;
 }  // namespace eche_app
 }  // namespace chromeos
 

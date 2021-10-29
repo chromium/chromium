@@ -10,7 +10,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class Callback {
@@ -23,7 +23,7 @@ class Callback {
   static std::string uid_;
 };
 
-std::string chromeos::eche_app::Callback::uid_ = "";
+std::string ash::eche_app::Callback::uid_ = "";
 
 class EcheUidProviderTest : public testing::Test {
  protected:
@@ -88,4 +88,4 @@ TEST_F(EcheUidProviderTest, GetUidWithWrongKeyShouldNotBeTheSame) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

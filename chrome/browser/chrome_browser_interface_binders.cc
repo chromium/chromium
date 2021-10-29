@@ -881,20 +881,18 @@ void PopulateChromeWebUIFrameBinders(
                                          ash::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::eche_app::mojom::SignalingMessageExchanger,
-      chromeos::eche_app::EcheAppUI>(map);
+      ash::eche_app::mojom::SignalingMessageExchanger,
+      ash::eche_app::EcheAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::eche_app::mojom::SystemInfoProvider,
-      chromeos::eche_app::EcheAppUI>(map);
+      ash::eche_app::mojom::SystemInfoProvider, ash::eche_app::EcheAppUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<ash::eche_app::mojom::UidGenerator,
+                                         ash::eche_app::EcheAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      chromeos::eche_app::mojom::UidGenerator, chromeos::eche_app::EcheAppUI>(
+      ash::eche_app::mojom::NotificationGenerator, ash::eche_app::EcheAppUI>(
       map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      chromeos::eche_app::mojom::NotificationGenerator,
-      chromeos::eche_app::EcheAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::media_app_ui::mojom::PageHandlerFactory, ash::MediaAppUI>(map);

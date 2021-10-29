@@ -51,7 +51,7 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
       notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
-  void Initialize(chromeos::eche_app::mojom::WebNotificationType type) {
+  void Initialize(ash::eche_app::mojom::WebNotificationType type) {
     absl::optional<std::u16string> title = u"title";
     absl::optional<std::u16string> message = u"message";
     notification_controller_->ShowNotificationFromWebUI(title, message, type);

@@ -7,7 +7,7 @@
 
 #include "ash/webui/eche_app_ui/eche_connector.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class FakeEcheConnector : public EcheConnector {
@@ -40,6 +40,6 @@ class FakeEcheConnector : public EcheConnector {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_FAKE_ECHE_CONNECTOR_H_

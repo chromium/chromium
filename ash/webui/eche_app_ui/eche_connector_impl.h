@@ -10,11 +10,10 @@
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/containers/queue.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
-namespace secure_channel {
-class ConnectionManager;
-}  // namespace secure_channel
+namespace ash {
 namespace eche_app {
 
 // Connects to target device when a message is made available to send (queuing
@@ -45,6 +44,6 @@ class EcheConnectorImpl : public EcheConnector,
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_CONNECTOR_IMPL_H_

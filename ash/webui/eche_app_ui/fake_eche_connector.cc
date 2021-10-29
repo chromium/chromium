@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/fake_eche_connector.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 FakeEcheConnector::FakeEcheConnector() = default;
@@ -26,4 +26,4 @@ void FakeEcheConnector::AttemptNearbyConnection() {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

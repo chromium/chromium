@@ -72,8 +72,7 @@ WebUIConfigList CreateConfigs() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   register_config(std::make_unique<TerminalUIConfig>());
-  register_config(
-      std::make_unique<chromeos::eche_app::UntrustedEcheAppUIConfig>());
+  register_config(std::make_unique<ash::eche_app::UntrustedEcheAppUIConfig>());
   register_config(std::make_unique<MediaAppGuestUIConfig>());
   register_config(std::make_unique<ash::UntrustedPersonalizationAppUIConfig>());
   register_config(std::make_unique<ash::HelpAppUntrustedUIConfig>());

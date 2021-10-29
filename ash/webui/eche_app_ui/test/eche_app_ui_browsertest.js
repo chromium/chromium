@@ -28,10 +28,7 @@ var EcheAppUIBrowserTest = class extends testing.Test {
   /** @override */
   get featureList() {
     return {
-      enabled: [
-        'chromeos::features::kEcheSWA',
-        'chromeos::features::kPhoneHubRecentApps'
-      ]
+      enabled: ['ash::features::kEcheSWA', 'ash::features::kPhoneHubRecentApps']
     };
   }
 };

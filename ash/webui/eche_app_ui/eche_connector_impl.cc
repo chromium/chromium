@@ -12,7 +12,7 @@
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheConnectorImpl::EcheConnectorImpl(
@@ -101,4 +101,4 @@ void EcheConnectorImpl::FlushQueue() {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

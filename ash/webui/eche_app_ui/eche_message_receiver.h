@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class EcheMessageReceiver {
@@ -50,6 +50,6 @@ class EcheMessageReceiver {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_MESSAGE_RECEIVER_H_

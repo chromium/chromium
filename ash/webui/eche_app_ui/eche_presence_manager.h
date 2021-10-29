@@ -12,27 +12,14 @@
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 
-namespace chromeos {
-
-namespace device_sync {
-
-class DeviceSyncClient;
-
-}  // namespace device_sync
-
-namespace multidevice_setup {
-
-class MultiDeviceSetupClient;
-
-}  // namespace multidevice_setup
-
-namespace secure_channel {
-
-class PresenceMonitorClient;
-
-}  // namespace secure_channel
-
+namespace ash {
 namespace eche_app {
 
 class EcheConnector;
@@ -89,6 +76,6 @@ class EchePresenceManager : public FeatureStatusProvider::Observer,
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_PRESENCE_MANAGER_H_

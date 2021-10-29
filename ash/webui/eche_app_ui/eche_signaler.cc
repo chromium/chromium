@@ -6,7 +6,7 @@
 
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheSignaler::EcheSignaler(
@@ -68,4 +68,4 @@ void EcheSignaler::OnMessageReceived(const std::string& payload) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

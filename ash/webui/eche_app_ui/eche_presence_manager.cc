@@ -11,7 +11,7 @@
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 namespace {
@@ -159,4 +159,4 @@ void EchePresenceManager::OnDeviceSeen() {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

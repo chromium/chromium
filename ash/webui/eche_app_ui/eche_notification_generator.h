@@ -10,7 +10,7 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class LaunchAppHelper;
@@ -27,10 +27,9 @@ class EcheNotificationGenerator : public mojom::NotificationGenerator {
       delete;
 
   // mojom::NotificationGenerator:
-  void ShowNotification(
-      const std::u16string& title,
-      const std::u16string& message,
-      chromeos::eche_app::mojom::WebNotificationType type) override;
+  void ShowNotification(const std::u16string& title,
+                        const std::u16string& message,
+                        mojom::WebNotificationType type) override;
 
   void Bind(mojo::PendingReceiver<mojom::NotificationGenerator> receiver);
 
@@ -40,6 +39,6 @@ class EcheNotificationGenerator : public mojom::NotificationGenerator {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_NOTIFICATION_GENERATOR_H_

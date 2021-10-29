@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 SystemInfo::Builder::Builder() = default;
@@ -38,4 +38,4 @@ SystemInfo::SystemInfo(const std::string& device_name,
     : device_name_(device_name), board_name_(board_name) {}
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

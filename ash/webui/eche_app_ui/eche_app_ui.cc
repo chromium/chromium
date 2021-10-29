@@ -17,7 +17,7 @@
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheAppUI::EcheAppUI(content::WebUI* web_ui,
@@ -115,4 +115,4 @@ void EcheAppUI::BindInterface(
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

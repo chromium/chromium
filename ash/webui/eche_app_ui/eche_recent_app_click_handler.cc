@@ -8,7 +8,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheRecentAppClickHandler::EcheRecentAppClickHandler(
@@ -87,4 +87,4 @@ bool EcheRecentAppClickHandler::IsClickable(FeatureStatus status) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
