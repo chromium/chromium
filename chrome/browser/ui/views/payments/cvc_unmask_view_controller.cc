@@ -102,7 +102,12 @@ CvcUnmaskViewController::CvcUnmaskViewController(
       result_delegate, weak_ptr_factory_.GetWeakPtr());
 }
 
-CvcUnmaskViewController::~CvcUnmaskViewController() {}
+CvcUnmaskViewController::~CvcUnmaskViewController() {
+  if (month_combobox_)
+    month_combobox_->SetModel(nullptr);
+  if (year_combobox_)
+    year_combobox_->SetModel(nullptr);
+}
 
 void CvcUnmaskViewController::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
@@ -228,19 +233,25 @@ void CvcUnmaskViewController::FillContentView(views::View* content_view) {
   layout->StartRow(views::GridLayout::kFixedSize, 1);
   if (requesting_expiration) {
     auto month = std::make_unique<views::Combobox>(&month_combobox_model_);
+    month->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_SETTINGS_CREDIT_CARD_EXPIRATION_MONTH));
     month->SetCallback(base::BindRepeating(
         &CvcUnmaskViewController::OnPerformAction, base::Unretained(this)));
     month->SetID(static_cast<int>(DialogViewID::CVC_MONTH));
     month->SelectValue(credit_card_.Expiration2DigitMonthAsString());
     month->SetInvalid(true);
+    month_combobox_ = month.get();
     layout->AddView(std::move(month));
 
     auto year = std::make_unique<views::Combobox>(&year_combobox_model_);
+    year->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_SETTINGS_CREDIT_CARD_EXPIRATION_YEAR));
     year->SetCallback(base::BindRepeating(
         &CvcUnmaskViewController::OnPerformAction, base::Unretained(this)));
     year->SetID(static_cast<int>(DialogViewID::CVC_YEAR));
     year->SelectValue(credit_card_.Expiration4DigitYearAsString());
     year->SetInvalid(true);
+    year_combobox_ = year.get();
     layout->AddView(std::move(year));
   }
 
