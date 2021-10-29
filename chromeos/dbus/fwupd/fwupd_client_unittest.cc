@@ -22,6 +22,9 @@ const char kFwupdServiceName[] = "org.freedesktop.fwupd";
 const char kFwupdServicePath[] = "/";
 const char kFwupdDeviceAddedSignalName[] = "DeviceAdded";
 const char kFakeDeviceIdForTesting[] = "0123";
+const char kFakeDeviceNameForTesting[] = "Fake Device";
+const char kNameKey[] = "Name";
+const char kIdKey[] = "DeviceId";
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -83,6 +86,11 @@ class FwupdClientTest : public testing::Test {
         FROM_HERE,
         base::BindOnce(&RunResponseOrErrorCallback, std::move(*callback),
                        std::move(result.first), std::move(result.second)));
+  }
+
+  void CheckDevices(FwupdDeviceList* devices) {
+    CHECK_EQ(kFakeDeviceNameForTesting, (*devices)[0].device_name);
+    CHECK_EQ(kFakeDeviceIdForTesting, (*devices)[0].id);
   }
 
   void AddDbusMethodCallResultSimulation(
@@ -168,14 +176,43 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
 }
 
 TEST_F(FwupdClientTest, RequestDevices) {
+  // The observer will check that the device description is parsed and passed
+  // correctly.
   MockObserver observer;
-  EXPECT_CALL(observer, OnDeviceListResponse(_)).Times(1);
+  EXPECT_CALL(observer, OnDeviceListResponse(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevices));
   fwupd_client_->AddObserver(&observer);
 
   EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
 
+  // Create a response simulation that contains one device description.
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  dbus::MessageWriter response_writer(response.get());
+  dbus::MessageWriter response_array_writer(nullptr);
+  dbus::MessageWriter device_array_writer(nullptr);
+  dbus::MessageWriter dict_writer(nullptr);
+
+  // The response is an array of arrays of dictionaries. Each dictionary is one
+  // device description.
+  response_writer.OpenArray("a{sv}", &response_array_writer);
+  response_array_writer.OpenArray("{sv}", &device_array_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kNameKey);
+  dict_writer.AppendVariantOfString(kFakeDeviceNameForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kIdKey);
+  dict_writer.AppendVariantOfString(kFakeDeviceIdForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  response_array_writer.CloseContainer(&device_array_writer);
+  response_writer.CloseContainer(&response_array_writer);
+
   AddDbusMethodCallResultSimulation(std::move(response), nullptr);
 
   fwupd_client_->RequestDevices();

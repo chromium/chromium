@@ -72,6 +72,37 @@ class FwupdClientImpl : public FwupdClient {
   }
 
  private:
+  // Pops a string-to-variant-string dictionary from the reader.
+  std::unique_ptr<base::DictionaryValue> PopStringToStringDictionary(
+      dbus::MessageReader* reader) {
+    dbus::MessageReader array_reader(nullptr);
+
+    if (!reader->PopArray(&array_reader)) {
+      LOG(ERROR) << "Failed to pop array into the array reader.";
+      return nullptr;
+    }
+
+    auto result = std::make_unique<base::DictionaryValue>();
+
+    while (array_reader.HasMoreData()) {
+      dbus::MessageReader entry_reader(nullptr);
+      dbus::MessageReader variant_reader(nullptr);
+      std::string key;
+      std::string value;
+
+      const bool success = array_reader.PopDictEntry(&entry_reader) &&
+                           entry_reader.PopString(&key) &&
+                           entry_reader.PopVariant(&variant_reader) &&
+                           variant_reader.PopString(&value);
+
+      if (success)
+        result->SetKey(key, base::Value(value));
+      else
+        LOG(ERROR) << "Failed to get a dictionary entry.";
+    }
+    return result;
+  }
+
   void RequestUpgradesCallback(dbus::Response* response,
                                dbus::ErrorResponse* error_response) {
     if (!response) {
@@ -91,9 +122,35 @@ class FwupdClientImpl : public FwupdClient {
       return;
     }
 
-    // TODO(swifton): Get the devices from the response. This just sends an
-    // empty list right now.
+    dbus::MessageReader reader(response);
+    dbus::MessageReader array_reader(nullptr);
+
+    if (!reader.PopArray(&array_reader)) {
+      LOG(ERROR) << "Failed to parse string from DBus Signal";
+      return;
+    }
+
     auto devices = std::make_unique<FwupdDeviceList>();
+
+    while (array_reader.HasMoreData()) {
+      // Parse device description.
+      std::unique_ptr<base::DictionaryValue> dict(
+          PopStringToStringDictionary(&array_reader));
+      if (!dict) {
+        LOG(ERROR) << "Failed to parse the device description.";
+        return;
+      }
+
+      const auto* id = dict->FindKey("DeviceId");
+      const auto* name = dict->FindKey("Name");
+
+      if (id && name) {
+        devices->push_back(FwupdDevice(id->GetString(), name->GetString()));
+      } else {
+        LOG(ERROR) << "No device id or name found.";
+        return;
+      }
+    }
 
     for (auto& observer : observers_)
       observer.OnDeviceListResponse(devices.get());
