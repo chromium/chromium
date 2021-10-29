@@ -17,12 +17,14 @@
 #include "ash/components/fwupd/firmware_update_manager.h"
 #include "ash/components/pcie_peripheral/pcie_peripheral_manager.h"
 #include "ash/components/power/dark_resume_controller.h"
+#include "ash/components/quick_answers/quick_answers_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/resources/keyboard_resource_util.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
+#include "ash/public/cpp/quick_answers/controller/quick_answers_controller.h"
 #include "ash/shell.h"
 #include "ash/system/pcie_peripheral/pcie_peripheral_notification_controller.h"
 #include "base/bind.h"
@@ -1115,6 +1117,14 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
       std::make_unique<LoginScreenExtensionsLifetimeManager>();
   login_screen_extensions_storage_cleaner_ =
       std::make_unique<LoginScreenExtensionsStorageCleaner>();
+
+  ash::QuickAnswersController::Get()->SetClient(
+      std::make_unique<ash::quick_answers::QuickAnswersClient>(
+          profile()
+              ->GetDefaultStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess()
+              .get(),
+          ash::QuickAnswersController::Get()->GetQuickAnswersDelegate()));
 
   ChromeBrowserMainPartsLinux::PostProfileInit();
 }

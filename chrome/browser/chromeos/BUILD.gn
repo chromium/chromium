@@ -89,6 +89,7 @@ source_set("chromeos") {
     "//ash/components/geolocation",
     "//ash/components/pcie_peripheral",
     "//ash/components/power",
+    "//ash/components/quick_answers:quick_answers",
     "//ash/components/quick_answers/public/cpp:prefs",
     "//ash/components/smbfs",
     "//ash/components/smbfs/mojom",
