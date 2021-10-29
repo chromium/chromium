@@ -138,7 +138,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
                 isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider, intentRequestTracker, false);
+                statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(), false);
         // clang-format on
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;

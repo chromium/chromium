@@ -406,12 +406,17 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
+     * @return Whether opening a NTP instead of Start surface for new Tab is enabled.
+     */
+    public static boolean shouldOpenNTPInsteadOfStart() {
+        return StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
+    }
+
+    /**
      * Check whether Start Surface is enabled. It includes checks of:
      * 1) whether home page is enabled and whether it is Chrome' home page url;
      * 2) whether Start surface is enabled with current accessibility settings;
      * 3) whether it is on phone.
-     *
-     * @return Whether Start Surface should be shown as the home page.
      * @param context The activity context.
      */
     public static boolean isStartSurfaceEnabled(Context context) {
