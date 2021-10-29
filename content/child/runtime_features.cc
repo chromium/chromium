@@ -361,6 +361,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kForceSynchronousHTMLParsing},
           {"InterestCohortFeaturePolicy",
            blink::features::kInterestCohortFeaturePolicy},
+          {"LateFormNewlineNormalization",
+           blink::features::kLateFormNewlineNormalization},
           {"LayoutNG", blink::features::kLayoutNG},
           {"LegacyWindowsDWriteFontFallback",
            features::kLegacyWindowsDWriteFontFallback},

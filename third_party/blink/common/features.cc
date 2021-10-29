@@ -354,7 +354,7 @@ const base::Feature kServiceWorkerUpdateDelay{
 // Enable the use of Speculation Rules in access the private prefetch proxy
 // (chrome/browser/prefetch/prefetch_proxy/).
 // https://crbug.com/1190167
-const base::Feature kSpeculationRulesPrefetchProxy{
+const base::Feature kSpeculationRulesPrefetchProxy {
   "SpeculationRulesPrefetchProxy",
 #if defined(OS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -1115,6 +1115,10 @@ const base::Feature kLCPAnimatedImagesReporting{
 const base::Feature kWebSQLInThirdPartyContextThrowsWhenDisabled{
     "WebSQLInThirdPartyContextThrowsWhenDisabled",
     base::FEATURE_ENABLED_BY_DEFAULT};
+
+// https://blog.whatwg.org/newline-normalizations-in-form-submission
+const base::Feature kLateFormNewlineNormalization{
+    "LateFormNewlineNormalization", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

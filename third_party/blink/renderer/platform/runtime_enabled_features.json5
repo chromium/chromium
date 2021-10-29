@@ -1247,6 +1247,10 @@
       settable_from_internals: true,
     },
     {
+      name: "LateFormNewlineNormalization",
+      status: "stable"
+    },
+    {
       // LayoutNG has been enabled in M76, but we still keep this flag for
       // testing. See web_tests/FlagExpectations/disable-layout-ng for more
       // details about running web tests with LayoutNG disabled. This flag also

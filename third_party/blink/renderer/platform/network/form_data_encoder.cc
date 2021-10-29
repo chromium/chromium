@@ -51,21 +51,30 @@ static inline void AppendPercentEncoded(Vector<char>& buffer, unsigned char c) {
 }
 
 static void AppendQuotedString(Vector<char>& buffer,
-                               const std::string& string) {
+                               const std::string& string,
+                               FormDataEncoder::Mode mode) {
   // Append a string as a quoted value, escaping quotes and line breaks.
-  // FIXME: Is it correct to use percent escaping here? Other browsers do not
-  // encode these characters yet, so we should test popular servers to find out
-  // if there is an encoding form they can handle.
   size_t length = string.length();
   for (size_t i = 0; i < length; ++i) {
     char c = string.data()[i];
 
     switch (c) {
       case 0x0a:
-        Append(buffer, "%0A");
+        if (mode == FormDataEncoder::kNormalizeCRLF) {
+          Append(buffer, "%0D%0A");
+        } else {
+          Append(buffer, "%0A");
+        }
         break;
       case 0x0d:
-        Append(buffer, "%0D");
+        if (mode == FormDataEncoder::kNormalizeCRLF) {
+          Append(buffer, "%0D%0A");
+          if (i + 1 < length && string.data()[i + 1] == 0x0a) {
+            ++i;
+          }
+        } else {
+          Append(buffer, "%0D");
+        }
         break;
       case '"':
         Append(buffer, "%22");
@@ -75,6 +84,23 @@ static void AppendQuotedString(Vector<char>& buffer,
     }
   }
 }
+
+namespace {
+
+inline void AppendNormalized(Vector<char>& buffer, const std::string& string) {
+  size_t length = string.length();
+  for (size_t i = 0; i < length; ++i) {
+    char c = string.data()[i];
+    if (c == '\n' ||
+        (c == '\r' && (i + 1 >= length || string.data()[i + 1] != '\n'))) {
+      Append(buffer, "\r\n");
+    } else if (c != '\r') {
+      Append(buffer, c);
+    }
+  }
+}
+
+}  // namespace
 
 WTF::TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
     const String& accept_charset,
@@ -133,13 +159,14 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
 
 void FormDataEncoder::BeginMultiPartHeader(Vector<char>& buffer,
                                            const std::string& boundary,
-                                           const std::string& name) {
+                                           const std::string& name,
+                                           Mode mode) {
   AddBoundaryToMultiPartHeader(buffer, boundary);
 
   // FIXME: This loses data irreversibly if the input name includes characters
   // you can't encode in the website's character set.
   Append(buffer, "Content-Disposition: form-data; name=\"");
-  AppendQuotedString(buffer, name);
+  AppendQuotedString(buffer, name, mode);
   Append(buffer, '"');
 }
 
@@ -188,7 +215,8 @@ void FormDataEncoder::AddFilenameToMultiPartHeader(
   // https://tools.ietf.org/html/rfc5987#section-3.2
   Append(buffer, "; filename=\"");
   AppendQuotedString(buffer,
-                     encoding.Encode(filename, WTF::kEntitiesForUnencodables));
+                     encoding.Encode(filename, WTF::kEntitiesForUnencodables),
+                     kDoNotNormalizeCRLF);
   Append(buffer, '"');
 }
 
@@ -209,9 +237,15 @@ void FormDataEncoder::AddKeyValuePairAsFormData(
     EncodedFormData::EncodingType encoding_type,
     Mode mode) {
   if (encoding_type == EncodedFormData::kTextPlain) {
-    Append(buffer, key);
-    Append(buffer, '=');
-    Append(buffer, value);
+    if (mode == kNormalizeCRLF) {
+      AppendNormalized(buffer, key);
+      Append(buffer, '=');
+      AppendNormalized(buffer, value);
+    } else {
+      Append(buffer, key);
+      Append(buffer, '=');
+      Append(buffer, value);
+    }
     Append(buffer, "\r\n");
   } else {
     if (!buffer.IsEmpty())
