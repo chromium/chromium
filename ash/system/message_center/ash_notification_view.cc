@@ -361,14 +361,17 @@ AshNotificationView::AshNotificationView(
                   .AddChild(
                       views::Builder<views::FlexLayoutView>()
                           .SetOrientation(views::LayoutOrientation::kHorizontal)
-                          .AddChild(views::Builder<ExpandButton>()
-                                        .CopyAddressTo(&expand_button_)
-                                        .SetCallback(base::BindRepeating(
-                                            &AshNotificationView::ToggleExpand,
-                                            base::Unretained(this)))
-                                        .SetProperty(
-                                            views::kCrossAxisAlignmentKey,
-                                            views::LayoutAlignment::kCenter))));
+                          .AddChild(
+                              views::Builder<ExpandButton>()
+                                  .CopyAddressTo(&expand_button_)
+                                  .SetCallback(base::BindRepeating(
+                                      &AshNotificationView::ToggleExpand,
+                                      base::Unretained(this)))
+                                  .SetProperty(
+                                      views::kCrossAxisAlignmentKey,
+                                      IsExpanded()
+                                          ? views::LayoutAlignment::kStart
+                                          : views::LayoutAlignment::kCenter))));
 
   // Main right view contains all the views besides control buttons and
   // icon.
@@ -399,6 +402,9 @@ AshNotificationView::AshNotificationView(
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .CopyAddressTo(&control_buttons_container_)
+          .SetInsideBorderInsets(IsExpanded()
+                                     ? kControlButtonsContainerExpandedPadding
+                                     : kControlButtonsContainerCollapsedPadding)
           .SetMainAxisAlignment(MainAxisAlignment::kEnd)
           .SetVisible(!notification.group_child())
           .AddChild(CreateControlButtonsBuilder()
@@ -533,6 +539,11 @@ void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
 }
 
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
+  static_cast<views::BoxLayout*>(control_buttons_container_->GetLayoutManager())
+      ->set_inside_border_insets(
+          expanded ? kControlButtonsContainerExpandedPadding
+                   : kControlButtonsContainerCollapsedPadding);
+
   app_icon_view_->SetBorder(views::CreateEmptyBorder(
       expanded ? kAppIconViewExpandedPadding : kAppIconViewCollapsedPadding));
 
@@ -556,6 +567,9 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
                                                 !is_grouped_parent_view_);
   }
 
+  expand_button_->SetProperty(views::kCrossAxisAlignmentKey,
+                              expanded ? views::LayoutAlignment::kStart
+                                       : views::LayoutAlignment::kCenter);
   expand_button_->SetExpanded(expanded);
 
   static_cast<views::BoxLayout*>(
