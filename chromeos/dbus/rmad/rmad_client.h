@@ -39,9 +39,7 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
         rmad::CalibrationOverallStatus status) {}
 
     // Called when provisioning progress is updated.
-    virtual void ProvisioningProgress(
-        rmad::ProvisionDeviceState::ProvisioningStep step,
-        double progress) {}
+    virtual void ProvisioningProgress(const rmad::ProvisionStatus& status) {}
 
     // Called when hardware write protection state changes.
     virtual void HardwareWriteProtectionState(bool enabled) {}

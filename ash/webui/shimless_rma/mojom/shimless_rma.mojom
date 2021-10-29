@@ -291,13 +291,14 @@ struct CalibrationComponentStatus {
   double progress;
 };
 
-// This must remain in sync with ProvisionDeviceState::ProvisioningStep in
+// This must remain in sync with ProvisionStatus::Status in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // See shimless_rma_mojom_traits.cc\h.
-enum ProvisioningStep {
-  kProvisioningUnknown = 0,
+enum ProvisioningStatus {
   kInProgress = 1,
-  kProvisioningComplete = 2,
+  kComplete = 2,
+  kFailedBlocking = 3,
+  kFailedNonBlocking = 4,
 };
 
 // This must remain in sync with FinalizeStatus::Status in
@@ -341,7 +342,7 @@ interface CalibrationObserver {
 interface ProvisioningObserver {
   // OnProvisioningUpdated is called whenever there is an update in the progress
   // of device provisioning.
-  OnProvisioningUpdated(ProvisioningStep step, float progress);
+  OnProvisioningUpdated(ProvisioningStatus status, float progress);
 };
 
 // Implemented by clients to track the current state of hardware write

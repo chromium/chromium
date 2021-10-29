@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -848,17 +848,17 @@ export function fakeShimlessRmaServiceTestSuite() {
     const provisioningObserver = /** @type {!ProvisioningObserverRemote} */ ({
       /**
        * Implements ProvisioningObserverRemote.onProvisioningUpdated()
-       * @param {!ProvisioningStep} step
+       * @param {!ProvisioningStatus} status
        * @param {number} progress
        */
-      onProvisioningUpdated(step, progress) {
-        assertEquals(step, ProvisioningStep.kInProgress);
+      onProvisioningUpdated(status, progress) {
+        assertEquals(status, ProvisioningStatus.kInProgress);
         assertEquals(progress, 0.25);
       }
     });
     service.observeProvisioningProgress(provisioningObserver);
     return service.triggerProvisioningObserver(
-        ProvisioningStep.kInProgress, 0.25, 0);
+        ProvisioningStatus.kInProgress, 0.25, 0);
   });
 
   test('ObserveHardwareWriteProtectionStateChange', () => {

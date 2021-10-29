@@ -63,13 +63,13 @@ struct EnumTraits<ash::shimless_rma::mojom::OsUpdateOperation,
 };
 
 template <>
-struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStep,
-                  rmad::ProvisionDeviceState::ProvisioningStep> {
-  static ash::shimless_rma::mojom::ProvisioningStep ToMojom(
-      rmad::ProvisionDeviceState::ProvisioningStep key_status);
+struct EnumTraits<ash::shimless_rma::mojom::ProvisioningStatus,
+                  rmad::ProvisionStatus::Status> {
+  static ash::shimless_rma::mojom::ProvisioningStatus ToMojom(
+      rmad::ProvisionStatus::Status key_status);
 
-  static bool FromMojom(ash::shimless_rma::mojom::ProvisioningStep input,
-                        rmad::ProvisionDeviceState::ProvisioningStep* out);
+  static bool FromMojom(ash::shimless_rma::mojom::ProvisioningStatus input,
+                        rmad::ProvisionStatus::Status* out);
 };
 
 template <>

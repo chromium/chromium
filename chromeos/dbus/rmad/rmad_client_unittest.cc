@@ -154,13 +154,16 @@ class RmadClientTest : public testing::Test {
   }
 
   // Passes a provisioning progress signal to |client_|.
-  void EmitProvisioningProgressSignal(
-      rmad::ProvisionDeviceState::ProvisioningStep step,
-      double progress) {
+  void EmitProvisioningProgressSignal(rmad::ProvisionStatus::Status status,
+                                      double progress) {
     dbus::Signal signal(rmad::kRmadInterfaceName,
                         rmad::kProvisioningProgressSignal);
-    dbus::MessageWriter(&signal).AppendUint32(static_cast<uint32_t>(step));
-    dbus::MessageWriter(&signal).AppendDouble(progress);
+    dbus::MessageWriter writer(&signal);
+    dbus::MessageWriter struct_writer(nullptr);
+    writer.OpenStruct(&struct_writer);
+    struct_writer.AppendInt32(static_cast<int32_t>(status));
+    struct_writer.AppendDouble(progress);
+    writer.CloseContainer(&struct_writer);
     EmitSignal(&signal);
   }
 
@@ -247,11 +250,8 @@ class TestObserver : public RmadClient::Observer {
     return last_calibration_overall_status_;
   }
   int num_provisioning_progress() const { return num_provisioning_progress_; }
-  rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step() const {
-    return last_provisioning_step_;
-  }
-  float last_provisioning_progress() const {
-    return last_provisioning_progress_;
+  rmad::ProvisionStatus last_provisioning_status() const {
+    return last_provisioning_status_;
   }
   int num_hardware_write_protection_state() const {
     return num_hardware_write_protection_state_;
@@ -294,11 +294,9 @@ class TestObserver : public RmadClient::Observer {
   }
 
   // Called when provisioning progress is updated.
-  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
-                            double progress) override {
+  void ProvisioningProgress(const rmad::ProvisionStatus& status) override {
     num_provisioning_progress_++;
-    last_provisioning_step_ = step;
-    last_provisioning_progress_ = progress;
+    last_provisioning_status_ = status;
   }
 
   // Called when hardware write protection state changes.
@@ -336,9 +334,7 @@ class TestObserver : public RmadClient::Observer {
   rmad::CalibrationOverallStatus last_calibration_overall_status_ =
       rmad::CalibrationOverallStatus::RMAD_CALIBRATION_OVERALL_UNKNOWN;
   int num_provisioning_progress_ = 0;
-  rmad::ProvisionDeviceState::ProvisioningStep last_provisioning_step_ =
-      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN;
-  float last_provisioning_progress_ = 0.0f;
+  rmad::ProvisionStatus last_provisioning_status_;
   int num_hardware_write_protection_state_ = 0;
   bool last_hardware_write_protection_state_ = true;
   int num_power_cable_state_ = 0;
@@ -707,11 +703,11 @@ TEST_F(RmadClientTest, ProvisioningProgress) {
   TestObserver observer_1(client_);
 
   EmitProvisioningProgressSignal(
-      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.25);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.25);
   EXPECT_EQ(1, observer_1.num_provisioning_progress());
-  EXPECT_EQ(rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS,
-            observer_1.last_provisioning_step());
-  EXPECT_EQ(0.25, observer_1.last_provisioning_progress());
+  EXPECT_EQ(rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS,
+            observer_1.last_provisioning_status().status());
+  EXPECT_EQ(0.25, observer_1.last_provisioning_status().progress());
 }
 
 // Tests that synchronous observers are notified about provisioning progress.

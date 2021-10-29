@@ -755,12 +755,11 @@ void ShimlessRmaService::CalibrationOverallProgress(
 }
 
 void ShimlessRmaService::ProvisioningProgress(
-    rmad::ProvisionDeviceState::ProvisioningStep step,
-    double progress) {
-  last_provisioning_progress_step_ = step;
-  last_provisioning_progress_ = progress;
+    const rmad::ProvisionStatus& status) {
+  last_provisioning_progress_ = status;
   if (provisioning_observer_.is_bound()) {
-    provisioning_observer_->OnProvisioningUpdated(step, progress);
+    provisioning_observer_->OnProvisioningUpdated(status.status(),
+                                                  status.progress());
   }
 }
 
@@ -812,9 +811,10 @@ void ShimlessRmaService::ObserveCalibrationProgress(
 void ShimlessRmaService::ObserveProvisioningProgress(
     ::mojo::PendingRemote<mojom::ProvisioningObserver> observer) {
   provisioning_observer_.Bind(std::move(observer));
-  if (last_provisioning_progress_step_) {
+  if (last_provisioning_progress_) {
     provisioning_observer_->OnProvisioningUpdated(
-        *last_provisioning_progress_step_, *last_provisioning_progress_);
+        last_provisioning_progress_->status(),
+        last_provisioning_progress_->progress());
   }
 }
 

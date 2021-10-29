@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -758,20 +758,20 @@ export class FakeShimlessRmaService {
    */
   observeProvisioningProgress(remote) {
     this.observables_.observe(
-        'ProvisioningObserver_onProvisioningUpdated', (step, progress) => {
+        'ProvisioningObserver_onProvisioningUpdated', (status, progress) => {
           remote.onProvisioningUpdated(
-              /** @type {!ProvisioningStep} */ (step),
+              /** @type {!ProvisioningStatus} */ (status),
               /** @type {number} */ (progress));
         });
     if (this.automaticallyTriggerProvisioningObservation_) {
       // Fake progress over 4 seconds.
       this.triggerProvisioningObserver(
-          ProvisioningStep.kInProgress, 0.25, 1000);
-      this.triggerProvisioningObserver(ProvisioningStep.kInProgress, 0.5, 2000);
+          ProvisioningStatus.kInProgress, 0.25, 1000);
       this.triggerProvisioningObserver(
-          ProvisioningStep.kInProgress, 0.75, 3000);
+          ProvisioningStatus.kInProgress, 0.5, 2000);
       this.triggerProvisioningObserver(
-          ProvisioningStep.kProvisioningComplete, 1.0, 4000);
+          ProvisioningStatus.kInProgress, 0.75, 3000);
+      this.triggerProvisioningObserver(ProvisioningStatus.kComplete, 1.0, 4000);
     }
   }
 
@@ -905,13 +905,13 @@ export class FakeShimlessRmaService {
 
   /**
    * Causes the provisioning observer to fire after a delay.
-   * @param {!ProvisioningStep} step
+   * @param {!ProvisioningStatus} status
    * @param {number} progress
    * @param {number} delayMs
    */
-  triggerProvisioningObserver(step, progress, delayMs) {
+  triggerProvisioningObserver(status, progress, delayMs) {
     return this.triggerObserverAfterMs(
-        'ProvisioningObserver_onProvisioningUpdated', [step, progress],
+        'ProvisioningObserver_onProvisioningUpdated', [status, progress],
         delayMs);
   }
 

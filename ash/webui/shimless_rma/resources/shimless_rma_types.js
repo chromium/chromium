@@ -76,9 +76,9 @@ export const CalibrationComponentStatus =
     ash.shimlessRma.mojom.CalibrationComponentStatus;
 
 /**
- * @typedef {ash.shimlessRma.mojom.ProvisioningStep}
+ * @typedef {ash.shimlessRma.mojom.ProvisioningStatus}
  */
-export const ProvisioningStep = ash.shimlessRma.mojom.ProvisioningStep;
+export const ProvisioningStatus = ash.shimlessRma.mojom.ProvisioningStatus;
 
 /**
  * @typedef {ash.shimlessRma.mojom.FinalizationStatus}

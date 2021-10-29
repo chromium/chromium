@@ -2638,15 +2638,13 @@ TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibrationAfterSignal) {
 
 class FakeProvisioningObserver : public mojom::ProvisioningObserver {
  public:
-  void OnProvisioningUpdated(rmad::ProvisionDeviceState_ProvisioningStep step,
+  void OnProvisioningUpdated(rmad::ProvisionStatus::Status step,
                              float progress) override {
     observations.push_back(
-        std::pair<rmad::ProvisionDeviceState_ProvisioningStep, float>(
-            step, progress));
+        std::pair<rmad::ProvisionStatus_Status, float>(step, progress));
   }
 
-  std::vector<std::pair<rmad::ProvisionDeviceState_ProvisioningStep, float>>
-      observations;
+  std::vector<std::pair<rmad::ProvisionStatus_Status, float>> observations;
   mojo::Receiver<mojom::ProvisioningObserver> receiver{this};
 };
 
@@ -2656,14 +2654,14 @@ TEST_F(ShimlessRmaServiceTest, ObserveProvisioning) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.75);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.75);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveProvisioningAfterSignal) {
   fake_rmad_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.75);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.75);
   FakeProvisioningObserver fake_observer;
   shimless_rma_provider_->ObserveProvisioningProgress(
       fake_observer.receiver.BindNewPipeAndPassRemote());
