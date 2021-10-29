@@ -138,7 +138,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSNumber* ariaSetSize;
 @property(nonatomic, readonly) NSArray* children;
 @property(nonatomic, readonly) NSArray* columns;
-@property(nonatomic, readonly) NSArray* columnHeaders;
 @property(nonatomic, readonly) NSValue* columnIndexRange;
 @property(nonatomic, readonly) NSString* descriptionForAccessibility;
 @property(nonatomic, readonly) NSArray* detailsElements;
