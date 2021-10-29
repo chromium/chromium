@@ -189,19 +189,21 @@
         }
       }
     </style>
-    <div id="icon"
-        class$="[[getIconClass_(networkState, deviceState, isListItem)]]">
-    </div>
-    <iron-icon id="technology"
-        hidden="[[!showTechnology_(networkState, showTechnologyBadge)]]"
-        icon="[[getTechnology_(networkState)]]">
-    </iron-icon>
-    <iron-icon id="secure" hidden="[[!showSecure_(networkState)]]"
-        icon="network8:badge-secure">
-    </iron-icon>
-    <iron-icon id="roaming" hidden="[[!showRoaming_(networkState)]]"
-        src="chrome://resources/cr_components/chromeos/network/globe_badge.svg">
-    </iron-icon>
+    <template is="dom-if" if="[[showIcon_(networkState)]]" restamp>
+      <div id="icon"
+          class$="[[getIconClass_(networkState, deviceState, isListItem)]]">
+      </div>
+      <iron-icon id="technology"
+          hidden="[[!showTechnology_(networkState, showTechnologyBadge)]]"
+          icon="[[getTechnology_(networkState)]]">
+      </iron-icon>
+      <iron-icon id="secure" hidden="[[!showSecure_(networkState)]]"
+          icon="network8:badge-secure">
+      </iron-icon>
+      <iron-icon id="roaming" hidden="[[!showRoaming_(networkState)]]"
+          src="chrome://resources/cr_components/chromeos/network/globe_badge.svg">
+      </iron-icon>
+    </template>
   </template>
   <script src="network_icon.js"></script>
 </dom-module>
