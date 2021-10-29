@@ -6,9 +6,7 @@
  * @fileoverview Polymer element for displaying material design OOBE.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /** @const {string} */
 const DEFAULT_CHROMEVOX_HINT_LOCALE = 'en-US';
@@ -25,7 +23,7 @@ const DEFAULT_CHROMEVOX_HINT_VOICE_EXTENSION_ID =
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const WelcomeScreenState = {
   GREETING: 'greeting',
   LANGUAGE: 'language',
   ACCESSIBILITY: 'accessibility',
@@ -33,150 +31,162 @@ const UIState = {
   ADVANCED_OPTIONS: 'advanced-options',
 };
 
-Polymer({
-  is: 'oobe-welcome-element',
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const OobeWelcomeScreenBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  Polymer.Element);
 
-  properties: {
-    /**
-     * Currently selected system language (display name).
-     */
-    currentLanguage: {
-      type: String,
-      value: '',
-    },
+/**
+ * @polymer
+ */
+class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
-    /**
-     * Currently selected input method (display name).
-     */
-    currentKeyboard: {
-      type: String,
-      value: '',
-    },
+  static get is() { return 'oobe-welcome-element'; }
 
-    /**
-     * List of languages for language selector dropdown.
-     * @type {!Array<OobeTypes.LanguageDsc>}
-     */
-    languages: {
-      type: Array,
-      observer: 'onLanguagesChanged_',
-    },
+  /* #html_template_placeholder */
 
-    /**
-     * List of keyboards for keyboard selector dropdown.
-     * @type {!Array<OobeTypes.IMEDsc>}
-     */
-    keyboards: {
-      type: Array,
-      observer: 'onKeyboardsChanged_',
-    },
+  static get properties() {
+    return {
+      /**
+       * Currently selected system language (display name).
+       */
+      currentLanguage:  String,
 
-    /**
-     * Accessibility options status.
-     * @type {!OobeTypes.A11yStatuses}
-     */
-    a11yStatus: {
-      type: Object,
-    },
+      /**
+       * Currently selected input method (display name).
+       */
+      currentKeyboard: String,
 
-    /**
-     * A list of timezones for Timezone Selection screen.
-     * @type {!Array<OobeTypes.TimezoneDsc>}
-     */
-    timezones: {
-      type: Object,
-      value: [],
-    },
-
-    /**
-     * If UI uses forced keyboard navigation.
-     */
-    highlightStrength: {
-      type: String,
-      value: '',
-    },
-
-    /**
-     * Controls displaying of "Enable debugging features" link.
-     */
-    debuggingLinkVisible_: Boolean,
-
-    /**
-     * Used to save the function instance created when for binded
-     * maybeGiveChromeVoxHint.
-     * @private {function(this:SpeechSynthesis, Event): *|null|undefined}
-     */
-    voicesChangedListenerMaybeGiveChromeVoxHint_: {type: Function},
-
-    /**
-     * The id of the timer that's set when setting a timeout on
-     * giveChromeVoxHint.
-     * Only gets set if the initial call to maybeGiveChromeVoxHint fails.
-     * @private {number|undefined}
-     */
-    defaultChromeVoxHintTimeoutId_: {type: Number},
-
-    /**
-     * The time in MS to wait before giving the ChromeVox hint in English.
-     * Declared as a property so it can be modified in a test.
-     * @private {number}
-     * @const
-     */
-    DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: {type: Number, value: 40 * 1000},
-
-    /**
-     * Tracks if we've given the ChromeVox hint yet.
-     * @private
-     */
-    chromeVoxHintGiven_: {type: Boolean, value: false},
-
-    /**
-     * Whether the subtitle for the language section should be shown.
-     */
-    shouldShowLanguageSectionSubtitle_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('languagePacksEnabled') &&
-            loadTimeData.getBoolean('languagePacksEnabled');
+      /**
+       * List of languages for language selector dropdown.
+       * @type {!Array<OobeTypes.LanguageDsc>}
+       */
+      languages: {
+        type: Array,
+        observer: 'onLanguagesChanged_',
       },
-    },
-  },
+
+      /**
+       * List of keyboards for keyboard selector dropdown.
+       * @type {!Array<OobeTypes.IMEDsc>}
+       */
+      keyboards: {
+        type: Array,
+        observer: 'onKeyboardsChanged_',
+      },
+
+      /**
+       * Accessibility options status.
+       * @type {!OobeTypes.A11yStatuses}
+       */
+      a11yStatus: Object,
+
+      /**
+       * A list of timezones for Timezone Selection screen.
+       * @type {!Array<OobeTypes.TimezoneDsc>}
+       */
+      timezones: Object,
+
+      /**
+       * If UI uses forced keyboard navigation.
+       */
+      highlightStrength: String,
+
+      /**
+       * Controls displaying of "Enable debugging features" link.
+       */
+      debuggingLinkVisible_: Boolean,
+
+      /**
+       * Used to save the function instance created when for binded
+       * maybeGiveChromeVoxHint.
+       * @private {function(this:SpeechSynthesis, Event): *|null|undefined}
+       */
+      voicesChangedListenerMaybeGiveChromeVoxHint_: Function,
+
+      /**
+       * The id of the timer that's set when setting a timeout on
+       * giveChromeVoxHint.
+       * Only gets set if the initial call to maybeGiveChromeVoxHint fails.
+       * @private {number|undefined}
+       */
+      defaultChromeVoxHintTimeoutId_: Number,
+
+      /**
+       * The time in MS to wait before giving the ChromeVox hint in English.
+       * Declared as a property so it can be modified in a test.
+       * @private {number}
+       * @const
+       */
+      DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_: Number,
+
+      /**
+       * Tracks if we've given the ChromeVox hint yet.
+       * @private
+       */
+      chromeVoxHintGiven_: Boolean,
+
+      /**
+       * Whether the subtitle for the language section should be shown.
+       */
+      shouldShowLanguageSectionSubtitle_: {
+        type: Boolean,
+        value: function () {
+          return loadTimeData.valueExists('languagePacksEnabled') &&
+              loadTimeData.getBoolean('languagePacksEnabled');
+        },
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    this.UI_STEPS = WelcomeScreenState;
+
+    // -- Properties --
+    this.currentLanguage = '';
+    this.currentKeyboard = '';
+    this.highlightStrength = '';
+    this.debuggingLinkVisible_ = false;
+    this.voicesChangedListenerMaybeGiveChromeVoxHint_ = undefined;
+    this.defaultChromeVoxHintTimeoutId_ = undefined;
+    this.DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_ = 40 * 1000;
+    this.chromeVoxHintGiven_ = false;
+
+    // -- Member Variables --
+    // Flag that ensures that OOBE configuration is applied only once.
+    this.configuration_applied_ = false;
+  }
 
   /** Overridden from LoginScreenBehavior. */
-  EXTERNAL_API: [
-    'onInputMethodIdSetFromBackend',
-    'refreshA11yInfo',
-    'showDemoModeConfirmationDialog',
-    'showEditRequisitionDialog',
-    'showRemoraRequisitionDialog',
-    'maybeGiveChromeVoxHint',
-  ],
-
-  /**
-   * Flag that ensures that OOBE configuration is applied only once.
-   * @private {boolean}
-   */
-  configuration_applied_: false,
+  get EXTERNAL_API() {
+    return  [ 'onInputMethodIdSetFromBackend',
+              'refreshA11yInfo',
+              'showDemoModeConfirmationDialog',
+              'showEditRequisitionDialog',
+              'showRemoraRequisitionDialog',
+              'maybeGiveChromeVoxHint'];
+  }
 
   defaultUIStep() {
-    return UIState.GREETING;
-  },
-
-  UI_STEPS: UIState,
+    return WelcomeScreenState.GREETING;
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.initializeLoginScreen('WelcomeScreen', {
       resetAllowed: true,
     });
     this.updateLocalizedContent();
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is shown.
@@ -188,18 +198,19 @@ Polymer({
         data && 'isDeveloperMode' in data && data['isDeveloperMode'];
 
     window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is hidden.
    */
   onBeforeHide() {
     this.cleanupChromeVoxHint_();
-  },
+  }
 
   /**
    * This is called when UI strings are changed.
    * Overridden from LoginScreenBehavior.
+   * @suppress {missingProperties}
    */
   updateLocalizedContent() {
     this.languages = /** @type {!Array<OobeTypes.LanguageDsc>} */ (
@@ -224,7 +235,7 @@ Polymer({
         configuration.language == currentLanguage) {
       window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
     }
-  },
+  }
 
   /**
    * Called when OOBE configuration is loaded.
@@ -234,7 +245,7 @@ Polymer({
   updateOobeConfiguration(configuration) {
     if (!this.configuration_applied_)
       window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
-  },
+  }
 
   /**
    * Called when dialog is shown for the first time.
@@ -268,16 +279,17 @@ Polymer({
     }
 
     this.configuration_applied_ = true;
-  },
+  }
 
   /**
    * Updates "device in tablet mode" state when tablet mode is changed.
    * Overridden from LoginScreenBehavior.
    * @param {boolean} isInTabletMode True when in tablet mode.
+   * @suppress {missingProperties}
    */
   setTabletModeState(isInTabletMode) {
     this.$.welcomeScreen.isInTabletMode = isInTabletMode;
-  },
+  }
 
   /**
    * Returns true if timezone button should be visible.
@@ -285,7 +297,7 @@ Polymer({
    */
   isTimezoneButtonVisible_(highlightStrength) {
     return highlightStrength === 'strong';
-  },
+  }
 
   /**
    * Handle "Next" button for "Welcome" screen.
@@ -294,7 +306,7 @@ Polymer({
    */
   onWelcomeNextButtonClicked_() {
     this.userActed('continue');
-  },
+  }
 
   /**
    * Handles "enable-debugging" link for "Welcome" screen.
@@ -303,7 +315,7 @@ Polymer({
    */
   onEnableDebuggingClicked_() {
     this.userActed('enableDebugging');
-  },
+  }
 
   /**
    * Handle "launch-advanced-options" button for "Welcome" screen.
@@ -312,8 +324,8 @@ Polymer({
    */
   onWelcomeLaunchAdvancedOptions_() {
     this.cancelChromeVoxHint_();
-    this.setUIStep(UIState.ADVANCED_OPTIONS);
-  },
+    this.setUIStep(WelcomeScreenState.ADVANCED_OPTIONS);
+  }
 
   /**
    * Handle "Language" button for "Welcome" screen.
@@ -322,8 +334,8 @@ Polymer({
    */
   onWelcomeSelectLanguageButtonClicked_() {
     this.cancelChromeVoxHint_();
-    this.setUIStep(UIState.LANGUAGE);
-  },
+    this.setUIStep(WelcomeScreenState.LANGUAGE);
+  }
 
   /**
    * Handle "Accessibility" button for "Welcome" screen.
@@ -332,8 +344,8 @@ Polymer({
    */
   onWelcomeAccessibilityButtonClicked_() {
     this.cancelChromeVoxHint_();
-    this.setUIStep(UIState.ACCESSIBILITY);
-  },
+    this.setUIStep(WelcomeScreenState.ACCESSIBILITY);
+  }
 
   /**
    * Handle "Timezone" button for "Welcome" screen.
@@ -342,8 +354,8 @@ Polymer({
    */
   onWelcomeTimezoneButtonClicked_() {
     this.cancelChromeVoxHint_();
-    this.setUIStep(UIState.TIMEZONE);
-  },
+    this.setUIStep(WelcomeScreenState.TIMEZONE);
+  }
 
   /**
    * Handle language selection.
@@ -356,7 +368,7 @@ Polymer({
     var languageId = item.value;
     this.currentLanguage = item.title;
     this.applySelectedLanguage_(languageId);
-  },
+  }
 
   /**
    * Switch UI language.
@@ -366,7 +378,7 @@ Polymer({
    */
   applySelectedLanguage_(languageId) {
     chrome.send('WelcomeScreen.setLocaleId', [languageId]);
-  },
+  }
 
   /**
    * Handle keyboard layout selection.
@@ -379,7 +391,7 @@ Polymer({
     var inputMethodId = item.value;
     this.currentKeyboard = item.title;
     this.applySelectedLkeyboard_(inputMethodId);
-  },
+  }
 
   /**
    * Switch keyboard layout.
@@ -389,12 +401,12 @@ Polymer({
    */
   applySelectedLkeyboard_(inputMethodId) {
     chrome.send('WelcomeScreen.setInputMethodId', [inputMethodId]);
-  },
+  }
 
   onLanguagesChanged_() {
     this.currentLanguage =
         getSelectedTitle(/** @type {!SelectListType} */ (this.languages));
-  },
+  }
 
   onInputMethodIdSetFromBackend(keyboard_id) {
     var found = false;
@@ -412,7 +424,7 @@ Polymer({
     // Force i18n-dropdown to refresh.
     this.keyboards = this.keyboards.slice();
     this.onKeyboardsChanged_();
-  },
+  }
 
   /**
    * Refreshes a11y menu state.
@@ -424,77 +436,96 @@ Polymer({
     if (data.spokenFeedbackEnabled) {
       this.closeChromeVoxHint_();
     }
-  },
+  }
 
   /**
    * On-tap event handler for demo mode confirmation dialog cancel button.
    * @private
+   * @suppress {missingProperties}
    */
   onDemoModeDialogCancelTap_() {
     this.$.demoModeConfirmationDialog.hideDialog();
-  },
+  }
 
   /**
    * On-tap event handler for demo mode confirmation dialog confirm button.
    * @private
+   * @suppress {missingProperties}
    */
   onDemoModeDialogConfirmTap_() {
     this.userActed('setupDemoMode');
     this.$.demoModeConfirmationDialog.hideDialog();
-  },
+  }
 
   /**
    * Shows confirmation dialog for starting Demo mode
+   * @suppress {missingProperties}
    */
   showDemoModeConfirmationDialog() {
     // Ensure the ChromeVox hint dialog is closed.
     this.closeChromeVoxHint_();
     this.$.demoModeConfirmationDialog.showDialog();
-  },
+  }
 
   onSetupDemoModeGesture() {
     this.userActed('setupDemoModeGesture');
-  },
+  }
 
   /**
    * Shows the device requisition prompt.
+   * @suppress {missingProperties}
    */
   showEditRequisitionDialog(requisition) {
     this.$.editRequisitionDialog.showDialog();
     this.$.editRequisitionInput.focus();
-  },
+  }
 
+  /**
+   * @suppress {missingProperties}
+   */
   onEditRequisitionCancel_() {
     chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
     this.$.editRequisitionDialog.hideDialog();
-  },
+  }
 
+  /**
+   * @suppress {missingProperties}
+   */
   onEditRequisitionConfirm_() {
     const requisition = this.$.editRequisitionInput.value;
     chrome.send('WelcomeScreen.setDeviceRequisition', [requisition]);
     this.$.editRequisitionDialog.hideDialog();
-  },
+  }
 
   /**
    * Shows the special remora/shark device requisition prompt.
+   * @suppress {missingProperties}
    */
   showRemoraRequisitionDialog() {
     this.$.remoraRequisitionDialog.showDialog();
-  },
+  }
 
+  /**
+   * Shows the special remora/shark device requisition prompt.
+   * @suppress {missingProperties}
+   */
   onRemoraCancel_() {
     chrome.send('WelcomeScreen.setDeviceRequisition', ['none']);
     this.$.remoraRequisitionDialog.hideDialog();
-  },
+  }
 
+  /**
+   * Shows the special remora/shark device requisition prompt.
+   * @suppress {missingProperties}
+   */
   onRemoraConfirm_() {
     chrome.send('WelcomeScreen.setDeviceRequisition', ['remora']);
     this.$.remoraRequisitionDialog.hideDialog();
-  },
+  }
 
   onKeyboardsChanged_() {
     this.currentKeyboard = getSelectedTitle(this.keyboards);
-  },
+  }
 
   /** ******************** Language section ******************* */
 
@@ -504,8 +535,8 @@ Polymer({
    * @private
    */
   closeLanguageSection_() {
-    this.setUIStep(UIState.GREETING);
-  },
+    this.setUIStep(WelcomeScreenState.GREETING);
+  }
 
   /**
    * On-tap event handler for "learn more" link about language packs.
@@ -517,9 +548,9 @@ Polymer({
     // for language packs, or pop up a <oobe-modal-dialog> with similar content.
 
     // Can't use this.$.languagesLearnMore here as the element is in a <dom-if>.
-    this.$$('#languagesLearnMore').focus();
+    this.shadowRoot.querySelector('#languagesLearnMore').focus();
     e.stopPropagation();
-  },
+  }
 
   /** ******************** Accessibility section ******************* */
 
@@ -529,8 +560,8 @@ Polymer({
    * @private
    */
   closeAccessibilitySection_() {
-    this.setUIStep(UIState.GREETING);
-  },
+    this.setUIStep(WelcomeScreenState.GREETING);
+  }
 
   /**
    * Handle all accessibility buttons.
@@ -548,7 +579,7 @@ Polymer({
     } else {
       this.userActed(a11ytarget.id + '-disable');
     }
-  },
+  }
 
   /** ******************** Timezone section ******************* */
 
@@ -558,13 +589,13 @@ Polymer({
    * @private
    */
   closeTimezoneSection_() {
-    this.setUIStep(UIState.GREETING);
-  },
+    this.setUIStep(WelcomeScreenState.GREETING);
+  }
 
   /**
    * Handle timezone selection.
    *
-   * @param {!CustomEvent<!OobeTypes.Timezone>} event
+   * @param {!CustomEvent<!OobeTypes.TimezoneDsc>} event
    * @private
    */
   onTimezoneSelected_(event) {
@@ -573,7 +604,7 @@ Polymer({
       return;
 
     chrome.send('WelcomeScreen.setTimezoneId', [item.value]);
-  },
+  }
 
   /** ******************** AdvancedOptions section ******************* */
 
@@ -583,8 +614,8 @@ Polymer({
    * @private
    */
   closeAdvancedOptionsSection_() {
-    this.setUIStep(UIState.GREETING);
-  },
+    this.setUIStep(WelcomeScreenState.GREETING);
+  }
 
   /**
    * Handle click on "Set up as CFM device" option.
@@ -593,7 +624,7 @@ Polymer({
    */
   onCFMBootstrappingClicked_() {
     this.userActed('activateRemoraRequisition');
-  },
+  }
 
   /**
    * Handle click on "Device requisition" option.
@@ -602,14 +633,14 @@ Polymer({
    */
   onDeviceRequisitionClicked_() {
     this.userActed('editDeviceRequisition');
-  },
+  }
 
   /** ******************** ChromeVox hint section ******************* */
 
   /** @private */
   onChromeVoxHintAccepted_() {
     this.userActed('activateChromeVoxFromHint');
-  },
+  }
 
   /** @private */
   onChromeVoxHintDismissed_() {
@@ -619,7 +650,7 @@ Polymer({
         chrome.tts.stop();
       }
     });
-  },
+  }
 
   /**
    * @suppress {missingProperties}
@@ -627,7 +658,7 @@ Polymer({
    */
   showChromeVoxHint_() {
     this.$.welcomeScreen.showChromeVoxHint();
-  },
+  }
 
   /**
    * @suppress {missingProperties}
@@ -635,13 +666,13 @@ Polymer({
    */
   closeChromeVoxHint_() {
     this.$.welcomeScreen.closeChromeVoxHint();
-  },
+  }
 
   /** @private */
   cancelChromeVoxHint_() {
     this.userActed('cancelChromeVoxHint');
     this.cleanupChromeVoxHint_();
-  },
+  }
 
   /**
    * Initially called from WelcomeScreenHandler.
@@ -663,7 +694,7 @@ Polymer({
           /** @type {!chrome.tts.TtsOptions} */ ({lang: locale, voiceName});
       this.giveChromeVoxHint_(locale, ttsOptions, false);
     });
-  },
+  }
 
   /**
    * Returns a voice name from |voices| that matches |locale|.
@@ -682,7 +713,7 @@ Polymer({
           voice.lang && voice.lang.toLowerCase().split('-')[0] === language);
     });
     return voice ? voice.voiceName : undefined;
-  },
+  }
 
   /**
    * Called if we couldn't find a voice in which to announce the ChromeVox
@@ -714,7 +745,7 @@ Polymer({
               DEFAULT_CHROMEVOX_HINT_LOCALE, ttsOptions, true),
           this.DEFAULT_CHROMEVOX_HINT_TIMEOUT_MS_);
     }
-  },
+  }
 
   /**
    * Shows the ChromeVox hint dialog and plays the spoken announcement. Gives
@@ -723,6 +754,7 @@ Polymer({
    * @param {!chrome.tts.TtsOptions} options
    * @param {boolean} isDefaultHint
    * @private
+   * @suppress {missingProperties}
    */
   giveChromeVoxHint_(locale, options, isDefaultHint) {
     if (this.chromeVoxHintGiven_) {
@@ -747,7 +779,7 @@ Polymer({
       this.showChromeVoxHint_();
       chrome.send('WelcomeScreen.recordChromeVoxHintSpokenSuccess');
     });
-  },
+  }
 
   /**
    * Clear timeout and remove voiceschanged listener.
@@ -764,5 +796,6 @@ Polymer({
         /* useCapture */ false);
     this.voicesChangedListenerMaybeGiveChromeVoxHint_ = null;
   }
-});
-})();
+}
+
+customElements.define(OobeWelcomeScreen.is, OobeWelcomeScreen);

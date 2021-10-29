@@ -2,21 +2,24 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/polymer.html">
+
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lottie/cr_lottie.html">
 
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/long_touch_detector.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_icon_button.html">
-<link rel="import" href="/components/buttons/oobe_next_button.html">
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/dialogs/oobe_modal_dialog.html">
-<link rel="import" href="/components/oobe_vars/oobe_shared_vars_css.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/long_touch_detector.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_icon_button.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
+<link rel="import" href="../../components/oobe_vars/oobe_shared_vars_css.html">
 
 <!--
   OOBE Welcome screen
@@ -191,9 +194,9 @@
         </oobe-text-button>
         <div id="welcomeAnimationSlot">
           <cr-lottie id="welcomeAnimation" hidden="[[isMeet_]]"
-              animation-url="welcome_screen_animation.json">
+              animation-url="/welcome_screen_animation.json">
           </cr-lottie>
-          <img src="images/cfm/welcome.svg" id="remoraWelcomeImage"
+          <img src="/images/cfm/welcome.svg" id="remoraWelcomeImage"
               class="oobe-illustration" hidden="[[!isMeet_]]">
         </div>
       </div>
@@ -213,4 +216,5 @@
       </div>
     </oobe-modal-dialog>
   </template>
+  <script src="welcome_dialog.js"></script>
 </dom-module>
