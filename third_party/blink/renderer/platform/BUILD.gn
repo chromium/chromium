@@ -1150,6 +1150,8 @@ component("platform") {
     "graphics/squashing_disallowed_reasons.h",
     "graphics/static_bitmap_image.cc",
     "graphics/static_bitmap_image.h",
+    "graphics/static_bitmap_image_to_video_frame_copier.cc",
+    "graphics/static_bitmap_image_to_video_frame_copier.h",
     "graphics/stroke_data.cc",
     "graphics/stroke_data.h",
     "graphics/subtree_paint_property_update_reason.cc",
