@@ -67,6 +67,14 @@ DesksTemplatesPresenter* DesksTemplatesPresenter::Get() {
   return g_instance;
 }
 
+size_t DesksTemplatesPresenter::GetEntryCount() const {
+  return GetDeskModel()->GetEntryCount();
+}
+
+size_t DesksTemplatesPresenter::GetMaxEntryCount() const {
+  return GetDeskModel()->GetMaxEntryCount();
+}
+
 void DesksTemplatesPresenter::GetAllEntries() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->GetAllEntries(
@@ -100,6 +108,20 @@ void DesksTemplatesPresenter::DeskModelLoaded() {}
 
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
   desk_model_observation_.Reset();
+}
+
+void DesksTemplatesPresenter::SaveActiveDeskAsTemplate() {
+  std::unique_ptr<DeskTemplate> desk_template =
+      DesksController::Get()->CaptureActiveDeskAsTemplate();
+  auto desk_template_clone = desk_template->Clone();
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+  // Save `desk_template_clone` as an entry in DeskModel.
+  GetDeskModel()->AddOrUpdateEntry(
+      std::move(desk_template_clone),
+      base::BindOnce(&DesksTemplatesPresenter::OnAddOrUpdateEntry,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DesksTemplatesPresenter::OnGetAllEntries(
@@ -166,6 +188,18 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();
+}
+
+void DesksTemplatesPresenter::OnAddOrUpdateEntry(
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+  // TODO: Display dialog for unsupported apps using
+  // `overview_session_->desks_templates_dialog_controller()`, and update the UI
+  // to display the Templates grid after a template has been added.
+
+  // Update the button here in case it has been disabled.
+  for (auto& overview_grid : overview_session_->grid_list()) {
+    overview_grid->UpdateSaveDeskAsTemplateButton();
+  }
 }
 
 }  // namespace ash

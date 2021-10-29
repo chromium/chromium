@@ -9,6 +9,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/style/button_style.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -203,6 +204,16 @@ class DesksTemplatesTest : public OverviewTestBase {
     return desks_bar_view->expanded_state_desks_templates_button();
   }
 
+  views::Widget* GetSaveDeskAsTemplateButtonForRoot(aura::Window* root_window) {
+    auto* overview_session = GetOverviewSession();
+    if (!overview_session)
+      return nullptr;
+
+    const auto* overview_grid =
+        overview_session->GetGridWithRootWindow(root_window);
+    return overview_grid->save_desk_as_template_widget_.get();
+  }
+
   // Shows the desks templates grid by emulating a click on the templates
   // button. It is required to have at least one entry in the desk model for the
   // button to be visible and clickable.
@@ -238,9 +249,9 @@ class DesksTemplatesTest : public OverviewTestBase {
     return overview_session->grid_list();
   }
 
-  bool GetCreateDeskTemplateWidgetVisibility(OverviewGrid* grid) {
+  bool GetSaveDeskAsTemplateWidgetVisibility(OverviewGrid* grid) {
     DCHECK(grid);
-    views::Widget* widget = grid->create_desk_template_widget_.get();
+    views::Widget* widget = grid->save_desk_as_template_widget_.get();
     return widget && widget->IsVisible();
   }
 };
@@ -551,47 +562,35 @@ TEST_F(DesksTemplatesTest, DeleteTemplate) {
     EXPECT_FALSE(overview_grid->IsShowingDesksTemplatesGrid());
 }
 
-// Tests that the save desk template button is not shown on displays with no
-// overview items, or while dragging an overivew item.
-TEST_F(DesksTemplatesTest, SaveDeskTemplateButtonVisibility) {
-  UpdateDisplay("800x600,800+0-800x600");
-
-  // Enter overview and show the Desks Templates Grid.
-  ToggleOverview();
-
-  // There are no windows, so the button doesn't show up on any grid.
-  for (auto& overview_grid : GetOverviewGridList())
-    EXPECT_FALSE(GetCreateDeskTemplateWidgetVisibility(overview_grid.get()));
-
-  // Create a test window on the primary root. This should exit overview.
+// Tests that the SaveDeskAsTemplate button is disabled when the max number of
+// templates has been reached.
+TEST_F(DesksTemplatesTest, SaveDeskAsTemplateButtonDisabledOnMaxTemplates) {
+  // There are no saved template entries and one test window initially.
   auto test_window = CreateTestWindow();
-  ASSERT_EQ(Shell::GetPrimaryRootWindow(), test_window->GetRootWindow());
-  ASSERT_FALSE(GetOverviewSession());
-
-  // Enter overview. The button should now show up on the first grid.
   ToggleOverview();
-  ASSERT_EQ(2u, GetOverviewGridList().size());
-  EXPECT_TRUE(
-      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[0].get()));
-  EXPECT_FALSE(
-      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[1].get()));
+  WaitForUI();
 
-  // Start a mouse drag to a point on the secondary display. Both buttons are
-  // hidden while dragging.
-  DragItemToPoint(GetOverviewItemForWindow(test_window.get()),
-                  gfx::Point(1200, 300), GetEventGenerator(),
-                  /*by_touch_gestures=*/false,
-                  /*drop=*/false);
-  for (auto& overview_grid : GetOverviewGridList())
-    EXPECT_FALSE(GetCreateDeskTemplateWidgetVisibility(overview_grid.get()));
+  // The `save_desk_as_template_widget` is visible when at least one window is
+  // open.
+  views::Widget* save_desk_as_template_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(save_desk_as_template_widget);
+  EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
 
-  // Drop the overview item on the secondary display. The button on the
-  // secondary display is now visible.
-  GetEventGenerator()->ReleaseLeftButton();
-  EXPECT_FALSE(
-      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[0].get()));
-  EXPECT_TRUE(
-      GetCreateDeskTemplateWidgetVisibility(GetOverviewGridList()[1].get()));
+  // Verify that the entry has been added.
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  // Verify that the button is disabled after 5 more entries are added.
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ClickOnView(save_desk_as_template_widget->GetContentsView());
+  ASSERT_EQ(6ul, GetAllEntries().size());
+  auto* button =
+      static_cast<PillButton*>(save_desk_as_template_widget->GetContentsView());
+  EXPECT_EQ(views::Button::STATE_DISABLED, button->GetState());
 }
 
 // Tests that launching templates from the templates grid functions correctly.
