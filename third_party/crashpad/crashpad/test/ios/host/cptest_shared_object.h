@@ -18,8 +18,29 @@
 #import <UIKit/UIKit.h>
 
 @interface CPTestSharedObject : NSObject
+
 // Returns the string "crashpad" for testing EDO.
 - (NSString*)testEDO;
+
+// Tell Crashpad to process intermediate dumps.
+- (void)processIntermediateDumps;
+
+// Clear pending reports from Crashpad database.
+- (void)clearPendingReports;
+
+// Returns the number of pending reports, or -1 if there's an error getting
+// report.
+- (int)pendingReportCount;
+
+// Returns exception code when there's a single pending report, or -1 if there's
+// a different number of pending reports.
+- (int)pendingReportException;
+
+// Return an NSDictionary with a dictionary named "simplemap", an array named
+// "vector" and an array named "objects", representing the combination of all
+// modules AnnotationsSimpleMap, AnnotationsVector and AnnotationObjects
+// (strings only) respectively.
+- (NSDictionary*)getAnnotations;
 
 // Triggers an EXC_BAD_ACCESS exception and crash.
 - (void)crashBadAccess;
@@ -43,13 +64,22 @@
 - (void)crashNSException;
 
 // Trigger an unrecognized selector after delay.
-- (void)crashUnreocgnizedSelectorAfterDelay;
+- (void)crashUnrecognizedSelectorAfterDelay;
 
-// Trigger a caught NSxception.
+// Trigger a caught NSException, this will not crash
 - (void)catchNSException;
 
 // Trigger a crash with an infinite recursion.
 - (void)crashRecursion;
+
+// Trigger a crash dlsym that contains a crash_info message.
+- (void)crashWithCrashInfoMessage;
+
+// Trigger an error that will to the dyld error string `_error_string`
+- (void)crashWithDyldErrorString;
+
+// Trigger a crash after writing various annotations.
+- (void)crashWithAnnotations;
 @end
 
 #endif  // CRASHPAD_TEST_IOS_HOST_SHARED_OBJECT_H_

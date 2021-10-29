@@ -69,6 +69,71 @@ arrays.
 
 Similar to JSON, maps can contain other maps, arrays and properties.
 
+## The life of an iOS crash report
+
+Immediately upon calling StartCrashpadInProcessHandler, the iOS in-process
+handler is installed. This will open a temporary file within the database
+directory, in a subdirectory named `pending-serialized-ios-dump`. This file will
+be used to write an intermediate dump in the event of a crash. This must happen
+before installing the various types of crash handlers, as each depends on having
+a valid handler with an intermediate dump ready to be written to.
+
+After the in-process handler is initialized, the Mach exception, POSIX signal
+and Objective-C exception preprocessor handlers are installed.
+
+### Intermediate Dump File Locking
+
+It is expected that multiple Crashpad clients may share the same database
+directory, and this directory may be inside an iOS app group directory. While
+it's possible for each Crashpad client to write to its own private directory,
+if a shared directory is used, it's possible for different applications to
+upload a crash report from any application in a shared group. This might be
+used, for example, by an application and its various app extensions, where each
+client may generate a crash report but only the main application uploads
+reports. Alternatively, a suite of applications may upload each other's crash
+reports. Otherwise, the only opportunity to upload a report would be when a
+specific app that crashed relaunches.
+
+To prevent multiple clients from processing a pending intermediate dump, files
+must be locked. However, POSIX locks on app group files will trigger app
+termination on app backgrounding, so a custom file locking protocol is used.
+Locked temporary files are named `<bundle-id>@<uuid>.locked`. The `.locked`
+extension is removed when the file is unlocked. The `bundle-id` is used to
+determine which Crashpad clients can process leftover locked files.
+
+### Writing Crashes to Intermediate Dumps
+
+When an app encounters a crash (via a Mach exception, Objective-C exception, or
+a POSIX signal), an intermediate dump is written to the temporary locked file,
+the .locked extension is removed, and a new temporary locked file is opened.
+
+App terminations not handled by Crashpad will leave behind a temporary
+locked file, to be cleaned up on next launch. These files are still processed,
+because it is possible for the app to be terminated while writing an
+intermediate dump, and if enough data is written this may still be valuable.
+
+Note: Generally iOS apps are single-process, so it's safe for the client to
+consider any files matching its `bundle-id`, but there are edge-cases (such as
+if a share-to app extension is opened at the same time in two different apps) so
+old locked files won't be cleared until after 24 hours. Any locked file found
+after 60 days is unlocked regardless of `bundle-id`.
+
+### Writing to Intermediate Dumps without a Crash
+
+Apps may also generate intermediate dumps without a crash, often used for
+debugging. Chromium makes heavy use of this for detecting main thread hangs,
+something that can appear as a crash for the user, but is uncatchable for crash
+handlers like Crashpad. When an app requests this (via DumpWithoutCrash,
+DumpWithoutCrashAndDeferProcessing), an intermediate dump is written to the
+temporary locked file, the .locked extension is removed, and a new temporary
+locked file is opened.
+
+Note: DumpWithoutCrashAndDeferProcessingAtPath writes an intermediate dump to
+the requested location, not the previously opened temporary file. This is useful
+because Chromium's main thread hang detection will throw away hang reports in
+certain circumstances (if the app recovers, if a different crash report is
+written, etc).
+
 ## The Crashpad In-Process Client
 
 Other Crashpad platforms handle exceptions and upload minidumps out-of-process.
@@ -81,6 +146,11 @@ intermediate dumps into pending minidumps and begin processing pending
 minidumps, possibly for upload, at suitable times following the next application
 restart.
 
+Note: Applications are not required to call either of these methods. For
+example, application extensions may choose to generate dumps but leave
+processing and uploading to the main applications. Clients that share the
+same database directory between apps can take advantage of processing and
+uploading crash reports from different applications.
 
 ### `ProcessIntermediateDumps`
 For performance and stability reasons applications may choose the correct time
@@ -95,6 +165,9 @@ the next call to `ProcessIntermediateDumps`. Conversely,
 `CRASHPAD_SIMULATE_CRASH` can be called when the client has no performance or
 stability concerns. In this case, intermediate dumps are automatically
 converted to minidumps and immediately eligible for uploading.
+
+Applications can include annotations here as well. Chromium uses this for its
+insta-crash logic, which detects if an app is crashing repeatedly on startup.
 
 ### `StartProcessingPendingReports`
 For similar reasons, applications may choose the correct time to begin uploading
