@@ -97,3 +97,10 @@ ProfileAccountManager::CreateAccessTokenFetcher(
   return mapper_->CreateAccessTokenFetcher(profile_path_, account,
                                            oauth_consumer_name, consumer);
 }
+
+void ProfileAccountManager::UpsertAccountForTesting(
+    const account_manager::Account& account,
+    const std::string& token_value) {
+  mapper_->UpsertAccountForTesting(  // IN-TEST
+      profile_path_, account, token_value);
+}

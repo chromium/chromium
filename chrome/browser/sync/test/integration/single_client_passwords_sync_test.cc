@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -364,6 +366,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 // Sanity check: The profile database should *not* get cleared on signout.
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        DoesNotClearProfileDBOnSignout) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   AddTestPasswordToFakeServer();
 
   // Sign in and enable Sync.
@@ -517,6 +527,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
       passwords_helper::GetProfilePasswordStoreInterface(0);
   EXPECT_EQ(passwords_helper::GetAllLogins(profile_store).size(), 1u);
   EXPECT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    return;
+#endif
 
   // Clear the primary account to put Sync into transport mode again.
   // Note: Clearing the primary account without also signing out isn't exposed

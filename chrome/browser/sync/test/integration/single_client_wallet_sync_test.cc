@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
@@ -350,6 +352,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 
   ExpectDefaultCreditCardValues(*cards[0]);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    return;
+#endif
+
   // Now sign back out.
   GetClient(0)->SignOutPrimaryAccount();
 
@@ -371,6 +381,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
 // different account.
 IN_PROC_BROWSER_TEST_F(SingleClientWalletWithAccountStorageSyncTest,
                        ClearOnSignOutAndDownstreamOnSignIn) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   ASSERT_TRUE(SetupClients());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);
   ASSERT_NE(nullptr, pdm);
@@ -533,6 +551,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnStopSync) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Wallet data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_F(SingleClientWalletSyncTest, ClearOnSignOut) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletAddress(),
                                   CreateDefaultSyncWalletCard(),
                                   CreateDefaultSyncPaymentsCustomerData(),

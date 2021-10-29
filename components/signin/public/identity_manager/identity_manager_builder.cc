@@ -177,6 +177,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   init_params.signin_client = params->signin_client;
+  init_params.account_manager_facade = params->account_manager_facade;
 #endif
 
   return init_params;

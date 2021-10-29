@@ -43,13 +43,9 @@ class NetworkConnectionTracker;
 namespace ash {
 class AccountManager;
 }
-
-namespace account_manager {
-class AccountManagerFacade;
-}
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace account_manager {
 class AccountManagerFacade;
 }
@@ -78,11 +74,9 @@ struct IdentityManagerBuildParams {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   account_manager::AccountManager* account_manager = nullptr;
-  account_manager::AccountManagerFacade* account_manager_facade = nullptr;
-  bool is_regular_profile = false;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::AccountManagerFacade* account_manager_facade = nullptr;
   bool is_regular_profile = false;
 #endif

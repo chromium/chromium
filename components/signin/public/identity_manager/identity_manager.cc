@@ -104,6 +104,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
       account_fetcher_service_(std::move(parameters.account_fetcher_service)),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       signin_client_(parameters.signin_client),
+      account_manager_facade_(parameters.account_manager_facade),
 #endif
       identity_mutator_(std::move(parameters.primary_account_mutator),
                         std::move(parameters.accounts_mutator),
@@ -536,6 +537,13 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 account_manager::AccountManager* IdentityManager::GetAshAccountManager() const {
   return ash_account_manager_;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade*
+IdentityManager::GetAccountManagerFacade() const {
+  return account_manager_facade_;
 }
 #endif
 

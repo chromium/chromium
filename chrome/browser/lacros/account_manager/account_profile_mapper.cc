@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/add_account_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -210,6 +211,28 @@ void AccountProfileMapper::OnAccountRemoved(
   account_manager_facade_->GetAccounts(
       base::BindOnce(&AccountProfileMapper::OnGetAccountsCompleted,
                      weak_factory_.GetWeakPtr()));
+}
+
+void AccountProfileMapper::UpsertAccountForTesting(
+    const base::FilePath& profile_path,
+    const account_manager::Account& account,
+    const std::string& token_value) {
+  if (!initialized_) {
+    initialization_callbacks_.push_back(base::BindOnce(
+        &AccountProfileMapper::UpsertAccountForTesting,
+        weak_factory_.GetWeakPtr(), profile_path, account, token_value));
+    return;
+  }
+
+  add_account_helpers_.push_back(std::make_unique<AddAccountHelper>(
+      account_manager_facade_, profile_attributes_storage_));
+  AddAccountHelper* helper = add_account_helpers_.back().get();
+  account_manager_facade_->UpsertAccountForTesting(  // IN-TEST
+      account, token_value);
+  helper->Start(
+      profile_path, account,
+      base::BindOnce(&AccountProfileMapper::OnAddAccountCompleted,
+                     weak_factory_.GetWeakPtr(), helper, base::DoNothing()));
 }
 
 void AccountProfileMapper::AddAccountInternal(
@@ -418,7 +441,8 @@ ProfileAttributesEntry* AccountProfileMapper::MaybeGetProfileForNewAccounts()
   // Ignore omitted profiles.
   base::EraseIf(entries,
                 [](const auto* entry) -> bool { return entry->IsOmitted(); });
-  DCHECK_GT(entries.size(), 0u);
+  if (entries.empty())
+    return nullptr;  // Happens in tests.
   // If there are multiple profiles, leave new accounts unassigned.
   if (entries.size() > 1)
     return nullptr;

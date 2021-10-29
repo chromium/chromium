@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -65,6 +66,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       const AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void UpsertAccountForTesting(const Account& account,
+                               const std::string& token_value) override;
+#endif
 
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;

@@ -5073,6 +5073,21 @@
             ]
         }
     ],
+    "MultiProfileAccountConsistency": [
+        {
+            "platforms": [
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MultiProfileAccountConsistency"
+                    ]
+                }
+            ]
+        }
+    ],
     "MultipleBlinkIsolates": [
         {
             "platforms": [

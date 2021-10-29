@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,11 +19,16 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_immediate_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager.h"
+#endif
 
 namespace account_manager {
 
@@ -345,6 +351,19 @@ AccountManagerFacadeImpl::CreateAccessTokenFetcher(
   RunOnMojoDisconnection(access_token_fetcher->MojoDisconnectionClosure());
   return std::move(access_token_fetcher);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void AccountManagerFacadeImpl::UpsertAccountForTesting(
+    const Account& account,
+    const std::string& token_value) {
+  account_manager::AccountManager* account_manager =
+      MaybeGetAshAccountManagerForTests();  // IN-TEST
+  DCHECK(account_manager)
+      << "AccountManager is not created. In Lacros browser tests use "
+      << "`IdentityBrowserTestBase` instead of `InProcessBrowserTest`";
+  account_manager->UpsertAccount(account.key, account.raw_email, token_value);
+}
+#endif
 
 // static
 std::string AccountManagerFacadeImpl::

@@ -9,7 +9,6 @@
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
@@ -29,6 +28,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -91,13 +91,22 @@ void UpdateRefreshTokenForAccount(
   if (ShouldUseAccountManager(identity_manager)) {
     const AccountInfo& account_info =
         account_tracker_service->GetAccountInfo(account_id);
-    DCHECK(account_manager)
-        << "AccountManager is not created. In Lacros browser tests use "
-           "`IdentityBrowserTestBase` instead of `InProcessBrowserTest`";
-    account_manager->UpsertAccount(
+    account_manager::Account account{
         account_manager::AccountKey{account_info.gaia,
                                     account_manager::AccountType::kGaia},
-        account_info.email, new_token);
+        account_info.email};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Lacros supports multiple `IdentityManager` instances, and the facade
+    // manages the mapping of accounts across these instances.
+    GetAccountManagerFacade(identity_manager)
+        ->UpsertAccountForTesting(account, new_token);
+#else
+    // On Ash, we can use the AccountManager directly, as all accounts in Ash
+    // are directly mirrored in the single instance of `IdentityManager`.
+    // TODO: Use `AccountManagerFacade` on Ash as well, for consistency.
+    account_manager->UpsertAccount(account.key, account.raw_email, new_token);
+#endif
   } else
 #endif  // defined(OS_CHROMEOS)
   {
@@ -384,6 +393,11 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
         identity_manager->GetAccountTrackerService()->GetAccountInfo(
             account_id);
     DCHECK(account_manager);
+    // Note: On Lacros, this removes the account from all instances of
+    // `IdentityManager` with Mirror enabled, not only this one. This may have
+    // unintended side effects.
+    // TODO: Use the account manager facade instead, as it can manage the
+    // account mapping more precisely.
     account_manager->RemoveAccount(account_manager::AccountKey{
         account_info.gaia, account_manager::AccountType::kGaia});
   } else
@@ -544,5 +558,12 @@ account_manager::AccountManager* GetAccountManager(
 #endif
 }
 #endif  // defined(OS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade* GetAccountManagerFacade(
+    IdentityManager* identity_manager) {
+  return identity_manager->GetAccountManagerFacade();
+}
+#endif
 
 }  // namespace signin

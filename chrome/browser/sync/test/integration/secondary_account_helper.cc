@@ -71,6 +71,12 @@ AccountInfo SignInSecondaryAccount(
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info =
       signin::MakeAccountAvailable(identity_manager, email);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Unlike other platforms, ChromeOS does not get the primary account from the
+  // cookies, and it needs to be set explicitly.
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_info.account_id, signin::ConsentLevel::kSignin);
+#endif
   signin::SetCookieAccounts(identity_manager, test_url_loader_factory,
                             {{account_info.email, account_info.gaia}});
   return account_info;

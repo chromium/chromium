@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_MOCK_ACCOUNT_MANAGER_FACADE_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_MOCK_ACCOUNT_MANAGER_FACADE_H_
 
+#include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -59,6 +60,12 @@ class MockAccountManagerFacade : public account_manager::AccountManagerFacade {
                const std::string&,
                OAuth2AccessTokenConsumer*),
               (override));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  MOCK_METHOD(void,
+              UpsertAccountForTesting,
+              (const Account&, const std::string&),
+              (override));
+#endif
 };
 
 }  // namespace account_manager
