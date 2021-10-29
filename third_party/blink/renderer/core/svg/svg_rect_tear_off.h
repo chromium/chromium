@@ -36,11 +36,17 @@
 
 namespace blink {
 
+class FloatRect;
+
 class SVGRectTearOff : public SVGPropertyTearOff<SVGRect> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGRectTearOff* CreateDetached(const FloatRect&);
+  static SVGRectTearOff* CreateDetached(const FloatRect& r);
+  static SVGRectTearOff* CreateDetached(float x,
+                                        float y,
+                                        float width,
+                                        float height);
 
   SVGRectTearOff(SVGRect*,
                  SVGAnimatedPropertyBase* binding,

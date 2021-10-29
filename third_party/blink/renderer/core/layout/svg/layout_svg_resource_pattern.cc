@@ -153,7 +153,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
       return pattern_data;
     tile_transform = SVGFitToViewBox::ViewBoxToViewTransform(
         attributes.ViewBox(), attributes.PreserveAspectRatio(),
-        tile_bounds.size());
+        ToGfxSizeF(tile_bounds.size()));
   } else {
     // A viewBox overrides patternContentUnits, per spec.
     if (attributes.PatternContentUnits() ==

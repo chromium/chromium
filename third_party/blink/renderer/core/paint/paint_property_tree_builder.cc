@@ -1978,7 +1978,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                 viewport_container.Viewport());
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
         // the first parameter?
-        state.SetClipRect(ToGfxRectF(clip_rect), FloatRoundedRect(clip_rect));
+        state.SetClipRect(clip_rect, FloatRoundedRect(clip_rect));
       }
       OnUpdateClip(properties_->UpdateOverflowClip(*context_.current.clip,
                                                    std::move(state)));

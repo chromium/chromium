@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
+#include <cmath>
+
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -33,19 +35,25 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
 static inline float DimensionForLengthMode(SVGLengthMode mode,
-                                           const FloatSize& viewport_size) {
+                                           const gfx::SizeF& viewport_size) {
   switch (mode) {
     case SVGLengthMode::kWidth:
       return viewport_size.width();
     case SVGLengthMode::kHeight:
       return viewport_size.height();
     case SVGLengthMode::kOther:
-      return sqrtf(viewport_size.DiagonalLengthSquared() / 2);
+      // Returns the normalized diagonal length of the viewport, as defined in
+      // https://www.w3.org/TR/SVG2/coords.html#Units.
+      return ClampTo<float>(std::sqrt(
+          gfx::Vector2dF(viewport_size.width(), viewport_size.height())
+              .LengthSquared() /
+          2));
   }
   NOTREACHED();
   return 0;
@@ -202,7 +210,7 @@ gfx::Vector2dF SVGLengthContext::ResolveLengthPair(
     const Length& x_length,
     const Length& y_length,
     const ComputedStyle& style) const {
-  FloatSize viewport_size;
+  gfx::SizeF viewport_size;
   if (x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) {
     DetermineViewport(viewport_size);
     // If either |x_length| or |y_length| is 'auto', set that viewport dimension
@@ -249,7 +257,7 @@ float SVGLengthContext::ValueForLength(const Length& length,
                                        SVGLengthMode mode) const {
   float dimension = 0;
   if (length.IsPercentOrCalc()) {
-    FloatSize viewport_size;
+    gfx::SizeF viewport_size;
     DetermineViewport(viewport_size);
     // The viewport will be unaffected by zoom.
     dimension = DimensionForLengthMode(mode, viewport_size);
@@ -286,7 +294,7 @@ float SVGLengthContext::ConvertValueToUserUnits(
       user_units = value;
       break;
     case CSSPrimitiveValue::UnitType::kPercentage: {
-      FloatSize viewport_size;
+      gfx::SizeF viewport_size;
       if (!DetermineViewport(viewport_size))
         return 0;
       user_units = value * DimensionForLengthMode(mode, viewport_size) / 100;
@@ -352,7 +360,7 @@ float SVGLengthContext::ConvertValueFromUserUnits(
     case CSSPrimitiveValue::UnitType::kUserUnits:
       return value;
     case CSSPrimitiveValue::UnitType::kPercentage: {
-      FloatSize viewport_size;
+      gfx::SizeF viewport_size;
       if (!DetermineViewport(viewport_size))
         return 0;
       float dimension = DimensionForLengthMode(mode, viewport_size);
@@ -452,7 +460,7 @@ float SVGLengthContext::ConvertValueFromEXSToUserUnits(float value) const {
          ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
 }
 
-bool SVGLengthContext::DetermineViewport(FloatSize& viewport_size) const {
+bool SVGLengthContext::DetermineViewport(gfx::SizeF& viewport_size) const {
   if (!context_)
     return false;
 

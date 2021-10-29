@@ -44,11 +44,11 @@ void LayoutSVGViewportContainer::UpdateLayout() {
 
   if (SelfNeedsLayout()) {
     SVGLengthContext length_context(svg);
-    FloatRect old_viewport = viewport_;
-    viewport_ = FloatRect(svg->x()->CurrentValue()->Value(length_context),
-                          svg->y()->CurrentValue()->Value(length_context),
-                          svg->width()->CurrentValue()->Value(length_context),
-                          svg->height()->CurrentValue()->Value(length_context));
+    gfx::RectF old_viewport = viewport_;
+    viewport_.SetRect(svg->x()->CurrentValue()->Value(length_context),
+                      svg->y()->CurrentValue()->Value(length_context),
+                      svg->width()->CurrentValue()->Value(length_context),
+                      svg->height()->CurrentValue()->Value(length_context));
     if (old_viewport != viewport_) {
       SetNeedsBoundariesUpdate();
       // The transform depends on viewport values.

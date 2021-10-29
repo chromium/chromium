@@ -136,8 +136,7 @@ bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
               ParseNumber(ptr, end, width) &&
               ParseNumber(ptr, end, height, kDisallowWhitespace)))
           return false;
-        view_box_ =
-            MakeGarbageCollected<SVGRect>(FloatRect(x, y, width, height));
+        view_box_ = MakeGarbageCollected<SVGRect>(x, y, width, height);
         break;
       }
       case kViewTarget: {

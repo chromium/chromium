@@ -91,10 +91,10 @@ void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
   if (!intrinsic_sizing_info.size.IsEmpty()) {
     intrinsic_sizing_info.aspect_ratio = intrinsic_sizing_info.size;
   } else {
-    FloatSize view_box_size = svg->viewBox()->CurrentValue()->Value().size();
+    gfx::SizeF view_box_size = svg->viewBox()->CurrentValue()->Rect().size();
     if (!view_box_size.IsEmpty()) {
       // The viewBox can only yield an intrinsic ratio, not an intrinsic size.
-      intrinsic_sizing_info.aspect_ratio = view_box_size;
+      intrinsic_sizing_info.aspect_ratio = FloatSize(view_box_size);
     }
   }
   EAspectRatioType ar_type = StyleRef().AspectRatio().GetType();
@@ -492,7 +492,7 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
   auto* svg = To<SVGSVGElement>(GetNode());
   DCHECK(svg);
   float scale = StyleRef().EffectiveZoom();
-  FloatSize content_size(ContentWidth() / scale, ContentHeight() / scale);
+  gfx::SizeF content_size(ContentWidth() / scale, ContentHeight() / scale);
   local_to_border_box_transform_ = svg->ViewBoxToViewTransform(content_size);
 
   gfx::Vector2dF translate = svg->CurrentTranslate();

@@ -86,10 +86,10 @@ static absl::optional<AffineTransform> ComputeViewportAdjustmentTransform(
   // TODO(crbug/260709): This fixes relative lengths but breaks non-relative
   // ones.
   SVGLengthContext length_context(element);
-  FloatSize viewport_size;
+  gfx::SizeF viewport_size;
   if (!length_context.DetermineViewport(viewport_size))
     return absl::nullopt;
-  return MakeMapBetweenRects(FloatRect(FloatPoint(), viewport_size),
+  return MakeMapBetweenRects(FloatRect(FloatPoint(), FloatSize(viewport_size)),
                              target_rect);
 }
 

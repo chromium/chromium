@@ -140,7 +140,7 @@ bool LayoutSVGResourceMarker::ShouldPaint() const {
   DCHECK(marker);
   return !marker->viewBox()->IsSpecified() ||
          !marker->viewBox()->CurrentValue()->IsValid() ||
-         !marker->viewBox()->CurrentValue()->Value().IsEmpty();
+         !marker->viewBox()->CurrentValue()->Rect().IsEmpty();
 }
 
 void LayoutSVGResourceMarker::SetNeedsTransformUpdate() {
@@ -163,7 +163,7 @@ SVGTransformChange LayoutSVGResourceMarker::CalculateLocalTransform(
   SVGLengthContext length_context(marker);
   float width = marker->markerWidth()->CurrentValue()->Value(length_context);
   float height = marker->markerHeight()->CurrentValue()->Value(length_context);
-  viewport_size_ = FloatSize(width, height);
+  viewport_size_.SetSize(width, height);
 
   SVGTransformChangeDetector change_detector(local_to_parent_transform_);
   local_to_parent_transform_ = marker->ViewBoxToViewTransform(viewport_size_);

@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -59,18 +59,19 @@ class PLATFORM_EXPORT LayoutSize {
 
   constexpr explicit LayoutSize(const FloatSize& size)
       : width_(size.width()), height_(size.height()) {}
-  constexpr explicit LayoutSize(const DoubleSize& size)
-      : width_(size.Width()), height_(size.Height()) {}
-  constexpr explicit LayoutSize(const gfx::Size& size)
-      : width_(size.width()), height_(size.height()) {}
   constexpr explicit LayoutSize(const gfx::SizeF& size)
       : width_(size.width()), height_(size.height()) {}
+  constexpr explicit LayoutSize(const DoubleSize& size)
+      : width_(size.Width()), height_(size.Height()) {}
 
   constexpr explicit operator FloatSize() const {
     return FloatSize(width_.ToFloat(), height_.ToFloat());
   }
   constexpr explicit operator FloatPoint() const {
     return FloatPoint(width_.ToFloat(), height_.ToFloat());
+  }
+  constexpr explicit operator gfx::SizeF() const {
+    return gfx::SizeF(width_.ToFloat(), height_.ToFloat());
   }
 
   constexpr LayoutUnit Width() const { return width_; }
@@ -216,6 +217,10 @@ inline IntSize RoundedIntSize(const LayoutSize& s) {
 }
 
 inline LayoutSize RoundedLayoutSize(const FloatSize& s) {
+  return LayoutSize(s);
+}
+
+inline LayoutSize RoundedLayoutSize(const gfx::SizeF& s) {
   return LayoutSize(s);
 }
 

@@ -315,6 +315,7 @@ _CONFIG = [
             'gfx::IntersectRects',
             'gfx::PointAtOffsetFromOrigin',
             'gfx::MaximumCoveredRect',
+            'gfx::RectFToSkRect',
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
             'gfx::ScalePoint',

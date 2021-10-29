@@ -298,12 +298,10 @@ void SVGSVGElement::SvgAttributeChanged(
   SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
-// FloatRect::intersects does not consider horizontal or vertical lines (because
-// of isEmpty()).
-static bool IntersectsAllowingEmpty(const FloatRect& r1, const FloatRect& r2) {
-  if (r1.width() < 0 || r1.height() < 0 || r2.width() < 0 || r2.height() < 0)
-    return false;
-
+// gfx::RectF::Intersects() does not consider horizontal or vertical lines
+// (because of IsEmpty()).
+static bool IntersectsAllowingEmpty(const gfx::RectF& r1,
+                                    const gfx::RectF& r2) {
   return r1.x() < r2.right() && r2.x() < r1.right() && r1.y() < r2.bottom() &&
          r2.y() < r1.bottom();
 }
@@ -319,7 +317,7 @@ static bool IsIntersectionOrEnclosureTarget(LayoutObject* layout_object) {
 
 bool SVGSVGElement::CheckIntersectionOrEnclosure(
     const SVGElement& element,
-    const FloatRect& rect,
+    const gfx::RectF& rect,
     GeometryMatchingMode mode) const {
   LayoutObject* layout_object = element.GetLayoutObject();
   DCHECK(!layout_object || layout_object->Style());
@@ -335,7 +333,7 @@ bool SVGSVGElement::CheckIntersectionOrEnclosure(
   FloatRect visual_rect = layout_object->VisualRectInLocalSVGCoordinates();
   SVGLayoutSupport::AdjustWithClipPathAndMask(
       *layout_object, layout_object->ObjectBoundingBox(), visual_rect);
-  FloatRect mapped_repaint_rect = ctm.MapRect(visual_rect);
+  gfx::RectF mapped_repaint_rect = ToGfxRectF(ctm.MapRect(visual_rect));
 
   bool result = false;
   switch (mode) {
@@ -361,7 +359,7 @@ void SVGSVGElement::DidMoveToNewDocument(Document& old_document) {
 }
 
 StaticNodeList* SVGSVGElement::CollectIntersectionOrEnclosureList(
-    const FloatRect& rect,
+    const gfx::RectF& rect,
     SVGElement* reference_element,
     GeometryMatchingMode mode) const {
   HeapVector<Member<Node>> nodes;
@@ -393,7 +391,7 @@ StaticNodeList* SVGSVGElement::getIntersectionList(
                                             DocumentUpdateReason::kJavaScript);
 
   return CollectIntersectionOrEnclosureList(
-      rect->Target()->Value(), reference_element, kCheckIntersection);
+      rect->Target()->Rect(), reference_element, kCheckIntersection);
 }
 
 StaticNodeList* SVGSVGElement::getEnclosureList(
@@ -402,7 +400,7 @@ StaticNodeList* SVGSVGElement::getEnclosureList(
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  return CollectIntersectionOrEnclosureList(rect->Target()->Value(),
+  return CollectIntersectionOrEnclosureList(rect->Target()->Rect(),
                                             reference_element, kCheckEnclosure);
 }
 
@@ -412,7 +410,7 @@ bool SVGSVGElement::checkIntersection(SVGElement* element,
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  return CheckIntersectionOrEnclosure(*element, rect->Target()->Value(),
+  return CheckIntersectionOrEnclosure(*element, rect->Target()->Rect(),
                                       kCheckIntersection);
 }
 
@@ -422,7 +420,7 @@ bool SVGSVGElement::checkEnclosure(SVGElement* element,
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  return CheckIntersectionOrEnclosure(*element, rect->Target()->Value(),
+  return CheckIntersectionOrEnclosure(*element, rect->Target()->Rect(),
                                       kCheckEnclosure);
 }
 
@@ -452,7 +450,7 @@ SVGMatrixTearOff* SVGSVGElement::createSVGMatrix() {
 }
 
 SVGRectTearOff* SVGSVGElement::createSVGRect() {
-  return SVGRectTearOff::CreateDetached(FloatRect(0, 0, 0, 0));
+  return SVGRectTearOff::CreateDetached(0, 0, 0, 0);
 }
 
 SVGTransformTearOff* SVGSVGElement::createSVGTransform() {
@@ -592,7 +590,7 @@ bool SVGSVGElement::HasValidViewBox() const {
 
 bool SVGSVGElement::HasEmptyViewBox() const {
   const SVGRect* view_box = viewBox()->CurrentValue();
-  return view_box->IsValid() && view_box->Value().IsEmpty();
+  return view_box->IsValid() && view_box->Rect().IsEmpty();
 }
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
@@ -600,23 +598,23 @@ bool SVGSVGElement::ShouldSynthesizeViewBox() const {
          To<LayoutSVGRoot>(GetLayoutObject())->IsEmbeddedThroughSVGImage();
 }
 
-FloatRect SVGSVGElement::CurrentViewBoxRect() const {
+gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
   if (view_spec_ && view_spec_->ViewBox())
-    return view_spec_->ViewBox()->Value();
+    return view_spec_->ViewBox()->Rect();
 
-  FloatRect use_view_box = viewBox()->CurrentValue()->Value();
+  gfx::RectF use_view_box = viewBox()->CurrentValue()->Rect();
   if (!use_view_box.IsEmpty())
     return use_view_box;
   if (!ShouldSynthesizeViewBox())
-    return FloatRect();
+    return gfx::RectF();
 
   // If no viewBox is specified but non-relative width/height values, then we
   // should always synthesize a viewBox if we're embedded through a SVGImage.
   SVGLengthContext length_context(this);
-  FloatSize synthesized_view_box_size(
+  gfx::SizeF synthesized_view_box_size(
       width()->CurrentValue()->Value(length_context),
       height()->CurrentValue()->Value(length_context));
-  return FloatRect(FloatPoint(), synthesized_view_box_size);
+  return gfx::RectF(synthesized_view_box_size);
 }
 
 const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
@@ -635,18 +633,19 @@ const SVGPreserveAspectRatio* SVGSVGElement::CurrentPreserveAspectRatio()
   return preserveAspectRatio()->CurrentValue();
 }
 
-FloatSize SVGSVGElement::CurrentViewportSize() const {
+gfx::SizeF SVGSVGElement::CurrentViewportSize() const {
   const LayoutObject* layout_object = GetLayoutObject();
   if (!layout_object)
-    return FloatSize();
+    return gfx::SizeF();
 
   if (layout_object->IsSVGRoot()) {
     LayoutSize content_size = To<LayoutSVGRoot>(layout_object)->ContentSize();
     float zoom = layout_object->StyleRef().EffectiveZoom();
-    return FloatSize(content_size.Width() / zoom, content_size.Height() / zoom);
+    return gfx::SizeF(content_size.Width() / zoom,
+                      content_size.Height() / zoom);
   }
 
-  FloatRect viewport_rect =
+  gfx::RectF viewport_rect =
       To<LayoutSVGViewportContainer>(GetLayoutObject())->Viewport();
   return viewport_rect.size();
 }
@@ -674,7 +673,7 @@ absl::optional<float> SVGSVGElement::IntrinsicHeight() const {
 }
 
 AffineTransform SVGSVGElement::ViewBoxToViewTransform(
-    const FloatSize& viewport_size) const {
+    const gfx::SizeF& viewport_size) const {
   AffineTransform ctm = SVGFitToViewBox::ViewBoxToViewTransform(
       CurrentViewBoxRect(), CurrentPreserveAspectRatio(), viewport_size);
   if (!view_spec_ || !view_spec_->Transform())
