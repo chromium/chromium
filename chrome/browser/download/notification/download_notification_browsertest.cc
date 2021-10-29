@@ -169,14 +169,16 @@ class SlowDownloadInterceptor {
     SendHead(params, "application/octet-stream", /*content_length=*/1024);
     SendBody(params, "some random data");
     base::AutoLock lock(lock_);
-    pending_requests_.push_back(new PendingRequest(std::move(*params)));
+    pending_requests_.push_back(
+        std::make_unique<PendingRequest>(std::move(*params)));
   }
 
   void HandleUnknownSize(content::URLLoaderInterceptor::RequestParams* params) {
     SendHead(params, "application/octet-stream", /*content_length=*/-1);
     SendBody(params, "some random data");
     base::AutoLock lock(lock_);
-    pending_requests_.push_back(new PendingRequest(std::move(*params)));
+    pending_requests_.push_back(
+        std::make_unique<PendingRequest>(std::move(*params)));
   }
 
   void HandleFinish(content::URLLoaderInterceptor::RequestParams* params) {
@@ -191,8 +193,8 @@ class SlowDownloadInterceptor {
 
   void CompletePendingRequests(net::Error error_code) {
     base::AutoLock lock(lock_);
-    for (auto* request : pending_requests_)
-      request->Complete(error_code);
+    for (auto& request : pending_requests_)
+      request.release()->Complete(error_code);
     pending_requests_.clear();
   }
 
@@ -243,7 +245,8 @@ class SlowDownloadInterceptor {
 
   const std::map<std::string, Handler> handlers_;
   base::Lock lock_;
-  std::vector<PendingRequest*> pending_requests_ GUARDED_BY(lock_);
+  std::vector<std::unique_ptr<PendingRequest>> pending_requests_
+      GUARDED_BY(lock_);
   content::URLLoaderInterceptor interceptor_;
 };
 
