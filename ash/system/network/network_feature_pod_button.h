@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_LEGACY_H_
-#define ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_LEGACY_H_
+#ifndef ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_H_
+#define ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_H_
 
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/network/tray_network_state_observer.h"
@@ -13,17 +13,16 @@ namespace ash {
 
 // Button view class for network feature pod button. It uses network_icon
 // animation to implement network connecting animation on feature pod button.
-class NetworkFeaturePodButtonLegacy : public FeaturePodButton,
-                                      public network_icon::AnimationObserver,
-                                      public TrayNetworkStateObserver {
+class NetworkFeaturePodButton : public FeaturePodButton,
+                                public network_icon::AnimationObserver,
+                                public TrayNetworkStateObserver {
  public:
-  explicit NetworkFeaturePodButtonLegacy(FeaturePodControllerBase* controller);
+  explicit NetworkFeaturePodButton(FeaturePodControllerBase* controller);
 
-  NetworkFeaturePodButtonLegacy(const NetworkFeaturePodButtonLegacy&) = delete;
-  NetworkFeaturePodButtonLegacy& operator=(
-      const NetworkFeaturePodButtonLegacy&) = delete;
+  NetworkFeaturePodButton(const NetworkFeaturePodButton&) = delete;
+  NetworkFeaturePodButton& operator=(const NetworkFeaturePodButton&) = delete;
 
-  ~NetworkFeaturePodButtonLegacy() override;
+  ~NetworkFeaturePodButton() override;
 
   // Updates the button's icon and tooltip based on the current state of the
   // system.
@@ -45,4 +44,4 @@ class NetworkFeaturePodButtonLegacy : public FeaturePodButton,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_LEGACY_H_
+#endif  // ASH_SYSTEM_NETWORK_NETWORK_FEATURE_POD_BUTTON_H_
