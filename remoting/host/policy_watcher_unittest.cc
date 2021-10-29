@@ -327,6 +327,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetBoolKey(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                     false);
     dict.SetInteger(key::kRemoteAccessHostClipboardSizeBytes, -1);
+    dict.SetBoolKey(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     dict.SetBoolKey(key::kRemoteAccessHostAllowFileTransfer, true);
     dict.SetBoolKey(key::kRemoteAccessHostEnableUserInterface, true);

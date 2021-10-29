@@ -101,7 +101,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // input is detected.
   void set_terminate_upon_input(bool terminate_upon_input);
 
-  // Methods called by the script object, from the plugin thread.
+  // Indicates whether the session was initiated through the remote command
+  // infrastructure for a managed device.
+  void set_is_enterprise_session(bool is_enterprise_session);
 
   // Creates It2Me host structures and starts the host.
   virtual void Connect(
@@ -211,6 +213,10 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Stores the current relay connections allowed policy value.
   bool relay_connections_allowed_ = false;
 
+  // Indicates whether the session was initiated via the RemoteCommand infra.
+  // This is by administrators to connect to managed enterprise devices.
+  bool is_enterprise_session_ = false;
+
   // The client and host domain policy setting.
   std::vector<std::string> required_client_domain_list_;
   std::vector<std::string> required_host_domain_list_;
@@ -220,6 +226,9 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Stores the clipboard size policy value.
   absl::optional<size_t> max_clipboard_size_;
+
+  // Stores the remote support connections allowed policy value.
+  bool remote_support_connections_allowed_ = true;
 
   // Tracks the JID of the remote user when in a connecting state.
   std::string connecting_jid_;

@@ -419,6 +419,7 @@
         'RemoteAccessHostAllowRemoteAccessConnections',
         'RemoteAccessHostMaximumSessionDurationMinutes',
         'RemoteAccessHostClipboardSizeBytes',
+        'RemoteAccessHostAllowRemoteSupportConnections',
       ],
     },
     {
@@ -2730,6 +2731,40 @@
           Setting the policy to a value that is not within the min/max range may prevent the host from starting.
 
           Please note that the actual upper bound for the clipboard size is based on the maximum WebRTC data channel message size which this policy does not control.''',
+    },
+    {
+      'name': 'RemoteAccessHostAllowRemoteSupportConnections',
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow remote support connections to this machine',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent remote support connections to this machine',
+        },
+      ],
+      'default': True,
+      'example_value': False,
+      'id': 923,
+      'caption': '''Allow remote support connections to this machine''',
+      'tags': [],
+      'desc': '''If this policy is disabled, the remote support host cannot be started or configured to accept incoming connections.
+
+          This policy does not affect remote access scenarios.
+
+          This policy does not prevent enterprise admins from connecting to managed Chrome OS devices.
+
+          This policy has no effect if enabled, left empty, or is not set.''',
     },
     {
       'name': 'DeviceAllowMGSToStoreDisplayProperties',
@@ -29155,6 +29190,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'RemoteAccessHostAllowRemoteAccessConnections',
         'RemoteAccessHostMaximumSessionDurationMinutes',
         'RemoteAccessHostClipboardSizeBytes',
+        'RemoteAccessHostAllowRemoteSupportConnections',
       ],
     },
     {
@@ -29620,6 +29656,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 922,
+  'highest_id_currently_used': 923,
   'highest_atomic_group_id_currently_used': 41
 }

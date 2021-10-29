@@ -352,6 +352,7 @@ void It2MeNativeMessagingHost::ProcessConnect(
   it2me_host_->set_enable_dialogs(!suppress_user_dialogs);
   it2me_host_->set_enable_notifications(!suppress_notifications);
   it2me_host_->set_terminate_upon_input(terminate_upon_input);
+  it2me_host_->set_is_enterprise_session(is_enterprise_admin_user);
 #endif
   it2me_host_->Connect(
       host_context_->Copy(), std::move(policies),

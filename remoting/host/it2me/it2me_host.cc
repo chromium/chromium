@@ -102,6 +102,15 @@ void It2MeHost::set_terminate_upon_input(bool terminate_upon_input) {
 #endif
 }
 
+void It2MeHost::set_is_enterprise_session(bool is_enterprise_session) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  is_enterprise_session_ = is_enterprise_session;
+#else
+  NOTREACHED()
+      << "It2MeHost::set_is_enterprise_session is only supported on ChromeOS";
+#endif
+}
+
 void It2MeHost::Connect(
     std::unique_ptr<ChromotingHostContext> host_context,
     std::unique_ptr<base::DictionaryValue> policies,
@@ -146,6 +155,11 @@ void It2MeHost::ConnectOnNetworkThread(
   DCHECK_EQ(It2MeHostState::kDisconnected, state_);
 
   SetState(It2MeHostState::kStarting, ErrorCode::OK);
+
+  if (!remote_support_connections_allowed_) {
+    DisconnectOnNetworkThread(ErrorCode::DISALLOWED_BY_POLICY);
+    return;
+  }
 
   auto connection_context = std::move(create_context).Run(host_context_.get());
   log_to_server_ = std::move(connection_context->log_to_server);
@@ -325,6 +339,20 @@ void It2MeHost::OnPolicyUpdate(
         FROM_HERE,
         base::BindOnce(&It2MeHost::OnPolicyUpdate, this, std::move(policies)));
     return;
+  }
+
+  // The policy to disallow remote support connections should not apply to
+  // support sessions initiated by the enterprise admin via a RemoteCommand.
+  if (!is_enterprise_session_) {
+    // Retrieve the policy value on whether to allow connections but don't apply
+    // it until after we've finished reading the rest of the policies and
+    // started the connection process.
+    bool remote_support_connections_allowed = true;
+    if (policies->GetBoolean(
+            policy::key::kRemoteAccessHostAllowRemoteSupportConnections,
+            &remote_support_connections_allowed)) {
+      remote_support_connections_allowed_ = remote_support_connections_allowed;
+    }
   }
 
   bool nat_policy_value = false;

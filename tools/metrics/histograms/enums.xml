@@ -26794,6 +26794,7 @@ Called by update_document_policy_enum.py.-->
   <int value="920" label="QuickAnswersUnitConverstionEnabled"/>
   <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
   <int value="922" label="RemoteAccessHostClipboardSizeBytes"/>
+  <int value="923" label="RemoteAccessHostAllowRemoteSupportConnections"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
