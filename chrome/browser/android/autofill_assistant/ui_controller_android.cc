@@ -409,14 +409,6 @@ void UiControllerAndroid::SetupForState() {
       SetSpinPoodle(true);
       return;
 
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-      SetOverlayState(OverlayState::HIDDEN);
-      SetSpinPoodle(false);
-
-      if (should_prompt_action_expand_sheet && ui_delegate_->IsTabSelected())
-        ShowContentAndExpandBottomSheet();
-      return;
-
     case AutofillAssistantState::PROMPT:
       SetOverlayState(OverlayState::PARTIAL);
       SetSpinPoodle(false);

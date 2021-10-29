@@ -124,8 +124,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(MAIN_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         scripts.add(script);
@@ -156,10 +155,9 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript interruptScript = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(INTERRUPT_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder()
-                                                 .setChip(ChipProto.newBuilder().setText("Done"))
-                                                 .setInterrupt(true)
-                                                 .setPrecondition(interruptPrecondition))
+                        .setPresentation(
+                                PresentationProto.newBuilder().setInterrupt(true).setPrecondition(
+                                        interruptPrecondition))
                         .build(),
                 interruptActionList);
         scripts.add(interruptScript);
@@ -253,8 +251,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(MAIN_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         scripts.add(script);
@@ -285,10 +282,9 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript interruptScript = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(INTERRUPT_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder()
-                                                 .setChip(ChipProto.newBuilder().setText("Done"))
-                                                 .setInterrupt(true)
-                                                 .setPrecondition(precondition))
+                        .setPresentation(
+                                PresentationProto.newBuilder().setInterrupt(true).setPrecondition(
+                                        precondition))
                         .build(),
                 interruptActionList);
         scripts.add(interruptScript);
@@ -389,8 +385,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(MAIN_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         scripts.add(script);
@@ -421,10 +416,9 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript interruptScript = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(INTERRUPT_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder()
-                                                 .setChip(ChipProto.newBuilder().setText("Done"))
-                                                 .setInterrupt(true)
-                                                 .setPrecondition(precondition))
+                        .setPresentation(
+                                PresentationProto.newBuilder().setInterrupt(true).setPrecondition(
+                                        precondition))
                         .build(),
                 interruptActionList);
         scripts.add(interruptScript);
@@ -576,8 +570,7 @@ public class AutofillAssistantInterruptIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath(MAIN_SCRIPT_PATH)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         scripts.add(script);

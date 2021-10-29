@@ -397,18 +397,10 @@ message SupportedScriptProto {
     // be executed. No precondition means that a script can run in any case.
     optional ScriptPreconditionProto precondition = 3;
 
-    // Text display at the same time as the script is proposed. If more than one
-    // script has an initial prompt, the prompt of the highest-priority script
-    // wins.
-    optional string initial_prompt = 4;
-
     // Display priority of the script. Lowest number has highest priority, which
     // means a script with priority 0 should be displayed before a script with
     // priority 1.
     optional int32 priority = 5;
-
-    // An optional chip to display.
-    optional ChipProto chip = 12;
 
     // Optionally map this script to a direct action.
     optional DirectActionProto direct_action = 13;
@@ -428,7 +420,7 @@ message SupportedScriptProto {
     // scripts started by direct actions.
     optional bool needs_ui = 15 [default = true];
 
-    reserved 1, 2, 6, 7, 10, 11, 16 to 18;
+    reserved 1, 2, 4, 6, 7, 10 to 12, 16 to 18;
   }
   optional PresentationProto presentation = 2;
 
