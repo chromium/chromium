@@ -2181,7 +2181,7 @@ struct DalvikMemoryProfileTestParam {
 };
 
 constexpr DalvikMemoryProfileTestParam kDalvikMemoryProfileTestCases[] = {
-    {StartParams::DalvikMemoryProfile::DEFAULT, nullptr},
+    {StartParams::DalvikMemoryProfile::DEFAULT, "4G"},
     {StartParams::DalvikMemoryProfile::M4G, "4G"},
     {StartParams::DalvikMemoryProfile::M8G, "8G"},
     {StartParams::DalvikMemoryProfile::M16G, "16G"}};
@@ -2196,7 +2196,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ArcVmClientAdapterDalvikMemoryProfileTest, Profile) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kUseHighMemoryDalvikProfile,
+  feature_list.InitWithFeatureState(arc::kUseDalvikMemoryProfile,
                                     true /* use */);
 
   const auto& test_param = GetParam();

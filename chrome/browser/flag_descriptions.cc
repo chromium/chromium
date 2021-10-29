@@ -4047,12 +4047,6 @@ const char kArcUsbDeviceDefaultAttachToVmName[] =
 const char kArcUsbDeviceDefaultAttachToVmDescription[] =
     "When ARCVM is enabled, always attach unclaimed USB devices to ARCVM";
 
-const char kArcUseHighMemoryDalvikProfileName[] =
-    "Enable ARC high-memory dalvik profile";
-const char kArcUseHighMemoryDalvikProfileDesc[] =
-    "Allow Android to use high-memory dalvik profile when applicable for "
-    "high-memory devices.";
-
 const char kArcVmBalloonPolicyName[] =
     "Enable ARCVM limit cache balloon policy";
 const char kArcVmBalloonPolicyDesc[] =
