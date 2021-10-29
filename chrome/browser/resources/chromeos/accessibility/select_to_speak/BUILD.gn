@@ -112,7 +112,7 @@ js2gtest("select_to_speak_extjs_tests") {
   ]
   extra_js_files = [
     "fake_settings_private.js",
-    "//chrome/test/data/webui/fake_chrome_event.js",
+    "fake_chrome_event.js",
   ]
 
   # The test base classes generate C++ code with these deps.
