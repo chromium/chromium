@@ -82,8 +82,7 @@ constexpr int kAppIconViewSize = 24;
 constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
-constexpr int kExpandedTitleLabelSize = 16;
-constexpr int kCollapsedTitleLabelSize = 14;
+constexpr int kTitleLabelSize = 14;
 constexpr int kTimestampInCollapsedViewSize = 12;
 constexpr int kMessageLabelSize = 13;
 // The size for `icon_view_`, which is the icon within right content (between
@@ -179,19 +178,12 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   ConfigureLabelStyle(timestamp_in_collapsed_view_,
                       kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
-  ConfigureLabelStyle(title_view_, kExpandedTitleLabelSize,
+  ConfigureLabelStyle(title_view_, kTitleLabelSize,
                       /*is_color_primary=*/true);
 }
 
 AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
   timestamp_update_timer_.Stop();
-}
-
-void AshNotificationView::NotificationTitleRow::SetExpanded(bool expanded) {
-  ConfigureLabelStyle(
-      title_view_,
-      expanded ? kExpandedTitleLabelSize : kCollapsedTitleLabelSize,
-      /*is_color_primary=*/true);
 }
 
 void AshNotificationView::NotificationTitleRow::UpdateTitle(
@@ -393,11 +385,10 @@ AshNotificationView::AshNotificationView(
                   .SetBorder(
                       views::CreateEmptyBorder(kMainRightViewChildPadding))
                   // TODO(crbug/682266): This is a workaround to that bug by
-                  // explicitly
-                  // setting the width. Ideally, we should fix the original bug,
-                  // but it seems there's no obvious solution for the bug
-                  // according to https://crbug.com/678337#c7. We will consider
-                  // making changes to this code when the bug is fixed
+                  // explicitly setting the width. Ideally, we should fix the
+                  // original bug, but it seems there's no obvious solution for
+                  // the bug according to https://crbug.com/678337#c7. We will
+                  // consider making changes to this code when the bug is fixed.
                   .SetMaximumWidth(GetExpandedMessageViewWidth()))
           .AddChild(CreateInlineSettingsBuilder())
           .AddChild(CreateImageContainerBuilder());
@@ -447,7 +438,7 @@ AshNotificationView::AshNotificationView(
 
   AddChildView(CreateActionsRow());
 
-  // Custom paddings for `AshNotificationView`
+  // Custom paddings for `AshNotificationView`.
   static_cast<views::BoxLayout*>(action_buttons_row()->GetLayoutManager())
       ->set_inside_border_insets(kActionButtonsRowPadding);
   static_cast<views::FlexLayout*>(header_row()->GetLayoutManager())
@@ -553,7 +544,6 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   if (title_row_) {
     title_row_->UpdateVisibility(is_grouped_child_view_ ||
                                  (IsExpandable() && !expanded));
-    title_row_->SetExpanded(expanded);
   }
 
   if (message_view()) {

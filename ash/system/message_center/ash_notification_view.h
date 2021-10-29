@@ -141,9 +141,6 @@ class ASH_EXPORT AshNotificationView
     NotificationTitleRow& operator=(const NotificationTitleRow&) = delete;
     ~NotificationTitleRow() override;
 
-    // Changed the expand state. Title view size will change based on the state.
-    void SetExpanded(bool expanded);
-
     // Update title view's text.
     void UpdateTitle(const std::u16string& title);
 
