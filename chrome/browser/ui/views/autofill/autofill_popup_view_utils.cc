@@ -8,9 +8,14 @@
 
 #include "base/cxx17_backports.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 void CalculatePopupXAndWidthHorizontallyCentered(
@@ -194,6 +199,23 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                w->GetWindowBoundsInScreen().Intersects(screen_bounds) &&
                w != web_contents_widget;
       });
+}
+
+bool BoundsOverlapWithOpenPermissionsPrompt(
+    const gfx::Rect& screen_bounds,
+    content::WebContents* web_contents) {
+  views::View* const permission_bubble_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier,
+          views::ElementTrackerViews::GetInstance()->GetContextForView(
+              BrowserView::GetBrowserViewForBrowser(
+                  chrome::FindBrowserWithWebContents(web_contents))));
+  if (!permission_bubble_view)
+    return false;
+
+  return permission_bubble_view->GetWidget()
+      ->GetWindowBoundsInScreen()
+      .Intersects(screen_bounds);
 }
 
 bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents) {

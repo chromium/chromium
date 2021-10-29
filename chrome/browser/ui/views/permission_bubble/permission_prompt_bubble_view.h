@@ -25,6 +25,8 @@ class Browser;
 class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(PermissionPromptBubbleView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+                                         kPermissionPromptBubbleViewIdentifier);
   PermissionPromptBubbleView(Browser* browser,
                              permissions::PermissionPrompt::Delegate* delegate,
                              base::TimeTicks permission_requested_time,
