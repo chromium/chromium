@@ -225,19 +225,19 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   tri_view->AddView(TriView::Container::START, header_);
   tri_view->AddView(TriView::Container::START, header_year_);
 
-  auto* down_button = new HeaderButton(
+  down_button_ = new HeaderButton(
       base::BindRepeating(&CalendarView::ScrollDownOneMonthAndAutoScroll,
                           base::Unretained(this)),
       vector_icons::kCaretDownIcon,
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION);
-  auto* up_button = new HeaderButton(
+  up_button_ = new HeaderButton(
       base::BindRepeating(&CalendarView::ScrollUpOneMonthAndAutoScroll,
                           base::Unretained(this)),
       vector_icons::kCaretUpIcon,
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION);
 
-  tri_view->AddView(TriView::Container::END, down_button);
-  tri_view->AddView(TriView::Container::END, up_button);
+  tri_view->AddView(TriView::Container::END, down_button_);
+  tri_view->AddView(TriView::Container::END, up_button_);
 
   AddChildView(tri_view);
 
