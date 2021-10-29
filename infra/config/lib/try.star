@@ -30,6 +30,7 @@ DEFAULT_EXCLUDE_REGEXPS = [
 
 defaults = args.defaults(
     extends = builders.defaults,
+    check_for_flakiness = False,
     cq_group = None,
     main_list_view = None,
     subproject_list_view = None,
@@ -72,6 +73,7 @@ def try_builder(
         *,
         name,
         branch_selector = branches.MAIN,
+        check_for_flakiness = args.DEFAULT,
         cq_group = args.DEFAULT,
         list_view = args.DEFAULT,
         main_list_view = args.DEFAULT,
@@ -87,6 +89,9 @@ def try_builder(
       branch_selector - A branch selector value controlling whether the
         builder definition is executed. See branches.star for more
         information.
+      check_for_flakiness - If True, it checks for new tests in a given try
+        build and reruns them multiple times to ensure that they are not
+        flaky.
       cq_group - The CQ group to add the builder to. If tryjob is None, it will
         be added as includable_only.
       list_view - A string or list of strings identifying the ID(s) of the list
@@ -167,6 +172,17 @@ def try_builder(
         if kwargs["goma_enable_ats"] != False:
             fail("Try Windows builder {} must disable ATS".format(name))
 
+    properties = kwargs.pop("properties", {})
+    properties = dict(properties)
+    check_for_flakiness = defaults.get_value(
+        "check_for_flakiness",
+        check_for_flakiness,
+    )
+    if check_for_flakiness:
+        properties["$build/flakiness"] = {
+            "check_for_flakiness": True,
+        }
+
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
     builders.builder(
@@ -176,6 +192,7 @@ def try_builder(
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
+        properties = properties,
         **kwargs
     )
 
