@@ -733,6 +733,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
+    expires_after="2022-07-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded when a device attempts to rotate its device trust signing key.
+    Chrome will retry a fixed number of times until the operation either
+    succeeds or fails. A value of 1 means the rotation worked on the first try.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.Status"
+    enum="DeviceTrustKeyRotationStatus" expires_after="2022-07-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded when a device attempts to rotate its device trust signing key.
+    {Nonce}
+  </summary>
+  <token key="Nonce">
+    <variant name="NoNonce"
+        summary="This occurs right after the device is enrolled with CBCM."/>
+    <variant name="WithNonce"
+        summary="This occurs when a device receives a command from the admin
+                 console."/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.Dlp.CaptureModeInitBlocked" enum="BooleanBlocked"
     expires_after="2022-05-01">
   <owner>poromov@chromium.org</owner>

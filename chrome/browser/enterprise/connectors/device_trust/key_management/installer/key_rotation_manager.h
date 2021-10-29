@@ -21,6 +21,21 @@ class KeyNetworkDelegate;
 // installer.
 class KeyRotationManager {
  public:
+  // Status of rotation attempts made with RotateWithAdminRights().
+  // Must be kept in sync with the DeviceTrustKeyRotationStatus UMA enum.
+  // Making this public here to access from tests.
+  enum class RotationStatus {
+    SUCCESS,
+    FAILURE_CANNOT_GENERATE_NEW_KEY,
+    FAILURE_CANNOT_STORE_KEY,
+    FAILURE_CANNOT_BUILD_REQUEST,
+    FAILURE_CANNOT_UPLOAD_KEY,
+    FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED,
+    FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED,
+    FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED,
+    kMaxValue = FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED,
+  };
+
   virtual ~KeyRotationManager() = default;
 
   static std::unique_ptr<KeyRotationManager> Create();

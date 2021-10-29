@@ -19988,6 +19988,22 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Cellular"/>
 </enum>
 
+<enum name="DeviceTrustKeyRotationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unable to generate a new signing key"/>
+  <int value="2" label="Unable to save the new signing key to storage"/>
+  <int value="3" label="Unable to build upload request"/>
+  <int value="4" label="Unable to upload new signing key to server"/>
+  <int value="5"
+      label="Unable to upload new signing key to server after maximum retries"/>
+  <int value="6"
+      label="Unable to upload new signing key to server and failed to restore
+             old key"/>
+  <int value="7"
+      label="Unable to upload new signing key to server after maximum retries
+             and failed to restore old key"/>
+</enum>
+
 <enum name="DevToolsAction">
   <int value="1" label="Window docked"/>
   <int value="2" label="Window undocked"/>
