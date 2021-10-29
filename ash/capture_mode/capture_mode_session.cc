@@ -960,7 +960,9 @@ void CaptureModeSession::OnSelectionWindowClosed() {
 
 void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
                                       bool is_touch) {
-  if (is_shutting_down_)
+  // No need to update cursor if `cursor_setter_` has been reset because of
+  // OpenFolderSelectionDialog.
+  if (is_shutting_down_ || !cursor_setter_)
     return;
 
   // Hide mouse cursor in tablet mode.

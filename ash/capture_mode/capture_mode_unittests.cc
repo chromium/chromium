@@ -5369,6 +5369,20 @@ TEST_F(CaptureModeAdvancedSettingsTest, SelectFolderFromDialog) {
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
+// Tests that folder selection dialog can be opened without crash while in
+// window capture mode.
+TEST_F(CaptureModeAdvancedSettingsTest, SelectFolderInWindowCaptureMode) {
+  std::unique_ptr<aura::Window> window1(
+      CreateTestWindow(gfx::Rect(0, 0, 200, 300)));
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kImage);
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(GetSettingsButton(), event_generator);
+
+  CaptureModeAdvancedSettingsTestApi test_api;
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+}
+
 TEST_F(CaptureModeAdvancedSettingsTest, DismissDialogWithoutSelection) {
   auto* controller = StartImageRegionCapture();
   const auto old_capture_folder = controller->GetCurrentCaptureFolder();
