@@ -132,6 +132,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
           observer) override;
   void ObservePowerCableState(
       ::mojo::PendingRemote<mojom::PowerCableStateObserver> observer) override;
+  void ObserveHardwareVerificationStatus(
+      ::mojo::PendingRemote<mojom::HardwareVerificationStatusObserver> observer)
+      override;
   void ObserveFinalizationStatus(
       ::mojo::PendingRemote<mojom::FinalizationObserver> observer) override;
 
@@ -147,6 +150,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void ProvisioningProgress(const rmad::ProvisionStatus& status) override;
   void HardwareWriteProtectionState(bool enabled) override;
   void PowerCableState(bool plugged_in) override;
+  void HardwareVerificationResult(
+      const rmad::HardwareVerificationResult& result) override;
   void FinalizationProgress(const rmad::FinalizeStatus& status) override;
 
   void OsUpdateProgress(update_engine::Operation operation, double progress);
@@ -189,6 +194,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   absl::optional<rmad::ProvisionStatus> last_provisioning_progress_;
   absl::optional<bool> last_hardware_protection_state_;
   absl::optional<bool> last_power_cable_state_;
+  absl::optional<rmad::HardwareVerificationResult>
+      last_hardware_verification_result_;
   absl::optional<rmad::FinalizeStatus> last_finalization_progress_;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
@@ -198,6 +205,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::Remote<mojom::HardwareWriteProtectionStateObserver>
       hwwp_state_observer_;
   mojo::Remote<mojom::PowerCableStateObserver> power_cable_observer_;
+  mojo::Remote<mojom::HardwareVerificationStatusObserver>
+      hardware_verification_observer_;
   mojo::Remote<mojom::FinalizationObserver> finalization_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
 

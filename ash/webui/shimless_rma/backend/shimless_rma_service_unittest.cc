@@ -2731,6 +2731,51 @@ TEST_F(ShimlessRmaServiceTest, ObservePowerCableStateAfterSignal) {
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
+class FakeHardwareVerificationStatusObserver
+    : public mojom::HardwareVerificationStatusObserver {
+ public:
+  struct Observation {
+    bool is_compliant;
+    std::string error_message;
+  };
+
+  void OnHardwareVerificationResult(bool is_compliant,
+                                    const std::string& error_message) override {
+    Observation observation;
+    observation.is_compliant = is_compliant;
+    observation.error_message = error_message;
+    observations.push_back(observation);
+  }
+
+  std::vector<Observation> observations;
+  mojo::Receiver<mojom::HardwareVerificationStatusObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerification) {
+  FakeHardwareVerificationStatusObserver fake_observer;
+  shimless_rma_provider_->ObserveHardwareVerificationStatus(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
+  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerificationAfterSignal) {
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true,
+                                                                    "also ok");
+  FakeHardwareVerificationStatusObserver fake_observer;
+  shimless_rma_provider_->ObserveHardwareVerificationStatus(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
+  EXPECT_EQ(fake_observer.observations[0].error_message, "also ok");
+}
+
 class FakeFinalizationObserver : public mojom::FinalizationObserver {
  public:
   struct Observation {

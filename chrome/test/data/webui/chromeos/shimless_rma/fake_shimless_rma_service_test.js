@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -894,6 +894,26 @@ export function fakeShimlessRmaServiceTestSuite() {
         });
     service.observePowerCableState(powerCableStateObserver);
     return service.triggerPowerCableObserver(true, 0);
+  });
+
+  test('ObserveHardwareVerificationStatus', () => {
+    /** @type {!HardwareVerificationStatusObserverRemote} */
+    const observer =
+        /** @type {!HardwareVerificationStatusObserverRemote} */ ({
+          /**
+           * Implements
+           * HardwareVerificationStatusObserverRemote.
+           *      onHardwareVerificationResult()
+           * @param {boolean} is_compliant
+           * @param {string} error_message
+           */
+          onHardwareVerificationResult(is_compliant, error_message) {
+            assertEquals(true, is_compliant);
+            assertEquals('ok', error_message);
+          }
+        });
+    service.observeHardwareVerificationStatus(observer);
+    return service.triggerHardwareVerificationStatusObserver(true, 'ok', 0);
   });
 
   test('ObserveFinalizationStatus', () => {

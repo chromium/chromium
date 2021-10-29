@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -55,6 +55,12 @@ export class FakeShimlessRmaService {
      * @private {boolean}
      */
     this.automaticallyTriggerOsUpdateObservation_ = false;
+
+    /**
+     * Control automatically triggering a hardware verification observation.
+     * @private {boolean}
+     */
+    this.automaticallyTriggerHardwareVerificationStatusObservation_ = false;
 
     /**
      * Control automatically triggering a finalization observation.
@@ -836,6 +842,31 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * Implements ShimlessRmaServiceInterface.ObserveHardwareVerificationStatus.
+   * @param {!HardwareVerificationStatusObserverRemote} remote
+   */
+  observeHardwareVerificationStatus(remote) {
+    this.observables_.observe(
+        'HardwareVerificationStatusObserver_onHardwareVerificationResult',
+        (is_compliant, error_message) => {
+          remote.onHardwareVerificationResult(
+              /** @type {boolean} */ (is_compliant),
+              /** @type {string} */ (error_message));
+        });
+    if (this.automaticallyTriggerHardwareVerificationStatusObservation_) {
+      this.triggerHardwareVerificationStatusObserver(true, '', 3000);
+    }
+  }
+
+
+  /**
+   * Trigger a hardware verification observation when an observer is added.
+   */
+  automaticallyTriggerHardwareVerificationStatusObservation() {
+    this.automaticallyTriggerHardwareVerificationStatusObservation_ = true;
+  }
+
+  /**
    * Implements ShimlessRmaServiceInterface.ObserveFinalizationStatus.
    * @param {!FinalizationObserverRemote} remote
    */
@@ -934,6 +965,19 @@ export class FakeShimlessRmaService {
   triggerPowerCableObserver(pluggedIn, delayMs) {
     return this.triggerObserverAfterMs(
         'PowerCableStateObserver_onPowerCableStateChanged', pluggedIn, delayMs);
+  }
+
+  /**
+   * Causes the hardware verification observer to fire after a delay.
+   * @param {boolean} is_compliant
+   * @param {string} error_message
+   * @param {number} delayMs
+   */
+  triggerHardwareVerificationStatusObserver(
+      is_compliant, error_message, delayMs) {
+    return this.triggerObserverAfterMs(
+        'HardwareVerificationStatusObserver_onHardwareVerificationResult',
+        [is_compliant, error_message], delayMs);
   }
 
   /**
@@ -1082,6 +1126,8 @@ export class FakeShimlessRmaService {
         'HardwareWriteProtectionStateObserver_onHardwareWriteProtectionStateChanged');
     this.observables_.register(
         'PowerCableStateObserver_onPowerCableStateChanged');
+    this.observables_.register(
+        'HardwareVerificationStatusObserver_onHardwareVerificationResult');
     this.observables_.register('FinalizationObserver_onFinalizationUpdated');
   }
 

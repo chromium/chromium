@@ -364,6 +364,13 @@ interface PowerCableStateObserver {
   OnPowerCableStateChanged(bool plugged_in);
 };
 
+// Implemented by clients to receive status of hardware verification.
+interface HardwareVerificationStatusObserver {
+  // OnHardwareVerificationResult is called to report if hardware verification
+  // succeeded or failed. With an optional error message for failures.
+  OnHardwareVerificationResult(bool is_compliant, string error_message);
+};
+
 // Implemented by clients to receive status of finalization progress.
 interface FinalizationObserver {
   // OnFinalizationUpdated is called to report progress of device finalization.
@@ -665,6 +672,9 @@ interface ShimlessRmaService {
   // The power cable state is needed to indicate if the device is ready for
   // battery cutoff.
   ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
+  // Registers an observer for completion of hardware verification.
+  ObserveHardwareVerificationStatus(
+      pending_remote<HardwareVerificationStatusObserver> observer);
   // Registers an observer for status of finalization.
   ObserveFinalizationStatus(pending_remote<FinalizationObserver> observer);
 };
