@@ -75,10 +75,14 @@ struct MediaStreamDispatcherHost::PendingAccessRequest {
   MediaDeviceSaltAndOrigin salt_and_origin;
 };
 
+// MediaStreamDispatcherHost::Broker runs on both the UI and IO thread. It
+// exists because it might need to outlive MediaStreamDispatcherHost while in a
+// posted task from the MediaStreamDispatcherHost.
 class MediaStreamDispatcherHost::Broker
     : public base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker> {
  public:
-  explicit Broker(MediaStreamDispatcherHost* host) : host_(host) {}
+  explicit Broker(base::WeakPtr<MediaStreamDispatcherHost> host)
+      : host_(host) {}
 
  private:
   friend class base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker>;
@@ -91,17 +95,14 @@ class MediaStreamDispatcherHost::Broker
   void OnWebContentsFocused();
   void StartObservingWebContents(int render_process_id, int render_frame_id);
 
-  base::Lock lock_;
-  MediaStreamDispatcherHost* host_ GUARDED_BY(lock_);
+  // host_ should be accessed only on IO thread.
+  base::WeakPtr<MediaStreamDispatcherHost> host_;
+  // web_contents_observer_ should be accessed only on UI thread.
   std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
 };
 
 void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped() {
-  {
-    base::AutoLock lock(lock_);
-    // Ensure the host_ pointer is cleared synchronously on Host being destroyed
-    host_ = nullptr;
-  }
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   base::OnceClosure stop_observing_cb = base::BindOnce(
       &MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI, this);
@@ -118,7 +119,6 @@ void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI() {
 void MediaStreamDispatcherHost::Broker::OnWebContentsFocused() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  base::AutoLock lock(lock_);
   if (!host_)
     return;
   host_->OnWebContentsFocused();
@@ -129,7 +129,6 @@ void MediaStreamDispatcherHost::Broker::StartObservingWebContents(
     int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::AutoLock lock(lock_);
   web_contents_observer_ = std::make_unique<MediaStreamWebContentsObserver>(
       render_process_id, render_frame_id);
   web_contents_observer_->RegisterFocusCallback(base::BindPostTask(
@@ -147,10 +146,11 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
       requester_id_(next_requester_id_++),
       media_stream_manager_(media_stream_manager),
       salt_and_origin_callback_(
-          base::BindRepeating(&GetMediaDeviceSaltAndOrigin)),
-      broker_(base::MakeRefCounted<MediaStreamDispatcherHost::Broker>(this)) {
+          base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  broker_ = base::MakeRefCounted<MediaStreamDispatcherHost::Broker>(
+      weak_factory_.GetWeakPtr());
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
