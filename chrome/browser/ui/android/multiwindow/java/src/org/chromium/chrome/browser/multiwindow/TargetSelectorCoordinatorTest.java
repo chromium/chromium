@@ -22,12 +22,12 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -37,7 +37,7 @@ import java.util.Arrays;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class TargetSelectorCoordinatorTest extends DummyUiChromeActivityTestCase {
+public class TargetSelectorCoordinatorTest extends DummyUiActivityTestCase {
     private LargeIconBridge mIconBridge;
 
     private ModalDialogManager mModalDialogManager;

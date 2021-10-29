@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -44,13 +43,14 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Tests for ThemeSettingsFragment.
  */
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ThemeSettingsFragmentTest extends DummyUiChromeActivityTestCase {
+public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
     // clang-format on
     @Rule
     public SettingsActivityTestRule<ThemeSettingsFragment> mSettingsActivityTestRule =

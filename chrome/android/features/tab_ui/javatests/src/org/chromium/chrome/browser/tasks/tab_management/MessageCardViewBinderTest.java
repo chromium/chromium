@@ -24,10 +24,10 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link MessageCardViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class MessageCardViewBinderTest extends DummyUiChromeActivityTestCase {
+public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
     private static final String DISMISS_BUTTON_CONTENT_DESCRIPTION = "dismiss";
