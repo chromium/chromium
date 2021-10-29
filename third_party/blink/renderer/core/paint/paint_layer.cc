@@ -1901,7 +1901,9 @@ PaintLayer::HitTestRecursionData::HitTestRecursionData(
 bool PaintLayer::HitTest(const HitTestLocation& hit_test_location,
                          HitTestResult& result,
                          const PhysicalRect& hit_test_area) {
-  DCHECK(IsSelfPaintingLayer() || HasSelfPaintingLayerDescendant());
+  // The root PaintLayer of HitTest must contain all descendants.
+  DCHECK(GetLayoutObject().CanContainFixedPositionObjects());
+  DCHECK(GetLayoutObject().CanContainAbsolutePositionObjects());
 
   // LayoutView should make sure to update layout before entering hit testing
   DCHECK(!GetLayoutObject().GetFrame()->View()->LayoutPending());
