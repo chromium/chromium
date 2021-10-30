@@ -59,21 +59,6 @@ bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
 }
 
-// Creates a label that is identical to CreateFrontElidingTitleLabel but has a
-// different style as it is not shown as a title label.
-std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
-                                              int text_id) {
-  std::u16string origin_text = l10n_util::GetStringFUTF16(
-      text_id, url_formatter::FormatOriginForSecurityDisplay(origin));
-  auto label = std::make_unique<views::Label>(
-      origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetElideBehavior(gfx::ELIDE_HEAD);
-  label->SetMultiLine(false);
-  return label;
-}
-
 }  // namespace
 
 // IntentPickerLabelButton
@@ -399,75 +384,51 @@ void IntentPickerBubbleView::Initialize() {
   scroll_view->ClipHeightTo(row_height,
                             (apps::kMaxAppResults + 0.5) * row_height);
 
-  constexpr int kMaxIntentPickerLabelButtonWidth = 320;
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* cs = layout->AddColumnSet(kColumnSetId);
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kFixed,
-                kMaxIntentPickerLabelButtonWidth, 0);
-
   const bool show_origin =
       initiating_origin_ &&
       !initiating_origin_->IsSameOriginWith(
           web_contents()->GetMainFrame()->GetLastCommittedOrigin());
 
   const auto* provider = ChromeLayoutProvider::Get();
-  const auto insets = provider->GetDialogInsetsForContentType(
+  auto insets = provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl,
       (show_origin && !show_remember_selection_)
           ? views::DialogContentType::kText
           : views::DialogContentType::kControl);
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetId,
-                              views::GridLayout::kFixedSize, insets.top());
-  scroll_view_ = layout->AddView(std::move(scroll_view));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets(insets.top(), 0, insets.bottom(), 0),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  insets = gfx::Insets(0, insets.left(), 0, insets.right());
 
-  // This second ColumnSet has a padding column in order to manipulate the
-  // Checkbox positioning freely.
-  constexpr int kColumnSetIdPadded = 1;
-  views::ColumnSet* cs_padded = layout->AddColumnSet(kColumnSetIdPadded);
-  cs_padded->AddPaddingColumn(views::GridLayout::kFixedSize, insets.left());
-  cs_padded->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kFixed,
-                       kMaxIntentPickerLabelButtonWidth - insets.width(), 0);
+  scroll_view_ = AddChildView(std::move(scroll_view));
 
   if (show_origin) {
-    layout->StartRowWithPadding(
-        views::GridLayout::kFixedSize, kColumnSetIdPadded,
-        views::GridLayout::kFixedSize,
-        provider->GetDistanceMetric(
-            views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-    layout->AddView(CreateOriginView(
-        *initiating_origin_,
+    std::u16string origin_text = l10n_util::GetStringFUTF16(
         icon_type_ == PageActionIconType::kClickToCall
             ? IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_INITIATING_ORIGIN
-            : IDS_INTENT_PICKER_BUBBLE_VIEW_INITIATING_ORIGIN));
+            : IDS_INTENT_PICKER_BUBBLE_VIEW_INITIATING_ORIGIN,
+        url_formatter::FormatOriginForSecurityDisplay(*initiating_origin_));
+    auto* label = AddChildView(std::make_unique<views::Label>(
+        origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetAllowCharacterBreak(true);
+    label->SetMultiLine(true);
+    constexpr int kMaxDialogWidth = 320;
+    label->SetMaximumWidth(kMaxDialogWidth - insets.width());
+    label->SetProperty(views::kMarginsKey, insets);
   }
 
   if (show_remember_selection_) {
-    layout->StartRowWithPadding(
-        views::GridLayout::kFixedSize, kColumnSetId,
-        views::GridLayout::kFixedSize,
-        provider->GetDistanceMetric(
-            views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-    layout->AddView(std::make_unique<views::Separator>());
+    AddChildView(std::make_unique<views::Separator>());
 
-    layout->StartRowWithPadding(
-        views::GridLayout::kFixedSize, kColumnSetIdPadded,
-        views::GridLayout::kFixedSize,
-        provider->GetDistanceMetric(
-            views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-    remember_selection_checkbox_ = layout->AddView(
+    remember_selection_checkbox_ = AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION)));
+    remember_selection_checkbox_->SetProperty(views::kMarginsKey, insets);
     UpdateCheckboxState();
   }
-
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, insets.bottom());
 }
 
 IntentPickerLabelButton* IntentPickerBubbleView::GetIntentPickerLabelButtonAt(
