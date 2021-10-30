@@ -21,6 +21,7 @@ COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsCrashStreak[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsFailedToFetchSeedStreak[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsLastFetchTime[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSeedMilestone[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsPermanentConsistencyCountry[];
 COMPONENT_EXPORT(VARIATIONS)
@@ -32,6 +33,7 @@ COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeCompressedSeed[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedDate[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedFetchTime[];
 COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedLocale[];
+COMPONENT_EXPORT(VARIATIONS) extern const char kVariationsSafeSeedMilestone[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsSafeSeedPermanentConsistencyCountry[];
 COMPONENT_EXPORT(VARIATIONS)

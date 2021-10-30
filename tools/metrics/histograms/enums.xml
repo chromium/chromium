@@ -86868,6 +86868,8 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Corrupted regular seed after loading empty safe seed">
     No seed used
   </int>
+  <int value="9" label="Regular seed for future milestone">No seed used</int>
+  <int value="10" label="Safe seed for future milestone">No seed used</int>
 </enum>
 
 <enum name="VaryType">

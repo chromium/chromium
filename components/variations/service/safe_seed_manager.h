@@ -57,12 +57,13 @@ class SafeSeedManager {
   virtual bool ShouldRunInSafeMode() const;
 
   // Stores the combined server and client state that control the active
-  // variations state. Must be called at most once per launch of the Chrome app.
-  // As an optimization, should not be called when running in safe mode.
+  // variations state. May be called at most once per Chrome app launch. As an
+  // optimization, should not be called when running in safe mode.
   // Virtual for testing.
   virtual void SetActiveSeedState(
       const std::string& seed_data,
       const std::string& base64_seed_signature,
+      int seed_milestone,
       std::unique_ptr<ClientFilterableState> client_filterable_state,
       base::Time seed_fetch_time);
 
@@ -82,6 +83,7 @@ class SafeSeedManager {
     ActiveSeedState(
         const std::string& seed_data,
         const std::string& base64_seed_signature,
+        int seed_milestone,
         std::unique_ptr<ClientFilterableState> client_filterable_state,
         base::Time seed_fetch_time);
     ~ActiveSeedState();
@@ -91,6 +93,9 @@ class SafeSeedManager {
 
     // The base64-encoded signature for the seed data.
     const std::string base64_seed_signature;
+
+    // The milestone with which the active seed was fetched.
+    const int seed_milestone;
 
     // The client state which is used for filtering studies.
     const std::unique_ptr<ClientFilterableState> client_filterable_state;

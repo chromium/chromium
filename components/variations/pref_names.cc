@@ -34,6 +34,9 @@ const char kVariationsFailedToFetchSeedStreak[] =
 // Variations server responds with 200 or 304). This is a client timestamp.
 const char kVariationsLastFetchTime[] = "variations_last_fetch_time";
 
+// The milestone, e.g. 96, with which the regular seed was fetched.
+const char kVariationsSeedMilestone[] = "variations_seed_milestone";
+
 // Pair of <Chrome version string, country code string> representing the country
 // used for filtering permanent consistency studies until the next time Chrome
 // is updated.
@@ -83,6 +86,9 @@ const char kVariationsSafeSeedFetchTime[] = "variations_safe_seed_fetch_time";
 // The active client locale that was successfully used in association with the
 // last known "safe" seed.
 const char kVariationsSafeSeedLocale[] = "variations_safe_seed_locale";
+
+// The milestone with which the "safe" seed was fetched.
+const char kVariationsSafeSeedMilestone[] = "variations_safe_seed_milestone";
 
 // A saved copy of |kVariationsPermanentConsistencyCountry|. The saved value is
 // the most recent value that was successfully used by the VariationsService for

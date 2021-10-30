@@ -44,7 +44,9 @@ enum class SeedUsage {
   kRegularSeedUsedAfterEmptySafeSeedLoaded = 6,
   kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded = 7,
   kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded = 8,
-  kMaxValue = kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded,
+  kRegularSeedForFutureMilestoneNotUsed = 9,
+  kSafeSeedForFutureMilestoneNotUsed = 10,
+  kMaxValue = kSafeSeedForFutureMilestoneNotUsed,
 };
 
 // Denotes a variations seed's expiry state. Exposed for testing.
@@ -195,6 +197,12 @@ class VariationsFieldTrialCreator {
   //
   // Also, records a couple VariationsSeed-related metrics.
   bool HasSeedExpired(bool is_safe_seed);
+
+  // Returns true if the loaded VariationsSeed is for a future milestone (e.g.
+  // if the client is on M92 and the seed was fetched with M93). A seed for a
+  // future milestone is invalid as it may be missing studies filtered out by
+  // the server.
+  bool IsSeedForFutureMilestone(bool is_safe_seed);
 
   // Creates field trials based on the variations seed loaded from local state.
   // If there is a problem loading the seed data, all trials specified by the
