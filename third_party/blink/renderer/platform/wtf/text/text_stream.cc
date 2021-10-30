@@ -99,7 +99,7 @@ TextStream& TextStream::operator<<(const void* p) {
 }
 
 TextStream& TextStream::operator<<(const std::string& string) {
-  text_.Append(string.c_str());
+  text_.Append(string.data(), string.length());
   return *this;
 }
 

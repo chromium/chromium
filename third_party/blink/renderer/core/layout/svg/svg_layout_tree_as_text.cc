@@ -322,7 +322,7 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
 
 static WTF::TextStream& WritePositionAndStyle(WTF::TextStream& ts,
                                               const LayoutObject& object) {
-  ts << " " << object.ObjectBoundingBox().ToString();
+  ts << " " << object.ObjectBoundingBox();
   WriteStyle(ts, object);
   return ts;
 }
@@ -573,7 +573,7 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
   } else if (resource->ResourceType() == kMarkerResourceType) {
     auto* marker = To<LayoutSVGResourceMarker>(resource);
     WriteNameValuePair(ts, "markerUnits", marker->MarkerUnits());
-    ts << " [ref at " << marker->ReferencePoint().ToString() << "]";
+    ts << " [ref at " << marker->ReferencePoint() << "]";
     ts << " [angle=";
     if (marker->OrientType() != kSVGMarkerOrientAngle)
       ts << marker->OrientType() << "]\n";
@@ -612,8 +612,8 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
         ->CollectGradientAttributes(attributes);
     WriteCommonGradientProperties(ts, attributes);
 
-    ts << " [start=" << gradient->StartPoint(attributes).ToString()
-       << "] [end=" << gradient->EndPoint(attributes).ToString() << "]\n";
+    ts << " [start=" << gradient->StartPoint(attributes)
+       << "] [end=" << gradient->EndPoint(attributes) << "]\n";
   } else if (resource->ResourceType() == kRadialGradientResourceType) {
     auto* gradient = To<LayoutSVGResourceRadialGradient>(resource);
 
@@ -757,8 +757,7 @@ void WriteResources(WTF::TextStream& ts,
       WriteSVGResourceReferencePrefix(ts, "clipPath", clipper,
                                       clip_path_reference.Url(), tree_scope,
                                       indent);
-      ts << " " << clipper->ResourceBoundingBox(reference_box).ToString()
-         << "\n";
+      ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
     }
   }
   // TODO(fs): Only handles the single url(...) case. Do we care?

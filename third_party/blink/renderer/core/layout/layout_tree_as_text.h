@@ -31,6 +31,15 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 
+namespace gfx {
+class Point;
+class PointF;
+class Rect;
+class RectF;
+class Size;
+class SizeF;
+}  // namespace gfx
+
 namespace blink {
 
 class Color;
@@ -101,14 +110,19 @@ class LayoutTreeAsText {
                                int indent = 0);
 };
 
-// Helper function shared with SVGLayoutTreeAsText
+// Helper function shared with SVGLayoutTreeAsText (so they are not exported).
 String QuoteAndEscapeNonPrintables(const String&);
+WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
+WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);
+WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Size&);
+WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Rect&);
+WTF::TextStream& operator<<(WTF::TextStream&, const gfx::SizeF&);
+WTF::TextStream& operator<<(WTF::TextStream&, const gfx::PointF&);
+WTF::TextStream& operator<<(WTF::TextStream&, const gfx::RectF&);
 
 CORE_EXPORT String CounterValueForElement(Element*);
 
 CORE_EXPORT String MarkerTextForListItem(Element*);
-
-WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
 
 }  // namespace blink
 
