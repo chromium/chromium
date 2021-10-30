@@ -974,9 +974,10 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
     return;
 
   // Do not create or show the save desk as template button if there are no
-  // windows in this grid, or during a window drag.
+  // windows in this grid, during a window drag or in tablet mode.
   const bool visible = !window_list_.empty() &&
-                       !overview_session_->GetCurrentDraggedOverviewItem();
+                       !overview_session_->GetCurrentDraggedOverviewItem() &&
+                       !Shell::Get()->tablet_mode_controller()->InTabletMode();
 
   if (!visible) {
     if (save_desk_as_template_widget_)
@@ -998,8 +999,8 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
 
   // Disable the create templates button if the current number of templates has
   // reached the max.
-  if (DesksTemplatesPresenter::Get()->GetEntryCount() >=
-      DesksTemplatesPresenter::Get()->GetMaxEntryCount()) {
+  auto* presenter = DesksTemplatesPresenter::Get();
+  if (presenter->GetEntryCount() >= presenter->GetMaxEntryCount()) {
     auto* button = static_cast<PillButton*>(
         save_desk_as_template_widget_->GetContentsView());
     button->SetState(views::Button::STATE_DISABLED);

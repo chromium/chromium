@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/guid.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -281,7 +282,12 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     const auto* overview_grid =
         overview_session->GetGridWithRootWindow(root_window);
+
+    // May be null in tablet mode.
     const auto* desks_bar_view = overview_grid->desks_bar_view();
+    if (!desks_bar_view)
+      return nullptr;
+
     if (zero_state)
       return desks_bar_view->zero_state_desks_templates_button();
     return desks_bar_view->expanded_state_desks_templates_button();
@@ -339,12 +345,6 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     return overview_session->grid_list();
   }
-
-  bool GetSaveDeskAsTemplateWidgetVisibility(OverviewGrid* grid) {
-    DCHECK(grid);
-    views::Widget* widget = grid->save_desk_as_template_widget_.get();
-    return widget && widget->IsVisible();
-  }
 };
 
 // Tests the helpers `AddEntry()` and `DeleteEntry()`, which will be used in
@@ -365,8 +365,8 @@ TEST_F(DesksTemplatesTest, AddDeleteEntry) {
   EXPECT_EQ(0ul, desk_model()->GetEntryCount());
 }
 
-// Tests the desks templates button visibility.
-TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
+// Tests the desks templates button visibility in clamshell mode.
+TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibilityClamshell) {
   // Helper function to verify which of the desks templates buttons are
   // currently shown.
   auto verify_button_visibilities = [this](bool zero_state_shown,
@@ -890,6 +890,92 @@ TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   for (size_t i = 0; i < icon_views.size() - 1; ++i)
     EXPECT_TRUE(icon_views[i]->GetVisible());
   EXPECT_FALSE(icon_views.back()->GetVisible());
+}
+
+// Tests that the desks templates and save desk template buttons are hidden when
+// entering overview in tablet mode.
+TEST_F(DesksTemplatesTest, EnteringInTabletMode) {
+  // Create a desk before entering tablet mode, otherwise the desks bar will not
+  // show up.
+  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kKeyboard);
+
+  // Create a window and add a test entry. Otherwise the templates UI wouldn't
+  // show up in clamshell mode either.
+  auto test_window_1 = CreateTestWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Test that the templates buttons are created but invisible. The save desk as
+  // template button is not created.
+  ToggleOverview();
+  WaitForUI();
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  auto* zero_state = GetDesksTemplatesButtonForRoot(root,
+                                                    /*zero_state=*/true);
+  auto* expanded_state = GetDesksTemplatesButtonForRoot(root,
+                                                        /*zero_state=*/false);
+  EXPECT_FALSE(zero_state->GetVisible());
+  EXPECT_FALSE(expanded_state->GetVisible());
+  EXPECT_FALSE(GetSaveDeskAsTemplateButtonForRoot(root));
+}
+
+// Tests that the desks templates and save desk template buttons are hidden when
+// transitioning from clamshell to tablet mode.
+TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
+  // Create a window and add a test entry. Otherwise the templates UI wouldn't
+  // show up.
+  auto test_window_1 = CreateTestWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Test that on entering overview, the zero state desks templates button and
+  // the save template button are visible.
+  ToggleOverview();
+  WaitForUI();
+  aura::Window* root = Shell::GetPrimaryRootWindow();
+  auto* zero_state = GetDesksTemplatesButtonForRoot(root,
+                                                    /*zero_state=*/true);
+  auto* expanded_state = GetDesksTemplatesButtonForRoot(root,
+                                                        /*zero_state=*/false);
+  auto* save_template = GetSaveDeskAsTemplateButtonForRoot(root);
+  EXPECT_TRUE(zero_state->GetVisible());
+  EXPECT_FALSE(expanded_state->GetVisible());
+  EXPECT_TRUE(save_template->IsVisible());
+
+  // Tests that after transitioning, we remain in overview mode and all the
+  // buttons are invisible.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(GetOverviewSession());
+  EXPECT_FALSE(zero_state->GetVisible());
+  EXPECT_FALSE(expanded_state->GetVisible());
+  EXPECT_FALSE(save_template->IsVisible());
+}
+
+// Tests that the desks templates grid gets hidden when transitioning to tablet
+// mode.
+TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
+  // Create a window and add a test entry. Otherwise the templates UI wouldn't
+  // show up.
+  auto test_window_1 = CreateTestWindow();
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Enter overview and show the templates grid.
+  ToggleOverview();
+  WaitForUI();
+  ShowDesksTemplatesGrids();
+  WaitForUI();
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  ASSERT_TRUE(GetOverviewSession()
+                  ->GetGridWithRootWindow(root_window)
+                  ->desks_templates_grid_widget());
+
+  // Tests that after transitioning, we remain in overview mode and the grid is
+  // hidden.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(GetOverviewSession());
+  EXPECT_FALSE(GetOverviewSession()
+                   ->GetGridWithRootWindow(root_window)
+                   ->desks_templates_grid_widget());
 }
 
 }  // namespace ash

@@ -13,6 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -55,7 +57,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
                                    public aura::WindowObserver,
                                    public ui::EventHandler,
                                    public ShellObserver,
-                                   public SplitViewObserver {
+                                   public SplitViewObserver,
+                                   public TabletModeObserver {
  public:
   using WindowList = std::vector<aura::Window*>;
 
@@ -286,19 +289,23 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
+  // ui::EventHandler:
+  void OnKeyEvent(ui::KeyEvent* event) override;
+
   // ShellObserver:
   void OnShellDestroying() override;
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window) override;
 
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override;
-
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
   void OnSplitViewDividerPositionChanged() override;
+
+  // TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   OverviewDelegate* delegate() { return delegate_; }
 
@@ -335,6 +342,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
+
+  // Called when tablet mode changes.
+  void OnTabletModeChanged();
 
   // Helper function that moves the highlight forward or backward on the
   // corresponding window grid.
@@ -430,6 +440,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // Boolean to indicate whether chromeVox is enabled or not.
   bool chromevox_enabled_;
+
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 };
 
 }  // namespace ash
