@@ -2070,7 +2070,8 @@
     ],
 
     'codesearch_gen_chromium_android_bot': [
-      'codesearch', 'android_without_codecs',
+      # Set is_component_build=false to enable cronet targets.
+      'codesearch', 'android_without_codecs', 'static',
     ],
 
     'codesearch_gen_chromium_chromiumos_bot': [
