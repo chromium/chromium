@@ -2581,7 +2581,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     ElementRareData* rare_data = GetElementRareData();
     if (ElementIntersectionObserverData* observer_data =
             rare_data->IntersectionObserverData()) {
-      observer_data->InvalidateCachedRects();
       observer_data->TrackWithController(
           GetDocument().EnsureIntersectionObserverController());
       if (!observer_data->IsEmpty()) {
