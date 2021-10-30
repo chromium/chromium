@@ -174,8 +174,13 @@ void CheckLpacToken(HANDLE process) {
 // isn't a security concern.
 std::wstring GetAppContainerProfileName() {
   std::string sandbox_base_name = std::string("cr.sb.net");
-  std::string appcontainer_id = base::WideToUTF8(
-      base::CommandLine::ForCurrentProcess()->GetProgram().value());
+  // Create a unique app container ID for the test case. This ensures that if
+  // multiple tests are running concurrently they don't mess with each other's
+  // app containers.
+  std::string appcontainer_id(
+      testing::UnitTest::GetInstance()->current_test_info()->test_case_name());
+  appcontainer_id +=
+      testing::UnitTest::GetInstance()->current_test_info()->name();
   auto sha1 = base::SHA1HashString(appcontainer_id);
   std::string profile_name = base::StrCat(
       {sandbox_base_name, base::HexEncode(sha1.data(), sha1.size())});
