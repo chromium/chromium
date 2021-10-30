@@ -106,7 +106,8 @@ using TimeRange = net::CookieDeletionInfo::TimeRange;
 // notification of key load completion triggered by the first request for the
 // same eTLD+1.
 
-static const int kMinutesInTenYears = 10 * 365 * 24 * 60;
+static const int kDaysInTenYears = 10 * 365;
+static const int kMinutesInTenYears = kDaysInTenYears * 24 * 60;
 
 namespace {
 
@@ -315,6 +316,18 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
     UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDurationMinutesNonSecure",
                                 expiration_duration_minutes, 1,
                                 kMinutesInTenYears, 50);
+  }
+  // The proposed rfc6265bis sets an upper limit on Expires/Max-Age attribute
+  // values of 400 days. We need to study the impact this change would have:
+  // https://httpwg.org/http-extensions/draft-ietf-httpbis-rfc6265bis.html
+  int expiration_duration_days = (cookie.ExpiryDate() - creation_time).InDays();
+  if (expiration_duration_days > 400) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDuration400DaysGT",
+                                expiration_duration_days, 401, kDaysInTenYears,
+                                100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.ExpirationDuration400DaysLTE",
+                                expiration_duration_days, 1, 400, 50);
   }
 }
 
