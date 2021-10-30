@@ -681,7 +681,14 @@ void HTMLSelectMenuElement::SetSelectedOption(Element* selected_option) {
   if (selected_option_ == selected_option)
     return;
 
+  if (auto* option = DynamicTo<HTMLOptionElement>(*selected_option_))
+    option->SetSelectedState(false);
+
   selected_option_ = selected_option;
+
+  if (auto* option = DynamicTo<HTMLOptionElement>(*selected_option_))
+    option->SetSelectedState(true);
+
   UpdateSelectedValuePartContents();
   NotifyFormStateChanged();
 }
