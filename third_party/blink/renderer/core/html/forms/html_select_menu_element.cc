@@ -817,13 +817,14 @@ void HTMLSelectMenuElement::AppendToFormData(FormData& form_data) {
     form_data.AppendFromElement(GetName(), value());
 }
 
-// TODO(crbug.com/1121840) Add support for saving form control state
 FormControlState HTMLSelectMenuElement::SaveFormControlState() const {
-  return FormControlState();
+  return FormControlState(const_cast<HTMLSelectMenuElement*>(this)->value());
 }
 
 void HTMLSelectMenuElement::RestoreFormControlState(
-    const FormControlState& state) {}
+    const FormControlState& state) {
+  setValue(state[0]);
+}
 
 void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
   visitor->Trace(button_part_listener_);
