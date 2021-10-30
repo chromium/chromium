@@ -31,9 +31,9 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
   explicit WindowScreens(LocalDOMWindow* window);
 
   // Web-exposed interface:
-  static ScriptPromise getScreens(ScriptState* script_state,
-                                  LocalDOMWindow& window,
-                                  ExceptionState& exception_state);
+  static ScriptPromise getScreenDetails(ScriptState* script_state,
+                                        LocalDOMWindow& window,
+                                        ExceptionState& exception_state);
 
   // ExecutionContextLifecycleObserver:
   void ContextDestroyed() override;
@@ -47,8 +47,8 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
   static WindowScreens* From(LocalDOMWindow* window);
 
   // Requests permission to resolve the returned Screens interface promise.
-  ScriptPromise GetScreens(ScriptState* script_state,
-                           ExceptionState& exception_state);
+  ScriptPromise GetScreenDetails(ScriptState* script_state,
+                                 ExceptionState& exception_state);
 
   // Handles the permission request result, to reject or resolve the promise.
   void OnPermissionRequestComplete(ScriptPromiseResolver* resolver,

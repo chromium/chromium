@@ -26,10 +26,10 @@ WindowScreens::WindowScreens(LocalDOMWindow* window)
       permission_service_(window) {}
 
 // static
-ScriptPromise WindowScreens::getScreens(ScriptState* script_state,
-                                        LocalDOMWindow& window,
-                                        ExceptionState& exception_state) {
-  return From(&window)->GetScreens(script_state, exception_state);
+ScriptPromise WindowScreens::getScreenDetails(ScriptState* script_state,
+                                              LocalDOMWindow& window,
+                                              ExceptionState& exception_state) {
+  return From(&window)->GetScreenDetails(script_state, exception_state);
 }
 
 void WindowScreens::ContextDestroyed() {
@@ -53,8 +53,8 @@ WindowScreens* WindowScreens::From(LocalDOMWindow* window) {
   return supplement;
 }
 
-ScriptPromise WindowScreens::GetScreens(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
+ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
+                                              ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");

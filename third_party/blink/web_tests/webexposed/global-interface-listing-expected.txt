@@ -11555,7 +11555,7 @@ namespace CSS
     method getComputedStyle
     method getDigitalGoodsService
     method getLockScreenData
-    method getScreens
+    method getScreenDetails
     method getSelection
     method matchMedia
     method moveBy
