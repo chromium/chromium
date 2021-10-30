@@ -98,7 +98,7 @@ struct ImageDrawOptions {
         clamping_mode(clamping_mode),
         decode_mode(decode_mode),
         apply_dark_mode(apply_dark_mode) {}
-  DarkModeFilter* dark_mode_filter;
+  DarkModeFilter* dark_mode_filter = nullptr;
   SkSamplingOptions sampling_options;
   RespectImageOrientationEnum respect_orientation = kRespectImageOrientation;
   Image::ImageClampingMode clamping_mode = Image::kClampImageToSourceRect;
