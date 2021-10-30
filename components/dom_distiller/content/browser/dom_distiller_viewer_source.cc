@@ -117,9 +117,6 @@ void DomDistillerViewerSource::RequestViewerHandle::SendJavaScript(
 
 void DomDistillerViewerSource::RequestViewerHandle::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted())
     return;
@@ -172,7 +169,7 @@ void DomDistillerViewerSource::RequestViewerHandle::DOMContentLoaded(
   // reason the accessibility focus is on the close button of the CCT, the title
   // could go unannounced.
   // See http://crbug.com/811417.
-  if (render_frame_host->GetParent()) {
+  if (render_frame_host->GetParentOrOuterDocument()) {
     return;
   }
 
