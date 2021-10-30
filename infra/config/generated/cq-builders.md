@@ -277,6 +277,11 @@ builder.
   Path regular expressions:
   * [`//ios/.+`](https://cs.chromium.org/chromium/src/ios/)
 
+* [ios-simulator-noncq](https://ci.chromium.org/p/chromium/builders/try/ios-simulator-noncq) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""ios-simulator-noncq"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator-noncq""))
+
+  Path regular expressions:
+  * [`//third_party/crashpad/crashpad/.+`](https://cs.chromium.org/chromium/src/third_party/crashpad/crashpad/)
+
 * [linux-blink-rel](https://ci.chromium.org/p/chromium/builders/try/linux-blink-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-blink-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-blink-rel""))
 
   Path regular expressions:

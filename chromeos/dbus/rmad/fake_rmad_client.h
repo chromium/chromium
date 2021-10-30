@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void TriggerCalibrationOverallProgressObservation(
       rmad::CalibrationOverallStatus status);
   void TriggerProvisioningProgressObservation(
-      rmad::ProvisionDeviceState::ProvisioningStep step,
+      rmad::ProvisionStatus::Status status,
       double progress);
   void TriggerHardwareWriteProtectionStateObservation(bool enabled);
   void TriggerPowerCableStateObservation(bool plugged_in);

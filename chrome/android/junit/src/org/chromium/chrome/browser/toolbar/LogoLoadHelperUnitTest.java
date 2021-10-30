@@ -11,10 +11,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.content.Context;
+import android.graphics.Bitmap;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,13 +28,13 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.LogoBridge;
 import org.chromium.chrome.browser.ntp.LogoBridgeJni;
 import org.chromium.chrome.browser.ntp.LogoDelegateImpl;
+import org.chromium.chrome.browser.ntp.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
@@ -51,15 +51,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class LogoLoadHelperUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
-
-    @Mock
-    AppCompatActivity mActivity;
-
-    @Mock
-    Resources mResource;
-
-    @Mock
-    Drawable mDrawable;
 
     @Mock
     Profile mMockProfile1;
@@ -82,6 +73,7 @@ public class LogoLoadHelperUnitTest {
     @Mock
     TopToolbarCoordinator mToolbar;
 
+    private Context mContext;
     private LogoLoadHelper mLogoLoadHelper;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
 
@@ -90,7 +82,8 @@ public class LogoLoadHelperUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mProfileSupplier = new ObservableSupplierImpl<>();
-        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mToolbar, mActivity);
+        mContext = ApplicationProvider.getApplicationContext();
+        mLogoLoadHelper = new LogoLoadHelper(mProfileSupplier, mToolbar, mContext);
         mLogoLoadHelper.setLogoDelegateForTesting(mLogoDelegate);
 
         doReturn(false).when(mMockProfile1).isOffTheRecord();
@@ -103,9 +96,6 @@ public class LogoLoadHelperUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridge);
-
-        when(mActivity.getResources()).thenReturn(mResource);
-        when(mResource.getDrawable(eq(R.drawable.google_logo), any())).thenReturn(mDrawable);
 
         CachedFeatureFlags.setForTesting(ChromeFeatureList.START_SURFACE_ANDROID, true);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -124,8 +114,8 @@ public class LogoLoadHelperUnitTest {
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        verify(mResource, times(1)).getDrawable(eq(R.drawable.google_logo), any());
-        verify(mToolbar, times(1)).onLogoAvailable(any(), any());
+        Bitmap googleLogoBitmap = LogoView.getDefaultGoogleLogo(mContext.getResources());
+        verify(mToolbar, times(1)).onLogoAvailable(eq(googleLogoBitmap), any());
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }
 
@@ -136,7 +126,6 @@ public class LogoLoadHelperUnitTest {
 
         mLogoLoadHelper.onDefaultSearchEngineChanged();
 
-        verify(mResource, times(0)).getDrawable(eq(R.drawable.google_logo), any());
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
         // mToolbar#onLogoAvailable should also be called here, but it's a callback from
         // LogoObserver, which is hard to test. We check mLogoDelegate#getSearchProviderLogo

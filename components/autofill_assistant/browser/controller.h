@@ -355,8 +355,14 @@ class Controller : public ScriptExecutorDelegate,
   void OnPeriodicScriptCheck();
 
   // Runs autostart scripts from |runnable_scripts|, if the conditions are
-  // right. Returns true if a script was auto-started.
-  bool MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
+  // right. Nothing happens if an empty vector is passed.
+  // If none of the scripts is autostartable or too many are, it stops the
+  // execution with an error.
+  void MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
+
+  // Creates a user action for each script with a direct action and sets the
+  // list as the current user action list.
+  void UpdateDirectActions(const std::vector<ScriptHandle>& runnable_scripts);
 
   void DisableAutostart();
 

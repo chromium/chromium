@@ -552,9 +552,16 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
   if (screen_infos_ == new_screen_infos && !force_sync_visual_properties)
     return;
 
+  // We need to look at `orientation_type` which is marked as kUndefined at
+  // startup. Unlike `orientation_angle` that uses 0 degrees as the default.
+  // This accounts for devices which have a default landscape orientation, such
+  // as tablets. We do not want the first UpdateScreenInfo to be treated as a
+  // rotation.
   const bool has_rotation_changed =
-      screen_infos_.current().orientation_angle !=
-      new_screen_infos.current().orientation_angle;
+      screen_infos_.current().orientation_type !=
+          display::mojom::ScreenOrientation::kUndefined &&
+      screen_infos_.current().orientation_type !=
+          new_screen_infos.current().orientation_type;
   screen_infos_ = std::move(new_screen_infos);
 
   // Notify the associated RenderWidgetHostImpl when screen info has changed.

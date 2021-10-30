@@ -64,7 +64,7 @@ class WebrtcVideoStream : public VideoStream,
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnRttUpdate(base::TimeDelta rtt) override;
   void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
-                      WebrtcVideoEncoder::EncodedFrame* frame) override;
+                      const WebrtcVideoEncoder::EncodedFrame* frame) override;
   void OnEncodedFrameSent(
       webrtc::EncodedImageCallback::Result result,
       const WebrtcVideoEncoder::EncodedFrame& frame) override;

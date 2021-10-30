@@ -234,15 +234,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'af5049b0d712bfe4bddee53a6eb83bb2d1182339',
+  'skia_revision': '9d24b02c2fdb5eede1054b16b9c03b5ed26dc618',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '17b54f6a439858a3ab4f3c733a0e36d1c64cc33c',
+  'v8_revision': 'db391a3b8fc5c3e8448bb0f5c2af1683ae8a4c32',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'bae19e0626f1c98ce37b57d4c26f10bd2a668b37',
+  'angle_revision': 'd2b4d9aec1590dae5c33625a30878b5bcf423527',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -250,7 +250,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '0daab1ae451dcbd7b96e9050bb2696de66dc5faa',
+  'pdfium_revision': '2270c15549599927213559733b680af9c2441ad8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -281,7 +281,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
-  'freetype_revision': '793c012635f8406c8370266442d3443ab6287067',
+  'freetype_revision': '94cb3a2eb96b3f17a1a3bd0e6f7da97c0e1d8f57',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -301,7 +301,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '819f08fc146681de1bd0850b733f9ac42232e2dc',
+  'catapult_revision': 'f10f06de2c0d894184322bdf9ccf8344abe1d516',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '416944ab56bb8541947469df4cd6b7a77debda32',
+  'devtools_frontend_revision': 'aaad5f15f1ec06508db736a60c74d6fcd4c8bfcd',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -341,7 +341,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_sources_version
   # and whatever else without interference from each other.
-  'android_sdk_sources_version': 'n7svc8KYah-i4s8zwkVa85SI3_H0WFOniP0mpwNdFO0C',
+  'android_sdk_sources_version': '_a_BcnANjPYw5mSKlNHa7GFY8yc1kdqj2rmQgac7yUcC',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -349,7 +349,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'f81ee792b5c12d7c82af06d9a2111bf68731fd3a',
+  'dawn_revision': 'b19556e907c5012e6e28906a797f62b197aff965',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -416,7 +416,7 @@ vars = {
   'libcxx_revision':       '79a2e924d96e2fc1e4b937c42efd08898fa472d7',
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:79c6c1b1a24c46df5a773cc61604bb5051ca6cf4',
+  'gn_version': 'git_revision:f847b5744a81d23b96de3f2e56ce0398f550bd0e',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
@@ -623,7 +623,7 @@ deps = {
   },
 
   'src/ios/third_party/material_components_ios/src': {
-      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + '598c7be032a2347904586fc425eb97835fe18882',
+      'url': Var('chromium_git') + '/external/github.com/material-components/material-components-ios.git' + '@' + 'bf756d71b63013890dcdee5d7c0cb12e87defd13',
       'condition': 'checkout_ios',
   },
 
@@ -885,7 +885,7 @@ deps = {
               'version': Var('android_sdk_platforms_version'),
           },
           {
-              'package': 'chromium/third_party/android_sdk/public/sources/android-30',
+              'package': 'chromium/third_party/android_sdk/public/sources/android-31',
               'version': Var('android_sdk_sources_version'),
           },
           {
@@ -981,7 +981,7 @@ deps = {
   },
 
   'src/third_party/cast_core/public/src':
-    Var('chromium_git') + '/cast_core/public' + '@' + '478707426d6d54163fefcb7c5efb62baa2e0fdc4',
+    Var('chromium_git') + '/cast_core/public' + '@' + '722dae2175351e8c7f5cecd362c418972c89df83',
 
   'src/third_party/catapult':
     Var('chromium_git') + '/catapult.git' + '@' + Var('catapult_revision'),
@@ -1010,7 +1010,7 @@ deps = {
   # Tools used when building Chrome for Chrome OS. This affects both the Simple
   # Chrome workflow, as well as the chromeos-chrome ebuild.
   'src/third_party/chromite': {
-      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + 'a9868636f64464ead877f847230b39d094e8c258',
+      'url': Var('chromium_git') + '/chromiumos/chromite.git' + '@' + '9bc68a2d46cf94f8c2ed02e494847c4d81f2a092',
       'condition': 'checkout_chromeos',
   },
 
@@ -1030,7 +1030,7 @@ deps = {
   },
 
   'src/third_party/depot_tools':
-    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + 'b3a1a797bac7a88c27db70849769230f3cd41d04',
+    Var('chromium_git') + '/chromium/tools/depot_tools.git' + '@' + '0f5bd4fd474cb63bad0c1a3a2c1e0eff9ba5f30a',
 
   'src/third_party/devtools-frontend/src':
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
@@ -1399,7 +1399,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/cisco/openh264' + '@' + '3dd5b80bc4f172dd82925bb259cb7c82348409c5',
 
   'src/third_party/openscreen/src':
-    Var('chromium_git') + '/openscreen' + '@' + 'f7b87d29e306ad76beb745283c2e4ca53680e6ec',
+    Var('chromium_git') + '/openscreen' + '@' + 'c826f69db459c6894ec48405f35860196236437d',
 
   'src/third_party/openxr/src': {
     'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + 'bf21ccb1007bb531b45d9978919a56ea5059c245',
@@ -1416,7 +1416,7 @@ deps = {
   },
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + 'e5fc9f62634b179a6ced07fd2f565a9cee70f5bd',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '9eab89ac2d5f8a7ab94045694afbeabb9a8b11f1',
 
   'src/third_party/perl': {
       'url': Var('chromium_git') + '/chromium/deps/perl.git' + '@' + '6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3',
@@ -1637,7 +1637,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '7c6749771b96d008cbc9877c618bf9f9a7f127da',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '5a2b377c80b4330c73011d7a52f646867809573f',
+    Var('webrtc_git') + '/src.git' + '@' + '3cff17133342a6edf438c8614fe630728e88d8c0',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1695,7 +1695,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@67b898a9ac17d02ad5917576c6099a91fca22295',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@ec2df110b9530e0df6e02a5400ede471693914e5',
     'condition': 'checkout_src_internal',
   },
 
@@ -1714,7 +1714,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'sy3EzNl6Dyy-4wYWyoqdmVCQBGXNdq-dakO1AwP9484C',
+        'version': 'Pu6biyiuS2Q5sTobyHp0PwgpgjstB7a-CKGx78lYUGEC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -1725,7 +1725,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'iz7naaFGhEcJd-H6xRa8A6RuxzYNxbLT1qT5p7Bvv8MC',
+        'version': '_fWINw4Gpe6I6CmF3_pR3f1PiTpy52scN2M774-x-ooC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4130,7 +4130,7 @@ hooks = [
                 '--no_resume',
                 '--extract',
                 '--no_auth',
-                '--bucket', 'chromium-nodejs/14.15.4',
+                '--bucket', 'chromium-nodejs/16.13.0',
                 '-s', 'src/third_party/node/linux/node-linux-x64.tar.gz.sha1',
     ],
   },
@@ -4143,14 +4143,11 @@ hooks = [
                 '--no_resume',
                 '--extract',
                 '--no_auth',
-                '--bucket', 'chromium-nodejs/14.15.4',
+                '--bucket', 'chromium-nodejs/16.13.0',
                 '-s', 'src/third_party/node/mac/node-darwin-x64.tar.gz.sha1',
     ],
   },
   {
-    # TODO: Node 16.0 will likely ship with an official universal node binary
-    # on macOS. Once node 16.0 is released, collapse this into the node_mac hook
-    # above again and use the universal binary on mac independent of host_cpu.
     'name': 'node_mac_arm64',
     'pattern': '.',
     'condition': 'host_os == "mac" and host_cpu == "arm64"',
@@ -4159,7 +4156,7 @@ hooks = [
                 '--no_resume',
                 '--extract',
                 '--no_auth',
-                '--bucket', 'chromium-nodejs/16.0.0-pre',
+                '--bucket', 'chromium-nodejs/16.13.0',
                 '-s', 'src/third_party/node/mac/node-darwin-arm64.tar.gz.sha1',
     ],
   },
@@ -4171,7 +4168,7 @@ hooks = [
                 'src/third_party/depot_tools/download_from_google_storage.py',
                 '--no_resume',
                 '--no_auth',
-                '--bucket', 'chromium-nodejs/14.15.4',
+                '--bucket', 'chromium-nodejs/16.13.0',
                 '-s', 'src/third_party/node/win/node.exe.sha1',
     ],
   },

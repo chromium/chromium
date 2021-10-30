@@ -25,6 +25,8 @@ using testing::Invoke;
 using testing::NiceMock;
 using testing::StrictMock;
 
+constexpr viz::FrameSinkId kInitSinkId(123, 456);
+
 // Standardized screen resolutions to test common scenarios.
 constexpr gfx::Size kSizeZero{0, 0};
 constexpr gfx::Size kSize720p{1280, 720};
@@ -60,7 +62,7 @@ class SimpleContext : public WebContentsFrameTracker::Context {
 
  private:
   int capturer_count_ = 0;
-  viz::FrameSinkId frame_sink_id_;
+  viz::FrameSinkId frame_sink_id_ = kInitSinkId;
   gfx::Size last_capture_size_;
   absl::optional<gfx::Rect> screen_bounds_;
 };
@@ -110,7 +112,6 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
     SetScreenSize(kSize1080p);
     tracker_->SetWebContentsAndContextForTesting(web_contents_.get(),
                                                  std::move(context));
-    SetFrameSinkId(viz::FrameSinkId(123, 456));
   }
 
   void TearDown() override {
@@ -314,15 +315,40 @@ TEST_F(WebContentsFrameTrackerTest, NotifiesOfLostTargets) {
 // test the observer callbacks here.
 TEST_F(WebContentsFrameTrackerTest, NotifiesOfTargetChanges) {
   const viz::FrameSinkId kNewId(42, 1337);
-  EXPECT_CALL(
-      *device(),
-      OnTargetChanged(FrameSinkVideoCaptureDevice::VideoCaptureTarget{kNewId}))
+  EXPECT_CALL(*device(),
+              OnTargetChanged(FrameSinkVideoCaptureDevice::VideoCaptureTarget(
+                  kNewId, viz::SubtreeCaptureId(), /*crop_id=*/base::Token())))
       .Times(1);
   SetFrameSinkId(kNewId);
   // The tracker doesn't actually use the frame host information, just
   // posts a possible target change.
   tracker()->RenderFrameHostChanged(nullptr, nullptr);
   RunAllTasksUntilIdle();
+}
+
+TEST_F(WebContentsFrameTrackerTest,
+       CroppingChangesTargetParametersAndInvokesCallback) {
+  const base::Token kCropId(19831230, 19840730);
+
+  // Expect the callback handed to Crop() to be invoke with kSuccess.
+  bool success = false;
+  base::OnceCallback<void(media::mojom::CropRequestResult)> callback =
+      base::BindOnce(
+          [](bool* success, media::mojom::CropRequestResult result) {
+            *success = (result == media::mojom::CropRequestResult::kSuccess);
+          },
+          &success);
+
+  // Expect OnTargetChanged() to be invoked once with the crop-ID.
+  EXPECT_CALL(*device(),
+              OnTargetChanged(FrameSinkVideoCaptureDevice::VideoCaptureTarget(
+                  kInitSinkId, viz::SubtreeCaptureId(), kCropId)))
+      .Times(1);
+
+  tracker()->Crop(kCropId, std::move(callback));
+
+  RunAllTasksUntilIdle();
+  EXPECT_TRUE(success);
 }
 
 }  // namespace

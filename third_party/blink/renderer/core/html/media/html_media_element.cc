@@ -151,6 +151,15 @@ using DocumentElementSetMap =
 
 namespace {
 
+// When enabled, this feature brings back the old behavior of periodically
+// dispatching the "progress" event when the source of a HTMLMediaElement is a
+// MediaStream.
+//
+// TODO(crbug.com/1260456): Cleanup in M98 if not the dispatching the "progress"
+// event periodically doesn't cause issues in M97.
+const base::Feature kRepeatProgressEventForMediaStream{
+    "RepeatProgressEventForMediaStream", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // This enum is used to record histograms. Do not reorder.
 enum class MediaControlsShow {
   kAttribute = 0,
@@ -2125,6 +2134,24 @@ void HTMLMediaElement::UpdateLayoutObject() {
 }
 
 void HTMLMediaElement::ProgressEventTimerFired(TimerBase*) {
+  // The spec doesn't require to dispatch the "progress" or "stalled" events
+  // when the resource fetch mode is "local".
+  // https://html.spec.whatwg.org/multipage/media.html#concept-media-load-resource
+  // The mode is "local" for these sources:
+  //
+  // MediaStream: The timer is stopped below to prevent the "progress" event
+  // from being dispatched more than once. It is dispatched once to match
+  // Safari's behavior, even though that's not required by the spec.
+  //
+  // MediaSource: The "stalled" event is not dispatched but a conscious decision
+  // was made to periodically dispatch the "progress" event to allow updates to
+  // buffering UIs. Therefore, the timer is not stopped below.
+  // https://groups.google.com/a/chromium.org/g/media-dev/c/Y8ITyIFmUC0/m/avBYOy_UFwAJ
+  if (GetLoadType() == WebMediaPlayer::kLoadTypeMediaStream &&
+      !base::FeatureList::IsEnabled(kRepeatProgressEventForMediaStream)) {
+    progress_event_timer_.Stop();
+  }
+
   if (network_state_ != kNetworkLoading) {
     RecordProgressEventTimerState(ProgressEventTimerState::kNotLoading);
     return;

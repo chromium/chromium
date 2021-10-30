@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/app_list_main_view.h"
@@ -194,9 +195,10 @@ void SearchResultListView::LogImpressions() {
 
   // Since no items is actually clicked, send the position index of clicked item
   // as -1.
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
   if (main_view_->search_box_view()->is_search_box_active()) {
     view_delegate_->NotifySearchResultsForLogging(
-        view_delegate_->GetSearchModel()->search_box()->text(),
+        search_model->search_box()->text(),
         GetSearchResultsForLogging(search_result_views_),
         -1 /* position_index */);
   }
@@ -235,8 +237,9 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 
   RecordSearchResultOpenSource(result, view_delegate_->GetAppListViewState(),
                                view_delegate_->IsInTabletMode());
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
   view_delegate_->NotifySearchResultsForLogging(
-      view_delegate_->GetSearchModel()->search_box()->text(),
+      search_model->search_box()->text(),
       GetSearchResultsForLogging(search_result_views_),
       view->index_in_container());
 

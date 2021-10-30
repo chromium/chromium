@@ -56,7 +56,7 @@ declare_args() {
   #
   # TODO(crbug.com/1159424): Reassess the validity of the next expression.
   is_cfi =
-      is_official_build &&
+      is_official_build && is_clang &&
       (((target_os == "linux" || is_chromeos_lacros) && target_cpu == "x64") ||
        ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device))
 

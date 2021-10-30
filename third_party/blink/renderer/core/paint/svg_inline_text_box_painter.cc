@@ -136,8 +136,8 @@ void SVGInlineTextBoxPainter::Paint(const PaintInfo& paint_info,
           paint_info.context, svg_inline_text_box_, paint_info.phase)) {
     DrawingRecorder recorder(
         paint_info.context, svg_inline_text_box_, paint_info.phase,
-        ToGfxRect(EnclosingIntRect(
-            parent_layout_object.VisualRectInLocalSVGCoordinates())));
+        gfx::ToEnclosingRect(
+            parent_layout_object.VisualRectInLocalSVGCoordinates()));
     InlineTextBoxPainter text_painter(svg_inline_text_box_);
     const DocumentMarkerVector& markers_to_paint =
         text_painter.ComputeMarkersToPaint();
@@ -526,8 +526,8 @@ void SVGInlineTextBoxPainter::PaintText(const PaintInfo& paint_info,
   if (!scaled_font.ShouldSkipDrawing()) {
     PaintTiming& timing = PaintTiming::From(text_layout_object.GetDocument());
     timing.MarkFirstContentfulPaint();
-    PaintTimingDetector::NotifyTextPaint(ToGfxRect(EnclosingIntRect(
-        InlineLayoutObject().VisualRectInLocalSVGCoordinates())));
+    PaintTimingDetector::NotifyTextPaint(gfx::ToEnclosingRect(
+        InlineLayoutObject().VisualRectInLocalSVGCoordinates()));
   }
 }
 

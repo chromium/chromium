@@ -52,6 +52,10 @@ namespace {
 
 using test::AppListTestViewDelegate;
 
+SearchModel* GetSearchModel() {
+  return AppListModelProvider::Get()->search_model();
+}
+
 class KeyPressCounterView : public ContentsView {
  public:
   explicit KeyPressCounterView(AppListView* app_list_view)
@@ -197,9 +201,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     results()->AddAt(index, std::move(search_result));
   }
 
-  SearchModel::SearchResults* results() {
-    return view_delegate_.GetSearchModel()->results();
-  }
+  SearchModel::SearchResults* results() { return GetSearchModel()->results(); }
 
  private:
   // Overridden from SearchBoxViewDelegate:
@@ -833,8 +835,7 @@ class SearchBoxViewAssistantButtonTest : public SearchBoxViewTest {
   // Overridden from testing::Test
   void SetUp() override {
     SearchBoxViewTest::SetUp();
-    view_delegate()->GetSearchModel()->search_box()->SetShowAssistantButton(
-        true);
+    GetSearchModel()->search_box()->SetShowAssistantButton(true);
   }
 };
 
@@ -878,12 +879,12 @@ class SearchBoxViewAutocompleteTest : public SearchBoxViewTest {
       // Search box autocomplete suggestion is accepted, but it should not
       // trigger another query, thus it is not reflected in Search Model.
       EXPECT_EQ(u"hello world!", view()->search_box()->GetText());
-      EXPECT_EQ(u"he", view_delegate()->GetSearchModel()->search_box()->text());
+      EXPECT_EQ(u"he", GetSearchModel()->search_box()->text());
     } else {
       // Search box autocomplete suggestion is removed and is reflected in
       // SearchModel.
       EXPECT_EQ(view()->search_box()->GetText(),
-                view_delegate()->GetSearchModel()->search_box()->text());
+                GetSearchModel()->search_box()->text());
       EXPECT_EQ(u"he", view()->search_box()->GetText());
       // ProcessAutocomplete should be a no-op.
       ProcessAutocomplete();
@@ -1152,8 +1153,7 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
 
   static void AddSearchResult(const std::string& id,
                               const std::u16string& title) {
-    SearchModel::SearchResults* search_results =
-        Shell::Get()->app_list_controller()->GetSearchModel()->results();
+    SearchModel::SearchResults* search_results = GetSearchModel()->results();
     auto search_result = std::make_unique<TestSearchResult>();
     search_result->set_result_id(id);
     search_result->set_display_type(SearchResultDisplayType::kList);

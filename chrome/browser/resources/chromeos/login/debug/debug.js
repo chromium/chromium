@@ -1042,6 +1042,28 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'pin-setup',
       kind: ScreenKind.NORMAL,
+      states: [
+        {
+          id: 'clear-error',
+          trigger: (screen) => {
+            (screen.$).pinKeyboard.hideProblem_();
+          }
+        },
+        {
+          id: 'error-warning',
+          trigger: (screen) => {
+            (screen.$).pinKeyboard.showProblem_(
+                MessageType.TOO_WEAK, ProblemType.WARNING);
+          }
+        },
+        {
+          id: 'error-error',
+          trigger: (screen) => {
+            (screen.$).pinKeyboard.showProblem_(
+                MessageType.TOO_LONG, ProblemType.ERROR);
+          }
+        }
+      ]
     },
     {
       id: 'arc-tos',

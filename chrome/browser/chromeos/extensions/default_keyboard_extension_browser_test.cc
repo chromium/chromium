@@ -27,16 +27,17 @@
 #include "ui/base/ime/input_method.h"
 
 namespace {
-const base::FilePath::CharType kWebuiTestDir[] = FILE_PATH_LITERAL("webui");
+const base::FilePath::CharType kWebuiTestDir[] =
+    FILE_PATH_LITERAL("webui/chromeos");
 
 const base::FilePath::CharType kMockController[] =
     FILE_PATH_LITERAL("mock_controller.js");
 
-const base::FilePath::CharType kMockTimer[] =
-    FILE_PATH_LITERAL("mock_timer.js");
-
 const char kVirtualKeyboardExtensionTestDir[] =
     "chromeos/virtual_keyboard/default_extension";
+
+const base::FilePath::CharType kMockTimer[] =
+    FILE_PATH_LITERAL("mock_timer.js");
 
 const char kBaseKeyboardExtensionTestFramework[] =
     "virtual_keyboard_test_base.js";
@@ -77,7 +78,8 @@ void DefaultKeyboardExtensionBrowserTest::RunTest(
   // Inject testing scripts.
   InjectJavascript(base::FilePath(kWebuiTestDir),
                    base::FilePath(kMockController));
-  InjectJavascript(base::FilePath(kWebuiTestDir), base::FilePath(kMockTimer));
+  InjectJavascript(base::FilePath(config.test_dir_),
+                   base::FilePath(kMockTimer));
   InjectJavascript(base::FilePath(config.test_dir_),
                    base::FilePath(config.base_framework_));
   InjectJavascript(base::FilePath(config.test_dir_), file);

@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -51,6 +53,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<CustomTabToolbarCoordinator> mToolbarCoordinator;
     private final Supplier<CustomTabActivityNavigationController> mNavigationController;
+    private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
+    private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+
+    private CustomTabHeightStrategy mCustomTabHeightStrategy;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -85,6 +91,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param intentRequestTracker Tracks intent requests.
      * @param customTabToolbarCoordinator Coordinates the custom tab toolbar.
      * @param customTabNavigationController Controls the custom tab navigation.
+     * @param intentDataProvider Contains intent information used to start the Activity.
+     * @param multiWindowModeStateDispatcher Required to register for multi-window mode changes.
      */
     public BaseCustomTabRootUiCoordinator(@NonNull AppCompatActivity activity,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
@@ -115,8 +123,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull StatusBarColorProvider statusBarColorProvider,
             @NonNull IntentRequestTracker intentRequestTracker,
             @NonNull Supplier<CustomTabToolbarCoordinator> customTabToolbarCoordinator,
-            @NonNull Supplier<CustomTabActivityNavigationController>
-                    customTabNavigationController) {
+            @NonNull Supplier<CustomTabActivityNavigationController> customTabNavigationController,
+            @NonNull Supplier<BrowserServicesIntentDataProvider> intentDataProvider,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher) {
         // clang-format off
         super(activity, null, shareDelegateSupplier, tabProvider, profileSupplier,
                 bookmarkBridgeSupplier, contextualSearchManagerSupplier, tabModelSelectorSupplier,
@@ -129,10 +138,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 fullscreenManager, compositorViewHolderSupplier, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
                 isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
-                statusBarColorProvider, intentRequestTracker, false);
+                statusBarColorProvider, intentRequestTracker, new OneshotSupplierImpl<>(), false);
         // clang-format on
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
+        mIntentDataProvider = intentDataProvider;
+        mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
     }
 
     @Override
@@ -167,5 +178,29 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     protected boolean shouldAllowBrightThemeColors() {
         return mActivityType == ActivityType.TRUSTED_WEB_ACTIVITY
                 || mActivityType == ActivityType.WEB_APK;
+    }
+
+    @Override
+    public void onPreInflationStartup() {
+        super.onPreInflationStartup();
+
+        BrowserServicesIntentDataProvider intentDataProvider = mIntentDataProvider.get();
+        assert intentDataProvider
+                != null : "IntentDataProvider needs to be non-null after preInflationStartup";
+
+        mCustomTabHeightStrategy = CustomTabHeightStrategy.createStrategy(mActivity,
+                intentDataProvider.getInitialActivityHeight(), mMultiWindowModeStateDispatcher,
+                CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
+                mActivityLifecycleDispatcher);
+    }
+
+    /**
+     * Delegates changing the background color to the {@link CustomTabHeightStrategy}.
+     * Returns {@code true} if any action were taken, {@code false} if not.
+     */
+    public boolean changeBackgroundColorForResizing() {
+        if (mCustomTabHeightStrategy == null) return false;
+
+        return mCustomTabHeightStrategy.changeBackgroundColorForResizing();
     }
 }

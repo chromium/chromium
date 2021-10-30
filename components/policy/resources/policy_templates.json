@@ -419,6 +419,7 @@
         'RemoteAccessHostAllowRemoteAccessConnections',
         'RemoteAccessHostMaximumSessionDurationMinutes',
         'RemoteAccessHostClipboardSizeBytes',
+        'RemoteAccessHostAllowRemoteSupportConnections',
       ],
     },
     {
@@ -2732,6 +2733,40 @@
           Please note that the actual upper bound for the clipboard size is based on the maximum WebRTC data channel message size which this policy does not control.''',
     },
     {
+      'name': 'RemoteAccessHostAllowRemoteSupportConnections',
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow remote support connections to this machine',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent remote support connections to this machine',
+        },
+      ],
+      'default': True,
+      'example_value': False,
+      'id': 923,
+      'caption': '''Allow remote support connections to this machine''',
+      'tags': [],
+      'desc': '''If this policy is disabled, the remote support host cannot be started or configured to accept incoming connections.
+
+          This policy does not affect remote access scenarios.
+
+          This policy does not prevent enterprise admins from connecting to managed Chrome OS devices.
+
+          This policy has no effect if enabled, left empty, or is not set.''',
+    },
+    {
       'name': 'DeviceAllowMGSToStoreDisplayProperties',
       'owners' : ['file://chrome/browser/ash/app_mode/OWNERS', 'apotapchuk@chromium.org'],
       'type' : 'main',
@@ -4363,27 +4398,27 @@
         {
           'name': 'DefaultDownloadSecurity',
           'value': 0,
-          'caption': '''No special restrictions''',
+          'caption': '''No special restrictions. Default.''',
         },
         {
           'name': 'BlockDangerousDownloads',
           'value': 1,
-          'caption': '''Block dangerous downloads''',
+          'caption': '''Block malicious downloads and dangerous file types.''',
         },
         {
           'name': 'BlockPotentiallyDangerousDownloads',
           'value': 2,
-          'caption': '''Block potentially dangerous downloads''',
+          'caption': '''Block malicious downloads, uncommon or unwanted downloads and dangerous file types.''',
         },
         {
           'name': 'BlockAllDownloads',
           'value': 3,
-          'caption': '''Block all downloads''',
+          'caption': '''Block all downloads.''',
         },
         {
           'name': 'BlockMaliciousDownloads',
           'value': 4,
-          'caption': '''Block malicious downloads (recommended)''',
+          'caption': '''Block malicious downloads. Recommended.''',
         },
       ],
       'supported_on': ['chrome.*:61-', 'chrome_os:61-'],
@@ -4398,17 +4433,23 @@
       'tags': ['local-data-access'],
       'desc': '''Setting the policy means users can't bypass download security decisions.
 
-       Setting the policy to:
+      There are many types of download warnings within Chrome, which roughly break down into these categories (learn more about Safe Browsing verdicts https://support.google.com/chrome/?p=ib_download_blocked):
 
-      * Block dangerous downloads means all downloads are allowed, except for those that carry safety warnings.
+      * Malicious, as flagged by the Safe Browsing server
+      * Uncommon or unwanted, as flagged by the Safe Browsing server
+      * A dangerous file type (e.g. all SWF downloads and many EXE downloads)
 
-      * Block potentially dangerous downloads means all downloads allowed, except for those that carry safety warnings of potentially dangerous downloads.
+      Setting the policy blocks different subsets of these, depending on it's value:
 
-      * Block all downloads means all downloads are blocked.
+      0: No special restrictions. Default.
 
-      * Block malicious downloads means all downloads are allowed, except for those assessed to be malware with high confidence. Unlike with dangerous downloads, this does not take into account file type, but does take into account the host.
+      1: Blocks malicious files flagged by the Safe Browsing server AND Blocks all dangerous file types. Only recommended for OUs/browsers/users that have a high tolerance for False Positives.
 
-      * No special restrictions means the downloads go through the usual security restrictions based on safety analysis results.
+      2: Blocks malicious files flagged by the Safe Browsing server AND Blocks uncommon or unwanted files flagged by the Safe Browsing server AND Blocks all dangerous file types. Only recommended for OUs/browsers/users that have a high tolerance for False Positives.
+
+      3: Blocks all downloads. Not recommended, except for special use cases.
+
+      4: Blocks malicious files flagged by the Safe Browsing server, does not block dangerous file types. Recommended.
 
       Note: These restrictions apply to downloads triggered from webpage content, as well as the Download link... menu option. They don't apply to the download of the currently displayed page or to saving as PDF from the printing options. Read more about Safe Browsing ( https://developers.google.com/safe-browsing ).''',
       'label': '''Download restrictions''',
@@ -29155,6 +29196,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'RemoteAccessHostAllowRemoteAccessConnections',
         'RemoteAccessHostMaximumSessionDurationMinutes',
         'RemoteAccessHostClipboardSizeBytes',
+        'RemoteAccessHostAllowRemoteSupportConnections',
       ],
     },
     {
@@ -29620,6 +29662,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 922,
+  'highest_id_currently_used': 923,
   'highest_atomic_group_id_currently_used': 41
 }

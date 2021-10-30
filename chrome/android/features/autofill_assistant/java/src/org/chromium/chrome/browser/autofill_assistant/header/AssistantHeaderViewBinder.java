@@ -225,13 +225,17 @@ class AssistantHeaderViewBinder
     private void setTtsButtonState(ViewHolder view, @AssistantTtsButtonState int state) {
         switch (state) {
             case AssistantTtsButtonState.DEFAULT:
-            case AssistantTtsButtonState.PLAYING:
                 view.mTtsButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
                 view.mTtsButton.setTag(AssistantTagsForTesting.TTS_ENABLED_ICON_TAG);
+                break;
+            case AssistantTtsButtonState.PLAYING:
+                view.mTtsButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
+                view.mTtsButton.setTag(AssistantTagsForTesting.TTS_PLAYING_ICON_TAG);
                 break;
             case AssistantTtsButtonState.DISABLED:
                 view.mTtsButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
                 view.mTtsButton.setTag(AssistantTagsForTesting.TTS_DISABLED_ICON_TAG);
+                break;
         }
     }
 }

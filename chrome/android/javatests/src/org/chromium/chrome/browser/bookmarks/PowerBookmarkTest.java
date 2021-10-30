@@ -32,11 +32,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.io.IOException;
 
@@ -44,7 +44,7 @@ import java.io.IOException;
  * Tests for the power bookmark experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PowerBookmarkTest extends DummyUiChromeActivityTestCase {
+public class PowerBookmarkTest extends DummyUiActivityTestCase {
     private static final long CURRENCY_MUTLIPLIER = 1000000;
 
     @Rule

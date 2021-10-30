@@ -47,7 +47,7 @@ class ASH_EXPORT DeskButtonBase
   void OnViewHighlighted() override;
   void OnViewUnhighlighted() override;
 
-  virtual void UpdateButtonState() {}
+  virtual void SetButtonState(bool enabled) {}
 
   // Updates the label's text of the button. E.g, ZeroStateDefaultDeskButton
   // showing the desk's name, which should be updated on desk name changes.

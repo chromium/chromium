@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 
@@ -122,6 +123,13 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
       const AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) = 0;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Adds or updates an account programmatically without user interaction.
+  // Should only be used in tests.
+  virtual void UpsertAccountForTesting(const Account& account,
+                                       const std::string& token_value) = 0;
+#endif
 };
 
 }  // namespace account_manager

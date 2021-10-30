@@ -84,9 +84,6 @@ class ASH_EXPORT AppListBubbleSearchPage
 
   SearchBoxView* const search_box_view_;
 
-  // The search model for which the results are displayed.
-  SearchModel* const search_model_;
-
   // Whether changes in search result containers are hidden from the
   // accessibility framework.
   bool ignore_result_changes_for_a11y_ = false;

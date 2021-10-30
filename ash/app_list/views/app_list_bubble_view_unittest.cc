@@ -11,6 +11,7 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -51,17 +52,22 @@ using views::Widget;
 namespace ash {
 namespace {
 
+SearchModel* GetSearchModel() {
+  return AppListModelProvider::Get()->search_model();
+}
+
 void AddSearchResult(const std::string& id, const std::u16string& title) {
   auto search_result = std::make_unique<TestSearchResult>();
   search_result->set_result_id(id);
   search_result->set_display_type(SearchResultDisplayType::kList);
   search_result->set_title(title);
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
-      std::move(search_result));
+  GetSearchModel()->results()->Add(std::move(search_result));
 }
 
+// TODO(jamescook): Move this into AppListTestHelper. This will require
+// changing how AppListTestHelper::AddAppItems() names the apps.
 void AddRecentApps(int num_apps) {
-  auto* search_model = Shell::Get()->app_list_controller()->GetSearchModel();
+  auto* search_model = GetSearchModel();
   for (int i = 0; i < num_apps; i++) {
     auto result = std::make_unique<TestSearchResult>();
     // Use the same "Item #" convention as AppListTestModel uses. The search
@@ -70,13 +76,13 @@ void AddRecentApps(int num_apps) {
     result->set_result_type(AppListSearchResultType::kInstalledApp);
     // TODO(crbug.com/1216662): Replace with a real display type after the ML
     // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kChip);
+    result->set_display_type(SearchResultDisplayType::kList);
     search_model->results()->Add(std::move(result));
   }
 }
 
 void AddContinueSuggestionResult(int num_suggestions) {
-  auto* search_model = Shell::Get()->app_list_controller()->GetSearchModel();
+  auto* search_model = GetSearchModel();
   for (int i = 0; i < num_suggestions; i++) {
     auto result = std::make_unique<TestSearchResult>();
     result->set_result_id(base::NumberToString(i));
@@ -98,11 +104,7 @@ views::View* GetSeparator() {
 
 // Simulates the Assistant being enabled.
 void SimulateAssistantEnabled() {
-  Shell::Get()
-      ->app_list_controller()
-      ->GetSearchModel()
-      ->search_box()
-      ->SetShowAssistantButton(true);
+  GetSearchModel()->search_box()->SetShowAssistantButton(true);
 }
 
 class AppListBubbleViewTest : public AshTestBase {
@@ -115,10 +117,10 @@ class AppListBubbleViewTest : public AshTestBase {
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
-    auto model = std::make_unique<test::AppListTestModel>();
-    app_list_test_model_ = model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(model));
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        app_list_test_model_.get(), search_model_.get());
   }
 
   // Shows the app list on the primary display.
@@ -174,7 +176,8 @@ class AppListBubbleViewTest : public AshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_features_;
-  test::AppListTestModel* app_list_test_model_ = nullptr;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
 };
 
 TEST_F(AppListBubbleViewTest, LayerConfiguration) {

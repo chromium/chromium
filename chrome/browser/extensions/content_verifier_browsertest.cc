@@ -20,12 +20,12 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
 #include "chrome/browser/extensions/content_verifier_test_utils.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/policy_extension_reinstaller.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -971,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierPolicyTest, FailedUpdateRetries) {
 
     delay_tracker.Proceed();
 
-    PolicyExtensionReinstaller::set_policy_reinstall_action_for_test(nullptr);
+    CorruptedExtensionReinstaller::set_reinstall_action_for_test(nullptr);
   }
   // Update ExtensionService again without disabling external updates.
   // The extension should now get installed.

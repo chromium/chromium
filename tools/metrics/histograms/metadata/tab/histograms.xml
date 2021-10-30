@@ -2401,7 +2401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}TabIn{State}List"
+<histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}In{State}List"
     units="tabs" expires_after="2021-11-21">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
@@ -2415,8 +2415,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Tab Search's tab list in a {State} state.
   </summary>
   <token key="Action">
-    <variant name="Close"/>
-    <variant name="Switch"/>
+    <variant name="CloseTab"/>
+    <variant name="OpenRecentlyClosedEntry"/>
+    <variant name="SwitchTab"/>
   </token>
   <token key="State">
     <variant name="Filtered" summary="Filtered by user search query."/>
@@ -2475,6 +2476,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Tabs.TabSearch.WebUI.SearchAlgorithmDuration" units="ms"
+    expires_after="2022-10-26">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
+  <summary>
+    The time taken to run the search algorithm. The algorithm takes an
+    unfiltered list of items and user search query as inputs, then generate a
+    list of filtered items as output. Recorded after the measurement ends.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.TabListDataReceived" units="ms"
     expires_after="2022-03-27">
   <owner>tluk@chromium.org</owner>
@@ -2498,6 +2510,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Search to switch to a tab from a filtered search results list or the default
     unfiltered list.
   </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TimeTo{Action}In{State}List" units="ms"
+    expires_after="2022-10-26">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
+  <summary>
+    The time taken between the tab search bubble is open and user switches to a
+    tab or opens a recently closed tab, with or without search query. Recorded
+    after the measurement ends.
+  </summary>
+  <token key="Action">
+    <variant name="OpenRecentlyClosedEntry"/>
+    <variant name="SwitchTab"/>
+  </token>
+  <token key="State">
+    <variant name="Filtered" summary="Filtered by user search query."/>
+    <variant name="Unfiltered" summary="Unfiltered by user search query."/>
+  </token>
 </histogram>
 
 <histogram name="Tabs.TabSearch.WindowDisplayedDuration2" units="ms"

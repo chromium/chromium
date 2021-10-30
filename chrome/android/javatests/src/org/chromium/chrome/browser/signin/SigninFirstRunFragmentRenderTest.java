@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.signin;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.accounts.Account;
@@ -72,15 +71,16 @@ public class SigninFirstRunFragmentRenderTest {
 
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
-
     @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;
-
     @Mock
     private PolicyLoadListener mPolicyLoadListenerMock;
-
     @Mock
     private SigninManager mSigninManagerMock;
+    @Mock
+    private SigninChecker mSigninCheckerMock;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProviderMock;
 
     private CustomSigninFirstRunFragment mFragment;
 
@@ -101,7 +101,7 @@ public class SigninFirstRunFragmentRenderTest {
     public void setUp() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        SigninCheckerProvider.setForTests(mock(SigninChecker.class));
+        SigninCheckerProvider.setForTests(mSigninCheckerMock);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -154,7 +154,7 @@ public class SigninFirstRunFragmentRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testFragmentWithAccountWhenSigninIsDisabledByPolicy(boolean nightModeEnabled)
             throws IOException {
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             when(IdentityServicesProvider.get().getSigninManager(
                          Profile.getLastUsedRegularProfile()))

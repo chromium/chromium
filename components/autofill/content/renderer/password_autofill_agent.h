@@ -127,6 +127,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   void SetPasswordGenerationAgent(PasswordGenerationAgent* generation_agent);
 
+  // Callers should not store the returned value longer than a function scope.
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
   // mojom::PasswordAutofillAgent:

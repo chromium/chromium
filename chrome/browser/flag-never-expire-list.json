@@ -18,6 +18,7 @@
   "arc-native-bridge-toggle",
   "ash-debug-shortcuts",
   "ash-enable-unified-desktop",
+  "cellular-bypass-esim-installation-connectivity-check",
   "cellular-use-external-euicc",
   "dcheck-is-fatal",
   "disable-accelerated-2d-canvas",

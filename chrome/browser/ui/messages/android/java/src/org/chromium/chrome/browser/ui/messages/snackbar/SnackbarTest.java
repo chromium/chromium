@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -21,7 +22,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -178,6 +181,29 @@ public class SnackbarTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> mManager.onClick(null));
         pollSnackbarCondition(
                 "Persistent snackbar not removed on action.", () -> !mManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.P)
+    public void testSnackbarDuration() {
+        final Snackbar snackbar = Snackbar.make(
+                "persistent", mDismissController, Snackbar.TYPE_ACTION, Snackbar.UMA_TEST_SNACKBAR);
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            snackbar.setDuration(0);
+            Assert.assertEquals(
+                    "Snackbar should use default duration when client sets duration to 0.",
+                    SnackbarManager.getDefaultDurationForTesting(), mManager.getDuration(snackbar));
+        });
+
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            snackbar.setDuration(SnackbarManager.getDefaultA11yDurationForTesting() / 3);
+            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+            Assert.assertEquals(
+                    "Default a11y duration should be used if the duration of snackbar in non-a11y mode is less than half of it",
+                    SnackbarManager.getDefaultA11yDurationForTesting(),
+                    mManager.getDuration(snackbar));
+        });
     }
 
     void pollSnackbarCondition(String message, Supplier<Boolean> condition) {

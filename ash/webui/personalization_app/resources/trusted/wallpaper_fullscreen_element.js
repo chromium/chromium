@@ -9,6 +9,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -16,8 +17,8 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {getWallpaperLayoutEnum} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {setFullscreenEnabledAction} from './personalization_actions.js';
-import {cancelPreviewWallpaper, confirmPreviewWallpaper, setCustomWallpaperLayout} from './personalization_controller.js';
-import {updateDailyRefreshWallpaper} from './personalization_controller.js';
+import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './personalization_controller.js';
+import {DisplayableImage} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /** @polymer */
@@ -44,12 +45,43 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         value: false,
       },
       /**
-       * TODO(b/202392508) remove this debug view when transparency works
-       * @type {?ash.personalizationApp.mojom.CurrentWallpaper}
+       * Note that this contains information about the non-preview wallpaper
+       * that was set before entering fullscreen mode.
+       * @type {!ash.personalizationApp.mojom.CurrentWallpaper}
        * @private
        */
-      image_: {
+      currentSelected_: {
         type: Object,
+        value: null,
+      },
+      /**
+       * This will be set during the duration of preview mode.
+       * @type {?DisplayableImage}
+       * @private
+       */
+      pendingSelected_: {
+        type: Object,
+        value: null,
+      },
+      /**
+       * TODO(b/202392508) can remove this when transparency works
+       * @type {!Object<string, string>}
+       * @private
+       */
+      localImageData_: {
+        type: Object,
+        value: {},
+      },
+      /**
+       * When preview mode starts, this is set to currentSelected.layout. If the
+       * user changes layout option, this will be updated locally to track which
+       * option the user has selected (currentSelected.layout does not change
+       * until confirmPreviewWallpaper is called).
+       * @type {?ash.personalizationApp.mojom.WallpaperLayout}
+       * @private
+       */
+      selectedLayout_: {
+        type: Number,
         value: null,
       },
     };
@@ -71,15 +103,10 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     this.watch('visible_', state => state.fullscreen);
     this.watch(
         'showLayoutOptions_',
-        state => state.currentSelected?.type ===
-            ash.personalizationApp.mojom.WallpaperType.kCustomized);
-    this.watch(
-        'showDailyRefresh_',
-        state => state.currentSelected?.type ===
-                ash.personalizationApp.mojom.WallpaperType.kDaily &&
-            state.dailyRefresh.collectionId && !state.pendingSelected);
-    this.watch('showConfirm_', state => !!state.pendingSelected);
-    this.watch('image_', state => state.currentSelected);
+        state => state.pendingSelected?.hasOwnProperty('path'));
+    this.watch('currentSelected_', state => state.currentSelected);
+    this.watch('pendingSelected_', state => state.pendingSelected);
+    this.watch('localImageData_', state => state.local.data);
     window.addEventListener('beforeunload', () => {
       // Attempt to cancel preview in the scenario the user exits wallpaper
       // picker by pressing CTRL + W while preview is still enabled.
@@ -110,11 +137,13 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   onVisibleChanged_(value) {
     if (value) {
       // Should only reach here if there is a valid image selected.
-      assert(!!this.getState().currentSelected);
+      assert(!!this.currentSelected_);
     }
     if (value && !this.getFullscreenElement()) {
+      this.selectedLayout_ = this.currentSelected_.layout;
       this.shadowRoot.getElementById('container').requestFullscreen();
     } else if (!value && this.getFullscreenElement()) {
+      this.selectedLayout_ = null;
       this.exitFullscreen();
     }
   }
@@ -130,7 +159,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       // This call is no-op when the user clicks on exit button or set as
       // wallpaper button.
       cancelPreviewWallpaper(this.wallpaperProvider_);
-      this.dispatch(setFullscreenEnabledAction(/*enabled=*/false));
+      this.dispatch(setFullscreenEnabledAction(/*enabled=*/ false));
     }
   }
 
@@ -150,21 +179,41 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
    * @param {!Event} event
    * @private
    */
-  onClickLayout_(event) {
+  async onClickLayout_(event) {
+    assert(this.pendingSelected_?.hasOwnProperty('path'));
     const layout = getWallpaperLayoutEnum(event.currentTarget.dataset.layout);
-    setCustomWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
+    await selectWallpaper(
+        /** @type {!DisplayableImage} */ (this.pendingSelected_),
+        this.wallpaperProvider_, this.getStore(), layout);
+    this.selectedLayout_ = layout;
   }
 
   /**
-   * @param {?ash.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {?ash.personalizationApp.mojom.WallpaperLayout} selectedLayout
    * @param {string} str
    * @return {string}
    * @private
    */
-  getLayoutAriaSelected_(image, str) {
+  getLayoutAriaSelected_(selectedLayout, str) {
     assert(str === 'FILL' || str === 'CENTER');
     const layout = getWallpaperLayoutEnum(str);
-    return (image?.layout === layout).toString();
+    return (selectedLayout === layout).toString();
+  }
+
+  /**
+   * @param {?DisplayableImage} image
+   * @param {!Object<string, string>} localImageData
+   * @return {?string}
+   * @private
+   */
+  getImageUrl_(image, localImageData) {
+    if (image?.url?.url) {
+      return image.url.url;
+    }
+    if (image?.path && localImageData[image.path]) {
+      return localImageData[image.path];
+    }
+    return null;
   }
 }
 

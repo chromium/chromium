@@ -130,18 +130,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void SetUpOnMainThread();
   void TearDownOnMainThread();
 
-  // Script-generated tests will call these methods right before/after calling
-  // each action. Useful for common code that should be executed by most or all
-  // actions, such as constructing state snapshots after state change actions.
-  // Adding a before/after call around each action call may look a bit messier,
-  // but this removes a burden of remembering to execute this test-framework
-  // related code for future authors of action implementations, allowing them
-  // to focus entirely on action-related code.
-  void BeforeStateChangeAction();
-  void AfterStateChangeAction();
-  void BeforeStateCheckAction();
-  void AfterStateCheckAction();
-
   // Automated Testing Actions
   //
   // Actions are defined in the following spreadsheet:
@@ -186,7 +174,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckInstallIconNotShown();
   void CheckLaunchIconShown();
   void CheckLaunchIconNotShown();
-  void CheckManifestDisplayModeInternal(DisplayMode display_mode);
   void CheckTabCreated();
   void CheckCustomToolbar();
   void CheckUserDisplayModeInternal(DisplayMode display_mode);
@@ -201,6 +188,15 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
                                base::StringPiece old_name) override;
 
  private:
+  // Must be called at the beginning of every state change action function.
+  void BeforeStateChangeAction();
+  // Must be called at the end of every state change action function.
+  void AfterStateChangeAction();
+  // Must be called at the beginning of every state check action function.
+  void BeforeStateCheckAction();
+  // Must be called at the end of every state check action function.
+  void AfterStateCheckAction();
+
   GURL GetAppStartURL(const std::string& site_mode);
   absl::optional<AppState> GetAppBySiteMode(StateSnapshot* state_snapshot,
                                             Profile* profile,
@@ -208,7 +204,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
 
   WebAppProvider* GetProviderForProfile(Profile* profile);
 
-  StateSnapshot ConstructStateSnapshot();
+  std::unique_ptr<StateSnapshot> ConstructStateSnapshot();
 
   GURL GetAppURLForManifest(const std::string& site_mode,
                             DisplayMode display_mode);
@@ -265,7 +261,14 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   // executed, and inspected by "state check" actions to verify behavior.
   std::unique_ptr<StateSnapshot> before_state_change_action_state_;
   std::unique_ptr<StateSnapshot> after_state_change_action_state_;
-  base::flat_map<std::string, bool> site_installability_map_;
+  // Keeps track if we are currently executing an action. Updated in the
+  // `BeforeState*Action()` and `AfterState*Action()` methods, and used by the
+  // manifest update logic to ensure that the action states are appropriately
+  // kept up to date.
+  // The number represents the level of nested actions we are in (as an action
+  // can often call another action).
+  int executing_action_level_ = 0;
+
   Browser* active_browser_ = nullptr;
   Profile* active_profile_ = nullptr;
   AppId active_app_id_;

@@ -272,6 +272,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 
 void ChromePersonalizationAppUiDelegate::SelectLocalImage(
     const base::FilePath& path,
+    ash::WallpaperLayout layout,
     bool preview_mode,
     SelectLocalImageCallback callback) {
   if (local_images_.count(path) == 0) {
@@ -283,8 +284,7 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
   pending_select_local_image_callback_ = std::move(callback);
 
   WallpaperController::Get()->SetCustomWallpaper(
-      GetAccountId(), path,
-      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
+      GetAccountId(), path, layout, preview_mode,
       base::BindOnce(&ChromePersonalizationAppUiDelegate::OnLocalImageSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
 }

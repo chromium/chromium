@@ -89,7 +89,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
   void AppendToFormData(FormData&) override;
   bool SupportsFocus() const override { return HTMLElement::SupportsFocus(); }
-  // TODO(crbug.com/1121840) Add support for saving form control state
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
 

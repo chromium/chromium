@@ -598,6 +598,12 @@ void WebGPUDecoderImpl::DoRequestDevice(
   if (request_device_properties.textureCompressionBC) {
     device_descriptor.requiredFeatures.push_back("texture_compression_bc");
   }
+  if (request_device_properties.textureCompressionETC2) {
+    device_descriptor.requiredFeatures.push_back("texture-compression-etc2");
+  }
+  if (request_device_properties.textureCompressionASTC) {
+    device_descriptor.requiredFeatures.push_back("texture-compression-astc");
+  }
   if (request_device_properties.shaderFloat16) {
     device_descriptor.requiredFeatures.push_back("shader_float16");
   }

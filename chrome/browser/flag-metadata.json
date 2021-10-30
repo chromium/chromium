@@ -645,6 +645,13 @@
     "expiry_milestone": 105
   },
   {
+    "name": "cellular-bypass-esim-installation-connectivity-check",
+    "owners": [ "azeemarshad", "khorimoto", "jiajunz", "cros-connectivity@google.com" ],
+    // This flag does not expire because it allows some test cases that host a local SM-DP+ server
+    // on a network without an external connection to the internet to be able to install eSIM.
+    "expiry_milestone": -1
+  },
+  {
     "name": "cellular-forbid-attach-apn",
     "owners": [ "hsuregan", "cros-connectivity@google.com" ],
     "expiry_milestone": 100
@@ -1728,6 +1735,11 @@
     "name": "enable-default-calculator-web-app",
     "owners": [ "zafzal@google.com", "calculator-eng@google.com" ],
     "expiry_milestone": 99
+  },
+  {
+    "name": "enable-desks-templates",
+    "owners": [ "janetmac", "richui", "sammiequon" ],
+    "expiry_milestone": 110
   },
   {
     "name": "enable-desks-trackpad-swipe-improvements",
@@ -5147,6 +5159,11 @@
     "name": "tab-restore-sub-menus",
     "owners": [ "emshack", "chrome-desktop-ui-sea" ],
     "expiry_milestone": 99
+  },
+  {
+    "name": "tab-search-fuzzy-search",
+    "owners": [ "yuhengh", "chrome-cros@google.com" ],
+    "expiry_milestone": 101
   },
   {
     "name": "tabs-bulkactions-ios",

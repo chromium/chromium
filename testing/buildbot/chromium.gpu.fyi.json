@@ -1422,7 +1422,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1462,7 +1462,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1509,7 +1509,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1556,7 +1556,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1612,7 +1612,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1656,7 +1656,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1700,7 +1700,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1744,7 +1744,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1792,7 +1792,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1845,7 +1845,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1898,7 +1898,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1943,7 +1943,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -1987,7 +1987,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",
@@ -2032,7 +2032,7 @@
           "containment_type": "AUTO",
           "dimension_sets": [
             {
-              "device_os": "L",
+              "device_os": "M",
               "device_os_type": "userdebug",
               "device_type": "hammerhead",
               "os": "Android",

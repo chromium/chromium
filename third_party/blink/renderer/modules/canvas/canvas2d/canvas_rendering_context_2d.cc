@@ -348,7 +348,7 @@ void CanvasRenderingContext2D::ScrollPathIntoViewInternal(const Path& path) {
   // Apply transformation and get the bounding rect
   Path transformed_path = path;
   transformed_path.Transform(GetState().GetAffineTransform());
-  FloatRect bounding_rect = transformed_path.BoundingRect();
+  gfx::RectF bounding_rect = transformed_path.BoundingRect();
 
   // We first map canvas coordinates to layout coordinates.
   PhysicalRect path_rect = PhysicalRect::EnclosingRect(bounding_rect);
@@ -1165,7 +1165,8 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
   stroke_data.SetThickness(kFocusRingWidth);
 
   SkIRect dirty_rect;
-  if (!ComputeDirtyRect(path.StrokeBoundingRect(stroke_data), &dirty_rect))
+  if (!ComputeDirtyRect(FloatRect(path.StrokeBoundingRect(stroke_data)),
+                        &dirty_rect))
     return;
 
   DidDraw(dirty_rect, CanvasPerformanceMonitor::DrawType::kPath);

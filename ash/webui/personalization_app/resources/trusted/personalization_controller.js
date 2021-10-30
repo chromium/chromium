@@ -174,8 +174,11 @@ async function getMissingLocalImageThumbnails(provider, store) {
  *     !mojoBase.mojom.FilePath} image
  * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
+ * @param {!ash.personalizationApp.mojom.WallpaperLayout=} layout
  */
-export async function selectWallpaper(image, provider, store) {
+export async function selectWallpaper(
+    image, provider, store,
+    layout = ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped) {
   // Batch these changes together to reduce polymer churn as multiple state
   // fields change quickly.
   store.beginBatchUpdate();
@@ -195,6 +198,7 @@ export async function selectWallpaper(image, provider, store) {
     } else if (image.path) {
       return provider.selectLocalImage(
           /** @type {!mojoBase.mojom.FilePath} */ (image),
+          /** @type {!ash.personalizationApp.mojom.WallpaperLayout} */ (layout),
           /*preview_mode=*/ shouldPreview);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');

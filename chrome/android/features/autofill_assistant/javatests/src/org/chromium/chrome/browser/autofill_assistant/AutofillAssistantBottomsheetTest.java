@@ -104,8 +104,7 @@ public class AutofillAssistantBottomsheetTest {
         return new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Bottomsheet behaviour")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 actionsList);
     }
@@ -340,8 +339,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -387,8 +385,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -417,8 +414,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -459,8 +455,7 @@ public class AutofillAssistantBottomsheetTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("bottomsheet_behaviour_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

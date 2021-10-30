@@ -47,6 +47,11 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
   static std::unique_ptr<WebContentsVideoCaptureDevice> Create(
       const std::string& device_id);
 
+  // VideoCaptureDevice overrides.
+  void Crop(
+      const base::Token& crop_id,
+      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) final;
+
   // For testing, we need the ability to create a device without its tracker.
  protected:
   WebContentsVideoCaptureDevice();

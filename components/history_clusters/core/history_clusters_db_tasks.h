@@ -28,6 +28,11 @@ class GetAnnotatedVisitsToCluster : public history::HistoryDBTask {
   using Callback = base::OnceCallback<void(std::vector<history::AnnotatedVisit>,
                                            base::Time)>;
 
+  // For a given `end_time`, this returns an appropriate beginning time
+  // designed to avoid breaking up internet browsing sessions. In the morning,
+  // it returns 4AM the previous day. In the afternoon, it returns 4AM today.
+  static base::Time GetBeginTimeOnDayBoundary(base::Time end_time);
+
   GetAnnotatedVisitsToCluster(
       HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
       base::Time end_time,

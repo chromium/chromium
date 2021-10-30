@@ -52,8 +52,8 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
   absl::optional<float> IntrinsicWidth() const;
   absl::optional<float> IntrinsicHeight() const;
-  FloatSize CurrentViewportSize() const;
-  FloatRect CurrentViewBoxRect() const;
+  gfx::SizeF CurrentViewportSize() const;
+  gfx::RectF CurrentViewBoxRect() const;
   bool HasEmptyViewBox() const;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const;
 
@@ -98,7 +98,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
   static SVGTransformTearOff* createSVGTransform();
   static SVGTransformTearOff* createSVGTransformFromMatrix(SVGMatrixTearOff*);
 
-  AffineTransform ViewBoxToViewTransform(const FloatSize& viewport_size) const;
+  AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
   void SetupInitialView(const String& fragment_identifier,
                         Element* anchor_node);
@@ -143,10 +143,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
   enum GeometryMatchingMode { kCheckIntersection, kCheckEnclosure };
 
   bool CheckIntersectionOrEnclosure(const SVGElement&,
-                                    const FloatRect&,
+                                    const gfx::RectF&,
                                     GeometryMatchingMode) const;
   StaticNodeList* CollectIntersectionOrEnclosureList(
-      const FloatRect&,
+      const gfx::RectF&,
       SVGElement*,
       GeometryMatchingMode) const;
 

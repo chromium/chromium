@@ -117,8 +117,9 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     if (sub_target->is_subtree_capture_id()) {
       subtree_id = sub_target->get_subtree_capture_id();
     }
-    MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget{
-        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_id});
+    MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget(
+        frame_sink_id.value_or(viz::FrameSinkId{}), subtree_id,
+        /*crop_id=*/base::Token()));
   }
   MOCK_METHOD1(
       MockChangeTarget,
@@ -350,8 +351,9 @@ class FrameSinkVideoCaptureDeviceTest : public testing::Test {
     EXPECT_CALL(capturer_, SetMinCapturePeriod(kMinCapturePeriod));
     EXPECT_CALL(capturer_,
                 SetResolutionConstraints(kResolution, kResolution, _));
-    FrameSinkVideoCaptureDevice::VideoCaptureTarget target{
-        .frame_sink_id = {1, 1}};
+    FrameSinkVideoCaptureDevice::VideoCaptureTarget target(
+        viz::FrameSinkId{1, 1}, viz::SubtreeCaptureId(),
+        /*crop_id=*/base::Token());
     EXPECT_CALL(capturer_, MockChangeTarget(target));
     EXPECT_CALL(capturer_, MockStart(NotNull()));
 
@@ -602,7 +604,7 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   {
     EXPECT_CALL(
         capturer_,
-        MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget{}));
+        MockChangeTarget(FrameSinkVideoCaptureDevice::VideoCaptureTarget()));
     EXPECT_CALL(capturer_, MockStop());
     POST_DEVICE_METHOD_CALL0(OnTargetPermanentlyLost);
     WAIT_FOR_DEVICE_TASKS();

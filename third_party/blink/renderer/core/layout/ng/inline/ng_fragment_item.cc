@@ -357,21 +357,22 @@ void NGFragmentItem::SetSvgLineLocalRect(const PhysicalRect& unscaled_rect) {
   rect_ = unscaled_rect;
 }
 
-FloatRect NGFragmentItem::ObjectBoundingBox(
+gfx::RectF NGFragmentItem::ObjectBoundingBox(
     const NGFragmentItems& items) const {
   DCHECK_EQ(Type(), kSvgText);
   const Font scaled_font = ScaledFont();
-  FloatRect ink_bounds = scaled_font.TextInkBounds(TextPaintInfo(items));
+  gfx::RectF ink_bounds =
+      ToGfxRectF(scaled_font.TextInkBounds(TextPaintInfo(items)));
   if (const auto* font_data = scaled_font.PrimaryFont())
     ink_bounds.Offset(0.0f, font_data->GetFontMetrics().FloatAscent());
   ink_bounds.Scale(SvgFragmentData()->length_adjust_scale, 1.0f);
-  const FloatRect& scaled_rect = SvgFragmentData()->rect;
+  const gfx::RectF& scaled_rect = SvgFragmentData()->rect;
   if (!IsHorizontal()) {
     ink_bounds =
-        FloatRect(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
-                  ink_bounds.height(), ink_bounds.width());
+        gfx::RectF(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
+                   ink_bounds.height(), ink_bounds.width());
   }
-  ink_bounds.MoveBy(scaled_rect.origin());
+  ink_bounds.Offset(scaled_rect.OffsetFromOrigin());
   ink_bounds.Union(scaled_rect);
   if (HasSvgTransformForBoundingBox())
     ink_bounds = BuildSvgTransformForBoundingBox().MapRect(ink_bounds);
@@ -381,8 +382,8 @@ FloatRect NGFragmentItem::ObjectBoundingBox(
 
 FloatQuad NGFragmentItem::SvgUnscaledQuad() const {
   DCHECK_EQ(Type(), kSvgText);
-  FloatQuad quad =
-      BuildSvgTransformForBoundingBox().MapQuad(SvgFragmentData()->rect);
+  FloatQuad quad = BuildSvgTransformForBoundingBox().MapQuad(
+      FloatRect(SvgFragmentData()->rect));
   const float scaling_factor = SvgScalingFactor();
   quad.Scale(1 / scaling_factor, 1 / scaling_factor);
   return quad;
@@ -407,17 +408,15 @@ float NGFragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
          SvgFragmentData()->length_adjust_scale;
 }
 
-bool NGFragmentItem::InclusiveContains(const FloatPoint& position) const {
+bool NGFragmentItem::InclusiveContains(const gfx::PointF& position) const {
   DCHECK_EQ(Type(), kSvgText);
-  const float scaling_factor = SvgScalingFactor();
-  FloatPoint scaled_position = position;
-  scaled_position.Scale(scaling_factor, scaling_factor);
-  FloatRect item_rect = SvgFragmentData()->rect;
+  gfx::PointF scaled_position = gfx::ScalePoint(position, SvgScalingFactor());
+  const gfx::RectF& item_rect = SvgFragmentData()->rect;
   if (!HasSvgTransformForBoundingBox())
     return item_rect.InclusiveContains(scaled_position);
   return BuildSvgTransformForBoundingBox()
-      .MapQuad(FloatQuad(item_rect))
-      .ContainsPoint(scaled_position);
+      .MapQuad(gfx::QuadF(item_rect))
+      .Contains(scaled_position);
 }
 
 bool NGFragmentItem::HasNonVisibleOverflow() const {

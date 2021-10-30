@@ -1404,6 +1404,21 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      base::size(kMinimumTabWidthSettingFull), nullptr}};
 
+const FeatureEntry::FeatureParam kTabSearchSearchThresholdSmall[] = {
+    {features::kTabSearchSearchThresholdName, "0.3"}};
+const FeatureEntry::FeatureParam kTabSearchSearchThresholdMedium[] = {
+    {features::kTabSearchSearchThresholdName, "0.6"}};
+const FeatureEntry::FeatureParam kTabSearchSearchThresholdLarge[] = {
+    {features::kTabSearchSearchThresholdName, "0.8"}};
+
+const FeatureEntry::FeatureVariation kTabSearchSearchThresholdVariations[] = {
+    {" - fuzzy level: small", kTabSearchSearchThresholdSmall,
+     base::size(kTabSearchSearchThresholdSmall), nullptr},
+    {" - fuzzy level: medium", kTabSearchSearchThresholdMedium,
+     base::size(kTabSearchSearchThresholdMedium), nullptr},
+    {" - fuzzy level: large", kTabSearchSearchThresholdLarge,
+     base::size(kTabSearchSearchThresholdLarge), nullptr}};
+
 const FeatureEntry::FeatureParam kTabHoverCardImagesAlternateFormat[] = {
     {features::kTabHoverCardAlternateFormat, "1"}};
 
@@ -3100,6 +3115,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"calendar-view", flag_descriptions::kCalendarViewName,
      flag_descriptions::kCalendarViewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCalendarView)},
+    {"cellular-bypass-esim-installation-connectivity-check",
+     flag_descriptions::kCellularBypassESimInstallationConnectivityCheckName,
+     flag_descriptions::
+         kCellularBypassESimInstallationConnectivityCheckDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kCellularBypassESimInstallationConnectivityCheck)},
     {"cellular-forbid-attach-apn",
      flag_descriptions::kCellularForbidAttachApnName,
      flag_descriptions::kCellularForbidAttachApnDescription, kOsCrOS,
@@ -7377,6 +7399,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabRestoreSubMenusDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabRestoreSubMenus)},
 
+    {"tab-search-fuzzy-search", flag_descriptions::kTabSearchFuzzySearchName,
+     flag_descriptions::kTabSearchFuzzySearchDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabSearchFuzzySearch,
+                                    kTabSearchSearchThresholdVariations,
+                                    "TabSearchFuzzySearch")},
+
     {"chrome-whats-new-ui", flag_descriptions::kChromeWhatsNewUIName,
      flag_descriptions::kChromeWhatsNewUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kChromeWhatsNewUI)},
@@ -7698,6 +7726,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextMenuPopupStyleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupStyle)},
 #endif  // defined(OS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-desks-templates", flag_descriptions::kDesksTemplatesName,
+     flag_descriptions::kDesksTemplatesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kDesksTemplates)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

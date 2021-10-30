@@ -125,7 +125,7 @@ void WebrtcFrameSchedulerSimple::OnFrameCaptured(
 
 void WebrtcFrameSchedulerSimple::OnFrameEncoded(
     WebrtcVideoEncoder::EncodeResult encode_result,
-    WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
+    const WebrtcVideoEncoder::EncodedFrame* encoded_frame) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   base::TimeTicks now = tick_clock_->NowTicks();
@@ -208,7 +208,6 @@ void WebrtcFrameSchedulerSimple::CaptureNextFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!frame_pending_);
   last_capture_started_time_ = tick_clock_->NowTicks();
-  processing_time_estimator_.StartFrame();
   frame_pending_ = true;
   capture_callback_.Run();
 }

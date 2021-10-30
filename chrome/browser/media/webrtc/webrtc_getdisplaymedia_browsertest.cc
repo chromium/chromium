@@ -410,8 +410,14 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_pair(GetDisplayMediaVariant::kPreferCurrentTab,
                                    /*allowlisted_by_policy=*/true)));
 
+// Flaky on Win bots http://crbug.com/1264805
+#if defined(OS_WIN)
+#define MAYBE_ScreenShareFromEmbedded DISABLED_ScreenShareFromEmbedded
+#else
+#define MAYBE_ScreenShareFromEmbedded ScreenShareFromEmbedded
+#endif
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
-                       ScreenShareFromEmbedded) {
+                       MAYBE_ScreenShareFromEmbedded) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const std::string constraints =

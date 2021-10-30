@@ -5,6 +5,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_ios_constants.h"
+#include "components/policy/policy_constants.h"
+#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
@@ -129,9 +132,10 @@ GREYLayoutConstraint* BelowConstraint() {
 }
 
 - (void)tearDown {
-  [super tearDown];
+  [PolicyAppInterface clearPolicies];
   [FirstRunAppInterface setUMACollectionEnabled:NO];
   [FirstRunAppInterface resetUMACollectionEnabledByDefault];
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -210,6 +214,9 @@ GREYLayoutConstraint* BelowConstraint() {
           grey_accessibilityID(
               first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Scrolls down to |elementMatcher| in the scrollable content of the first run
@@ -785,6 +792,26 @@ GREYLayoutConstraint* BelowConstraint() {
   GREYAssertFalse([FirstRunAppInterface isUMACollectionEnabled],
                   @"kMetricsReportingEnabled pref was unexpectedly true after "
                   @"leaving the UMA checkbox unchecked.");
+}
+
+// Checks that the sync screen doesn't appear when the SyncDisabled policy is
+// enabled.
+- (void)testSyncDisabled {
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+
+  // Go to the sign-in screen.
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  // Don't sign-in.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
+      performAction:grey_tap()];
+
+  // The Sync screen should not be displayed, so the NTP should be visible.
+  [self verifyFREIsDismissed];
 }
 
 @end

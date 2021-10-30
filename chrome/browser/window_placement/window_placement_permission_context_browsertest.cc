@@ -29,7 +29,11 @@ namespace {
 
 constexpr char kGetScreens[] = R"(
   (async () => {
-    try { const screens = await self.getScreens(); } catch { return 'error'; }
+    try {
+      const screenDetails = await self.getScreenDetails();
+    } catch {
+      return 'error';
+    }
     return (await navigator.permissions.query({name:'window-placement'})).state;
   })();
 )";
@@ -134,21 +138,23 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, GestureToPrompt) {
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
 
-  // Calling getScreens() without a gesture or pre-existing permission will not
-  // prompt the user, and leaves the permission in the default "prompt" state.
+  // Calling getScreenDetails() without a gesture or pre-existing permission
+  // will not prompt the user, and leaves the permission in the default "prompt"
+  // state.
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
   EXPECT_EQ("error",
             EvalJs(tab, kGetScreens, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission,
                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  // Calling getScreens() with a gesture will show the prompt, and auto-accept.
+  // Calling getScreenDetails() with a gesture will show the prompt, and
+  // auto-accept.
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
   EXPECT_EQ("granted", EvalJs(tab, kGetScreens));
   EXPECT_TRUE(tab->GetMainFrame()->HasTransientUserActivation());
 
-  // Calling getScreens() without a gesture, but with pre-existing permission,
-  // will succeed, since it does not need to prompt the user.
+  // Calling getScreenDetails() without a gesture, but with pre-existing
+  // permission, will succeed, since it does not need to prompt the user.
   WaitForUserActivationExpiry();
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
   EXPECT_EQ("granted",
@@ -166,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, DismissAndDeny) {
       permissions::PermissionRequestManager::FromWebContents(tab);
 
   // Dismiss the prompt after activation expires, expect no activation.
-  ExecuteScriptAsync(tab, "getScreens()");
+  ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Closing();
@@ -175,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, DismissAndDeny) {
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
 
   // Deny the prompt after activation expires, expect no activation.
-  ExecuteScriptAsync(tab, "getScreens()");
+  ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Deny();
@@ -194,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, Accept) {
       permissions::PermissionRequestManager::FromWebContents(tab);
 
   // Accept the prompt after activation expires, expect an activation signal.
-  ExecuteScriptAsync(tab, "getScreens()");
+  ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Accept();
@@ -218,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
       permissions::PermissionRequestManager::FromWebContents(tab);
 
   // Accept the prompt after activation expires, expect an activation signal.
-  ExecuteScriptAsync(child, "getScreens()");
+  ExecuteScriptAsync(child, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Accept();
@@ -281,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
       permissions::PermissionRequestManager::FromWebContents(tab);
 
   // Accept the prompt after activation expires, expect an activation signal.
-  ExecuteScriptAsync(child, "getScreens()");
+  ExecuteScriptAsync(child, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Accept();

@@ -105,7 +105,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="logo_service"/>
       <traffic_annotation unique_id="ssl_name_mismatch_lookup"/>
       <traffic_annotation unique_id="ui_devtools_server"/>
-      <traffic_annotation unique_id="appcache_update_job"/>
       <traffic_annotation unique_id="background_fetch_context"/>
       <traffic_annotation unique_id="devtools_proxy_config"/>
       <traffic_annotation unique_id="tethering_handler_socket"/>

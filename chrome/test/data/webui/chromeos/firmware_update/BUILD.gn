@@ -50,6 +50,7 @@ js_library("peripheral_updates_list_test") {
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:mojo_interface_provider",
     "//ash/webui/firmware_update_ui/resources:peripheral_updates_list",
+    "//ash/webui/firmware_update_ui/resources:update_card",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -58,6 +59,7 @@ js_library("update_card_test") {
   deps = [
     "../..:chai_assert",
     "../..:test_util",
+    "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:update_card",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

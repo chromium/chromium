@@ -145,7 +145,8 @@ class ContentIndexDatabaseTest : public ::testing::Test {
     base::RunLoop run_loop;
     blink::mojom::ContentIndexError error;
     database_->AddEntry(
-        service_worker_registration_id_, origin_, std::move(description),
+        service_worker_registration_id_, origin_,
+        /* is_top_level_context= */ true, std::move(description),
         std::move(icons), launch_url(),
         base::BindOnce(&DatabaseErrorCallback, run_loop.QuitClosure(), &error));
     run_loop.Run();

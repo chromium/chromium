@@ -374,7 +374,14 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OpenInChrome) {
 }
 
 // Check the 'App info' menu button for web app windows.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppInfoOpensPageInfo) {
+#if defined(OS_LINUX)
+// Disabled on Linux because the test only completes unless unrelated
+// events are received to wake up the message loop.
+#define MAYBE_AppInfoOpensPageInfo DISABLED_AppInfoOpensPageInfo
+#else
+#define MAYBE_AppInfoOpensPageInfo AppInfoOpensPageInfo
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_AppInfoOpensPageInfo) {
   const GURL app_url(kExampleURL);
   const AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowser(app_id);

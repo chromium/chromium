@@ -6,12 +6,15 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
@@ -21,6 +24,8 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 using ViewFactoryTest = views::test::WidgetTest;
 
@@ -184,4 +189,21 @@ TEST_F(ViewFactoryTest, TestViewBuilderArbitraryMethod) {
   EXPECT_EQ(view->get_int_param(), 10);
   EXPECT_EQ(view->get_float_param(), 5.5);
   EXPECT_EQ(view->get_property_effects(), views::kPropertyEffectsLayout);
+}
+
+TEST_F(ViewFactoryTest, TestViewBuilderCustomConfigure) {
+  views::UniqueWidgetPtr widget =
+      base::WrapUnique(CreateTopLevelPlatformWidget());
+  auto* view = widget->GetContentsView()->AddChildView(
+      views::Builder<internal::TestView>()
+          .CustomConfigure(base::BindOnce([](internal::TestView* view) {
+            view->SetEnabled(false);
+            view->GetViewAccessibility().OverridePosInSet(5, 10);
+          }))
+          .Build());
+  EXPECT_FALSE(view->GetEnabled());
+  ui::AXNodeData node_data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 5);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 10);
 }

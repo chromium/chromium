@@ -381,7 +381,7 @@ export class PasswordSectionElementFactory {
    * @param {Array<!MultiStorePasswordUiEntry>=} passwords
    * @return {!Object}
    */
-  createPasswordEditDialog(passwordEntry = null, passwords = []) {
+  createPasswordEditDialog(passwordEntry = null, passwords) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
     passwordDialog.existingEntry = passwordEntry;
     if (passwordEntry && !passwordEntry.federationText) {
@@ -390,7 +390,8 @@ export class PasswordSectionElementFactory {
       // edit dialog.
       passwordDialog.existingEntry.password = 'password';
     }
-    passwordDialog.savedPasswords = passwords;
+    passwordDialog.savedPasswords =
+        passwords || (passwordEntry ? [passwordEntry] : []);
     this.document.body.appendChild(passwordDialog);
     flush();
     return passwordDialog;

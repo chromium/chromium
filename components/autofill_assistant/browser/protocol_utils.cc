@@ -97,16 +97,6 @@ void ProtocolUtils::AddScript(const SupportedScriptProto& script_proto,
   } else {
     script->handle.autostart = presentation.autostart();
   }
-  if (script->handle.autostart) {
-    // Autostartable scripts without chip text must be skipped,
-    // but these chips must never be shown.
-    if (presentation.chip().text().empty()) {
-      return;
-    }
-  } else {
-    script->handle.initial_prompt = presentation.initial_prompt();
-    script->handle.chip = Chip(presentation.chip());
-  }
   script->handle.direct_action = DirectAction(presentation.direct_action());
   script->handle.start_message = presentation.start_message();
   script->handle.needs_ui = presentation.needs_ui();

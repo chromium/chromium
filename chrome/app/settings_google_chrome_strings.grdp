@@ -138,6 +138,12 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_SUB_HEADER" desc="A subheader shown at on the welcome card in the privacy review, explaining to users that Chrome has default settings but they can customize them if they like.">
     The default settings work for most people, but you can customize them to fit how you like to use Chrome
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy review.">
+    Checks URLs with a list of unsafe sites stored in Chrome
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the privacy review.">
+    If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing
+  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_PARENT_PRIMARY_LABEL_BEFORE" desc="This text describes what the safety check is. (It's an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.)">

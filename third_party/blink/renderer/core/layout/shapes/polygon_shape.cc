@@ -49,7 +49,7 @@ static inline gfx::Vector2dF OutwardEdgeNormal(const FloatPolygonEdge& edge) {
   return -InwardEdgeNormal(edge);
 }
 
-static inline bool OverlapsYRange(const FloatRect& rect, float y1, float y2) {
+static inline bool OverlapsYRange(const gfx::RectF& rect, float y1, float y2) {
   return !rect.IsEmpty() && y2 >= y1 && y2 >= rect.y() && y1 <= rect.bottom();
 }
 
@@ -119,7 +119,7 @@ static FloatShapeInterval ClippedCircleXRange(const gfx::PointF& center,
 }
 
 LayoutRect PolygonShape::ShapeMarginLogicalBoundingBox() const {
-  FloatRect box = polygon_.BoundingBox();
+  gfx::RectF box = polygon_.BoundingBox();
   box.Outset(ShapeMargin());
   return LayoutRect(box);
 }

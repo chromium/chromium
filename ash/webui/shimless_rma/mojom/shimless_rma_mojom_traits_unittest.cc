@@ -273,14 +273,17 @@ TEST_F(ShimlessRmaMojoToProtoTest, RepairStatesMatch) {
   TestMojoToProto(enums);
 }
 
-TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStepsMatch) {
-  constexpr auto enums =
-      base::MakeFixedFlatMap<mojom::ProvisioningStep,
-                             rmad::ProvisionDeviceState::ProvisioningStep>(
-          {{mojom::ProvisioningStep::kInProgress,
-            rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS},
-           {mojom::ProvisioningStep::kProvisioningComplete,
-            rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE}});
+TEST_F(ShimlessRmaMojoToProtoTest, ProvisioningStatusMatch) {
+  constexpr auto enums = base::MakeFixedFlatMap<mojom::ProvisioningStatus,
+                                                rmad::ProvisionStatus::Status>(
+      {{mojom::ProvisioningStatus::kInProgress,
+        rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS},
+       {mojom::ProvisioningStatus::kComplete,
+        rmad::ProvisionStatus::RMAD_PROVISION_STATUS_COMPLETE},
+       {mojom::ProvisioningStatus::kFailedBlocking,
+        rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING},
+       {mojom::ProvisioningStatus::kFailedNonBlocking,
+        rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_NON_BLOCKING}});
 
   TestProtoToMojo(enums);
   TestMojoToProto(enums);

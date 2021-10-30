@@ -140,22 +140,22 @@ void MaybeDecodeImageFileAndCopyToClipboard(
   std::string html = base::StrCat(
       {kImageClipboardFormatPrefix, encoded, kImageClipboardFormatSuffix});
 
-  // Convert string PNG data to more useful vector of bytes.
-  std::vector<uint8_t> png_bytes(png_data->data().begin(),
-                                 png_data->data().end());
-
   if (!maintain_clipboard ||
       !ui::ClipboardNonBacked::GetForCurrentThread()->GetClipboardData(
           nullptr)) {
     // Decode the image in sandboxed process because |png_data| comes from
     // external storage.
     data_decoder::DecodeImageIsolated(
-        std::move(png_bytes), data_decoder::mojom::ImageCodec::kDefault,
+        base::as_bytes(base::make_span(png_data->data())),
+        data_decoder::mojom::ImageCodec::kDefault,
         /*shrink_to_fit=*/false, data_decoder::kDefaultMaxSizeInBytes,
         gfx::Size(),
         base::BindOnce(&CopyDecodedImageToClipboard, clipboard_sequence,
                        std::move(callback), std::move(html)));
   } else {
+    // Convert string PNG data to a vector of bytes.
+    std::vector<uint8_t> png_bytes(png_data->data().begin(),
+                                   png_data->data().end());
     // Skip image decoding and write the PNG bytes directly to the clipboard.
     CopyImageToClipboard(clipboard_sequence, std::move(callback),
                          std::move(html), std::move(png_bytes));

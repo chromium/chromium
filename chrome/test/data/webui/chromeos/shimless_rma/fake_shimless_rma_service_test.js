@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, RmaState, WriteProtectDisableCompleteState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -404,6 +404,21 @@ export function fakeShimlessRmaServiceTestSuite() {
     return service.reworkMainboard().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    });
+  });
+
+  test('GetWriteProtectDisableCompleteStateDefaultUndefined', () => {
+    return service.getWriteProtectDisableCompleteState().then((res) => {
+      assertEquals(undefined, res);
+    });
+  });
+
+  test('SetGetWriteProtectDisableCompleteStateUpdatesState', () => {
+    service.setGetWriteProtectDisableCompleteState(
+        WriteProtectDisableCompleteState.kCompleteKeepDeviceOpen);
+    return service.getWriteProtectDisableCompleteState().then((res) => {
+      assertEquals(
+          WriteProtectDisableCompleteState.kCompleteKeepDeviceOpen, res.state);
     });
   });
 
@@ -848,17 +863,17 @@ export function fakeShimlessRmaServiceTestSuite() {
     const provisioningObserver = /** @type {!ProvisioningObserverRemote} */ ({
       /**
        * Implements ProvisioningObserverRemote.onProvisioningUpdated()
-       * @param {!ProvisioningStep} step
+       * @param {!ProvisioningStatus} status
        * @param {number} progress
        */
-      onProvisioningUpdated(step, progress) {
-        assertEquals(step, ProvisioningStep.kInProgress);
+      onProvisioningUpdated(status, progress) {
+        assertEquals(status, ProvisioningStatus.kInProgress);
         assertEquals(progress, 0.25);
       }
     });
     service.observeProvisioningProgress(provisioningObserver);
     return service.triggerProvisioningObserver(
-        ProvisioningStep.kInProgress, 0.25, 0);
+        ProvisioningStatus.kInProgress, 0.25, 0);
   });
 
   test('ObserveHardwareWriteProtectionStateChange', () => {
@@ -894,6 +909,26 @@ export function fakeShimlessRmaServiceTestSuite() {
         });
     service.observePowerCableState(powerCableStateObserver);
     return service.triggerPowerCableObserver(true, 0);
+  });
+
+  test('ObserveHardwareVerificationStatus', () => {
+    /** @type {!HardwareVerificationStatusObserverRemote} */
+    const observer =
+        /** @type {!HardwareVerificationStatusObserverRemote} */ ({
+          /**
+           * Implements
+           * HardwareVerificationStatusObserverRemote.
+           *      onHardwareVerificationResult()
+           * @param {boolean} is_compliant
+           * @param {string} error_message
+           */
+          onHardwareVerificationResult(is_compliant, error_message) {
+            assertEquals(true, is_compliant);
+            assertEquals('ok', error_message);
+          }
+        });
+    service.observeHardwareVerificationStatus(observer);
+    return service.triggerHardwareVerificationStatusObserver(true, 'ok', 0);
   });
 
   test('ObserveFinalizationStatus', () => {

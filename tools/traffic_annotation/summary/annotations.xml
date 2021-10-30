@@ -17,7 +17,7 @@ Refer to README.md for content description and update process.
  <item id="aggregation_service_report" added_in_milestone="95" hash_code="95942194" type="0" content_hash_code="44673922" os_list="linux,windows" file_path="content/browser/aggregation_service/aggregatable_report_sender.cc"/>
  <item id="android_device_manager_socket" added_in_milestone="65" hash_code="37249086" type="0" content_hash_code="6436865" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_device_manager.cc"/>
  <item id="android_web_socket" added_in_milestone="65" hash_code="39356976" type="0" content_hash_code="12310113" os_list="linux,windows" file_path="chrome/browser/devtools/device/android_web_socket.cc"/>
- <item id="appcache_update_job" added_in_milestone="62" hash_code="25790702" type="0" content_hash_code="27424887" os_list="linux,windows" file_path="content/browser/appcache/appcache_update_url_loader_request.cc"/>
+ <item id="appcache_update_job" added_in_milestone="62" hash_code="25790702" type="0" deprecated="2021-10-27" content_hash_code="27424887" file_path=""/>
  <item id="auction_downloader" added_in_milestone="92" hash_code="27833508" type="0" content_hash_code="118747666" os_list="linux,windows" file_path="content/services/auction_worklet/auction_downloader.cc"/>
  <item id="auction_report_sender" added_in_milestone="92" hash_code="96136865" type="0" content_hash_code="62368950" os_list="linux,windows" file_path="content/browser/interest_group/ad_auction_service_impl.cc"/>
  <item id="autofill_image_fetcher_card_art_image" added_in_milestone="93" hash_code="90561372" type="0" content_hash_code="24622412" os_list="linux,windows" file_path="components/autofill/core/browser/ui/autofill_image_fetcher.cc"/>

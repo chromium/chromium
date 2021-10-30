@@ -58,6 +58,11 @@ WidgetDelegate::WidgetDelegate()
 
 WidgetDelegate::~WidgetDelegate() {
   CHECK(can_delete_this_) << "A WidgetDelegate must outlive its Widget";
+  if (!contents_view_taken_ && default_contents_view_ &&
+      !default_contents_view_->parent()) {
+    delete default_contents_view_;
+    default_contents_view_ = nullptr;
+  }
   if (destructor_ran_) {
     DCHECK(!*destructor_ran_);
     *destructor_ran_ = true;

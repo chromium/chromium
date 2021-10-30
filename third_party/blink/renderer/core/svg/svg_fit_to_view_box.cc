@@ -70,9 +70,9 @@ void SVGFitToViewBox::Trace(Visitor* visitor) const {
 }
 
 AffineTransform SVGFitToViewBox::ViewBoxToViewTransform(
-    const FloatRect& view_box_rect,
+    const gfx::RectF& view_box_rect,
     const SVGPreserveAspectRatio* preserve_aspect_ratio,
-    const FloatSize& viewport_size) {
+    const gfx::SizeF& viewport_size) {
   if (view_box_rect.IsEmpty() || viewport_size.IsEmpty())
     return AffineTransform();
   return preserve_aspect_ratio->ComputeTransform(view_box_rect, viewport_size);

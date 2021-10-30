@@ -43,6 +43,9 @@ class MODULES_EXPORT Sanitizer final : public ScriptWrappable {
   SanitizerConfig* getConfiguration() const;
   static SanitizerConfig* getDefaultConfiguration();
 
+  // Get a (shared) Sanitizer instance with the default configuration.
+  static Sanitizer* getDefaultInstance();
+
   // Implementation of ElementSanitizer::SetHTML, so that we have
   // all the sanitizer logic in one place.
   void ElementSetHTML(ScriptState* script_state,

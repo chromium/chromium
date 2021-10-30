@@ -30,18 +30,14 @@ namespace {
 
 using test::AppListTestViewDelegate;
 
-void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+void AddSearchResultToModel(const std::string& id,
+                            AppListSearchResultType type,
+                            SearchModel* model) {
   auto result = std::make_unique<TestSearchResult>();
   result->set_result_id(id);
   result->set_result_type(type);
   result->set_display_type(SearchResultDisplayType::kContinue);
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
-      std::move(result));
-}
-
-void RemoveSearchResultAt(size_t index) {
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->RemoveAt(
-      index);
+  model->results()->Add(std::move(result));
 }
 
 void ShowAppList() {
@@ -62,8 +58,17 @@ class ContinueSectionViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetContinueSectionView();
   }
 
+  void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+    AddSearchResultToModel(id, type,
+                           AppListModelProvider::Get()->search_model());
+  }
+
+  void RemoveSearchResultAt(size_t index) {
+    GetAppListTestHelper()->GetSearchResults()->RemoveAt(index);
+  }
+
   SearchModel::SearchResults* GetResults() {
-    return Shell::Get()->app_list_controller()->GetSearchModel()->results();
+    return GetAppListTestHelper()->GetSearchResults();
   }
 
   SearchBoxView* GetSearchBoxView() {

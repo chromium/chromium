@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/task/default_delayed_task_handle_delegate.h"
 
 namespace base {
 
@@ -14,6 +15,26 @@ bool SequencedTaskRunner::PostNonNestableTask(const Location& from_here,
                                               OnceClosure task) {
   return PostNonNestableDelayedTask(from_here, std::move(task),
                                     base::TimeDelta());
+}
+
+DelayedTaskHandle SequencedTaskRunner::PostCancelableDelayedTask(
+    const Location& from_here,
+    OnceClosure task,
+    TimeDelta delay) {
+  auto delayed_task_handle_delegate =
+      base::MakeRefCounted<DefaultDelayedTaskHandleDelegate>();
+
+  task = delayed_task_handle_delegate->BindCallback(std::move(task));
+
+  DelayedTaskHandle delayed_task_handle(
+      std::move(delayed_task_handle_delegate));
+
+  // If the task fails to be posted, the handle will automatically be
+  // invalidated upon destruction of the callback object.
+  if (!PostDelayedTask(from_here, std::move(task), delay))
+    DCHECK(!delayed_task_handle.IsValid());
+
+  return delayed_task_handle;
 }
 
 bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(

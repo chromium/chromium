@@ -723,9 +723,10 @@ void LayoutText::AbsoluteQuadsForRange(Vector<FloatQuad>& quads,
         rect = text_combine->AdjustRectForBoundingBox(rect);
       FloatQuad quad;
       if (item.Type() == NGFragmentItem::kSvgText) {
-        FloatRect float_rect(rect);
-        float_rect.MoveBy(item.SvgFragmentData()->rect.origin());
-        quad = item.BuildSvgTransformForBoundingBox().MapQuad(float_rect);
+        gfx::RectF float_rect(rect);
+        float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
+        quad = item.BuildSvgTransformForBoundingBox().MapQuad(
+            FloatRect(float_rect));
         const float scaling_factor = item.SvgScalingFactor();
         quad.Scale(1 / scaling_factor, 1 / scaling_factor);
         quad = LocalToAbsoluteQuad(quad);
@@ -2476,7 +2477,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       if (svg_inline_text) {
         FloatRect float_rect(item_rect);
         const NGFragmentItem& item = *cursor.CurrentItem();
-        float_rect.MoveBy(item.SvgFragmentData()->rect.origin());
+        float_rect.MoveBy(FloatPoint(item.SvgFragmentData()->rect.origin()));
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
               item.BuildSvgTransformForBoundingBox().MapRect(float_rect);

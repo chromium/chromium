@@ -21,6 +21,8 @@ source_set("app_list") {
     "app_list_feature_usage_metrics.h",
     "app_list_metrics.cc",
     "app_list_metrics.h",
+    "app_list_model_provider.cc",
+    "app_list_model_provider.h",
     "app_list_presenter_event_filter.cc",
     "app_list_presenter_event_filter.h",
     "app_list_presenter_impl.cc",

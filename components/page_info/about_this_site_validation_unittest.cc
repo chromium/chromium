@@ -43,7 +43,7 @@ proto::AboutThisSiteMetadata GetSampleMetaData() {
 }
 
 // Tests that correct proto messages are accepted.
-TEST(AboutThisSiteService, ValidateProtos) {
+TEST(AboutThisSiteValidation, ValidateProtos) {
   auto metadata = GetSampleMetaData();
   EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kValid);
 
@@ -52,7 +52,7 @@ TEST(AboutThisSiteService, ValidateProtos) {
   EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kValid);
 }
 
-TEST(AboutThisSiteService, InvalidSiteInfoProto) {
+TEST(AboutThisSiteValidation, InvalidSiteInfoProto) {
   proto::AboutThisSiteMetadata metadata;
   EXPECT_EQ(ValidateMetadata(metadata), ProtoValidation::kMissingSiteInfo);
   metadata.mutable_site_info();
@@ -63,7 +63,7 @@ TEST(AboutThisSiteService, InvalidSiteInfoProto) {
             ProtoValidation::kIncompleteDescription);
 }
 
-TEST(AboutThisSiteService, InvalidDescription) {
+TEST(AboutThisSiteValidation, InvalidDescription) {
   proto::SiteDescription description = GetSampleDescription();
   description.clear_description();
   EXPECT_EQ(ValidateDescription(description),
@@ -85,7 +85,7 @@ TEST(AboutThisSiteService, InvalidDescription) {
             ProtoValidation::kIncompleteDescription);
 }
 
-TEST(AboutThisSiteService, InvalidSource) {
+TEST(AboutThisSiteValidation, InvalidSource) {
   proto::Hyperlink source = GetSampleSource();
   source.clear_label();
   EXPECT_EQ(ValidateSource(source), ProtoValidation::kIncompleteSource);
@@ -102,7 +102,7 @@ TEST(AboutThisSiteService, InvalidSource) {
   EXPECT_EQ(ValidateSource(source), ProtoValidation::kInvalidSource);
 }
 
-TEST(AboutThisSiteService, InvalidFirstSeenDuration) {
+TEST(AboutThisSiteValidation, InvalidFirstSeenDuration) {
   proto::SiteFirstSeen first_seen = GetSampleFirstSeen();
   first_seen.clear_count();
   EXPECT_EQ(ValidateFirstSeen(first_seen),

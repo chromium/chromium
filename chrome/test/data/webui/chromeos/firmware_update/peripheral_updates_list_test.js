@@ -7,8 +7,9 @@ import {FakeUpdateProvider} from 'chrome://accessory-update/fake_update_provider
 import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update_types.js';
 import {setUpdateProviderForTesting} from 'chrome://accessory-update/mojo_interface_provider.js';
 import {PeripheralUpdateListElement} from 'chrome://accessory-update/peripheral_updates_list.js';
+import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 
-import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function peripheralUpdatesListTest() {
@@ -57,9 +58,20 @@ export function peripheralUpdatesListTest() {
     return peripheralUpdateListElement.firmwareUpdates_;
   }
 
-  test('FirmwareUpdatesPopulated', () => {
+  /**
+   * @return {!Array<!UpdateCardElement>}
+   */
+  function getUpdateCards() {
+    return Array.from(
+        peripheralUpdateListElement.shadowRoot.querySelectorAll('update-card'));
+  }
+
+  test('UpdateCardsPopulated', () => {
     return initializeUpdateList().then(() => {
-      assertDeepEquals(getFirmwareUpdates(), fakeFirmwareUpdates[0]);
+      const updateCards = getUpdateCards();
+      getFirmwareUpdates().forEach((u, i) => {
+        assertEquals(u.deviceName, updateCards[i].$.name.innerText);
+      });
     });
   });
 }

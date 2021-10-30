@@ -66,6 +66,24 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
+viz::mojom::SubTargetPtr ToSubTargetPtr(
+    const FrameSinkVideoCaptureDevice::VideoCaptureTarget& target) {
+  // Recall that either |subtree_capture_id| or |crop_id| is set,
+  // or neither, but never both. This was verified in |target|'s ctor,
+  // but is reiterated here for clarity's sake.
+  DCHECK(!target.subtree_capture_id.is_valid() || target.crop_id.is_zero());
+
+  auto sub_target = viz::mojom::SubTarget::New();
+  if (target.crop_id.is_zero()) {
+    // Note: Irrelevant if `target_.subtree_capture_id.is_valid()`.
+    sub_target->set_subtree_capture_id(target.subtree_capture_id);
+  } else {
+    sub_target->set_region_capture_crop_id(target.crop_id);
+  }
+
+  return sub_target;
+}
+
 }  // namespace
 
 #if !defined(OS_ANDROID)
@@ -122,11 +140,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                                       constraints.fixed_aspect_ratio);
 
   if (target_.frame_sink_id.is_valid()) {
-    auto sub_target = viz::mojom::SubTarget::New();
-    if (target_.subtree_capture_id.is_valid()) {
-      sub_target->set_subtree_capture_id(target_.subtree_capture_id);
-    }
-    capturer_->ChangeTarget(target_.frame_sink_id, std::move(sub_target));
+    capturer_->ChangeTarget(target_.frame_sink_id, ToSubTargetPtr(target_));
   }
 
 #if !defined(OS_ANDROID)
@@ -185,8 +199,8 @@ void FrameSinkVideoCaptureDevice::Crop(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  // TODO(crbug.com/1247761): Forward this onwards to Viz.
-  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
+  std::move(callback).Run(
+      media::mojom::CropRequestResult::kUnsupportedCaptureDevice);
 }
 
 void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
@@ -321,14 +335,14 @@ void FrameSinkVideoCaptureDevice::OnTargetChanged(
         target_.frame_sink_id.is_valid()
             ? absl::make_optional<viz::FrameSinkId>(target_.frame_sink_id)
             : absl::nullopt,
-        viz::mojom::SubTarget::NewSubtreeCaptureId(target.subtree_capture_id));
+        ToSubTargetPtr(target_));
   }
 }
 
 void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  OnTargetChanged(VideoCaptureTarget{});
+  OnTargetChanged(VideoCaptureTarget());
   OnFatalError("Capture target has been permanently lost.");
 }
 

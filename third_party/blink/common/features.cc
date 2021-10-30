@@ -167,7 +167,7 @@ const base::Feature kNavigatorPluginsFixed{"NavigatorPluginsFixed",
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 const base::Feature kPlzDedicatedWorker{"PlzDedicatedWorker",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable Portals. https://crbug.com/865123.
 // Note that default enabling this does not expose the portal
@@ -642,7 +642,7 @@ const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
 // TODO(crbug.com/920069): Remove this once the feature has
 // landed and no compat issues are reported.
 const base::Feature kOffsetParentNewSpecBehavior{
-    "OffsetParentNewSpecBehavior", base::FEATURE_ENABLED_BY_DEFAULT};
+    "OffsetParentNewSpecBehavior", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Slightly delays rendering if there are fonts being preloaded, so that
 // they don't miss the first paint if they can be loaded fast enough (e.g.,
@@ -1119,6 +1119,11 @@ const base::Feature kWebSQLInThirdPartyContextThrowsWhenDisabled{
 // https://blog.whatwg.org/newline-normalizations-in-form-submission
 const base::Feature kLateFormNewlineNormalization{
     "LateFormNewlineNormalization", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// TODO(crbug.com/1185950): Remove this flag when the feature is fully launched
+// and released to stable with no issues.
+const base::Feature kAutoExpandDetailsElement{
+    "AutoExpandDetailsElement", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

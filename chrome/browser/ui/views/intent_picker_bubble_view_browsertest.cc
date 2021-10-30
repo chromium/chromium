@@ -5,9 +5,11 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
@@ -25,6 +27,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
@@ -364,3 +367,41 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewPrerenderingBrowserTest,
     testing::Values("", "noopener", "noreferrer", "nofollow"));
+
+class IntentPickerDialogTest : public DialogBrowserTest {
+ public:
+  IntentPickerDialogTest() = default;
+  IntentPickerDialogTest(const IntentPickerDialogTest&) = delete;
+  IntentPickerDialogTest& operator=(const IntentPickerDialogTest&) = delete;
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    PageActionIconView* anchor =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar_button_provider()
+            ->GetPageActionIconView(PageActionIconType::kIntentPicker);
+    std::vector<apps::IntentPickerAppInfo> app_info;
+    const auto add_entry = [&app_info](const std::string& str) {
+      app_info.emplace_back(
+          apps::PickerEntryType::kUnknown,
+          ui::ImageModel::FromImage(
+              gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
+                  GURL("https://" + str + ".com"), gfx::kFaviconSize,
+                  gfx::kFaviconSize))),
+          "Launch name " + str, "Display name " + str);
+    };
+    add_entry("a");
+    add_entry("b");
+    add_entry("c");
+    add_entry("d");
+    IntentPickerBubbleView::ShowBubble(
+        anchor, anchor, PageActionIconType::kIntentPicker,
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        std::move(app_info), true, true,
+        url::Origin::Create(GURL("https://c.com")), base::DoNothing());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, InvokeUi_default) {
+  ShowAndVerifyUi();
+}

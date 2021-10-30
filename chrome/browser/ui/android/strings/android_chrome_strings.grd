@@ -470,6 +470,12 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_DATE" desc="Label for text input field containing a credit card expiration date. [CHAR_LIMIT=32]">
         Expiration date
       </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_MONTH" desc="Accessibility label for a spinner input field containing a list of expiration months for a credit card. [CHAR_LIMIT=32]">
+        Expiration month
+      </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_YEAR" desc="Accessibility label for a spinner input field containing a list of expiration years for a credit card. [CHAR_LIMIT=32]">
+        Expiration year
+      </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_BILLING_ADDRESS" desc="Label for a spinner input field containing a list of billing addresses for a credit card. [CHAR_LIMIT=32]">
         Billing address
       </message>
@@ -1033,6 +1039,18 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_PRIVACY_REVIEW_WHAT_YOU_SHARE" desc="Section header text describing what data the user shares when using the feature.">
         What you share with Google
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_ONE" desc="First bullet point that describes the details of the MSBB toggle.">
+        You’ll browse faster because content is proactively loaded based on your current webpage visit
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_TWO" desc="Second bullet point that describes the details of the MSBB toggle.">
+        You’ll get improved suggestions in the address bar
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_THREE" desc="Third bullet point that describes the details of the MSBB toggle.">
+        URLs you visit are sent to Google
+      </message>
+      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
+        If you also share Chrome usage reports, those reports include the URLs you visit
       </message>
 
       <!-- Safety check -->
@@ -2628,9 +2646,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
      <!-- Incognito reauthentication page -->
-     <message name="IDS_INCOGNITO_REAUTH_PAGE_TITLE" desc="Title on the Incognito re-authentication page which is shown when a user revisits their Incognito session if they have turned on Incognito lock setting.">
-       Verify it's you to unlock Incognito
-     </message>
      <message name="IDS_INCOGNITO_REAUTH_PAGE_UNLOCK_INCOGNITO_BUTTON_LABEL" desc="The label of button which upon click allows user to start the re-authentication process to view their existing Incognito tabs.">
        Unlock Incognito
      </message>

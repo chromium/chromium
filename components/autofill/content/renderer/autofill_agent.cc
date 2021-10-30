@@ -125,8 +125,10 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
  private:
   template <typename F, typename... Args>
   void SendMsg(F fn, Args&&... args) {
-    DCHECK(agent_->autofill_driver_);
-    (agent_->autofill_driver_.get()->*fn)(std::forward<Args>(args)...);
+    DCHECK(!agent_->IsPrerendering());
+    mojom::AutofillDriver& autofill_driver = agent_->GetAutofillDriver();
+    DCHECK_NE(&autofill_driver, this);
+    (autofill_driver.*fn)(std::forward<Args>(args)...);
   }
   template <typename F, typename... Args>
   void DeferMsg(F fn, Args... args) {
@@ -1443,17 +1445,18 @@ void AutofillAgent::ReplaceElementIfNowInvalid(const FormData& original_form) {
 }
 
 mojom::AutofillDriver& AutofillAgent::GetAutofillDriver() {
-  if (!autofill_driver_) {
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &autofill_driver_);
-  }
-
   if (IsPrerendering()) {
     if (!deferring_autofill_driver_) {
       deferring_autofill_driver_ =
           std::make_unique<DeferringAutofillDriver>(this);
     }
     return *deferring_autofill_driver_;
+  }
+
+  // Lazily bind this interface.
+  if (!autofill_driver_) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &autofill_driver_);
   }
 
   return *autofill_driver_;

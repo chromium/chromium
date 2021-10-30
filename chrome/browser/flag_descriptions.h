@@ -1434,6 +1434,9 @@ extern const char kTabOutlinesInLowContrastThemesDescription[];
 extern const char kTabRestoreSubMenusName[];
 extern const char kTabRestoreSubMenusDescription[];
 
+extern const char kTabSearchFuzzySearchName[];
+extern const char kTabSearchFuzzySearchDescription[];
+
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];
 
@@ -2361,6 +2364,9 @@ extern const char kButtonARCNetworkDiagnosticsDescription[];
 extern const char kCalendarViewName[];
 extern const char kCalendarViewDescription[];
 
+extern const char kDesksTemplatesName[];
+extern const char kDesksTemplatesDescription[];
+
 extern const char kDesksTrackpadSwipeImprovementsName[];
 extern const char kDesksTrackpadSwipeImprovementsDescription[];
 
@@ -2375,6 +2381,9 @@ extern const char kHdrNetOverrideDescription[];
 
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
+
+extern const char kCellularBypassESimInstallationConnectivityCheckName[];
+extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 
 extern const char kCellularForbidAttachApnName[];
 extern const char kCellularForbidAttachApnDescription[];

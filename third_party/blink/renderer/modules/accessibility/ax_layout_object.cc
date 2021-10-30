@@ -1160,17 +1160,17 @@ String AXLayoutObject::TextAlternative(
 //
 
 AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
-  if (!layout_object_ || !layout_object_->HasLayer() ||
-      !layout_object_->IsBox())
+  // Must be called for the document.
+  if (!IsRoot() || !layout_object_)
     return nullptr;
 
-    // Must be called with lifecycle >= pre-paint clean
-#if DCHECK_IS_ON()
+  // Must be called with lifecycle >= pre-paint clean
   DCHECK_GE(GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
-#endif
 
+  DCHECK(layout_object_->IsLayoutView());
   PaintLayer* layer = To<LayoutBox>(layout_object_.Get())->Layer();
+  DCHECK(layer);
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kRetargetForInert);

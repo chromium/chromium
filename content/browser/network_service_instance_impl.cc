@@ -320,7 +320,8 @@ void CreateNetworkContextInternal(
       grant_access_result != SandboxGrantResult::kMigrationAlreadySucceeded) {
     PLOG(ERROR) << "Encountered error while migrating network context data or "
                    "granting sandbox access for "
-                << params->file_paths->data_path
+                << (params->file_paths ? params->file_paths->data_path
+                                       : base::FilePath())
                 << ". Result: " << static_cast<int>(grant_access_result);
   }
 

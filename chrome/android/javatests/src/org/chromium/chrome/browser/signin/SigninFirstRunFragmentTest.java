@@ -121,16 +121,16 @@ public class SigninFirstRunFragmentTest {
 
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
-
     @Mock
     private FirstRunPageDelegate mFirstRunPageDelegateMock;
-
     @Mock
     private PolicyLoadListener mPolicyLoadListenerMock;
-
     @Mock
     private SigninManager mSigninManagerMock;
-
+    @Mock
+    private SigninChecker mSigninCheckerMock;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProviderMock;
     @Captor
     private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
@@ -140,7 +140,7 @@ public class SigninFirstRunFragmentTest {
     public void setUp() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        SigninCheckerProvider.setForTests(mock(SigninChecker.class));
+        SigninCheckerProvider.setForTests(mSigninCheckerMock);
         when(mPolicyLoadListenerMock.get()).thenReturn(false);
         when(mFirstRunPageDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListenerMock);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -240,7 +240,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWhenSigninIsDisabledByPolicy() {
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             when(IdentityServicesProvider.get().getSigninManager(
                          Profile.getLastUsedRegularProfile()))
@@ -259,7 +259,7 @@ public class SigninFirstRunFragmentTest {
     @Test
     @MediumTest
     public void testFragmentWhenAddingAccountDynamicallyAndSigninIsDisabledByPolicy() {
-        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             when(IdentityServicesProvider.get().getSigninManager(
                          Profile.getLastUsedRegularProfile()))

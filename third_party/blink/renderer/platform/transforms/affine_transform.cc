@@ -33,7 +33,13 @@
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -263,6 +269,14 @@ IntPoint AffineTransform::MapPoint(const IntPoint& point) const {
   return IntPoint(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
 }
 
+gfx::Point AffineTransform::MapPoint(const gfx::Point& point) const {
+  double x2, y2;
+  Map(point.x(), point.y(), x2, y2);
+
+  // Round the point.
+  return gfx::Point(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
+}
+
 FloatPoint AffineTransform::MapPoint(const FloatPoint& point) const {
   double x2, y2;
   Map(point.x(), point.y(), x2, y2);
@@ -296,6 +310,10 @@ IntRect AffineTransform::MapRect(const IntRect& rect) const {
   return EnclosingIntRect(MapRect(FloatRect(rect)));
 }
 
+gfx::Rect AffineTransform::MapRect(const gfx::Rect& rect) const {
+  return gfx::ToEnclosingRect(MapRect(gfx::RectF(rect)));
+}
+
 FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
   if (IsIdentityOrTranslation()) {
     if (!transform_[4] && !transform_[5])
@@ -309,21 +327,30 @@ FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
 
   FloatQuad result;
   result.set_p1(MapPoint(rect.origin()));
-  result.set_p2(MapPoint(FloatPoint(rect.right(), rect.y())));
-  result.set_p3(MapPoint(FloatPoint(rect.right(), rect.bottom())));
-  result.set_p4(MapPoint(FloatPoint(rect.x(), rect.bottom())));
+  result.set_p2(MapPoint(rect.top_right()));
+  result.set_p3(MapPoint(rect.bottom_right()));
+  result.set_p4(MapPoint(rect.bottom_left()));
   return result.BoundingBox();
 }
 
+gfx::RectF AffineTransform::MapRect(const gfx::RectF& rect) const {
+  // Still use FloatRect/FloatQuad version because FloatQuad::BoundingBox()
+  // clamp to int range, which is required by some callers.
+  // TODO(crbug.com/738465): Find a way to use gfx types.
+  return ToGfxRectF(MapRect(FloatRect(rect)));
+}
+
 FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {
+  return FloatQuad(MapQuad(ToGfxQuadF(q)));
+}
+
+gfx::QuadF AffineTransform::MapQuad(const gfx::QuadF& q) const {
   if (IsIdentityOrTranslation()) {
-    FloatQuad mapped_quad(q);
-    mapped_quad.Move(ClampTo<float>(transform_[4]),
-                     ClampTo<float>(transform_[5]));
-    return mapped_quad;
+    return q + gfx::Vector2dF(ClampTo<float>(transform_[4]),
+                              ClampTo<float>(transform_[5]));
   }
 
-  FloatQuad result;
+  gfx::QuadF result;
   result.set_p1(MapPoint(q.p1()));
   result.set_p2(MapPoint(q.p2()));
   result.set_p3(MapPoint(q.p3()));

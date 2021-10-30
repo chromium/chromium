@@ -398,6 +398,13 @@ SanitizerConfig* Sanitizer::getDefaultConfiguration() {
   return SanitizerConfigCopy(SanitizerConfigImpl::DefaultConfig());
 }
 
+Sanitizer* Sanitizer::getDefaultInstance() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<Sanitizer>, default_sanitizer_,
+      (Sanitizer::Create(nullptr, nullptr, ASSERT_NO_EXCEPTION)));
+  return default_sanitizer_;
+}
+
 void Sanitizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }

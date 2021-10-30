@@ -46,7 +46,7 @@ void AutofillAssistantTtsController::Stop() {
 }
 
 void AutofillAssistantTtsController::SetTtsEventDelegate(
-    TtsEventDelegate* tts_event_delegate) {
+    base::WeakPtr<TtsEventDelegate> tts_event_delegate) {
   // Ensure that it is set only once
   DCHECK(!tts_event_delegate_);
 
@@ -59,7 +59,7 @@ void AutofillAssistantTtsController::OnTtsEvent(
     int char_index,
     int char_length,
     const std::string& error_message) {
-  if (tts_event_delegate_ == nullptr) {
+  if (!tts_event_delegate_) {
     VLOG(1) << "AssistantAutofillTtsController: No TtsEventDelegate set.";
     return;
   }

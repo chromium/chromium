@@ -1901,7 +1901,9 @@ PaintLayer::HitTestRecursionData::HitTestRecursionData(
 bool PaintLayer::HitTest(const HitTestLocation& hit_test_location,
                          HitTestResult& result,
                          const PhysicalRect& hit_test_area) {
-  DCHECK(IsSelfPaintingLayer() || HasSelfPaintingLayerDescendant());
+  // The root PaintLayer of HitTest must contain all descendants.
+  DCHECK(GetLayoutObject().CanContainFixedPositionObjects());
+  DCHECK(GetLayoutObject().CanContainAbsolutePositionObjects());
 
   // LayoutView should make sure to update layout before entering hit testing
   DCHECK(!GetLayoutObject().GetFrame()->View()->LayoutPending());
@@ -2706,8 +2708,8 @@ bool PaintLayer::HitTestClippedOutByClipPath(
     ConvertToLayerCoords(root_layer, origin);
 
   FloatPoint point(hit_test_location.Point() - origin.offset);
-  FloatRect reference_box(
-      ClipPathClipper::LocalReferenceBox(GetLayoutObject()));
+  gfx::RectF reference_box =
+      ClipPathClipper::LocalReferenceBox(GetLayoutObject());
 
   ClipPathOperation* clip_path_operation =
       GetLayoutObject().StyleRef().ClipPath();
@@ -2716,7 +2718,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
     ShapeClipPathOperation* clip_path =
         To<ShapeClipPathOperation>(clip_path_operation);
     return !clip_path
-                ->GetPath(reference_box,
+                ->GetPath(FloatRect(reference_box),
                           GetLayoutObject().StyleRef().EffectiveZoom())
                 .Contains(ToGfxPointF(point));
   }
@@ -2729,7 +2731,7 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   // the coordinate system is the top-left of the reference box, so adjust
   // the point accordingly.
   if (clipper->ClipPathUnits() == SVGUnitTypes::kSvgUnitTypeUserspaceonuse)
-    point.MoveBy(-reference_box.origin());
+    point.MoveBy(-FloatPoint(reference_box.origin()));
   // Unzoom the point and the reference box, since the <clipPath> geometry is
   // not zoomed.
   float inverse_zoom = 1 / GetLayoutObject().StyleRef().EffectiveZoom();

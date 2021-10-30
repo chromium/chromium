@@ -96,9 +96,10 @@ async function updateWebsiteInput(
     passwordManager.resetResolver('getUrlCollection');
     passwordManager.setGetUrlCollectionResponse(
         isValid ? {
-          origin: newValue + '-origin',
-          shown: newValue + '-shown',
-          link: newValue + '-link',
+          // Matches fake data pattern in createPasswordEntry.
+          origin: `http://${newValue}/login`,
+          shown: newValue,
+          link: `http://${newValue}/login`,
         } :
                   null);
   }
@@ -434,5 +435,53 @@ suite('PasswordEditDialog', function() {
     addDialog.$.storePicker.value = addDialog.storeOptionDeviceValue;
     return addPasswordTestHelper(
         addDialog, passwordManager, /*expectedUseAccountStore=*/ false);
+  });
+
+  test('validatesUsernameWhenWebsiteOriginChanges', async function() {
+    const passwords = [createMultiStorePasswordEntry(
+        {url: 'website.com', username: 'username', accountId: 0})];
+    const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
+
+    addDialog.$.usernameInput.value = 'username';
+    assertFalse(addDialog.$.usernameInput.invalid);
+
+    await updateWebsiteInput(addDialog, passwordManager, 'website.com');
+    assertTrue(addDialog.$.usernameInput.invalid);
+
+    await updateWebsiteInput(
+        addDialog, passwordManager, 'different-website.com');
+    assertFalse(addDialog.$.usernameInput.invalid);
+  });
+
+  test('validatesUsernameWhenUsernameChanges', async function() {
+    const passwords = [createMultiStorePasswordEntry(
+        {url: 'website.com', username: 'username', accountId: 0})];
+    const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
+
+    await updateWebsiteInput(addDialog, passwordManager, 'website.com');
+    assertFalse(addDialog.$.usernameInput.invalid);
+
+    addDialog.$.usernameInput.value = 'username';
+    assertTrue(addDialog.$.usernameInput.invalid);
+
+    addDialog.$.usernameInput.value = 'different username';
+    assertFalse(addDialog.$.usernameInput.invalid);
+  });
+
+  test('addPasswordFailsWhenUsernameReusedForAnyStore', async function() {
+    const passwords = [
+      createMultiStorePasswordEntry(
+          {url: 'website.com', username: 'username1', accountId: 0}),
+      createMultiStorePasswordEntry(
+          {url: 'website.com', username: 'username2', deviceId: 0})
+    ];
+    const addDialog = elementFactory.createPasswordEditDialog(null, passwords);
+    await updateWebsiteInput(addDialog, passwordManager, 'website.com');
+
+    addDialog.$.usernameInput.value = 'username1';
+    assertTrue(addDialog.$.usernameInput.invalid);
+
+    addDialog.$.usernameInput.value = 'username2';
+    assertTrue(addDialog.$.usernameInput.invalid);
   });
 });

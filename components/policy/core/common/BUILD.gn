@@ -576,3 +576,11 @@ if (is_win || is_linux || is_chromeos) {
     ]
   }
 }
+
+fuzzer_test("policy_schema_fuzzer") {
+  sources = [ "schema_fuzzer.cc" ]
+  deps = [
+    ":internal",
+    "//base",
+  ]
+}

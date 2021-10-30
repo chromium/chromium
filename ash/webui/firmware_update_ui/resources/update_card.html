@@ -1,1 +1,17 @@
-<div id="container"></div>
+<style include="firmware-fonts firmware-shared">
+  #priorityText::before {
+    content: '•';
+    margin-inline: 8px;
+  }
+</style>
+<div id="container">
+  <div id="name">[[update.deviceName]]</div>
+  <div id="version">
+    <span>[[update.version]]</span>
+    <span id ="priorityText" hidden$="[[!isCriticalUpdate_(update.priority)]]">
+      <!-- TODO(michaelcheco): i18n string -->
+      Critical update
+    </span>
+  </div>
+  <div id="description">[[update.description]]</div>
+</div>

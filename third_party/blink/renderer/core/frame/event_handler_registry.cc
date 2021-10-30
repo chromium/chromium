@@ -356,7 +356,7 @@ void EventHandlerRegistry::DocumentDetached(Document& document) {
     {
       // TODO(keishi): If a GC happens while iterating a EventTargetSet, the
       // custom weak processing may remove elements from it. Remove this scope
-      // when we get rid of the custom weak processing. crbug.com/123531
+      // when we get rid of the custom weak processing. crbug.com/1235316
       ThreadState::GCForbiddenScope gc_forbidden(ThreadState::Current());
       const EventTargetSet* targets = &targets_[handler_class];
       for (const auto& event_target : *targets) {
@@ -388,13 +388,13 @@ void EventHandlerRegistry::CheckConsistency(
 #if DCHECK_IS_ON()
   // TODO(keishi): If a GC happens while iterating a EventTargetSet, the
   // custom weak processing may remove elements from it. Remove this scope
-  // when we get rid of the custom weak processing. crbug.com/123531
+  // when we get rid of the custom weak processing. crbug.com/1235316
   ThreadState::GCForbiddenScope gc_forbidden(ThreadState::Current());
   const EventTargetSet* targets = &targets_[handler_class];
   for (const auto& event_target : *targets) {
     if (Node* node = event_target.key->ToNode()) {
-      // See the comment for |documentDetached| if either of these assertions
-      // fails.
+      // See the header file comment for |documentDetached| if either of these
+      // assertions fails.
       DCHECK(node->GetDocument().GetPage());
       DCHECK_EQ(frame_, &node->GetDocument().GetFrame()->LocalFrameRoot());
     } else if (LocalDOMWindow* window = event_target.key->ToLocalDOMWindow()) {

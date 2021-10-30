@@ -84,8 +84,8 @@ void SVGRootInlineBox::ComputePerCharacterLayoutInformation() {
                             LogicalBottom());
 }
 
-FloatRect SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
-  FloatRect rect;
+gfx::RectF SVGRootInlineBox::LayoutInlineBoxes(InlineBox& box) {
+  gfx::RectF rect;
   if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(box)) {
     rect = svg_inline_text_box->CalculateBoundaries();
   } else {

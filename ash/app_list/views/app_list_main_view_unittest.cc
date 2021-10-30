@@ -180,6 +180,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
     AppListFolderItem* folder_item =
         delegate_->GetTestModel()->CreateSingleItemFolder("single_item_folder",
                                                           "single");
+    GetRootGridView()->Layout();
     EXPECT_EQ(folder_item,
               delegate_->GetTestModel()->FindFolderItem("single_item_folder"));
     EXPECT_EQ(AppListFolderItem::kItemType, folder_item->GetItemType());
@@ -302,6 +303,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   // 20).
   const int kNumApps = 30;
   delegate_->GetTestModel()->PopulateApps(kNumApps);
+  GetRootGridView()->Layout();
 
   EXPECT_EQ(1, GetFolderViewModel()->view_size());
   EXPECT_EQ(kNumApps + 1, GetRootViewModel()->view_size());

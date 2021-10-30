@@ -174,56 +174,56 @@ class AppTestHelper : public App {
 void AppTestHelper::FirstTaskRun() {
   std::map<std::string,
            base::RepeatingCallback<bool(base::OnceCallback<void(int)>)>>
-      commands = {
-        // To add additional commands, first Wrap a pointer to the target
-        // function (which should be declared in integration_tests_impl.h), and
-        // then use the With* helper functions to provide its arguments.
-        {"clean", WithSystemScope(Wrap(&Clean))},
-        {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
-        {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
-        {"expect_app_unregistered_existence_checker_path",
-         WithSwitch("app_id",
-                    WithSystemScope(
-                        Wrap(&ExpectAppUnregisteredExistenceCheckerPath)))},
-        {"expect_app_version",
-         WithSwitch("version", WithSwitch("app_id", WithSystemScope(Wrap(
-                                                        &ExpectAppVersion))))},
-        {"expect_candidate_uninstalled",
-         WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
-        {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
-        {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
+      commands =
+  {
+    // To add additional commands, first Wrap a pointer to the target
+    // function (which should be declared in integration_tests_impl.h), and
+    // then use the With* helper functions to provide its arguments.
+    {"clean", WithSystemScope(Wrap(&Clean))},
+    {"enter_test_mode", WithSwitch("url", Wrap(&EnterTestMode))},
+    {"expect_active_updater", WithSystemScope(Wrap(&ExpectActiveUpdater))},
+    {"expect_app_unregistered_existence_checker_path",
+     WithSwitch("app_id", WithSystemScope(Wrap(
+                              &ExpectAppUnregisteredExistenceCheckerPath)))},
+    {"expect_app_version",
+     WithSwitch("version", WithSwitch("app_id", WithSystemScope(
+                                                    Wrap(&ExpectAppVersion))))},
+    {"expect_candidate_uninstalled",
+     WithSystemScope(Wrap(&ExpectCandidateUninstalled))},
+    {"expect_clean", WithSystemScope(Wrap(&ExpectClean))},
+    {"expect_installed", WithSystemScope(Wrap(&ExpectInstalled))},
 #if defined(OS_WIN)
-        {"expect_interfaces_registered",
-         WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
-        {"expect_legacy_update3web_succeeds",
-         WithSwitch("app_id",
-                    WithSystemScope(Wrap(&ExpectLegacyUpdate3WebSucceeds)))},
-        {"expect_legacy_process_launcher_succeeds",
-         WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
+    {"expect_interfaces_registered",
+     WithSystemScope(Wrap(&ExpectInterfacesRegistered))},
+    {"expect_legacy_update3web_succeeds",
+     WithSwitch("app_id",
+                WithSystemScope(Wrap(&ExpectLegacyUpdate3WebSucceeds)))},
+    {"expect_legacy_process_launcher_succeeds",
+     WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
 #endif  // OS_WIN
-        {"expect_version_active",
-         WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},
-        {"expect_version_not_active",
-         WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionNotActive)))},
-        {"install", WithSystemScope(Wrap(&Install))},
-        {"print_log", WithSystemScope(Wrap(&PrintLog))},
-        {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
-        {"update", WithSwitch("app_id", Wrap(&Update))},
-        {"update_all", Wrap(&UpdateAll)},
-        {"register_app", WithSwitch("app_id", Wrap(&RegisterApp))},
-        {"set_existence_checker_path",
-         WithSwitch("path",
-                    (WithSwitch("app_id", WithSystemScope(Wrap(
-                                              &SetExistenceCheckerPath)))))},
-        {"setup_fake_updater_higher_version",
-         WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
-        {"setup_fake_updater_lower_version",
-         WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
-        {"set_first_registration_counter",
-         WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
-        {"stress_update_service", WithSystemScope(Wrap(&StressUpdateService))},
-        {"uninstall", WithSystemScope(Wrap(&Uninstall))},
-      };
+    {"expect_version_active",
+     WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionActive)))},
+    {"expect_version_not_active",
+     WithSwitch("version", WithSystemScope(Wrap(&ExpectVersionNotActive)))},
+    {"install", WithSystemScope(Wrap(&Install))},
+    {"print_log", WithSystemScope(Wrap(&PrintLog))},
+    {"run_wake", WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+    {"update", WithSwitch("app_id", WithSystemScope(Wrap(&Update)))},
+    {"update_all", WithSystemScope(Wrap(&UpdateAll))},
+    {"register_app", WithSwitch("app_id", WithSystemScope(Wrap(&RegisterApp)))},
+    {"set_existence_checker_path",
+     WithSwitch("path",
+                (WithSwitch("app_id",
+                            WithSystemScope(Wrap(&SetExistenceCheckerPath)))))},
+    {"setup_fake_updater_higher_version",
+     WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
+    {"setup_fake_updater_lower_version",
+     WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
+    {"set_first_registration_counter",
+     WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
+    {"stress_update_service", WithSystemScope(Wrap(&StressUpdateService))},
+    {"uninstall", WithSystemScope(Wrap(&Uninstall))},
+  };
 
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();

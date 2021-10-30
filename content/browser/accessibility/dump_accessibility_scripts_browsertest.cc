@@ -173,6 +173,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXAutocompleteValue) {
   RunTypedTest<kMacAttributes>("ax-autocomplete-value.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXColumnHeaderUIElements) {
+  RunTypedTest<kMacAttributes>("ax-column-header-ui-elements.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
   RunTypedTest<kMacSelection>("selectall-textarea.html");
 }
@@ -213,12 +217,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AccessibilityColumnHeaderUIElements) {
+  RunTypedTest<kMacMethods>("accessibility-column-header-ui-elements.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
                        AccessibilityPlaceholderValue) {
-  RunTypedTest<kMacMethods>("placeholder-value.html");
+  RunTypedTest<kMacMethods>("accessibility-placeholder-value.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AccessibilityTitle) {
-  RunTypedTest<kMacMethods>("title.html");
+  RunTypedTest<kMacMethods>("accessibility-title.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, MathMLFractionAttributes) {

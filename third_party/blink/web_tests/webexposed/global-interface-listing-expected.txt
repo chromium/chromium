@@ -4944,6 +4944,7 @@ interface KeyframeEffect : AnimationEffect
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
+    getter firstAnimatedFrameTime
     getter id
     getter loadTime
     getter renderTime
@@ -11554,7 +11555,7 @@ namespace CSS
     method getComputedStyle
     method getDigitalGoodsService
     method getLockScreenData
-    method getScreens
+    method getScreenDetails
     method getSelection
     method matchMedia
     method moveBy

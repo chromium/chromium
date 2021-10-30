@@ -21,9 +21,11 @@ import 'chrome://oobe/screens/login/gaia_password_changed.m.js';
 import 'chrome://oobe/screens/login/lacros_data_migration.m.js';
 import 'chrome://oobe/screens/login/management_transition.m.js';
 import 'chrome://oobe/screens/oobe/auto_enrollment_check.m.js';
+import 'chrome://oobe/screens/oobe/demo_preferences.m.js';
 import 'chrome://oobe/screens/oobe/demo_setup.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
+import 'chrome://oobe/screens/oobe/welcome.m.js';
 import 'chrome://oobe/screens/oobe/packaged_license.m.js';
 
 import {Oobe} from './cr_ui.m.js';

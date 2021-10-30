@@ -44,7 +44,8 @@ MultiDeviceSetupClientImpl::MultiDeviceSetupClientImpl(
     : multidevice_setup_remote_(std::move(remote_setup)),
       remote_device_cache_(multidevice::RemoteDeviceCache::Factory::Create()),
       host_status_with_device_(GenerateDefaultHostStatusWithDevice()),
-      feature_states_map_(GenerateDefaultFeatureStatesMap()) {
+      feature_states_map_(GenerateDefaultFeatureStatesMap(
+          mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady)) {
   multidevice_setup_remote_->AddHostStatusObserver(
       GenerateHostStatusObserverRemote());
   multidevice_setup_remote_->AddFeatureStateObserver(

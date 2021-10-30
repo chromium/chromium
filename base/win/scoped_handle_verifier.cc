@@ -89,10 +89,10 @@ ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(
 
 ScopedHandleVerifierInfo::~ScopedHandleVerifierInfo() = default;
 
-ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(ScopedHandleVerifierInfo&&) =
-    default;
+ScopedHandleVerifierInfo::ScopedHandleVerifierInfo(
+    ScopedHandleVerifierInfo&&) noexcept = default;
 ScopedHandleVerifierInfo& ScopedHandleVerifierInfo::operator=(
-    ScopedHandleVerifierInfo&&) = default;
+    ScopedHandleVerifierInfo&&) noexcept = default;
 
 ScopedHandleVerifier::ScopedHandleVerifier(bool enabled)
     : enabled_(enabled), lock_(GetLock()) {}

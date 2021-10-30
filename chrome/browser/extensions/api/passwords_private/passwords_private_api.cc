@@ -393,6 +393,13 @@ ResponseAction PasswordsPrivateGetPasswordCheckStatusFunction::Run() {
           GetDelegate(browser_context())->GetPasswordCheckStatus())));
 }
 
+// PasswordsPrivateIsAccountStoreDefaultFunction
+ResponseAction PasswordsPrivateIsAccountStoreDefaultFunction::Run() {
+  return RespondNow(OneArgument(
+      base::Value(GetDelegate(browser_context())
+                      ->IsAccountStoreDefault(GetSenderWebContents()))));
+}
+
 // PasswordsPrivateGetUrlCollectionFunction:
 ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
   auto parameters =

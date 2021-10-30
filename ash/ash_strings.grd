@@ -1681,6 +1681,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER" desc="The text of the header (text above the icon list) of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Unsupported apps
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON" desc="The text of the desks templates button in the overview desks bar.">
+        Templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON" desc="The text of the button to save the active desk as a template.">
+        Save desk as a template
+      </message>
 
       <!-- Virtual Desks -->
       <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">

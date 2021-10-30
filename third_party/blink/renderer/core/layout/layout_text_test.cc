@@ -259,6 +259,24 @@ TEST_F(LayoutTextTest, PrewarmFontFace) {
                    .Family()
                    .IsPrewarmed());
 }
+
+TEST_F(LayoutTextTest, PrewarmGenericFamily) {
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container { font-family: serif; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  // No prewarms because |GenericFontFamilySettings| is empty.
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
 #endif
 
 struct NGOffsetMappingTestData {

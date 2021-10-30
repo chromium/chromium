@@ -298,7 +298,13 @@ TEST_F(VerdictCacheManagerTest, TestRemoveCachedVerdictOnURLsDeleted) {
                     LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
 }
 
-TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdict) {
+// TODO(crbug.com/1264925): This test is flaky on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_TestCleanUpExpiredVerdict TestCleanUpExpiredVerdict
+#else
+#define MAYBE_TestCleanUpExpiredVerdict DISABLED_TestCleanUpExpiredVerdict
+#endif
+TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
   // Prepare 4 verdicts for PASSWORD_REUSE_EVENT with SIGN_IN_PASSWORD type:
   // (1) "foo.com/abc/" valid
   // (2) "foo.com/def/" expired

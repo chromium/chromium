@@ -38,7 +38,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/test/button_test_api.h"
 #include "url/gurl.h"
 
@@ -464,12 +463,7 @@ IN_PROC_BROWSER_TEST_F(ClickToCallBrowserTest, OpenNewTabAndShowBubble) {
       GetPageActionIconView(PageActionIconType::kClickToCall)->GetBubble();
   ASSERT_NE(nullptr, bubble);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ensure that the dialog shows the origin in column id 1.
-  EXPECT_NE(nullptr, static_cast<views::GridLayout*>(
-                         bubble->GetContentsView()->GetLayoutManager())
-                         ->GetColumnSet(1));
-#else
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Ensure that the dialog shows the origin in the footnote.
   EXPECT_NE(nullptr, bubble->GetFootnoteViewForTesting());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -4750,16 +4750,18 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedMulticolFrameUnderMulticol) {
   // TODO(crbug.com/797779): Add code to verify fragments under the iframe.
 }
 
-TEST_P(
-    PaintPropertyTreeBuilderTest,
-    BecomingUnfragmentedClearsLegacyPaginationOffsetAndLogicalTopInFlowThread) {
+// Test that becoming unfragmented correctly updates FragmentData. In legacy
+// layout this means clearing LegacyPaginationOffset() and
+// LogicalTopInFlowThread(). In LayoutNGBlockFragmentation it means clearing the
+// fragment ID. Also check the paint offset, for good measure.
+TEST_P(PaintPropertyTreeBuilderTest, BecomingUnfragmented) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #target {
          width: 30px; height: 20px; position: relative;
       }
     </style>
-    <div style='columns: 2; height: 20px width: 400px'>
+    <div style='columns:2; column-fill:auto; column-gap:0; height:20px; width:400px;'>
        <div style='height: 20px'></div>
        <div id=target></div>
      </div>
@@ -4767,15 +4769,28 @@ TEST_P(
   )HTML");
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(PhysicalOffset(LayoutUnit(392.5f), LayoutUnit(-20)),
-            target->FirstFragment().LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(20), target->FirstFragment().LogicalTopInFlowThread());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(1u, target->FirstFragment().FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(LayoutUnit(200), LayoutUnit(-20)),
+              target->FirstFragment().LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(20), target->FirstFragment().LogicalTopInFlowThread());
+  }
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(208), LayoutUnit(8)),
+            target->FirstFragment().PaintOffset());
   Element* target_element = GetDocument().getElementById("target");
 
   target_element->setAttribute(html_names::kStyleAttr, "position: absolute");
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(PhysicalOffset(), target->FirstFragment().LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(), target->FirstFragment().LogicalTopInFlowThread());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(0u, target->FirstFragment().FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(),
+              target->FirstFragment().LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(), target->FirstFragment().LogicalTopInFlowThread());
+  }
+  EXPECT_EQ(PhysicalOffset(LayoutUnit(8), LayoutUnit(28)),
+            target->FirstFragment().PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, Reflection) {

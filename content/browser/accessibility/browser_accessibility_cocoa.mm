@@ -824,7 +824,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
       {NSAccessibilityColumnsAttribute, @"columns"},
-      {NSAccessibilityColumnHeaderUIElementsAttribute, @"columnHeaders"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
       {NSAccessibilityDescriptionAttribute, @"descriptionForAccessibility"},
@@ -1275,43 +1274,6 @@ static NSDictionary* createMathSubSupScriptsPair(
     if (parent)
       [ToBrowserAccessibilityCocoa(parent) childrenChanged];
   }
-}
-
-- (NSArray*)columnHeaders {
-  if (![self instanceActive])
-    return nil;
-
-  bool is_cell_or_table_header = ui::IsCellOrTableHeader(_owner->GetRole());
-  bool is_table_like = ui::IsTableLike(_owner->GetRole());
-  if (!is_table_like && !is_cell_or_table_header)
-    return nil;
-  BrowserAccessibility* table = [self containingTable];
-  if (!table)
-    return nil;
-
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-  if (is_table_like) {
-    // If this is a table, return all column headers.
-    for (int32_t id : table->GetColHeaderNodeIds()) {
-      BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
-      if (cell)
-        [ret addObject:ToBrowserAccessibilityCocoa(cell)];
-    }
-  } else {
-    // Otherwise this is a cell, return the column headers for this cell.
-    absl::optional<int> column = _owner->GetTableCellColIndex();
-    if (!column)
-      return nil;
-
-    std::vector<int32_t> colHeaderIds = table->GetColHeaderNodeIds(*column);
-    for (int32_t id : colHeaderIds) {
-      BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
-      if (cell)
-        [ret addObject:ToBrowserAccessibilityCocoa(cell)];
-    }
-  }
-
-  return [ret count] ? ret : nil;
 }
 
 - (NSValue*)columnIndexRange {
@@ -1805,21 +1767,13 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSString*)invalid {
   if (![self instanceActive])
     return nil;
-  int invalidState;
-  if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState,
-                               &invalidState))
-    return @"false";
-  // TODO(rhalavati): Replace with GetInvalidState() and remove NOTREACHED.
-  switch (static_cast<ax::mojom::InvalidState>(invalidState)) {
+  switch (_owner->GetData().GetInvalidState()) {
+    case ax::mojom::InvalidState::kNone:
     case ax::mojom::InvalidState::kFalse:
       return @"false";
     case ax::mojom::InvalidState::kTrue:
       return @"true";
-    default:
-      NOTREACHED();
   }
-
-  return @"false";
 }
 
 - (NSNumber*)isMultiSelectable {
@@ -3693,7 +3647,6 @@ static NSDictionary* createMathSubSupScriptsPair(
       NSAccessibilityVisibleRowsAttribute,
       NSAccessibilityVisibleCellsAttribute,
       NSAccessibilityHeaderAttribute,
-      NSAccessibilityColumnHeaderUIElementsAttribute,
       NSAccessibilityRowHeaderUIElementsAttribute,
       NSAccessibilityARIAColumnCountAttribute,
       NSAccessibilityARIARowCountAttribute,
@@ -3711,8 +3664,6 @@ static NSDictionary* createMathSubSupScriptsPair(
       NSAccessibilityARIARowIndexAttribute,
       @"AXSortDirection",
     ]];
-    if ([self internalRole] != ax::mojom::Role::kColumnHeader)
-      [ret addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
     if ([self internalRole] != ax::mojom::Role::kRowHeader)
       [ret addObject:NSAccessibilityRowHeaderUIElementsAttribute];
   } else if ([role isEqualToString:@"AXWebArea"]) {

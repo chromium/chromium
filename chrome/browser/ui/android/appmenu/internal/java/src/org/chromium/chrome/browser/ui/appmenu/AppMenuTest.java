@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -39,10 +38,10 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.ui.widget.ChipView;
 
@@ -58,7 +57,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-public class AppMenuTest extends DummyUiChromeActivityTestCase {
+public class AppMenuTest extends DummyUiActivityTestCase {
     private AppMenuCoordinatorImpl mAppMenuCoordinator;
     private AppMenuHandlerImpl mAppMenuHandler;
     private TestAppMenuPropertiesDelegate mPropertiesDelegate;
@@ -69,6 +68,9 @@ public class AppMenuTest extends DummyUiChromeActivityTestCase {
 
     @Mock
     private Canvas mCanvas;
+    // Tell R8 not to break the ability to mock the class.
+    @Mock
+    private AppMenu mUnused;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -78,7 +80,7 @@ public class AppMenuTest extends DummyUiChromeActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        MockitoAnnotations.initMocks(this);
+        mCanvas = Mockito.mock(Canvas.class);
         TestThreadUtils.runOnUiThreadBlocking(this::setUpTestOnUiThread);
         mLifecycleDispatcher.observerRegisteredCallbackHelper.waitForCallback(0);
     }

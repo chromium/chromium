@@ -286,13 +286,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.CertificateTransparency.SCT.VerificationTime"
-    units="microseconds" expires_after="M70">
+    units="microseconds" expires_after="M99">
   <owner>estark@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
     Time to verify the SCTs (Signed Certificate Timestamps) when setting up a
     TLS connection. Recorded on each connection setup where at least one SCT is
-    verified.
+    verified. Histogram was expired between M70 and M97. Histogram is only
+    reported for clients with high resolution clocks.
   </summary>
 </histogram>
 

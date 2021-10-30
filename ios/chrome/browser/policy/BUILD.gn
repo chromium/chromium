@@ -294,8 +294,11 @@ source_set("eg_test_support+eg2") {
   sources = [
     "policy_app_interface.h",
     "policy_app_interface_stub.mm",
+    "policy_earl_grey_utils.h",
+    "policy_earl_grey_utils.mm",
   ]
   deps = [
+    "//base",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
   ]

@@ -625,6 +625,7 @@ bool IsAXSetter(SEL selector) {
 - (NSArray*)accessibilityAttributeNames {
   if (!_node)
     return @[];
+
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
     NSAccessibilityChildrenAttribute,
@@ -659,7 +660,9 @@ bool IsAXSetter(SEL selector) {
   base::scoped_nsobject<NSMutableArray> axAttributes(
       [[NSMutableArray alloc] init]);
   [axAttributes addObjectsFromArray:kAllRoleAttributes];
-  switch (_node->GetRole()) {
+
+  ax::mojom::Role role = _node->GetRole();
+  switch (role) {
     case ax::mojom::Role::kTextField:
     case ax::mojom::Role::kTextFieldWithComboBox:
     case ax::mojom::Role::kStaticText:
@@ -683,11 +686,11 @@ bool IsAXSetter(SEL selector) {
   }
   if (_node->HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
     [axAttributes addObject:NSAccessibilitySelectedAttribute];
-  if (ui::IsMenuItem(_node->GetRole()))
+  if (ui::IsMenuItem(role))
     [axAttributes addObject:@"AXMenuItemMarkChar"];
-  if (ui::IsItemLike(_node->GetRole()))
+  if (ui::IsItemLike(role))
     [axAttributes addObjectsFromArray:@[ @"AXARIAPosInSet", @"AXARIASetSize" ]];
-  if (ui::IsSetLike(_node->GetRole()))
+  if (ui::IsSetLike(role))
     [axAttributes addObject:@"AXARIASetSize"];
 
   // Live regions.
@@ -714,6 +717,13 @@ bool IsAXSetter(SEL selector) {
   if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete))
     [axAttributes addObject:NSAccessibilityAutocompleteValueAttribute];
 
+  // Table and grid.
+  if (ui::IsTableLike(role)) {
+    [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
+  }
+  if (ui::IsCellOrTableHeader(role) && role != ax::mojom::Role::kColumnHeader) {
+    [axAttributes addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
+  }
   return axAttributes.autorelease();
 }
 
@@ -838,6 +848,10 @@ bool IsAXSetter(SEL selector) {
     return nil;
 
   return [self getStringAttribute:ax::mojom::StringAttribute::kAutoComplete];
+}
+
+- (NSArray*)AXColumnHeaderUIElements {
+  return [self accessibilityColumnHeaderUIElements];
 }
 
 - (NSString*)AXRole {
@@ -1361,6 +1375,59 @@ bool IsAXSetter(SEL selector) {
 
 - (NSRange)accessibilityRangeForPosition:(NSPoint)point {
   return [[self AXRangeForPosition:[NSValue valueWithPoint:point]] rangeValue];
+}
+
+//
+// NSAccessibility protocol: configuring table and outline views
+
+- (NSArray*)accessibilityColumnHeaderUIElements {
+  if (![self instanceActive])
+    return nil;
+
+  ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
+  DCHECK(delegate);
+
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+
+  // If this is a table, return all column headers.
+  ax::mojom::Role role = _node->GetRole();
+  if (ui::IsTableLike(role)) {
+    for (ui::AXNodeID id : delegate->GetColHeaderNodeIds()) {
+      ui::AXPlatformNode* cell = delegate->GetFromNodeID(id);
+      if (cell) {
+        gfx::NativeViewAccessible native_cell = cell->GetNativeViewAccessible();
+        if (native_cell)
+          [ret addObject:native_cell];
+      }
+    }
+    return [ret count] ? ret : nil;
+  }
+
+  // Otherwise if this is a cell or a header cell, return the column headers for
+  // it.
+  if (!ui::IsCellOrTableHeader(role))
+    return nil;
+
+  ui::AXPlatformNodeBase* table = _node->GetTable();
+  if (!table)
+    return nil;
+
+  ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
+  DCHECK(tableDelegate);
+
+  absl::optional<int> column = delegate->GetTableCellColIndex();
+  if (!column)
+    return nil;
+
+  for (ui::AXNodeID id : tableDelegate->GetColHeaderNodeIds(*column)) {
+    ui::AXPlatformNode* cell = tableDelegate->GetFromNodeID(id);
+    if (cell) {
+      gfx::NativeViewAccessible native_cell = cell->GetNativeViewAccessible();
+      if (native_cell)
+        [ret addObject:native_cell];
+    }
+  }
+  return [ret count] ? ret : nil;
 }
 
 @end

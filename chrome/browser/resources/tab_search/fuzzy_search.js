@@ -28,7 +28,7 @@ export function fuzzySearch(input, records, options) {
   // present in the input string.
   // To address these shortcomings we use the exactSearch implementation below
   // if the options indicate an exact matching algorithm should be used.
-  performance.mark('tab_search:search_algorithm:metric_begin');
+  const searchStartTime = Date.now();
   let result;
   if (options.useFuzzySearch) {
     const keyNames = options.keys.reduce((acc, {name}) => {
@@ -54,7 +54,9 @@ export function fuzzySearch(input, records, options) {
   } else {
     result = exactSearch(input, records, options);
   }
-  performance.mark('tab_search:search_algorithm:metric_end');
+  chrome.metricsPrivate.recordTime(
+      'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
+      Math.round(Date.now() - searchStartTime));
   return result;
 }
 

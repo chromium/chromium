@@ -52,7 +52,8 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   SECURITY_DCHECK(!masker->SelfNeedsLayout());
   masker->ClearInvalidationMask();
 
-  FloatRect reference_box = SVGResources::ReferenceBoxForEffects(layout_object);
+  gfx::RectF reference_box =
+      SVGResources::ReferenceBoxForEffects(layout_object);
   AffineTransform content_transformation;
   if (masker->MaskContentUnits() ==
       SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {

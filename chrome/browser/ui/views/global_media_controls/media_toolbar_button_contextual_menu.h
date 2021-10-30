@@ -28,6 +28,8 @@ class MediaToolbarButtonContextualMenu : public ui::SimpleMenuModel::Delegate {
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
  private:
+  friend class MediaToolbarButtonContextualMenuTest;
+
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 

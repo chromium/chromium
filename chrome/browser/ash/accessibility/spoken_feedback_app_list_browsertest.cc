@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -95,7 +95,7 @@ class SpokenFeedbackAppListTest
             ->GetModelUpdaterForTest()
             ->GetPublishedSearchResultsForTest();
     for (auto* result : published_results) {
-      if (result->display_type() == ash::SearchResultDisplayType::kChip)
+      if (result->display_type() == SearchResultDisplayType::kChip)
         chips.push_back(base::UTF16ToUTF8(result->title()));
     }
     return chips;
@@ -107,9 +107,9 @@ class SpokenFeedbackAppListTest
         "CommandHandler.onCommand('readCurrentTitle');");
   }
 
-  ash::AppListItem* FindItemByName(const std::string& name, int* index) {
-    ash::AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
-    ash::AppListItemList* item_list = model->top_level_item_list();
+  AppListItem* FindItemByName(const std::string& name, int* index) {
+    AppListModel* const model = AppListModelProvider::Get()->model();
+    AppListItemList* item_list = model->top_level_item_list();
     for (int i = 0; i < item_list->item_count(); ++i) {
       if (item_list->item_at(i)->name() == name) {
         if (index)

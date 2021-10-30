@@ -28,6 +28,10 @@ GEN('#include "content/public/test/browser_test.h"');
     'PairingRequestCodePage',
     'bluetooth/bluetooth_pairing_request_code_page_test.js'
   ],
+  [
+    'PairingEnterCodePage',
+    'bluetooth/bluetooth_pairing_enter_code_page_test.js'
+  ],
   ['PairingUi', 'bluetooth/bluetooth_pairing_ui_test.js'],
   ['SpinnerPage', 'bluetooth/bluetooth_spinner_page_test.js'],
  ].forEach(test => registerTest('Bluetooth', 'bluetooth-pairing', ...test));

@@ -156,15 +156,15 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
 
   AffineTransform LocalToSVGParentTransform() const override;
 
-  FloatRect ObjectBoundingBox() const override {
+  gfx::RectF ObjectBoundingBox() const override {
     NOT_DESTROYED();
     return content_.ObjectBoundingBox();
   }
-  FloatRect StrokeBoundingBox() const override {
+  gfx::RectF StrokeBoundingBox() const override {
     NOT_DESTROYED();
     return content_.StrokeBoundingBox();
   }
-  FloatRect VisualRectInLocalSVGCoordinates() const override {
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
     return content_.StrokeBoundingBox();
   }

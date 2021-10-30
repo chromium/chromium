@@ -586,6 +586,9 @@
   "RemoteAccessHostClipboardSizeBytes": {
     "reason_for_missing_test": "Not used by the browser, handled by CRD host."
   },
+  "RemoteAccessHostAllowRemoteSupportConnections": {
+    "reason_for_missing_test": "Not used by the browser, handled by CRD host."
+  },
   "PrintingEnabled": {
     "os": [
       "win",

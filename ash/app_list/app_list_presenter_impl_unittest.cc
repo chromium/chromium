@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_item_view.h"
@@ -90,7 +91,7 @@ TEST_F(AppListPresenterImplTest, WidgetDestroyed) {
 // Test that clicking on app list context menus doesn't close the app list.
 TEST_F(AppListPresenterImplTest, ClickingContextMenuDoesNotDismiss) {
   // Populate some apps since we will show the context menu over a view.
-  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+  AppListModel* model = AppListModelProvider::Get()->model();
   model->AddItem(std::make_unique<AppListItem>("item 1"));
   model->AddItem(std::make_unique<AppListItem>("item 2"));
 

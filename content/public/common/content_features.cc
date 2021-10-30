@@ -69,6 +69,11 @@ const base::Feature kAudioServiceSandbox {
 #endif
 };
 
+// When enabled, the browser process will only ask the renderer process to run
+// beforeunload handlers if it knows such handlers are registered.
+const base::Feature kAvoidUnnecessaryBeforeUnloadCheck{
+    "AvoidUnnecessaryBeforeUnloadCheck", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Kill switch for Background Fetch.
 const base::Feature kBackgroundFetch{"BackgroundFetch",
                                      base::FEATURE_ENABLED_BY_DEFAULT};

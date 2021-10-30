@@ -268,6 +268,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   // return 1x1 rectangle in the apps grid center.
   gfx::Rect GetExpectedItemBoundsInFirstPage(const std::string& id) const;
 
+  // Whether the provided view is hidden to facilitate drag operation (for
+  // example, the drag view for which a drag icon proxy has been created).
+  bool IsViewHiddenForDrag(const views::View* view) const;
+
   // Passes scroll information from a parent view, so that subclasses may scroll
   // or switch pages.
   virtual void HandleScrollFromParentView(const gfx::Vector2d& offset,
@@ -395,10 +399,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Calculates the item views' bounds for both folder and non-folder.
   void CalculateIdealBounds();
-
-  // Whether the provided view is hidden to facilitate drag operation (for
-  // example, the drag view for which a drag icon proxy has been created).
-  bool IsViewHiddenForDrag(const views::View* view) const;
 
   // Gets the bounds of the tile located at |index|, where |index| contains the
   // page/slot info.

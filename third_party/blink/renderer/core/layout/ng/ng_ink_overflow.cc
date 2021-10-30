@@ -363,7 +363,7 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
-    const FloatRect& rect,
+    const gfx::RectF& rect,
     float scaling_factor,
     float length_adjust_scale,
     const AffineTransform& transform,
@@ -382,11 +382,11 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
       ComputeTextInkOverflow(text_info, style, scaled_font, item_size);
   const bool needs_transform =
       scaling_factor != 1.0f || !transform.IsIdentity();
-  PhysicalSize unscaled_size = PhysicalSize::FromFloatSizeRound(rect.size());
+  PhysicalSize unscaled_size = PhysicalSize::FromSizeFRound(rect.size());
   unscaled_size.Scale(1.0f / scaling_factor);
   if (!ink_overflow) {
     if (needs_transform) {
-      FloatRect transformed_rect = transform.MapRect(rect);
+      gfx::RectF transformed_rect = transform.MapRect(rect);
       transformed_rect.Offset(-rect.x(), -rect.y());
       transformed_rect.Scale(1 / scaling_factor);
       *ink_overflow_out = PhysicalRect::EnclosingRect(transformed_rect);
@@ -408,7 +408,7 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
         LayoutUnit(ink_overflow->Height() * length_adjust_scale));
   }
   if (needs_transform) {
-    FloatRect transformed_rect = FloatRect(*ink_overflow);
+    gfx::RectF transformed_rect(*ink_overflow);
     transformed_rect.Offset(rect.x(), rect.y());
     transformed_rect = transform.MapRect(transformed_rect);
     transformed_rect.Offset(-rect.x(), -rect.y());

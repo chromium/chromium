@@ -401,11 +401,7 @@ class FakeDataRequestedEventArgs final
 
 // static
 bool FakeDataTransferManager::IsSupportedEnvironment() {
-  if (base::win::ResolveCoreWinRTDelayload() &&
-      base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return true;
-  EXPECT_LT(base::win::GetVersion(), base::win::Version::WIN8);
-  return false;
+  return base::win::GetVersion() >= base::win::Version::WIN10;
 }
 
 FakeDataTransferManager::FakeDataTransferManager() {

@@ -250,6 +250,113 @@ class OverviewSessionTest : public OverviewTestBase {
   }
 };
 
+// Tests that close buttons on windows in overview do not work
+// when one window is being dragged.
+TEST_F(OverviewSessionTest, CloseButtonDisabledOnDrag) {
+  std::unique_ptr<views::Widget> widget1(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget2(CreateTestWidget());
+
+  aura::Window* window1 = widget1->GetNativeWindow();
+  aura::Window* window2 = widget2->GetNativeWindow();
+
+  ToggleOverview();
+
+  ASSERT_FALSE(widget1->IsClosed());
+  ASSERT_FALSE(widget2->IsClosed());
+
+  OverviewItem* item1 = GetOverviewItemForWindow(window1);
+  OverviewItem* item2 = GetOverviewItemForWindow(window2);
+
+  // Get location of close button on `window1` before drag.
+  const gfx::Point item1_close_button_position =
+      GetCloseButton(item1)->GetBoundsInScreen().CenterPoint();
+
+  // Drag `window1` in overview to trigger drag animations.
+  GetEventGenerator()->PressTouchId(
+      /*touch_id=*/0, item1->GetBoundsOfSelectedItem().CenterPoint());
+  GetEventGenerator()->MoveTouchIdBy(/*touch_id=*/0, -100, 0);
+
+  // Make sure the drag event triggered the fade animations.
+  EXPECT_EQ(0.f, GetTitlebarOpacity(item1));
+  EXPECT_EQ(1.f, GetCloseButtonOpacity(item1));
+  EXPECT_EQ(1.f, GetTitlebarOpacity(item2));
+  EXPECT_EQ(0.f, GetCloseButtonOpacity(item2));
+
+  // Both close buttons should be disabled at this point.
+  EXPECT_FALSE(GetCloseButton(item1)->GetEnabled());
+  EXPECT_FALSE(GetCloseButton(item2)->GetEnabled());
+
+  // Try to close `window2` and `window1`.
+  GetEventGenerator()->GestureTapAt(
+      GetCloseButton(item2)->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->GestureTapAt(item1_close_button_position);
+  GetEventGenerator()->GestureTapAt(
+      GetCloseButton(item1)->GetBoundsInScreen().CenterPoint());
+
+  // Check that both windows are still open.
+  ASSERT_FALSE(widget1->IsClosed());
+  ASSERT_FALSE(widget2->IsClosed());
+
+  // Release touch 0 to exit drag.
+  GetEventGenerator()->ReleaseTouchId(0);
+
+  // We should still be in an overview session.
+  ASSERT_TRUE(InOverviewSession());
+
+  // The windows should now be closable.
+  GetEventGenerator()->GestureTapAt(
+      GetCloseButton(item2)->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->GestureTapAt(
+      GetCloseButton(item1)->GetBoundsInScreen().CenterPoint());
+
+  EXPECT_TRUE(widget1->IsClosed());
+  EXPECT_TRUE(widget2->IsClosed());
+}
+
+// Tests that close buttons on windows in overview are re-enabled
+// when one window is snapped to a side of the screen.
+TEST_F(OverviewSessionTest, CloseButtonEnabledOnSnap) {
+  std::unique_ptr<views::Widget> widget2 = CreateTestWidget();
+
+  std::unique_ptr<aura::Window> window1 = CreateTestWindow();
+  aura::Window* window2 = widget2->GetNativeWindow();
+
+  ToggleOverview();
+
+  OverviewItem* item1 = GetOverviewItemForWindow(window1.get());
+  OverviewItem* item2 = GetOverviewItemForWindow(window2);
+
+  ASSERT_FALSE(widget2->IsClosed());
+
+  ASSERT_TRUE(GetSplitViewController()->CanSnapWindow(window1.get()));
+
+  // Snap `window1` to the left side of the screen while in
+  // overview.
+  GetEventGenerator()->PressTouchId(
+      /*touch_id=*/0, item1->GetBoundsOfSelectedItem().CenterPoint());
+
+  GetEventGenerator()->MoveTouchId(gfx::Point(0, 0), /*touch_id=*/0);
+
+  EXPECT_FALSE(GetCloseButton(item1)->GetEnabled());
+  EXPECT_FALSE(GetCloseButton(item2)->GetEnabled());
+
+  GetEventGenerator()->ReleaseTouchId(0);
+
+  ASSERT_TRUE(InOverviewSession());
+  EXPECT_EQ(SplitViewController::State::kLeftSnapped,
+            GetSplitViewController()->state());
+
+  // The close button for `window2` should be enabled.
+  EXPECT_TRUE(GetCloseButton(item2)->GetEnabled());
+
+  // Try to close `window2`.
+  GetEventGenerator()->GestureTapAt(
+      GetCloseButton(item2)->GetBoundsInScreen().CenterPoint());
+
+  // Check that `window2` is closed.
+  EXPECT_TRUE(widget2->IsClosed());
+}
+
 // Tests that an a11y alert is sent on entering overview mode.
 TEST_F(OverviewSessionTest, A11yAlertOnOverviewMode) {
   TestAccessibilityControllerClient client;

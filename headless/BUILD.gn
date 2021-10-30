@@ -878,7 +878,10 @@ static_library("headless_shell_lib") {
     "//printing/buildflags",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//third_party/inspector_protocol:crdtp",
+  ]
 
   if (!is_component_build) {
     public_deps += [ ":headless_non_renderer" ]

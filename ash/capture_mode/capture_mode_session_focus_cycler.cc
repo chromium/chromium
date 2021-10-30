@@ -293,6 +293,9 @@ void CaptureModeSessionFocusCycler::OnSettingsMenuWidgetCreated() {
 }
 
 void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
+  settings_menu_opened_with_keyboard_nav_ = false;
+  settings_menu_widget_observeration_.Reset();
+
   // Return immediately if the widget is closing by the closing of `session_`.
   if (session_->is_shutting_down())
     return;
@@ -302,9 +305,6 @@ void CaptureModeSessionFocusCycler::OnWidgetClosing(views::Widget* widget) {
       current_focus_group_ == FocusGroup::kSettingsMenu) {
     ClearFocus();
   }
-
-  settings_menu_opened_with_keyboard_nav_ = false;
-  settings_menu_widget_observeration_.Reset();
   UpdateA11yAnnotation();
 }
 

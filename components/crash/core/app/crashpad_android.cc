@@ -717,13 +717,14 @@ bool StartHandlerForClient(int fd, bool write_minidump_to_database) {
       GetCrashReporterClient(), fd, write_minidump_to_database);
 }
 
-base::FilePath PlatformCrashpadInitialization(
+bool PlatformCrashpadInitialization(
     bool initial_client,
     bool browser_process,
     bool embedded_handler,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments) {
+    const std::vector<std::string>& initial_arguments,
+    base::FilePath* database_path) {
   DCHECK_EQ(initial_client, browser_process);
   DCHECK(initial_arguments.empty());
 
@@ -745,14 +746,16 @@ base::FilePath PlatformCrashpadInitialization(
 
   if (browser_process) {
     HandlerStarter* starter = HandlerStarter::Get();
-    return starter->Initialize(dump_at_crash);
+    *database_path = starter->Initialize(dump_at_crash);
+    return true;
   }
 
   crashpad::SandboxedHandler* handler = crashpad::SandboxedHandler::Get();
   bool result = handler->Initialize(dump_at_crash);
   DCHECK(result);
 
-  return base::FilePath();
+  *database_path = base::FilePath();
+  return true;
 }
 
 }  // namespace internal

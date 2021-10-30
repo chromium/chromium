@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
@@ -19,8 +20,11 @@ class TestURLLoaderFactory;
 #if defined(OS_CHROMEOS)
 namespace account_manager {
 class AccountManager;
-}
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AccountManagerFacade;
 #endif
+}  // namespace account_manager
+#endif  // defined(OS_CHROMEOS)
 
 class GoogleServiceAuthError;
 
@@ -207,6 +211,11 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
 
 #if defined(OS_CHROMEOS)
 account_manager::AccountManager* GetAccountManager(
+    IdentityManager* identity_manager);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+account_manager::AccountManagerFacade* GetAccountManagerFacade(
     IdentityManager* identity_manager);
 #endif
 }  // namespace signin

@@ -67,7 +67,7 @@ bool LayoutSVGResourceGradient::RemoveClientFromCache(
 }
 
 std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
-    const FloatRect& object_bounding_box) {
+    const gfx::RectF& object_bounding_box) {
   NOT_DESTROYED();
   // Create gradient object
   auto gradient_data = std::make_unique<GradientData>();
@@ -106,7 +106,7 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
 
 bool LayoutSVGResourceGradient::ApplyShader(
     const SVGResourceClient& client,
-    const FloatRect& reference_box,
+    const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
     PaintFlags& flags) {
   NOT_DESTROYED();

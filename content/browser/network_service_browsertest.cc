@@ -797,7 +797,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
 // Using the same network context, make an HTTP request with
 // `reset_http_cache_backend` set to true, and verify that the cache files are
 // recreated successfully.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_FUCHSIA)
 #define MAYBE_CacheResetTest DISABLED_CacheResetTest
 #else
 #define MAYBE_CacheResetTest CacheResetTest

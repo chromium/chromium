@@ -145,6 +145,8 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   views::Label* header_year_ = nullptr;
   views::Button* reset_to_today_button_ = nullptr;
   views::Button* settings_button_ = nullptr;
+  TopShortcutButton* up_button_ = nullptr;
+  TopShortcutButton* down_button_ = nullptr;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.

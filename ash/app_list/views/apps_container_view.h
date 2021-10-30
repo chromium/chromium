@@ -26,7 +26,6 @@ namespace ash {
 class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
-class AppListModel;
 class ContentsView;
 class FolderBackgroundView;
 class PageSwitcher;
@@ -42,7 +41,7 @@ class ASH_EXPORT AppsContainerView
       public PagedAppsGridView::ContainerDelegate,
       public RecentAppsView::Delegate {
  public:
-  AppsContainerView(ContentsView* contents_view, AppListModel* model);
+  explicit AppsContainerView(ContentsView* contents_view);
 
   AppsContainerView(const AppsContainerView&) = delete;
   AppsContainerView& operator=(const AppsContainerView&) = delete;

@@ -45,7 +45,6 @@
   X("blink.resource")                                                    \
   X("blink.user_timing")                                                 \
   X("blink.worker")                                                      \
-  X("blink_gc")                                                          \
   X("blink_style")                                                       \
   X("Blob")                                                              \
   X("browser")                                                           \
@@ -53,6 +52,7 @@
   X("CacheStorage")                                                      \
   X("Calculators")                                                       \
   X("CameraStream")                                                      \
+  X("cppgc")                                                             \
   X("camera")                                                            \
   X("cast_app")                                                          \
   X("cast_perf_test")                                                    \
@@ -185,7 +185,6 @@
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("blink_gc"))                               \
   X(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding"))                   \
   X(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("cc"))                                     \
@@ -198,6 +197,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.now"))                 \
   X(TRACE_DISABLED_BY_DEFAULT("content.verbose"))                        \
   X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))                           \
+  X(TRACE_DISABLED_BY_DEFAULT("cppgc"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"))                     \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"))                    \
   X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                      \

@@ -2518,6 +2518,31 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookies) {
     EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
   }
 
+  // Verify that the lax cookie is sent for cross-site initiators when the
+  // method is "safe" and the request is being forced to be considered as a
+  // main frame navigation.
+  {
+    TestDelegate d;
+    std::unique_ptr<URLRequest> req(default_context().CreateRequest(
+        test_server.GetURL(kHost, "/echoheader?Cookie"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_isolation_info(IsolationInfo::Create(
+        IsolationInfo::RequestType::kOther, kOrigin, kOrigin, kSiteForCookies,
+        {} /* party_context */));
+    req->set_site_for_cookies(kSiteForCookies);
+    req->set_initiator(kCrossOrigin);
+    req->set_method("GET");
+    req->set_force_main_frame_for_same_site_cookies(true);
+    req->Start();
+    d.RunUntilComplete();
+
+    EXPECT_EQ(std::string::npos,
+              d.data_received().find("StrictSameSiteCookie=1"));
+    EXPECT_NE(std::string::npos, d.data_received().find("LaxSameSiteCookie=1"));
+    EXPECT_EQ(0, network_delegate.blocked_annotate_cookies_count());
+    EXPECT_EQ(0, network_delegate.blocked_set_cookie_count());
+  }
+
   // Verify that neither cookie is sent for cross-site initiators when the
   // method is unsafe (e.g. POST), even if the request is a main frame
   // navigation.

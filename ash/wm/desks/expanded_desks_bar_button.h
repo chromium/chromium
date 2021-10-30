@@ -31,6 +31,7 @@ class ExpandedDesksBarButton : public views::View {
   ExpandedDesksBarButton(DesksBarView* bar_view,
                          const gfx::VectorIcon* button_icon,
                          const std::u16string& button_label,
+                         bool initially_enabled,
                          base::RepeatingClosure callback);
   ExpandedDesksBarButton(const ExpandedDesksBarButton&) = delete;
   ExpandedDesksBarButton& operator=(const ExpandedDesksBarButton&) = delete;
@@ -43,10 +44,10 @@ class ExpandedDesksBarButton : public views::View {
   void set_active(bool active) { active_ = active; }
 
   // Updates `inner_button_`'s state on current desks state.
-  void UpdateButtonState();
+  void SetButtonState(bool enabled);
 
   // Updates the `label_`'s color on DesksController::CanCreateDesks.
-  void UpdateLabelColor();
+  void UpdateLabelColor(bool enabled);
 
   bool IsPointOnButton(const gfx::Point& screen_location) const;
 

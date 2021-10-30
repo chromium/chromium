@@ -18,6 +18,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       'getLocalImageThumbnail',
       'setWallpaperObserver',
       'selectWallpaper',
+      'selectLocalImage',
       'setCustomWallpaperLayout',
       'setDailyRefreshCollectionId',
       'getDailyRefreshCollectionId',
@@ -164,8 +165,8 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   }
 
   /** @override */
-  selectLocalImage(id, previewMode) {
-    this.methodCalled('selectLocalImage', id, previewMode);
+  selectLocalImage(id, layout, previewMode) {
+    this.methodCalled('selectLocalImage', id, layout, previewMode);
     return Promise.resolve({success: this.selectLocalImageResponse});
   }
 

@@ -192,6 +192,7 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
   result->SetBoolean(key::kRemoteAccessHostAllowUiAccessForRemoteAssistance,
                      false);
   result->SetInteger(key::kRemoteAccessHostClipboardSizeBytes, -1);
+  result->SetBoolean(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   result->SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
   result->SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);

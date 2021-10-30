@@ -7,16 +7,20 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/printing/print_job_manager.h"
+#include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
+#include "chrome/browser/printing/printer_query.h"
 #include "chrome/browser/printing/test_print_job.h"
-#include "chrome/browser/printing/test_printer_query.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -24,6 +28,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "printing/print_settings.h"
+#include "printing/print_settings_conversion.h"
+#include "printing/units.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 #if defined(OS_WIN)
@@ -33,6 +40,152 @@
 namespace printing {
 
 using PrintViewManagerTest = BrowserWithTestWindowTest;
+
+namespace {
+
+class TestPrintQueriesQueue : public PrintQueriesQueue {
+ public:
+  TestPrintQueriesQueue() = default;
+  TestPrintQueriesQueue(const TestPrintQueriesQueue&) = delete;
+  TestPrintQueriesQueue& operator=(const TestPrintQueriesQueue&) = delete;
+
+  // Creates a `TestPrinterQuery`. Sets up the printer query with the printer
+  // settings indicated by `printable_offset_x_`, `printable_offset_y_`, and
+  // `print_driver_type_`.
+  std::unique_ptr<PrinterQuery> CreatePrinterQuery(
+      int render_process_id,
+      int render_frame_id) override;
+
+  // Sets the printer's printable area offsets to `offset_x` and `offset_y`,
+  // which should be in pixels. Used to fill in printer settings that would
+  // normally be filled in by the backend `PrintingContext`.
+  void SetupPrinterOffsets(int offset_x, int offset_y);
+
+#if defined(OS_WIN)
+  // Sets the printer type to `type`. Used to fill in printer settings that
+  // would normally be filled in by the backend `PrintingContext`.
+  void SetupPrinterLanguageType(mojom::PrinterLanguageType type);
+#endif
+
+ private:
+  ~TestPrintQueriesQueue() override = default;
+
+#if defined(OS_WIN)
+  mojom::PrinterLanguageType printer_language_type_;
+#endif
+  int printable_offset_x_;
+  int printable_offset_y_;
+};
+
+class TestPrinterQuery : public PrinterQuery {
+ public:
+  // Can only be called on the IO thread, since this inherits from
+  // `PrinterQuery`.
+  TestPrinterQuery(int render_process_id, int render_frame_id);
+  TestPrinterQuery(const TestPrinterQuery&) = delete;
+  TestPrinterQuery& operator=(const TestPrinterQuery&) = delete;
+  ~TestPrinterQuery() override;
+
+  // Updates the current settings with `new_settings` dictionary values. Also
+  // fills in the settings with values from `offsets_` and `printer_type_` that
+  // would normally be filled in by the `PrintingContext`.
+  void SetSettings(base::Value new_settings,
+                   base::OnceClosure callback) override;
+
+#if defined(OS_WIN)
+  // Sets `printer_language_type_` to `type`. Should be called before
+  // `SetSettings()`.
+  void SetPrinterLanguageType(mojom::PrinterLanguageType type);
+#endif
+
+  // Sets printer offsets to `offset_x` and `offset_y`, which should be in DPI.
+  // Should be called before `SetSettings()`.
+  void SetPrintableAreaOffsets(int offset_x, int offset_y);
+
+  // Intentional no-op.
+  void StopWorker() override;
+
+ private:
+  absl::optional<gfx::Point> offsets_;
+#if defined(OS_WIN)
+  absl::optional<mojom::PrinterLanguageType> printer_language_type_;
+#endif
+};
+
+std::unique_ptr<PrinterQuery> TestPrintQueriesQueue::CreatePrinterQuery(
+    int render_process_id,
+    int render_frame_id) {
+  auto test_query =
+      std::make_unique<TestPrinterQuery>(render_process_id, render_frame_id);
+#if defined(OS_WIN)
+  test_query->SetPrinterLanguageType(printer_language_type_);
+#endif
+  test_query->SetPrintableAreaOffsets(printable_offset_x_, printable_offset_y_);
+
+  return test_query;
+}
+
+void TestPrintQueriesQueue::SetupPrinterOffsets(int offset_x, int offset_y) {
+  printable_offset_x_ = offset_x;
+  printable_offset_y_ = offset_y;
+}
+
+#if defined(OS_WIN)
+void TestPrintQueriesQueue::SetupPrinterLanguageType(
+    mojom::PrinterLanguageType type) {
+  printer_language_type_ = type;
+}
+#endif
+
+TestPrinterQuery::TestPrinterQuery(int render_process_id, int render_frame_id)
+    : PrinterQuery(render_process_id, render_frame_id) {}
+
+TestPrinterQuery::~TestPrinterQuery() = default;
+
+void TestPrinterQuery::SetSettings(base::Value new_settings,
+                                   base::OnceClosure callback) {
+  DCHECK(offsets_);
+#if defined(OS_WIN)
+  DCHECK(printer_language_type_);
+#endif
+  std::unique_ptr<PrintSettings> settings =
+      PrintSettingsFromJobSettings(new_settings);
+  mojom::ResultCode result = mojom::ResultCode::kSuccess;
+  if (!settings) {
+    settings = std::make_unique<PrintSettings>();
+    result = mojom::ResultCode::kFailed;
+  }
+
+  float device_microns_per_device_unit =
+      static_cast<float>(kMicronsPerInch) / settings->device_units_per_inch();
+  gfx::Size paper_size =
+      gfx::Size(settings->requested_media().size_microns.width() /
+                    device_microns_per_device_unit,
+                settings->requested_media().size_microns.height() /
+                    device_microns_per_device_unit);
+  gfx::Rect paper_rect(0, 0, paper_size.width(), paper_size.height());
+  paper_rect.Inset(offsets_->x(), offsets_->y());
+  settings->SetPrinterPrintableArea(paper_size, paper_rect, true);
+#if defined(OS_WIN)
+  settings->set_printer_language_type(*printer_language_type_);
+#endif
+
+  GetSettingsDone(std::move(callback), std::move(settings), result);
+}
+
+#if defined(OS_WIN)
+void TestPrinterQuery::SetPrinterLanguageType(mojom::PrinterLanguageType type) {
+  printer_language_type_ = type;
+}
+#endif
+
+void TestPrinterQuery::SetPrintableAreaOffsets(int offset_x, int offset_y) {
+  offsets_ = gfx::Point(offset_x, offset_y);
+}
+
+void TestPrinterQuery::StopWorker() {}
+
+}  // namespace
 
 class TestPrintViewManager : public PrintViewManagerBase {
  public:

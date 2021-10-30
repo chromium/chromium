@@ -71,7 +71,6 @@ import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
@@ -166,8 +165,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -255,8 +253,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -333,8 +330,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -386,8 +382,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -437,8 +432,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -492,8 +486,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -572,8 +565,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -641,8 +633,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -679,8 +670,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -728,8 +718,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -802,8 +791,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -861,8 +849,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -898,8 +885,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 
@@ -971,8 +957,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Address")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -1058,8 +1043,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
 

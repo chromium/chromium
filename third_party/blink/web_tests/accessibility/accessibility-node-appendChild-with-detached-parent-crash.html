@@ -1,0 +1,15 @@
+<body>
+PASS if no crash.
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+let i = document.createElement('iframe');
+document.body.appendChild(i);
+let div = document.createElement("div");
+i.contentDocument.body.appendChild(div);
+
+i.remove();
+div.accessibleNode.appendChild(new AccessibleNode()); 
+</script>
+</body>

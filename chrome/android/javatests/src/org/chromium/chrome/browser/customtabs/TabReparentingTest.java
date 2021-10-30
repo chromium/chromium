@@ -22,6 +22,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ObserverList;
@@ -35,14 +37,20 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
+import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
@@ -67,6 +75,23 @@ public class TabReparentingTest {
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
+            BaseCustomTabActivityModule.Factory.class,
+            (BrowserServicesIntentDataProvider intentDataProvider,
+                    StartupTabPreloader startupTabPreloader,
+                    CustomTabNightModeStateController nightModeController,
+                    CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                    TopUiThemeColorProvider topUiThemeColorProvider,
+                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                    -> new BaseCustomTabActivityModule(intentDataProvider, startupTabPreloader,
+                            nightModeController, intentIgnoringCriterion, topUiThemeColorProvider,
+                            new FakeDefaultBrowserProviderImpl()));
+
+    @Rule
+    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
+                                          .around(mCustomTabActivityTestRule)
+                                          .around(mModuleOverridesRule);
 
     private String mTestPage;
     private EmbeddedTestServer mTestServer;

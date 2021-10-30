@@ -128,15 +128,34 @@ crashpad::ObjcExceptionDelegate* g_exception_delegate;
 objc_exception_preprocessor g_next_preprocessor;
 NSUncaughtExceptionHandler* g_next_uncaught_exception_handler;
 
-static void SetNSExceptionAnnotations(id exception,
+static void SetNSExceptionAnnotations(NSException* exception,
                                       std::string& name,
                                       std::string& reason) {
-  name = base::SysNSStringToUTF8([exception name]);
-  reason = base::SysNSStringToUTF8([exception reason]);
-  static crashpad::StringAnnotation<256> nameKey("exceptionName");
-  nameKey.Set(name);
-  static crashpad::StringAnnotation<512> reasonKey("exceptionReason");
-  reasonKey.Set(reason);
+  @try {
+    name = base::SysNSStringToUTF8(exception.name);
+    static crashpad::StringAnnotation<256> nameKey("exceptionName");
+    nameKey.Set(name);
+  } @catch (id name_exception) {
+    LOG(ERROR) << "Unable to read uncaught Objective-C exception name.";
+  }
+
+  @try {
+    reason = base::SysNSStringToUTF8(exception.reason);
+    static crashpad::StringAnnotation<512> reasonKey("exceptionReason");
+    reasonKey.Set(reason);
+  } @catch (id reason_exception) {
+    LOG(ERROR) << "Unable to read uncaught Objective-C exception reason.";
+  }
+
+  @try {
+    if (exception.userInfo) {
+      static crashpad::StringAnnotation<512> userInfoKey("exceptionUserInfo");
+      userInfoKey.Set(base::SysNSStringToUTF8(
+          [NSString stringWithFormat:@"%@", exception.userInfo]));
+    }
+  } @catch (id user_info_exception) {
+    LOG(ERROR) << "Unable to read uncaught Objective-C exception user info.";
+  }
 }
 
 static void ObjcUncaughtExceptionHandler(NSException* exception) {
@@ -147,7 +166,6 @@ static void ObjcUncaughtExceptionHandler(NSException* exception) {
     static crashpad::StringAnnotation<256> nameKey("UncaughtNSException");
     nameKey.Set("true");
     std::vector<uint64_t> addresses;
-    NSArray<NSNumber*>* addressArray = [exception callStackReturnAddresses];
     for (NSNumber* address in addressArray)
       addresses.push_back([address unsignedLongLongValue]);
     g_exception_delegate->HandleUncaughtNSException(&addresses[0],

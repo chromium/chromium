@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -741,7 +742,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
 
 void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
-  FloatRect unscaled_visual_rect;
+  gfx::RectF unscaled_visual_rect;
   for (const SvgPerCharacterInfo& info : result_) {
     if (info.middle)
       continue;
@@ -769,11 +770,10 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
       width = item->Size().width;
       height = info.inline_size;
     }
-    FloatRect scaled_rect(x, y, width, height);
+    gfx::RectF scaled_rect(x, y, width, height);
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
-    FloatRect unscaled_rect = scaled_rect;
-    unscaled_rect.Scale(1 / scaling_factor);
+    gfx::RectF unscaled_rect = gfx::ScaleRect(scaled_rect, 1 / scaling_factor);
     auto data = std::make_unique<NGSvgFragmentData>();
     data->shape_result = item->TextShapeResult();
     data->text_offset = item->TextOffset();
@@ -786,7 +786,7 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
                                PhysicalRect::EnclosingRect(unscaled_rect),
                                info.hidden);
 
-    FloatRect transformd_rect = scaled_rect;
+    gfx::RectF transformd_rect = scaled_rect;
     if (item.item.HasSvgTransformForBoundingBox()) {
       transformd_rect =
           item.item.BuildSvgTransformForBoundingBox().MapRect(transformd_rect);
@@ -796,7 +796,7 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
   }
   if (items[0]->Type() == NGFragmentItem::kLine) {
     items[0].item.SetSvgLineLocalRect(
-        PhysicalRect(EnclosingIntRect(unscaled_visual_rect)));
+        PhysicalRect(gfx::ToEnclosingRect(unscaled_visual_rect)));
   }
   // |items| should not have kLine items other than the first one.
   DCHECK_EQ(std::find_if(items.begin() + 1, items.end(),

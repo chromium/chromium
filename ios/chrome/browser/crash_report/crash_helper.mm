@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
@@ -141,8 +142,11 @@ void Start() {
   if (common::CanCrashpadStart()) {
     base::PathService::Override(ios::DIR_CRASH_DUMPS,
                                 common::CrashpadDumpLocation());
-    common::StartCrashpad();
-    crash_reporter::SetCrashpadRunning(true);
+    bool initialized = common::StartCrashpad();
+    if (initialized) {
+      crash_reporter::SetCrashpadRunning(true);
+    }
+    UMA_HISTOGRAM_BOOLEAN("Stability.IOS.Crashpad.Initialized", initialized);
   } else {
     NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
         NSCachesDirectory, NSUserDomainMask, YES);
@@ -171,8 +175,10 @@ void SetEnabled(bool enabled) {
   // the function will update its preference based on finch.
   [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
 
-  // Crashpad is always running, don't shut it off.
-  if (crash_reporter::IsCrashpadRunning()) {
+  // Crashpad is always running, don't shut it off. Using CanCrashpadStart()
+  // here, because if Crashpad fails to init, do not unintentionally enable
+  // breakpad.
+  if (common::CanCrashpadStart()) {
     return;
   }
 
@@ -222,6 +228,10 @@ void SetUploadingEnabled(bool enabled) {
     return;
   }
 
+  if (common::CanCrashpadStart()) {
+    return;
+  }
+
   if ([MainThreadFreezeDetector sharedInstance].canUploadBreakpadCrashReports) {
     SetBreakpadUploadingEnabled(enabled);
   } else {
@@ -237,6 +247,10 @@ void CleanupCrashReports(BOOL after_upgrade) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&ProcessIntermediateDumps));
+    return;
+  }
+
+  if (common::CanCrashpadStart()) {
     return;
   }
 
@@ -279,14 +293,6 @@ int GetPendingCrashReportCount() {
   }];
   dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
   return outerCrashReportCount;
-}
-
-void GetCrashReportCount(void (^callback)(int)) {
-  if (crash_reporter::IsCrashpadRunning()) {
-    callback(GetPendingCrashReportCount());
-  }
-
-  [[BreakpadController sharedInstance] getCrashReportCount:callback];
 }
 
 bool HasReportToUpload() {
@@ -354,12 +360,10 @@ void StartUploadingReportsInRecoveryMode() {
 }
 
 void RestoreDefaultConfiguration() {
-  if (crash_reporter::IsCrashpadRunning()) {
+  if (!crash_reporter::IsBreakpadRunning()) {
     return;
   }
 
-  if (!crash_reporter::IsBreakpadRunning())
-    return;
   [[BreakpadController sharedInstance] stop];
   [[BreakpadController sharedInstance] resetConfiguration];
   [[BreakpadController sharedInstance] start:NO];

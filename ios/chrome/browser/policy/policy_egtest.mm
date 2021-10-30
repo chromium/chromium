@@ -4,7 +4,6 @@
 
 #include "ios/testing/earl_grey/earl_grey_test.h"
 
-#include "base/json/json_string_value_serializer.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -16,6 +15,7 @@
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -47,46 +47,9 @@
 #error "This file requires ARC support."
 #endif
 
+using policy_test_utils::SetPolicy;
+
 namespace {
-
-// Returns a JSON-encoded string representing the given |base::Value|. If
-// |value| is nullptr, returns a string representing a |base::Value| of type
-// NONE.
-NSString* SerializeValue(const base::Value value) {
-  std::string serialized_value;
-  JSONStringValueSerializer serializer(&serialized_value);
-  serializer.Serialize(std::move(value));
-  return base::SysUTF8ToNSString(serialized_value);
-}
-
-// Sets the value of the policy with the |policy_key| key to the given value.
-// The value must be serialized as a JSON string.
-// Prefer using the other type-specific helpers instead of this generic helper
-// if possible.
-void SetPolicy(NSString* json_value, const std::string& policy_key) {
-  [PolicyAppInterface setPolicyValue:json_value
-                              forKey:base::SysUTF8ToNSString(policy_key)];
-}
-
-// Sets the value of the policy with the |policy_key| key to the given value.
-// The value must be wrapped in a |base::Value|.
-// Prefer using the other type-specific helpers instead of this generic helper
-// if possible.
-void SetPolicy(base::Value value, const std::string& policy_key) {
-  SetPolicy(SerializeValue(std::move(value)), policy_key);
-}
-
-// Sets the value of the policy with the |policy_key| key to the given boolean
-// value.
-void SetPolicy(bool enabled, const std::string& policy_key) {
-  SetPolicy(base::Value(enabled), policy_key);
-}
-
-// Sets the value of the policy with the |policy_key| key to the given integer
-// value.
-void SetPolicy(int value, const std::string& policy_key) {
-  SetPolicy(base::Value(value), policy_key);
-}
 
 // TODO(crbug.com/1065522): Add helpers as needed for:
 //    - STRING

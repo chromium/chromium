@@ -179,8 +179,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include "base/win/core_winrt_util.h"
-#include "base/win/scoped_hstring.h"
+#include "base/win/windows_version.h"
 #endif
 
 #if BUILDFLAG(ENABLE_FEED_V2)
@@ -334,9 +333,8 @@ std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
 // Mojo implementation (e.g. WebView).
 void MaybeEnableWebShare() {
 #if defined(OS_WIN)
-  if (!base::win::ResolveCoreWinRTDelayload() ||
-      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
-    // Web Share API is not available for Windows 7.
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    // Web Share API is not functional for non-UWP apps prior to Windows 10.
     return;
   }
 #endif

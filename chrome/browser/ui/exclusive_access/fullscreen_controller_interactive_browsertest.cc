@@ -723,9 +723,9 @@ class ExperimentalFullscreenControllerInteractiveTest
     const std::string request_fullscreen_script =
         base::StringPrintf(R"(
       (async () => {
-        if (!window.screensInterface)
-          window.screensInterface = await window.getScreens();
-        const options = { screen: window.screensInterface.screens[%d] };
+        if (!window.screenDetails)
+          window.screenDetails = await window.getScreenDetails();
+        const options = { screen: window.screenDetails.screens[%d] };
         await document.body.requestFullscreen(options);
         return !!document.fullscreenElement;
       })();
@@ -999,8 +999,8 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   // affordance granted on screen change events, after user activation expiry.
   const std::string request_fullscreen_script = R"(
     (async () => {
-      const screensInterface = await window.getScreens();
-      screensInterface.onscreenschange = async () => {
+      const screenDetails = await window.getScreenDetails();
+      screenDetails.onscreenschange = async () => {
         if (!navigator.userActivation.isActive)
           await document.body.requestFullscreen();
       };
@@ -1047,7 +1047,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
   // Request the Window Placement permission and accept the prompt after user
   // activation expires; accepting should grant a new transient activation
   // signal that can be used to request fullscreen, without another gesture.
-  ExecuteScriptAsync(tab, "getScreens()");
+  ExecuteScriptAsync(tab, "getScreenDetails()");
   WaitForUserActivationExpiry();
   ASSERT_TRUE(permission_request_manager->IsRequestInProgress());
   permission_request_manager->Accept();

@@ -23,6 +23,7 @@ TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
     'Tabs.TabSearch.WebUI.LoadCompletedTime',
     'Tabs.TabSearch.WebUI.LoadDocumentTime',
+    'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
     'Tabs.TabSearch.WebUI.TabListDataReceived',
     'Tabs.TabSearch.WebUI.TabSwitchAction',
     'Tabs.TabSearch.WindowDisplayedDuration2',

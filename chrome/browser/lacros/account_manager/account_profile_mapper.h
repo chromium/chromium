@@ -130,6 +130,12 @@ class AccountProfileMapper
   void OnAccountUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
+  // Adds or updates an account programmatically without user interaction
+  // Should only be used in tests.
+  void UpsertAccountForTesting(const base::FilePath& profile_path,
+                               const account_manager::Account& account,
+                               const std::string& token_value);
+
  private:
   // Shared code for methods related to profile creation and adding accounts to
   // profiles. Pass an empty path to request a new profile. If

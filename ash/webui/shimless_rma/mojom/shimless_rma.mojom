@@ -261,6 +261,15 @@ struct Component {
   ComponentRepairStatus state;
 };
 
+// Enumeration of all instructions for next steps after manually disabling write
+// protect.
+enum WriteProtectDisableCompleteState {
+  kUnknown = 0,
+  kSkippedAssembleDevice = 1,
+  kCompleteAssembleDevice = 2,
+  kCompleteKeepDeviceOpen = 3,
+};
+
 // Enumeration of all instructions needed for calibration that require manual
 // setup.
 enum CalibrationSetupInstruction {
@@ -291,13 +300,14 @@ struct CalibrationComponentStatus {
   double progress;
 };
 
-// This must remain in sync with ProvisionDeviceState::ProvisioningStep in
+// This must remain in sync with ProvisionStatus::Status in
 // //third_party/cros_system_api/dbus/rmad/rmad.proto.
 // See shimless_rma_mojom_traits.cc\h.
-enum ProvisioningStep {
-  kProvisioningUnknown = 0,
+enum ProvisioningStatus {
   kInProgress = 1,
-  kProvisioningComplete = 2,
+  kComplete = 2,
+  kFailedBlocking = 3,
+  kFailedNonBlocking = 4,
 };
 
 // This must remain in sync with FinalizeStatus::Status in
@@ -341,7 +351,7 @@ interface CalibrationObserver {
 interface ProvisioningObserver {
   // OnProvisioningUpdated is called whenever there is an update in the progress
   // of device provisioning.
-  OnProvisioningUpdated(ProvisioningStep step, float progress);
+  OnProvisioningUpdated(ProvisioningStatus status, float progress);
 };
 
 // Implemented by clients to track the current state of hardware write
@@ -361,6 +371,13 @@ interface PowerCableStateObserver {
   // connection.
   // This is only needed for battery cut off.
   OnPowerCableStateChanged(bool plugged_in);
+};
+
+// Implemented by clients to receive status of hardware verification.
+interface HardwareVerificationStatusObserver {
+  // OnHardwareVerificationResult is called to report if hardware verification
+  // succeeded or failed. With an optional error message for failures.
+  OnHardwareVerificationResult(bool is_compliant, string error_message);
 };
 
 // Implemented by clients to receive status of finalization progress.
@@ -482,12 +499,17 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Methods for kWPDisableComplete state.
   //
+  // Get the state enum that specifies any steps the user needs to take before
+  // progressing to the next state.
+  // The device may need to be re-assembled or left disassembled, depending on
+  // the method of HWWP disable chosen.
+  GetWriteProtectDisableCompleteState()
+      => (WriteProtectDisableCompleteState state);
   // User acknowledges manual HWWP disable is complete and transitions to next
   // state.
   ConfirmManualWpDisableComplete()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
-
 
   ///////////////////////////////////////
   // Methods for kSelectComponents state.
@@ -664,6 +686,9 @@ interface ShimlessRmaService {
   // The power cable state is needed to indicate if the device is ready for
   // battery cutoff.
   ObservePowerCableState(pending_remote<PowerCableStateObserver> observer);
+  // Registers an observer for completion of hardware verification.
+  ObserveHardwareVerificationStatus(
+      pending_remote<HardwareVerificationStatusObserver> observer);
   // Registers an observer for status of finalization.
   ObserveFinalizationStatus(pending_remote<FinalizationObserver> observer);
 };

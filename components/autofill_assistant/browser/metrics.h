@@ -55,8 +55,9 @@ class Metrics {
     UI_CLOSED_UNEXPECTEDLY = 25,  // This is a "should never happen" entry.
     ONBOARDING_NAVIGATION = 26,
     ONBOARDING_DIALOG_DISMISSED = 27,
+    MULTIPLE_AUTOSTARTABLE_SCRIPTS = 28,
 
-    kMaxValue = ONBOARDING_DIALOG_DISMISSED
+    kMaxValue = MULTIPLE_AUTOSTARTABLE_SCRIPTS
   };
 
   // The different ways that autofill assistant can stop. Note that this only
@@ -556,6 +557,9 @@ class Metrics {
         break;
       case DropOutReason::ONBOARDING_DIALOG_DISMISSED:
         out << "ONBOARDING_DIALOG_DISMISSED";
+        break;
+      case DropOutReason::MULTIPLE_AUTOSTARTABLE_SCRIPTS:
+        out << "MULTIPLE_AUTOSTARTABLE_SCRIPTS";
         break;
         // Do not add default case to force compilation error for new values.
     }

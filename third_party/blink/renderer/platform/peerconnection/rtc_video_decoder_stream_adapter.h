@@ -129,7 +129,10 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
       const media::VideoDecoderConfig& config,
       const webrtc::SdpVideoFormat& format);
 
-  void InitializeSync(const media::VideoDecoderConfig& config);
+  // May be called on the decoder / worker thread at any time to replace the
+  // decoder stream / demuxer / etc.
+  void InitializeOrReinitializeSync();
+
   void InitializeOnMediaThread(const media::VideoDecoderConfig& config,
                                InitCB init_cb);
   void OnInitializeDone(base::TimeTicks start_time, bool success);
@@ -168,6 +171,24 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Must be called on the media thread.
   void RecordMaxInFlightDecodesLockedOnMedia();
 
+  // Destroy any existing demuxer / decoder stream / etc., reset everything, and
+  // create / start init on a new one.  This can be called on the media thread
+  // at any time to replace the DecoderStream and friends, including dropping
+  // any previously enqueued decoder buffers.
+  void RestartDecoderStreamOnMedia();
+
+  // Try to reconstruct `decoder_stream_` and friends, but prefer software
+  // decoders over hardware ones.
+  //
+  // Returns WEBRTC_VIDEO_{ERROR, FALLBACK_TO_SOFTWARE} depending on whether we
+  // should get a keyframe or give up.
+  // Note that this should eventually return void, because we should never fall
+  // back to software.  However, since we don't always support software codecs,
+  // we allow it.
+  //
+  // Called on decoder thread, with `lock_` held.
+  int32_t FallBackToSoftwareLocked();
+
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
@@ -189,8 +210,6 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Decoding thread members.
   bool key_frame_required_ = true;
   webrtc::VideoCodecType video_codec_type_ = webrtc::kVideoCodecGeneric;
-  // Has anything been sent to Decode() yet?
-  bool have_started_decoding_ = false;
 
   // Shared members.
   mutable base::Lock lock_;
@@ -218,6 +237,13 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // haven't decoded anything yet.  Since this is updated asynchronously, it's
   // only an approximation of "most recently".
   gfx::Size current_resolution_ GUARDED_BY(lock_);
+  // If true, then we'll try to use software decoders instead of hardware
+  // decoders.  Useful to fall back to software if hw isn't working.  Also
+  // remember that this does not guarantee a sw decoder; if there is no chrome
+  // sw decoder, then DecoderStream will use a hw one anyway.
+  bool prefer_software_decoders_ GUARDED_BY(lock_) = false;
+  // Have we incremented the decoder count?
+  bool contributes_to_decoder_count_ GUARDED_BY(lock_) = false;
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

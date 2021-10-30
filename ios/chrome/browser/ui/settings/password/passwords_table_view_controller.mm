@@ -624,9 +624,13 @@ void RemoveFormsToBeDeleted(
 - (SettingsSwitchItem*)savePasswordsItem {
   SettingsSwitchItem* savePasswordsItem =
       [[SettingsSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
-  // TODO(crbug.com/1226006): Update the switch text to "Offer to Save
-  // Passwords".
-  savePasswordsItem.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    savePasswordsItem.text =
+        l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+  } else {
+    savePasswordsItem.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
+  }
   savePasswordsItem.on = [_passwordManagerEnabled value];
   savePasswordsItem.accessibilityIdentifier = kSavePasswordSwitchTableViewId;
   return savePasswordsItem;

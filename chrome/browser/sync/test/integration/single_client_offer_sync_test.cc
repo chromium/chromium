@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/offer_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -152,6 +154,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Offer data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnSignOut) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros, signout is not supported with Mirror account consistency.
+  // TODO(https://crbug.com/1260291): Enable this test once signout is
+  // supported.
+  if (base::FeatureList::IsEnabled(kMultiProfileAccountConsistency))
+    GTEST_SKIP();
+#endif
+
   GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
   autofill::PersonalDataManager* pdm = GetPersonalDataManager(0);

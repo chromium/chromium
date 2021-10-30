@@ -39,10 +39,34 @@
             android:layout_height="wrap_content"
             app:titleText="@string/privacy_review_what_you_get" />
 
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_flash_on_24dp"
+            app:summaryText="@string/privacy_review_msbb_item_one" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_lightbulb_24dp"
+            app:summaryText="@string/privacy_review_msbb_item_two" />
+
         <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:titleText="@string/privacy_review_what_you_share" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_link_24dp"
+            app:summaryText="@string/privacy_review_msbb_item_three" />
+
+        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:iconImage="@drawable/ic_bar_chart_24dp"
+            app:summaryText="@string/privacy_review_msbb_item_four" />
 
     </LinearLayout>
 

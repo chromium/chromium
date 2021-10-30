@@ -17,6 +17,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
@@ -100,6 +101,7 @@ class ChromePersonalizationAppUiDelegate
                        SelectWallpaperCallback callback) override;
 
   void SelectLocalImage(const base::FilePath& path,
+                        ash::WallpaperLayout layout,
                         bool preview_mode,
                         SelectLocalImageCallback callback) override;
 

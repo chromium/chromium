@@ -28,9 +28,9 @@ The current implementation matches the specification as of 09/2021 and will be
 updated as the specification develops. Known omissions relative to the
 current spec are:
 
-* [Element.setHTML signature will change to have an options dictionary.](https://github.com/WICG/sanitizer-api/issues/130)
 * [MathML and SVG are not currently supported](https://github.com/WICG/sanitizer-api/issues/103)
 
+* [Element.setHTML signature now has an options dictionary.](https://github.com/WICG/sanitizer-api/issues/130) (M97) The previous method signature is supported but deprecated, and will be removed before enabling the Sanitizer by default.
 
 ## Tests
 

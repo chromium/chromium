@@ -2292,6 +2292,7 @@ if (!is_android && !is_fuchsia) {
 
     if (is_chromeos_lacros) {
       sources += [
+        "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.cc",
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
@@ -3334,6 +3335,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/chromeos/extensions/wallpaper_private_apitest.cc",
         "../browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
         "../browser/chromeos/policy/dlp/data_transfer_dlp_controller_browsertest.cc",
+        "../browser/chromeos/policy/dlp/dlp_content_restriction_set_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_content_tab_helper_browsertest.cc",
         "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.cc",
         "../browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h",
@@ -6765,6 +6767,7 @@ test("unit_tests") {
       "../browser/extensions/component_loader_unittest.cc",
       "../browser/extensions/context_menu_matcher_unittest.cc",
       "../browser/extensions/convert_user_script_unittest.cc",
+      "../browser/extensions/corrupted_extension_reinstaller_unittest.cc",
       "../browser/extensions/dev_mode_bubble_delegate_unittest.cc",
       "../browser/extensions/error_console/error_console_unittest.cc",
       "../browser/extensions/event_router_forwarder_unittest.cc",
@@ -6817,7 +6820,6 @@ test("unit_tests") {
       "../browser/extensions/permission_messages_unittest.cc",
       "../browser/extensions/permissions_based_management_policy_provider_unittest.cc",
       "../browser/extensions/permissions_updater_unittest.cc",
-      "../browser/extensions/policy_extension_reinstaller_unittest.cc",
       "../browser/extensions/policy_handlers_unittest.cc",
       "../browser/extensions/preinstalled_apps_unittest.cc",
       "../browser/extensions/safe_browsing_verdict_handler_unittest.cc",
@@ -7352,8 +7354,6 @@ test("unit_tests") {
         "../browser/printing/print_view_manager_unittest.cc",
         "../browser/printing/test_print_job.cc",
         "../browser/printing/test_print_job.h",
-        "../browser/printing/test_printer_query.cc",
-        "../browser/printing/test_printer_query.h",
         "../browser/ui/webui/print_preview/data_request_filter_unittest.cc",
         "../browser/ui/webui/print_preview/extension_printer_handler_unittest.cc",
         "../browser/ui/webui/print_preview/fake_print_render_frame.cc",
@@ -7369,7 +7369,7 @@ test("unit_tests") {
       if (is_win) {
         sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_win_unittest.cc" ]
 
-        # Needed by test_print_job.h, test_printer_query.h.
+        # Needed by test_print_job.h.
         public_deps += [ "//printing/mojom" ]
       }
 
@@ -7658,6 +7658,7 @@ test("unit_tests") {
       "../browser/ui/views/frame/web_contents_close_handler_unittest.cc",
       "../browser/ui/views/global_media_controls/media_item_ui_device_selector_view_unittest.cc",
       "../browser/ui/views/global_media_controls/media_item_ui_footer_view_unittest.cc",
+      "../browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu_unittest.cc",
       "../browser/ui/views/hover_button_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
       "../browser/ui/views/intent_picker_bubble_view_unittest.cc",

@@ -7,8 +7,6 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 
-class GURL;
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -32,11 +30,6 @@ class DlpContentObserver {
 
   // Called when |web_contents| is about to be destroyed.
   virtual void OnWebContentsDestroyed(content::WebContents* web_contents) = 0;
-
-  // Returns which content restrictions are being applied to the |url| according
-  // to the policies.
-  virtual DlpContentRestrictionSet GetRestrictionSetForURL(
-      const GURL& url) const;
 
   // Called when |web_contents| becomes visible or not.
   virtual void OnVisibilityChanged(content::WebContents* web_contents) = 0;

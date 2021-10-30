@@ -3894,13 +3894,8 @@ static_library("browser") {
       "media/webrtc/desktop_media_picker_factory_impl.h",
       "media/webrtc/display_media_access_handler.cc",
       "media/webrtc/display_media_access_handler.h",
-      "media/webrtc/media_authorization_wrapper_mac.h",
       "media/webrtc/media_stream_focus_delegate.cc",
       "media/webrtc/media_stream_focus_delegate.h",
-      "media/webrtc/system_media_capture_permissions_mac.h",
-      "media/webrtc/system_media_capture_permissions_mac.mm",
-      "media/webrtc/system_media_capture_permissions_stats_mac.h",
-      "media/webrtc/system_media_capture_permissions_stats_mac.mm",
       "media/webrtc/tab_desktop_media_list.cc",
       "media/webrtc/tab_desktop_media_list.h",
       "media_galleries/fileapi/av_scanning_file_validator.cc",
@@ -5512,6 +5507,11 @@ static_library("browser") {
       "mac/nsprocessinfo_additions.mm",
       "mac/relauncher.h",
       "mac/relauncher.mm",
+      "media/webrtc/media_authorization_wrapper_mac.h",
+      "media/webrtc/system_media_capture_permissions_mac.h",
+      "media/webrtc/system_media_capture_permissions_mac.mm",
+      "media/webrtc/system_media_capture_permissions_stats_mac.h",
+      "media/webrtc/system_media_capture_permissions_stats_mac.mm",
       "media/webrtc/window_icon_util_mac.mm",
       "media_galleries/mac/mtp_device_delegate_impl_mac.h",
       "media_galleries/mac/mtp_device_delegate_impl_mac.mm",
@@ -6178,6 +6178,10 @@ static_library("browser") {
         ]
       }
 
+      if (is_mac) {
+        sources += [ "service_process/service_process_control_mac.mm" ]
+      }
+
       if (!is_chromeos_ash) {
         sources += [
           "printing/cloud_print/cloud_print_proxy_service.cc",
@@ -6186,7 +6190,6 @@ static_library("browser") {
           "printing/cloud_print/cloud_print_proxy_service_factory.h",
           "service_process/service_process_control.cc",
           "service_process/service_process_control.h",
-          "service_process/service_process_control_mac.mm",
         ]
         public_deps += [ "//chrome/common:service_process_mojom" ]
       }
@@ -6780,15 +6783,20 @@ static_library("browser") {
     sources += [
       "local_discovery/service_discovery_client.cc",
       "local_discovery/service_discovery_client.h",
-      "local_discovery/service_discovery_client_mac.h",
-      "local_discovery/service_discovery_client_mac.mm",
-      "local_discovery/service_discovery_client_mac_factory.h",
-      "local_discovery/service_discovery_client_mac_factory.mm",
       "local_discovery/service_discovery_device_lister.cc",
       "local_discovery/service_discovery_device_lister.h",
       "local_discovery/service_discovery_shared_client.cc",
       "local_discovery/service_discovery_shared_client.h",
     ]
+
+    if (is_mac) {
+      sources += [
+        "local_discovery/service_discovery_client_mac.h",
+        "local_discovery/service_discovery_client_mac.mm",
+        "local_discovery/service_discovery_client_mac_factory.h",
+        "local_discovery/service_discovery_client_mac_factory.mm",
+      ]
+    }
 
     if (enable_mdns) {
       sources += [

@@ -165,22 +165,4 @@ bool AudioManager::Shutdown() {
   return true;
 }
 
-void AudioManager::SetDiverterCallbacks(
-    AddDiverterCallback add_callback,
-    RemoveDiverterCallback remove_callback) {
-  add_diverter_callback_ = std::move(add_callback);
-  remove_diverter_callback_ = std::move(remove_callback);
-}
-
-void AudioManager::AddDiverter(const base::UnguessableToken& group_id,
-                               media::AudioSourceDiverter* diverter) {
-  if (!add_diverter_callback_.is_null())
-    add_diverter_callback_.Run(group_id, diverter);
-}
-
-void AudioManager::RemoveDiverter(media::AudioSourceDiverter* diverter) {
-  if (!remove_diverter_callback_.is_null())
-    remove_diverter_callback_.Run(diverter);
-}
-
 }  // namespace media

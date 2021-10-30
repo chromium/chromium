@@ -44,7 +44,8 @@ std::string IconsKey(const std::string& id) {
 std::string CreateSerializedContentEntry(
     const blink::mojom::ContentDescription& description,
     const GURL& launch_url,
-    base::Time entry_time) {
+    base::Time entry_time,
+    bool is_top_level_context) {
   // Convert description.
   proto::ContentDescription description_proto;
   description_proto.set_id(description.id);
@@ -68,6 +69,7 @@ std::string CreateSerializedContentEntry(
   *entry.mutable_description() = std::move(description_proto);
   entry.set_launch_url(launch_url.spec());
   entry.set_timestamp(entry_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  entry.set_is_top_level_context(is_top_level_context);
 
   return entry.SerializeAsString();
 }
@@ -120,7 +122,8 @@ absl::optional<ContentIndexEntry> EntryFromSerializedProto(
 
   return ContentIndexEntry(service_worker_registration_id,
                            std::move(description), std::move(launch_url),
-                           registration_time);
+                           registration_time,
+                           entry_proto.is_top_level_context());
 }
 
 }  // namespace
@@ -138,6 +141,7 @@ ContentIndexDatabase::~ContentIndexDatabase() = default;
 void ContentIndexDatabase::AddEntry(
     int64_t service_worker_registration_id,
     const url::Origin& origin,
+    bool is_top_level_context,
     blink::mojom::ContentDescriptionPtr description,
     const std::vector<SkBitmap>& icons,
     const GURL& launch_url,
@@ -173,7 +177,7 @@ void ContentIndexDatabase::AddEntry(
       base::BindOnce(&ContentIndexDatabase::DidSerializeIcons,
                      weak_ptr_factory_.GetWeakPtr(),
                      service_worker_registration_id, origin,
-                     std::move(description), launch_url,
+                     is_top_level_context, std::move(description), launch_url,
                      std::move(serialized_icons), std::move(callback)));
 
   for (const auto& icon : icons) {
@@ -191,6 +195,7 @@ void ContentIndexDatabase::AddEntry(
 void ContentIndexDatabase::DidSerializeIcons(
     int64_t service_worker_registration_id,
     const url::Origin& origin,
+    bool is_top_level_context,
     blink::mojom::ContentDescriptionPtr description,
     const GURL& launch_url,
     std::unique_ptr<proto::SerializedIcons> serialized_icons,
@@ -199,13 +204,14 @@ void ContentIndexDatabase::DidSerializeIcons(
   base::Time entry_time = base::Time::Now();
   std::string entry_key = EntryKey(description->id);
   std::string icon_key = IconsKey(description->id);
-  std::string entry_value =
-      CreateSerializedContentEntry(*description, launch_url, entry_time);
+  std::string entry_value = CreateSerializedContentEntry(
+      *description, launch_url, entry_time, is_top_level_context);
   std::string icons_value = serialized_icons->SerializeAsString();
 
   // Entry to pass over to the provider.
   ContentIndexEntry entry(service_worker_registration_id,
-                          std::move(description), launch_url, entry_time);
+                          std::move(description), launch_url, entry_time,
+                          is_top_level_context);
 
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id, blink::StorageKey(origin),

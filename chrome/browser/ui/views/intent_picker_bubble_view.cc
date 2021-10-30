@@ -18,6 +18,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -51,44 +52,11 @@
 
 namespace {
 
-// TODO(djacobo): Replace this limit to correctly reflect the UI mocks, which
-// now instead of limiting the results to 3.5 will allow whatever fits in 256pt.
-// Using |kMaxAppResults| as a measure of how many apps we want to show.
-constexpr size_t kMaxAppResults = apps::kMaxAppResults;
-// Main components sizes
-constexpr int kTitlePadding = 16;
-constexpr int kRowHeight = 32;
-constexpr int kMaxIntentPickerLabelButtonWidth = 320;
-constexpr gfx::Insets kSeparatorPadding(16, 0, 16, 0);
-constexpr SkColor kSeparatorColor = SkColorSetARGB(0x1F, 0x0, 0x0, 0x0);
-
 constexpr char kInvalidLaunchName[] = "";
 
 bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
   return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
-}
-
-std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(kSeparatorColor);
-  separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
-  return separator;
-}
-
-// Creates a label that is identical to CreateFrontElidingTitleLabel but has a
-// different style as it is not shown as a title label.
-std::unique_ptr<views::View> CreateOriginView(const url::Origin& origin,
-                                              int text_id) {
-  std::u16string origin_text = l10n_util::GetStringFUTF16(
-      text_id, url_formatter::FormatOriginForSecurityDisplay(origin));
-  auto label = std::make_unique<views::Label>(
-      origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-      views::style::STYLE_SECONDARY);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetElideBehavior(gfx::ELIDE_HEAD);
-  label->SetMultiLine(false);
-  return label;
 }
 
 }  // namespace
@@ -106,14 +74,18 @@ class IntentPickerLabelButton : public views::LabelButton {
       : LabelButton(std::move(callback),
                     base::UTF8ToUTF16(base::StringPiece(display_name))) {
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    SetMinSize(gfx::Size(kMaxIntentPickerLabelButtonWidth, kRowHeight));
-    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    if (!icon_model.IsEmpty()) {
+    if (!icon_model.IsEmpty())
       SetImageModel(views::ImageButton::STATE_NORMAL, icon_model);
-    }
-    SetBorder(views::CreateEmptyBorder(8, 16, 8, 0));
-    views::InkDrop::Get(this)->SetBaseColor(SK_ColorGRAY);
+    auto* provider = ChromeLayoutProvider::Get();
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(
+        provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI),
+        provider->GetInsetsMetric(views::INSETS_DIALOG).left())));
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     views::InkDrop::Get(this)->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
+    views::InkDrop::Get(this)->SetHighlightOpacity(
+        kToolbarInkDropHighlightVisibleOpacity);
+    views::InkDrop::Get(this)->SetBaseColorCallback(
+        base::BindRepeating(&GetToolbarInkDropBaseColor, this));
   }
   IntentPickerLabelButton(const IntentPickerLabelButton&) = delete;
   IntentPickerLabelButton& operator=(const IntentPickerLabelButton&) = delete;
@@ -190,9 +162,9 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   intent_picker_bubble_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   DCHECK(intent_picker_bubble_->HasCandidates());
+  widget->Show();
   intent_picker_bubble_->GetIntentPickerLabelButtonAt(0)->MarkAsSelected(
       nullptr);
-  widget->Show();
   return widget;
 }
 
@@ -372,9 +344,6 @@ void IntentPickerBubbleView::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void IntentPickerBubbleView::Initialize() {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
   // Creates a view to hold the views for each app.
   auto scrollable_view = std::make_unique<views::View>();
   scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -405,70 +374,61 @@ void IntentPickerBubbleView::Initialize() {
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetBackgroundThemeColorId(ui::kColorBubbleBackground);
   scroll_view->SetContents(std::move(scrollable_view));
-  // This part gives the scroll a fixed width and height. The height depends on
-  // how many app candidates we got and how many we actually want to show.
-  // The added 0.5 on the else block allow us to let the user know there are
-  // more than |kMaxAppResults| apps accessible by scrolling the list.
-  scroll_view->ClipHeightTo(kRowHeight, (kMaxAppResults + 0.5) * kRowHeight);
+  DCHECK(!scroll_view->contents()->children().empty());
+  const int row_height =
+      scroll_view->contents()->children().front()->GetPreferredSize().height();
+  // TODO(djacobo): Replace this limit to correctly reflect the UI mocks, which
+  // now instead of limiting the results to 3.5 will allow whatever fits in
+  // 256pt. Using |kMaxAppResults| as a measure of how many apps we want to
+  // show.
+  scroll_view->ClipHeightTo(row_height,
+                            (apps::kMaxAppResults + 0.5) * row_height);
 
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* cs = layout->AddColumnSet(kColumnSetId);
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kFixed,
-                kMaxIntentPickerLabelButtonWidth, 0);
-
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetId,
-                              views::GridLayout::kFixedSize, kTitlePadding);
-  scroll_view_ = layout->AddView(std::move(scroll_view));
-
-  if (initiating_origin_ &&
+  const bool show_origin =
+      initiating_origin_ &&
       !initiating_origin_->IsSameOriginWith(
-          web_contents()->GetMainFrame()->GetLastCommittedOrigin())) {
-    constexpr int kColumnSetIdOrigin = 1;
-    views::ColumnSet* cs_origin = layout->AddColumnSet(kColumnSetIdOrigin);
-    cs_origin->AddPaddingColumn(views::GridLayout::kFixedSize, kTitlePadding);
-    cs_origin->AddColumn(
-        views::GridLayout::FILL, views::GridLayout::CENTER,
-        views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-        kMaxIntentPickerLabelButtonWidth - 2 * kTitlePadding, 0);
+          web_contents()->GetMainFrame()->GetLastCommittedOrigin());
 
-    layout->StartRowWithPadding(views::GridLayout::kFixedSize,
-                                kColumnSetIdOrigin,
-                                views::GridLayout::kFixedSize, kTitlePadding);
+  const auto* provider = ChromeLayoutProvider::Get();
+  auto insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kControl,
+      (show_origin && !show_remember_selection_)
+          ? views::DialogContentType::kText
+          : views::DialogContentType::kControl);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets(insets.top(), 0, insets.bottom(), 0),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  insets = gfx::Insets(0, insets.left(), 0, insets.right());
 
-    layout->AddView(CreateOriginView(
-        *initiating_origin_,
+  scroll_view_ = AddChildView(std::move(scroll_view));
+
+  if (show_origin) {
+    std::u16string origin_text = l10n_util::GetStringFUTF16(
         icon_type_ == PageActionIconType::kClickToCall
             ? IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_INITIATING_ORIGIN
-            : IDS_INTENT_PICKER_BUBBLE_VIEW_INITIATING_ORIGIN));
+            : IDS_INTENT_PICKER_BUBBLE_VIEW_INITIATING_ORIGIN,
+        url_formatter::FormatOriginForSecurityDisplay(*initiating_origin_));
+    auto* label = AddChildView(std::make_unique<views::Label>(
+        origin_text, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+        views::style::STYLE_SECONDARY));
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetAllowCharacterBreak(true);
+    label->SetMultiLine(true);
+    constexpr int kMaxDialogWidth = 320;
+    label->SetMaximumWidth(kMaxDialogWidth - insets.width());
+    label->SetProperty(views::kMarginsKey, insets);
   }
-
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId, 0);
 
   if (show_remember_selection_) {
-    layout->AddView(CreateHorizontalSeparator());
+    AddChildView(std::make_unique<views::Separator>());
 
-    // This second ColumnSet has a padding column in order to manipulate the
-    // Checkbox positioning freely.
-    constexpr int kColumnSetIdPadded = 2;
-    views::ColumnSet* cs_padded = layout->AddColumnSet(kColumnSetIdPadded);
-    cs_padded->AddPaddingColumn(views::GridLayout::kFixedSize, kTitlePadding);
-    cs_padded->AddColumn(
-        views::GridLayout::FILL, views::GridLayout::CENTER,
-        views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-        kMaxIntentPickerLabelButtonWidth - 2 * kTitlePadding, 0);
-
-    layout->StartRowWithPadding(views::GridLayout::kFixedSize,
-                                kColumnSetIdPadded,
-                                views::GridLayout::kFixedSize, 0);
-
-    remember_selection_checkbox_ = layout->AddView(
+    remember_selection_checkbox_ = AddChildView(
         std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
             IDS_INTENT_PICKER_BUBBLE_VIEW_REMEMBER_SELECTION)));
+    remember_selection_checkbox_->SetProperty(views::kMarginsKey, insets);
     UpdateCheckboxState();
   }
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, kTitlePadding);
 }
 
 IntentPickerLabelButton* IntentPickerBubbleView::GetIntentPickerLabelButtonAt(
@@ -507,8 +467,13 @@ size_t IntentPickerBubbleView::GetScrollViewSize() const {
 void IntentPickerBubbleView::AdjustScrollViewVisibleRegion() {
   const views::ScrollBar* bar = scroll_view_->vertical_scroll_bar();
   if (bar) {
+    const int row_height = scroll_view_->contents()
+                               ->children()
+                               .front()
+                               ->GetPreferredSize()
+                               .height();
     scroll_view_->ScrollToPosition(const_cast<views::ScrollBar*>(bar),
-                                   (selected_app_tag_ - 1) * kRowHeight);
+                                   (selected_app_tag_ - 1) * row_height);
   }
 }
 

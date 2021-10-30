@@ -111,6 +111,40 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Color& c) {
   return ts << c.NameForLayoutTreeAsText();
 }
 
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Point& p) {
+  return ts << "(" << p.x() << "," << p.y() << ")";
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Size& s) {
+  return ts << "width=" << s.width() << " height=" << s.height();
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Rect& r) {
+  return ts << "at " << r.origin() << " size " << r.width() << "x"
+            << r.height();
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::SizeF& s) {
+  ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.width());
+  ts << " height="
+     << WTF::TextStream::FormatNumberRespectingIntegers(s.height());
+  return ts;
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::PointF& p) {
+  ts << "(" << WTF::TextStream::FormatNumberRespectingIntegers(p.x());
+  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(p.y());
+  ts << ")";
+  return ts;
+}
+
+WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::RectF& r) {
+  ts << "at " << r.origin();
+  ts << " size " << WTF::TextStream::FormatNumberRespectingIntegers(r.width());
+  ts << "x" << WTF::TextStream::FormatNumberRespectingIntegers(r.height());
+  return ts;
+}
+
 void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
                                          const LayoutObject& o,
                                          LayoutAsTextBehavior behavior) {

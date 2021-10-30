@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/svc_scalability_mode.h"
+#include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -470,6 +471,10 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   constexpr auto timestamp_us = 0;
   auto duration_us = GetFrameDuration(*frame).InMicroseconds();
   last_frame_timestamp_ = frame->timestamp();
+  if (last_frame_color_space_ != frame->ColorSpace()) {
+    last_frame_color_space_ = frame->ColorSpace();
+    key_frame = true;
+  }
   auto deadline = VPX_DL_REALTIME;
   vpx_codec_flags_t flags = key_frame ? VPX_EFLAG_FORCE_KF : 0;
 
@@ -506,7 +511,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  DrainOutputs(temporal_id, frame->timestamp());
+  DrainOutputs(temporal_id, frame->timestamp(), frame->ColorSpace());
   std::move(done_cb).Run(Status());
 }
 
@@ -632,11 +637,13 @@ void VpxVideoEncoder::Flush(StatusCB done_cb) {
     std::move(done_cb).Run(std::move(status));
     return;
   }
-  DrainOutputs(0, base::TimeDelta());
+  DrainOutputs(0, base::TimeDelta(), gfx::ColorSpace());
   std::move(done_cb).Run(Status());
 }
 
-void VpxVideoEncoder::DrainOutputs(int temporal_id, base::TimeDelta ts) {
+void VpxVideoEncoder::DrainOutputs(int temporal_id,
+                                   base::TimeDelta ts,
+                                   gfx::ColorSpace color_space) {
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
   while ((pkt = vpx_codec_get_cx_data(codec_.get(), &iter))) {
@@ -656,6 +663,7 @@ void VpxVideoEncoder::DrainOutputs(int temporal_id, base::TimeDelta ts) {
       // We don't given timestamps to vpx_codec_encode() that's why
       // pkt->data.frame.pts can't be used here.
       result.timestamp = ts;
+      result.color_space = color_space;
       result.size = pkt->data.frame.sz;
       result.data.reset(new uint8_t[result.size]);
       memcpy(result.data.get(), pkt->data.frame.buf, result.size);

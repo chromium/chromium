@@ -230,13 +230,13 @@ void FrameSinkVideoCapturerImpl::ChangeTarget(
 
   if (frame_sink_id) {
     requested_target_ = *frame_sink_id;
-    if (sub_target) {
-      if (sub_target->is_subtree_capture_id()) {
-        region_specifier_ = sub_target->get_subtree_capture_id();
-      } else if (sub_target->is_region_capture_crop_id()) {
-        region_specifier_ = sub_target->get_region_capture_crop_id();
-      }
-    }
+    region_specifier_ =
+        !sub_target ? CapturableFrameSink::RegionSpecifier()
+                    : sub_target->is_subtree_capture_id()
+                          ? sub_target->get_subtree_capture_id()
+                          : sub_target->is_region_capture_crop_id()
+                                ? sub_target->get_region_capture_crop_id()
+                                : CapturableFrameSink::RegionSpecifier();
     SetResolvedTarget(
         frame_sink_manager_->FindCapturableFrameSink(requested_target_));
   } else {

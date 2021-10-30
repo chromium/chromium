@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -62,10 +62,7 @@ void UpdateAppRegistryCache(Profile* profile,
 }
 
 ash::AppListItem* GetAppListItem(const std::string& id) {
-  ash::AppListControllerImpl* controller =
-      ash::Shell::Get()->app_list_controller();
-  ash::AppListModel* model = controller->GetModel();
-  return model->FindItem(id);
+  return ash::AppListModelProvider::Get()->model()->FindItem(id);
 }
 
 }  // namespace

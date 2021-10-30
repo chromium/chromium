@@ -28,6 +28,8 @@ android_library("language_bridge_java") {
   sources = [
     "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java",
     "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
+    "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
+    "java/src/org/chromium/components/language/LanguageProfileDelegateImpl.java",
   ]
 
   deps = [

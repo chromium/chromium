@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -72,10 +73,15 @@ class PLATFORM_EXPORT LayoutRect {
   // Don't do these implicitly since they are lossy.
   constexpr explicit LayoutRect(const FloatRect& r)
       : location_(r.origin()), size_(r.size()) {}
+  constexpr explicit LayoutRect(const gfx::RectF& r)
+      : location_(r.origin()), size_(r.size()) {}
   explicit LayoutRect(const DoubleRect&);
 
   constexpr explicit operator FloatRect() const {
     return FloatRect(X(), Y(), Width(), Height());
+  }
+  constexpr explicit operator gfx::RectF() const {
+    return gfx::RectF(X(), Y(), Width(), Height());
   }
 
   constexpr LayoutPoint Location() const { return location_; }
@@ -342,6 +348,14 @@ inline IntRect EnclosedIntRect(const LayoutRect& rect) {
 }
 
 inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
+  LayoutUnit x = LayoutUnit::FromFloatFloor(rect.x());
+  LayoutUnit y = LayoutUnit::FromFloatFloor(rect.y());
+  LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.right());
+  LayoutUnit max_y = LayoutUnit::FromFloatCeil(rect.bottom());
+  return LayoutRect(x, y, max_x - x, max_y - y);
+}
+
+inline LayoutRect EnclosingLayoutRect(const gfx::RectF& rect) {
   LayoutUnit x = LayoutUnit::FromFloatFloor(rect.x());
   LayoutUnit y = LayoutUnit::FromFloatFloor(rect.y());
   LayoutUnit max_x = LayoutUnit::FromFloatCeil(rect.right());

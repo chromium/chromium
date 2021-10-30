@@ -4,6 +4,9 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/policy/policy_constants.h"
+#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -59,9 +62,10 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 - (void)tearDown {
-  [super tearDown];
+  [PolicyAppInterface clearPolicies];
   [FirstRunAppInterface setUMACollectionEnabled:NO];
   [FirstRunAppInterface resetUMACollectionEnabledByDefault];
+  [super tearDown];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -177,6 +181,20 @@ id<GREYMatcher> SkipSigninButton() {
   // Check sync started.
   GREYAssertTrue([FirstRunAppInterface isSyncFirstSetupComplete],
                  @"Sync should have finished its original setup");
+}
+
+// Checks that the sync screen doesn't appear when the SyncDisabled policy is
+// enabled.
+- (void)testSyncDisabled {
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+
+  // Launch First Run and accept tems of services.
+  [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
+      performAction:grey_tap()];
+
+  // The SignIn screen should not be displayed, so the NTP should be visible.
+  [[EarlGrey selectElementWithMatcher:FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks FRE shows in only one window.

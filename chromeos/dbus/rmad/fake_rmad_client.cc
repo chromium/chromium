@@ -291,10 +291,13 @@ void FakeRmadClient::TriggerCalibrationOverallProgressObservation(
 }
 
 void FakeRmadClient::TriggerProvisioningProgressObservation(
-    rmad::ProvisionDeviceState::ProvisioningStep step,
+    rmad::ProvisionStatus::Status status,
     double progress) {
+  rmad::ProvisionStatus status_proto;
+  status_proto.set_status(status);
+  status_proto.set_progress(progress);
   for (auto& observer : observers_)
-    observer.ProvisioningProgress(step, progress);
+    observer.ProvisioningProgress(status_proto);
 }
 
 void FakeRmadClient::TriggerHardwareWriteProtectionStateObservation(

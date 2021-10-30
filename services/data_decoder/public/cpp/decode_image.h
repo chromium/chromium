@@ -7,8 +7,7 @@
 
 #include <stdint.h>
 
-#include <vector>
-
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
@@ -36,13 +35,14 @@ using DecodeImageCallback =
 // size if there's no precise match). Passing gfx::Size() as
 // |desired_image_frame_size| is also supported and will result in chosing the
 // smallest available size.
+//
 // Upon completion, |callback| is invoked on the calling thread TaskRunner with
 // an SkBitmap argument. The SkBitmap will be null on failure and non-null on
 // success.
 //
 // This always uses an isolated instance of the Data Decoder service. To use a
 // shared instance, call the signature below which takes a DataDecoder.
-void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
+void DecodeImageIsolated(base::span<const uint8_t> encoded_bytes,
                          mojom::ImageCodec codec,
                          bool shrink_to_fit,
                          uint64_t max_size_in_bytes,
@@ -53,7 +53,7 @@ void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
 // with other operations. |callback| will only be invoked if |data_decoder| is
 // still alive by the time the decode operation is complete.
 void DecodeImage(DataDecoder* data_decoder,
-                 const std::vector<uint8_t>& encoded_bytes,
+                 base::span<const uint8_t> encoded_bytes,
                  mojom::ImageCodec codec,
                  bool shrink_to_fit,
                  uint64_t max_size_in_bytes,
@@ -67,7 +67,7 @@ void DecodeImage(DataDecoder* data_decoder,
 // This always uses an isolated instance of the Data Decoder service. To use a
 // shared instance, call the signature below which takes a DataDecoder.
 void DecodeAnimationIsolated(
-    const std::vector<uint8_t>& encoded_bytes,
+    base::span<const uint8_t> encoded_bytes,
     bool shrink_to_fit,
     uint64_t max_size_in_bytes,
     mojom::ImageDecoder::DecodeAnimationCallback callback);
@@ -76,7 +76,7 @@ void DecodeAnimationIsolated(
 // with other operations. |callback| will only be invoked if |data_decoder| is
 // still alive by the time the decode operation is complete.
 void DecodeAnimation(DataDecoder* data_decoder,
-                     const std::vector<uint8_t>& encoded_bytes,
+                     base::span<const uint8_t> encoded_bytes,
                      bool shrink_to_fit,
                      uint64_t max_size_in_bytes,
                      mojom::ImageDecoder::DecodeAnimationCallback callback);

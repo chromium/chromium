@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -78,6 +77,7 @@ import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ import java.util.Map;
 /** Tests the DownloadActivity home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-public class DownloadActivityV2Test extends DummyUiChromeActivityTestCase {
+public class DownloadActivityV2Test extends DummyUiActivityTestCase {
     @Mock
     private Tracker mTracker;
     @Mock

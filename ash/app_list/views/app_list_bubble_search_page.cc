@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/result_selection_controller.h"
@@ -44,8 +45,7 @@ constexpr base::TimeDelta kNotifyA11yDelay = base::Milliseconds(1500);
 AppListBubbleSearchPage::AppListBubbleSearchPage(
     AppListViewDelegate* view_delegate,
     SearchBoxView* search_box_view)
-    : search_box_view_(search_box_view),
-      search_model_(view_delegate->GetSearchModel()) {
+    : search_box_view_(search_box_view) {
   DCHECK(view_delegate);
   DCHECK(search_box_view_);
   SetUseDefaultFillLayout(true);
@@ -79,7 +79,8 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
           /*main_view=*/nullptr, view_delegate));
   result_container->SetListType(
       SearchResultListView::SearchResultListType::kBestMatch);
-  result_container->SetResults(view_delegate->GetSearchModel()->results());
+  result_container->SetResults(
+      AppListModelProvider::Get()->search_model()->results());
   result_container->set_delegate(this);
   result_container_views_.push_back(result_container);
 
@@ -133,7 +134,8 @@ void AppListBubbleSearchPage::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
 
   std::u16string value;
-  std::u16string query = search_model_->search_box()->text();
+  std::u16string query =
+      AppListModelProvider::Get()->search_model()->search_box()->text();
   if (!query.empty()) {
     if (last_search_result_count_ == 1) {
       value = l10n_util::GetStringFUTF16(

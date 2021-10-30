@@ -75,6 +75,38 @@ size_t DesksTemplatesPresenter::GetMaxEntryCount() const {
   return GetDeskModel()->GetMaxEntryCount();
 }
 
+void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
+  // The save as desk template button is hidden in tablet mode. The desks
+  // templates button on the desk bar view and the desks templates grid are
+  // hidden in tablet mode and if there no templates to view.
+  const bool in_tablet_mode =
+      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  should_show_templates_ui_ = !in_tablet_mode && GetEntryCount() > 0u;
+  for (auto& overview_grid : overview_session_->grid_list()) {
+    if (DesksBarView* desks_bar_view =
+            const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
+      // When templates is enabled but templates haven't loaded, the templates
+      // button may be visible but have a size of 0x0 so we have to make a
+      // Layout() call here.
+      desks_bar_view->UpdateDesksTemplatesButtonVisibility();
+      desks_bar_view->UpdateButtonsForDesksTemplatesGrid();
+      desks_bar_view->Layout();
+    }
+
+    overview_grid->UpdateSaveDeskAsTemplateButton();
+
+    if (!overview_grid->IsShowingDesksTemplatesGrid())
+      continue;
+
+    if (!should_show_templates_ui_) {
+      // When deleting, it is possible to delete the last template. In this
+      // case, close the template grid and go back to overview.
+      overview_grid->HideDesksTemplatesGrid();
+      continue;
+    }
+  }
+}
+
 void DesksTemplatesPresenter::GetAllEntries() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->GetAllEntries(
@@ -130,32 +162,18 @@ void DesksTemplatesPresenter::OnGetAllEntries(
   if (status != desks_storage::DeskModel::GetAllEntriesStatus::kOk)
     return;
 
-  should_show_templates_ui_ = !entries.empty();
+  DCHECK_EQ(GetEntryCount(), entries.size());
+
+  // This updates `should_show_templates_ui_`.
+  UpdateDesksTemplatesUI();
+
   for (auto& overview_grid : overview_session_->grid_list()) {
-    if (DesksBarView* desks_bar_view =
-            const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
-      // When templates is enabled but templates haven't loaded, the templates
-      // button may be visible but have a size of 0x0 so we have to make a
-      // Layout() call here.
-      desks_bar_view->UpdateDesksTemplatesButtonVisibility();
-      desks_bar_view->Layout();
-    }
-
-    if (!overview_grid->IsShowingDesksTemplatesGrid())
-      continue;
-
-    if (!should_show_templates_ui_) {
-      // When deleting, it is possible to delete the last template. In this
-      // case, close the template grid and go back to overview.
-      overview_grid->HideDesksTemplatesGrid();
-      continue;
-    }
-
     // Populate `DesksTemplatesGridView` with the desk template entries.
-    views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
-    DCHECK(grid_widget);
-    static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-        ->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
+    if (views::Widget* grid_widget =
+            overview_grid->desks_templates_grid_widget()) {
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
+          ->UpdateGridUI(entries, overview_grid->GetGridEffectiveBounds());
+    }
   }
 
   if (on_update_ui_closure_for_testing_)

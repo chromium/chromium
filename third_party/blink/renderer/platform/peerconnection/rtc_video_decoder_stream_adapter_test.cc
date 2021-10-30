@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -49,8 +50,24 @@ namespace blink {
 
 namespace {
 
+struct TestParams {
+  enum class UseHwDecoders {
+    kNo = 0,
+    kYes = 1,
+  };
+  enum class UseChromeSwDecoders {
+    kNo = 0,
+    kYes = 1,
+  };
+  UseHwDecoders use_hw_decoders = UseHwDecoders::kNo;
+  UseChromeSwDecoders use_chrome_sw_decoders = UseChromeSwDecoders::kNo;
+};
+
 class MockVideoDecoder : public media::VideoDecoder {
  public:
+  explicit MockVideoDecoder(bool is_platform_decoder)
+      : is_platform_decoder_(is_platform_decoder) {}
+
   media::VideoDecoderType GetDecoderType() const override {
     return media::VideoDecoderType::kTesting;
   }
@@ -82,7 +99,10 @@ class MockVideoDecoder : public media::VideoDecoder {
   int GetMaxDecodeRequests() const override { return 1; }
   // Since DecoderSelector always allows platform decoders, pretend that we are
   // a platform decoder.
-  bool IsPlatformDecoder() const override { return true; }
+  bool IsPlatformDecoder() const override { return is_platform_decoder_; }
+
+ private:
+  const bool is_platform_decoder_;
 };
 
 class MockDecoderFactory : public media::DecoderFactory {
@@ -102,15 +122,29 @@ class MockDecoderFactory : public media::DecoderFactory {
                            const gfx::ColorSpace& target_color_space,
                            std::vector<std::unique_ptr<media::VideoDecoder>>*
                                video_decoders) override {
-    video_decoders->push_back(std::move(decoder_));
+    std::move(std::begin(decoders_), std::end(decoders_),
+              std::back_inserter(*video_decoders));
+    decoders_.clear();
   }
 
-  MockVideoDecoder* decoder() const { return decoder_.get(); }
+  // Return the first, usually only, decoder.  Only works before we've provided
+  // it via CreateVideoDecoders.
+  MockVideoDecoder* decoder() const { return decoders_[0].get(); }
+  MockVideoDecoder* last_decoder() const {
+    return decoders_[decoders_.size() - 1].get();
+  }
+  // Return true if and only if we have decoders ready that we haven't sent to
+  // DecoderSelector via CreateVideoDecoder.
+  bool has_pending_decoders() const { return !decoders_.empty(); }
+
+  // Must call this if you want us to vend more than one decoder.
+  void CreatePendingDecoder(bool is_platform_decoder = true) {
+    decoders_.push_back(
+        std::make_unique<MockVideoDecoder>(is_platform_decoder));
+  }
 
  private:
-  // `decoder_` will be null once we're asked to create video decoders.
-  std::unique_ptr<MockVideoDecoder> decoder_ =
-      std::make_unique<MockVideoDecoder>();
+  std::vector<std::unique_ptr<MockVideoDecoder>> decoders_;
 };
 
 // Wraps a callback as a webrtc::DecodedImageCallback.
@@ -135,18 +169,28 @@ class DecodedImageCallback : public webrtc::DecodedImageCallback {
 
 }  // namespace
 
-class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
+class RTCVideoDecoderStreamAdapterTest
+    : public ::testing::TestWithParam<TestParams> {
  public:
   RTCVideoDecoderStreamAdapterTest()
       : task_environment_(
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         media_thread_task_runner_(
             base::ThreadPool::CreateSequencedTaskRunner({})),
-        use_hw_decoders_(GetParam()),
+        use_hw_decoders_(GetParam().use_hw_decoders ==
+                         TestParams::UseHwDecoders::kYes),
         decoded_image_callback_(decoded_cb_.Get()),
         sdp_format_(webrtc::SdpVideoFormat(
             webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9))) {
+    if (GetParam().use_chrome_sw_decoders ==
+        TestParams::UseChromeSwDecoders::kYes) {
+      feature_list_.InitAndEnableFeature(::media::kExposeSwDecodersToWebRTC);
+    } else {
+      feature_list_.InitAndDisableFeature(::media::kExposeSwDecodersToWebRTC);
+    }
     decoder_factory_ = std::make_unique<MockDecoderFactory>();
+    // Create one hw decoder.
+    decoder_factory_->CreatePendingDecoder(true);
   }
 
   RTCVideoDecoderStreamAdapterTest(const RTCVideoDecoderStreamAdapterTest&) =
@@ -164,7 +208,8 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
 
  protected:
   bool BasicSetup() {
-    if (!CreateAndInitialize())
+    SetupDecoders();
+    if (!CreateDecoderStream())
       return false;
     if (!InitDecode())
       return false;
@@ -184,8 +229,7 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
     return true;
   }
 
-  bool CreateAndInitialize(bool init_cb_result = true) {
-    auto* decoder = decoder_factory_->decoder();
+  void SetUpMockDecoder(MockVideoDecoder* decoder, bool init_cb_result) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _))
         .WillOnce(DoAll(
             SaveArg<0>(&vda_config_), SaveArg<4>(&output_cb_),
@@ -193,15 +237,30 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
                 init_cb_result
                     ? media::OkStatus()
                     : media::Status(media::StatusCode::kCodeOnlyForTesting))));
+  }
+
+  // Set up our decoder factory to provide a decoder that will succeed or fail
+  // init based on `init_cb_result`.
+  void SetupDecoders(bool init_cb_result = true) {
+    auto* decoder = decoder_factory_->decoder();
+    SetUpMockDecoder(decoder, init_cb_result);
+  }
+
+  // Create a DecoderStreamAdapter in `adapter_` using the decoder factory.
+  bool CreateDecoderStream() {
     adapter_ = RTCVideoDecoderStreamAdapter::Create(
         use_hw_decoders_ ? &gpu_factories_ : nullptr, decoder_factory_.get(),
         media_thread_task_runner_, gfx::ColorSpace{}, sdp_format_);
     return !!adapter_;
   }
 
+  // Start initialization on `adapter_`.
   bool InitDecode() {
     webrtc::VideoDecoder::Settings settings;
     settings.set_codec_type(webrtc::kVideoCodecVP9);
+    // Important but subtle note: this resolution must be under the cutoff for
+    // choosing sw decoders in DecoderStream.  Some of the tests require it.
+    settings.set_max_render_resolution(webrtc::RenderResolution(128, 128));
     return adapter_->Configure(settings);
   }
 
@@ -278,6 +337,8 @@ class RTCVideoDecoderStreamAdapterTest : public ::testing::TestWithParam<bool> {
   webrtc::SdpVideoFormat sdp_format_;
 
   media::VideoDecoderConfig vda_config_;
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
@@ -288,22 +349,30 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
   ASSERT_FALSE(adapter);
 }
 
-TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_InitDecodeFails) {
-  // If initialization fails before InitDecode runs, then InitDecode should too.
-  EXPECT_TRUE(CreateAndInitialize(false));
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(InitDecode());
-  EXPECT_FALSE(BasicTeardown());
-}
-
 TEST_P(RTCVideoDecoderStreamAdapterTest, FailInit_DecodeFails) {
-  // If initialization fails after InitDecode runs, then the first Decode should
-  // fail instead.
-  EXPECT_TRUE(CreateAndInitialize(false));
+  // If decoder initialization fails after InitDecode runs, then the first
+  // Decode should fail.  If chrome sw decoders are allowed, then it should
+  // request a keyframe.  Otherwise, it should fall back to rtc sw decoders.
+  SetupDecoders(false);
+  EXPECT_TRUE(CreateDecoderStream());
   EXPECT_TRUE(InitDecode());
+  const bool allow_sw = GetParam().use_chrome_sw_decoders ==
+                        TestParams::UseChromeSwDecoders::kYes;
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
-  EXPECT_FALSE(BasicTeardown());
+  if (allow_sw) {
+    // Queue up another decoder, since it should ask for one.
+    EXPECT_FALSE(decoder_factory_->has_pending_decoders());
+    decoder_factory_->CreatePendingDecoder();
+    EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_ERROR);
+    task_environment_.RunUntilIdle();
+    EXPECT_FALSE(decoder_factory_->has_pending_decoders());
+    // TODO(liberato): Can we verify that it switched to a sw decoder?
+    // This one should succeed, since the sw decoder isn't set up to fail.
+    EXPECT_TRUE(BasicTeardown());
+  } else {
+    EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+    EXPECT_FALSE(BasicTeardown());
+  }
 }
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, MissingFramesRequestsKeyframe) {
@@ -394,7 +463,7 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
         break;
       case WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE:
         // Yay -- it now believes that it's hopelessly behind, and has requested
-        // a keyframe.
+        // a rtc software fallback.
         limit = i;
         break;
       default:
@@ -429,8 +498,55 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, WontForwardFramesAfterRelease) {
   EXPECT_TRUE(BasicTeardown());
 }
 
-INSTANTIATE_TEST_SUITE_P(UseHwDecoding,
-                         RTCVideoDecoderStreamAdapterTest,
-                         ::testing::Values(false, true));
+TEST_P(RTCVideoDecoderStreamAdapterTest, LowResSelectsCorrectDecoder) {
+  // Low-res streams should select a sw decoder if those are enabled.
+  const bool allow_sw = GetParam().use_chrome_sw_decoders ==
+                        TestParams::UseChromeSwDecoders::kYes;
+
+  // There should already be a platform decoder to choose from, else the test is
+  // not set up correctly.
+  ASSERT_TRUE(decoder_factory_->decoder()->IsPlatformDecoder());
+  // Assume that this is the correct decoder.
+  auto* correct_decoder = decoder_factory_->decoder();
+
+  // Create a sw decoder, even if they are not allowed to be selected.
+  decoder_factory_->CreatePendingDecoder(false);
+
+  if (allow_sw) {
+    // The hw decoder is the wrong one, so expect no calls to initialize it.
+    EXPECT_CALL(*decoder_factory_->decoder(), Initialize_(_, _, _, _, _, _))
+        .Times(0);
+    // The sw one is the correct one
+    correct_decoder = decoder_factory_->last_decoder();
+  } else {
+    // The software decoder is the wrong one.
+    EXPECT_CALL(*decoder_factory_->last_decoder(),
+                Initialize_(_, _, _, _, _, _))
+        .Times(0);
+  }
+
+  // Set up the correct decoder to succeed init.
+  SetUpMockDecoder(correct_decoder, true);
+
+  EXPECT_TRUE(CreateDecoderStream());
+  EXPECT_TRUE(InitDecode());
+  EXPECT_EQ(RegisterDecodeCompleteCallback(), WEBRTC_VIDEO_CODEC_OK);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(*correct_decoder, Decode_(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+  Decode(0);
+  task_environment_.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UseHwDecoding,
+    RTCVideoDecoderStreamAdapterTest,
+    ::testing::Values(TestParams{TestParams::UseHwDecoders::kNo,
+                                 TestParams::UseChromeSwDecoders::kNo},
+                      TestParams{TestParams::UseHwDecoders::kYes,
+                                 TestParams::UseChromeSwDecoders::kNo},
+                      TestParams{TestParams::UseHwDecoders::kYes,
+                                 TestParams::UseChromeSwDecoders::kYes}));
 
 }  // namespace blink

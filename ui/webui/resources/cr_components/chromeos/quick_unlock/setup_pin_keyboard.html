@@ -76,7 +76,7 @@ Where:
       <!-- Warning/error; only shown if title is hidden. -->
       <div id="problemDiv" class$="[[problemClass_]]"
           invisible$="[[!problemMessageId_]]" problem>
-        <span>
+        <span aria-live="assertive">
           [[formatProblemMessage_(locale, problemMessageId_,
                 problemMessageParameters_)]]
         </span>

@@ -49,7 +49,8 @@ class MultiDeviceSetupClient {
       base::OnceCallback<void(const multidevice::RemoteDeviceRefList&)>;
 
   static HostStatusWithDevice GenerateDefaultHostStatusWithDevice();
-  static FeatureStatesMap GenerateDefaultFeatureStatesMap();
+  static FeatureStatesMap GenerateDefaultFeatureStatesMap(
+      mojom::FeatureState default_value);
 
   MultiDeviceSetupClient();
 

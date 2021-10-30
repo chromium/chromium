@@ -317,6 +317,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool obey_origin_policy(const network::ResourceRequest& request) {
     return request.obey_origin_policy;
   }
+  static network::mojom::RequestDestination original_destination(
+      const network::ResourceRequest& request) {
+    return request.original_destination;
+  }
   static const absl::optional<std::vector<net::SourceStream::SourceType>>&
   devtools_accepted_stream_types(const network::ResourceRequest& request) {
     return request.devtools_accepted_stream_types;

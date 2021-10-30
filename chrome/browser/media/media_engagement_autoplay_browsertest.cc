@@ -155,7 +155,8 @@ class MediaEngagementAutoplayBrowserTest
 
     // Get the path to the "generator" binary in the module path.
     base::FilePath module_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &module_dir));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &module_dir));
 
     // Launch the generator and wait for it to finish.
     base::CommandLine cmd(GetPythonPath());

@@ -1076,6 +1076,23 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "fuchsia-binary-size",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = True,
+    executable = "recipe:binary_size_fuchsia_trybot",
+    properties = {
+        "$build/binary_size": {
+            "analyze_targets": [
+                "//fuchsia/release:fuchsia_sizes",
+            ],
+            "compile_targets": [
+                "fuchsia_sizes",
+            ],
+        },
+    },
+)
+
+try_.chromium_linux_builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
@@ -1726,6 +1743,7 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
@@ -1742,6 +1760,7 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
@@ -1764,6 +1783,11 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-noncq",
     xcode = xcode.x13main,
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/third_party/crashpad/crashpad/.+",
+        ],
+    ),
 )
 
 try_.chromium_mac_ios_builder(

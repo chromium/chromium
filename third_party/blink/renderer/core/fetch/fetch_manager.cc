@@ -762,22 +762,7 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetHttpMethod(fetch_request_data_->Method());
   request.SetFetchWindowId(fetch_request_data_->WindowId());
   request.SetTrustTokenParams(fetch_request_data_->TrustTokenParams());
-
-  switch (fetch_request_data_->Mode()) {
-    case RequestMode::kSameOrigin:
-    case RequestMode::kNoCors:
-    case RequestMode::kCors:
-    case RequestMode::kCorsWithForcedPreflight:
-      request.SetMode(fetch_request_data_->Mode());
-      break;
-    case RequestMode::kNavigate:
-      // NetworkService (i.e. CorsURLLoaderFactory::IsSane) rejects kNavigate
-      // requests coming from renderers, so using kSameOrigin here.
-      // TODO(lukasza): Tweak CorsURLLoaderFactory::IsSane to accept kNavigate
-      // if request_initiator and the target are same-origin.
-      request.SetMode(RequestMode::kSameOrigin);
-      break;
-  }
+  request.SetMode(fetch_request_data_->Mode());
 
   request.SetCredentialsMode(fetch_request_data_->Credentials());
   for (const auto& header : fetch_request_data_->HeaderList()->List()) {
@@ -824,6 +809,8 @@ void FetchManager::Loader::PerformHTTPFetch() {
     request.SetKeepalive(true);
     UseCounter::Count(execution_context_, mojom::WebFeature::kFetchKeepalive);
   }
+
+  request.SetOriginalDestination(fetch_request_data_->OriginalDestination());
 
   // "3. Append `Host`, ..."
   // FIXME: Implement this when the spec is fixed.

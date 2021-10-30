@@ -988,6 +988,7 @@
       'chromium_presubmit': 'presubmit',
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-cast': 'release_trybot_fuchsia_arm64_cast',
+      'fuchsia-binary-size': 'release_fuchsia_arm64',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
       'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -1465,6 +1466,7 @@
     'android_release_bot_minimal_symbols_x64_fastbuild_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'x64',
       'strip_debug_info', 'android_fastbuild', 'webview_google',
+      'no_secondary_abi',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
@@ -2068,7 +2070,8 @@
     ],
 
     'codesearch_gen_chromium_android_bot': [
-      'codesearch', 'android_without_codecs',
+      # Set is_component_build=false to enable cronet targets.
+      'codesearch', 'android_without_codecs', 'static',
     ],
 
     'codesearch_gen_chromium_chromiumos_bot': [
@@ -2883,6 +2886,10 @@
 
     'release_bot_x86_minimal_symbols_no_com_init_hooks_with_codecs': [
       'release_bot', 'x86', 'minimal_symbols', 'no_com_init_hooks', 'chrome_with_codecs'
+    ],
+
+    'release_fuchsia_arm64': [
+      'release', 'official_optimize_goma', 'fuchsia', 'arm64'
     ],
 
     'release_trybot': [

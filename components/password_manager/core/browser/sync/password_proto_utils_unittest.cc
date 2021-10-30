@@ -108,7 +108,8 @@ TEST(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
               Eq(specifics.SerializeAsString()));
 }
 
-TEST(PasswordProtoUtilsTest, ConvertPasswordWithLocalDataToFullPasswordForm) {
+TEST(PasswordProtoUtilsTest,
+     ConvertPasswordWithLocalDataToFullPasswordFormAndBack) {
   sync_pb::PasswordWithLocalData password_data;
   *password_data.mutable_password_specifics_data() = CreateSpecificsData(
       "http://www.origin.com/", "username_element", "username_value",
@@ -122,6 +123,11 @@ TEST(PasswordProtoUtilsTest, ConvertPasswordWithLocalDataToFullPasswordForm) {
   EXPECT_THAT(form.username_value, Eq(u"username_value"));
   EXPECT_THAT(form.password_element, Eq(u"password_element"));
   EXPECT_THAT(form.signon_realm, Eq("signon_realm"));
+
+  sync_pb::PasswordWithLocalData password_data_converted_back =
+      PasswordWithLocalDataFromPassword(form);
+  EXPECT_EQ(password_data.SerializeAsString(),
+            password_data_converted_back.SerializeAsString());
 }
 
 TEST(PasswordProtoUtilsTest, ConvertListResultToFormVector) {

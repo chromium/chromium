@@ -95,6 +95,14 @@ class SideSearchBrowserController
   // contents associated with the currently active tab for this browser window.
   void UpdateSidePanel();
 
+  // Callback invoked when the `web_view_`'s visibility state has changed.
+  // Visibility changes happens after we update the visibility of the
+  // `side_panel_` and a Layout() occurs. This can cause the side panel's layout
+  // manager to update the visibility of its web_view_ child.
+  void OnWebViewVisibilityChanged();
+
+  base::CallbackListSubscription web_view_visibility_subscription_;
+
   // The toggled state of the side panel (i.e. the state of the side panel
   // as controlled by the toolbar button).
   bool toggled_open_ = false;

@@ -35,6 +35,11 @@ extern const wchar_t kPrefsAccessMutex[];
   L"Software\\Microsoft\\Internet Explorer\\" \
   L"InternetRegistry\\REGISTRY\\USER"
 
+// The environment variable is created into the environment of the installer
+// process to indicate the updater scope. The valid values for the environment
+// variable are "0" and "1".
+#define ENV_GOOGLE_UPDATE_IS_MACHINE COMPANY_SHORTNAME_STRING L"UpdateIsMachine"
+
 extern const wchar_t kRegValuePV[];
 extern const wchar_t kRegValueName[];
 

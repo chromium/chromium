@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/media_query_result.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -921,6 +922,181 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
   EXPECT_FALSE(media_query_evaluator.Eval(MediaQueryOrExpNode(
       width_lt_400.Copy(),
       std::make_unique<MediaQueryNotExpNode>(width_lt_800.Copy()))));
+}
+
+TEST(MediaQueryEvaluatorTest, DependentResults) {
+  MediaValuesCached::MediaValuesCachedData data;
+  data.viewport_width = 300;
+  data.device_width = 400;
+
+  auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+  MediaQueryEvaluator media_query_evaluator(*media_values);
+
+  // Viewport-dependent:
+  MediaQueryFeatureExpNode width_lt_400(MediaQueryExp::Create(
+      "width", MediaQueryExpBounds(MediaQueryExpComparison(
+                   PxValue(400), MediaQueryOperator::kLt))));
+
+  // Device-dependent:
+  MediaQueryFeatureExpNode device_width_lt_600(MediaQueryExp::Create(
+      "device-width", MediaQueryExpBounds(MediaQueryExpComparison(
+                          PxValue(600), MediaQueryOperator::kLt))));
+
+  // Neither viewport- nor device-dependent:
+  MediaQueryFeatureExpNode color(MediaQueryExp::Create(
+      "color",
+      MediaQueryExpBounds(MediaQueryExpComparison(MediaQueryExpValue()))));
+
+  MediaQueryResultList viewport_dependent;
+  MediaQueryResultList device_dependent;
+
+  MediaQueryEvaluator::Results results;
+  results.viewport_dependent = &viewport_dependent;
+  results.device_dependent = &device_dependent;
+
+  // "(color)" should not be dependent on anything.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(color, results);
+
+    EXPECT_TRUE(viewport_dependent.IsEmpty());
+    EXPECT_TRUE(device_dependent.IsEmpty());
+  }
+
+  // "(width < 400px)" should be viewport-dependent.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(width_lt_400, results);
+
+    ASSERT_EQ(1u, viewport_dependent.size());
+    EXPECT_EQ(width_lt_400.Expression(), viewport_dependent[0].Expression());
+
+    EXPECT_TRUE(device_dependent.IsEmpty());
+  }
+
+  // "(device-width < 600px)" should be device-dependent.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(device_width_lt_600, results);
+
+    ASSERT_EQ(1u, device_dependent.size());
+    EXPECT_EQ(device_width_lt_600.Expression(),
+              device_dependent[0].Expression());
+
+    EXPECT_TRUE(viewport_dependent.IsEmpty());
+  }
+
+  // "((device-width < 600px))" should be device-dependent.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(
+        MediaQueryNestedExpNode(device_width_lt_600.Copy()), results);
+
+    ASSERT_EQ(1u, device_dependent.size());
+    EXPECT_EQ(device_width_lt_600.Expression(),
+              device_dependent[0].Expression());
+
+    EXPECT_TRUE(viewport_dependent.IsEmpty());
+  }
+
+  // "not (device-width < 600px)" should be device-dependent.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(MediaQueryNotExpNode(device_width_lt_600.Copy()),
+                               results);
+
+    ASSERT_EQ(1u, device_dependent.size());
+    EXPECT_EQ(device_width_lt_600.Expression(),
+              device_dependent[0].Expression());
+
+    EXPECT_TRUE(viewport_dependent.IsEmpty());
+  }
+
+  // "(width < 400px) and (device-width < 600px)" should be both viewport- and
+  // device-dependent.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(
+        MediaQueryAndExpNode(width_lt_400.Copy(), device_width_lt_600.Copy()),
+        results);
+
+    ASSERT_EQ(1u, viewport_dependent.size());
+    EXPECT_EQ(width_lt_400.Expression(), viewport_dependent[0].Expression());
+
+    ASSERT_EQ(1u, device_dependent.size());
+    EXPECT_EQ(device_width_lt_600.Expression(),
+              device_dependent[0].Expression());
+  }
+
+  // "not (width < 400px) and (device-width < 600px)" should be
+  // viewport-dependent only.
+  //
+  // Note that the evaluation short-circuits on the first condition, making the
+  // the second condition irrelevant.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(
+        MediaQueryAndExpNode(MediaQueryNotExpNode(width_lt_400.Copy()).Copy(),
+                             device_width_lt_600.Copy()),
+        results);
+
+    ASSERT_EQ(1u, viewport_dependent.size());
+    EXPECT_EQ(width_lt_400.Expression(), viewport_dependent[0].Expression());
+
+    EXPECT_EQ(0u, device_dependent.size());
+  }
+
+  // "(width < 400px) or (device-width < 600px)" should be viewport-dependent
+  // only.
+  //
+  // Note that the evaluation short-circuits on the first condition, making the
+  // the second condition irrelevant.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(
+        MediaQueryOrExpNode(width_lt_400.Copy(), device_width_lt_600.Copy()),
+        results);
+
+    ASSERT_EQ(1u, viewport_dependent.size());
+    EXPECT_EQ(width_lt_400.Expression(), viewport_dependent[0].Expression());
+
+    EXPECT_EQ(0u, device_dependent.size());
+  }
+
+  // "not (width < 400px) or (device-width < 600px)" should be both viewport-
+  //  and device-dependent.
+  {
+    viewport_dependent.clear();
+    device_dependent.clear();
+
+    media_query_evaluator.Eval(
+        MediaQueryOrExpNode(MediaQueryNotExpNode(width_lt_400.Copy()).Copy(),
+                            device_width_lt_600.Copy()),
+        results);
+
+    ASSERT_EQ(1u, viewport_dependent.size());
+    EXPECT_EQ(width_lt_400.Expression(), viewport_dependent[0].Expression());
+
+    ASSERT_EQ(1u, device_dependent.size());
+    EXPECT_EQ(device_width_lt_600.Expression(),
+              device_dependent[0].Expression());
+  }
 }
 
 }  // namespace blink

@@ -12,6 +12,8 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
+  "firmware_shared_css.js",
+  "firmware_shared_fonts.js",
   "firmware_update_app.js",
   "peripheral_updates_list.js",
   "update_card.js",
@@ -60,6 +62,7 @@ js_library("fake_update_provider") {
 
 js_library("firmware_update_app") {
   deps = [
+    ":peripheral_updates_list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -80,12 +83,14 @@ js_library("peripheral_updates_list") {
   deps = [
     ":firmware_update_types",
     ":mojo_interface_provider",
+    ":update_card",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
 js_library("update_card") {
   deps = [
+    ":firmware_update_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

@@ -71,6 +71,11 @@ bool CanShowDropdownHere(int item_height,
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents);
 
+// Returns whether there is an open permissions prompt in |web_contents| with
+// bounds that overlap |screen_bounds|.
+bool BoundsOverlapWithOpenPermissionsPrompt(const gfx::Rect& screen_bounds,
+                                            content::WebContents* web_contents);
+
 // Returns whether a popup may vertically exceed the bounds of |web_contents|.
 // This is permitted for extension popups. Here we only enforce that the
 // autofill popup is at least attached to the extension popup (or overlaps the

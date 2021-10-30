@@ -15,6 +15,22 @@ const ERROR_MESSAGE_FOR_CHANGE_PASSWORD =
     'could be found at least for one of the ids.'
 
 var availableTests = [
+  function isAccountStoreDefaultWhenFalse() {
+    chrome.passwordsPrivate.isAccountStoreDefault(isDefault => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertFalse(isDefault);
+      chrome.test.succeed();
+    });
+  },
+
+  function isAccountStoreDefaultWhenTrue() {
+    chrome.passwordsPrivate.isAccountStoreDefault(isDefault => {
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(isDefault);
+      chrome.test.succeed();
+    });
+  },
+
   function getUrlCollectionWhenUrlValidSucceeds() {
     chrome.passwordsPrivate.getUrlCollection(
         'https://example.com', urlCollection => {

@@ -33,7 +33,7 @@ struct NGSvgFragmentData {
  public:
   scoped_refptr<const ShapeResultView> shape_result;
   NGTextOffset text_offset;
-  FloatRect rect;
+  gfx::RectF rect;
   float length_adjust_scale;
   float angle;
   float baseline_shift;
@@ -190,7 +190,7 @@ class CORE_EXPORT NGFragmentItem {
   // This function returns a transformed unscaled glyph bounds for kSvgText
   // type.
   // Do not call this for other types.
-  FloatRect ObjectBoundingBox(const NGFragmentItems& items) const;
+  gfx::RectF ObjectBoundingBox(const NGFragmentItems& items) const;
 
   // Returns a point transformed by the inverse of
   // BuildSvgTransformForBoundingBox(). The return value can be compared with
@@ -204,7 +204,7 @@ class CORE_EXPORT NGFragmentItem {
   // Returns true if |position|, which is a point in the IFC's coordinate
   // system, is in the transformed rectangle (including the edges) of this item.
   // This works only for kSvgText type.
-  bool InclusiveContains(const FloatPoint& position) const;
+  bool InclusiveContains(const gfx::PointF& position) const;
 
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;

@@ -66,7 +66,8 @@ class ChromeShellDelegate : public ash::ShellDelegate {
       aura::Window* window) const override;
   desks_storage::DeskModel* GetDeskModel() override;
   void GetFaviconForUrl(const std::string& page_url,
-                        favicon_base::FaviconImageCallback callback,
+                        int desired_icon_size,
+                        favicon_base::FaviconRawBitmapCallback callback,
                         base::CancelableTaskTracker* tracker) const override;
   void GetIconForAppId(
       const std::string& app_id,

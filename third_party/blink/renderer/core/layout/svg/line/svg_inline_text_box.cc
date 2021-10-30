@@ -259,19 +259,19 @@ void SVGInlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
                                                            marker, style, font);
 }
 
-FloatRect SVGInlineTextBox::CalculateBoundaries() const {
+gfx::RectF SVGInlineTextBox::CalculateBoundaries() const {
   LineLayoutSVGInlineText line_layout_item =
       LineLayoutSVGInlineText(GetLineLayoutItem());
   const SimpleFontData* font_data = line_layout_item.ScaledFont().PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return FloatRect();
+    return gfx::RectF();
 
   float scaling_factor = line_layout_item.ScalingFactor();
   DCHECK(scaling_factor);
   float baseline = font_data->GetFontMetrics().FloatAscent() / scaling_factor;
 
-  FloatRect text_bounding_rect;
+  gfx::RectF text_bounding_rect;
   for (const SVGTextFragment& fragment : text_fragments_)
     text_bounding_rect.Union(fragment.OverflowBoundingBox(baseline));
 

@@ -43,7 +43,8 @@ void MeasureSizeAndTimeToLoadNativeLibrary(
     const base::FilePath& library_relative_dir,
     const base::FilePath& library_name) {
   base::FilePath output_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &output_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &output_dir));
   output_dir = output_dir.Append(library_relative_dir);
   base::FilePath library_path = output_dir.Append(library_name);
   ASSERT_TRUE(base::PathExists(library_path)) << library_path.value();

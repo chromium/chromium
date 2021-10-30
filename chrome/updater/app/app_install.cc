@@ -95,7 +95,8 @@ void AppInstall::FirstTaskRun() {
   splash_screen_->Show();
 
   // Capture `update_service` to manage the object lifetime.
-  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  scoped_refptr<UpdateService> update_service =
+      CreateUpdateService(updater_scope());
   update_service->GetVersion(
       base::BindOnce(&AppInstall::GetVersionDone, this, update_service));
 }
@@ -143,7 +144,7 @@ void AppInstall::WakeCandidate() {
   // |UpdateServiceInternal| instance has sequence affinity. Bind it in the
   // closure to ensure it is released in this sequence.
   scoped_refptr<UpdateServiceInternal> update_service_internal =
-      CreateUpdateServiceInternal();
+      CreateUpdateServiceInternal(updater_scope());
   update_service_internal->InitializeUpdateService(base::BindOnce(
       [](scoped_refptr<UpdateServiceInternal> /*update_service_internal*/,
          scoped_refptr<AppInstall> app_install) {
@@ -158,7 +159,8 @@ void AppInstall::RegisterUpdater() {
   request.version = base::Version(kUpdaterVersion);
   // update_service is bound in the callback to ensure it is released in this
   // sequence.
-  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+  scoped_refptr<UpdateService> update_service =
+      CreateUpdateService(updater_scope());
   update_service->RegisterApp(
       request, base::BindOnce(
                    [](scoped_refptr<UpdateService> /*update_service*/,

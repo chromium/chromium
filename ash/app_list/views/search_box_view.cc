@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
@@ -96,11 +97,12 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       view_delegate_(view_delegate),
       app_list_view_(app_list_view),
       is_app_list_bubble_(!app_list_view_),
-      is_tablet_mode_(view_delegate_->IsInTabletMode()) {}
-
-SearchBoxView::~SearchBoxView() {
-  search_model_->search_box()->RemoveObserver(this);
+      is_tablet_mode_(view_delegate_->IsInTabletMode()) {
+  search_box_model_observer_.Observe(
+      AppListModelProvider::Get()->search_model()->search_box());
 }
+
+SearchBoxView::~SearchBoxView() = default;
 
 void SearchBoxView::Init(const InitParams& params) {
   SearchBoxViewBase::Init(params);
@@ -164,14 +166,11 @@ void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
 }
 
 void SearchBoxView::ModelChanged() {
-  if (search_model_)
-    search_model_->search_box()->RemoveObserver(this);
+  search_box_model_observer_.Reset();
+  search_box_model_observer_.Observe(
+      AppListModelProvider::Get()->search_model()->search_box());
 
-  search_model_ = view_delegate_->GetSearchModel();
-  DCHECK(search_model_);
   UpdateSearchIcon();
-  search_model_->search_box()->AddObserver(this);
-
   OnWallpaperColorsChanged();
   ShowAssistantChanged();
 }
@@ -197,18 +196,21 @@ void SearchBoxView::UpdateKeyboardVisibility() {
 
 void SearchBoxView::UpdateModel(bool initiated_by_user) {
   // Temporarily remove from observer to ignore notifications caused by us.
-  search_model_->search_box()->RemoveObserver(this);
-  search_model_->search_box()->Update(search_box()->GetText(),
-                                      initiated_by_user);
-  search_model_->search_box()->AddObserver(this);
+  search_box_model_observer_.Reset();
+
+  SearchBoxModel* const search_box_model =
+      AppListModelProvider::Get()->search_model()->search_box();
+  search_box_model->Update(search_box()->GetText(), initiated_by_user);
+  search_box_model_observer_.Observe(search_box_model);
 }
 
 void SearchBoxView::UpdateSearchIcon() {
+  const bool search_engine_is_google =
+      AppListModelProvider::Get()->search_model()->search_engine_is_google();
   const gfx::VectorIcon& google_icon =
       is_search_box_active() ? kGoogleColorIcon : kGoogleBlackIcon;
-  const gfx::VectorIcon& icon = search_model_->search_engine_is_google()
-                                    ? google_icon
-                                    : kSearchEngineNotGoogleIcon;
+  const gfx::VectorIcon& icon =
+      search_engine_is_google ? google_icon : kSearchEngineNotGoogleIcon;
   SetSearchIconImage(
       gfx::CreateVectorIcon(icon, kSearchBoxIconSize,
                             AppListColorProvider::Get()->GetSearchBoxIconColor(
@@ -838,7 +840,8 @@ void SearchBoxView::UpdateSearchBoxTextForSelectedResult(
 }
 
 void SearchBoxView::Update() {
-  search_box()->SetText(search_model_->search_box()->text());
+  search_box()->SetText(
+      AppListModelProvider::Get()->search_model()->search_box()->text());
   UpdateButtonsVisisbility();
   NotifyQueryChanged();
 }
@@ -848,10 +851,10 @@ void SearchBoxView::SearchEngineChanged() {
 }
 
 void SearchBoxView::ShowAssistantChanged() {
-  if (search_model_) {
-    SetShowAssistantButton(
-        search_model_->search_box()->show_assistant_button());
-  }
+  SetShowAssistantButton(AppListModelProvider::Get()
+                             ->search_model()
+                             ->search_box()
+                             ->show_assistant_button());
 }
 
 bool SearchBoxView::ShouldProcessAutocomplete() {
@@ -868,10 +871,6 @@ void SearchBoxView::ResetHighlightRange() {
 }
 
 void SearchBoxView::SetupAssistantButton() {
-  if (search_model_ && !search_model_->search_box()->show_assistant_button()) {
-    return;
-  }
-
   views::ImageButton* assistant = assistant_button();
   assistant->SetImage(
       views::ImageButton::STATE_NORMAL,

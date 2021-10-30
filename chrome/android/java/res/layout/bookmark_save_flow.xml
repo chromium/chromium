@@ -11,7 +11,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical"
-      android:padding="24dp">
+      android:paddingVertical="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,6 +22,7 @@
           android:id="@+id/bookmark_select_folder"
           android:layout_width="72dp"
           android:layout_height="72dp"
+          android:layout_marginHorizontal="16dp"
           android:layout_gravity="center_vertical|start"
           android:background="@drawable/bookmark_save_flow_background"
           android:foreground="@drawable/bookmark_save_flow_ripple"
@@ -31,7 +32,6 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="center_vertical|start"
-          android:paddingStart="12dp"
           android:orientation="horizontal">
 
         <LinearLayout
@@ -44,14 +44,14 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:ellipsize="end"
-              android:textAppearance="@style/TextAppearance.HeadlineThick" />
+              android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
 
           <TextView
               android:id="@+id/subtitle_text"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:ellipsize="end"
-              android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </LinearLayout>
 
         <TextView
@@ -62,6 +62,7 @@
             android:layout_gravity="center_vertical"
             android:gravity="end"
             android:text="@string/bookmark_item_edit"
+            android:paddingHorizontal="24dp"
             android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
       </LinearLayout>
     </LinearLayout>
@@ -70,26 +71,28 @@
         android:id="@+id/notification_switch_divider"
         style="@style/HorizontalDivider"
         android:visibility="gone"
-        android:layout_marginVertical="8dp"/>
+        android:layout_margin="16dp"/>
 
     <LinearLayout
         android:id="@+id/notification_switch_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
         android:visibility="gone">
 
       <org.chromium.ui.widget.ChromeImageView
           android:id="@+id/notification_switch_start_icon"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical|start" />
+          android:layout_marginEnd="16dp"
+          android:layout_gravity="center_vertical" />
 
       <LinearLayout
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:paddingHorizontal="12dp"
+          android:layout_gravity="center_vertical" 
           android:orientation="vertical">
         <TextView
             android:id="@+id/notification_switch_title"
@@ -103,7 +106,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
       </LinearLayout>
 
       <androidx.appcompat.widget.SwitchCompat

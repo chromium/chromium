@@ -28,9 +28,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ import java.io.IOException;
  * Tests for the power bookmark experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PowerBookmarkTagChipListTest extends DummyUiChromeActivityTestCase {
+public class PowerBookmarkTagChipListTest extends DummyUiActivityTestCase {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();

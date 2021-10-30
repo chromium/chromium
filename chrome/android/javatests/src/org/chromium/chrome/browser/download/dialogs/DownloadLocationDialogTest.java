@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.prefs.PrefService;
@@ -52,6 +51,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ import java.util.Map;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadLocationDialogTest extends DummyUiChromeActivityTestCase {
+public class DownloadLocationDialogTest extends DummyUiActivityTestCase {
     private static final long TOTAL_BYTES = 1024L;
     private static final String SUGGESTED_PATH = "download.png";
     private static final String PRIMARY_STORAGE_PATH = "/sdcard";

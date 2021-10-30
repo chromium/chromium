@@ -14,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/account_manager_core/account.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -33,11 +34,14 @@
 #include "base/time/time.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace account_manager {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class AccountManager;
-}
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class AccountManagerFacade;
+#endif
+}  // namespace account_manager
 
 namespace gaia {
 class GaiaSource;
@@ -372,6 +376,7 @@ class IdentityManager : public KeyedService,
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     SigninClient* signin_client = nullptr;
+    account_manager::AccountManagerFacade* account_manager_facade = nullptr;
 #endif
 
     InitParameters();
@@ -550,7 +555,13 @@ class IdentityManager : public KeyedService,
       const std::string& picture_url);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO: Remove this and use GetAccountManagerFacade() on Ash as well.
   friend account_manager::AccountManager* GetAccountManager(
+      IdentityManager* identity_manager);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  friend account_manager::AccountManagerFacade* GetAccountManagerFacade(
       IdentityManager* identity_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -628,6 +639,9 @@ class IdentityManager : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   account_manager::AccountManager* GetAshAccountManager() const;
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  account_manager::AccountManagerFacade* GetAccountManagerFacade() const;
+#endif
 
   // Populates and returns an AccountInfo object corresponding to |account_id|,
   // which must be an account with a refresh token.
@@ -684,6 +698,7 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<AccountFetcherService> account_fetcher_service_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   SigninClient* const signin_client_;
+  account_manager::AccountManagerFacade* const account_manager_facade_;
 #endif
 
   IdentityMutator identity_mutator_;

@@ -371,7 +371,7 @@ void GtkUi::Initialize() {
   // instance instead of using GtkUi context factory. This step is made upon
   // CreateInputMethod call. If the factory is not set, use the GtkUi context
   // factory.
-  if (!features::IsUsingOzonePlatform() ||
+  if (!features::IsUsingOzonePlatform() || GetPlatform()->PreferGtkIme() ||
       !ui::OzonePlatform::GetInstance()->CreateInputMethod(
           nullptr, gfx::kNullAcceleratedWidget)) {
     if (!ui::LinuxInputMethodContextFactory::instance())

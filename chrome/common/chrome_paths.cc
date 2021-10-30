@@ -388,15 +388,8 @@ bool PathProvider(int key, base::FilePath* result) {
     // will fail if executed from an installed executable (because the
     // generated path won't exist).
     case chrome::DIR_GEN_TEST_DATA:
-#if defined(OS_ANDROID)
-      // On Android, our tests don't have permission to write to DIR_MODULE.
-      // gtest/test_runner.py pushes data to external storage.
-      if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &cur))
+      if (!base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &cur))
         return false;
-#else
-      if (!base::PathService::Get(base::DIR_MODULE, &cur))
-        return false;
-#endif
       cur = cur.Append(FILE_PATH_LITERAL("test_data"));
       if (!base::PathExists(cur))  // We don't want to create this.
         return false;

@@ -82,6 +82,7 @@ void FakePersonalizationAppUiDelegate::SelectWallpaper(
 
 void FakePersonalizationAppUiDelegate::SelectLocalImage(
     const base::FilePath& path,
+    ash::WallpaperLayout layout,
     bool preview_mode,
     SelectLocalImageCallback callback) {
   std::move(callback).Run(/*success=*/true);

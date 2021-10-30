@@ -49,7 +49,7 @@ DlpContentTabHelper::~DlpContentTabHelper() = default;
 void DlpContentTabHelper::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   const DlpContentRestrictionSet restriction_set =
-      DlpContentObserver::Get()->GetRestrictionSetForURL(
+      DlpContentRestrictionSet::GetForURL(
           render_frame_host->GetLastCommittedURL());
   if (!restriction_set.IsEmpty())
     AddFrame(render_frame_host, restriction_set);
@@ -65,7 +65,7 @@ void DlpContentTabHelper::RenderFrameHostStateChanged(
     content::RenderFrameHost::LifecycleState old_state,
     content::RenderFrameHost::LifecycleState new_state) {
   const DlpContentRestrictionSet restriction_set =
-      DlpContentObserver::Get()->GetRestrictionSetForURL(
+      DlpContentRestrictionSet::GetForURL(
           render_frame_host->GetLastCommittedURL());
 
   using LifecycleState = content::RenderFrameHost::LifecycleState;
@@ -84,8 +84,7 @@ void DlpContentTabHelper::DidFinishNavigation(
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage())
     return;
   const DlpContentRestrictionSet restriction_set =
-      DlpContentObserver::Get()->GetRestrictionSetForURL(
-          navigation_handle->GetURL());
+      DlpContentRestrictionSet::GetForURL(navigation_handle->GetURL());
   if (restriction_set.IsEmpty()) {
     RemoveFrame(navigation_handle->GetRenderFrameHost());
   } else {

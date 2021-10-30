@@ -10,6 +10,8 @@
 
 namespace updater {
 
+enum class UpdaterScope;
+
 // The UpdateServiceInternal is a service abstraction to expose functionality
 // made available only to callers which are part of the same instance of
 // the updater installation. In other words, only a client and a service with
@@ -39,7 +41,8 @@ class UpdateServiceInternal
 };
 
 // A factory method to create a UpdateServiceInternal class instance.
-scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal();
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal(
+    UpdaterScope updater_scope);
 
 }  // namespace updater
 

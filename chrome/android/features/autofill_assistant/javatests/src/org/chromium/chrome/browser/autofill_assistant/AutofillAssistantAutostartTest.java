@@ -53,8 +53,7 @@ public class AutofillAssistantAutostartTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("example.com/hello")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 Collections.singletonList(
                         ActionProto.newBuilder()

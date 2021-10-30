@@ -110,8 +110,8 @@ int CountDirectoryFiles(const base::FilePath& dir) {
   return res;
 }
 
-void RegisterApp(const std::string& app_id) {
-  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+void RegisterApp(UpdaterScope scope, const std::string& app_id) {
+  scoped_refptr<UpdateService> update_service = CreateUpdateService(scope);
   RegistrationRequest registration;
   registration.app_id = app_id;
   registration.version = base::Version("0.1");
@@ -125,16 +125,14 @@ void RegisterApp(const std::string& app_id) {
   loop.Run();
 }
 
-void ExpectVersionActive(UpdaterScope updater_scope,
-                         const std::string& version) {
-  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(updater_scope);
+void ExpectVersionActive(UpdaterScope scope, const std::string& version) {
+  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
   EXPECT_EQ(prefs->GetActiveVersion(), version);
 }
 
-void ExpectVersionNotActive(UpdaterScope updater_scope,
-                            const std::string& version) {
-  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(updater_scope);
+void ExpectVersionNotActive(UpdaterScope scope, const std::string& version) {
+  scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
   ASSERT_NE(prefs, nullptr) << "Failed to acquire GlobalPrefs.";
   EXPECT_NE(prefs->GetActiveVersion(), version);
 }
@@ -196,9 +194,8 @@ void RunWake(UpdaterScope scope, int expected_exit_code) {
   EXPECT_EQ(exit_code, expected_exit_code);
 }
 
-void Update(const std::string& app_id) {
-  // CreateUpdateService implicitly relies on GetUpdaterScope.
-  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+void Update(UpdaterScope scope, const std::string& app_id) {
+  scoped_refptr<UpdateService> update_service = CreateUpdateService(scope);
   base::RunLoop loop;
   update_service->Update(
       app_id, UpdateService::Priority::kForeground, base::DoNothing(),
@@ -207,9 +204,8 @@ void Update(const std::string& app_id) {
   loop.Run();
 }
 
-void UpdateAll() {
-  // CreateUpdateService implicitly relies on GetUpdaterScope.
-  scoped_refptr<UpdateService> update_service = CreateUpdateService();
+void UpdateAll(UpdaterScope scope) {
+  scoped_refptr<UpdateService> update_service = CreateUpdateService(scope);
   base::RunLoop loop;
   update_service->UpdateAll(
       base::DoNothing(),
@@ -218,9 +214,8 @@ void UpdateAll() {
   loop.Run();
 }
 
-void SetupFakeUpdaterPrefs(UpdaterScope updater_scope,
-                           const base::Version& version) {
-  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(updater_scope);
+void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   ASSERT_TRUE(global_prefs) << "No global prefs.";
   global_prefs->SetActiveVersion(version.GetString());
   global_prefs->SetSwapping(false);
@@ -413,9 +408,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
 
 // Runs multiple cycles of instantiating the update service, calling
 // `GetVersion()`, then releasing the service interface.
-// TODO(crbug.com/1260471) - enable the scope after removing the implicit
-// dependency of `CreateUpdateService()` on the command line.
-void StressUpdateService(UpdaterScope /*scope*/) {
+void StressUpdateService(UpdaterScope scope) {
   base::RunLoop loop;
 
   // Number of times to run the cycle of instantiating the service.
@@ -434,10 +427,11 @@ void StressUpdateService(UpdaterScope /*scope*/) {
 
   // Creates a task runner, and runs the service instance on it.
   using LoopClosure = decltype(loop_closure);
-  auto stress_runner = [loop_closure]() {
+  auto stress_runner = [scope, loop_closure]() {
     // `task_runner` is always bound on the main sequence.
     struct Local {
       static void GetVersion(
+          UpdaterScope scope,
           scoped_refptr<base::SequencedTaskRunner> task_runner,
           LoopClosure loop_closure) {
         auto service_task_runner =
@@ -445,16 +439,17 @@ void StressUpdateService(UpdaterScope /*scope*/) {
                 {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
         service_task_runner->PostDelayedTask(
             FROM_HERE,
-            base::BindLambdaForTesting([task_runner, loop_closure]() {
-              auto update_service = CreateUpdateService();
+            base::BindLambdaForTesting([scope, task_runner, loop_closure]() {
+              auto update_service = CreateUpdateService(scope);
               update_service->GetVersion(
-                  base::BindOnce(GetVersionCallback, update_service,
+                  base::BindOnce(GetVersionCallback, scope, update_service,
                                  task_runner, loop_closure));
             }),
             base::Milliseconds(kDelayBetweenLoopsMS));
       }
 
       static void GetVersionCallback(
+          UpdaterScope scope,
           scoped_refptr<UpdateService> /*update_service*/,
           scoped_refptr<base::SequencedTaskRunner> task_runner,
           LoopClosure loop_closure,
@@ -462,16 +457,17 @@ void StressUpdateService(UpdaterScope /*scope*/) {
         EXPECT_EQ(version, base::Version(kUpdaterVersion));
         task_runner->PostTask(
             FROM_HERE,
-            base::BindLambdaForTesting([task_runner, loop_closure]() {
+            base::BindLambdaForTesting([scope, task_runner, loop_closure]() {
               if (loop_closure()) {
                 return;
               }
-              GetVersion(task_runner, loop_closure);
+              GetVersion(scope, task_runner, loop_closure);
             }));
       }
     };
 
-    Local::GetVersion(base::SequencedTaskRunnerHandle::Get(), loop_closure);
+    Local::GetVersion(scope, base::SequencedTaskRunnerHandle::Get(),
+                      loop_closure);
   };
 
   stress_runner();

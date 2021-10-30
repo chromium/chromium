@@ -190,9 +190,13 @@ CastRuntimeAudioChannelBroker::TimestampInfo ToGrpcTypes(
     const BufferIdManager::TargetBufferInfo& target_buffer) {
   CastRuntimeAudioChannelBroker::TimestampInfo ts_info;
   ts_info.set_buffer_id(target_buffer.buffer_id);
-  *ts_info.mutable_system_timestamp() =
-      google::protobuf::util::TimeUtil::MicrosecondsToDuration(
-          target_buffer.timestamp_micros);
+  cast::common::Duration cc_duration;
+  cc_duration.set_seconds(target_buffer.timestamp_micros /
+                          base::Time::kMicrosecondsPerSecond);
+  cc_duration.set_nanoseconds(
+      (target_buffer.timestamp_micros % base::Time::kMicrosecondsPerSecond) *
+      base::Time::kNanosecondsPerMicrosecond);
+  *ts_info.mutable_system_timestamp() = std::move(cc_duration);
   return ts_info;
 }
 

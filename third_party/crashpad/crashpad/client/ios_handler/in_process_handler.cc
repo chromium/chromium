@@ -28,13 +28,15 @@
 namespace {
 
 // Creates directory at |path|.
-void CreateDirectory(const base::FilePath& path) {
+bool CreateDirectory(const base::FilePath& path) {
   if (mkdir(path.value().c_str(), 0755) == 0) {
-    return;
+    return true;
   }
   if (errno != EEXIST) {
     PLOG(ERROR) << "mkdir " << path.value();
+    return false;
   }
+  return true;
 }
 
 // The file extension used to indicate a file is locked.
@@ -63,6 +65,9 @@ bool InProcessHandler::Initialize(
   INITIALIZATION_STATE_SET_INITIALIZING(initialized_);
   annotations_ = annotations;
   database_ = CrashReportDatabase::Initialize(database);
+  if (!database_) {
+    return false;
+  }
   bundle_identifier_and_seperator_ =
       system_data.BundleIdentifier() + kBundleSeperator;
 
@@ -80,11 +85,13 @@ bool InProcessHandler::Initialize(
         database_.get(), url, upload_thread_options));
   }
 
-  CreateDirectory(database);
+  if (!CreateDirectory(database))
+    return false;
   static constexpr char kPendingSerializediOSDump[] =
       "pending-serialized-ios-dump";
   base_dir_ = database.Append(kPendingSerializediOSDump);
-  CreateDirectory(base_dir_);
+  if (!CreateDirectory(base_dir_))
+    return false;
 
   prune_thread_.reset(new PruneIntermediateDumpsAndCrashReportsThread(
       database_.get(),

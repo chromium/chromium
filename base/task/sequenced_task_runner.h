@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
+#include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/task_runner.h"
 
@@ -116,6 +117,20 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   virtual bool PostNonNestableDelayedTask(const Location& from_here,
                                           OnceClosure task,
                                           base::TimeDelta delay) = 0;
+
+  // Posts the given |task| to be run only after |delay| has passed. Returns a
+  // handle that can be used to cancel the task.
+  //
+  // The handle is only valid while the task is pending execution. This means
+  // that it will be invalid if the posting failed, and will be invalid while
+  // the task is executing. Calling CancelTask() on an invalid handle is a
+  // no-op.
+  //
+  // This method and the handle it returns are not thread-safe and can only be
+  // used from the sequence this task runner runs its tasks on.
+  virtual DelayedTaskHandle PostCancelableDelayedTask(const Location& from_here,
+                                                      OnceClosure task,
+                                                      TimeDelta delay);
 
   // Submits a non-nestable task to delete the given object.  Returns
   // true if the object may be deleted at some point in the future,

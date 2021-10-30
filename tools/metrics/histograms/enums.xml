@@ -61,6 +61,20 @@ uploading your change for review.  These are checked by presubmit scripts.
       label="LoadEventEnd+LoadEventStart+FinishAllLoads+FinishDoc missing"/>
 </enum>
 
+<enum name="AboutThisSiteStatus">
+  <summary>Tracks status of AboutThisSite queries.</summary>
+  <int value="0" label="kValid">kValid</int>
+  <int value="1" label="kNoResult">kNoResult</int>
+  <int value="2" label="kMissingSiteInfo">kMissingSiteInfo</int>
+  <int value="3" label="kEmptySiteData">kEmptySiteData</int>
+  <int value="4" label="kIncompleteDescription">kIncompleteDescription</int>
+  <int value="5" label="kIncompleteSource">kIncompleteSource</int>
+  <int value="6" label="kInvalidSource">kInvalidSource</int>
+  <int value="7" label="kIncompleteTimeStamp">kIncompleteTimeStamp</int>
+  <int value="8" label="kInvalidTimeStamp">kInvalidTimeStamp</int>
+  <int value="9" label="kUnknown">kUnknown</int>
+</enum>
+
 <enum name="AcceleratedFixedRootBackground">
   <int value="0" label="ScrolledMainFrame"/>
   <int value="1" label="ScrolledMainFrameWithAcceleratedFixedRootBackground"/>
@@ -5509,6 +5523,9 @@ others/histograms.xml -->
   <int value="25" label="The UI was closed unexpectedly"/>
   <int value="26" label="User navigated during onboarding"/>
   <int value="27" label="User dismissed the onboarding dialog"/>
+  <int value="28"
+      label="Two or more autostartable scripts with satisfied preconditions
+             received"/>
 </enum>
 
 <enum name="AutofillAssistantFeatureModuleInstallation">
@@ -19985,6 +20002,22 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Cellular"/>
 </enum>
 
+<enum name="DeviceTrustKeyRotationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unable to generate a new signing key"/>
+  <int value="2" label="Unable to save the new signing key to storage"/>
+  <int value="3" label="Unable to build upload request"/>
+  <int value="4" label="Unable to upload new signing key to server"/>
+  <int value="5"
+      label="Unable to upload new signing key to server after maximum retries"/>
+  <int value="6"
+      label="Unable to upload new signing key to server and failed to restore
+             old key"/>
+  <int value="7"
+      label="Unable to upload new signing key to server after maximum retries
+             and failed to restore old key"/>
+</enum>
+
 <enum name="DevToolsAction">
   <int value="1" label="Window docked"/>
   <int value="2" label="Window undocked"/>
@@ -20162,6 +20195,8 @@ Called by update_debug_scenarios.py.-->
   <int value="48" label="hideIssuesFeature"/>
   <int value="49" label="reportingApiDebugging"/>
   <int value="50" label="syncSettings"/>
+  <int value="51" label="groupAndHideIssuesByKind"/>
+  <int value="52" label="cssTypeComponentLength"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
@@ -20617,6 +20652,9 @@ Called by update_debug_scenarios.py.-->
 </enum>
 
 <enum name="DevToolsSetting">
+  <obsolete>
+    Instrumentation was removed before M76.
+  </obsolete>
   <int value="1" label="Elements DOM wrap on"/>
   <int value="2" label="Elements DOM wrap off"/>
   <int value="3" label="Console monitor XHR on"/>
@@ -26772,6 +26810,7 @@ Called by update_document_policy_enum.py.-->
   <int value="920" label="QuickAnswersUnitConverstionEnabled"/>
   <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
   <int value="922" label="RemoteAccessHostClipboardSizeBytes"/>
+  <int value="923" label="RemoteAccessHostAllowRemoteSupportConnections"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -29732,6 +29771,7 @@ Called by update_extension_histograms.py.-->
   <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
   <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
   <int value="1596" label="PASSWORDSPRIVATE_ADDPASSWORD"/>
+  <int value="1597" label="PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -34368,7 +34408,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3385" label="V8FontMetadata_Blob_Method"/>
   <int value="3386" label="V8FontManager_Query_Method"/>
   <int value="3387" label="AudioContextBaseLatency"/>
-  <int value="3388" label="V8Window_GetScreens_Method"/>
+  <int value="3388" label="V8Window_GetScreenDetails_Method"/>
   <int value="3389" label="OBSOLETE_V8Window_IsMultiScreen_Method"/>
   <int value="3390" label="OBSOLETE_V8Window_Onscreenschange_AttributeGetter"/>
   <int value="3391" label="OBSOLETE_V8Window_Onscreenschange_AttributeSetter"/>
@@ -35072,6 +35112,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4064" label="V8FragmentDirective_Items_AttributeGetter"/>
   <int value="4065" label="V8FragmentDirective_CreateSelectorDirective_Method"/>
   <int value="4066" label="CSSTransitionBlockedByAnimation"/>
+  <int value="4067" label="WebAppManifestHasComments"/>
+  <int value="4068" label="AutoExpandedDetailsForFindInPage"/>
+  <int value="4069" label="AutoExpandedDetailsForScrollToTextFragment"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -48951,6 +48994,7 @@ from previous Chrome versions.
       label="EnterpriseReportingApiKeychainRecreation:disabled"/>
   <int value="-1460561942" label="SystemEmojiPicker:disabled"/>
   <int value="-1460462432" label="disable-media-source"/>
+  <int value="-1459907288" label="DesksTemplates:enabled"/>
   <int value="-1457775295" label="PasswordSearchMobile:disabled"/>
   <int value="-1456789591" label="MediaFoundationVideoCapture:enabled"/>
   <int value="-1456627355" label="EnableEmojiContextMenu:disabled"/>
@@ -49600,6 +49644,7 @@ from previous Chrome versions.
   <int value="-987470173" label="ClickToCallOpenDialerDirectly:disabled"/>
   <int value="-987191098" label="FontAccessPersistent:disabled"/>
   <int value="-987187004" label="SyncSettingsCategorization:disabled"/>
+  <int value="-985445963" label="TabSearchFuzzySearch:disabled"/>
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-981993135"
@@ -50697,6 +50742,7 @@ from previous Chrome versions.
   <int value="-116692797" label="HTTPAuthCommittedInterstitials:enabled"/>
   <int value="-116172457" label="PhoneHubRecentApps:disabled"/>
   <int value="-115834377" label="EnableUnifiedMultiDeviceSetup:disabled"/>
+  <int value="-115261987" label="DesksTemplates:disabled"/>
   <int value="-114807608" label="TerminalSystemApp:disabled"/>
   <int value="-114768488" label="ImmersiveFullscreen:enabled"/>
   <int value="-113855291" label="RelatedSearchesUi:enabled"/>
@@ -50790,6 +50836,7 @@ from previous Chrome versions.
   <int value="-51567065" label="EnableFeedbackPanel:disabled"/>
   <int value="-50628385"
       label="ContentSuggestionsThumbnailDominantColor:enabled"/>
+  <int value="-50050190" label="PaintHoldingCrossOrigin:enabled"/>
   <int value="-50021298" label="ash-adjustable-large-cursor"/>
   <int value="-49441721" label="NtpModulesRedesigned:enabled"/>
   <int value="-48920737" label="enable-smooth-scrolling"/>
@@ -51869,6 +51916,7 @@ from previous Chrome versions.
   <int value="752194066" label="enable-app-window-cycling"/>
   <int value="752416911" label="FastPair:disabled"/>
   <int value="752939691" label="disable-tab-for-desktop-share"/>
+  <int value="756897997" label="PaintHoldingCrossOrigin:disabled"/>
   <int value="757645375" label="AndroidDarkSearch:disabled"/>
   <int value="760542355" label="ServiceWorkerScriptFullCodeCache:enabled"/>
   <int value="761770770"
@@ -52764,6 +52812,8 @@ from previous Chrome versions.
   <int value="1442830837" label="MemoryAblation:disabled"/>
   <int value="1443830588" label="VerticalSnap:disabled"/>
   <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
+  <int value="1444719196"
+      label="CellularBypassESimInstallationConnectivityCheck:enabled"/>
   <int value="1446066818" label="WebRtcAnalogAgcClippingControl:enabled"/>
   <int value="1446349255" label="ArcEnableUsap:disabled"/>
   <int value="1446946673" label="DesktopRestructuredLanguageSettings:disabled"/>
@@ -52771,6 +52821,8 @@ from previous Chrome versions.
   <int value="1448684258" label="TabHoverCardImages:enabled"/>
   <int value="1449177114"
       label="EnablePasswordsAccountStorageSavingUi:enabled"/>
+  <int value="1451146739"
+      label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
   <int value="1454006695" label="BlinkHeapUnifiedGarbageCollection:disabled"/>
   <int value="1454028829" label="EnhancedProtectionPromoCard:disabled"/>
@@ -53595,6 +53647,7 @@ from previous Chrome versions.
   <int value="2076787478" label="OmniboxDisplayTitleForCurrentUrl:disabled"/>
   <int value="2076903744" label="progress-bar-animation"/>
   <int value="2077106718" label="EnableMessagesWebPush:enabled"/>
+  <int value="2077172826" label="TabSearchFuzzySearch:enabled"/>
   <int value="2077917024"
       label="enable-supervised-user-managed-bookmarks-folder"/>
   <int value="2078599705" label="ShelfAppScaling:enabled"/>
@@ -57601,6 +57654,8 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Unavailable, suite disabled"/>
   <int value="8" label="Further setup required"/>
   <int value="9" label="Unavailable, top-level feature disabled"/>
+  <int value="10"
+      label="Unable, no verified host and device sync client not ready"/>
 </enum>
 
 <enum name="MultiDevice_PostOOBESetupFlow_Page">
@@ -86813,6 +86868,8 @@ Full version information for the fingerprint enum values:
   <int value="8" label="Corrupted regular seed after loading empty safe seed">
     No seed used
   </int>
+  <int value="9" label="Regular seed for future milestone">No seed used</int>
+  <int value="10" label="Safe seed for future milestone">No seed used</int>
 </enum>
 
 <enum name="VaryType">

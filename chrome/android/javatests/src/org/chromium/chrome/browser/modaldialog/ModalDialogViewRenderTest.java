@@ -31,7 +31,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.modaldialog.test.R;
@@ -39,6 +38,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -52,7 +52,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
-public class ModalDialogViewRenderTest extends DummyUiChromeActivityTestCase {
+public class ModalDialogViewRenderTest extends DummyUiActivityTestCase {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();

@@ -191,6 +191,14 @@ BrowserAccessibility* BrowserAccessibilityMac::PlatformGetPreviousSibling()
   return BrowserAccessibility::PlatformGetPreviousSibling();
 }
 
+gfx::NativeViewAccessible BrowserAccessibilityMac::GetNativeViewAccessible() {
+  return GetNativeWrapper();
+}
+
+ui::AXPlatformNode* BrowserAccessibilityMac::GetAXPlatformNode() const {
+  return platform_node_;
+}
+
 void BrowserAccessibilityMac::CreatePlatformNodes() {
   DCHECK(!platform_node_);
   platform_node_ =

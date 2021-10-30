@@ -30,13 +30,6 @@ void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
     std::string* cipher_text) const {
-#if !defined(OS_FUCHSIA)
-  if (!use_encryption_) {
-    *cipher_text = base::UTF16ToUTF8(plain_text);
-    return ENCRYPTION_RESULT_SUCCESS;
-  }
-#endif
-
   return OSCrypt::EncryptString16(plain_text, cipher_text)
              ? ENCRYPTION_RESULT_SUCCESS
              : ENCRYPTION_RESULT_SERVICE_FAILURE;
@@ -52,9 +45,9 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
   // else is plain-text.
   // TODO(crbug.com/960322): Remove this when there isn't a mix of plain-text
   // and obfuscated passwords.
-  bool use_encryption = use_encryption_ && (cipher_text.find("v10", 0) == 0);
+  bool use_encryption = base::StartsWith(cipher_text, "v10");
 #else
-  bool use_encryption = use_encryption_;
+  bool use_encryption = true;
 #endif
 
   if (!use_encryption) {

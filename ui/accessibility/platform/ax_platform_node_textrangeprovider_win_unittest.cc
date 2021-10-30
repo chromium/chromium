@@ -6399,6 +6399,85 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   }
 }
 
+TEST_F(AXPlatformNodeTextRangeProviderTest, TestDeleteNodeInRange) {
+  // This test updates the tree structure to ensure that the text range is still
+  // valid after a node included in the text range is deleted, resulting in a
+  // change to the range.
+  //
+  // ++1 kRootWebArea
+  // ++++2 kParagraph
+  // ++++++3 kStaticText "one"
+  // ++++++4 kStaticText " two"
+  // ++++++5 kStaticText " three"
+  AXNodeData root_1;
+  AXNodeData para_2;
+  AXNodeData text_3;
+  AXNodeData text_4;
+  AXNodeData text_5;
+
+  root_1.id = 1;
+  para_2.id = 2;
+  text_3.id = 3;
+  text_4.id = 4;
+  text_5.id = 5;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {para_2.id};
+
+  para_2.role = ax::mojom::Role::kParagraph;
+  para_2.child_ids = {text_3.id, text_4.id, text_5.id};
+
+  text_3.role = ax::mojom::Role::kStaticText;
+  text_3.SetName("one");
+
+  text_4.role = ax::mojom::Role::kStaticText;
+  text_4.SetName(" two");
+
+  text_5.role = ax::mojom::Role::kStaticText;
+  text_5.SetName(" three");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1, para_2, text_3, text_4, text_5};
+  Init(update);
+
+  // Create a position at MaxTextOffset of |para_2|.
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  // start: TextPosition, anchor_id=2, text_offset=0
+  // end  : TextPosition, anchor_id=2, text_offset=3
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  CreateTextRangeProviderWin(
+      range, owner, tree_id,
+      /*start_anchor_id*/ para_2.id, /*start_offset*/ 0,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ para_2.id, /*end_offset*/ 13,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"one two three");
+
+  // Delete a node included in the range to ensure that we always keep a valid
+  // position.
+  AXTreeUpdate test_update;
+  para_2.child_ids = {text_3.id, text_5.id};
+  test_update.nodes = {root_1, para_2};
+  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+  // The text range should now encompass only 9 characters, not 13, since
+  // |text_2| has been deleted.
+  EXPECT_EQ(para_2.id, GetStart(range.Get())->anchor_id());
+  EXPECT_EQ(0, GetStart(range.Get())->text_offset());
+
+  EXPECT_EQ(para_2.id, GetEnd(range.Get())->anchor_id());
+  EXPECT_EQ(9, GetEnd(range.Get())->text_offset());
+}
+
 TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestReplaceStartAndEndEndpointRepeatRemoval) {
   // This test updates the tree structure to ensure that the text range is still

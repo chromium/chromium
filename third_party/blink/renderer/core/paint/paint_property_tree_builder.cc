@@ -1978,7 +1978,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
                 viewport_container.Viewport());
         // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
         // the first parameter?
-        state.SetClipRect(ToGfxRectF(clip_rect), FloatRoundedRect(clip_rect));
+        state.SetClipRect(clip_rect, FloatRoundedRect(clip_rect));
       }
       OnUpdateClip(properties_->UpdateOverflowClip(*context_.current.clip,
                                                    std::move(state)));
@@ -2798,19 +2798,19 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathCache() {
   if (fragment_data_.IsClipPathCacheValid())
     return;
 
-  absl::optional<FloatRect> bounding_box =
+  absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(object_);
   if (!bounding_box) {
     fragment_data_.ClearClipPathCache();
     return;
   }
-  bounding_box->MoveBy(FloatPoint(fragment_data_.PaintOffset()));
+  bounding_box->Offset(gfx::Vector2dF(fragment_data_.PaintOffset()));
 
   absl::optional<Path> path = ClipPathClipper::PathBasedClip(object_);
   if (path)
     path->Translate(gfx::Vector2dF(fragment_data_.PaintOffset()));
   fragment_data_.SetClipPathCache(
-      EnclosingIntRect(*bounding_box),
+      IntRect(gfx::ToEnclosingRect(*bounding_box)),
       path ? AdoptRef(new RefCountedPath(std::move(*path))) : nullptr);
 }
 

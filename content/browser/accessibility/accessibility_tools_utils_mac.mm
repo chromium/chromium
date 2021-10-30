@@ -37,7 +37,8 @@ const auto kValidAttributes = base::MakeFixedFlatSet<NSString*>(
     {NSAccessibilityAccessKeyAttribute, NSAccessibilityARIAAtomicAttribute,
      NSAccessibilityARIABusyAttribute, NSAccessibilityARIACurrentAttribute,
      NSAccessibilityARIALiveAttribute, NSAccessibilityARIARelevantAttribute,
-     NSAccessibilityAutocompleteValueAttribute},
+     NSAccessibilityAutocompleteValueAttribute,
+     NSAccessibilityColumnHeaderUIElementsAttribute},
     NSStringComparator());
 
 bool IsValidAttribute(const std::string& attribute) {

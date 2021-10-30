@@ -136,7 +136,7 @@ bool PathProviderWin(int key, FilePath* result) {
         return false;
       cur = FilePath(system_buffer);
       break;
-    case base::DIR_SOURCE_ROOT: {
+    case base::DIR_SRC_TEST_DATA_ROOT: {
       FilePath executableDir;
       // On Windows, unit tests execute two levels deep from the source root.
       // For example:  chrome/{Debug|Release}/ui_tests.exe

@@ -8,8 +8,25 @@ import("//tools/polymer/html_to_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
+    ":parent_access_after",
+    ":parent_access_app",
     ":parent_access_controller",
     ":parent_access_ui",
+  ]
+}
+
+js_library("parent_access_after") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+}
+
+js_library("parent_access_app") {
+  deps = [
+    ":parent_access_ui",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
   ]
 }
 
@@ -34,5 +51,9 @@ js_library("parent_access_ui") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "parent_access_ui.js" ]
+  js_files = [
+    "parent_access_after.js",
+    "parent_access_app.js",
+    "parent_access_ui.js",
+  ]
 }

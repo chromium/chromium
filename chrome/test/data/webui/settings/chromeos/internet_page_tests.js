@@ -132,6 +132,9 @@ suite('InternetPage', function() {
   }
 
   function init() {
+    loadTimeData.overrideValues({
+      bypassConnectivityCheck: false,
+    });
     internetPage = document.createElement('settings-internet-page');
     assertTrue(!!internetPage);
     mojoApi_.resetForTest();
@@ -482,6 +485,32 @@ suite('InternetPage', function() {
             internetPage.$.errorToastMessage.innerHTML,
             internetPage.i18n('eSimNoConnectionErrorToast'));
         assertFalse(!!internetPage.$$('#cellularSetupDialog'));
+      });
+
+  test(
+      'Show eSIM flow cellular setup dialog if route params ' +
+          'contain showCellularSetup, does not contain showPsimFlow, ' +
+          'cellular is enabled, not connected to a non-cellular network ' +
+          'but cellular bypass esim installation connectivity flag is enabled',
+      async function() {
+        await init();
+        loadTimeData.overrideValues({
+          bypassConnectivityCheck: true,
+        });
+        eSimManagerRemote.addEuiccForTest(1);
+
+        let cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertFalse(!!cellularSetupDialog);
+
+        await navigateToCellularSetupDialog(
+            /*showPSimFlow=*/ false, /*isCellularEnabled=*/ true);
+
+        cellularSetupDialog = internetPage.$$('#cellularSetupDialog');
+        assertTrue(!!cellularSetupDialog);
+        const esimFlow =
+            cellularSetupDialog.shadowRoot.querySelector('cellular-setup')
+                .shadowRoot.querySelector('#esim-flow-ui');
+        assertTrue(!!esimFlow);
       });
 
   test(

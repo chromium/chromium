@@ -52,6 +52,10 @@ export const ComponentType = ash.shimlessRma.mojom.ComponentType;
 export const ComponentRepairStatus =
     ash.shimlessRma.mojom.ComponentRepairStatus;
 
+/** @typedef {ash.shimlessRma.mojom.WriteProtectDisableCompleteState} */
+export const WriteProtectDisableCompleteState =
+    ash.shimlessRma.mojom.WriteProtectDisableCompleteState;
+
 /**
  * @typedef {ash.shimlessRma.mojom.CalibrationSetupInstruction}
  */
@@ -76,9 +80,9 @@ export const CalibrationComponentStatus =
     ash.shimlessRma.mojom.CalibrationComponentStatus;
 
 /**
- * @typedef {ash.shimlessRma.mojom.ProvisioningStep}
+ * @typedef {ash.shimlessRma.mojom.ProvisioningStatus}
  */
-export const ProvisioningStep = ash.shimlessRma.mojom.ProvisioningStep;
+export const ProvisioningStatus = ash.shimlessRma.mojom.ProvisioningStatus;
 
 /**
  * @typedef {ash.shimlessRma.mojom.FinalizationStatus}
@@ -194,6 +198,29 @@ export const HardwareWriteProtectionStateObserverInterface =
  */
 export const PowerCableStateObserverRemote =
     ash.shimlessRma.mojom.PowerCableStateObserverRemote;
+
+/**
+ * Type alias for HardwareVerificationStatusObserverRemote.
+ * @typedef {ash.shimlessRma.mojom.HardwareVerificationStatusObserverRemote}
+ */
+export const HardwareVerificationStatusObserverRemote =
+    ash.shimlessRma.mojom.HardwareVerificationStatusObserverRemote;
+
+/**
+ * Type alias for HardwareVerificationStatusObserverReceiver.
+ * @typedef {ash.shimlessRma.mojom.HardwareVerificationStatusObserverReceiver}
+ */
+export const HardwareVerificationStatusObserverReceiver =
+    ash.shimlessRma.mojom.HardwareVerificationStatusObserverReceiver;
+
+/**
+ * Type alias for HardwareVerificationStatusObserverInterface.
+ * @typedef {
+ *    ash.shimlessRma.mojom.HardwareVerificationStatusObserverInterface
+ * }
+ */
+export const HardwareVerificationStatusObserverInterface =
+    ash.shimlessRma.mojom.HardwareVerificationStatusObserverInterface;
 
 /**
  * Type alias for FinalizationObserverRemote.

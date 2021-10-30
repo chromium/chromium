@@ -34,6 +34,8 @@ source_set("test") {
     "test_redirect_observer.h",
     "test_redirect_observer.mm",
     "test_web_thread.h",
+    "web_state_test_util.h",
+    "web_state_test_util.mm",
     "web_task_environment.h",
     "web_test.h",
     "web_test.mm",
@@ -95,4 +97,20 @@ source_set("util") {
     "web_view_interaction_test_util.h",
     "web_view_interaction_test_util.mm",
   ]
+}
+
+source_set("fuzzer_support") {
+  testonly = true
+  sources = [
+    "fuzzer_env_with_web_state.h",
+    "fuzzer_env_with_web_state.mm",
+  ]
+  deps = [
+    ":test",
+    "//base",
+    "//base/test:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test/fakes",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }

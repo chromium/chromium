@@ -24,15 +24,6 @@
         app:srcCompat="@drawable/incognito_splash"
         app:tint="@color/ntp_incognito_icon_color" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/incognito_reauth_icon"
-        android:layout_marginTop="24dp"
-        android:gravity="center_horizontal"
-        android:text="@string/incognito_reauth_page_title"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

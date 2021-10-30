@@ -53,7 +53,6 @@ bool ShouldSuppressKeyboardForState(AutofillAssistantState state) {
     case AutofillAssistantState::RUNNING:
       return true;
 
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
     case AutofillAssistantState::PROMPT:
     case AutofillAssistantState::BROWSE:
     case AutofillAssistantState::MODAL_DIALOG:
@@ -83,7 +82,7 @@ Controller::Controller(
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
       tts_controller_(std::move(tts_controller)) {
   user_model_.AddObserver(this);
-  tts_controller_->SetTtsEventDelegate(this);
+  tts_controller_->SetTtsEventDelegate(weak_ptr_factory_.GetWeakPtr());
 }
 
 Controller::~Controller() {
@@ -950,7 +949,6 @@ void Controller::OnUrlChange() {
 bool Controller::ShouldCheckScripts() {
   return state_ == AutofillAssistantState::TRACKING ||
          state_ == AutofillAssistantState::STARTING ||
-         state_ == AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT ||
          ((state_ == AutofillAssistantState::PROMPT ||
            state_ == AutofillAssistantState::BROWSE) &&
           (!script_tracker_ || !script_tracker_->running()));
@@ -1212,28 +1210,29 @@ void Controller::OnScriptExecuted(const std::string& script_path,
   EnterState(end_state);
 }
 
-bool Controller::MaybeAutostartScript(
+void Controller::MaybeAutostartScript(
     const std::vector<ScriptHandle>& runnable_scripts) {
-  // Under specific conditions, we can directly run a non-interrupt script
-  // without first displaying it. This is meant to work only at the very
-  // beginning, when no scripts have run, and only if there's exactly one
-  // autostartable script.
-  if (!allow_autostart())
-    return false;
+  // We are still waiting for preconditions to match.
+  if (runnable_scripts.empty())
+    return;
 
   int autostart_index = -1;
   for (size_t i = 0; i < runnable_scripts.size(); i++) {
     if (runnable_scripts[i].autostart) {
       if (autostart_index != -1) {
-        // To many autostartable scripts.
-        return false;
+        OnScriptError(GetDisplayStringUTF8(ClientSettingsProto::DEFAULT_ERROR,
+                                           GetSettings()),
+                      Metrics::DropOutReason::MULTIPLE_AUTOSTARTABLE_SCRIPTS);
+        return;
       }
       autostart_index = i;
     }
   }
 
-  if (autostart_index == -1)
-    return false;
+  if (autostart_index == -1) {
+    UpdateDirectActions(runnable_scripts);
+    return;
+  }
 
   // Copying the strings is necessary, as ExecuteScript will invalidate
   // runnable_scripts by calling ScriptTracker::ClearRunnableScripts.
@@ -1242,10 +1241,10 @@ bool Controller::MaybeAutostartScript(
   std::string path = runnable_scripts[autostart_index].path;
   std::string start_message = runnable_scripts[autostart_index].start_message;
   bool needs_ui = runnable_scripts[autostart_index].needs_ui;
+  // TODO(b/204037940): remove prompt state after script execution.
   ExecuteScript(path, start_message, needs_ui,
                 std::make_unique<TriggerContext>(),
                 AutofillAssistantState::PROMPT);
-  return true;
 }
 
 void Controller::InitFromParameters() {
@@ -1874,7 +1873,6 @@ void Controller::OnNoRunnableScriptsForPage() {
       break;
 
     case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
       // The user has navigated to a page that has no scripts or the scripts
       // have reached a state from which they cannot recover through a DOM
       // change.
@@ -1888,6 +1886,22 @@ void Controller::OnNoRunnableScriptsForPage() {
       // other states, for example in BROWSE state.
       break;
   }
+}
+
+void Controller::UpdateDirectActions(
+    const std::vector<ScriptHandle>& runnable_scripts) {
+  auto user_actions = std::make_unique<std::vector<UserAction>>();
+  for (const auto& script : runnable_scripts) {
+    if (script.direct_action.empty())
+      continue;
+
+    UserAction user_action;
+    user_action.direct_action() = script.direct_action;
+    user_action.SetCallback(base::BindOnce(
+        &Controller::OnScriptSelected, weak_ptr_factory_.GetWeakPtr(), script));
+    user_actions->emplace_back(std::move(user_action));
+  }
+  SetUserActions(std::move(user_actions));
 }
 
 void Controller::OnRunnableScriptsChanged(
@@ -1904,55 +1918,20 @@ void Controller::OnRunnableScriptsChanged(
 
   // Script selection is disabled when a script is already running. We will
   // check again and maybe update when the current script has finished.
-  if (script_tracker()->running() || state_ == AutofillAssistantState::STOPPED)
+  if (script_tracker()->running())
     return;
 
-  if (MaybeAutostartScript(runnable_scripts)) {
-    return;
-  }
-
-  // Show the initial prompt if available.
-  for (const auto& script : runnable_scripts) {
-    // runnable_scripts is ordered by priority.
-    if (!script.initial_prompt.empty()) {
-      SetStatusMessage(script.initial_prompt);
-      break;
-    }
-  }
-
-  // Update the set of user actions to report.
-  auto user_actions = std::make_unique<std::vector<UserAction>>();
-  for (const auto& script : runnable_scripts) {
-    UserAction user_action;
-    user_action.chip() = script.chip;
-    user_action.direct_action() = script.direct_action;
-    if (!user_action.has_triggers())
-      continue;
-
-    user_action.SetCallback(base::BindOnce(
-        &Controller::OnScriptSelected, weak_ptr_factory_.GetWeakPtr(), script));
-    user_actions->emplace_back(std::move(user_action));
-  }
-
-  // Change state, if necessary.
   switch (state_) {
-    case AutofillAssistantState::TRACKING:
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
-    case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::BROWSE:
-      // Don't change state
-      break;
-
     case AutofillAssistantState::STARTING:
-      if (!user_actions->empty())
-        EnterState(AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT);
-      break;
-
+      MaybeAutostartScript(runnable_scripts);
+      return;
+    case AutofillAssistantState::TRACKING:
+      UpdateDirectActions(runnable_scripts);
+      return;
     default:
-      if (!user_actions->empty())
-        EnterState(AutofillAssistantState::PROMPT);
+      // In other states we ignore the script update.
+      break;
   }
-  SetUserActions(std::move(user_actions));
 }
 
 void Controller::DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -2204,7 +2183,6 @@ bool Controller::StateNeedsUI(AutofillAssistantState state) {
   // require it.
   switch (state) {
     case AutofillAssistantState::PROMPT:
-    case AutofillAssistantState::AUTOSTART_FALLBACK_PROMPT:
     case AutofillAssistantState::MODAL_DIALOG:
     case AutofillAssistantState::STARTING:
       return true;

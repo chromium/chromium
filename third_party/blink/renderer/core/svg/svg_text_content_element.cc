@@ -163,14 +163,14 @@ SVGPointTearOff* SVGTextContentElement::getStartPositionOfChar(
     return nullptr;
   }
 
-  FloatPoint point;
+  gfx::PointF point;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     point = NGSvgTextQuery(*layout_object).StartPositionOfCharacter(charnum);
   } else {
     point = SVGTextQuery(layout_object).StartPositionOfCharacter(charnum);
   }
-  return SVGPointTearOff::CreateDetached(ToGfxPointF(point));
+  return SVGPointTearOff::CreateDetached(point);
 }
 
 SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
@@ -187,14 +187,14 @@ SVGPointTearOff* SVGTextContentElement::getEndPositionOfChar(
     return nullptr;
   }
 
-  FloatPoint point;
+  gfx::PointF point;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     point = NGSvgTextQuery(*layout_object).EndPositionOfCharacter(charnum);
   } else {
     point = SVGTextQuery(layout_object).EndPositionOfCharacter(charnum);
   }
-  return SVGPointTearOff::CreateDetached(ToGfxPointF(point));
+  return SVGPointTearOff::CreateDetached(point);
 }
 
 SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
@@ -211,7 +211,7 @@ SVGRectTearOff* SVGTextContentElement::getExtentOfChar(
     return nullptr;
   }
 
-  FloatRect rect;
+  gfx::RectF rect;
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     rect = NGSvgTextQuery(*layout_object).ExtentOfCharacter(charnum);
@@ -249,10 +249,10 @@ int SVGTextContentElement::getCharNumAtPosition(
   auto* layout_object = GetLayoutObject();
   if (IsNGTextOrInline(layout_object)) {
     return NGSvgTextQuery(*layout_object)
-        .CharacterNumberAtPosition(FloatPoint(point->Target()->Value()));
+        .CharacterNumberAtPosition(point->Target()->Value());
   }
   return SVGTextQuery(layout_object)
-      .CharacterNumberAtPosition(FloatPoint(point->Target()->Value()));
+      .CharacterNumberAtPosition(point->Target()->Value());
 }
 
 void SVGTextContentElement::selectSubString(unsigned charnum,

@@ -25,6 +25,7 @@ namespace {
 
 const char kTestSeed[] = "compressed, base-64 encoded serialized seed data";
 const char kTestSignature[] = "a completely unforged signature, I promise!";
+const int kTestSeedMilestone = 92;
 const char kTestLocale[] = "en-US";
 const char kTestPermanentConsistencyCountry[] = "US";
 const char kTestSessionConsistencyCountry[] = "CA";
@@ -36,8 +37,10 @@ base::Time GetTestFetchTime() {
 // A simple fake data store.
 class FakeSeedStore : public VariationsSeedStore {
  public:
-  explicit FakeSeedStore(PrefService* local_state)
-      : VariationsSeedStore(local_state) {}
+  explicit FakeSeedStore(TestingPrefServiceSimple* local_state)
+      : VariationsSeedStore(local_state) {
+    VariationsSeedStore::RegisterPrefs(local_state->registry());
+  }
 
   FakeSeedStore(const FakeSeedStore&) = delete;
   FakeSeedStore& operator=(const FakeSeedStore&) = delete;
@@ -46,10 +49,12 @@ class FakeSeedStore : public VariationsSeedStore {
 
   bool StoreSafeSeed(const std::string& seed_data,
                      const std::string& base64_seed_signature,
+                     int seed_milestone,
                      const ClientFilterableState& client_state,
                      base::Time seed_fetch_time) override {
     seed_data_ = seed_data;
     signature_ = base64_seed_signature;
+    seed_milestone_ = seed_milestone;
     date_ = client_state.reference_date;
     locale_ = client_state.locale;
     permanent_consistency_country_ = client_state.permanent_consistency_country;
@@ -60,6 +65,7 @@ class FakeSeedStore : public VariationsSeedStore {
 
   const std::string& seed_data() const { return seed_data_; }
   const std::string& signature() const { return signature_; }
+  int seed_milestone() const { return seed_milestone_; }
   const base::Time& date() const { return date_; }
   const std::string& locale() const { return locale_; }
   const std::string& permanent_consistency_country() const {
@@ -74,6 +80,7 @@ class FakeSeedStore : public VariationsSeedStore {
   // The stored data.
   std::string seed_data_;
   std::string signature_;
+  int seed_milestone_ = 0;
   base::Time date_;
   std::string locale_;
   std::string permanent_consistency_country_;
@@ -81,9 +88,10 @@ class FakeSeedStore : public VariationsSeedStore {
   base::Time fetch_time_;
 };
 
-// Passes the default test values as the active state into the
-// |safe_seed_manager|.
-void SetDefaultActiveState(SafeSeedManager* safe_seed_manager) {
+// Passes the default test values as the active state into |safe_seed_manager|
+// and |local_state|.
+void SetDefaultActiveState(SafeSeedManager* safe_seed_manager,
+                           PrefService* local_state) {
   std::unique_ptr<ClientFilterableState> client_state =
       std::make_unique<ClientFilterableState>(
           base::BindOnce([] { return false; }));
@@ -93,14 +101,18 @@ void SetDefaultActiveState(SafeSeedManager* safe_seed_manager) {
   client_state->session_consistency_country = kTestSessionConsistencyCountry;
   client_state->reference_date = base::Time::UnixEpoch();
 
+  local_state->SetInteger(prefs::kVariationsSeedMilestone, kTestSeedMilestone);
+
   safe_seed_manager->SetActiveSeedState(
-      kTestSeed, kTestSignature, std::move(client_state), GetTestFetchTime());
+      kTestSeed, kTestSignature, kTestSeedMilestone, std::move(client_state),
+      GetTestFetchTime());
 }
 
 // Verifies that the default test values were written to the seed store.
 void ExpectDefaultActiveState(const FakeSeedStore& seed_store) {
   EXPECT_EQ(kTestSeed, seed_store.seed_data());
   EXPECT_EQ(kTestSignature, seed_store.signature());
+  EXPECT_EQ(kTestSeedMilestone, seed_store.seed_milestone());
   EXPECT_EQ(kTestLocale, seed_store.locale());
   EXPECT_EQ(kTestPermanentConsistencyCountry,
             seed_store.permanent_consistency_country());
@@ -126,36 +138,34 @@ class SafeSeedManagerTest : public testing::Test {
 
 TEST_F(SafeSeedManagerTest, RecordSuccessfulFetch_FirstCallSavesSafeSeed) {
   SafeSeedManager safe_seed_manager(&prefs_);
-  SetDefaultActiveState(&safe_seed_manager);
-
   FakeSeedStore seed_store(&prefs_);
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
+  SetDefaultActiveState(&safe_seed_manager, &prefs_);
 
+  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
   ExpectDefaultActiveState(seed_store);
 }
 
 TEST_F(SafeSeedManagerTest, RecordSuccessfulFetch_RepeatedCallsRetainSafeSeed) {
   SafeSeedManager safe_seed_manager(&prefs_);
-  SetDefaultActiveState(&safe_seed_manager);
-
   FakeSeedStore seed_store(&prefs_);
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
-  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
+  SetDefaultActiveState(&safe_seed_manager, &prefs_);
 
+  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
+  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
+  safe_seed_manager.RecordSuccessfulFetch(&seed_store);
   ExpectDefaultActiveState(seed_store);
 }
 
 TEST_F(SafeSeedManagerTest,
        RecordSuccessfulFetch_NoActiveState_DoesntSaveSafeSeed) {
   SafeSeedManager safe_seed_manager(&prefs_);
+  FakeSeedStore seed_store(&prefs_);
   // Omit setting any active state.
 
-  FakeSeedStore seed_store(&prefs_);
   safe_seed_manager.RecordSuccessfulFetch(&seed_store);
-
   EXPECT_EQ(std::string(), seed_store.seed_data());
   EXPECT_EQ(std::string(), seed_store.signature());
+  EXPECT_EQ(0, seed_store.seed_milestone());
   EXPECT_EQ(std::string(), seed_store.locale());
   EXPECT_EQ(std::string(), seed_store.permanent_consistency_country());
   EXPECT_EQ(std::string(), seed_store.session_consistency_country());

@@ -34,7 +34,7 @@ void AppWake::FirstTaskRun() {
   //
   // TODO(crbug.com/1113448) - consider initializing the thread pool in the
   // constructor of the base class or earlier, in the updater main.
-  update_service_internal_ = CreateUpdateServiceInternal();
+  update_service_internal_ = CreateUpdateServiceInternal(updater_scope());
   update_service_internal_->Run(base::BindOnce(&AppWake::Shutdown, this, 0));
 }
 

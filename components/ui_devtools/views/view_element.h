@@ -42,6 +42,7 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
       const override;
   static views::View* From(const UIElement* element);
   void PaintRect() const override;
+  int GetBackingElementID() override;
   bool DispatchMouseEvent(protocol::DOM::MouseEvent* event) override;
   bool DispatchKeyEvent(protocol::DOM::KeyEvent* event) override;
 

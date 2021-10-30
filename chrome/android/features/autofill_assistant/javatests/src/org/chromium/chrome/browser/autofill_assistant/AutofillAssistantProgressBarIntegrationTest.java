@@ -133,8 +133,7 @@ public class AutofillAssistantProgressBarIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -217,8 +216,7 @@ public class AutofillAssistantProgressBarIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -297,8 +295,7 @@ public class AutofillAssistantProgressBarIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -373,8 +370,7 @@ public class AutofillAssistantProgressBarIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);
@@ -458,8 +454,7 @@ public class AutofillAssistantProgressBarIntegrationTest {
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 SupportedScriptProto.newBuilder()
                         .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Autostart")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
         runScript(script);

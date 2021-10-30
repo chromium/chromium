@@ -443,7 +443,7 @@
         android:enabled="false"
         android:excludeFromRecents="true"
         android:exported="true"
-        android:icon="@drawable/sharing_print"
+        android:icon="@drawable/sharing_print_baseline"
         android:label="@string/print_share_activity_title"
         android:noHistory="true"
         android:theme="@android:style/Theme.NoDisplay">

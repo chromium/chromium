@@ -117,16 +117,7 @@ bool MediaQueryEvaluator::Eval(const MediaQuery& query, Results results) const {
   // semantics).
   wtf_size_t i = 0;
   for (; i < expressions.size(); ++i) {
-    bool expr_result = Eval(expressions.at(i));
-    if (results.viewport_dependent && expressions.at(i).IsViewportDependent()) {
-      results.viewport_dependent->push_back(
-          MediaQueryResult(expressions.at(i), expr_result));
-    }
-    if (results.device_dependent && expressions.at(i).IsDeviceDependent()) {
-      results.device_dependent->push_back(
-          MediaQueryResult(expressions.at(i), expr_result));
-    }
-    if (!expr_result)
+    if (!Eval(expressions.at(i), results))
       break;
   }
 
@@ -153,15 +144,20 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
+  return Eval(node, Results());
+}
+
+bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
+                               Results results) const {
   if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
-    return Eval(n->Operand());
+    return Eval(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
-    return !Eval(n->Operand());
+    return !Eval(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))
-    return Eval(n->Left()) && Eval(n->Right());
+    return Eval(n->Left(), results) && Eval(n->Right(), results);
   if (auto* n = DynamicTo<MediaQueryOrExpNode>(node))
-    return Eval(n->Left()) || Eval(n->Right());
-  return Eval(To<MediaQueryFeatureExpNode>(node).Expression());
+    return Eval(n->Left(), results) || Eval(n->Right(), results);
+  return Eval(To<MediaQueryFeatureExpNode>(node).Expression(), results);
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
@@ -1125,6 +1121,18 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr) const {
   }
 
   return result;
+}
+
+bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
+                               Results results) const {
+  bool value = Eval(expr);
+
+  if (results.viewport_dependent && expr.IsViewportDependent())
+    results.viewport_dependent->push_back(MediaQueryResult(expr, value));
+  if (results.device_dependent && expr.IsDeviceDependent())
+    results.device_dependent->push_back(MediaQueryResult(expr, value));
+
+  return value;
 }
 
 }  // namespace blink

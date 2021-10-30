@@ -20,12 +20,13 @@ namespace {
 
 std::vector<password_manager::PasswordForm> CreateFormsVector(
     const base::android::JavaRef<jbyteArray>& passwords) {
-  std::vector<uint8_t> serializedResult;
+  std::vector<uint8_t> serialized_result;
   base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
-                                           passwords, &serializedResult);
+                                           passwords, &serialized_result);
   sync_pb::ListPasswordsResult list_passwords_result;
-  list_passwords_result.ParseFromArray(serializedResult.data(),
-                                       serializedResult.size());
+  // TODO(crbug.com/1229655): Check that parsing executes successfully.
+  list_passwords_result.ParseFromArray(serialized_result.data(),
+                                       serialized_result.size());
   auto forms =
       password_manager::PasswordVectorFromListResult(list_passwords_result);
   for (auto& form : forms) {
@@ -37,11 +38,23 @@ std::vector<password_manager::PasswordForm> CreateFormsVector(
 
 sync_pb::PasswordSpecificsData CreatePasswordSpecificsData(
     const base::android::JavaRef<jbyteArray>& login) {
-  std::vector<uint8_t> serializedResult;
+  std::vector<uint8_t> serialized_result;
   base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
-                                           login, &serializedResult);
+                                           login, &serialized_result);
   sync_pb::PasswordSpecificsData result;
-  result.ParseFromArray(serializedResult.data(), serializedResult.size());
+  // TODO(crbug.com/1229655): Check that parsing executes successfully.
+  result.ParseFromArray(serialized_result.data(), serialized_result.size());
+  return result;
+}
+
+sync_pb::PasswordWithLocalData CreatePasswordWithLocalData(
+    const base::android::JavaRef<jbyteArray>& login) {
+  std::vector<uint8_t> serialized_result;
+  base::android::JavaByteArrayToByteVector(base::android::AttachCurrentThread(),
+                                           login, &serialized_result);
+  sync_pb::PasswordWithLocalData result;
+  // TODO(crbug.com/1229655): Check that parsing executes successfully.
+  result.ParseFromArray(serialized_result.data(), serialized_result.size());
   return result;
 }
 
@@ -111,6 +124,17 @@ JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
   return job_id;
 }
 
+JobId PasswordStoreAndroidBackendBridgeImpl::AddLogin(
+    const password_manager::PasswordForm& form) {
+  JobId job_id = GetNextJobId();
+  sync_pb::PasswordWithLocalData data = PasswordWithLocalDataFromPassword(form);
+  Java_PasswordStoreAndroidBackendBridgeImpl_addLogin(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                     data.SerializeAsString()));
+  return job_id;
+}
+
 JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
     const password_manager::PasswordForm& form) {
   JobId job_id = GetNextJobId();
@@ -120,6 +144,25 @@ JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
                                      data.SerializeAsString()));
   return job_id;
+}
+
+void PasswordStoreAndroidBackendBridgeImpl::OnLoginAdded(
+    JNIEnv* env,
+    jint job_id,
+    const base::android::JavaParamRef<jbyteArray>& login) {
+  DCHECK(consumer_);
+
+  // TODO(crbug.com/1229655): This is a temporary workaround, while store
+  // change deltas are not received to confirm the correct operation execution.
+  sync_pb::PasswordWithLocalData login_data =
+      CreatePasswordWithLocalData(login);
+  password_manager::PasswordStoreChangeList changelist;
+  password_manager::PasswordForm added_form =
+      password_manager::PasswordFromProtoWithLocalData(login_data);
+  changelist.emplace_back(password_manager::PasswordStoreChange::ADD,
+                          added_form);
+
+  consumer_->OnLoginsChanged(JobId(job_id), changelist);
 }
 
 void PasswordStoreAndroidBackendBridgeImpl::OnLoginDeleted(

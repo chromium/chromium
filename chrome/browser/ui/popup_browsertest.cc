@@ -279,7 +279,11 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
         permissions::PermissionRequestManager::ACCEPT_ALL);
     constexpr char kGetScreensLength[] = R"(
       (async () => {
-        try { return (await getScreens()).screens.length; } catch { return 0; }
+        try {
+          return (await getScreenDetails()).screens.length;
+        } catch {
+          return 0;
+        }
       })();
     )";
     EXPECT_EQ(2, EvalJs(opener, kGetScreensLength));

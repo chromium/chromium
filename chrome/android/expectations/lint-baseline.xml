@@ -3413,22 +3413,6 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/android/java/res/drawable/sharing_print.xml"
-            line="13"/>
-    </issue>
-
-    <issue
-        id="VectorRaster"
-        message="">
-        <location
-            file="../../chrome/android/java/res/drawable/sharing_print.xml"
-            line="15"/>
-    </issue>
-
-    <issue
-        id="VectorRaster"
-        message="">
-        <location
             file="../../components/browser_ui/styles/android/java/res/drawable/smartphone_black_24dp.xml"
             line="17"/>
     </issue>

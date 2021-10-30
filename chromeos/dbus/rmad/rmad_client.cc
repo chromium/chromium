@@ -205,23 +205,24 @@ void RmadClientImpl::PowerCableStateReceived(dbus::Signal* signal) {
 void RmadClientImpl::ProvisioningProgressReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kProvisioningProgressSignal);
   dbus::MessageReader reader(signal);
-  uint32_t step;
-  double progress;
-  if (!reader.PopUint32(&step)) {
-    LOG(ERROR) << "Unable to decode step uint32 from " << signal->GetMember()
-               << " signal";
-    return;
-  }
-  if (!reader.PopDouble(&progress)) {
-    LOG(ERROR) << "Unable to decode progress double from "
-               << signal->GetMember() << " signal";
+  // Read proto message
+  dbus::MessageReader sub_reader(nullptr);
+  if (!reader.PopStruct(&sub_reader)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
     return;
   }
   DCHECK(!reader.HasMoreData());
+  int32_t status;
+  double progress;
+  if (!sub_reader.PopInt32(&status) || !sub_reader.PopDouble(&progress)) {
+    LOG(ERROR) << "Unable to decode signal for " << signal->GetMember();
+    return;
+  }
+  rmad::ProvisionStatus signal_proto;
+  signal_proto.set_status(static_cast<rmad::ProvisionStatus::Status>(status));
+  signal_proto.set_progress(progress);
   for (auto& observer : observers_) {
-    observer.ProvisioningProgress(
-        static_cast<rmad::ProvisionDeviceState::ProvisioningStep>(step),
-        progress);
+    observer.ProvisioningProgress(signal_proto);
   }
 }
 

@@ -399,6 +399,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAuthenticationConditionalUI", features::kWebAuthConditionalUI},
           {"SyncLoadDataUrlFonts", blink::features::kSyncLoadDataUrlFonts},
           {"CSSCascadeLayers", blink::features::kCSSCascadeLayers},
+          // TODO(crbug.com/1185950): Remove this flag when the feature is fully
+          // launched and released to stable with no issues.
+          {"AutoExpandDetailsElement",
+           blink::features::kAutoExpandDetailsElement},
       };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

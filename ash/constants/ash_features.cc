@@ -222,6 +222,12 @@ const base::Feature kCalendarView{"CalendarView",
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, allow eSIM installation bypass the non-cellular internet
+// connectivity check.
+const base::Feature kCellularBypassESimInstallationConnectivityCheck{
+    "CellularBypassESimInstallationConnectivityCheck",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the value of |kCellularUseAttachApn| should have no effect and
 // and the LTE attach APN configuration will not be sent to the modem. This
 // flag exists because the |kCellularUseAttachApn| flag can be enabled

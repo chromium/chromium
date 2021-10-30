@@ -21,7 +21,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/wm_role_names_linux.h"
 #include "ui/base/x/x11_cursor.h"
-#include "ui/base/x/x11_menu_registrar.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/base/x/x11_pointer_grab.h"
 #include "ui/base/x/x11_topmost_window_finder.h"
@@ -1603,10 +1602,6 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
 
   workspace_extension_delegate_ = properties.workspace_extension_delegate;
   x11_extension_delegate_ = properties.x11_extension_delegate;
-
-  // Ensure that the X11MenuRegistrar exists. The X11MenuRegistrar is
-  // necessary to properly track menu windows.
-  X11MenuRegistrar::Get();
 
   activatable_ = properties.activatable;
 

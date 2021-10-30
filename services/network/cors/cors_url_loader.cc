@@ -294,6 +294,18 @@ void CorsURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const absl::optional<GURL>& new_url) {
+  // If this is a navigation from a renderer, then its a service worker
+  // passthrough of a navigation request.  Since this case uses manual
+  // redirect mode FollowRedirect() should never be called.
+  if (process_id_ != mojom::kBrowserProcessId &&
+      request_.mode == mojom::RequestMode::kNavigate) {
+    mojo::ReportBadMessage(
+        "CorsURLLoader: navigate from non-browser-process should not call "
+        "FollowRedirect");
+    HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
+    return;
+  }
+
   if (!network_loader_ || !deferred_redirect_url_) {
     HandleComplete(URLLoaderCompletionStatus(net::ERR_FAILED));
     return;

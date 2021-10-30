@@ -125,6 +125,7 @@ class MockMediaRouter : public MediaRouterBase {
                     mojo::PendingRemote<mojom::MediaStatusObserver> observer));
   MOCK_METHOD0(GetLogger, LoggerImpl*());
 #endif  // !defined(OS_ANDROID)
+  MOCK_CONST_METHOD0(GetState, base::Value());
   MOCK_METHOD1(OnAddPresentationConnectionStateChangedCallbackInvoked,
                void(const content::PresentationConnectionStateChangedCallback&
                         callback));

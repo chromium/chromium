@@ -54,7 +54,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
     widget_->SetBounds(gfx::Rect(0, 0, 700, 500));
     widget_->GetContentsView()->AddChildView(view_.get());
     widget_->Show();
-    view_->SetResults(view_delegate_.GetSearchModel()->results());
+    view_->SetResults(GetResults());
   }
 
   void TearDown() override {
@@ -82,7 +82,7 @@ class SearchResultListViewTest : public views::test::WidgetTest {
   }
 
   SearchModel::SearchResults* GetResults() {
-    return view_delegate_.GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
   void AddAssistantSearchResult() {

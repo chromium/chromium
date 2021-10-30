@@ -61,10 +61,8 @@ void CameraRollThumbnailDecoderImpl::DecoderDelegate::DecodeThumbnail(
     const DecodeRequest& request,
     data_decoder::DecodeImageCallback callback) {
   const std::string& encoded_thumbnail = request.GetEncodedThumbnail();
-  std::vector<uint8_t> thumbnail_bytes(encoded_thumbnail.begin(),
-                                       encoded_thumbnail.end());
   data_decoder::DecodeImage(
-      &data_decoder_, thumbnail_bytes,
+      &data_decoder_, base::as_bytes(base::make_span(encoded_thumbnail)),
       data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/true, data_decoder::kDefaultMaxSizeInBytes,
       /*desired_image_frame_size=*/gfx::Size(), std::move(callback));

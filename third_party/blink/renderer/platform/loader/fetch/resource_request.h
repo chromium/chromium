@@ -513,6 +513,14 @@ class PLATFORM_EXPORT ResourceRequestHead {
     return allowHTTP1ForStreamingUpload_;
   }
 
+  // The original destination of a request passed through by a service worker.
+  network::mojom::RequestDestination GetOriginalDestination() const {
+    return original_destination_;
+  }
+  void SetOriginalDestination(network::mojom::RequestDestination value) {
+    original_destination_ = value;
+  }
+
   const absl::optional<ResourceRequestHead::WebBundleTokenParams>&
   GetWebBundleTokenParams() const {
     return web_bundle_token_params_;
@@ -602,6 +610,9 @@ class PLATFORM_EXPORT ResourceRequestHead {
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   base::UnguessableToken fetch_window_id_;
+
+  network::mojom::RequestDestination original_destination_ =
+      network::mojom::RequestDestination::kEmpty;
 
   uint64_t inspector_id_ = 0;
 

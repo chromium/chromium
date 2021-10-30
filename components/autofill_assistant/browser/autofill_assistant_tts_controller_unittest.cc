@@ -55,20 +55,30 @@ class MockTtsController : public content::TtsController {
 class MockTtsEventDelegate
     : public AutofillAssistantTtsController::TtsEventDelegate {
  public:
+  MockTtsEventDelegate() = default;
+  ~MockTtsEventDelegate() override = default;
+
   MOCK_METHOD1(OnTtsEvent, void(AutofillAssistantTtsController::TtsEventType));
+
+  base::WeakPtr<MockTtsEventDelegate> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockTtsEventDelegate> weak_ptr_factory_{this};
 };
 
 class AutofillAssistantTtsControllerTest : public ::testing::Test {
  public:
   void SetUp() override {
     autofill_assistant_tts_controller_.SetTtsEventDelegate(
-        &mock_tts_event_delegate_);
+        mock_tts_event_delegate_.GetWeakPtr());
   }
 
   void SimulateTtsEvent(content::TtsEventType tts_event_type) {
     autofill_assistant_tts_controller_.OnTtsEvent(
         /* utterance= */ nullptr, tts_event_type, /* char_index= */ 0,
-        /* char_length= */ 0, /* error_message= */ "");
+        /* char_length= */ 0, /* error_message= */ std::string());
   }
 
   testing::NiceMock<MockTtsController> mock_tts_controller_;
@@ -110,7 +120,7 @@ TEST_F(AutofillAssistantTtsControllerTest, OnTtsEvent) {
   SimulateTtsEvent(content::TTS_EVENT_ERROR);
 }
 
-TEST(AutofillAssistantTtsControllerDestructorTest,
+TEST(AutofillAssistantTtsControllerStandaloneTest,
      DestructorRemovesUtteranceEventDelegate) {
   testing::NiceMock<MockTtsController> mock_tts_controller;
   auto autofill_assistant_tts_controller =
@@ -121,6 +131,22 @@ TEST(AutofillAssistantTtsControllerDestructorTest,
       RemoveUtteranceEventDelegate(autofill_assistant_tts_controller.get()));
 
   autofill_assistant_tts_controller.reset();
+}
+
+TEST(AutofillAssistantTtsControllerStandaloneTest,
+     OnTtsEventDoesNotCrashesWhenTtsEventDelegateIsInvalid) {
+  testing::NiceMock<MockTtsController> mock_tts_controller;
+  auto mock_tts_event_delegate = std::make_unique<MockTtsEventDelegate>();
+  auto autofill_assistant_tts_controller =
+      std::make_unique<AutofillAssistantTtsController>(&mock_tts_controller);
+  autofill_assistant_tts_controller->SetTtsEventDelegate(
+      mock_tts_event_delegate->GetWeakPtr());
+  mock_tts_event_delegate.reset();
+
+  // This method should not crash.
+  autofill_assistant_tts_controller->OnTtsEvent(
+      /* utterance= */ nullptr, content::TTS_EVENT_START, /* char_index= */ 0,
+      /* char_length= */ 0, /* error_message= */ std::string());
 }
 }  // namespace
 }  // namespace autofill_assistant

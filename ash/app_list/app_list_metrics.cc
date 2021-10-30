@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
@@ -197,8 +198,8 @@ void RecordPeriodicAppListMetrics() {
   int number_of_apps_in_launcher = 0;
   int number_of_root_level_items = 0;
 
-  AppListItemList* item_list =
-      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  AppListModel* const model = AppListModelProvider::Get()->model();
+  AppListItemList* const item_list = model->top_level_item_list();
   for (size_t i = 0; i < item_list->item_count(); ++i) {
     AppListItem* item = item_list->item_at(i);
     if (item->GetItemType() == AppListFolderItem::kItemType) {

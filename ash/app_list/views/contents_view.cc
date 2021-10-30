@@ -120,14 +120,11 @@ int ContentsView::GetPeekingSearchBoxTopMarginOnPage(AppListState page) {
 
 void ContentsView::Init() {
   AppListViewDelegate* view_delegate = GetAppListMainView()->view_delegate();
-
   apps_container_view_ = AddLauncherPage(
-      std::make_unique<AppsContainerView>(this, view_delegate->GetModel()),
-      AppListState::kStateApps);
+      std::make_unique<AppsContainerView>(this), AppListState::kStateApps);
 
   // Search results UI.
-  auto search_result_page_view =
-      std::make_unique<SearchResultPageView>(view_delegate->GetSearchModel());
+  auto search_result_page_view = std::make_unique<SearchResultPageView>();
   search_result_page_view->InitializeContainers(
       view_delegate, GetAppListMainView(), GetSearchBoxView()->search_box());
 

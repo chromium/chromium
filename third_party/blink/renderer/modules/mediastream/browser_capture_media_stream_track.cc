@@ -51,6 +51,11 @@ void ResolveCropPromise(ScriptPromiseResolver* resolver,
   }
 
   switch (result) {
+    case media::mojom::CropRequestResult::kSuccess:
+      // TODO(crbug.com/1247761): Delay reporting success to the Web-application
+      // until "seeing" the last frame cropped to the previous crop-target.
+      resolver->Resolve();
+      return;
     case media::mojom::CropRequestResult::kErrorGeneric:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unknown error.");

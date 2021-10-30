@@ -40,22 +40,23 @@ base::CallbackListSubscription SetUpSigninClient(
 void InitNetwork();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Makes a non-primary account available with both a refresh token and cookie.
-AccountInfo SignInSecondaryAccount(
+// Sets an account as primary with `signin::ConsentLevel::kSignin`. There is no
+// consent for Sync. The account is available with both a refresh token and
+// cookie.
+AccountInfo SignInUnconsentedAccount(
     Profile* profile,
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email);
 
 // Clears signin cookies and removes the refresh token for the given account.
-void SignOutSecondaryAccount(
-    Profile* profile,
-    network::TestURLLoaderFactory* test_url_loader_factory,
-    const CoreAccountId& account_id);
+void SignOutAccount(Profile* profile,
+                    network::TestURLLoaderFactory* test_url_loader_factory,
+                    const CoreAccountId& account_id);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Makes the given account Chrome's primary one. The account must already be
-// signed in (per SignInSecondaryAccount).
-void MakeAccountPrimary(Profile* profile, const std::string& email);
+// Grants sync consent to an account (`signin::ConsentLevel::kSync`). The
+// account must already be signed in (per SignInUnconsentedAccount).
+void GrantSyncConsent(Profile* profile, const std::string& email);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace secondary_account_helper

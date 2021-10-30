@@ -65,12 +65,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
 
   // Restrict screenshot for Platform App
   GURL kUrl = GURL("chrome-extension://" + extension->id() + "/index.html");
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(kUrl))
-      .Times(1)
-      .WillOnce(Return(kScreenshotRestrictionSet));
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl, kScreenshotRestrictionSet);
   EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kScreenshotRestrictionSet))
       .Times(1);
@@ -126,14 +124,12 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBFCacheBrowserTest,
       embedded_test_server()->GetURL("restricted.com", "/title1.html");
   GURL kUrlUnrestricted =
       embedded_test_server()->GetURL("unrestricted.com", "/title1.html");
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_,
-              GetRestrictionSetForURL(kUrlRestricted))
-      .WillRepeatedly(Return(kScreenshotRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_,
-              GetRestrictionSetForURL(kUrlUnrestricted))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrlRestricted, kScreenshotRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrlUnrestricted, kEmptyRestrictionSet);
 
   content::WebContents* const web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

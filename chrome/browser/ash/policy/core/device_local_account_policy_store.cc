@@ -125,9 +125,17 @@ void DeviceLocalAccountPolicyStore::ValidateLoadedPolicyBlob(
 void DeviceLocalAccountPolicyStore::UpdatePolicy(
     const std::string& signature_validation_public_key,
     UserCloudPolicyValidator* validator) {
-  DCHECK(!signature_validation_public_key.empty());
+  // Validator is not created when device ownership is not set up yet. Do not
+  // propagate the error in such case since it is recoverable.
+  if (!validator) {
+    status_ = CloudPolicyStore::STATUS_BAD_STATE;
+    NotifyStoreLoaded();
+    return;
+  }
 
+  DCHECK(!signature_validation_public_key.empty());
   validation_result_ = validator->GetValidationResult();
+
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
     NotifyStoreError();
@@ -145,6 +153,14 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
 void DeviceLocalAccountPolicyStore::OnPolicyToStoreValidated(
     const std::string& signature_validation_public_key_unused,
     UserCloudPolicyValidator* validator) {
+  // Validator is not created when device ownership is not set up yet. Do not
+  // propagate the error in such case since it is recoverable.
+  if (!validator) {
+    status_ = CloudPolicyStore::STATUS_BAD_STATE;
+    NotifyStoreLoaded();
+    return;
+  }
+
   validation_result_ = validator->GetValidationResult();
   if (!validator->success()) {
     status_ = STATUS_VALIDATION_ERROR;
@@ -210,8 +226,8 @@ void DeviceLocalAccountPolicyStore::Validate(
     LOG(ERROR) << "Failed policy validation, key: " << (key.get() != nullptr)
                << ", is_loaded: " << (key.get() ? key->is_loaded() : false)
                << ", device_policy_data: " << (device_policy_data != nullptr);
-    status_ = CloudPolicyStore::STATUS_BAD_STATE;
-    NotifyStoreLoaded();
+    std::move(callback).Run(/*signature_validation_public_key=*/std::string(),
+                            /*validator=*/nullptr);
     return;
   }
 
@@ -247,8 +263,9 @@ void DeviceLocalAccountPolicyStore::Validate(
         base::BindOnce(std::move(callback), key->as_string()));
   } else {
     validator->RunValidation();
-
-    UpdatePolicy(key->as_string(), validator.get());
+    std::move(callback).Run(
+        /*signature_validation_public_key=*/key->as_string(),
+        /*validator=*/validator.get());
   }
 }
 

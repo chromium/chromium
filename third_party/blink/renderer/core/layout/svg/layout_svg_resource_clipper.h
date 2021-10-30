@@ -41,7 +41,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const FloatRect& reference_box);
+  gfx::RectF ResourceBoundingBox(const gfx::RectF& reference_box);
 
   static const LayoutSVGResourceType kResourceType = kClipperResourceType;
   LayoutSVGResourceType ResourceType() const override {
@@ -49,10 +49,10 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
     return kResourceType;
   }
 
-  bool HitTestClipContent(const FloatRect&, const HitTestLocation&) const;
+  bool HitTestClipContent(const gfx::RectF&, const HitTestLocation&) const;
 
   SVGUnitTypes::SVGUnitType ClipPathUnits() const;
-  AffineTransform CalculateClipTransform(const FloatRect& reference_box) const;
+  AffineTransform CalculateClipTransform(const gfx::RectF& reference_box) const;
 
   absl::optional<Path> AsPath();
   sk_sp<const PaintRecord> CreatePaintRecord();
@@ -75,7 +75,7 @@ class LayoutSVGResourceClipper final : public LayoutSVGResourceContainer {
   // clipping.
   sk_sp<const PaintRecord> cached_paint_record_;
 
-  FloatRect local_clip_bounds_;
+  gfx::RectF local_clip_bounds_;
 };
 
 template <>

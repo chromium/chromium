@@ -44,7 +44,11 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+                                      kPermissionPromptBubbleViewIdentifier);
 
 PermissionPromptBubbleView::PermissionPromptBubbleView(
     Browser* browser,
@@ -144,6 +148,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extra_text_label->SetMultiLine(true);
   }
+  View::SetProperty(views::kElementIdentifierKey,
+                    kPermissionPromptBubbleViewIdentifier);
 }
 
 PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;

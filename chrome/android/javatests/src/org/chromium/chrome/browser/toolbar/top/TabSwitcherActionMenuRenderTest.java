@@ -25,10 +25,10 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class TabSwitcherActionMenuRenderTest extends DummyUiChromeActivityTestCase {
+public class TabSwitcherActionMenuRenderTest extends DummyUiActivityTestCase {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();

@@ -34,7 +34,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -370,10 +370,10 @@ class StartSurfaceToolbarMediator {
     /**
      * This method should be called when there is a possibility that logo image became available or
      * was changed.
-     * @param logoImage The logo image in drawable format.
+     * @param logoImage The logo image in bitmap format.
      * @param contentDescription The accessibility text describing the logo.
      */
-    void onLogoImageAvailable(Drawable logoImage, String contentDescription) {
+    void onLogoImageAvailable(Bitmap logoImage, String contentDescription) {
         mDefaultSearchEngineHasLogo = logoImage != null;
         updateLogoVisibility();
         mPropertyModel.set(LOGO_IMAGE, logoImage);

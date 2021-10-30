@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/continue_section_view.h"
@@ -104,11 +105,12 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
                                             /*tablet_mode=*/false));
 
   // Recent apps row.
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
+  AppListModel* const model = AppListModelProvider::Get()->model();
   recent_apps_ = scroll_contents->AddChildView(
       std::make_unique<RecentAppsView>(this, view_delegate));
   recent_apps_->UpdateAppListConfig(app_list_config);
-  recent_apps_->ShowResults(view_delegate->GetSearchModel(),
-                            view_delegate->GetModel());
+  recent_apps_->ShowResults(search_model, model);
 
   // Horizontal separator.
   auto* separator =
@@ -128,7 +130,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_->Init();
   scrollable_apps_grid_view_->UpdateAppListConfig(app_list_config);
   scrollable_apps_grid_view_->SetMaxColumns(5);
-  AppListModel* model = view_delegate->GetModel();
   scrollable_apps_grid_view_->SetModel(model);
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
   scrollable_apps_grid_view_->ResetForShowApps();

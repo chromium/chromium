@@ -274,7 +274,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
             base::BindOnce(&GenerateKeyTask::GotPermissions,
-                           base::Unretained(this)),
+                           weak_factory_.GetWeakPtr()),
             service_->browser_context_, extension_id_);
   }
 
@@ -292,7 +292,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     service_->keystore_service_->RemoveKey(
         KeystoreTypeFromTokenId(token_id_), StrToBlob(public_key_spki_der_),
         base::BindOnce(&GenerateKeyTask::RemoveKeyCallback,
-                       base::Unretained(this),
+                       weak_factory_.GetWeakPtr(),
                        /*corporate_key_registration_error_status=*/error));
   }
 
@@ -319,7 +319,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     extension_key_permissions_service_->RegisterKeyForCorporateUsage(
         public_key_spki_der_,
         base::BindOnce(&GenerateKeyTask::OnKeyRegisteredForCorporateUsage,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   }
 
   void GotPermissions(
@@ -468,7 +468,8 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void GetExtensionPermissions() {
     platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
-            base::BindOnce(&SignTask::GotPermissions, base::Unretained(this)),
+            base::BindOnce(&SignTask::GotPermissions,
+                           weak_factory_.GetWeakPtr()),
             service_->browser_context_, extension_id_);
   }
 
@@ -493,7 +494,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
     extension_key_permissions_service_->CanUseKeyForSigning(
         public_key_spki_der_,
         base::BindOnce(&SignTask::OnCanUseKeyForSigningKnown,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   }
 
   void OnCanUseKeyForSigningKnown(bool allowed) {
@@ -513,7 +514,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
     extension_key_permissions_service_->SetKeyUsedForSigning(
         public_key_spki_der_,
         base::BindOnce(&SignTask::OnSetKeyUsedForSigningDone,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   }
 
   void OnSetKeyUsedForSigningDone(bool is_error,
@@ -672,7 +673,8 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   void GetExtensionPermissions() {
     platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
-            base::BindOnce(&SelectTask::GotPermissions, base::Unretained(this)),
+            base::BindOnce(&SelectTask::GotPermissions,
+                           weak_factory_.GetWeakPtr()),
             service_->browser_context_, extension_id_);
   }
 
@@ -756,7 +758,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     extension_key_permissions_service_->CanUseKeyForSigning(
         public_key_spki_der,
         base::BindOnce(&SelectTask::OnKeySigningPermissionKnown,
-                       base::Unretained(this), public_key_spki_der,
+                       weak_factory_.GetWeakPtr(), public_key_spki_der,
                        certificate));
   }
 
@@ -771,7 +773,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
       service_->keystore_service_->CanUserGrantPermissionForKey(
           StrToBlob(public_key_spki_der),
           base::BindOnce(&SelectTask::OnAbilityToGrantPermissionKnown,
-                         base::Unretained(this), std::move(certificate)));
+                         weak_factory_.GetWeakPtr(), std::move(certificate)));
     } else {
       DoStep();
     }
@@ -816,7 +818,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
     }
     service_->select_delegate_->Select(
         extension_id_, matches_,
-        base::BindOnce(&SelectTask::GotSelection, base::Unretained(this)),
+        base::BindOnce(&SelectTask::GotSelection, weak_factory_.GetWeakPtr()),
         web_contents_, service_->browser_context_);
   }
 
@@ -839,7 +841,7 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
         platform_keys::GetSubjectPublicKeyInfo(selected_cert_));
     extension_key_permissions_service_->SetUserGrantedPermission(
         public_key_spki_der, base::BindOnce(&SelectTask::OnPermissionsUpdated,
-                                            base::Unretained(this)));
+                                            weak_factory_.GetWeakPtr()));
   }
 
   void OnPermissionsUpdated(bool is_error,

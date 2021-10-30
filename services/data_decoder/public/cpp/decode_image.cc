@@ -53,7 +53,7 @@ void OnDecodeImages(mojo::Remote<mojom::ImageDecoder> decoder,
 }
 
 void DecodeImageUsingServiceProcess(DataDecoder* data_decoder,
-                                    const std::vector<uint8_t>& encoded_bytes,
+                                    base::span<const uint8_t> encoded_bytes,
                                     mojom::ImageCodec codec,
                                     bool shrink_to_fit,
                                     uint64_t max_size_in_bytes,
@@ -82,7 +82,7 @@ void DecodeImageUsingServiceProcess(DataDecoder* data_decoder,
 
 }  // namespace
 
-void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
+void DecodeImageIsolated(base::span<const uint8_t> encoded_bytes,
                          mojom::ImageCodec codec,
                          bool shrink_to_fit,
                          uint64_t max_size_in_bytes,
@@ -105,7 +105,7 @@ void DecodeImageIsolated(const std::vector<uint8_t>& encoded_bytes,
 }
 
 void DecodeImage(DataDecoder* data_decoder,
-                 const std::vector<uint8_t>& encoded_bytes,
+                 base::span<const uint8_t> encoded_bytes,
                  mojom::ImageCodec codec,
                  bool shrink_to_fit,
                  uint64_t max_size_in_bytes,
@@ -118,7 +118,7 @@ void DecodeImage(DataDecoder* data_decoder,
 }
 
 void DecodeAnimationIsolated(
-    const std::vector<uint8_t>& encoded_bytes,
+    base::span<const uint8_t> encoded_bytes,
     bool shrink_to_fit,
     uint64_t max_size_in_bytes,
     mojom::ImageDecoder::DecodeAnimationCallback callback) {
@@ -137,7 +137,7 @@ void DecodeAnimationIsolated(
 }
 
 void DecodeAnimation(DataDecoder* data_decoder,
-                     const std::vector<uint8_t>& encoded_bytes,
+                     base::span<const uint8_t> encoded_bytes,
                      bool shrink_to_fit,
                      uint64_t max_size_in_bytes,
                      mojom::ImageDecoder::DecodeAnimationCallback callback) {

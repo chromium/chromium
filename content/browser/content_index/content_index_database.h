@@ -44,6 +44,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
 
   void AddEntry(int64_t service_worker_registration_id,
                 const url::Origin& origin,
+                bool is_top_level_context,
                 blink::mojom::ContentDescriptionPtr description,
                 const std::vector<SkBitmap>& icons,
                 const GURL& launch_url,
@@ -96,6 +97,7 @@ class CONTENT_EXPORT ContentIndexDatabase {
   void DidSerializeIcons(
       int64_t service_worker_registration_id,
       const url::Origin& origin,
+      bool is_top_level_context,
       blink::mojom::ContentDescriptionPtr description,
       const GURL& launch_url,
       std::unique_ptr<proto::SerializedIcons> serialized_icons,

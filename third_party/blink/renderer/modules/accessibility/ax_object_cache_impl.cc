@@ -462,6 +462,12 @@ bool IsNodeRelevantForAccessibility(const Node* node,
       return false;
     }
 
+    // Children of an <iframe> tag will always be replaced by a new Document,
+    // either loaded from the iframe src or empty. In fact, we don't even parse
+    // them and they are treated like one text node. Consider irrelevant.
+    if (IsA<HTMLIFrameElement>(node->parentElement()))
+      return false;
+
     // If unrendered and in <canvas>, consider even whitespace relevant.
     // TODO(aleventhal) Consider including all text, even unrendered whitespace,
     // whether or not in <canvas>. For now this matches previous behavior.

@@ -25,15 +25,15 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuChipControllerTest extends DummyUiChromeActivityTestCase {
+public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
     // Computed by taking the 338dp max width and subtracting:

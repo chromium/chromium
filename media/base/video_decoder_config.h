@@ -99,6 +99,9 @@ class MEDIA_EXPORT VideoDecoderConfig {
   // Region of coded_size() that contains image data, also known as the clean
   // aperture. Usually, but not always, origin-aligned (top-left).
   const gfx::Rect& visible_rect() const { return visible_rect_; }
+  void set_visible_rect(const gfx::Rect& visible_rect) {
+    visible_rect_ = visible_rect;
+  }
 
   // DEPRECATED: Use aspect_ratio().GetNaturalSize().
   // TODO(crbug.com/1214061): Remove.
@@ -106,6 +109,9 @@ class MEDIA_EXPORT VideoDecoderConfig {
   // into account. Image data in the visible_rect() should be scaled to this
   // size for display.
   const gfx::Size& natural_size() const { return natural_size_; }
+  void set_natural_size(const gfx::Size& natural_size) {
+    natural_size_ = natural_size;
+  }
 
   // The aspect ratio parsed from the container. Decoders may override using
   // in-band metadata only if !aspect_ratio().IsValid().

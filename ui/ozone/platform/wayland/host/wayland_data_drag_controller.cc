@@ -139,6 +139,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
     if (icon_surface_->Initialize()) {
       // Corresponds to actual scale factor of the origin surface.
       icon_surface_->SetSurfaceBufferScale(origin_window->window_scale());
+      icon_surface_->ApplyPendingState();
     } else {
       LOG(ERROR) << "Failed to create drag icon surface.";
       icon_surface_.reset();

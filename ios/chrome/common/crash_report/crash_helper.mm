@@ -48,9 +48,9 @@ base::FilePath CrashpadDumpLocation() {
   return base::FilePath(base::SysNSStringToUTF8(path));
 }
 
-void StartCrashpad() {
+bool StartCrashpad() {
   ChromeCrashReporterClient::Create();
-  crash_reporter::InitializeCrashpad(true, "");
+  return crash_reporter::InitializeCrashpad(true, "");
 }
 
 }  // namespace common

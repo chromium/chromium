@@ -36,14 +36,14 @@ void TtsControllerAndroid::Stop() {
   Java_AutofillAssistantTestTtsController_stop(env, java_tts_controller_);
 }
 
-void TtsControllerAndroid::OnTtsEvent(content::TtsUtterance* utterance,
-                                      content::TtsEventType event_type,
-                                      int char_index,
-                                      int char_length,
-                                      const std::string& error_message) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutofillAssistantTestTtsController_onTtsEvent(
-      env, java_tts_controller_, static_cast<int>(event_type));
+void TtsControllerAndroid::SimulateTtsEvent(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint eventType) {
+  OnTtsEvent(
+      /* utterance= */ nullptr, static_cast<content::TtsEventType>(eventType),
+      /* char_index= */ 0, /* char_length= */ 0,
+      /* error_message= */ std::string());
 }
 
 }  // namespace autofill_assistant

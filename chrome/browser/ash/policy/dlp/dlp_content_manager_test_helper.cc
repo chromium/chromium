@@ -44,12 +44,6 @@ base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
   return manager_->GetPrivacyScreenOffDelayForTesting();
 }
 
-DlpContentRestrictionSet DlpContentManagerTestHelper::GetRestrictionSetForURL(
-    const GURL& url) const {
-  DCHECK(manager_);
-  return manager_->GetRestrictionSetForURL(url);
-}
-
 DlpContentManager* DlpContentManagerTestHelper::GetContentManager() const {
   return manager_;
 }

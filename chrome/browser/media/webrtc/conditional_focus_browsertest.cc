@@ -165,15 +165,31 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   WebContents* capturing_tab_ = nullptr;
 };
 
+// Flaky on Win bots and on linux release bots http://crbug.com/1264744
+#if defined(OS_WIN) || (defined(OS_LINUX) && defined(NDEBUG))
+#define MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus \
+  DISABLED_CapturedTabFocusedIfNoExplicitCallToFocus
+#else
+#define MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus \
+  CapturedTabFocusedIfNoExplicitCallToFocus
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       CapturedTabFocusedIfNoExplicitCallToFocus) {
+                       MAYBE_CapturedTabFocusedIfNoExplicitCallToFocus) {
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kNoValue);
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());
 }
 
+// Flaky on Win bots and on linux release bots http://crbug.com/1264744
+#if defined(OS_WIN) || (defined(OS_LINUX) && defined(NDEBUG))
+#define MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus \
+  DISABLED_CapturedTabFocusedIfExplicitlyCallingFocus
+#else
+#define MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus \
+  CapturedTabFocusedIfExplicitlyCallingFocus
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       CapturedTabFocusedIfExplicitlyCallingFocus) {
+                       MAYBE_CapturedTabFocusedIfExplicitlyCallingFocus) {
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface);
   EXPECT_TRUE(WaitForFocusSwitchToCapturedTab());

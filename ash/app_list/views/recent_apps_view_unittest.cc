@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
@@ -44,22 +45,6 @@ aura::Window* FindMenuWindow(aura::Window* root) {
   return nullptr;
 }
 
-void AddAppListItem(const std::string& id) {
-  Shell::Get()->app_list_controller()->GetModel()->AddItem(
-      std::make_unique<AppListItem>(id));
-}
-
-void AddSearchResult(const std::string& id, AppListSearchResultType type) {
-  auto result = std::make_unique<TestSearchResult>();
-  result->set_result_id(id);
-  result->set_result_type(type);
-  // TODO(crbug.com/1216662): Replace with a real display type after the ML team
-  // gives us a way to query directly for recent apps.
-  result->set_display_type(SearchResultDisplayType::kChip);
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
-      std::move(result));
-}
-
 // Parameterized to test recent apps in the app list bubble and tablet mode.
 class RecentAppsViewTest : public AshTestBase,
                            public testing::WithParamInterface<bool> {
@@ -93,6 +78,21 @@ class RecentAppsViewTest : public AshTestBase,
     if (tablet_mode_param())
       return GetAppListTestHelper()->GetFullscreenRecentAppsView();
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
+  }
+
+  void AddAppListItem(const std::string& id) {
+    AppListModelProvider::Get()->model()->AddItem(
+        std::make_unique<AppListItem>(id));
+  }
+
+  void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+    auto result = std::make_unique<TestSearchResult>();
+    result->set_result_id(id);
+    result->set_result_type(type);
+    // TODO(crbug.com/1216662): Replace with a real display type after the ML
+    // team gives us a way to query directly for recent apps.
+    result->set_display_type(SearchResultDisplayType::kList);
+    GetAppListTestHelper()->GetSearchResults()->Add(std::move(result));
   }
 
   // Adds `count` installed app search results.

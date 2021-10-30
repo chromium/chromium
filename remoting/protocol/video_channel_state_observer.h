@@ -23,12 +23,11 @@ class VideoChannelStateObserver {
   virtual void OnRttUpdate(base::TimeDelta rtt) = 0;
 
   // Called when the encoder has finished encoding a frame, and before it is
-  // passed to WebRTC's registered callback. |frame| is non-const so that
-  // WebrtcVideoStream can add timestamps to it before sending.
-  // TODO(crbug.com/1192865): Make |frame| const when standard encoding pipeline
-  // is implemented.
-  virtual void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
-                              WebrtcVideoEncoder::EncodedFrame* frame) = 0;
+  // passed to WebRTC's registered callback. |frame| may be null if encoding
+  // failed.
+  virtual void OnFrameEncoded(
+      WebrtcVideoEncoder::EncodeResult encode_result,
+      const WebrtcVideoEncoder::EncodedFrame* frame) = 0;
 
   // Called after the encoded frame is sent via the WebRTC registered callback.
   // The result contains the frame ID assigned by WebRTC if successfully sent.

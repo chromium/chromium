@@ -114,9 +114,12 @@ static void ScrollToVisible(Range* match) {
 
   // If the active match is hidden inside a <details> element, then we should
   // expand it so find-in-page can scroll to it.
-  needs_style_and_layout |=
-      RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
-      HTMLDetailsElement::ExpandDetailsAncestors(first_node);
+  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+      HTMLDetailsElement::ExpandDetailsAncestors(first_node)) {
+    needs_style_and_layout = true;
+    UseCounter::Count(first_node.GetDocument(),
+                      WebFeature::kAutoExpandedDetailsForFindInPage);
+  }
 
   // If the active match is hidden inside a hidden=until-found element, then we
   // should reveal it so find-in-page can scroll to it.

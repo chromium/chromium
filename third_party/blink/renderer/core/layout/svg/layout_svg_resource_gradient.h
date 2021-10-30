@@ -41,7 +41,7 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
   bool RemoveClientFromCache(SVGResourceClient&) final;
 
   bool ApplyShader(const SVGResourceClient&,
-                   const FloatRect& reference_box,
+                   const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
                    PaintFlags&) final;
 
@@ -58,7 +58,7 @@ class LayoutSVGResourceGradient : public LayoutSVGResourcePaintServer {
 
  private:
   std::unique_ptr<GradientData> BuildGradientData(
-      const FloatRect& object_bounding_box);
+      const gfx::RectF& object_bounding_box);
 
   bool should_collect_gradient_attributes_ : 1;
   using GradientMap = HeapHashMap<Member<const SVGResourceClient>,

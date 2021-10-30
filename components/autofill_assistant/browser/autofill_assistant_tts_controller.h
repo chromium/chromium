@@ -23,6 +23,8 @@ class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
 
   class TtsEventDelegate {
    public:
+    virtual ~TtsEventDelegate() = default;
+
     virtual void OnTtsEvent(TtsEventType event) = 0;
   };
 
@@ -44,7 +46,7 @@ class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
   // generate any TTS event.
   virtual void Stop();
 
-  void SetTtsEventDelegate(TtsEventDelegate* tts_event_delegate);
+  void SetTtsEventDelegate(base::WeakPtr<TtsEventDelegate> tts_event_delegate);
 
   // Overrides UtteranceEventDelegate
   // Note: We will get this callback only for the events related to any current
@@ -58,7 +60,7 @@ class AutofillAssistantTtsController : public content::UtteranceEventDelegate {
  private:
   content::TtsController* tts_controller_ = nullptr;
 
-  TtsEventDelegate* tts_event_delegate_ = nullptr;
+  base::WeakPtr<TtsEventDelegate> tts_event_delegate_;
 };
 
 }  // namespace autofill_assistant

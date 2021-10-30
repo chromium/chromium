@@ -286,8 +286,8 @@ void SVGPreserveAspectRatio::TransformRect(FloatRect& dest_rect,
 }
 
 AffineTransform SVGPreserveAspectRatio::ComputeTransform(
-    const FloatRect& view_box,
-    const FloatSize& viewport_size) const {
+    const gfx::RectF& view_box,
+    const gfx::SizeF& viewport_size) const {
   DCHECK(!view_box.IsEmpty());
   DCHECK(!viewport_size.IsEmpty());
   DCHECK_NE(align_, kSvgPreserveaspectratioUnknown);

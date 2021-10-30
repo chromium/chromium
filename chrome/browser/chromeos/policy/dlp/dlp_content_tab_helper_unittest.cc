@@ -77,12 +77,10 @@ TEST_F(DlpContentTabHelperTest, NotCreatedForIncognito) {
 
 TEST_F(DlpContentTabHelperTest, NotConfidential) {
   GURL kUrl = GURL("https://example.com");
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(kUrl))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl, kEmptyRestrictionSet);
   EXPECT_CALL(mock_dlp_content_observer_, OnConfidentialityChanged(_, _))
       .Times(0);
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
@@ -96,12 +94,10 @@ TEST_F(DlpContentTabHelperTest, NotConfidential) {
 
 TEST_F(DlpContentTabHelperTest, Confidential) {
   GURL kUrl = GURL("https://example.com");
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(kUrl))
-      .Times(1)
-      .WillOnce(Return(kNonEmptyRestrictionSet));
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl, kNonEmptyRestrictionSet);
   EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kNonEmptyRestrictionSet))
       .Times(1);
@@ -120,14 +116,12 @@ TEST_F(DlpContentTabHelperTest, Confidential) {
 TEST_F(DlpContentTabHelperTest, VisibilityChanged) {
   GURL kUrl1 = GURL("https://example1.com");
   GURL kUrl2 = GURL("https://example2.com");
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(kUrl1))
-      .Times(1)
-      .WillOnce(Return(kNonEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(kUrl2))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl1, kNonEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl2, kEmptyRestrictionSet);
   EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kNonEmptyRestrictionSet))
       .Times(1);
@@ -157,14 +151,12 @@ TEST_F(DlpContentTabHelperTest, VisibilityChanged) {
 TEST_F(DlpContentTabHelperTest, SubFrameNavigation) {
   GURL kNonConfidentialUrl = GURL("https://example.com");
   GURL kConfidentialUrl = GURL("https://google.com");
-  EXPECT_CALL(mock_dlp_content_observer_, GetRestrictionSetForURL(GURL()))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_,
-              GetRestrictionSetForURL(kNonConfidentialUrl))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_observer_,
-              GetRestrictionSetForURL(kConfidentialUrl))
-      .WillRepeatedly(Return(kNonEmptyRestrictionSet));
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kNonConfidentialUrl, kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kConfidentialUrl, kNonEmptyRestrictionSet);
   EXPECT_CALL(mock_dlp_content_observer_, OnConfidentialityChanged(_, _))
       .Times(0);
   EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);

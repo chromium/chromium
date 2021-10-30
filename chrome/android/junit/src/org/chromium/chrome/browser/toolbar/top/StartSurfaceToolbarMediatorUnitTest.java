@@ -37,6 +37,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -101,6 +102,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private Resources mMockResources;
     @Mock
     private Drawable mDrawable;
+    @Mock
+    private Bitmap mBitmap;
     @Mock
     Drawable.ConstantState mMockConstantState;
     @Mock
@@ -255,7 +258,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mLayoutStateObserverCaptor.getValue().onStartedShowing(LayoutType.TAB_SWITCHER, false);
         mLayoutStateObserverCaptor.getValue().onFinishedShowing(LayoutType.TAB_SWITCHER);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mMediator.onLogoImageAvailable(mDrawable, null);
+        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -352,7 +355,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.updateIdentityDisc(mButtonData);
         mMediator.setStartSurfaceMode(true);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mMediator.onLogoImageAvailable(mDrawable, null);
+        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -439,9 +442,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
 
         // If default search engine has logo, logo should be visible.
         when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-        mMediator.onLogoImageAvailable(mDrawable, null);
+        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertEquals(mDrawable, mPropertyModel.get(LOGO_IMAGE));
+        assertEquals(mBitmap, mPropertyModel.get(LOGO_IMAGE));
     }
 
     @Test

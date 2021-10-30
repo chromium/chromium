@@ -64,7 +64,7 @@ class MixingGraph : public media::AudioOutputStream::AudioSourceCallback {
 
   // Creates a graph which will provide the audio mix formatted as
   // |output_params| each time its
-  // AudioOutputStream::AudioSourceCallback::OnMoreData() method is calls, and
+  // AudioOutputStream::AudioSourceCallback::OnMoreData() method is called, and
   // will also provide the audio mix to |on_more_data_cb| callback.
   // |on_error_cb| will be used to notify the client about audio rendering
   // errors.

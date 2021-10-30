@@ -115,6 +115,9 @@ class PLATFORM_EXPORT FloatRoundedRect {
   };
 
   constexpr FloatRoundedRect() = default;
+  explicit FloatRoundedRect(const gfx::RectF& rect,
+                            const Radii& radii = Radii())
+      : FloatRoundedRect(FloatRect(rect), radii) {}
   explicit FloatRoundedRect(const FloatRect&, const Radii& = Radii());
   explicit FloatRoundedRect(const IntRect&, const Radii& = Radii());
   FloatRoundedRect(float x, float y, float width, float height);

@@ -22,6 +22,18 @@ bool IsTransitionUserVisible(int32_t transition) {
                                        ui::PAGE_TRANSITION_KEYWORD_GENERATED);
 }
 
+// static
+base::Time GetAnnotatedVisitsToCluster::GetBeginTimeOnDayBoundary(
+    base::Time end_time) {
+  // Conventionally, `end_time` being null means to fetch History starting from
+  // right now, so we explicitly convert that to `Now()` here.
+  base::Time begin_time = end_time.is_null() ? base::Time::Now() : end_time;
+  begin_time -= base::Hours(12);
+  begin_time = begin_time.LocalMidnight();
+  begin_time += base::Hours(4);
+  return begin_time;
+}
+
 GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     HistoryClustersService::IncompleteVisitMap incomplete_visit_map,
     base::Time end_time,
@@ -38,19 +50,7 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
 
   // Determine initial query options.
   options_.end_time = end_time;
-  // Super simple method of pagination: one day a time, broken up at 4AM.
-  // Get 4AM yesterday in the morning, and 4AM today in the afternoon.
-  base::Time begin = end_time.is_null() ? base::Time::Now() : end_time;
-  begin -= base::Hours(12);
-  base::Time::Exploded exploded_begin;
-  begin.LocalExplode(&exploded_begin);
-  exploded_begin.hour = 4;
-  exploded_begin.minute = 0;
-  exploded_begin.second = 0;
-  exploded_begin.millisecond = 0;
-  // If for some reason this fails, fallback to 24 hours ago.
-  if (!base::Time::FromLocalExploded(exploded_begin, &options_.begin_time))
-    options_.begin_time = end_time - base::Days(1);
+  options_.begin_time = GetBeginTimeOnDayBoundary(end_time);
 
   // History Clusters wants a complete navigation graph and internally handles
   // de-duplication.

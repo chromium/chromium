@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
@@ -55,13 +54,14 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 /**
  *  Unit tests for {@link ImageDescriptionsDialog}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class ImageDescriptionsDialogTest extends DummyUiChromeActivityTestCase {
+public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 

@@ -145,7 +145,8 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
           host_status_with_device =
               MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice(),
       const MultiDeviceSetupClient::FeatureStatesMap& feature_states_map =
-          MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap()) {
+          MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap(
+              mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady)) {
     mojo::PendingRemote<mojom::MultiDeviceSetup> remote_setup;
     service_->BindMultiDeviceSetup(
         remote_setup.InitWithNewPipeAndPassReceiver());

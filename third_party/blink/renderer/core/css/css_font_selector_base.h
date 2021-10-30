@@ -38,6 +38,7 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
 
   Member<FontFaceCache> font_face_cache_;
   GenericFontFamilySettings generic_font_family_settings_;
+  HashSet<AtomicString> prewarmed_generic_families_;
 };
 
 }  // namespace blink

@@ -137,7 +137,7 @@ TEST(FloatPolygonTest, basics) {
   EXPECT_EQ(1u, triangle.EdgeAt(2).PreviousEdge().EdgeIndex());
   EXPECT_EQ(0u, triangle.EdgeAt(2).NextEdge().EdgeIndex());
 
-  EXPECT_EQ(FloatRect(100, 100, 100, 100), triangle.BoundingBox());
+  EXPECT_EQ(gfx::RectF(100, 100, 100, 100), triangle.BoundingBox());
 
   Vector<const FloatPolygonEdge*> result_a =
       SortedOverlappingEdges(triangle, 100, 200);

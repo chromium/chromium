@@ -34,18 +34,17 @@ public interface PasswordStoreAndroidBackend {
     /**
      * Triggers an async call to add a login to the store.
      *
-     * @param pwWithLocalData Serialised PasswordWithLocalData identifying the login to be added.
+     * @param pwdWithLocalData Serialized PasswordWithLocalData identifying the login to be added.
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    // TODO(crbug.com/1229655): Make this method abstract after landing its implementation in Clank.
-    default void addLogin(byte[] pwdWithLocalData, Runnable successCallback,
-            Callback<Exception> failureCallback){};
+    void addLogin(
+            byte[] pwdWithLocalData, Runnable successCallback, Callback<Exception> failureCallback);
 
     /**
      * Triggers an async call to update a login in the store.
      *
-     * @param pwWithLocalData Serialised PasswordWithLocalData identifying the login to be updated.
+     * @param pwdWithLocalData Serialized PasswordWithLocalData identifying the login to be updated.
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */

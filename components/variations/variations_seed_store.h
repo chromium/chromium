@@ -110,6 +110,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Virtual for testing.
   virtual bool StoreSafeSeed(const std::string& seed_data,
                              const std::string& base64_seed_signature,
+                             int seed_milestone,
                              const ClientFilterableState& client_state,
                              base::Time seed_fetch_time);
 
@@ -232,7 +233,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Updates the safe seed with validated data.
   StoreSeedResult StoreValidatedSafeSeed(
-      const ValidatedSeed& validated,
+      const ValidatedSeed& seed,
+      int seed_milestone,
       const ClientFilterableState& client_state,
       base::Time seed_fetch_time) WARN_UNUSED_RESULT;
 

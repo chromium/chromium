@@ -41,7 +41,7 @@ class ASH_EXPORT SearchResultPageView
       public SearchResultContainerView::Delegate,
       public SearchBoxModelObserver {
  public:
-  explicit SearchResultPageView(SearchModel* search_model);
+  SearchResultPageView();
 
   SearchResultPageView(const SearchResultPageView&) = delete;
   SearchResultPageView& operator=(const SearchResultPageView&) = delete;
@@ -179,9 +179,6 @@ class ASH_EXPORT SearchResultPageView
 
   void AddSearchResultContainerViewInternal(
       std::unique_ptr<SearchResultContainerView> result_container);
-
-  // The search model for which the results are displayed.
-  SearchModel* const search_model_;
 
   // The SearchResultContainerViews that compose the search page. All owned by
   // the views hierarchy.

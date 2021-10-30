@@ -2489,6 +2489,10 @@ const char kTabRestoreSubMenusDescription[] =
     "Show app menu history sub menus for the contents of recently closed tab "
     "groups and windows.";
 
+const char kTabSearchFuzzySearchName[] = "Fuzzy search for Tab Search";
+const char kTabSearchFuzzySearchDescription[] =
+    "Enable fuzzy search for Tab Search.";
+
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";
@@ -4110,6 +4114,11 @@ const char kCalendarViewDescription[] =
     "Show Monthly Calendar View with Google Calendar events to increase "
     "productivity by helping users view their schedules more quickly.";
 
+const char kDesksTemplatesName[] = "Desks Templates";
+const char kDesksTemplatesDescription[] =
+    "Streamline workflows by saving a group of applications and windows as a "
+    "launchable template.";
+
 const char kDesksTrackpadSwipeImprovementsName[] =
     "Experiment: Trackpad swiping to switch desks.";
 const char kDesksTrackpadSwipeImprovementsDescription[] =
@@ -4132,6 +4141,12 @@ const char kHdrNetOverrideDescription[] =
 const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
     "Launcher search results grouped by categories";
+
+const char kCellularBypassESimInstallationConnectivityCheckName[] =
+    "Bypass eSIM installation connectivity check";
+const char kCellularBypassESimInstallationConnectivityCheckDescription[] =
+    "Bypass the non-cellular internet connectivity check during eSIM "
+    "installation.";
 
 const char kCellularForbidAttachApnName[] = "Forbid Use Attach APN";
 const char kCellularForbidAttachApnDescription[] =

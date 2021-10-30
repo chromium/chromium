@@ -2691,7 +2691,7 @@ enum WebFeature {
   kV8FontMetadata_Blob_Method = 3385,
   kV8FontManager_Query_Method = 3386,
   kAudioContextBaseLatency = 3387,
-  kV8Window_GetScreens_Method = 3388,
+  kV8Window_GetScreenDetails_Method = 3388,
   kOBSOLETE_V8Window_IsMultiScreen_Method = 3389,
   kOBSOLETE_V8Window_Onscreenschange_AttributeGetter = 3390,
   kOBSOLETE_V8Window_Onscreenschange_AttributeSetter = 3391,
@@ -3373,6 +3373,9 @@ enum WebFeature {
   kV8FragmentDirective_Items_AttributeGetter = 4064,
   kV8FragmentDirective_CreateSelectorDirective_Method = 4065,
   kCSSTransitionBlockedByAnimation = 4066,
+  kWebAppManifestHasComments = 4067,
+  kAutoExpandedDetailsForFindInPage = 4068,
+  kAutoExpandedDetailsForScrollToTextFragment = 4069,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

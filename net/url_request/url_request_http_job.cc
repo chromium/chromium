@@ -597,8 +597,10 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
                                                request_->site_for_cookies())) {
       force_ignore_site_for_cookies = true;
     }
-    bool is_main_frame_navigation = IsolationInfo::RequestType::kMainFrame ==
-                                    request_->isolation_info().request_type();
+    bool is_main_frame_navigation =
+        IsolationInfo::RequestType::kMainFrame ==
+            request_->isolation_info().request_type() ||
+        request_->force_main_frame_for_same_site_cookies();
     CookieOptions::SameSiteCookieContext same_site_context =
         net::cookie_util::ComputeSameSiteContextForRequest(
             request_->method(), request_->url_chain(),

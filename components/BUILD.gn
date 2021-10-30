@@ -147,6 +147,7 @@ test("components_unittests") {
     "//components/reporting/client:unit_tests",
     "//components/reporting/compression:unit_tests",
     "//components/reporting/encryption:unit_tests",
+    "//components/reporting/metrics:unit_tests",
     "//components/reporting/storage:unit_tests",
     "//components/reporting/util:unit_tests",
     "//components/reputation/core:unit_tests",

@@ -363,6 +363,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
       std::make_unique<ExpandedDesksBarButton>(
           this, &kDesksNewDeskButtonIcon,
           l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
+          /*initially_enabled=*/DesksController::Get()->CanCreateDesks(),
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
@@ -375,12 +376,13 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
   if (desks_templates_util::AreDesksTemplatesEnabled()) {
-    // TODO(sophiewen): u"Templates" should be replaced with the localized name
-    // for the "Templates" desk label.
     expanded_state_desks_templates_button_ =
         scroll_view_contents_->AddChildView(
             std::make_unique<ExpandedDesksBarButton>(
-                this, &kDesksTemplatesIcon, u"Templates",
+                this, &kDesksTemplatesIcon,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON),
+                /*initially_enabled=*/true,
                 base::BindRepeating(
                     &DesksBarView::OnDesksTemplatesButtonPressed,
                     base::Unretained(this))));
@@ -510,7 +512,10 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
 }
 
 bool DesksBarView::IsZeroState() const {
-  return mini_views_.empty() && DesksController::Get()->desks().size() == 1;
+  if (!mini_views_.empty() || DesksController::Get()->desks().size() > 1)
+    return false;
+  return !desks_templates_util::AreDesksTemplatesEnabled() ||
+         !overview_grid_->desks_templates_grid_widget();
 }
 
 void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
@@ -781,9 +786,7 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
   if (drag_view_ == removed_mini_view)
     EndDragDesk(removed_mini_view, /*end_by_user=*/false);
 
-  expanded_state_new_desk_button_->UpdateButtonState();
-  if (desks_templates_util::AreDesksTemplatesEnabled())
-    expanded_state_desks_templates_button_->UpdateButtonState();
+  expanded_state_new_desk_button_->SetButtonState(/*enabled=*/true);
 
   for (auto* mini_view : mini_views_)
     mini_view->UpdateCloseButtonVisibility();
@@ -940,22 +943,18 @@ void DesksBarView::OnNewDeskButtonPressed(
     return;
   set_should_name_nudge(true);
   controller->NewDesk(desks_creation_removal_source);
-  expanded_state_new_desk_button_->UpdateButtonState();
-  if (desks_templates_util::AreDesksTemplatesEnabled())
-    expanded_state_desks_templates_button_->UpdateButtonState();
+  if (!controller->CanCreateDesks())
+    expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
 }
 
 void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
-  // TODO(chinsenj): When the grid is shown, we should expand the zero state
-  // desks bar so `IsZeroState()` should never be true here. Currently the
-  // aforementioned behavior is WIP so leave this as an early return for now to
-  // satisfy tests.
   if (IsZeroState() || !desks_templates_util::AreDesksTemplatesEnabled())
     return;
 
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateBorderColor();
-  expanded_state_desks_templates_button_->set_active(true);
+  expanded_state_desks_templates_button_->set_active(
+      !!overview_grid_->desks_templates_grid_widget());
   expanded_state_desks_templates_button_->UpdateBorderColor();
 }
 
@@ -1171,10 +1170,9 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
-  // TODO(chinsenj): Expand out of zero state if we are in it.
   // TODO(sammiequon): The button might be changed to be a toggle and this
   // callback will need to be updated to reflect that.
-  overview_grid_->overview_session()->ShowDesksTemplatesGrids();
+  overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState());
 }
 
 void DesksBarView::OnContentsScrolled() {

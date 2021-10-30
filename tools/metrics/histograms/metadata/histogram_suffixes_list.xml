@@ -2930,6 +2930,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="ContentSettingsType" separator=".">
   <suffix name="app-banner" label="App banner exceptions"/>
   <suffix name="auto-select-certificate" label="Auto-select cert exceptions"/>
+  <suffix name="auto-dark-web-content" label="Auto-dark web contents exceptions"/>
   <suffix name="automatic-downloads" label="Automatic downloads exceptions"/>
   <suffix name="autoplay" label="Autoplay exception"/>
   <suffix name="background-sync" label="Background sync exceptions"/>
@@ -2965,6 +2966,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="protected-media-identifier" label="Protected media exceptions"/>
   <suffix name="protocol-handler" label="Protocol handler exceptions"/>
   <suffix name="push-messaging" label="Push messaging exceptions"/>
+  <suffix name="request-desktop-site" label="Request desktop site exceptions"/>
   <suffix name="safe-browsing-url-check-data"
       label="Safe browsing url check data"/>
   <suffix name="serial-chooser-data" label="Serial chooser data"/>
@@ -18410,6 +18412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </suffix>
   <suffix name="OSFeedback" label="OSFeedback"/>
+  <suffix name="OsFlags" label="OsFlags"/>
   <suffix name="OSSettings" label="OS Settings"/>
   <suffix name="OsUrlHandler" label="OsUrlHandler"/>
   <suffix name="Personalization" label="Personalization"/>
