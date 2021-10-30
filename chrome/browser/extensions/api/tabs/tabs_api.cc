@@ -274,8 +274,8 @@ bool IsValidStateForWindowsCreateFunction(
 }
 
 bool ExtensionHasLockedFullscreenPermission(const Extension* extension) {
-  return extension->permissions_data()->HasAPIPermission(
-      mojom::APIPermissionID::kLockWindowFullscreenPrivate);
+  return extension && extension->permissions_data()->HasAPIPermission(
+                          mojom::APIPermissionID::kLockWindowFullscreenPrivate);
 }
 
 std::unique_ptr<api::tabs::Tab> CreateTabObjectHelper(
@@ -540,6 +540,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   TabStripModel* source_tab_strip = NULL;
   int tab_index = -1;
 
+  DCHECK(extension() || source_context_type() == Feature::WEBUI_CONTEXT ||
+         source_context_type() == Feature::WEBUI_UNTRUSTED_CONTEXT);
   windows::Create::Params::CreateData* create_data = params->create_data.get();
 
   // Look for optional url.
@@ -616,7 +618,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       case windows::CREATE_TYPE_PANEL:
       case windows::CREATE_TYPE_POPUP:
         window_type = Browser::TYPE_POPUP;
-        extension_id = extension()->id();
+        if (extension())
+          extension_id = extension()->id();
         break;
       case windows::CREATE_TYPE_NONE:
       case windows::CREATE_TYPE_NORMAL:
@@ -696,7 +699,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       // TODO(crbug.com/984350): Add tests for checking opener SiteInstance
       // behavior from a SW based extension's extension frame (e.g. from popup).
       // See ExtensionApiTest.WindowsCreate* tests for details.
-      navigate_params.initiator_origin = extension()->origin();
+      navigate_params.initiator_origin =
+          extension() ? extension()->origin()
+                      : render_frame_host()->GetLastCommittedOrigin();
       navigate_params.opener = render_frame_host();
       navigate_params.source_site_instance =
           render_frame_host()->GetSiteInstance();

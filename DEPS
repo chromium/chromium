@@ -250,7 +250,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '2270c15549599927213559733b680af9c2441ad8',
+  'pdfium_revision': 'bd93f46dfc3d97d725117336c8e47bfb27ab264e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'aaad5f15f1ec06508db736a60c74d6fcd4c8bfcd',
+  'devtools_frontend_revision': '1e2213ae6af144301092d81e0905d74c502a7c22',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -405,7 +405,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'libjxl_revision': 'c4e0877f93506e880cd922f6c94644d79ae9adff',
+  'libjxl_revision': 'a205468bc5d3a353fb15dae2398a101dff52f2d3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1494,7 +1494,7 @@ deps = {
       'packages': [
           {
               'package': 'fuchsia/third_party/aemu/linux-amd64',
-              'version': 'oGlyr7Yd3bVAIOk9ix9USsqpL5HzLbxt5CyB54MmvJ4C'
+              'version': 'hys6gk1KOHMz9nURGWen255HiLIaVd3e4eZfa-w6l7oC'
           },
       ],
       'condition': 'host_os == "linux" and checkout_fuchsia',
@@ -1598,7 +1598,7 @@ deps = {
   'src/third_party/usrsctp/usrsctplib':
     Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '62d7d0c928c9a040dce96aa2f16c00e7e67d59cb',
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@a8b8d8f08118b8ee73017ea467343c2e1b7800c5',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@36bbe49c47eaa8df11d027f994aa3b7cef79b987',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'e0216a5484c8345f7d792fa16fad77ac63d89a70',
@@ -1695,7 +1695,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@ec2df110b9530e0df6e02a5400ede471693914e5',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@103905ef4db3c004e49f8d38bab9690add4b902d',
     'condition': 'checkout_src_internal',
   },
 
@@ -1736,7 +1736,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': 'DKagFubQJLOJAn_nhiqYF0Z5r-eohHRpOxbMgcWZe5EC',
+        'version': 'nWz2-8LpaNC_4gdj2NbFuxg4SfEZ4YLavASjO5j7tGcC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

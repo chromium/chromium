@@ -11,10 +11,10 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
     Serializable,
     RuntimeEnabled=WebCodecs
 ] interface VideoFrame {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoFrameFromImage]
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});
 
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoFrameFromBuffer]
   constructor(AllowSharedBufferSource data, VideoFrameBufferInit init);
 
   readonly attribute VideoPixelFormat? format;

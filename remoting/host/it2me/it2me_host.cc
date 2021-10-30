@@ -154,12 +154,12 @@ void It2MeHost::ConnectOnNetworkThread(
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(It2MeHostState::kDisconnected, state_);
 
-  SetState(It2MeHostState::kStarting, ErrorCode::OK);
-
   if (!remote_support_connections_allowed_) {
-    DisconnectOnNetworkThread(ErrorCode::DISALLOWED_BY_POLICY);
+    SetState(It2MeHostState::kError, ErrorCode::DISALLOWED_BY_POLICY);
     return;
   }
+
+  SetState(It2MeHostState::kStarting, ErrorCode::OK);
 
   auto connection_context = std::move(create_context).Run(host_context_.get());
   log_to_server_ = std::move(connection_context->log_to_server);
