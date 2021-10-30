@@ -1002,10 +1002,6 @@ AppListItemView* AppsGridView::GetViewAtIndex(const GridIndex& index) const {
   return GetItemViewAt(model_index);
 }
 
-bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
-  return drag_view_hider_ && drag_view_hider_->drag_view() == view;
-}
-
 int AppsGridView::TilesPerPage(int page) const {
   const int max_rows = GetMaxRowsInPage(page);
 
@@ -2186,6 +2182,10 @@ gfx::Rect AppsGridView::GetExpectedItemBoundsInFirstPage(
     return gfx::Rect(GetContentsBounds().CenterPoint(), gfx::Size(1, 1));
 
   return GetExpectedTileBounds(grid_index);
+}
+
+bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
+  return drag_view_hider_ && drag_view_hider_->drag_view() == view;
 }
 
 AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
