@@ -182,7 +182,7 @@ bool ValidateCommandLine(const base::CommandLine& command_line) {
     if (command_line.GetArgs().size() <= 1)
       return true;
     LOG(ERROR) << "Open multiple tabs is only supported when "
-               << "remote debugging is enabled.";
+               << "remote debugging is on.";
     return false;
   }
   if (command_line.HasSwitch(switches::kDefaultBackgroundColor)) {
@@ -195,7 +195,7 @@ bool ValidateCommandLine(const base::CommandLine& command_line) {
     return false;
   }
   if (command_line.HasSwitch(switches::kPrintToPDF)) {
-    LOG(ERROR) << "Print to PDF is disabled "
+    LOG(ERROR) << "Print to .PDF is disabled "
                << "when remote debugging is enabled.";
     return false;
   }
@@ -205,7 +205,7 @@ bool ValidateCommandLine(const base::CommandLine& command_line) {
     return false;
   }
   if (command_line.HasSwitch(switches::kScreenshot)) {
-    LOG(ERROR) << "Capture screenshot is disabled "
+    LOG(ERROR) << "Make screenshot is disabled "
                << "when remote debugging is enabled.";
     return false;
   }
