@@ -257,7 +257,8 @@ let Feature;
  *  needsRestart: boolean,
  *  showBetaChannelPromotion: boolean,
  *  showDevChannelPromotion: boolean,
- *  showOwnerWarning: boolean
+ *  showOwnerWarning: boolean,
+ *  showSystemFlagsLink: boolean
  * }}
  */
 let ExperimentalFeaturesData;
@@ -299,7 +300,8 @@ let ExperimentalFeaturesData;
  *     needsRestart: false,
  *     showBetaChannelPromotion: false,
  *     showDevChannelPromotion: false,
- *     showOwnerWarning: false
+ *     showOwnerWarning: false,
+ *     showSystemFlagsLink: false
  *   }
  */
 function returnExperimentalFeatures(experimentalFeaturesData) {
@@ -319,6 +321,11 @@ function returnExperimentalFeatures(experimentalFeaturesData) {
   const ownerWarningDiv = $('owner-warning');
   if (ownerWarningDiv) {
     ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
+  }
+
+  const systemFlagsLinkDiv = $('os-link-container');
+  if (systemFlagsLinkDiv && !experimentalFeaturesData.showSystemFlagsLink) {
+    systemFlagsLinkDiv.style.display = 'none';
   }
 
   experimentalFeaturesResolver();

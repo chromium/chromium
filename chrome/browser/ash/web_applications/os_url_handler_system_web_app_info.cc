@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -53,7 +54,7 @@ bool OsUrlHandlerSystemWebAppDelegate::ShouldCaptureNavigations() const {
 }
 
 bool OsUrlHandlerSystemWebAppDelegate::IsAppEnabled() const {
-  return true;
+  return crosapi::browser_util::IsLacrosEnabled();
 }
 
 bool OsUrlHandlerSystemWebAppDelegate::ShouldShowInLauncher() const {

@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -104,6 +105,13 @@ void FlagsUIHandler::SendExperimentalFeatures() {
                      about_flags::IsRestartNeededToCommitChanges());
   results.SetBoolean(flags_ui::kShowOwnerWarning,
                      access_ == flags_ui::kGeneralAccessFlagsOnly);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool showSystemFlagsLink = crosapi::browser_util::IsLacrosEnabled();
+#else
+  const bool showSystemFlagsLink = true;
+#endif
+  results.SetBoolean(flags_ui::kShowSystemFlagsLink, showSystemFlagsLink);
 
 #if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   version_info::Channel channel = chrome::GetChannel();

@@ -37,6 +37,7 @@ extern const char kShowOwnerWarning[];
 extern const char kSupportedFeatures[];
 extern const char kUnsupportedFeatures[];
 extern const char kVersion[];
+extern const char kShowSystemFlagsLink[];
 
 }  // namespace flags_ui
 
