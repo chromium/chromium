@@ -779,7 +779,7 @@ TEST_F(It2MeHostTest, AllowSupportHostConnectionsPolicyDisabled) {
                 base::Value(false)}});
 
   StartHost();
-  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
+  ASSERT_EQ(It2MeHostState::kError, last_host_state_);
   ASSERT_EQ(ErrorCode::DISALLOWED_BY_POLICY, last_error_code_);
 }
 
