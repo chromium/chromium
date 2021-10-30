@@ -8,14 +8,12 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 
 class ExtensionsToolbarButton;
-class Browser;
 
 class ExtensionsToolbarControls : public ToolbarIconContainerView {
  public:
   METADATA_HEADER(ExtensionsToolbarControls);
 
   explicit ExtensionsToolbarControls(
-      Browser* browser,
       std::unique_ptr<ExtensionsToolbarButton> extensions_button,
       std::unique_ptr<ExtensionsToolbarButton> site_access_button);
   ExtensionsToolbarControls(const ExtensionsToolbarControls&) = delete;
@@ -26,6 +24,13 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
   ExtensionsToolbarButton* extensions_button() const {
     return extensions_button_;
   }
+
+  ExtensionsToolbarButton* site_access_button_for_testing() const {
+    return site_access_button_;
+  }
+
+  // Updates `site_access_button_` visibility to the given one.
+  void UpdateSiteAccessButtonVisibility(bool visibility);
 
   // ToolbarIconContainerView:
   void UpdateAllIcons() override;
