@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {fakeCalibrationComponents, fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeRsuChallengeCode, fakeRsuChallengeQrCode, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js';
-import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {CalibrationSetupInstruction, NetworkConfigServiceInterface, RmadErrorCode, ShimlessRmaService, ShimlessRmaServiceInterface, WriteProtectDisableCompleteState} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -58,6 +58,9 @@ function setupFakeShimlessRmaService_() {
   service.setGetRsuDisableWriteProtectHwidResult('### hwid ###');
   service.setGetRsuDisableWriteProtectChallengeQrCodeResponse(
       fakeRsuChallengeQrCode);
+
+  service.setGetWriteProtectDisableCompleteState(
+      WriteProtectDisableCompleteState.kCompleteAssembleDevice);
 
   service.setGetOriginalSerialNumberResult('serial# 0001');
   service.setGetRegionListResult(fakeDeviceRegions);

@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, Component, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, QrCode, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteState} from './shimless_rma_types.js';
 
 /** @implements {ShimlessRmaServiceInterface} */
 export class FakeShimlessRmaService {
@@ -357,6 +357,17 @@ export class FakeShimlessRmaService {
   writeProtectManuallyDisabled() {
     return this.getNextStateForMethod_(
         'writeProtectManuallyDisabled', RmaState.kWaitForManualWPDisable);
+  }
+
+  /** @return {!Promise<!{state: !WriteProtectDisableCompleteState}>} */
+  getWriteProtectDisableCompleteState() {
+    return this.methods_.resolveMethod('getWriteProtectDisableCompleteState');
+  }
+
+  /** @param {!WriteProtectDisableCompleteState} state */
+  setGetWriteProtectDisableCompleteState(state) {
+    this.methods_.setResult(
+        'getWriteProtectDisableCompleteState', {state: state});
   }
 
   /**
@@ -1069,6 +1080,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('writeProtectManuallyDisabled');
 
+    this.methods_.register('getWriteProtectDisableCompleteState');
     this.methods_.register('confirmManualWpDisableComplete');
 
     this.methods_.register('shutdownForRestock');

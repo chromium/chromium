@@ -4,7 +4,7 @@
 
 import {fakeCalibrationComponents} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
+import {CalibrationComponentStatus, CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, RmaState, WriteProtectDisableCompleteState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -404,6 +404,21 @@ export function fakeShimlessRmaServiceTestSuite() {
     return service.reworkMainboard().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kRequestInvalid);
+    });
+  });
+
+  test('GetWriteProtectDisableCompleteStateDefaultUndefined', () => {
+    return service.getWriteProtectDisableCompleteState().then((res) => {
+      assertEquals(undefined, res);
+    });
+  });
+
+  test('SetGetWriteProtectDisableCompleteStateUpdatesState', () => {
+    service.setGetWriteProtectDisableCompleteState(
+        WriteProtectDisableCompleteState.kCompleteKeepDeviceOpen);
+    return service.getWriteProtectDisableCompleteState().then((res) => {
+      assertEquals(
+          WriteProtectDisableCompleteState.kCompleteKeepDeviceOpen, res.state);
     });
   });
 

@@ -1,9 +1,20 @@
 <style include="cr-shared-style shimless-rma-shared">
+  iron-icon {
+    height: 200px;
+    width: 300px;
+  }
 </style>
 
-<base-page>
+<base-page orientation="column">
   <div slot="header">
     <!-- TODO(gavindodd): Update text for i18n -->
     <h1>Hardware Write Protection Disabled Manually</h1>
+    <p id="writeProtectStatus">
+      [[statusString_]]
+    </p>
+  </div>
+  <div slot="body">
+    <!-- TODO(gavindodd): Replace with correct graphic -->
+    <iron-icon icon="shimless:shimless-placeholder"></iron-icon>
   </div>
 </base-page>
