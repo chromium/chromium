@@ -166,6 +166,10 @@ void ViewElement::PaintRect() const {
   view()->SchedulePaint();
 }
 
+int ViewElement::GetBackingElementID() {
+  return view_->GetID();
+}
+
 bool ViewElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
   ui::EventType event_type = GetMouseEventType(event->getType());
   int button_flags = GetButtonFlags(event->getButton());

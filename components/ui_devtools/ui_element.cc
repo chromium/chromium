@@ -149,6 +149,10 @@ std::vector<UIElement::Source> UIElement::GetSources() {
   return sources_;
 }
 
+int UIElement::GetBackingElementID() {
+  return 0;
+}
+
 bool UIElement::DispatchMouseEvent(protocol::DOM::MouseEvent* event) {
   return false;
 }
