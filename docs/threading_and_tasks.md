@@ -902,8 +902,7 @@ Sample workaround when inner task processing is needed:
 ```
 
 Please be SURE your task is reentrant (nestable) and all global variables
-are stable and accessible before before using
-CurrentThread::ScopedNestableTaskAllower.
+are stable and accessible before using CurrentThread::ScopedNestableTaskAllower.
 
 ## APIs for general use
 
