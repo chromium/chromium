@@ -73,6 +73,8 @@ char kLSanDefaultSuppressions[] =
 #if defined(OS_CHROMEOS)
     // Suppress leak in FileStream. crbug.com/1263374
     "leak:chromeos::PipeReader::StartIO\n"
+    // Supppress AnimationObserverToHideView leak. crbug.com/1261464
+    "leak:ash::ShelfNavigationWidget::UpdateButtonVisibility\n"
 #endif
 
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
