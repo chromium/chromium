@@ -230,10 +230,10 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   return SBOX_ALL_OK;
 }
 
-void InitWinsock() {
+int InitWinsock() {
   WORD winsock_ver = MAKEWORD(2, 2);
   WSAData wsa_data;
-  WSAStartup(winsock_ver, &wsa_data);
+  return WSAStartup(winsock_ver, &wsa_data);
 }
 
 class WSAEventHandleTraits {
@@ -473,15 +473,6 @@ HANDLE UDPEchoServer::GetProcessSignalEvent() {
   return trigger_event_.Get();
 }
 
-// Queries WSAGetLastError for a real error and returns that, otherwise returns
-// `alternative`.
-int GetWSALastErrorOrAlternative(SboxTestResult alternative) {
-  int last_error = ::WSAGetLastError();
-  if (last_error != ERROR_SUCCESS)
-    return last_error;
-  return alternative;
-}
-
 }  // namespace
 
 TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
@@ -662,8 +653,7 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
 // SBOX_TEST_INVALID_PARAMETER - Invalid number of parameters.
 //
 // SBOX_TEST_FIRST_ERROR - Could not create socket from call to WSASocket or
-// socket broker operation, and ::WSAGetLastError() is ERROR_SUCCESS. In this
-// instance WSAGetLastError can be returned if it's set.
+// socket broker operation.
 //
 // SBOX_TEST_SECOND_ERROR - Could not call successfully perform a non-blocking
 // TCP connect().
@@ -678,9 +668,13 @@ SBOX_TESTS_COMMAND int CheckIsAppContainer(int argc, wchar_t** argv) {
 // SBOX_TEST_TIMED_OUT - The connect timed out. This might be the correct result
 // for certain types of tests e.g. when App Container is blocking either a TCP
 // connect.
-
+//
+// This function can also return a WSAError if Winsock fails to initialize
+// correctly.
 SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
-  InitWinsock();
+  int init_status = InitWinsock();
+  if (init_status != STATUS_SUCCESS)
+    return init_status;
   SOCKET socket_handle = INVALID_SOCKET;
 
   if (argc < 3)
@@ -698,7 +692,7 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
   }
 
   if (socket_handle == INVALID_SOCKET)
-    return GetWSALastErrorOrAlternative(SBOX_TEST_FIRST_ERROR);
+    return SBOX_TEST_FIRST_ERROR;
 
   ScopedSocketHandle socket(socket_handle);
 
@@ -750,7 +744,7 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 // SBOX_TEST_INVALID_PARAMETER - Invalid number of parameters.
 //
 // SBOX_TEST_FIRST_ERROR - Could not create socket from call to WSASocket or
-// socket broker operation and WSAGetLastError() was ERROR_SUCCESS.
+// socket broker operation.
 //
 // SBOX_TEST_THIRD_ERROR - Could not successfully perform a non-blocking UDP
 // sendto().
@@ -770,10 +764,12 @@ SBOX_TESTS_COMMAND int Socket_CreateTCP(int argc, wchar_t** argv) {
 // timed out. This might be the correct result for certain types of tests e.g.
 // when App Container is blocking either a TCP connect or UDP recv.
 //
-// If a socket creation call fails then ::WSAGetLastError() will be returned
-// if it is not ERROR_SUCCESS, otherwise SBOX_TEST_FIRST_ERROR is returned.
+// This function can also return a WSAError if Winsock fails to initialize
+// correctly.
 SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
-  InitWinsock();
+  int init_status = InitWinsock();
+  if (init_status != STATUS_SUCCESS)
+    return init_status;
   SOCKET socket_handle = INVALID_SOCKET;
 
   if (argc < 4)
@@ -794,7 +790,7 @@ SBOX_TESTS_COMMAND int Socket_CreateUDP(int argc, wchar_t** argv) {
   }
 
   if (socket_handle == INVALID_SOCKET)
-    return GetWSALastErrorOrAlternative(SBOX_TEST_FIRST_ERROR);
+    return SBOX_TEST_FIRST_ERROR;
 
   ScopedSocketHandle socket(socket_handle);
   sockaddr_in local_service = {};
@@ -896,7 +892,7 @@ class SocketBrokerTest
                            /* add brokering rule */ bool>> {
  public:
   void SetUp() override {
-    InitWinsock();
+    ASSERT_EQ(STATUS_SUCCESS, InitWinsock());
     SetUpSandboxPolicy();
   }
 
