@@ -704,6 +704,13 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
           "'RTCPeerConnectionIceErrorEvent.address', "
           "'RTCPeerConnectionIceErrorEvent.port'");
 
+    case WebFeature::kWebCodecsVideoFrameDefaultTimestamp:
+      return DeprecationInfo::WithDetails(
+          "WebCodecsVideoFrameDefaultTimestamp", kUnknown,
+          "A VideoFrame was constructed without a timestamp. Support for this  "
+          "may be removed in the future. Please provide an explicit timestamp "
+          "via VideoFrameInit.");
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return DeprecationInfo::WithDetails("NotDeprecated", kUnknown, String());

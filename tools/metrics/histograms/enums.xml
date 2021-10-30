@@ -35115,6 +35115,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4067" label="WebAppManifestHasComments"/>
   <int value="4068" label="AutoExpandedDetailsForFindInPage"/>
   <int value="4069" label="AutoExpandedDetailsForScrollToTextFragment"/>
+  <int value="4070" label="WebCodecsVideoFrameDefaultTimestamp"/>
+  <int value="4071" label="WebCodecsVideoFrameFromImage"/>
+  <int value="4072" label="WebCodecsVideoFrameFromBuffer"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
