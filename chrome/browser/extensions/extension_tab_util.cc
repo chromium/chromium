@@ -828,13 +828,16 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
 
   // Don't let the extension navigate directly to devtools scheme pages, unless
   // they have applicable permissions.
-  if (url.SchemeIs(content::kChromeDevToolsScheme) &&
-      !(extension->permissions_data()->HasAPIPermission(
-            APIPermissionID::kDevtools) ||
-        extension->permissions_data()->HasAPIPermission(
-            APIPermissionID::kDebugger))) {
-    *error = tabs_constants::kCannotNavigateToDevtools;
-    return false;
+  if (url.SchemeIs(content::kChromeDevToolsScheme)) {
+    bool has_permission =
+        extension && (extension->permissions_data()->HasAPIPermission(
+                          APIPermissionID::kDevtools) ||
+                      extension->permissions_data()->HasAPIPermission(
+                          APIPermissionID::kDebugger));
+    if (!has_permission) {
+      *error = tabs_constants::kCannotNavigateToDevtools;
+      return false;
+    }
   }
 
   return_url->Swap(&url);
