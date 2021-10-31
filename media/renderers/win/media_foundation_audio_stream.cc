@@ -101,7 +101,7 @@ HRESULT GetDefaultAudioType(const AudioDecoderConfig decoder_config,
 
   GUID mf_subtype = AudioCodecToMediaFoundationSubtype(decoder_config.codec());
   if (mf_subtype == GUID_NULL) {
-    DLOG(ERROR) << "Unsupported codec type: " << decoder_config.codec();
+    DLOG(ERROR) << "Unsupported format: " << decoder_config.codec();
     return MF_E_TOPO_CODEC_NOT_FOUND;
   }
   RETURN_IF_FAILED(media_type->SetGUID(MF_MT_SUBTYPE, mf_subtype));
