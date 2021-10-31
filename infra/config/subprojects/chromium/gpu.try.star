@@ -1,7 +1,7 @@
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
+# load libraries
 load("//lib/builders.star", "cpu", "goma", "os")
 load("//lib/try.star", "try_")
 
@@ -40,7 +40,7 @@ try_.defaults.set(
 # Builder functions are defined for each builder group, with additional
 # functions for specializing on OS: XXX_builder and XXX_YYY_builder where XXX is
 # the part after the last dot in the builder group and YYY is the OS
-
+# Load drivers
 def gpu_android_builder(*, name, **kwargs):
     return try_.builder(
         name = name,
