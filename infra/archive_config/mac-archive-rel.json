@@ -17,6 +17,7 @@
             }
         },
         {
+		// A chrome driver
             "files": [
                 "chromedriver"
             ],
@@ -84,4 +85,5 @@
             "archive_type": "ARCHIVE_TYPE_ZIP"
         }
     ]
+	// end of file :(
 }
