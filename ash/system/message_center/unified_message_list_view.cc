@@ -286,10 +286,7 @@ UnifiedMessageListView::~UnifiedMessageListView() {
 void UnifiedMessageListView::Init() {
   bool is_latest = true;
   for (auto* notification :
-       message_center_utils::GetSortedVisibleNotifications()) {
-    if (notification->group_child())
-      continue;
-
+       message_center_utils::GetSortedNotificationsWithOwnView()) {
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
     view->LoadExpandedState(model_, is_latest);
