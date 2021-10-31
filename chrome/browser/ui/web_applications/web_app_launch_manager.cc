@@ -313,6 +313,12 @@ WindowOpenDisposition LaunchProcess::GetNavigationDisposition(
     // extended scope.
   }
 
+  // If launch handler is routing to an existing client, we want to use the
+  // existing WebContents rather than opening a new tab.
+  if (GetLaunchRouteTo() == LaunchHandler::RouteTo::kExistingClient) {
+    return WindowOpenDisposition::CURRENT_TAB;
+  }
+
   // Only CURRENT_TAB and NEW_FOREGROUND_TAB dispositions are supported for web
   // app launches.
   return params_.disposition == WindowOpenDisposition::CURRENT_TAB

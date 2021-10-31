@@ -70,6 +70,9 @@ void AwaitTabCount(Browser* browser, int tab_count) {
 
 namespace web_app {
 
+using RouteTo = LaunchHandler::RouteTo;
+using NavigateExistingClient = LaunchHandler::NavigateExistingClient;
+
 // Tests that links are captured correctly into an installed WebApp using the
 // 'tabbed' display mode, which allows the webapp window to have multiple tabs.
 class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
@@ -176,6 +179,12 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   GURL NtpUrl() { return ntp_test_utils::GetFinalNtpUrl(browser()->profile()); }
+
+  void TurnOnLinkCapturing() {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->SetSupportedLinksPreference(app_id_);
+    proxy->FlushMojoCallsForTesting();
+  }
 
  protected:
   AppId app_id_;
@@ -310,12 +319,6 @@ class WebAppDeclarativeLinkCapturingBrowserTest
 
   bool IsIntentPickerPersistenceEnabled() {
     return base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
-  }
-
-  void TurnOnLinkCapturing() {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AddPreferredApp(app_id_, start_url_);
-    proxy->FlushMojoCallsForTesting();
   }
 
  protected:
@@ -617,5 +620,66 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
   ALLOW_UNUSED_LOCAL(app_web_contents);
 #endif  // defined(OS_CHROMEOS)
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class WebAppLaunchHanderLinkCaptureBrowserTest
+    : public WebAppLinkCapturingBrowserTest {
+ public:
+  WebAppLaunchHanderLinkCaptureBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kWebAppEnableLaunchHandler,
+                                    features::kIntentPickerPWAPersistence},
+                                   {});
+  }
+  ~WebAppLaunchHanderLinkCaptureBrowserTest() override = default;
+
+ protected:
+  Profile* profile() { return browser()->profile(); }
+
+  absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
+    return WebAppProvider::GetForTest(profile())
+        ->registrar()
+        .GetAppById(app_id)
+        ->launch_handler();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ScopedOsHooksSuppress os_hooks_suppress_{
+      OsIntegrationManager::ScopedSuppressOsHooksForTesting()};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderLinkCaptureBrowserTest,
+                       RouteToExistingClientFromBrowser) {
+  InstallTestApp(
+      "/web_apps/"
+      "get_manifest.html?route_to_existing_client_navigate_empty.json",
+      /*await_metric=*/false);
+  EXPECT_EQ(GetLaunchHandler(app_id_),
+            (LaunchHandler{RouteTo::kExistingClient,
+                           NavigateExistingClient::kAlways}));
+
+  TurnOnLinkCapturing();
+
+  // Start browser at an out of scope page.
+  Navigate(browser(), out_of_scope_);
+
+  // In scope navigation should open app window.
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1_});
+
+  // Navigate the app window out of scope to ensure the captured link triggers a
+  // navigation.
+  Navigate(app_browser, out_of_scope_);
+  ExpectTabs(app_browser, {out_of_scope_});
+
+  // Click a link in the browser in to scope. Ensure that no additional tabs get
+  // opened in the browser.
+  Navigate(browser(), in_scope_1_);
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1_});
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app
