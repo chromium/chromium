@@ -218,6 +218,15 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kSearchEventFired,
           WebFeature::kReadOrWriteWebDatabase,
           WebFeature::kExternalProtocolBlockedBySandbox,
+          WebFeature::kWebCodecsAudioDecoder,
+          WebFeature::kWebCodecsVideoDecoder,
+          WebFeature::kWebCodecsVideoEncoder,
+          WebFeature::kWebCodecsVideoTrackReader,
+          WebFeature::kWebCodecsImageDecoder,
+          WebFeature::kWebCodecsAudioEncoder,
+          WebFeature::kWebCodecsVideoFrameDefaultTimestamp,
+          WebFeature::kWebCodecsVideoFrameFromImage,
+          WebFeature::kWebCodecsVideoFrameFromBuffer,
       }));
   return *opt_in_features;
 }
