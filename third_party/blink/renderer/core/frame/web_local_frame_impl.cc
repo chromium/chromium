@@ -620,6 +620,13 @@ WebFrame* WebFrame::FromFrameToken(const FrameToken& frame_token) {
   return WebFrame::FromCoreFrame(frame);
 }
 
+// static
+WebLocalFrame* WebLocalFrame::FromFrameToken(
+    const LocalFrameToken& frame_token) {
+  auto* frame = LocalFrame::FromFrameToken(frame_token);
+  return WebLocalFrameImpl::FromFrame(frame);
+}
+
 WebLocalFrame* WebLocalFrame::FrameForCurrentContext() {
   v8::Local<v8::Context> context =
       v8::Isolate::GetCurrent()->GetCurrentContext();

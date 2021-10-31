@@ -260,7 +260,8 @@ void CastAudioRenderer::SetPlaybackRate(double playback_rate) {
     if (ticking_ && playback_rate_ == 0.0f && playback_rate > 0.0) {
       // It is necessary to set the playback state in the `Resume` case since
       // `playback_rate_` is changed immediately but the media time should not
-      // move forward until we received a timestamp update in UpdateMediaTime().
+      // move forward until we received a timestamp update in
+      // OnNextBuffer().
       SetPlaybackState(PlaybackState::kStarting);
     }
     playback_rate_ = playback_rate;
@@ -498,9 +499,10 @@ void CastAudioRenderer::OnBackendInitialized(
   std::move(init_cb_).Run(::media::PIPELINE_OK);
 }
 
-void CastAudioRenderer::UpdateMediaTime(
-    int64_t media_timestamp_microseconds,
-    int64_t reference_timestamp_microseconds) {
+void CastAudioRenderer::OnNextBuffer(int64_t media_timestamp_microseconds,
+                                     int64_t reference_timestamp_microseconds,
+                                     int64_t delay_microseconds,
+                                     int64_t delay_timestamp_microseconds) {
   base::AutoLock lock(timeline_lock_);
   if (GetPlaybackState() == PlaybackState::kStopped) {
     return;

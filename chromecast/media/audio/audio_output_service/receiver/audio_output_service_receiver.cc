@@ -171,12 +171,17 @@ class AudioOutputServiceReceiver::Stream
     socket_->ReceiveMoreMessages();
   }
 
-  void UpdateMediaTime(int64_t media_timestamp_microseconds,
-                       int64_t reference_timestamp_microseconds) override {
+  void UpdateMediaTimeAndRenderingDelay(
+      int64_t media_timestamp_microseconds,
+      int64_t reference_timestamp_microseconds,
+      int64_t delay_microseconds,
+      int64_t delay_timestamp_microseconds) override {
     audio_output_service::CurrentMediaTimestamp message;
     message.set_media_timestamp_microseconds(media_timestamp_microseconds);
     message.set_reference_timestamp_microseconds(
         reference_timestamp_microseconds);
+    message.set_delay_microseconds(delay_microseconds);
+    message.set_delay_timestamp_microseconds(delay_timestamp_microseconds);
     audio_output_service::Generic generic;
     *(generic.mutable_current_media_timestamp()) = message;
     socket_->SendProto(kUpdateMediaTime, generic);

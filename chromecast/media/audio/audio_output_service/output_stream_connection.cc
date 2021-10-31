@@ -185,9 +185,11 @@ bool OutputStreamConnection::HandleMetadata(const Generic& message) {
   }
 
   if (message.has_current_media_timestamp()) {
-    delegate_->UpdateMediaTime(
+    delegate_->OnNextBuffer(
         message.current_media_timestamp().media_timestamp_microseconds(),
-        message.current_media_timestamp().reference_timestamp_microseconds());
+        message.current_media_timestamp().reference_timestamp_microseconds(),
+        message.current_media_timestamp().delay_microseconds(),
+        message.current_media_timestamp().delay_timestamp_microseconds());
   }
   return true;
 }

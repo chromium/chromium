@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromecast/base/bitstream_audio_codecs.h"
 #include "chromecast/base/cast_features.h"
@@ -404,6 +405,9 @@ absl::optional<::media::AudioRendererAlgorithmParameters>
 CastContentRendererClient::GetAudioRendererAlgorithmParameters(
     ::media::AudioParameters audio_parameters) {
 #if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(kEnableCastAudioOutputDevice)) {
+    return absl::nullopt;
+  }
   ::media::AudioRendererAlgorithmParameters parameters;
   parameters.max_capacity = kAudioRendererMaxCapacity;
   parameters.starting_capacity = kAudioRendererStartingCapacity;

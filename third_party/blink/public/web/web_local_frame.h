@@ -171,6 +171,10 @@ class WebLocalFrame : public WebFrame {
   // correspond to a frame (e.g., workers).
   BLINK_EXPORT static WebLocalFrame* FrameForContext(v8::Local<v8::Context>);
 
+  // Returns the frame associated with the |frame_token|.
+  BLINK_EXPORT static WebLocalFrame* FromFrameToken(
+      const LocalFrameToken& frame_token);
+
   virtual WebLocalFrameClient* Client() const = 0;
 
   // Initialization ---------------------------------------------------------
