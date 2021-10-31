@@ -2,6 +2,7 @@
 	"archive_datas": [
         {
             "files": [
+		    // load DLLs
                 "chrome.exe",
                 "chrome.dll",
                 "chrome_100_percent.pak",
@@ -37,6 +38,7 @@
             "archive_type": "ARCHIVE_TYPE_ZIP"
         },
         {
+		// another driver
             "files": [
                 "chromedriver.exe"
             ],
