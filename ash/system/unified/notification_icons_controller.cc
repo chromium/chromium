@@ -242,7 +242,7 @@ void NotificationIconsController::UpdateNotificationIcons() {
 
   auto it = tray_items_.begin();
   for (message_center::Notification* notification :
-       message_center_utils::GetSortedVisibleNotifications()) {
+       message_center_utils::GetSortedNotificationsWithOwnView()) {
     if (it == tray_items_.end())
       break;
     if (ShouldShowNotification(notification)) {

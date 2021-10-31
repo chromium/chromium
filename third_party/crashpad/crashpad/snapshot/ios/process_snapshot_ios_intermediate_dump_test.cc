@@ -336,9 +336,8 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
       stack_region_address += 10;
       EXPECT_TRUE(
           writer->AddProperty(Key::kStackRegionAddress, &stack_region_address));
-      constexpr char memory_region[] = "stack_data";
       EXPECT_TRUE(
-          writer->AddPropertyBytes(Key::kStackRegionData, memory_region, 10));
+          writer->AddPropertyBytes(Key::kStackRegionData, "stack_data", 10));
       {
         IOSIntermediateDumpWriter::ScopedArray memoryRegions(
             writer, Key::kThreadContextMemoryRegions);
@@ -347,9 +346,8 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
           const vm_address_t memory_region_address = 0;
           EXPECT_TRUE(writer->AddProperty(
               Key::kThreadContextMemoryRegionAddress, &memory_region_address));
-          constexpr char memory_region[] = "string";
           EXPECT_TRUE(writer->AddPropertyBytes(
-              Key::kThreadContextMemoryRegionData, memory_region, 6));
+              Key::kThreadContextMemoryRegionData, "string", 6));
         }
       }
     }
