@@ -115,4 +115,10 @@ bool ShouldTriggerNetworkDataMigration() {
 const base::Feature kWebUsbDeviceDetection{"WebUsbDeviceDetection",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
+// Enables Certificate Transparency on Android.
+const base::Feature kCertificateTransparencyAndroid{
+    "CertificateTransparencyAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 }  // namespace features

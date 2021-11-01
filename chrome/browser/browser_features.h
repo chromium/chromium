@@ -53,6 +53,10 @@ bool ShouldTriggerNetworkDataMigration();
 
 extern const base::Feature kWebUsbDeviceDetection;
 
+#if defined(OS_ANDROID)
+extern const base::Feature kCertificateTransparencyAndroid;
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_
