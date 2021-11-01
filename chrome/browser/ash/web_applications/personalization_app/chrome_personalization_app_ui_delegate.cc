@@ -120,7 +120,8 @@ void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
       std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
           collection_id);
 
-  wallpaper_images_info_fetcher->Start(base::BindOnce(
+  auto* wallpaper_images_info_fetcher_ptr = wallpaper_images_info_fetcher.get();
+  wallpaper_images_info_fetcher_ptr->Start(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnFetchCollectionImages,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
       std::move(wallpaper_images_info_fetcher)));
