@@ -10,6 +10,8 @@ static_library("diagnostics_ui") {
   sources = [
     "diagnostics_metrics.cc",
     "diagnostics_metrics.h",
+    "diagnostics_metrics_message_handler.cc",
+    "diagnostics_metrics_message_handler.h",
     "diagnostics_ui.cc",
     "diagnostics_ui.h",
     "url_constants.cc",
@@ -40,7 +42,10 @@ group("closure_compile") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "diagnostics_metrics_unittest.cc" ]
+  sources = [
+    "diagnostics_metrics_message_handler_unittest.cc",
+    "diagnostics_metrics_unittest.cc",
+  ]
 
   deps = [
     ":diagnostics_ui",
