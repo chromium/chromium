@@ -32,6 +32,31 @@ namespace ash {
 
 namespace {
 
+constexpr net::NetworkTrafficAnnotationTag kAmbientPhotoCacheNetworkTag =
+    net::DefineNetworkTrafficAnnotation("ambient_photo_cache", R"(
+        semantics {
+          sender: "Ambient photo"
+          description:
+            "Get ambient photo from url to store limited number of photos in "
+            "the device cache. This is used to show the screensaver when the "
+            "user is idle. The url can be Backdrop service to provide pictures"
+            " from internal gallery, weather/time photos served by Google, or "
+            "user selected album from Google photos."
+          trigger:
+            "Triggered by a photo refresh timer, after the device has been "
+            "idle and the battery is charging."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is off by default and can be overridden by users."
+         policy_exception_justification:
+           "This feature is set by user settings.ambient_mode.enabled pref. "
+           "The user setting is per device and cannot be overriden by admin."
+        })");
+
 void ToImageSkia(base::OnceCallback<void(const gfx::ImageSkia&)> callback,
                  const SkBitmap& image) {
   if (image.isNull()) {
@@ -69,7 +94,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
   }
 
   return network::SimpleURLLoader::Create(std::move(resource_request),
-                                          NO_TRAFFIC_ANNOTATION_YET);
+                                          kAmbientPhotoCacheNetworkTag);
 }
 
 bool CreateDirIfNotExists(const base::FilePath& path) {

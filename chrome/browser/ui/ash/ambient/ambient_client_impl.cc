@@ -47,6 +47,31 @@ const user_manager::User* GetPrimaryUser() {
   return user_manager::UserManager::Get()->GetPrimaryUser();
 }
 
+constexpr net::NetworkTrafficAnnotationTag kAmbientClientNetworkTag =
+    net::DefineNetworkTrafficAnnotation("ambient_client", R"(
+        semantics {
+          sender: "Ambient photo"
+          description:
+            "Get ambient photo from url to store limited number of photos in "
+            "the device cache. This is used to show the screensaver when the "
+            "user is idle. The url can be Backdrop service to provide pictures"
+            " from internal gallery, weather/time photos served by Google, or "
+            "user selected album from Google photos."
+          trigger:
+            "Triggered by a photo refresh timer, after the device has been "
+            "idle and the battery is charging."
+          data: "None."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+         cookies_allowed: NO
+         setting:
+           "This feature is off by default and can be overridden by users."
+         policy_exception_justification:
+           "This feature is set by user settings.ambient_mode.enabled pref. "
+           "The user setting is per device and cannot be overriden by admin."
+        })");
+
 Profile* GetProfileForActiveUser() {
   const user_manager::User* const active_user = GetActiveUser();
   DCHECK(active_user);
@@ -96,6 +121,9 @@ bool AmbientClientImpl::IsAmbientModeAllowed() {
   if (!IsPrimaryUser())
     return false;
 
+  // When this check is removed to start supporting enterprise users,
+  // please update kAmbientClientNetworkTag and network annotation tags
+  // in ash/ambient package to reflect that this is an enterprise feature.
   if (!IsEmailDomainSupported(active_user))
     return false;
 
@@ -152,14 +180,13 @@ void AmbientClientImpl::DownloadImage(
           }
           net::HttpRequestHeaders headers;
           headers.SetHeader("Authorization", "Bearer " + access_token);
-
           ash::ImageDownloader::Get()->Download(GURL(url),
-                                                NO_TRAFFIC_ANNOTATION_YET,
+                                                kAmbientClientNetworkTag,
                                                 headers, std::move(callback));
         },
         url, std::move(callback)));
   } else {
-    ash::ImageDownloader::Get()->Download(GURL(url), NO_TRAFFIC_ANNOTATION_YET,
+    ash::ImageDownloader::Get()->Download(GURL(url), kAmbientClientNetworkTag,
                                           /*additional_headers=*/{},
                                           std::move(callback));
   }

@@ -8,12 +8,9 @@ missing,chrome/browser/ash/printing/server_printers_fetcher.cc
 missing,chrome/browser/ash/customization/customization_wallpaper_downloader.cc
 all,chrome/browser/ash/customization/customization_document.cc
 all,chromeos/printing/printer_config_cache.cc
-all,ash/ambient/ambient_photo_cache.cc
-all,ash/ambient/ambient_photo_controller.cc
 all,ash/wallpaper/wallpaper_controller_impl.cc
 all,chrome/browser/ash/net/network_portal_detector_impl.cc
 all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
-all,chrome/browser/ui/ash/ambient/ambient_client_impl.cc
 all,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,chromeos/timezone/timezone_request.cc
