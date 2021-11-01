@@ -15,10 +15,20 @@ namespace ash {
 namespace diagnostics {
 namespace metrics {
 
+// The enums below are used in histograms, do not remove/renumber entries. If
+// you're adding to any of these enums, update the corresponding enum listing in
+// tools/metrics/histograms/enums.xml.
+enum class NavigationView {
+  kSystem = 0,
+  kConnectivity = 1,
+  kInput = 2,
+  kMaxValue = kInput,
+};
+
 // ChromeOS Diagnostics app metrics handler for recording metrics from the UI.
 class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
  public:
-  DiagnosticsMetricsMessageHandler() = default;
+  explicit DiagnosticsMetricsMessageHandler(NavigationView initial_view);
   DiagnosticsMetricsMessageHandler(DiagnosticsMetricsMessageHandler&) = delete;
   DiagnosticsMetricsMessageHandler& operator=(
       DiagnosticsMetricsMessageHandler&) = delete;
@@ -27,7 +37,11 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
   // Test helper functions:
+  NavigationView GetCurrentViewForTesting();
   void SetWebUiForTesting(content::WebUI* web_ui);
+
+ private:
+  NavigationView current_view_;
 };
 }  // namespace metrics
 }  // namespace diagnostics

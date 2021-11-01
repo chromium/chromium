@@ -11,12 +11,20 @@ namespace ash {
 namespace diagnostics {
 namespace metrics {
 
+DiagnosticsMetricsMessageHandler::DiagnosticsMetricsMessageHandler(
+    NavigationView initial_view)
+    : current_view_(initial_view) {}
+
 // content::WebUIMessageHandler:
 void DiagnosticsMetricsMessageHandler::RegisterMessages() {
   DCHECK(web_ui());
 }
 
 // Test helpers:
+NavigationView DiagnosticsMetricsMessageHandler::GetCurrentViewForTesting() {
+  return current_view_;
+}
+
 void DiagnosticsMetricsMessageHandler::SetWebUiForTesting(
     content::WebUI* web_ui) {
   DCHECK(web_ui);
