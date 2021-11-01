@@ -106,17 +106,23 @@ Result UpdateAppRegistration(const AppId& app_id,
       GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL()));
   absl::optional<base::FilePath> app_launcher_path =
       CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
-  if (!app_launcher_path) {
+  if (!app_launcher_path)
     return Result::kError;
-  }
 
   base::CommandLine app_launch_cmd =
       GetAppLauncherCommand(app_id, app_launcher_path.value(), profile_path);
   base::FilePath icon_path =
       internals::GetIconFilePath(web_app_path, base::AsString16(app_name));
-
   ShellUtil::AddApplicationClass(prog_id, app_launch_cmd, user_visible_app_name,
                                  app_name, icon_path);
+  // Retrieve the file handler ProgIds and register the new app name for each of
+  // them.
+  const std::vector<std::wstring> file_handler_prog_ids =
+      ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
+  for (const auto& file_handler_prog_id : file_handler_prog_ids) {
+    ShellUtil::AddApplicationClass(file_handler_prog_id, app_launch_cmd,
+                                   user_visible_app_name, app_name, icon_path);
+  }
   return Result::kOk;
 }
 
