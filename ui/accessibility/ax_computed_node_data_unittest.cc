@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -21,7 +22,8 @@ namespace ui {
 
 namespace {
 
-class AXComputedNodeDataTest : public testing::Test {
+class AXComputedNodeDataTest : public ::testing::Test,
+                               public TestAXTreeManager {
  public:
   AXComputedNodeDataTest();
   ~AXComputedNodeDataTest() override;
@@ -44,7 +46,6 @@ class AXComputedNodeDataTest : public testing::Test {
   AXNodeData static_text_2_0_0_;
   AXNodeData static_text_2_0_1_;
 
-  AXTree tree_;
   AXNode* root_node_;
 };
 
@@ -79,6 +80,8 @@ void AXComputedNodeDataTest::SetUp() {
                      paragraph_2_ignored_.id};
 
   paragraph_0_.role = ax::mojom::Role::kParagraph;
+  paragraph_0_.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
   paragraph_0_.child_ids = {static_text_0_0_ignored_.id};
 
   static_text_0_0_ignored_.role = ax::mojom::Role::kStaticText;
@@ -89,6 +92,8 @@ void AXComputedNodeDataTest::SetUp() {
 
   paragraph_1_ignored_.role = ax::mojom::Role::kParagraph;
   paragraph_1_ignored_.AddState(ax::mojom::State::kIgnored);
+  paragraph_1_ignored_.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   paragraph_1_ignored_.child_ids = {static_text_1_0_.id};
 
   static_text_1_0_.role = ax::mojom::Role::kStaticText;
@@ -97,6 +102,8 @@ void AXComputedNodeDataTest::SetUp() {
 
   paragraph_2_ignored_.role = ax::mojom::Role::kParagraph;
   paragraph_2_ignored_.AddState(ax::mojom::State::kIgnored);
+  paragraph_2_ignored_.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
   paragraph_2_ignored_.child_ids = {link_2_0_ignored_.id};
 
   link_2_0_ignored_.role = ax::mojom::Role::kLink;
@@ -132,17 +139,22 @@ void AXComputedNodeDataTest::SetUp() {
   tree_data.title = "Application";
   initial_state.tree_data = tree_data;
 
-  ASSERT_TRUE(tree_.Unserialize(initial_state)) << tree_.error();
-  root_node_ = tree_.root();
+  auto tree = std::make_unique<AXTree>();
+  ASSERT_TRUE(tree->Unserialize(initial_state)) << tree->error();
+  root_node_ = tree->root();
   ASSERT_EQ(root_.id, root_node_->id());
+
+  // `SetTree` is defined in our `TestAXTreeManager` superclass and it passes
+  // ownership of the created AXTree to the manager.
+  SetTree(std::move(tree));
 }
 
 }  // namespace
 
-using testing::ElementsAre;
-using testing::ElementsAreArray;
-using testing::SizeIs;
-using testing::StrEq;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
+using ::testing::SizeIs;
+using ::testing::StrEq;
 
 TEST_F(AXComputedNodeDataTest, UnignoredValues) {
   const AXNode* paragraph_0_node = root_node_->GetChildAtIndex(0);
@@ -223,8 +235,8 @@ TEST_F(AXComputedNodeDataTest, HasOrCanComputeAttribute) {
   tree_update.root_id = root_.id;
   tree_update.nodes = {root_, paragraph_0_};
 
-  ASSERT_TRUE(tree_.Unserialize(tree_update));
-  root_node_ = tree_.root();
+  ASSERT_TRUE(GetTree()->Unserialize(tree_update));
+  root_node_ = GetTree()->root();
   ASSERT_EQ(root_.id, root_node_->id());
 
   // Computing the value attribute is only supported on non-atomic text fields.
@@ -251,10 +263,17 @@ TEST_F(AXComputedNodeDataTest, HasOrCanComputeAttribute) {
       ax::mojom::IntListAttribute::kLabelledbyIds));
 }
 
-TEST_F(AXComputedNodeDataTest, GetComputedNodeData) {
+TEST_F(AXComputedNodeDataTest, GetOrComputeAttribute) {
+  // Embedded object behavior is dependant on platform. We manually set it to a
+  // specific value so that test results are consistent across platforms.
+  testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
+
+  // Line breaks should be inserted between each paragraph to mirror how HTML's
+  // "textContent" works.
   EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
                   ax::mojom::StringAttribute::kValue),
-              StrEq("t_1s+t++2...0.  0s t\n2\r0\r\n1"));
+              StrEq("t_1\ns+t++2...0.  0s t\n2\r0\r\n1"));
   EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
                   ax::mojom::StringAttribute::kHtmlTag),
               StrEq(""));
@@ -348,8 +367,8 @@ TEST_F(AXComputedNodeDataTest, GetComputedNodeData) {
   tree_update.root_id = root_.id;
   tree_update.nodes = {root_, paragraph_0_};
 
-  ASSERT_TRUE(tree_.Unserialize(tree_update));
-  root_node_ = tree_.root();
+  ASSERT_TRUE(GetTree()->Unserialize(tree_update));
+  root_node_ = GetTree()->root();
   ASSERT_EQ(root_.id, root_node_->id());
 
   EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeAttributeUTF8(
@@ -424,6 +443,49 @@ TEST_F(AXComputedNodeDataTest, GetComputedNodeData) {
   EXPECT_THAT(paragraph_0_node->GetComputedNodeData().GetOrComputeAttribute(
                   ax::mojom::IntListAttribute::kLabelledbyIds),
               SizeIs(0));
+}
+
+TEST_F(AXComputedNodeDataTest, GetOrComputeInnerTextAndTextContent) {
+  // Embedded object behavior is dependant on platform. We manually set it to a
+  // specific value so that test results are consistent across platforms.
+  testing::ScopedAXEmbeddedObjectBehaviorSetter embedded_object_behaviour(
+      AXEmbeddedObjectBehavior::kSuppressCharacter);
+
+  // `innerText` and `textContent` behave like they do in HTML. The former
+  // inserts extra line breaks between paragraphs.
+  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeInnerTextUTF8(),
+              StrEq("t_1\ns+t++2...0.  0s t\n2\r0\r\n1"));
+  EXPECT_THAT(root_node_->GetComputedNodeData().GetOrComputeTextContentUTF8(),
+              StrEq("t_1s+t++2...0.  0s t\n2\r0\r\n1"));
+  EXPECT_EQ(
+      root_node_->GetComputedNodeData().GetOrComputeTextContentLengthUTF8(),
+      27);
+
+  // Paragraph_0's text is ignored. Ignored text should not be visible.
+  const AXNode* paragraph_0_node = root_node_->GetChildAtIndex(0);
+  EXPECT_THAT(
+      paragraph_0_node->GetComputedNodeData().GetOrComputeInnerTextUTF8(),
+      StrEq(""));
+  EXPECT_THAT(
+      paragraph_0_node->GetComputedNodeData().GetOrComputeTextContentUTF8(),
+      StrEq(""));
+  EXPECT_EQ(paragraph_0_node->GetComputedNodeData()
+                .GetOrComputeTextContentLengthUTF8(),
+            0);
+
+  // "innerText" and "textContent" should behave identically when line breaks
+  // are manually inserted via e.g. a <br> element in HTML, as this case
+  // demonstrates.
+  const AXNode* paragraph_2_ignored_node = root_node_->GetChildAtIndex(2);
+  EXPECT_THAT(paragraph_2_ignored_node->GetComputedNodeData()
+                  .GetOrComputeInnerTextUTF8(),
+              StrEq("s+t++2...0.  0s t\n2\r0\r\n1"));
+  EXPECT_THAT(paragraph_2_ignored_node->GetComputedNodeData()
+                  .GetOrComputeTextContentUTF8(),
+              StrEq("s+t++2...0.  0s t\n2\r0\r\n1"));
+  EXPECT_EQ(paragraph_2_ignored_node->GetComputedNodeData()
+                .GetOrComputeTextContentLengthUTF8(),
+            24);
 }
 
 }  // namespace ui

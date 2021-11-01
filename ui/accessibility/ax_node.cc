@@ -955,22 +955,22 @@ const AXHypertext& AXNode::GetOldHypertext() const {
 
 const std::string& AXNode::GetInnerText() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  return GetComputedNodeData().GetOrComputeInnerTextUTF8();
+  return GetComputedNodeData().GetOrComputeTextContentUTF8();
 }
 
 const std::u16string& AXNode::GetInnerTextUTF16() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  return GetComputedNodeData().GetOrComputeInnerTextUTF16();
+  return GetComputedNodeData().GetOrComputeTextContentUTF16();
 }
 
 int AXNode::GetInnerTextLength() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  return GetComputedNodeData().GetOrComputeInnerTextLengthUTF8();
+  return GetComputedNodeData().GetOrComputeTextContentLengthUTF8();
 }
 
 int AXNode::GetInnerTextLengthUTF16() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  return GetComputedNodeData().GetOrComputeInnerTextLengthUTF16();
+  return GetComputedNodeData().GetOrComputeTextContentLengthUTF16();
 }
 
 std::string AXNode::GetLanguage() const {
