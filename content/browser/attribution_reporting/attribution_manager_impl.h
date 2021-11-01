@@ -148,15 +148,20 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // |reporter|.
   void GetAndQueueReportsForNextInterval();
 
-  // Queue the given |reports| on |reporter_|.
-  void QueueReports(std::vector<AttributionReport> reports);
+  void OnGetReportsToSend(std::vector<AttributionReport> reports);
 
-  void HandleReportsSentFromWebUI(base::OnceClosure done,
-                                  std::vector<AttributionReport> reports);
+  void OnGetReportsToSendFromWebUI(base::OnceClosure done,
+                                   std::vector<AttributionReport> reports);
 
   void OnReportSent(SentReportInfo info);
 
   void OnReportStored(AttributionStorage::CreateReportResult result);
+
+  // Removes already-queued reports from |reports|.
+  void RemoveAlreadyQueuedReports(
+      std::vector<AttributionReport>& reports) const;
+
+  void AddReportsToReporter(std::vector<AttributionReport> reports);
 
   // Friend to expose the AttributionStorage for certain tests.
   friend std::vector<AttributionReport> GetAttributionsToReportForTesting(
@@ -177,6 +182,12 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // from |attribution_storage_| and added to |reporter_| by
   // |get_and_queue_reports_timer_|.
   std::unique_ptr<AttributionReporter> reporter_;
+
+  // Set of all conversion IDs that are currently
+  // being sent by |reporter_|. The number of concurrent conversion
+  // reports being sent at any time is expected to be small, so a `flat_set` is
+  // used.
+  base::flat_set<AttributionReport::Id> queued_reports_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 

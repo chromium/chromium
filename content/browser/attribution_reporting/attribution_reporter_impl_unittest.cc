@@ -178,17 +178,18 @@ TEST_F(AttributionReporterImplTest,
   EXPECT_EQ(1u, sender_->num_reports_sent());
 }
 
-TEST_F(AttributionReporterImplTest, DuplicateReportScheduled_Ignored) {
+TEST_F(AttributionReporterImplTest, DuplicateReportScheduled_Sent) {
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now() + base::Minutes(1),
                  AttributionReport::Id(1))});
 
-  // A duplicate report should not be scheduled.
+  // A duplicate report should be scheduled, as it is up to the manager to
+  // perform deduplication.
   reporter_->AddReportsToQueue(
       {GetReport(clock().Now(), clock().Now() + base::Minutes(1),
                  AttributionReport::Id(1))});
   task_environment_.FastForwardBy(base::Minutes(1));
-  EXPECT_EQ(1u, sender_->num_reports_sent());
+  EXPECT_EQ(2u, sender_->num_reports_sent());
 }
 
 TEST_F(AttributionReporterImplTest,

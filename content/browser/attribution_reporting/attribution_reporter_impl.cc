@@ -50,11 +50,7 @@ void AttributionReporterImpl::AddReportsToQueue(
   base::RandomShuffle(reports.begin(), reports.end());
 
   for (AttributionReport& report : reports) {
-    DCHECK(report.conversion_id.has_value());
-    // If the given report is already being processed, ignore it.
-    bool inserted = queued_reports_.emplace(*report.conversion_id).second;
-    if (inserted)
-      report_queue_.push(std::move(report));
+    report_queue_.push(std::move(report));
   }
   MaybeScheduleNextReport();
 }
@@ -63,9 +59,9 @@ void AttributionReporterImpl::RemoveAllReportsFromQueue() {
   while (!report_queue_.empty()) {
     AttributionReport report = report_queue_.top();
     report_queue_.pop();
-    OnReportSent(SentReportInfo(std::move(report),
-                                SentReportInfo::Status::kRemovedFromQueue,
-                                /*http_response_code=*/0));
+    callback_.Run(SentReportInfo(std::move(report),
+                                 SentReportInfo::Status::kRemovedFromQueue,
+                                 /*http_response_code=*/0));
   }
 }
 
@@ -107,23 +103,20 @@ void AttributionReporterImpl::SendNextReport() {
     // If there's no network connection, drop the report and tell the manager to
     // retry it later.
     if (offline_) {
-      OnReportSent(SentReportInfo(std::move(report),
-                                  SentReportInfo::Status::kOffline,
-                                  /*http_response_code=*/0));
+      callback_.Run(SentReportInfo(std::move(report),
+                                   SentReportInfo::Status::kOffline,
+                                   /*http_response_code=*/0));
     } else {
-      network_sender_->SendReport(
-          std::move(report),
-          base::BindOnce(&AttributionReporterImpl::OnReportSent,
-                         base::Unretained(this)));
+      network_sender_->SendReport(std::move(report), callback_);
     }
   } else {
     // If measurement is disallowed, just drop the report on the floor. We need
     // to make sure we forward that the report was "sent" to ensure it is
     // deleted from storage, etc. This simulates sending the report through a
     // null channel.
-    OnReportSent(SentReportInfo(std::move(report),
-                                SentReportInfo::Status::kDropped,
-                                /*http_response_code=*/0));
+    callback_.Run(SentReportInfo(std::move(report),
+                                 SentReportInfo::Status::kDropped,
+                                 /*http_response_code=*/0));
   }
   MaybeScheduleNextReport();
 }
@@ -146,13 +139,6 @@ void AttributionReporterImpl::MaybeScheduleNextReport() {
                                    : report_time - current_time,
       base::BindOnce(&AttributionReporterImpl::SendNextReport,
                      base::Unretained(this)));
-}
-
-void AttributionReporterImpl::OnReportSent(SentReportInfo info) {
-  DCHECK(info.report.conversion_id.has_value());
-  size_t num_removed = queued_reports_.erase(*info.report.conversion_id);
-  DCHECK_EQ(num_removed, 1u);
-  callback_.Run(std::move(info));
 }
 
 bool AttributionReporterImpl::ReportComparator::operator()(
