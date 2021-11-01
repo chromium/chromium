@@ -701,15 +701,6 @@ MediaFactory::CreateRendererFactorySelector(
           render_frame_->GetBrowserInterfaceBroker()));
 #endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
-  if (!is_base_renderer_factory_set) {
-    DCHECK(!use_media_player_renderer);
-    is_base_renderer_factory_set = true;
-    auto default_factory = CreateDefaultRendererFactory(
-        media_log, decoder_factory, render_thread, render_frame_);
-    factory_selector->AddBaseFactory(RendererType::kDefault,
-                                     std::move(default_factory));
-  }
-
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   mojo::PendingRemote<media::mojom::RemotingSource> remoting_source;
   auto remoting_source_receiver =
@@ -778,6 +769,9 @@ MediaFactory::CreateRendererFactorySelector(
 
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
   if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
+    DCHECK(!is_base_renderer_factory_set);
+    DCHECK(!use_media_player_renderer);
+    is_base_renderer_factory_set = true;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_cast_streaming =
         std::make_unique<CastRendererClientFactory>(
@@ -800,6 +794,18 @@ MediaFactory::CreateRendererFactorySelector(
   }
 #endif  // BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 #endif  // BUILDFLAG(IS_CHROMECAST)
+
+  if (!is_base_renderer_factory_set) {
+    // TODO(crbug.com/1265448): These sorts of checks shouldn't be necessary if
+    // this method were significantly refactored to split things up by
+    // Android/non-Android/Cast/etc...
+    DCHECK(!use_media_player_renderer);
+    is_base_renderer_factory_set = true;
+    auto default_factory = CreateDefaultRendererFactory(
+        media_log, decoder_factory, render_thread, render_frame_);
+    factory_selector->AddBaseFactory(RendererType::kDefault,
+                                     std::move(default_factory));
+  }
 
   return factory_selector;
 }

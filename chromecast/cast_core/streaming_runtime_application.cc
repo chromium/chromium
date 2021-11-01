@@ -32,7 +32,7 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter)
-    : RuntimeApplicationBase(mojom::RendererType::REMOTING_RENDERER,
+    : RuntimeApplicationBase(mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)),
       network_context_getter_(std::move(network_context_getter)) {}

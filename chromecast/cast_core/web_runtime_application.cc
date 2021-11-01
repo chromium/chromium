@@ -35,17 +35,6 @@ bool WebRuntimeApplication::Load(
       std::make_unique<UrlRewriteRulesAdapter>(request.url_rewrite_rules());
   app_url_ = request.application_config().cast_web_app_config().url();
 
-  auto* web_service = cast_web_service();
-  if (web_service) {
-    MojoIdentificationSettings params(request.url_rewrite_rules());
-    web_service->CreateSessionWithSubstitutions(
-        cast_session_id(), std::move(params.substitutable_params));
-    web_service->UpdateAppSettingsForSession(
-        cast_session_id(), std::move(params.application_settings));
-    web_service->UpdateDeviceSettingsForSession(
-        cast_session_id(), std::move(params.device_settings));
-  }
-
   return true;
 }
 

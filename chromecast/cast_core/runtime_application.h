@@ -50,7 +50,7 @@ class RuntimeApplication {
   }
 
   void set_display_name(std::string display_name) {
-    app_id_ = std::move(display_name);
+    display_name_ = std::move(display_name);
   }
 
   void set_cast_media_service_grpc_endpoint(
