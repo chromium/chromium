@@ -11776,6 +11776,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Open now
     </message>
 
+    <!-- Tailored security dialog for unconsented primary accounts -->
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE" desc="Title shown in the tab modal dialog when the account tailored security setting changes for an unconsented primary account">
+      Also turn on Enhanced Safe Browsing for this Chrome profile?
+    </message>
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_ACCEPT_BUTTON" desc="The text on the accept button in the tab modal dialog when the account tailored security setting changes for an unconsented primary account">
+      Turn on
+    </message>
+    <message name="IDS_TAILORED_SECURITY_UNCONSENTED_CANCEL_BUTTON" desc="The text on the cancel button in the tab modal dialog when the account tailored security setting changes for an unconsented primary account">
+      No thanks
+    </message>
+
     <!-- Enterprise file system connector service providers' display names -->
     <message name="IDS_FILE_SYSTEM_CONNECTOR_BOX" meaning="box.com" desc="Display name for Box.">
       Box
