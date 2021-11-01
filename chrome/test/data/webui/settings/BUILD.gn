@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-preprocess_manifest = "preprocessed_manifest.json"
 
 # Test files that contain // <if expr> and therefore require preprocessing.
 preprocessed_files = [
@@ -25,21 +24,52 @@ non_preprocessed_files = [
   "test_util.js",
 ]
 
+preprocessed_folder = "$target_gen_dir/preprocessed"
+
 preprocess_if_expr("preprocess") {
   in_folder = "./"
-  out_folder = "$target_gen_dir/preprocessed"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  out_folder = preprocessed_folder
   in_files = preprocessed_files
+}
+
+copy("copy") {
+  sources = non_preprocessed_files
+  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
 }
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_settings"
   out_grd = "$target_gen_dir/resources.grdp"
-  deps = [ ":preprocess" ]
-
-  input_files = non_preprocessed_files
-  input_files_base_dir = rebase_path(".", "//")
-
-  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   resource_path_prefix = "settings"
+}
+
+ts_library("build_ts") {
+  root_dir = preprocessed_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://settings/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/settings/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = preprocessed_files + non_preprocessed_files
+  definitions = [
+    "//tools/typescript/definitions/autofill_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/language_settings_private.d.ts",
+    "//tools/typescript/definitions/management.d.ts",
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+  deps = [ "//chrome/browser/resources/settings:build_ts" ]
+  extra_deps = [
+    ":copy",
+    ":preprocess",
+    "..:generate_definitions",
+  ]
 }
