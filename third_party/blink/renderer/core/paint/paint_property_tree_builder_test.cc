@@ -5820,13 +5820,16 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedLayerUnderClipUnderMulticol) {
 
   const auto* flow_thread =
       GetLayoutObjectByElementId("multicol")->SlowFirstChild();
-  const auto* fragment_clip =
-      flow_thread->FirstFragment().PaintProperties()->FragmentClip();
   const auto* clip_properties = PaintPropertiesForElement("clip");
   const auto* composited = GetLayoutObjectByElementId("composited");
   EXPECT_EQ(clip_properties->OverflowClip(),
             &composited->FirstFragment().LocalBorderBoxProperties().Clip());
-  EXPECT_EQ(fragment_clip, clip_properties->OverflowClip()->Parent());
+  // FragmentClip isn't used in LayoutNGBlockFragmentation.
+  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    const auto* fragment_clip =
+        flow_thread->FirstFragment().PaintProperties()->FragmentClip();
+    EXPECT_EQ(fragment_clip, clip_properties->OverflowClip()->Parent());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
