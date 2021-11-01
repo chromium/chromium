@@ -2081,6 +2081,7 @@
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
+<translation id="311214366526552035">फिर भी डाउनलोड करें</translation>
 <translation id="311394601889664316">साइटों को अपने डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति न दें</translation>
 <translation id="3115147772012638511">कैश मेमोरी का इंतज़ार कर रहे हैं...</translation>
 <translation id="3115580024857770654">सभी छिपाएं</translation>
@@ -2360,6 +2361,7 @@
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
 <translation id="3429271624041785769">वेब कॉन्टेंट की भाषाएं</translation>
 <translation id="3429275422858276529">बाद में इस पेज को आसानी से पाने के लिए इसे बुकमार्क करें</translation>
+<translation id="343115368966109153">क्या आपको <ph name="FILE_NAME" /> को डाउनलोड करना है? इस डिवाइस को इस्तेमाल करने वाला हर व्यक्ति इसे देख सकता है.</translation>
 <translation id="3432227430032737297">दिखाई गईं सभी कुकी निकालें</translation>
 <translation id="3432762828853624962">शेयर किए गए वर्कर</translation>
 <translation id="3433621910545056227">ओह!  सिस्टम डिवाइस इंस्टॉलेशन-समय विशेषता लॉक स्थापित नहीं कर पाया.</translation>
@@ -2701,6 +2703,7 @@
 <translation id="3777806571986431400">एक्सटेंशन सक्षम किया गया</translation>
 <translation id="3778152852029592020">डाउनलोड रद्द कर दिया गया था.</translation>
 <translation id="3778208826288864398">सुरक्षा कुंजी लॉक कर दी गई है क्योंकि गलत पिन कई बार डाला गया है. आपको सुरक्षा कुंजी रीसेट करनी होगी.</translation>
+<translation id="3778369586810509692">इस फ़ाइल को डिवाइस में सेव किया जाएगा और सभी इसे देख पाएंगे.</translation>
 <translation id="3778740492972734840">&amp;डेवलपर टूल</translation>
 <translation id="3778868487658107119">इससे प्रश्न पूछें. इसे कुछ काम करने को कहें. यह आपका व्यक्तिगत Google है, जो हमेशा सहायता के लिए तैयार रहता है.</translation>
 <translation id="3781742599892759500">Linux में माइक्रोफ़ोन का ऐक्सेस</translation>
@@ -4714,6 +4717,7 @@
 <translation id="597235323114979258">ज़्यादा मंज़िलें देखें</translation>
 <translation id="5972666587303800813">सेवा में नहीं है</translation>
 <translation id="5972708806901999743">शीर्ष पर ले जाएं</translation>
+<translation id="5972801171078377748">फिर से न दिखाएं</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> प्रारंभ करें</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" ने इस ब्राउज़र को डीबग करना शुरू कर दिया है</translation>
 <translation id="5973605538625120605">पिन बदलें</translation>

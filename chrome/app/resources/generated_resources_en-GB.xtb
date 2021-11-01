@@ -2081,6 +2081,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="310671807099593501">Site is using Bluetooth</translation>
 <translation id="3108931485517391283">Can't receive</translation>
 <translation id="3109724472072898302">Collapsed</translation>
+<translation id="311214366526552035">Download anyway</translation>
 <translation id="311394601889664316">Don't allow sites to edit files or folders on your device</translation>
 <translation id="3115147772012638511">Waiting for cache...</translation>
 <translation id="3115580024857770654">Collapse all</translation>
@@ -2360,6 +2361,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3429160811076349561">Trial features are off</translation>
 <translation id="3429271624041785769">Web content languages</translation>
 <translation id="3429275422858276529">Bookmark this page to easily find it later</translation>
+<translation id="343115368966109153">Download <ph name="FILE_NAME" />? Anyone using the device can see it.</translation>
 <translation id="3432227430032737297">Remove all shown</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Oops!  The system failed to establish the device installation-time attributes lock.</translation>
@@ -2701,6 +2703,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3777806571986431400">Extension enabled</translation>
 <translation id="3778152852029592020">Download was cancelled.</translation>
 <translation id="3778208826288864398">The security key is locked because the wrong PIN was entered too many times. You’ll need to reset the security key.</translation>
+<translation id="3778369586810509692">This file will be stored on the device and everyone will be able to see it.</translation>
 <translation id="3778740492972734840">&amp;Developer tools</translation>
 <translation id="3778868487658107119">Ask it questions. Tell it to do things. It's your personal Google, always ready to help.</translation>
 <translation id="3781742599892759500">Linux microphone access</translation>
@@ -3873,7 +3876,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5051836348807686060">Spellcheck isn’t supported for the languages that you have selected</translation>
 <translation id="5052499409147950210">Edit site</translation>
 <translation id="505347685865235222">Unnamed group – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Search Image with Google Lens</translation>
+<translation id="5053962746715621840">Search image with Google Lens</translation>
 <translation id="5056950756634735043">Connecting to the container</translation>
 <translation id="5057110919553308744">When you click the extension</translation>
 <translation id="5057403786441168405">Manage your signed-in accounts. Websites, apps and extensions in Chrome and Google Play may use these accounts to customise your experience, depending on permissions. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -4715,6 +4718,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="597235323114979258">See more destinations</translation>
 <translation id="5972666587303800813">No-op Service</translation>
 <translation id="5972708806901999743">Move to the top</translation>
+<translation id="5972801171078377748">Don't show again</translation>
 <translation id="5972826969634861500">Start <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">'<ph name="CLIENT_NAME" />' started debugging this browser</translation>
 <translation id="5973605538625120605">Change a PIN</translation>
@@ -5870,7 +5874,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7230222852462421043">&amp;Restore window</translation>
 <translation id="7230787553283372882">Customise your text size</translation>
 <translation id="7232750842195536390">Renaming failed</translation>
-<translation id="723343421145275488">Search Images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Search images with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Cancelling Linux restore</translation>
 <translation id="7235716375204803342">Fetching activities...</translation>
 <translation id="7235737137505019098">Your security key does not have enough space for any more accounts.</translation>

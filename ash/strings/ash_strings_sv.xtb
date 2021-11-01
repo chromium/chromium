@@ -356,7 +356,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3626281679859535460">Ljusstyrka</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillåt aviseringar från följande</translation>
-<translation id="3638400994746983214">Aktivera och inaktivera sekretesskärmen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
 <translation id="3680908746918359504">Rensa alla markeringar</translation>
@@ -510,7 +510,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
-<translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
+<translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
 <translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
@@ -648,7 +648,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5750765938512549687">Bluetooth är inaktiverat</translation>
 <translation id="576341972084747908">Den skadliga filen <ph name="FILENAME" /> laddas ned</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
-<translation id="5769373120130404283">Sekretesskärm</translation>
+<translation id="5769373120130404283">Integritetsskärm</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5790085346892983794">Klart</translation>
@@ -750,7 +750,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6612802754306526077">Skärminspelningsläget har valts</translation>
-<translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
+<translation id="6614169507485700968">Integritetsskärmen är aktiverad</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vill använda mikrofonen</translation>
 <translation id="6630773993843701741">Öppna Bluetooth-inställningarna för att parkoppla enheten manuellt</translation>

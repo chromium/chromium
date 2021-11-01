@@ -706,7 +706,7 @@
 <translation id="1719312230114180055">Заўвага. Выкарыстанне адбітка пальца можа быць менш бяспечным, чым надзейны пароль або PIN-код.</translation>
 <translation id="1720318856472900922">Аўтэнтыфікацыя сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
-<translation id="172123215662733643">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Шукаць праз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Каб наведаць гэты сайт, вам патрабуецца дазвол ад карыстальніка <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
@@ -1565,7 +1565,7 @@
 <translation id="2602501489742255173">Каб пачаць, правядзіце пальцам уверх</translation>
 <translation id="2603115962224169880">Ачыстка камп'ютара</translation>
 <translation id="2603355571917519942">Функцыя Voice Match гатовая да работы</translation>
-<translation id="2604138917550693049">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
+<translation id="2604138917550693049">Шукаць праз Аб'ектыў</translation>
 <translation id="2604255671529671813">Памылка падключэння да сеткі</translation>
 <translation id="2605668923777146443">Каб прагледзець параметры функцыі Better Together, перайдзіце ў <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Звязаць даныя</translation>
@@ -3860,7 +3860,7 @@
 <translation id="5051836348807686060">Праверка правапісу для выбраных моў не падтрымліваецца</translation>
 <translation id="5052499409147950210">Рэдагаванне сайта</translation>
 <translation id="505347685865235222">Група без назвы – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
+<translation id="5053962746715621840">Шукаць праз Аб'ектыў</translation>
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
 <translation id="5057403786441168405">Тут можна кіраваць уліковымі запісамі, у якія вы ўвайшлі: вэб-сайты, праграмы і пашырэнні ў браўзеры Chrome і краме Google Play могуць выкарыстоўваць іх для персаналізацыі сваіх функцый згодна з дазволамі. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -5858,7 +5858,7 @@
 <translation id="7230222852462421043">Аднавіць акно</translation>
 <translation id="7230787553283372882">Наладжванне памеру тэксту</translation>
 <translation id="7232750842195536390">Не ўдалося перайменаваць</translation>
-<translation id="723343421145275488">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Шукаць праз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Ідзе скасаванне аднаўлення кантэйнера Linux</translation>
 <translation id="7235716375204803342">Ідзе атрыманне дзеянняў...</translation>
 <translation id="7235737137505019098">На вашым ключы бяспекі недастаткова месца для стварэння іншых уліковых запісаў.</translation>

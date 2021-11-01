@@ -2081,6 +2081,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="310671807099593501">Tapak sedang menggunakan bluetooth</translation>
 <translation id="3108931485517391283">Tidak dapat menerima</translation>
 <translation id="3109724472072898302">Diruntuhkan</translation>
+<translation id="311214366526552035">Muat Turun Juga</translation>
 <translation id="311394601889664316">Jangan benarkan laman mengedit fail atau folder pada peranti anda</translation>
 <translation id="3115147772012638511">Menunggu cache...</translation>
 <translation id="3115580024857770654">Runtuhkan semua</translation>
@@ -2360,6 +2361,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3429160811076349561">Ciri percubaan dimatikan</translation>
 <translation id="3429271624041785769">Bahasa kandungan web</translation>
 <translation id="3429275422858276529">Tandai halaman ini agar mudah dicari kemudian</translation>
+<translation id="343115368966109153">Muat turun <ph name="FILE_NAME" />? Sesiapa sahaja yang menggunakan peranti dapat melihat fail itu.</translation>
 <translation id="3432227430032737297">Alih Keluar Semua Yang Ditunjukkan</translation>
 <translation id="3432762828853624962">Pekerja Kongsi</translation>
 <translation id="3433621910545056227">Op! Sistem gagal mewujudkan kunci atribut masa pemasangan peranti.</translation>
@@ -2701,6 +2703,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3777806571986431400">Sambungan Didayakan</translation>
 <translation id="3778152852029592020">Muat turun telah dibatalkan.</translation>
 <translation id="3778208826288864398">Kunci keselamatan dikunci kerana PIN yang salah dimasukkan terlalu banyak kali. Anda perlu menetapkan semula kunci keselamatan itu.</translation>
+<translation id="3778369586810509692">Fail ini akan disimpan pada peranti dan semua orang akan dapat melihat fail ini.</translation>
 <translation id="3778740492972734840">&amp;Alat pembangun</translation>
 <translation id="3778868487658107119">Tanya soalan dan berikannya tugas. Peranti ini ialah Google peribadi anda yang sentiasa bersedia untuk membantu.</translation>
 <translation id="3781742599892759500">Akses mikrofon Linux</translation>
@@ -4715,6 +4718,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="597235323114979258">Lihat lagi destinasi</translation>
 <translation id="5972666587303800813">Perkhidmatan Tanpa Pengendalian</translation>
 <translation id="5972708806901999743">Alihkan ke bahagian atas</translation>
+<translation id="5972801171078377748">Jangan tunjukkan lagi</translation>
 <translation id="5972826969634861500">Mula <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" memulakan penyahpepijatan penyemak imbas ini</translation>
 <translation id="5973605538625120605">Tukar PIN</translation>

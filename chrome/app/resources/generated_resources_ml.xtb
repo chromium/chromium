@@ -702,7 +702,7 @@
 <translation id="1719312230114180055">ശ്രദ്ധിക്കുക: ഒരു ശക്തമായ പാസ്‌വേഡിനേക്കാളോ പിൻ നമ്പറിനേക്കാളോ കുറവായിരിക്കാം നിങ്ങളുടെ വിരലടയാളം ഉപയോഗിച്ചുള്ള സുരക്ഷ.</translation>
 <translation id="1720318856472900922">TLS WWW സെര്‍‌വര്‍‌ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="1720941539803966190">ട്യൂട്ടോറിയൽ അടയ്‌ക്കുക</translation>
-<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രങ്ങൾ തിരയുക</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="1721312023322545264">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് <ph name="NAME" /> എന്നയാളിൽ നിന്നുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="1722460139690167654">നിങ്ങളുടെ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
 <translation id="1723824996674794290">&amp;പുതിയ വിൻഡോ</translation>
@@ -1561,7 +1561,7 @@
 <translation id="2602501489742255173">ആരംഭിക്കുന്നതിന് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2603115962224169880">നിങ്ങളുടെ കമ്പ്യൂട്ടർ ക്ലീൻ ചെയ്യുക</translation>
 <translation id="2603355571917519942">Voice Match തയ്യാറാണ്</translation>
-<translation id="2604138917550693049">Google Lens ഉപയോഗിച്ച് ചിത്രം തിരയുക</translation>
+<translation id="2604138917550693049">Google Lens-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="2604255671529671813">നെറ്റ്‌വർക്ക് കണക്ഷൻ പിശക്</translation>
 <translation id="2605668923777146443">Better Together-നുള്ള നിങ്ങളുടെ ഓപ്ഷനുകൾ കാണാൻ <ph name="LINK_BEGIN" />ക്രമീകരണത്തിലേക്ക്<ph name="LINK_END" /> പോകുക.</translation>
 <translation id="2606246518223360146">ഡാറ്റ ലിങ്ക് ചെയ്യുക</translation>
@@ -2065,6 +2065,7 @@
 <translation id="310671807099593501">സൈറ്റ്, bluetooth ഉപയോഗിക്കുന്നു</translation>
 <translation id="3108931485517391283">സ്വീകരിക്കാനാകുന്നില്ല</translation>
 <translation id="3109724472072898302">ചുരുക്കിയത്</translation>
+<translation id="311214366526552035">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="311394601889664316">നിങ്ങളുടെ ഉപകരണത്തിലെ ഫയലുകളോ ഫോൾഡറുകളോ എഡിറ്റ് ചെയ്യാൻ സൈറ്റുകളെ അനുവദിക്കരുത്</translation>
 <translation id="3115147772012638511">കാഷെയ്ക്കായി കാത്തിരിക്കുന്നു...</translation>
 <translation id="3115580024857770654">എല്ലാം ചുരുക്കുക</translation>
@@ -2344,6 +2345,7 @@
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
 <translation id="3429271624041785769">വെബ് ഉള്ളടക്കം ലഭ്യമായ ഭാഷകൾ</translation>
 <translation id="3429275422858276529">പിന്നീട് ഈ പേജ് എളുപ്പത്തിൽ കണ്ടെത്താൻ ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യണോ? ഉപകരണം ഉപയോഗിക്കുന്ന എല്ലാവർക്കും ഇത് കാണാനാകും.</translation>
 <translation id="3432227430032737297">ദൃശ്യമാക്കിയിരിക്കുന്നതെല്ലാം നീക്കംചെയ്യുക</translation>
 <translation id="3432762828853624962">പങ്കിട്ട വർക്കർമാർ</translation>
 <translation id="3433621910545056227">ക്ഷമിക്കണം! ഉപകരണ ഇൻസ്റ്റലേഷൻ-സമയ ആട്രിബ്യൂട്ട് ലോക്ക് സ്ഥാപിക്കുന്നതിൽ സിസ്റ്റം പരാജയപ്പെട്ടു.</translation>
@@ -2685,6 +2687,7 @@
 <translation id="3777806571986431400">വിപുലീകരണം പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="3778152852029592020">ഡൗൺലോഡ് റദ്ദാക്കി.</translation>
 <translation id="3778208826288864398">തെറ്റായ പിൻ നിരവധി തവണ നൽകിയതിനാൽ സുരക്ഷാ കീ ലോക്ക് ചെയ്‌തിരിക്കുന്നു. സുരക്ഷാ കീ പുനഃസജ്ജീകരിക്കേണ്ടി വരും.</translation>
+<translation id="3778369586810509692">ഈ ഫയൽ ഉപകരണത്തിൽ സംഭരിക്കും, അത് എല്ലാവർക്കും കാണാനുമാകും.</translation>
 <translation id="3778740492972734840">&amp;ഡെവലപ്പര്‍ ഉപകരണങ്ങള്‍‌</translation>
 <translation id="3778868487658107119">അതിനോട് ചോദ്യങ്ങൾ ചോദിക്കുക. ആവശ്യമുള്ള കാര്യങ്ങൾ ചെയ്യാൻ പറയുക. ഇത് എപ്പോഴും സഹായിക്കാൻ സന്നദ്ധമായ, നിങ്ങളുടെ വ്യക്തിഗത Google ആണ്.</translation>
 <translation id="3781742599892759500">Linux-നുള്ള മൈക്രോഫോൺ ആക്സസ്</translation>
@@ -3855,7 +3858,7 @@
 <translation id="5051836348807686060">നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷകൾക്ക് സ്പെൽ ചെക്ക് പിന്തുണയ്‌ക്കുന്നില്ല</translation>
 <translation id="5052499409147950210">സൈറ്റ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="505347685865235222">പേരില്ലാത്ത ഗ്രൂപ്പ് - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens ഉപയോഗിച്ച് ചിത്രം തിരയുക</translation>
+<translation id="5053962746715621840">Google Lens-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="5056950756634735043">കണ്ടെയ്‌നറിലേക്ക് കണക്റ്റ് ചെയ്യുന്നു</translation>
 <translation id="5057110919553308744">നിങ്ങൾ വിപുലീകരണം ക്ലിക്ക് ചെയ്യുമ്പോൾ</translation>
 <translation id="5057403786441168405">നിങ്ങളുടെ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന അക്കൗണ്ടുകൾ മാനേജ് ചെയ്യുക. നിങ്ങളുടെ അനുഭവം ഇഷ്‌ടാനുസൃതമാക്കാൻ Chrome, Google Play എന്നിവയിലെ വെബ്സൈറ്റുകളും ആപ്പുകളും വിപുലീകരണങ്ങളും അനുമതികൾക്കനുസരിച്ച് ഈ അക്കൗണ്ടുകൾ ഉപയോഗിച്ചേക്കാം. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
@@ -4698,6 +4701,7 @@
 <translation id="597235323114979258">കൂടുതൽ ലക്ഷ്യസ്ഥാനങ്ങൾ കാണുക</translation>
 <translation id="5972666587303800813">No-op സേവനം</translation>
 <translation id="5972708806901999743">മുകളിലേക്ക് നീക്കുക</translation>
+<translation id="5972801171078377748">വീണ്ടും കാണിക്കരുത്</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> ആരംഭിക്കുക</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" ഈ ബ്രൗസറിൽ ഡീബഗ് ചെയ്യൽ ആരംഭിച്ചു</translation>
 <translation id="5973605538625120605">പിൻ മാറ്റുക</translation>
@@ -5854,7 +5858,7 @@
 <translation id="7230222852462421043">&amp;വിൻഡോ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="7230787553283372882">നിങ്ങളുടെ ടെക്‌സ്‌‌റ്റ് വലുപ്പം ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
 <translation id="7232750842195536390">പേരുമാറ്റൽ പരാജയപ്പെട്ടു</translation>
-<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> ഉപയോഗിച്ച് ചിത്രങ്ങൾ തിരയുക</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />-ലൂടെ ചിത്രം തിരയൂ</translation>
 <translation id="7234010996000898150">Linux പുനഃസ്ഥാപിക്കൽ റദ്ദാക്കുന്നു</translation>
 <translation id="7235716375204803342">ആക്റ്റിവിറ്റികൾ ലഭ്യമാക്കുന്നു...</translation>
 <translation id="7235737137505019098">കൂടുതൽ അക്കൗണ്ടുകൾ സൃഷ്‌ടിക്കാൻ ആവശ്യമായ സ്‌പെയ്‌സ് നിങ്ങളുടെ സുരക്ഷാ കീയിൽ ഇല്ല.</translation>

@@ -2071,6 +2071,7 @@
 <translation id="310671807099593501">يستخدم الموقع الإلكتروني البلوتوث.</translation>
 <translation id="3108931485517391283">يتعذّر تلقّي الملف</translation>
 <translation id="3109724472072898302">مصغّر</translation>
+<translation id="311214366526552035">التنزيل على أيّ حال</translation>
 <translation id="311394601889664316">عدم السماح للمواقع الإلكترونية بتعديل الملفات أو المجلدات على جهازك</translation>
 <translation id="3115147772012638511">في انتظار ذاكرة التخزين المؤقت ...</translation>
 <translation id="3115580024857770654">تصغير الكل</translation>
@@ -2351,6 +2352,7 @@
 <translation id="3429160811076349561">تم إيقاف ميزات الإصدار التجريبي.</translation>
 <translation id="3429271624041785769">لغات محتوى الويب</translation>
 <translation id="3429275422858276529">ضَع إشارة على هذه الصفحة لسهولة العثور عليها لاحقًا</translation>
+<translation id="343115368966109153">هل تريد تنزيل <ph name="FILE_NAME" />؟ سيتمكَّن جميع مستخدمي الجهاز من الاطّلاع على هذا الملف.</translation>
 <translation id="3432227430032737297">إزالة كل العناصر المعروضة</translation>
 <translation id="3432762828853624962">العمال المشتركون</translation>
 <translation id="3433621910545056227">عفوًا!  تعذّر النظام في إنشاء قفل سمات وقت التثبيت بالجهاز.</translation>
@@ -2692,6 +2694,7 @@
 <translation id="3777806571986431400">تم تفعيل الإضافة</translation>
 <translation id="3778152852029592020">تم إلغاء التنزيل.</translation>
 <translation id="3778208826288864398">تم قفل مفتاح الأمان بسبب إدخال رقم التعريف الشخصي غير الصحيح عدّة مرات. يجب إعادة ضبط مفتاح الأمان.</translation>
+<translation id="3778369586810509692">سيتم حفظ هذا الملف على الجهاز وسيتمكَّن جميع المستخدمين من الاطّلاع عليه.</translation>
 <translation id="3778740492972734840">أ&amp;دوات مطوري البرامج</translation>
 <translation id="3778868487658107119">‏يمكنك طرح الأسئلة، وطلب تنفيذ المهام. إنه مساعدك الشخصي من Google، وهو على استعداد كامل لتقديم المساعدة.</translation>
 <translation id="3781742599892759500">‏الوصول إلى ميكروفون نظام التشغيل Linux</translation>
@@ -4702,6 +4705,7 @@
 <translation id="597235323114979258">عرض المزيد من الوجهات</translation>
 <translation id="5972666587303800813">‏خدمة No-op</translation>
 <translation id="5972708806901999743">نقل إلى الأعلى</translation>
+<translation id="5972801171078377748">عدم عرض بطاقة الترحيب مرة أخرى</translation>
 <translation id="5972826969634861500">بدء <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">بدأ "<ph name="CLIENT_NAME" />" بتصحيح أخطاء هذا المتصفِّح.</translation>
 <translation id="5973605538625120605">تغيير رقم التعريف الشخصي</translation>
