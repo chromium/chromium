@@ -454,6 +454,7 @@ crbug.com/946762 external/wpt/css/mediaqueries/mq-gamut-004.html [ Failure ]
 crbug.com/946762 external/wpt/css/mediaqueries/mq-gamut-002.html [ Failure ]
 crbug.com/962417 external/wpt/css/mediaqueries/mq-negative-range-001.html [ Failure ]
 crbug.com/442449 external/wpt/css/mediaqueries/mq-range-001.html [ Failure ]
+crbug.com/1264962 external/wpt/css/mediaqueries/relative-units-005.html [ Failure Pass ]
 
 crbug.com/1007134 external/wpt/intersection-observer/v2/delay-test.html [ Failure Pass ]
 crbug.com/1004547 external/wpt/intersection-observer/cross-origin-iframe.sub.html [ Failure Pass ]
