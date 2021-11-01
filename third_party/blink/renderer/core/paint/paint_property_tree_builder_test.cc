@@ -4607,23 +4607,39 @@ TEST_P(PaintPropertyTreeBuilderTest,
       GetLayoutObjectByElementId("multicol")->SlowFirstChild();
   EXPECT_TRUE(thread->IsLayoutFlowThread());
   EXPECT_EQ(2u, NumFragments(thread));
-  EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(thread, 0).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(), FragmentAt(thread, 0).LogicalTopInFlowThread());
-  EXPECT_EQ(PhysicalOffset(300, 100), FragmentAt(thread, 1).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(200, 100),
-            FragmentAt(thread, 1).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(200), FragmentAt(thread, 1).LogicalTopInFlowThread());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).PaintOffset());
+    EXPECT_EQ(0u, FragmentAt(thread, 0).FragmentID());
+    EXPECT_EQ(PhysicalOffset(0, 100), FragmentAt(thread, 1).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(thread, 1).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(thread, 0).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(), FragmentAt(thread, 0).LogicalTopInFlowThread());
+    EXPECT_EQ(PhysicalOffset(300, 100), FragmentAt(thread, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(200, 100),
+              FragmentAt(thread, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(200), FragmentAt(thread, 1).LogicalTopInFlowThread());
+  }
 
   LayoutObject* content = GetLayoutObjectByElementId("content");
   EXPECT_EQ(2u, NumFragments(content));
-  EXPECT_EQ(PhysicalOffset(-200, 0), FragmentAt(content, 0).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(), FragmentAt(content, 0).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(), FragmentAt(content, 0).LogicalTopInFlowThread());
-  EXPECT_EQ(PhysicalOffset(0, 100), FragmentAt(content, 1).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(200, 100),
-            FragmentAt(content, 1).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(200), FragmentAt(content, 1).LogicalTopInFlowThread());
+
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(), FragmentAt(content, 0).PaintOffset());
+    EXPECT_EQ(0u, FragmentAt(thread, 0).FragmentID());
+    EXPECT_EQ(PhysicalOffset(0, 100), FragmentAt(content, 1).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(thread, 1).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(-200, 0), FragmentAt(content, 0).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(),
+              FragmentAt(content, 0).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(), FragmentAt(content, 0).LogicalTopInFlowThread());
+    EXPECT_EQ(PhysicalOffset(0, 100), FragmentAt(content, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(200, 100),
+              FragmentAt(content, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(200), FragmentAt(content, 1).LogicalTopInFlowThread());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, LayerUnderOverflowClipUnderMultiColumn) {
