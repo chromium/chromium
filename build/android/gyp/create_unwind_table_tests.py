@@ -407,6 +407,29 @@ class _TestPushOrSubSpParser(unittest.TestCase):
                       sp_offset=0,
                       registers=(7, 10)), address_unwind)
 
+  def testPoppingCallerSaveRegisters(self):
+    """Regression test for pop unwinds that encode caller-save registers.
+
+    Callee-save registers: r0 ~ r3.
+    """
+    parser = PushOrSubSpParser()
+    match = parser.GetBreakpadInstructionsRegex().search(
+        '.cfa: sp 16 + .ra: .cfa -4 + ^ '
+        'r3: .cfa -16 + ^ r4: .cfa -12 + ^ r5: .cfa -8 + ^')
+
+    self.assertIsNotNone(match)
+
+    address_unwind, new_cfa_sp_offset = parser.ParseFromMatch(address_offset=20,
+                                                              cfa_sp_offset=0,
+                                                              match=match)
+
+    self.assertEqual(16, new_cfa_sp_offset)
+    self.assertEqual(
+        AddressUnwind(address_offset=20,
+                      unwind_type=UnwindType.UPDATE_SP_AND_OR_POP_REGISTERS,
+                      sp_offset=4,
+                      registers=(4, 5, 14)), address_unwind)
+
 
 class _TestVPushParser(unittest.TestCase):
   def testCfaAndRegistersChange(self):
