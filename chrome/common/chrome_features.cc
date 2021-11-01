@@ -74,6 +74,8 @@ const base::Feature kAppManagementIntentSettings{
 // App Service related flags. See components/services/app_service/README.md.
 const base::Feature kAppServiceExternalProtocol{
     "AppServiceExternalProtocol", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAppServiceLoadIconWithoutMojom{
+    "AppServiceLoadIconWithoutMojom", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MAC)
