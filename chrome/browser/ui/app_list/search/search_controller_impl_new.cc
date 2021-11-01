@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/category_usage_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
@@ -67,6 +68,7 @@ void SearchControllerImplNew::InitializeRankers() {
   ranker_->AddRanker(std::make_unique<CategoryUsageRanker>(profile_));
   ranker_->AddRanker(std::make_unique<TopMatchRanker>());
   ranker_->AddRanker(std::make_unique<FilteringRanker>());
+  ranker_->AddRanker(std::make_unique<RemovedResultsRanker>());
 }
 
 void SearchControllerImplNew::Start(const std::u16string& query) {
