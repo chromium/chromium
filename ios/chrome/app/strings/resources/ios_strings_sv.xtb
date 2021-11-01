@@ -188,7 +188,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2840687315230832938">Konfigurationen av synkronisering har inte slutförts</translation>
 <translation id="2843803966603263712">Återställ översättningsinställningar</translation>
 <translation id="2848086008667475748">Använd som standard i Inställningar …</translation>
-<translation id="2858204748079866344">Av sekretesskäl fylls ditt lösenord inte i automatiskt i det här fältet.</translation>
+<translation id="2858204748079866344">Av integritetsskäl fylls ditt lösenord inte i automatiskt i det här fältet.</translation>
 <translation id="285960592395650245">Försök ladda ned</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2871695793448672541">Dolt, lösenord</translation>
@@ -716,7 +716,7 @@ Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i C
 <translation id="7840771868269352570">De markerade objekten tas bort.</translation>
 <translation id="7856733331829174190">Nedladdning misslyckades</translation>
 <translation id="7859704718976024901">Webbhistorik</translation>
-<translation id="7887198238286927132">Av sekretesskäl fylls det här fältet inte i automatiskt.</translation>
+<translation id="7887198238286927132">Av integritetsskäl fylls det här fältet inte i automatiskt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportera lösenord …</translation>
 <translation id="794799177247607889">Stoppa loggning</translation>

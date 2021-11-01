@@ -1544,7 +1544,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2602501489742255173">Alustamiseks pühkige üles</translation>
 <translation id="2603115962224169880">Puhasta arvuti</translation>
 <translation id="2603355571917519942">Voice Match on valmis</translation>
-<translation id="2604138917550693049">Pildi otsimine Google Lensiga</translation>
+<translation id="2604138917550693049">Otsi pilti Google Lensiga</translation>
 <translation id="2604255671529671813">Võrguühenduse viga</translation>
 <translation id="2605668923777146443">Avage menüü <ph name="LINK_BEGIN" />Seaded<ph name="LINK_END" />, et funktsiooni Better Together valikuid näha.</translation>
 <translation id="2606246518223360146">Lingi andmed</translation>
@@ -3810,7 +3810,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5051836348807686060">Õigekirjakontrolli teie valitud keelte puhul ei toetata</translation>
 <translation id="5052499409147950210">Saidi muutmine</translation>
 <translation id="505347685865235222">Nimetu grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pildi otsimine Google Lensiga</translation>
+<translation id="5053962746715621840">Otsi pilti Google Lensiga</translation>
 <translation id="5056950756634735043">Ühenduse loomine konteineriga</translation>
 <translation id="5057110919553308744">Laiendusel klõpsamisel</translation>
 <translation id="5057403786441168405">Hallake oma sisselogitud kontosid. Veebisaidid, rakendused ja laiendused Chrome’is ning Google Plays võivad olenevalt lubadest kasutada neid kontosid teie kasutuskogemuse isikupärastamiseks. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
@@ -6404,14 +6404,14 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="7853747251428735">Rohkem töö&amp;riistu</translation>
 <translation id="7855678561139483478">Vahelehe teisaldamine uude aknasse</translation>
 <translation id="7857093393627376423">Teksti soovitused</translation>
-<translation id="7857675386615530425">Otsi Google'i Lensiga lehe piiratud osas</translation>
+<translation id="7857675386615530425">Otsi Google Lensiga lehe piiratud osas</translation>
 <translation id="7857949311770343000">Kas see on uus vaheleht, mida ootasite?</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="786073089922909430">Teenus: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Allalaadimised</translation>
 <translation id="7861846108263890455">Google'i konto keel</translation>
 <translation id="7864539943188674973">Keela Bluetooth</translation>
-<translation id="7866230141401327032">Otsi Google'i Lensiga lehe piiratud osas</translation>
+<translation id="7866230141401327032">Otsi Google Lensiga lehe piiratud osas</translation>
 <translation id="7869143217755017858">Tumeda režiimi keelamine</translation>
 <translation id="786957569166715433"><ph name="DEVICE_NAME" /> – seotud</translation>
 <translation id="7870730066603611552">Vaata sünkroonimisvalikud pärast seadistust üle</translation>
