@@ -173,7 +173,7 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
       case kCenter:
         // The available-size for the center static-position "grows" towards
         // both edges (equally), and stops when it hits the first one.
-        // |<-----*---->       |
+        // |<-----*----->      |
         computed_available_size =
             2 * std::min(static_position_offset,
                          available_size - static_position_offset);
@@ -197,11 +197,20 @@ void ComputeAbsoluteSize(const LayoutUnit border_padding_size,
           StaticPositionEndInset(static_position_edge, static_position_offset,
                                  available_size, margin_size);
     }
-  } else if (inset_start && inset_end && size) {
+  } else if (inset_start && inset_end && (is_shrink_to_fit || size)) {
+    LayoutUnit computed_available_size =
+        available_size - *inset_start - *inset_end;
+
+    if (!size) {
+      size = ComputeShrinkToFitSize(is_table, min_max_sizes_func,
+                                    available_size, computed_available_size,
+                                    margin_start.value_or(LayoutUnit()),
+                                    margin_end.value_or(LayoutUnit()));
+    }
+
     // "If left, right, and width are not auto:"
     // Compute margins.
-    LayoutUnit margin_space =
-        available_size - *inset_start - *inset_end - *size;
+    LayoutUnit margin_space = computed_available_size - *size;
 
     if (!margin_start && !margin_end) {
       // When both margins are auto.
