@@ -104,9 +104,13 @@ void InstanceRegistryUpdater::OnInstance(const base::UnguessableToken& id,
                                          const std::string& app_id,
                                          aura::Window* window,
                                          InstanceState state) {
-  // TODO(crbug.com/1251501): Implement updating the instance registry.
-  (void)instance_registry_;
-  NOTIMPLEMENTED();
+  auto instance = std::make_unique<apps::Instance>(app_id, id);
+  instance->SetWindow(window);
+  instance->UpdateState(state, base::Time::Now());
+
+  std::vector<std::unique_ptr<apps::Instance>> deltas;
+  deltas.push_back(std::move(instance));
+  instance_registry_.OnInstances(std::move(deltas));
 }
 
 }  // namespace apps

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
 
@@ -71,6 +72,9 @@ class Instance {
     bool is_web_contents_backed_;
   };
 
+  Instance(const std::string& app_id, const base::UnguessableToken& id);
+  // TODO(crbug.com/1251501): Deprecated. Implement updating the instance
+  // registry using instance ID as a key.
   Instance(const std::string& app_id, InstanceKey&& instance_key);
   ~Instance();
 
@@ -82,21 +86,28 @@ class Instance {
   void SetLaunchId(const std::string& launch_id) { launch_id_ = launch_id; }
   void UpdateState(InstanceState state, const base::Time& last_updated_time);
   void SetBrowserContext(content::BrowserContext* browser_context);
+  void SetWindow(aura::Window* window);
 
   const std::string& AppId() const { return app_id_; }
+  const base::UnguessableToken& Id() const { return id_; }
   const InstanceKey& GetInstanceKey() const { return instance_key_; }
   const std::string& LaunchId() const { return launch_id_; }
   InstanceState State() const { return state_; }
   const base::Time& LastUpdatedTime() const { return last_updated_time_; }
   content::BrowserContext* BrowserContext() const { return browser_context_; }
+  aura::Window* Window() const { return window_; }
 
  private:
   std::string app_id_;
+  const base::UnguessableToken id_;
+  // TODO(crbug.com/1251501): Deprecated field. Implement updating the instance
+  // registry using instance ID as a key.
   InstanceKey instance_key_;
   std::string launch_id_;
   InstanceState state_;
   base::Time last_updated_time_;
   content::BrowserContext* browser_context_ = nullptr;
+  aura::Window* window_{nullptr};
 };
 
 std::ostream& operator<<(std::ostream& os,
