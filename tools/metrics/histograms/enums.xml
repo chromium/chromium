@@ -3352,6 +3352,13 @@ Unknown properties are collapsed to zero. -->
   <int value="17" label="CHROME_GOT_INVALID_RESULT"/>
 </enum>
 
+<enum name="AppListSearchAction">
+  <int value="0" label="Impression"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="Abandon"/>
+  <int value="3" label="Ignore"/>
+</enum>
+
 <enum name="AppListSearchResult">
   <int value="0" label="OMNIBOX_DEPRECATED"/>
   <int value="1" label="APP_DEPRECATED"/>
@@ -3448,6 +3455,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppListUserEvent">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <int value="0" label="Impression"/>
   <int value="1" label="Launch"/>
   <int value="2" label="Abandon"/>
@@ -3458,6 +3468,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Missing notifier"/>
   <int value="1" label="Result not found"/>
   <int value="2" label="Untracked location"/>
+  <int value="3" label="Untyped result"/>
 </enum>
 
 <enum name="AppListZeroStateResultRemovalConfirmation">

@@ -128,11 +128,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <variants name="LauncherUISurface">
-  <variant name=".AppsSearch" summary="App tiles search"/>
-  <variant name=".AppsZeroState" summary="App tiles zero-state"/>
-  <variant name=".Chip" summary="Suggestion chips"/>
-  <variant name=".ListSearch" summary="Results list search"/>
-  <variant name=".ListZeroState" summary="Results list zero-state"/>
+  <variant name=".AppsSearch" summary="App tiles search">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name=".AppsZeroState" summary="App tiles zero-state">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name=".Chip" summary="Suggestion chips">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name=".ListSearch" summary="Results list search">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name=".ListZeroState" summary="Results list zero-state">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
 </variants>
 
 <variants name="LockScreenAppDataItemOperation">
@@ -166,6 +186,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Removed October 2021.
     </obsolete>
   </variant>
+</variants>
+
+<variants name="SearchAction">
+  <variant name="Abandon" summary="abandon"/>
+  <variant name="Ignore" summary="ignore"/>
+  <variant name="Impression" summary="impression"/>
+  <variant name="Launch" summary="launch"/>
+</variants>
+
+<variants name="SearchView">
+  <variant name="AppsSearch" summary="app tiles search"/>
+  <variant name="AppsZeroState" summary="app tiles zero-state"/>
+  <variant name="Chip" summary="suggestion chips"/>
+  <variant name="ListSearch" summary="results list search"/>
+  <variant name="ListZeroState" summary="results list zero-state"/>
 </variants>
 
 <variants name="TabletOrClamshellMode">
@@ -832,8 +867,85 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
+    expires_after="2022-08-15">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Records errors in processing other Apps.AppList.Search.* metrics. These are
+    expected to be rare and bucket proportion is not meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.{SearchView}" enum="AppListSearchAction"
+    expires_after="2022-08-15">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Emitted on a usage of launcher search, and records overall impressions,
+    launches, abandons, and ignores for the {SearchView} view.
+
+    Launch. Emitted after an impression, if a result is clicked in the
+    {SearchView} view.
+
+    Abandon. Emitted after an impression, if the user closes the launcher or
+    moves to another UI view.
+
+    Ignore. Emitted after an impression, if the user launches a result from a
+    different currently visible UI view.
+
+    Impression. Emitted if either a) the view is displayed for 2 seconds or b)
+    the user interacted with a result, eg. by clicking it.
+
+    The bucket proportion is not meaningful, because impressions are a superset
+    of the other buckets. Instead, the ratio between buckets is meaningful.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.{SearchView}.LaunchIndex" units="index"
+    expires_after="2022-08-15">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Emitted when launching a search result. Records the index of the launched
+    result in the {SearchView} view. The top-most result is index zero.
+  </summary>
+</histogram>
+
+<histogram name="Apps.AppList.Search.{SearchView}.{SearchAction}"
+    enum="AppListSearchResult" expires_after="2022-08-15">
+  <owner>wrong@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <summary>
+    Tracks launches, impressions, abandons, and ignores for search result types
+    in the launcher. This histogram is specific to the {SearchView} view. These
+    metrics are all emitted once for each unique displayed search result type,
+    and records that search result type.
+
+    For example, if we show the user three files and two apps, and the user
+    clicks a file, then we would record: one file impression and one app
+    impression, one file launch, and one app ignore.
+
+    Launch. Emitted after an impression, if the user launches a result.
+
+    Abandon. Emitted after an impression, if the user closes the launcher or
+    moves to a different view.
+
+    Ignore. Emitted after an impression, if the user then launched a different
+    result.
+
+    Impression. Emitted if either a) a set of results is displayed for 2 seconds
+    or b) the user interacted with a result, eg. by clicking it.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.SearchQueryLength.Apps" units="characters"
     expires_after="2022-08-09">
+  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -844,6 +956,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.SearchSuccess.Apps" enum="AppListLaunchedFrom"
     expires_after="2022-10-29">
+  <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -903,6 +1016,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.Error" enum="AppListSearchResult"
     expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -915,6 +1031,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.LaunchIndex{LauncherUISurface}"
     units="index" expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -932,6 +1051,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.Overall{LauncherUISurface}"
     enum="AppListUserEvent" expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -949,6 +1071,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
     expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -962,6 +1087,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.TypeAbandon{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -981,6 +1109,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.TypeImpression{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -1006,6 +1137,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.AppList.UserEvent.TypeLaunch{LauncherUISurface}"
     enum="AppListSearchResult" expires_after="2022-08-15">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
