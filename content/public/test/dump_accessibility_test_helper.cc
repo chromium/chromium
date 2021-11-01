@@ -67,6 +67,14 @@ const TypeInfo kTypeInfos[] = {
         },
     },
     {
+        "fuchsia",
+        {
+            "@FUCHSIA-",
+            FILE_PATH_LITERAL("-fuchsia"),
+            [](base::CommandLine*) {},
+        },
+    },
+    {
         "linux",
         {
             "@AURALINUX-",
@@ -213,6 +221,8 @@ DumpAccessibilityTestHelper::TreeTestPasses() {
       {AXInspectFactory::kBlink, AXInspectFactory::kMac};
 #elif defined(OS_ANDROID)
       {AXInspectFactory::kAndroid};
+#elif defined(OS_FUCHSIA)
+      {AXInspectFactory::kFuchsia};
 #else  // linux
       {AXInspectFactory::kBlink, AXInspectFactory::kLinux};
 #endif
