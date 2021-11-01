@@ -932,8 +932,10 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
         weak_ptr_factory_.GetWeakPtr());
 
     extension_id_prompting_ = extension_id;
-    bool dont_confirm = false;
-    if (args->GetBoolean(1, &dont_confirm) && dont_confirm) {
+    const auto& list = args->GetList();
+    const bool dont_confirm =
+        list.size() >= 2 && list[1].is_bool() && list[1].GetBool();
+    if (dont_confirm) {
       base::AutoReset<bool> auto_reset(&ignore_changes_, true);
       web_app_provider_->install_finalizer().UninstallWebApp(
           extension_id_prompting_, webapps::WebappUninstallSource::kAppsPage,
@@ -969,8 +971,10 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
 
   extension_id_prompting_ = extension_id;
 
-  bool dont_confirm = false;
-  if (args->GetBoolean(1, &dont_confirm) && dont_confirm) {
+  const auto& list = args->GetList();
+  const bool dont_confirm =
+      list.size() >= 2 && list[1].is_bool() && list[1].GetBool();
+  if (dont_confirm) {
     base::AutoReset<bool> auto_reset(&ignore_changes_, true);
     // Do the uninstall work here.
     extension_service_->UninstallExtension(

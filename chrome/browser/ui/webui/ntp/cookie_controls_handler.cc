@@ -52,8 +52,9 @@ void CookieControlsHandler::OnJavascriptDisallowed() {
 
 void CookieControlsHandler::HandleCookieControlsToggleChanged(
     const base::ListValue* args) {
-  bool checked;
-  CHECK(args->GetBoolean(0, &checked));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool checked = list[0].GetBool();
   service_->HandleCookieControlsToggleChanged(checked);
 }
 
