@@ -139,7 +139,8 @@ class AppListModelUpdater {
 
   // Methods for handling app list item updates initiated from ash:
   virtual void HandleSetPosition(std::string id,
-                                 const syncer::StringOrdinal& new_position) = 0;
+                                 const syncer::StringOrdinal& new_position,
+                                 ash::RequestPositionUpdateReason reason) = 0;
   virtual void HandleMoveItemToFolder(std::string id,
                                       const std::string& folder_id) = 0;
   virtual void HandleMoveItemToRoot(std::string id,

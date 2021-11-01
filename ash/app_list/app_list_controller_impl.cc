@@ -1169,9 +1169,12 @@ void AppListControllerImpl::OnUiVisibilityChanged(
 
 void AppListControllerImpl::RequestPositionUpdate(
     std::string id,
-    const syncer::StringOrdinal& new_position) {
-  if (client_)
-    client_->OnSetPositionRequested(profile_id_, std::move(id), new_position);
+    const syncer::StringOrdinal& new_position,
+    RequestPositionUpdateReason reason) {
+  if (client_) {
+    client_->OnSetPositionRequested(profile_id_, std::move(id), new_position,
+                                    reason);
+  }
 }
 
 void AppListControllerImpl::RequestMoveItemToFolder(

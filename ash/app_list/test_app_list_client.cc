@@ -41,7 +41,8 @@ void TestAppListClient::InvokeSearchResultAction(const std::string& result_id,
 void TestAppListClient::OnSetPositionRequested(
     int profile_id,
     std::string id,
-    const syncer::StringOrdinal& new_position) {
+    const syncer::StringOrdinal& new_position,
+    RequestPositionUpdateReason reason) {
   AppListModel* model = AppListModelProvider::Get()->model();
   AppListItem* item = model->FindItem(id);
   std::unique_ptr<AppListItemMetadata> meta_data = item->CloneMetadata();

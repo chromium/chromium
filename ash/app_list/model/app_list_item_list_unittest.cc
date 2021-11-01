@@ -38,9 +38,9 @@ class AppListItemListWithUpdater : public AppListModelDelegate {
   ~AppListItemListWithUpdater() override = default;
 
   // AppListModelDelegate:
-  void RequestPositionUpdate(
-      std::string id,
-      const syncer::StringOrdinal& new_position) override {
+  void RequestPositionUpdate(std::string id,
+                             const syncer::StringOrdinal& new_position,
+                             RequestPositionUpdateReason reason) override {
     item_list_->SetItemPosition(item_list_->FindItem(id), new_position);
   }
   void RequestMoveItemToFolder(std::string id,

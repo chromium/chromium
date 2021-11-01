@@ -534,7 +534,8 @@ void ChromeAppListModelUpdater::OnSortRequested(ash::AppListSortOrder order) {
 
 void ChromeAppListModelUpdater::HandleSetPosition(
     std::string id,
-    const syncer::StringOrdinal& new_position) {
+    const syncer::StringOrdinal& new_position,
+    ash::RequestPositionUpdateReason reason) {
   DCHECK(FindItem(id));
   SetItemPosition(id, new_position);
 }

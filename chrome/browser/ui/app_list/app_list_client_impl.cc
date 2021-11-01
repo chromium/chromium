@@ -589,13 +589,15 @@ void AppListClientImpl::OnAppListSortRequested(int profile_id,
 void AppListClientImpl::OnSetPositionRequested(
     int profile_id,
     std::string id,
-    const syncer::StringOrdinal& new_position) {
+    const syncer::StringOrdinal& new_position,
+    ash::RequestPositionUpdateReason reason) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
   if (requested_model_updater != current_model_updater_ ||
       !requested_model_updater) {
     return;
   }
-  requested_model_updater->HandleSetPosition(std::move(id), new_position);
+  requested_model_updater->HandleSetPosition(std::move(id), new_position,
+                                             reason);
 }
 
 void AppListClientImpl::OnMoveItemToFolderRequested(

@@ -297,9 +297,9 @@ class ASH_EXPORT AppListControllerImpl
       absl::optional<AssistantExitPoint> exit_point) override;
 
   // AppListModelDelegate:
-  void RequestPositionUpdate(
-      std::string id,
-      const syncer::StringOrdinal& new_position) override;
+  void RequestPositionUpdate(std::string id,
+                             const syncer::StringOrdinal& new_position,
+                             RequestPositionUpdateReason reason) override;
   void RequestMoveItemToFolder(std::string id,
                                const std::string& folder_id) override;
   void RequestMoveItemToRoot(

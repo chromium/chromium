@@ -108,7 +108,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
 
   // Methods to handle app list item updates initiated from ash:
   void HandleSetPosition(std::string id,
-                         const syncer::StringOrdinal& new_position) override;
+                         const syncer::StringOrdinal& new_position,
+                         ash::RequestPositionUpdateReason reason) override;
   void HandleMoveItemToFolder(std::string id,
                               const std::string& folder_id) override;
   void HandleMoveItemToRoot(std::string id,
