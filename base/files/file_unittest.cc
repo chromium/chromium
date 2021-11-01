@@ -391,7 +391,7 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   File file(temp_dir.GetPath().AppendASCII("touch_get_info_file"),
             base::File::FLAG_CREATE | base::File::FLAG_WRITE |
-                base::File::FLAG_WIN_WRITE_ATTRIBUTES);
+                base::File::FLAG_WRITE_ATTRIBUTES);
   ASSERT_TRUE(file.IsValid());
 
   // Get info for a newly created file.

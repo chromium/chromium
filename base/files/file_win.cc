@@ -395,7 +395,7 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   }
   if (flags & FLAG_READ)
     access |= GENERIC_READ;
-  if (flags & FLAG_WIN_WRITE_ATTRIBUTES)
+  if (flags & FLAG_WRITE_ATTRIBUTES)
     access |= FILE_WRITE_ATTRIBUTES;
   if (flags & FLAG_WIN_EXECUTE)
     access |= GENERIC_EXECUTE;
