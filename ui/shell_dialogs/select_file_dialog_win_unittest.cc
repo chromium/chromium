@@ -198,7 +198,8 @@ class SelectFileDialogWinTest : public ::testing::Test,
   bool was_cancelled_ = false;
 };
 
-TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
+// TODO(crbug.com/1265379): Flaky.
+TEST_F(SelectFileDialogWinTest, DISABLED_CancelAllDialogs) {
   // Intentionally not testing SELECT_UPLOAD_FOLDER because the dialog is
   // customized for that case.
   struct {
