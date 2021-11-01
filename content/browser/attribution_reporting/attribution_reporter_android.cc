@@ -38,8 +38,7 @@ void ReportAppImpression(AttributionManager& attribution_manager,
                          const std::string& source_event_id,
                          const std::string& destination,
                          const std::string& report_to,
-                         int64_t expiry,
-                         base::Time impression_time) {
+                         int64_t expiry) {
   absl::optional<blink::Impression> impression =
       attribution_host_utils::ParseImpressionFromApp(
           source_event_id, destination, report_to, expiry);
@@ -51,7 +50,7 @@ void ReportAppImpression(AttributionManager& attribution_manager,
 
   attribution_host_utils::VerifyAndStoreImpression(
       StorableSource::SourceType::kEvent, impression_origin, *impression,
-      context, attribution_manager, impression_time);
+      context, attribution_manager);
 }
 
 }  // namespace attribution_reporter_android
@@ -86,8 +85,7 @@ void JNI_AttributionReporterImpl_ReportAppImpression(
     const JavaParamRef<jstring>& j_source_event_id,
     const JavaParamRef<jstring>& j_destination,
     const JavaParamRef<jstring>& j_report_to,
-    jlong expiry,
-    jlong event_time) {
+    jlong expiry) {
   BrowserContext* context = BrowserContextFromJavaHandle(j_browser_context);
   DCHECK(context);
 
@@ -97,17 +95,12 @@ void JNI_AttributionReporterImpl_ReportAppImpression(
   if (!attribution_manager)
     return;
 
-  base::Time impression_time = event_time == 0
-                                   ? base::Time::Now()
-                                   : base::Time::FromJavaTime(event_time);
-
   attribution_reporter_android::ReportAppImpression(
       *attribution_manager, context,
       ConvertJavaStringToUTF8(env, j_source_package_name),
       ConvertJavaStringToUTF8(env, j_source_event_id),
       ConvertJavaStringToUTF8(env, j_destination),
-      j_report_to ? ConvertJavaStringToUTF8(env, j_report_to) : "", expiry,
-      impression_time);
+      j_report_to ? ConvertJavaStringToUTF8(env, j_report_to) : "", expiry);
 }
 
 }  // namespace content

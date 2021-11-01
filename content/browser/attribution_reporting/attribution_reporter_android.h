@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -26,8 +25,7 @@ CONTENT_EXPORT void ReportAppImpression(AttributionManager& attribution_manager,
                                         const std::string& source_event_id,
                                         const std::string& destination,
                                         const std::string& report_to,
-                                        int64_t expiry,
-                                        base::Time reportTime);
+                                        int64_t expiry);
 
 }  // namespace attribution_reporter_android
 

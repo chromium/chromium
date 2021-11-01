@@ -31,10 +31,9 @@ public class AttributionReporterImpl extends AttributionReporter {
      */
     @Override
     public void reportAppImpression(BrowserContextHandle browserContext, String sourcePackageName,
-            String sourceEventId, String destination, String reportTo, long expiry,
-            long eventTime) {
-        AttributionReporterImplJni.get().reportAppImpression(browserContext, sourcePackageName,
-                sourceEventId, destination, reportTo, expiry, eventTime);
+            String sourceEventId, String destination, String reportTo, long expiry) {
+        AttributionReporterImplJni.get().reportAppImpression(
+                browserContext, sourcePackageName, sourceEventId, destination, reportTo, expiry);
     }
 
     @NativeMethods
@@ -43,7 +42,6 @@ public class AttributionReporterImpl extends AttributionReporter {
                 String sourcePackageName, String sourceEventId, String destination, String reportTo,
                 long expiry);
         void reportAppImpression(BrowserContextHandle browserContext, String sourcePackageName,
-                String sourceEventId, String destination, String reportTo, long expiry,
-                long eventTime);
+                String sourceEventId, String destination, String reportTo, long expiry);
     }
 }
