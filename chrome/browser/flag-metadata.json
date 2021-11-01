@@ -656,7 +656,7 @@
   {
     "name": "cellular-forbid-attach-apn",
     "owners": [ "hsuregan", "cros-connectivity@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 100
   },
   {
     "name": "cellular-use-attach-apn",
