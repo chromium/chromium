@@ -280,12 +280,23 @@ class WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest
         CreateUrlHandlerLaunchParams(browser()->profile()->GetPath(),
                                      test_app_id),
         std::move(keep_alive), base::DoNothing());
-    waiter.WaitIfNeededAndGet()->CloseWithReason(
-        views::Widget::ClosedReason::kEscKeyPressed);
+    if (should_close_) {
+      waiter.WaitIfNeededAndGet()->CloseWithReason(
+          views::Widget::ClosedReason::kEscKeyPressed);
+    }
   }
+
+ protected:
+  bool should_close_ = true;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest,
                        InvokeUi_CloseDialog) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppUrlHandlerIntentPickerDialogInteractiveBrowserTest,
+                       InvokeUi_default) {
+  should_close_ = false;
   ShowAndVerifyUi();
 }
