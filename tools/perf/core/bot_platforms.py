@@ -672,9 +672,10 @@ LINUX_PERF_CALIBRATION = PerfPlatform(
 ANDROID_PIXEL2_PERF_CALIBRATION = PerfPlatform(
     'android-pixel2-perf-calibration',
     'Android OPM1.171019.021',
-    _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS,
+    _ANDROID_PIXEL2_BENCHMARK_CONFIGS,
     42,
     'android',
+    executables=_ANDROID_PIXEL2_EXECUTABLE_CONFIGS,
     is_calibration=True)
 
 ALL_PLATFORMS = {
