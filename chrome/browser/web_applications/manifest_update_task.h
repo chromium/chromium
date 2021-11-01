@@ -166,6 +166,8 @@ class ManifestUpdateTask final
   static void SetUpdatePendingCallbackForTesting(
       UpdatePendingCallback callback);
 
+  static bool& BypassWindowCloseWaitingForTesting();
+
   ManifestUpdateTask(const GURL& url,
                      const AppId& app_id,
                      content::WebContents* web_contents,

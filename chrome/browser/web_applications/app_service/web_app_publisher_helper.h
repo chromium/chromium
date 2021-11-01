@@ -51,6 +51,7 @@ class WebApp;
 class WebAppProvider;
 class WebAppRegistrar;
 class WebAppLaunchManager;
+class LinkCapturingMigrationManager;
 
 struct ShortcutIdTypeMarker {};
 
@@ -367,6 +368,9 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   std::map<std::string, WebApplicationShortcutsMenuItemInfo> shortcut_id_map_;
   ShortcutId::Generator shortcut_id_generator_;
+
+  std::unique_ptr<web_app::LinkCapturingMigrationManager>
+      link_capturing_migration_manager_;
 
   base::WeakPtrFactory<WebAppPublisherHelper> weak_ptr_factory_{this};
 };

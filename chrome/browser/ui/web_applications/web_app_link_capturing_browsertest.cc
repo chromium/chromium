@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -31,6 +32,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
@@ -91,7 +93,11 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   void InstallTestApp(const char* path, bool await_metric) {
-    start_url_ = embedded_test_server()->GetURL(path);
+    InstallTestApp(embedded_test_server()->GetURL(path), await_metric);
+  }
+
+  void InstallTestApp(GURL start_url, bool await_metric) {
+    start_url_ = start_url;
     in_scope_1_ = start_url_.Resolve("page1.html");
     in_scope_2_ = start_url_.Resolve("page2.html");
     scope_ = start_url_.GetWithoutFilename();
@@ -139,7 +145,19 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
                      link_target, "");
   }
 
-  Browser* GetNewBrowserFromNavigation(Browser* browser, const GURL& url) {
+  Browser* GetNewBrowserFromNavigation(Browser* browser,
+                                       const GURL& url,
+                                       bool preserve_about_blank = true) {
+    if (preserve_about_blank && browser->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetVisibleURL()
+                                    .IsAboutBlank()) {
+      // Create a new tab to link capture in because about:blank tabs are
+      // destroyed after link capturing, see:
+      // CommonAppsNavigationThrottle::ShouldCancelNavigation()
+      AddTab(browser, about_blank_);
+    }
+
     BrowserChangeObserver observer(browser,
                                    BrowserChangeObserver::ChangeType::kAdded);
     Navigate(browser, url);
@@ -270,7 +288,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
 
   // Navigations from a fresh about:blank page should reparent.
   // When no app window is open one should be created.
-  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
+  Browser* app_browser = GetNewBrowserFromNavigation(
+      browser(), in_scope_1_, /*preserve_about_blank=*/false);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
   ExpectTabs(browser(), {NtpUrl()});
   ExpectTabs(app_browser, {in_scope_1_});
@@ -490,14 +509,17 @@ INSTANTIATE_TEST_SUITE_P(
     &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
 
 class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
-    : public InProcessBrowserTest {
+    : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppDeclarativeLinkCapturingOriginTrialBrowserTest() {
-    features_.InitAndDisableFeature(
-        blink::features::kWebAppEnableLinkCapturing);
+    // Intent handling persistence enabled and DLC disable by default (needs
+    // origin trial to enable).
+    features_.InitWithFeatures({features::kIntentPickerPWAPersistence},
+                               {blink::features::kWebAppEnableLinkCapturing});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    WebAppLinkCapturingBrowserTest::SetUpCommandLine(command_line);
     // Using the test public key from docs/origin_trials_integration.md#Testing.
     command_line->AppendSwitchASCII(
         embedder_support::kOriginTrialPublicKey,
@@ -553,14 +575,24 @@ constexpr char kOriginTrialToken[] =
 
 }  // namespace
 
+// The origin trial migration is not needed in Lacros as it will be removed
+// long before Lacros ships.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_OriginTrialMigration DISABLED_CaptureLinksNewClient
+#else
+#define MAYBE_OriginTrialMigration OriginTrialMigration
+#endif
+// Tests that the DLC origin trial works and that we can migrate off it into
+// the intent handling persistence user preference model seamlessly.
 IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
-                       OriginTrial) {
-  WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
+                       MAYBE_OriginTrialMigration) {
+  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
 
   bool serve_token = true;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&serve_token](
           content::URLLoaderInterceptor::RequestParams* params) -> bool {
+
         if (params->url_request.url.spec() == kTestWebAppUrl) {
           content::URLLoaderInterceptor::WriteResponse(
               kTestWebAppHeaders,
@@ -570,55 +602,59 @@ IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
               params->client.get());
           return true;
         }
+
         if (params->url_request.url.spec() == kTestManifestUrl) {
           content::URLLoaderInterceptor::WriteResponse(
               kTestManifestHeaders, kTestManifestBody, params->client.get());
           return true;
         }
+
         if (params->url_request.url.spec() == kTestIconUrl) {
           content::URLLoaderInterceptor::WriteResponse(
               "chrome/test/data/web_apps/basic-192.png", params->client.get());
           return true;
         }
+
         return false;
       }));
 
-  // Install web app with origin trial token.
-  content::WebContents* app_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
+  InstallTestApp(GURL(kTestWebAppUrl), /*await_metric=*/false);
 
-#if defined(OS_CHROMEOS)
+#if !defined(OS_CHROMEOS)
+  // The origin trial is not available outside of Chrome OS.
+  EXPECT_EQ(provider().registrar().GetAppCaptureLinks(app_id_),
+            blink::mojom::CaptureLinks::kUndefined);
+  return;
+#endif  // !defined(OS_CHROMEOS)
+
   // Origin trial should grant the app access.
-  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
+  EXPECT_EQ(provider().registrar().GetAppCaptureLinks(app_id_),
             blink::mojom::CaptureLinks::kNewClient);
 
-  // Open the page again with the token missing.
+  // Open app with the token missing.
   {
-    WebAppTestManifestUpdatedObserver update_awaiter(&provider.registrar());
+    WebAppTestManifestUpdatedObserver update_awaiter(&provider().registrar());
     update_awaiter.BeginListening();
 
     serve_token = false;
-    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
 
-    // Close the app window to unblock updating.
-    app_web_contents->Close();
+    Browser* app_browser =
+        GetNewBrowserFromNavigation(browser(), GURL(kTestWebAppUrl));
+    // Automatic link capturing should be triggered because DLC is enabled.
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
 
     update_awaiter.Wait();
   }
 
   // The app should update to no longer have capture_links defined without the
   // origin trial.
-  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
-            blink::mojom::CaptureLinks::kUndefined);
-#else
-  // The origin trial is not available outside of Chrome OS.
-  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
+  EXPECT_EQ(provider().registrar().GetAppCaptureLinks(app_id_),
             blink::mojom::CaptureLinks::kUndefined);
 
-  ALLOW_UNUSED_LOCAL(app_web_contents);
-#endif  // defined(OS_CHROMEOS)
+  // Automatic link capturing should continue to be enabled.
+  Browser* app_browser =
+      GetNewBrowserFromNavigation(browser(), GURL(kTestWebAppUrl));
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
