@@ -3557,7 +3557,7 @@ static NSDictionary* createMathSubSupScriptsPair(
   if ([self internalRole] == ax::mojom::Role::kStaticText)
     [ret addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
 
-  if (_owner->IsPlatformDocument()) {
+  if (ui::IsPlatformDocument(_owner->GetRole())) {
     [ret addObjectsFromArray:@[
       NSAccessibilityTextMarkerIsValidParameterizedAttribute,
       NSAccessibilityIndexForTextMarkerParameterizedAttribute,
@@ -3759,7 +3759,7 @@ static NSDictionary* createMathSubSupScriptsPair(
   // Caret navigation and text selection attributes.
   if (_owner->HasState(ax::mojom::State::kEditable)) {
     // Add ancestor attributes if not a web area.
-    if (!_owner->IsPlatformDocument()) {
+    if (!ui::IsPlatformDocument(_owner->GetRole())) {
       [ret addObjectsFromArray:@[
         NSAccessibilityEditableAncestorAttribute,
         NSAccessibilityFocusableAncestorAttribute,
