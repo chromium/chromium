@@ -1783,6 +1783,13 @@
        {}
       ]
      ],
+     "inserthtml-after-temporarily-removing-document-element.html": [
+      "7245fe3ddcc44d2c2a1485131ced5bde5cc927e5",
+      [
+       null,
+       {}
+      ]
+     ],
      "inserthtml-in-inline-editing-host-at-load-event.html": [
       "22f172856adc852499478cccaca685cd4d49f837",
       [
@@ -1853,8 +1860,36 @@
        {}
       ]
      ],
+     "make-editable-div-inline-and-set-contenteditable-of-input-to-false.html": [
+      "1743a2641da33cef9d65f342858e75f6de13afac",
+      [
+       null,
+       {}
+      ]
+     ],
      "make-parent-element-editable-after-making-focused-editing-host-non-editable.html": [
       "d624d7d3b98a7c615951f10e381e99fb1266c424",
+      [
+       null,
+       {}
+      ]
+     ],
+     "move-legend-followed-by-textarea-into-orphan-div.html": [
+      "462ff37fd628fcd3e807b535befc13268ad14c6e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "multiple-execCommand-calls-after-interting-long-text.html": [
+      "32d0e38248f251005882f5874dbb3e56996e26d9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "non-root-editable-html-element.html": [
+      "2e4c02b0e18ad5d7c4b46e195c6cc681b19ad802",
       [
        null,
        {}
@@ -1904,6 +1939,13 @@
      ],
      "queryCommandValue-backcolor-after-replacing-html-element-with-new-one-in-designMode-from-load.html": [
       "d14422c9319e0aff1bde91c932905caf510207cd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "remove-document-element-of-iframe-having-style-content.html": [
+      "b032311fa7552767a2356a181ce0ffb1fb9b3511",
       [
        null,
        {}
@@ -276761,10 +276803,6 @@
       "d83ed86fb9b5d159b9f380424887402edc96cb75",
       []
      ],
-     "coop-same-origin-allow-popups-document-write-expected.txt": [
-      "07689797499dfb851056d3a5e94cbf4a5c2434a2",
-      []
-     ],
      "coop-sandbox.https.html.headers": [
       "46ad58d83bf6e98913ca4c564b7acb8f19fa0093",
       []
@@ -290300,7 +290338,7 @@
     ]
    },
    "lint.ignore": [
-    "ac67bd0b4c0cea0305a5bf3eb5d2fb98929e5851",
+    "17cb36df5c8a1c75fce2ce95628b52e2873a38b4",
     []
    ],
    "loading": {
@@ -305811,10 +305849,6 @@
      []
     ],
     "broadcastchannel": {
-     "detached-iframe.tentative-expected.txt": [
-      "8bd3b3a2e93068de8177f1c193d98d77dc57f0c1",
-      []
-     ],
      "resources": {
       "cross-origin.html": [
        "5078b6fc8e46f556fe1b86c7e1aa5a141c132be1",
@@ -305840,11 +305874,7 @@
        "df23072bc99f95d09f7cd1a6550595e43039e7b8",
        []
       ]
-     },
-     "workers.tentative-expected.txt": [
-      "8629e0db82950840b253b000fbcc31ccae7d8ace",
-      []
-     ]
+     }
     },
     "message-channels": {
      "close-expected.txt": [
@@ -368355,6 +368385,13 @@
      ],
      "prefers-reduced-motion.html": [
       "2d9f88474598bcaa0c988639473821171f08b094",
+      [
+       null,
+       {}
+      ]
+     ],
+     "relative-units-005.html": [
+      "91f85eca6d5dc5e64f45cf98a6e96a1028717f9a",
       [
        null,
        {}
