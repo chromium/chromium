@@ -266,6 +266,7 @@
         },
       },
       'Mac10.15 Tests (dbg)': {
+        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
@@ -1851,6 +1852,9 @@
         ],
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
+        'experiment_percentage': 100,
+      },
+      'Mac10.15 Tests (dbg)': { # https://crbug.com/1265051
         'experiment_percentage': 100,
       },
       'ToTLinuxTSan': {

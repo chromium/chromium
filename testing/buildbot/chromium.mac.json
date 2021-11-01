@@ -9651,6 +9651,7 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10388,6 +10389,7 @@
           "--num-retries=3",
           "--debug"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [
