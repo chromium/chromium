@@ -27,7 +27,7 @@ namespace chromeos {
 
 using reporting::Priority;
 using reporting::Record;
-using reporting::SequencingInformation;
+using reporting::SequenceInformation;
 using reporting::SignedEncryptionInfo;
 using reporting::Status;
 
@@ -110,13 +110,11 @@ class MissiveClientImpl : public MissiveClient {
     return;
   }
 
-  void ReportSuccess(
-      const reporting::SequencingInformation& sequencing_information,
-      bool force_confirm) override {
+  void ReportSuccess(const reporting::SequenceInformation& sequence_information,
+                     bool force_confirm) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
     reporting::ConfirmRecordUploadRequest request;
-    *request.mutable_sequencing_information() =
-        std::move(sequencing_information);
+    *request.mutable_sequence_information() = std::move(sequence_information);
     request.set_force_confirm(force_confirm);
     dbus::MethodCall method_call(missive::kMissiveServiceInterface,
                                  missive::kConfirmRecordUpload);

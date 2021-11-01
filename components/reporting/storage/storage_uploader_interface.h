@@ -68,7 +68,7 @@ class UploaderInterface {
   // be called after the record or error status has been processed, with true
   // if next record needs to be delivered and false if the Uploader should
   // stop.
-  virtual void ProcessGap(SequencingInformation start,
+  virtual void ProcessGap(SequenceInformation start,
                           uint64_t count,
                           base::OnceCallback<void(bool)> processed_cb) = 0;
 

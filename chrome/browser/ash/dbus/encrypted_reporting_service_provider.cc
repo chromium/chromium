@@ -96,10 +96,10 @@ EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
   MissiveClient* const missive_client = MissiveClient::Get();
   return base::BindRepeating(
       [](base::WeakPtr<MissiveClient> missive_client,
-         ::reporting::SequencingInformation sequencing_information,
+         ::reporting::SequenceInformation sequence_information,
          bool force_confirm) {
         if (missive_client) {
-          missive_client->ReportSuccess(sequencing_information, force_confirm);
+          missive_client->ReportSuccess(sequence_information, force_confirm);
         }
       },
       missive_client->GetWeakPtr());

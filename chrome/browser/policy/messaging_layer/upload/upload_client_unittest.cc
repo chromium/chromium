@@ -179,11 +179,11 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(serialized_record);
 
-    SequencingInformation* sequencing_information =
-        encrypted_record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(static_cast<int64_t>(i));
-    sequencing_information->set_generation_id(kGenerationId);
-    sequencing_information->set_priority(Priority::IMMEDIATE);
+    SequenceInformation* sequence_information =
+        encrypted_record.mutable_sequence_information();
+    sequence_information->set_sequencing_id(static_cast<int64_t>(i));
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_priority(Priority::IMMEDIATE);
     records->push_back(encrypted_record);
   }
 
@@ -214,13 +214,13 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                                                       force_confirm_flag));
           })));
 
-  test::TestMultiEvent<SequencingInformation, bool> upload_success;
+  test::TestMultiEvent<SequenceInformation, bool> upload_success;
   UploadClient::ReportSuccessfulUploadCallback upload_success_cb =
       upload_success.cb();
 
   // Save last record seq info for verification.
-  const SequencingInformation last_record_seq_info =
-      records->back().sequencing_information();
+  const SequenceInformation last_record_seq_info =
+      records->back().sequence_information();
 
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(client.get(), e.cb());

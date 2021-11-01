@@ -41,11 +41,10 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     EncryptedRecord record;
     record.set_encrypted_wrapped_record(std::string(encrypted_wrapped_record));
 
-    auto* const sequencing_information =
-        record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(GetNextSequencingId());
-    sequencing_information->set_generation_id(kGenerationId);
-    sequencing_information->set_priority(kPriority);
+    auto* const sequence_information = record.mutable_sequence_information();
+    sequence_information->set_sequencing_id(GetNextSequencingId());
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_priority(kPriority);
 
     auto* const encryption_info = record.mutable_encryption_info();
     encryption_info->set_encryption_key(kEncryptionKey);
@@ -115,7 +114,7 @@ TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   }
   // Corrupt one record.
   records[kNumRecords - 2]
-      .mutable_sequencing_information()
+      .mutable_sequence_information()
       ->clear_generation_id();
 
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
@@ -139,15 +138,15 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
 
   // Reject incorrectly set sequencing information by only setting sequencing
   // id.
-  auto* sequencing_information = record.mutable_sequencing_information();
-  sequencing_information->set_sequencing_id(1701);
+  auto* sequence_information = record.mutable_sequence_information();
+  sequence_information->set_sequencing_id(1701);
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
   // Finish correctly setting sequencing information but incorrectly set
   // encryption info.
-  sequencing_information->set_generation_id(12345678);
-  sequencing_information->set_priority(IMMEDIATE);
+  sequence_information->set_generation_id(12345678);
+  sequence_information->set_priority(IMMEDIATE);
 
   auto* encryption_info = record.mutable_encryption_info();
   encryption_info->set_encryption_key("Key");

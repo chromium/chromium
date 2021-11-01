@@ -1010,7 +1010,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // indicates a gap notification.
   void CallRecordUpload(EncryptedRecord encrypted_record) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
-    if (encrypted_record.has_sequencing_information()) {
+    if (encrypted_record.has_sequence_information()) {
       LOG(ERROR) << "Sequencing information already present, seq="
                  << sequencing_info_.sequencing_id();
       CallGapUpload(/*count=*/1);
@@ -1019,7 +1019,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
     // Fill in sequencing information.
     // Priority is attached by the Storage layer.
-    *encrypted_record.mutable_sequencing_information() = sequencing_info_;
+    *encrypted_record.mutable_sequence_information() = sequencing_info_;
     uploader_->ProcessRecord(std::move(encrypted_record),
                              base::BindOnce(&ReadContext::ScheduleNextRecord,
                                             base::Unretained(this)));
@@ -1243,7 +1243,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
   // Files that will be read (in order of sequencing ids).
   std::map<int64_t, scoped_refptr<SingleFile>> files_;
-  SequencingInformation sequencing_info_;
+  SequenceInformation sequencing_info_;
   uint32_t current_pos_;
   std::map<int64_t, scoped_refptr<SingleFile>>::iterator current_file_;
   const AsyncStartUploaderCb async_start_upload_cb_;

@@ -42,7 +42,7 @@ class DmServerUploadService {
   // the owner of |this| (the respone consists of sequencing information and
   // force_confirm flag).
   using ReportSuccessfulUploadCallback =
-      base::OnceCallback<void(SequencingInformation,
+      base::OnceCallback<void(SequenceInformation,
                               /*force_confirm*/ bool)>;
 
   // ReceivedEncryptionKeyCallback is called if server attached encryption key
@@ -53,7 +53,7 @@ class DmServerUploadService {
   // Successful response consists of Sequencing information that may be
   // accompanied with force_confirm flag.
   struct SuccessfulUploadResponse {
-    SequencingInformation sequencing_information;
+    SequenceInformation sequence_information;
     bool force_confirm;
   };
   using CompletionResponse = StatusOr<SuccessfulUploadResponse>;
@@ -75,7 +75,7 @@ class DmServerUploadService {
     // be present). If response has the key info attached, it is decoded and
     // handed over to |encryption_key_attached_cb|.
     // Once the server has responded |upload_complete| is called with either the
-    // highest accepted SequencingInformation, or an error detailing the failure
+    // highest accepted SequenceInformation, or an error detailing the failure
     // cause.
     // Any errors will result in |upload_complete| being called with a Status.
     virtual void HandleRecords(

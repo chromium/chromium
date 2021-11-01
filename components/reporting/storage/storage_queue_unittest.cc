@@ -223,7 +223,7 @@ class StorageQueueTest
     void ProcessRecord(EncryptedRecord encrypted_record,
                        base::OnceCallback<void(bool)> processed_cb) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
-      auto sequencing_information = encrypted_record.sequencing_information();
+      auto sequence_information = encrypted_record.sequence_information();
       // Decompress encrypted_wrapped_record if is was compressed.
       WrappedRecord wrapped_record;
       if (encrypted_record.has_compression_information()) {
@@ -242,66 +242,66 @@ class StorageQueueTest
         EXPECT_FALSE(encrypted_record.has_compression_information());
       }
 
-      ScheduleVerifyRecord(std::move(sequencing_information),
+      ScheduleVerifyRecord(std::move(sequence_information),
                            std::move(wrapped_record), std::move(processed_cb));
     }
 
-    void ProcessGap(SequencingInformation sequencing_information,
+    void ProcessGap(SequenceInformation sequence_information,
                     uint64_t count,
                     base::OnceCallback<void(bool)> processed_cb) override {
       DCHECK_CALLED_ON_VALID_SEQUENCE(test_uploader_checker_);
       // Verify generation match.
       if (generation_id_.has_value() &&
-          generation_id_.value() != sequencing_information.generation_id()) {
+          generation_id_.value() != sequence_information.generation_id()) {
         sequenced_task_runner_->PostTask(
             FROM_HERE,
             base::BindOnce(
-                [](SequencingInformation sequencing_information,
+                [](SequenceInformation sequence_information,
                    int64_t uploader_id, int64_t generation_id,
                    scoped_refptr<MockUpload> mock_upload,
                    base::OnceCallback<void(bool)> processed_cb) {
                   std::move(processed_cb)
                       .Run(mock_upload->DoUploadRecordFailure(
-                          uploader_id, sequencing_information.sequencing_id(),
+                          uploader_id, sequence_information.sequencing_id(),
                           Status(
                               error::DATA_LOSS,
                               base::StrCat({"Generation id mismatch, expected=",
                                             base::NumberToString(generation_id),
                                             " actual=",
                                             base::NumberToString(
-                                                sequencing_information
+                                                sequence_information
                                                     .generation_id())}))));
                 },
-                std::move(sequencing_information), uploader_id_,
+                std::move(sequence_information), uploader_id_,
                 generation_id_.value(), mock_upload_, std::move(processed_cb)));
         return;
       }
       if (!generation_id_.has_value()) {
-        generation_id_ = sequencing_information.generation_id();
+        generation_id_ = sequence_information.generation_id();
       }
 
       last_record_digest_map_->emplace(
-          std::make_pair(sequencing_information.sequencing_id(),
-                         sequencing_information.generation_id()),
+          std::make_pair(sequence_information.sequencing_id(),
+                         sequence_information.generation_id()),
           absl::nullopt);
 
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
-              [](uint64_t count, SequencingInformation sequencing_information,
+              [](uint64_t count, SequenceInformation sequence_information,
                  int64_t uploader_id, scoped_refptr<MockUpload> mock_upload,
                  base::OnceCallback<void(bool)> processed_cb) {
                 for (uint64_t c = 0; c < count; ++c) {
                   mock_upload->DoEncounterSeqId(
-                      uploader_id, sequencing_information.sequencing_id() +
+                      uploader_id, sequence_information.sequencing_id() +
                                        static_cast<int64_t>(c));
                 }
                 std::move(processed_cb)
                     .Run(mock_upload->DoUploadGap(
-                        uploader_id, sequencing_information.sequencing_id(),
+                        uploader_id, sequence_information.sequencing_id(),
                         count));
               },
-              count, std::move(sequencing_information), uploader_id_,
+              count, std::move(sequence_information), uploader_id_,
               mock_upload_, std::move(processed_cb)));
     }
 
@@ -407,36 +407,36 @@ class StorageQueueTest
     };
 
    private:
-    void ScheduleVerifyRecord(SequencingInformation sequencing_information,
+    void ScheduleVerifyRecord(SequenceInformation sequence_information,
                               WrappedRecord wrapped_record,
                               base::OnceCallback<void(bool)> processed_cb) {
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&TestUploader::VerifyRecord, base::Unretained(this),
-                         std::move(sequencing_information),
+                         std::move(sequence_information),
                          std::move(wrapped_record), std::move(processed_cb)));
     }
 
-    void VerifyRecord(SequencingInformation sequencing_information,
+    void VerifyRecord(SequenceInformation sequence_information,
                       WrappedRecord wrapped_record,
                       base::OnceCallback<void(bool)> processed_cb) {
       // Verify generation match.
       if (generation_id_.has_value() &&
-          generation_id_.value() != sequencing_information.generation_id()) {
+          generation_id_.value() != sequence_information.generation_id()) {
         std::move(processed_cb)
             .Run(mock_upload_->DoUploadRecordFailure(
-                uploader_id_, sequencing_information.sequencing_id(),
+                uploader_id_, sequence_information.sequencing_id(),
                 Status(error::DATA_LOSS,
                        base::StrCat(
                            {"Generation id mismatch, expected=",
                             base::NumberToString(generation_id_.value()),
                             " actual=",
                             base::NumberToString(
-                                sequencing_information.generation_id())}))));
+                                sequence_information.generation_id())}))));
         return;
       }
       if (!generation_id_.has_value()) {
-        generation_id_ = sequencing_information.generation_id();
+        generation_id_ = sequence_information.generation_id();
       }
 
       // Verify digest and its match.
@@ -448,28 +448,28 @@ class StorageQueueTest
         if (record_digest != wrapped_record.record_digest()) {
           std::move(processed_cb)
               .Run(mock_upload_->DoUploadRecordFailure(
-                  uploader_id_, sequencing_information.sequencing_id(),
+                  uploader_id_, sequence_information.sequencing_id(),
                   Status(error::DATA_LOSS, "Record digest mismatch")));
           return;
         }
         // Store record digest for the next record in sequence to
         // verify.
         last_record_digest_map_->emplace(
-            std::make_pair(sequencing_information.sequencing_id(),
-                           sequencing_information.generation_id()),
+            std::make_pair(sequence_information.sequencing_id(),
+                           sequence_information.generation_id()),
             record_digest);
         // If last record digest is present, match it and validate,
         // unless previous record was a gap.
         if (wrapped_record.has_last_record_digest()) {
           auto it = last_record_digest_map_->find(
-              std::make_pair(sequencing_information.sequencing_id() - 1,
-                             sequencing_information.generation_id()));
+              std::make_pair(sequence_information.sequencing_id() - 1,
+                             sequence_information.generation_id()));
           if (it == last_record_digest_map_->end() ||
               (it->second.has_value() &&
                it->second.value() != wrapped_record.last_record_digest())) {
             std::move(processed_cb)
                 .Run(mock_upload_->DoUploadRecordFailure(
-                    uploader_id_, sequencing_information.sequencing_id(),
+                    uploader_id_, sequence_information.sequencing_id(),
                     Status(error::DATA_LOSS, "Last record digest mismatch")));
             return;
           }
@@ -477,10 +477,10 @@ class StorageQueueTest
       }
 
       mock_upload_->DoEncounterSeqId(uploader_id_,
-                                     sequencing_information.sequencing_id());
+                                     sequence_information.sequencing_id());
       std::move(processed_cb)
           .Run(mock_upload_->DoUploadRecord(
-              uploader_id_, sequencing_information.sequencing_id(),
+              uploader_id_, sequence_information.sequencing_id(),
               wrapped_record.record().data()));
     }
 

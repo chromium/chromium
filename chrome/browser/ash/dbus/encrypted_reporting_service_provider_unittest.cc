@@ -154,7 +154,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
  public:
   MOCK_METHOD(void,
               ReportSuccessfulUpload,
-              (reporting::SequencingInformation, bool),
+              (reporting::SequenceInformation, bool),
               ());
   MOCK_METHOD(void,
               EncryptionKeyCallback,
@@ -179,10 +179,10 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
 
-    auto* sequencing_information = record_.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(42);
-    sequencing_information->set_generation_id(1701);
-    sequencing_information->set_priority(reporting::Priority::SLOW_BATCH);
+    auto* sequence_information = record_.mutable_sequence_information();
+    sequence_information->set_sequencing_id(42);
+    sequence_information->set_generation_id(1701);
+    sequence_information->set_priority(reporting::Priority::SLOW_BATCH);
   }
 
   void TearDown() override {
@@ -236,7 +236,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
 TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
   SetupForRequestUploadEncryptedRecord();
   EXPECT_CALL(*this, ReportSuccessfulUpload(
-                         EqualsProto(record_.sequencing_information()), _))
+                         EqualsProto(record_.sequence_information()), _))
       .Times(1);
   EXPECT_CALL(cloud_policy_client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(

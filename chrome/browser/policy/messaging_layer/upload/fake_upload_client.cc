@@ -20,10 +20,10 @@
 namespace reporting {
 namespace {
 
-absl::optional<Priority> GetPriorityFromSequencingInformationValue(
-    const base::Value& sequencing_information) {
+absl::optional<Priority> GetPriorityFromSequenceInformationValue(
+    const base::Value& sequence_information) {
   const absl::optional<int> priority_result =
-      sequencing_information.FindIntKey("priority");
+      sequence_information.FindIntKey("priority");
   if (!priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return absl::nullopt;
@@ -31,11 +31,11 @@ absl::optional<Priority> GetPriorityFromSequencingInformationValue(
   return Priority(priority_result.value());
 }
 
-StatusOr<SequencingInformation> SequencingInformationValueToProto(
+StatusOr<SequenceInformation> SequenceInformationValueToProto(
     const base::Value& value) {
   const std::string* const sequencing_id = value.FindStringKey("sequencingId");
   const std::string* const generation_id = value.FindStringKey("generationId");
-  const auto priority_result = GetPriorityFromSequencingInformationValue(value);
+  const auto priority_result = GetPriorityFromSequenceInformationValue(value);
 
   // If any of the previous values don't exist, or are malformed, return error.
   if (!sequencing_id || generation_id->empty() || !generation_id ||
@@ -43,7 +43,7 @@ StatusOr<SequencingInformation> SequencingInformationValueToProto(
       !Priority_IsValid(priority_result.value())) {
     return Status(error::INVALID_ARGUMENT,
                   base::StrCat({"Provided value lacks some fields required by "
-                                "SequencingInformation proto: ",
+                                "SequenceInformation proto: ",
                                 value.DebugString()}));
   }
 
@@ -62,14 +62,14 @@ StatusOr<SequencingInformation> SequencingInformationValueToProto(
         unsigned_gen_id == 0) {
       return Status(error::INVALID_ARGUMENT,
                     base::StrCat({"Provided value did not conform to a valid "
-                                  "SequencingInformation proto: ",
+                                  "SequenceInformation proto: ",
                                   value.DebugString()}));
     }
     seq_id = static_cast<int64_t>(unsigned_seq_id);
     gen_id = static_cast<int64_t>(unsigned_gen_id);
   }
 
-  SequencingInformation proto;
+  SequenceInformation proto;
   proto.set_sequencing_id(seq_id);
   proto.set_generation_id(gen_id);
   proto.set_priority(Priority(priority_result.value()));
@@ -132,7 +132,7 @@ void FakeUploadClient::OnUploadComplete(
     const auto force_confirm_flag = last_success->FindBoolKey("forceConfirm");
     bool force_confirm =
         force_confirm_flag.has_value() && force_confirm_flag.value();
-    auto seq_info_result = SequencingInformationValueToProto(*last_success);
+    auto seq_info_result = SequenceInformationValueToProto(*last_success);
     if (seq_info_result.ok()) {
       std::move(report_upload_success_cb)
           .Run(seq_info_result.ValueOrDie(), force_confirm);

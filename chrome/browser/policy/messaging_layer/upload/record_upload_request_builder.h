@@ -102,8 +102,8 @@ class EncryptedRecordDictionaryBuilder {
   absl::optional<base::Value> Build();
 
   static base::StringPiece GetEncryptedWrappedRecordPath();
-  static base::StringPiece GetUnsignedSequencingInformationKeyPath();
-  static base::StringPiece GetSequencingInformationKeyPath();
+  static base::StringPiece GetUnsignedSequenceInformationKeyPath();
+  static base::StringPiece GetSequenceInformationKeyPath();
   static base::StringPiece GetEncryptionInfoPath();
   static base::StringPiece GetCompressionInformationPath();
 
@@ -111,13 +111,13 @@ class EncryptedRecordDictionaryBuilder {
   absl::optional<base::Value> result_;
 };
 
-// Builds a |base::Value| dictionary from a |SequencingInformation|
+// Builds a |base::Value| dictionary from a |SequenceInformation|
 // proto.
-class SequencingInformationDictionaryBuilder {
+class SequenceInformationDictionaryBuilder {
  public:
-  explicit SequencingInformationDictionaryBuilder(
-      const SequencingInformation& sequencing_information);
-  ~SequencingInformationDictionaryBuilder();
+  explicit SequenceInformationDictionaryBuilder(
+      const SequenceInformation& sequence_information);
+  ~SequenceInformationDictionaryBuilder();
 
   absl::optional<base::Value> Build();
 
