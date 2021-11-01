@@ -4,7 +4,7 @@
 
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -24,7 +24,7 @@ export const ShowPasswordMixin = dedupingMixin(
           return {
             entry: Object,
 
-            // <if expr="chromeos">
+            // <if expr="chromeos or lacros">
             tokenRequestManager: Object
             // </if>
           };
@@ -32,7 +32,7 @@ export const ShowPasswordMixin = dedupingMixin(
 
         entry: MultiStorePasswordUiEntry;
 
-        // <if expr="chromeos">
+        // <if expr="chromeos or lacros">
         tokenRequestManager: BlockingRequestManager;
         // </if>
 
@@ -70,7 +70,7 @@ export const ShowPasswordMixin = dedupingMixin(
                     this.set('entry.password', password);
                   },
                   _error => {
-                    // <if expr="chromeos">
+                    // <if expr="chromeos or lacros">
                     // If no password was found, refresh auth token and retry.
                     this.tokenRequestManager.request(
                         () => this.onShowPasswordButtonTap());

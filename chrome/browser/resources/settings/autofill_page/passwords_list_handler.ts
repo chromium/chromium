@@ -29,7 +29,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {loadTimeData} from '../i18n_setup.js';
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -94,7 +94,7 @@ export class PasswordsListHandlerElement extends
         value: false,
       },
 
-      // <if expr="chromeos">
+      // <if expr="chromeos or lacros">
       tokenRequestManager: Object,
       // </if>
 
@@ -150,7 +150,7 @@ export class PasswordsListHandlerElement extends
   isAccountStoreUser: boolean;
   allowMoveToAccountOption: boolean;
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   tokenRequestManager: BlockingRequestManager;
   // </if>
 
@@ -240,7 +240,7 @@ export class PasswordsListHandlerElement extends
         .requestPlaintextPassword(
             this.activePassword_!.entry.getAnyId(), reason)
         .then(callback, _error => {
-          // <if expr="chromeos">
+          // <if expr="chromeos or lacros">
           // If no password was found, refresh auth token and retry.
           this.tokenRequestManager.request(() => {
             this.requestActivePlaintextPassword_(reason, callback);

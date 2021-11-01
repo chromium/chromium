@@ -1350,7 +1350,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
   AddSignOutDialogStrings(html_source, profile);
   AddSyncControlsStrings(html_source);
   AddSyncAccountControlStrings(html_source);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   AddPasswordPromptDialogStrings(html_source);
 #endif
   AddSyncPageStrings(html_source);

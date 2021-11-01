@@ -7,7 +7,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {HatsBrowserProxyImpl, MultiStoreExceptionEntry, MultiStorePasswordUiEntry, PasswordCheckReferrer, PasswordManagerImpl, Router, routes, SettingsPluralStringProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
@@ -1192,7 +1192,7 @@ suite('PasswordsSection', function() {
     passwordsSection.$.menuExportPassword.click();
   });
 
-  if (!isChromeOS) {
+  if (!(isChromeOS || isLacros)) {
     // Test that tapping "Export passwords..." notifies the browser.
     test('startExport', function(done) {
       const exportDialog =
