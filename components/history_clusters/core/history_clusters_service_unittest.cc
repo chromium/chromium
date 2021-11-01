@@ -814,6 +814,15 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EXPECT_TRUE(
       history_clusters_service_->DoesQueryMatchAnyCluster("apples oranges"));
 
+  // Deleting a history entry should clear the keyword cache.
+  history_service_->DeleteURLs({GURL{"https://google.com/"}});
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+  EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
+
+  // The keyword cache should be repopulated.
+  test_clustering_backend_->WaitForGetClustersCall();
+  test_clustering_backend_->FulfillCallback(clusters);
+  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
 }
 
