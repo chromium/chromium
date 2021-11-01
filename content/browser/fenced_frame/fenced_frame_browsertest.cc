@@ -16,6 +16,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
@@ -128,6 +129,15 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
   const GURL main_url =
       embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // WebContentsObservers should not be notified of commits happening
+  // in the non-primary navigation controller.
+  testing::NiceMock<MockWebContentsObserver> web_contents_observer(
+      web_contents());
+  EXPECT_CALL(web_contents_observer, NavigationEntryCommitted(testing::_))
+      .Times(0);
+  EXPECT_CALL(web_contents_observer, NavigationEntryChanged(testing::_))
+      .Times(0);
 
   RenderFrameHostImpl* primary_rfh = primary_main_frame_host();
   RenderFrameHost* inner_fenced_frame_rfh =

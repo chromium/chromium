@@ -18,17 +18,17 @@ FencedFrame::FencedFrame(
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
-      frame_tree_(std::make_unique<FrameTree>(
-          web_contents_->GetBrowserContext(),
-          /*delegate=*/this,
-          /*navigation_controller_delegate=*/web_contents_,
-          /*navigator_delegate=*/web_contents_,
-          /*render_frame_delegate=*/web_contents_,
-          /*render_view_delegate=*/web_contents_,
-          /*render_widget_delegate=*/web_contents_,
-          /*manager_delegate=*/web_contents_,
-          /*page_delegate=*/web_contents_,
-          FrameTree::Type::kFencedFrame)) {
+      frame_tree_(
+          std::make_unique<FrameTree>(web_contents_->GetBrowserContext(),
+                                      /*delegate=*/this,
+                                      /*navigation_controller_delegate=*/this,
+                                      /*navigator_delegate=*/web_contents_,
+                                      /*render_frame_delegate=*/web_contents_,
+                                      /*render_view_delegate=*/web_contents_,
+                                      /*render_widget_delegate=*/web_contents_,
+                                      /*manager_delegate=*/web_contents_,
+                                      /*page_delegate=*/web_contents_,
+                                      FrameTree::Type::kFencedFrame)) {
   scoped_refptr<SiteInstance> site_instance =
       SiteInstance::Create(web_contents_->GetBrowserContext());
   // Note that even though this is happening in response to an event in the
