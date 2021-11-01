@@ -38,6 +38,11 @@ extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 // Use IsFollowingFeedEnabled() instead of this constant directly.
 extern const base::Feature kFollowingFeedInNTP;
 
+// Feature flag to fix the NTP view hierarchy if it is broken before applying
+// constraints.
+// TODO(crbug.com/1262536): Remove this when it is fixed.
+extern const base::Feature kNTPViewHierarchyRepair;
+
 // Whether the Discover feed content preview is shown in the context menu.
 bool IsDiscoverFeedPreviewEnabled();
 
@@ -49,5 +54,8 @@ bool IsDiscoverFeedShorterCacheEnabled();
 
 // Whether the Following Feed is enabled.
 bool IsFollowingFeedEnabled();
+
+// Whether the NTP view hierarchy repair is enabled.
+bool IsNTPViewHierarchyRepairEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_
