@@ -14,4 +14,7 @@ interface UnderlyingSinkBase {
     [CallWith=ScriptState, RaisesException] Promise<void> write(any chunk, any controller);
     [CallWith=ScriptState, RaisesException] Promise<void> close();
     [CallWith=ScriptState, RaisesException] Promise<void> abort(any reason);
+
+    // This only exists to prevent Object.prototype.type being accessed.
+    [CallWith=ScriptState] readonly attribute any type;
 };
