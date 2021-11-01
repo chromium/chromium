@@ -5283,14 +5283,32 @@ fuzzer_test("net_websocket_frame_parser_fuzzer") {
   libfuzzer_options = [ "max_len=256" ]
 }
 
-fuzzer_test("net_web_socket_encoder_fuzzer") {
-  sources = [ "server/web_socket_encoder_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    "//net",
-    "//net/server:http_server",
-  ]
-  libfuzzer_options = [ "max_len=256" ]
+if (use_fuzzing_engine) {
+  # This is a separate target because //net/server:http_server
+  # wants to limit its visibility to a select number of target, but the
+  # "fuzzer_test" template expands on iOS to many targets that need to
+  # have the "deps" information propagated in order to support "fat"
+  # binaries.
+  source_set("net_web_socket_encoder_fuzzer_deps") {
+    testonly = true
+    visibility = [
+      ":net_web_socket_encoder_fuzzer",
+      ":net_web_socket_encoder_fuzzer_arch_executable",
+      ":net_web_socket_encoder_fuzzer_arch_executable_sources",
+      ":run_net_web_socket_encoder_fuzzer",
+    ]
+    public_deps = [
+      ":net_fuzzer_test_support",
+      "//net",
+      "//net/server:http_server",
+    ]
+  }
+
+  fuzzer_test("net_web_socket_encoder_fuzzer") {
+    sources = [ "server/web_socket_encoder_fuzzer.cc" ]
+    deps = [ ":net_web_socket_encoder_fuzzer_deps" ]
+    libfuzzer_options = [ "max_len=256" ]
+  }
 }
 
 fuzzer_test("net_http_chunked_decoder_fuzzer") {
