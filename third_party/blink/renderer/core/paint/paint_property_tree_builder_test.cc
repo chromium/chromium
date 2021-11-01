@@ -4603,17 +4603,26 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedUnderMultiColumn) {
       GetLayoutObjectByElementId("multicol")->SlowFirstChild();
   EXPECT_TRUE(thread->IsLayoutFlowThread());
   EXPECT_EQ(3u, NumFragments(thread));
-  EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(), FragmentAt(thread, 0).LogicalTopInFlowThread());
-  EXPECT_EQ(PhysicalOffset(100, -200), FragmentAt(thread, 1).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(100, -200),
-            FragmentAt(thread, 1).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(200), FragmentAt(thread, 1).LogicalTopInFlowThread());
-  EXPECT_EQ(PhysicalOffset(200, -400), FragmentAt(thread, 2).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(200, -400),
-            FragmentAt(thread, 2).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(400), FragmentAt(thread, 2).LogicalTopInFlowThread());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(thread, 0).PaintOffset());
+    EXPECT_EQ(0u, FragmentAt(thread, 0).FragmentID());
+    EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(thread, 1).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(thread, 1).FragmentID());
+    EXPECT_EQ(PhysicalOffset(200, 0), FragmentAt(thread, 2).PaintOffset());
+    EXPECT_EQ(2u, FragmentAt(thread, 2).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(), FragmentAt(thread, 0).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(), FragmentAt(thread, 0).LogicalTopInFlowThread());
+    EXPECT_EQ(PhysicalOffset(100, -200), FragmentAt(thread, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(100, -200),
+              FragmentAt(thread, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(200), FragmentAt(thread, 1).LogicalTopInFlowThread());
+    EXPECT_EQ(PhysicalOffset(200, -400), FragmentAt(thread, 2).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(200, -400),
+              FragmentAt(thread, 2).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(400), FragmentAt(thread, 2).LogicalTopInFlowThread());
+  }
 
   LayoutObject* composited = GetLayoutObjectByElementId("composited");
   LayoutObject* non_composited_child =
@@ -4623,38 +4632,60 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedUnderMultiColumn) {
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     // Compositing doesn't affect CAP fragmentation.
     EXPECT_EQ(2u, NumFragments(composited));
-    EXPECT_EQ(PhysicalOffset(100, 100),
-              FragmentAt(composited, 0).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(100, -200),
-              FragmentAt(composited, 0).LegacyPaginationOffset());
-    EXPECT_EQ(LayoutUnit(200),
-              FragmentAt(composited, 0).LogicalTopInFlowThread());
-    EXPECT_EQ(PhysicalOffset(200, -100),
-              FragmentAt(composited, 1).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(200, -400),
-              FragmentAt(composited, 1).LegacyPaginationOffset());
-    EXPECT_EQ(LayoutUnit(400),
-              FragmentAt(composited, 1).LogicalTopInFlowThread());
-    EXPECT_EQ(2u, NumFragments(non_composited_child));
-    EXPECT_EQ(PhysicalOffset(100, 100),
-              FragmentAt(non_composited_child, 0).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(100, -200),
-              FragmentAt(non_composited_child, 0).LegacyPaginationOffset());
-    EXPECT_EQ(LayoutUnit(200),
-              FragmentAt(non_composited_child, 0).LogicalTopInFlowThread());
-    EXPECT_EQ(PhysicalOffset(200, -100),
-              FragmentAt(non_composited_child, 1).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(200, -400),
-              FragmentAt(non_composited_child, 1).LegacyPaginationOffset());
-    EXPECT_EQ(LayoutUnit(400),
-              FragmentAt(non_composited_child, 1).LogicalTopInFlowThread());
-    EXPECT_EQ(1u, NumFragments(composited_child));
-    EXPECT_EQ(PhysicalOffset(200, 50),
-              FragmentAt(composited_child, 0).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(200, -400),
-              FragmentAt(composited_child, 0).LegacyPaginationOffset());
-    EXPECT_EQ(LayoutUnit(400),
-              FragmentAt(composited_child, 0).LogicalTopInFlowThread());
+    if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+      EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 0).PaintOffset());
+      EXPECT_EQ(1u, FragmentAt(composited, 0).FragmentID());
+      EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 1).PaintOffset());
+      EXPECT_EQ(2u, FragmentAt(composited, 1).FragmentID());
+      EXPECT_EQ(2u, NumFragments(non_composited_child));
+      EXPECT_EQ(PhysicalOffset(0, 0),
+                FragmentAt(non_composited_child, 0).PaintOffset());
+      EXPECT_EQ(1u, FragmentAt(non_composited_child, 0).FragmentID());
+      EXPECT_EQ(PhysicalOffset(0, 0),
+                FragmentAt(non_composited_child, 1).PaintOffset());
+      EXPECT_EQ(2u, FragmentAt(non_composited_child, 1).FragmentID());
+      EXPECT_EQ(1u, NumFragments(composited_child));
+      EXPECT_EQ(PhysicalOffset(0, 0),
+                FragmentAt(composited_child, 0).PaintOffset());
+      EXPECT_EQ(2u, FragmentAt(composited_child, 0).FragmentID());
+    } else {
+      EXPECT_EQ(PhysicalOffset(100, 100),
+                FragmentAt(composited, 0).PaintOffset());
+      EXPECT_EQ(PhysicalOffset(100, -200),
+                FragmentAt(composited, 0).LegacyPaginationOffset());
+      EXPECT_EQ(LayoutUnit(200),
+                FragmentAt(composited, 0).LogicalTopInFlowThread());
+      EXPECT_EQ(PhysicalOffset(200, -100),
+                FragmentAt(composited, 1).PaintOffset());
+      EXPECT_EQ(PhysicalOffset(200, -400),
+                FragmentAt(composited, 1).LegacyPaginationOffset());
+      EXPECT_EQ(LayoutUnit(400),
+                FragmentAt(composited, 1).LogicalTopInFlowThread());
+      EXPECT_EQ(2u, NumFragments(non_composited_child));
+      EXPECT_EQ(PhysicalOffset(100, 100),
+                FragmentAt(non_composited_child, 0).PaintOffset());
+      EXPECT_EQ(PhysicalOffset(100, -200),
+                FragmentAt(non_composited_child, 0).LegacyPaginationOffset());
+      EXPECT_EQ(LayoutUnit(200),
+                FragmentAt(non_composited_child, 0).LogicalTopInFlowThread());
+      EXPECT_EQ(PhysicalOffset(200, -100),
+                FragmentAt(non_composited_child, 1).PaintOffset());
+      EXPECT_EQ(PhysicalOffset(200, -400),
+                FragmentAt(non_composited_child, 1).LegacyPaginationOffset());
+      EXPECT_EQ(LayoutUnit(400),
+                FragmentAt(non_composited_child, 1).LogicalTopInFlowThread());
+      EXPECT_EQ(1u, NumFragments(composited_child));
+      EXPECT_EQ(PhysicalOffset(200, 50),
+                FragmentAt(composited_child, 0).PaintOffset());
+      EXPECT_EQ(PhysicalOffset(200, -400),
+                FragmentAt(composited_child, 0).LegacyPaginationOffset());
+      EXPECT_EQ(LayoutUnit(400),
+                FragmentAt(composited_child, 0).LogicalTopInFlowThread());
+    }
+  } else if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    // Expectations for non-CompositeAfterPaint + LayoutNGBlockFragmentation
+    // haven't been corrected, but there should be no need, since
+    // CompositeAfterPaint has shipped.
   } else {
     // SPv1 forces single fragment for composited layers.
     EXPECT_EQ(1u, NumFragments(composited));

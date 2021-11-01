@@ -844,6 +844,8 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
       }
     }
     fragmentainer_fragment_data->SetPaintOffset(paint_offset);
+    fragmentainer_fragment_data->SetFragmentID(
+        context.current_fragmentainer.fragmentainer_idx);
 
     WalkChildren(actual_parent, box_fragment, context);
 
