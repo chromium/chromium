@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_CHROME_BROWSER_MAIN_PARTS_FUCHSIA_H_
 #define CHROME_BROWSER_CHROME_BROWSER_MAIN_PARTS_FUCHSIA_H_
 
+#include <memory>
+
 #include "chrome/browser/chrome_browser_main.h"
+
+namespace base {
+class ProcessLifecycle;
+}
 
 class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
  public:
@@ -15,12 +21,16 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
   ChromeBrowserMainPartsFuchsia(const ChromeBrowserMainPartsFuchsia&) = delete;
   ChromeBrowserMainPartsFuchsia& operator=(
       const ChromeBrowserMainPartsFuchsia&) = delete;
+  ~ChromeBrowserMainPartsFuchsia() override;
 
   // ChromeBrowserMainParts overrides.
   void ShowMissingLocaleMessageBox() override;
 
   // content::BrowserMainParts overrides.
   int PreMainMessageLoopRun() override;
+
+ private:
+  std::unique_ptr<base::ProcessLifecycle> lifecycle_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_PARTS_FUCHSIA_H_
