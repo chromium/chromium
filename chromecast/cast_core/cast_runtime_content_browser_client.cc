@@ -36,7 +36,7 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
   return CastRuntimeService::Create(
       GetMediaTaskRunner(), browser_context, window_manager,
       media_pipeline_backend_manager(), std::move(network_context_getter),
-      pref_service);
+      pref_service, video_plane_controller);
 }
 
 void CastRuntimeContentBrowserClient::OverrideWebkitPrefs(

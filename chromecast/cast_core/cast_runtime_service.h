@@ -35,6 +35,7 @@ class CastWebService;
 
 namespace media {
 class MediaPipelineBackendManager;
+class VideoPlaneController;
 }  // namespace media
 
 namespace receiver {
@@ -57,7 +58,8 @@ class CastRuntimeService
       CastWindowManager* window_manager,
       media::MediaPipelineBackendManager* media_pipeline_backend_manager,
       NetworkContextGetter network_context_getter,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      media::VideoPlaneController* video_plane_controller);
 
   // Returns current instance of CastRuntimeService in the browser process.
   static CastRuntimeService* GetInstance();
