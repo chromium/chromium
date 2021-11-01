@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_instance_throttle.h"
 
-#include "ash/constants/ash_switches.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ash/arc/instance_throttle/arc_kiosk_mode_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_pip_window_throttle_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_provisioning_throttle_observer.h"
+#include "chrome/browser/ash/arc/instance_throttle/arc_switch_throttle_observer.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -96,14 +96,6 @@ void SetArcContainerCpuRestriction(CpuRestrictionState cpu_restriction_state) {
 // |cpu_restriction_state| is CPU_RESTRICTION_BACKGROUND, the limit is adjusted
 // so ARC can only use tightly restricted CPU resources.
 void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  // Ignore any calls to restrict the ARC container if the specified command
-  // line flag is set.
-  if (chromeos::switches::IsArcCpuRestrictionDisabled() &&
-      cpu_restriction_state ==
-          CpuRestrictionState::CPU_RESTRICTION_BACKGROUND) {
-    return;
-  }
-
   if (IsArcVmEnabled())
     SetArcVmCpuRestriction(cpu_restriction_state);
   else
@@ -190,6 +182,7 @@ ArcInstanceThrottle::ArcInstanceThrottle(content::BrowserContext* context,
   AddObserver(std::make_unique<ArcKioskModeThrottleObserver>());
   AddObserver(std::make_unique<ArcPipWindowThrottleObserver>());
   AddObserver(std::make_unique<ArcProvisioningThrottleObserver>());
+  AddObserver(std::make_unique<ArcSwitchThrottleObserver>());
   StartObservers();
   DCHECK(bridge_);
   bridge_->power()->AddObserver(this);
