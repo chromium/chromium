@@ -92,8 +92,9 @@ void OSSyncHandler::HandleDidNavigateAwayFromOsSyncPage(
 }
 
 void OSSyncHandler::HandleSetOsSyncFeatureEnabled(const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetList().size());
-  CHECK(args->GetBoolean(0, &feature_enabled_));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  feature_enabled_ = list[0].GetBool();
   should_commit_feature_enabled_ = true;
   // Changing the feature enabled state may change toggle state.
   PushSyncPrefs();
