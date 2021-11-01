@@ -34,7 +34,6 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual void Trace(Visitor* visitor) const {}
 
   static MediaValues* CreateDynamicIfFrameExists(LocalFrame*);
-  virtual MediaValues* Copy() const = 0;
 
   static bool ComputeLengthImpl(double value,
                                 CSSPrimitiveValue::UnitType,
@@ -63,8 +62,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
                              CSSPrimitiveValue::UnitType,
                              double& result) const = 0;
 
-  virtual double ViewportWidth() const = 0;
-  virtual double ViewportHeight() const = 0;
+  virtual double Width() const { return ViewportWidth(); }
+  virtual double Height() const { return ViewportHeight(); }
   virtual int DeviceWidth() const = 0;
   virtual int DeviceHeight() const = 0;
   virtual float DevicePixelRatio() const = 0;
@@ -83,7 +82,6 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual Document* GetDocument() const = 0;
   virtual bool HasValues() const = 0;
 
-  virtual void OverrideViewportDimensions(double width, double height) = 0;
   virtual ColorSpaceGamut ColorGamut() const = 0;
   virtual mojom::blink::PreferredColorScheme GetPreferredColorScheme()
       const = 0;
@@ -97,6 +95,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
 
  protected:
+  virtual double ViewportWidth() const = 0;
+  virtual double ViewportHeight() const = 0;
   static double CalculateViewportWidth(LocalFrame*);
   static double CalculateViewportHeight(LocalFrame*);
   static int CalculateDeviceWidth(LocalFrame*);

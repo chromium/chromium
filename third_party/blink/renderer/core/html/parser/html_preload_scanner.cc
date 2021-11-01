@@ -125,7 +125,7 @@ bool MediaAttributeMatches(const MediaValuesCached& media_values,
   // trials for media queries are not needed.
   scoped_refptr<MediaQuerySet> media_queries =
       MediaQuerySet::Create(attribute_value, nullptr);
-  MediaQueryEvaluator media_query_evaluator(media_values);
+  MediaQueryEvaluator media_query_evaluator(&media_values);
   return media_query_evaluator.Eval(*media_queries);
 }
 
@@ -1161,10 +1161,7 @@ void TokenPreloadScanner::ScanCommon(
         return;
       }
 
-      // TODO(yoav): ViewportWidth is currently racy and might be zero in some
-      // cases, at least in tests. That problem will go away once
-      // ParseHTMLOnMainThread lands and MediaValuesCached is eliminated.
-      if (in_picture_ && media_values_->ViewportWidth())
+      if (in_picture_ && media_values_->Width())
         scanner.HandlePictureSourceURL(picture_data_);
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, source, client_hints_preferences_,
