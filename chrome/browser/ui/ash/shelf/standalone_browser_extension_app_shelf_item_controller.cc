@@ -160,7 +160,11 @@ void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::Close() {
-  // TODO(https://crbug.com/1225848): implement
+  // There can only be a single active ash profile when Lacros is running.
+  apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  proxy->StopApp(app_id());
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::ShelfItemAdded(
