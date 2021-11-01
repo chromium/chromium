@@ -458,6 +458,18 @@ public class CachedFeatureFlags {
     }
 
     @VisibleForTesting
+    public static void resetDiskForTesting() {
+        for (Map.Entry<String, Boolean> e : sDefaults.entrySet()) {
+            String prefKey = ChromePreferenceKeys.FLAGS_CACHED.createKey(e.getKey());
+            SharedPreferencesManager.getInstance().removeKey(prefKey);
+        }
+        for (Map.Entry<String, String> e : sNonDynamicPrefKeys.entrySet()) {
+            String prefKey = e.getValue();
+            SharedPreferencesManager.getInstance().removeKey(prefKey);
+        }
+    }
+
+    @VisibleForTesting
     static void setOverrideTestValue(String preferenceKey, String overrideValue) {
         sValuesOverridden.setOverrideTestValue(preferenceKey, overrideValue);
     }
