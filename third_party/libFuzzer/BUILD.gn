@@ -48,7 +48,6 @@ source_set("libfuzzer") {
     "src/FuzzerIOPosix.cpp",
     "src/FuzzerIOWindows.cpp",
     "src/FuzzerLoop.cpp",
-    "src/FuzzerMain.cpp",
     "src/FuzzerMerge.cpp",
     "src/FuzzerMutate.cpp",
     "src/FuzzerSHA1.cpp",
@@ -60,6 +59,10 @@ source_set("libfuzzer") {
     "src/FuzzerUtilPosix.cpp",
     "src/FuzzerUtilWindows.cpp",
   ]
+
+  if (!is_ios) {
+    sources += [ "src/FuzzerMain.cpp" ]
+  }
 
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
