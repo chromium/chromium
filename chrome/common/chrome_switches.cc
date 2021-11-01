@@ -690,9 +690,6 @@ const char kWmClass[]                       = "class";
 // Prevents Chrome from quitting when Chrome Apps are open.
 const char kAppsKeepChromeAliveInTests[]    = "apps-keep-chrome-alive-in-tests";
 
-// Disables app shim creation for hosted apps on Mac.
-const char kDisableHostedAppShimCreation[] = "disable-hosted-app-shim-creation";
-
 // Enable user metrics from within the installer.
 const char kEnableUserMetrics[] = "enable-user-metrics";
 

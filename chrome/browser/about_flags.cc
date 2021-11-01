@@ -3441,12 +3441,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-vulkan", flag_descriptions::kEnableVulkanName,
      flag_descriptions::kEnableVulkanDescription,
      kOsWin | kOsLinux | kOsAndroid, FEATURE_VALUE_TYPE(features::kVulkan)},
-#if defined(OS_MAC)
-    {"disable-hosted-app-shim-creation",
-     flag_descriptions::kHostedAppShimCreationName,
-     flag_descriptions::kHostedAppShimCreationDescription, kOsMac,
-     SINGLE_DISABLE_VALUE_TYPE(switches::kDisableHostedAppShimCreation)},
-#endif  // OS_MAC
 #if defined(OS_ANDROID)
     {"translate-force-trigger-on-english",
      flag_descriptions::kTranslateForceTriggerOnEnglishName,

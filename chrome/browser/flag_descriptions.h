@@ -825,9 +825,6 @@ extern const char kTabSwitcherOnReturnDescription[];
 extern const char kHideShelfControlsInTabletModeName[];
 extern const char kHideShelfControlsInTabletModeDescription[];
 
-extern const char kHostedAppShimCreationName[];
-extern const char kHostedAppShimCreationDescription[];
-
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 

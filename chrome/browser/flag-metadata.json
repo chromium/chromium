@@ -1162,11 +1162,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disable-hosted-app-shim-creation",
-    "owners": [ "ccameron" ],
-    "expiry_milestone": 77
-  },
-  {
     "name": "disable-idle-sockets-close-on-memory-pressure",
     "owners": [ "pmarko" ],
     "expiry_milestone": 100
