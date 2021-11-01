@@ -13,7 +13,7 @@ namespace metrics {
 class DiagnosticsMetrics final
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  DiagnosticsMetrics() = default;
+  DiagnosticsMetrics();
   DiagnosticsMetrics(DiagnosticsMetrics&) = delete;
   DiagnosticsMetrics& operator=(DiagnosticsMetrics&) = delete;
   ~DiagnosticsMetrics() override = default;
@@ -21,6 +21,12 @@ class DiagnosticsMetrics final
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
   bool IsEnabled() const override;
+
+  // feature_usage::FeatureUsageMetrics helpers:
+  void RecordUsage(bool success);
+
+ private:
+  feature_usage::FeatureUsageMetrics feature_metrics_;
 };
 }  // namespace metrics
 }  // namespace diagnostics

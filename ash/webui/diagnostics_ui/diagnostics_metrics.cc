@@ -9,6 +9,12 @@
 namespace ash {
 namespace diagnostics {
 namespace metrics {
+namespace {
+const char kDiagnosticsUmaFeatureName[] = "DiagnosticsUi";
+}
+
+DiagnosticsMetrics::DiagnosticsMetrics()
+    : feature_metrics_(kDiagnosticsUmaFeatureName, this) {}
 
 bool DiagnosticsMetrics::IsEligible() const {
   return features::IsDiagnosticsAppEnabled();
@@ -16,6 +22,11 @@ bool DiagnosticsMetrics::IsEligible() const {
 
 bool DiagnosticsMetrics::IsEnabled() const {
   return features::IsDiagnosticsAppEnabled();
+}
+
+// Helper function for feature_usage::FeatureUsageMetrics RecordUsage.
+void DiagnosticsMetrics::RecordUsage(bool success) {
+  feature_metrics_.RecordUsage(success);
 }
 }  // namespace metrics
 }  // namespace diagnostics
