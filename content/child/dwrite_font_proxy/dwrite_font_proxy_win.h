@@ -114,8 +114,13 @@ class DWriteFontCollectionProxy
       EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
   DWriteFontFamilyProxy* GetFamily(UINT32 family_index)
       LOCKS_EXCLUDED(families_lock_);
+  DWriteFontFamilyProxy* GetFamilyLockRequired(UINT32 family_index)
+      EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
   DWriteFontFamilyProxy* GetOrCreateFamilyLockRequired(UINT32 family_index)
       EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
+  absl::optional<UINT32> FindFamilyIndexLockRequired(
+      const std::u16string& family_name,
+      HRESULT* hresult_out = nullptr) EXCLUSIVE_LOCKS_REQUIRED(families_lock_);
 
   HRESULT FindFamilyName(const std::u16string& family_name,
                          UINT32* index,

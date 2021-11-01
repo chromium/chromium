@@ -119,12 +119,17 @@ DWriteFontCollectionProxy::DWriteFontCollectionProxy() = default;
 
 DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
-DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamily(
+inline DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamilyLockRequired(
     UINT32 family_index) {
-  base::AutoLock families_lock(families_lock_);
   if (family_index < families_.size())
     return families_[family_index].Get();
   return nullptr;
+}
+
+DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamily(
+    UINT32 family_index) {
+  base::AutoLock families_lock(families_lock_);
+  return GetFamilyLockRequired(family_index);
 }
 
 HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
@@ -145,41 +150,57 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   TRACE_EVENT0("dwrite,fonts", "FontProxy::FindFamilyName");
   base::AutoLock families_lock(families_lock_);
 
+  HRESULT hr = S_OK;
+  if (absl::optional<UINT32> family_index =
+          FindFamilyIndexLockRequired(family_name, &hr)) {
+    DCHECK_EQ(hr, S_OK);
+    DCHECK_NE(*family_index, UINT32_MAX);
+    *index = *family_index;
+    *exists = TRUE;
+  } else {
+    // |hr| can be failures, or |S_OK| if the |family_name| is not found.
+    *exists = FALSE;
+    *index = UINT32_MAX;
+  }
+  return hr;
+}
+
+absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndexLockRequired(
+    const std::u16string& family_name,
+    HRESULT* hresult_out) {
   auto iter = family_names_.find(family_name);
   if (iter != family_names_.end()) {
-    *index = iter->second;
-    *exists = iter->second != UINT_MAX;
-    return S_OK;
+    if (iter->second != UINT_MAX)
+      return iter->second;
+    return absl::nullopt;
   }
 
   if (base::FeatureList::IsEnabled(kLimitFontFamilyNamesPerRenderer) &&
       family_names_.size() > kFamilyNamesLimit &&
       !IsLastResortFontName(family_name)) {
-    *exists = FALSE;
-    *index = UINT32_MAX;
-    return S_OK;
+    return absl::nullopt;
   }
 
   uint32_t family_index = 0;
   if (!GetFontProxy().FindFamily(family_name, &family_index)) {
     LogFontProxyError(FIND_FAMILY_SEND_FAILED);
-    return E_FAIL;
+    if (hresult_out)
+      *hresult_out = E_FAIL;
+    return absl::nullopt;
   }
+  family_names_[family_name] = family_index;
+  if (UNLIKELY(family_index == UINT32_MAX))
+    return absl::nullopt;
 
-  if (family_index != UINT32_MAX) {
-    DWriteFontFamilyProxy* family = GetOrCreateFamilyLockRequired(family_index);
-    if (!family)
-      return E_FAIL;
+  if (DWriteFontFamilyProxy* family =
+          GetOrCreateFamilyLockRequired(family_index)) {
     family->SetName(family_name);
-    *exists = TRUE;
-    *index = family_index;
-  } else {
-    *exists = FALSE;
-    *index = UINT32_MAX;
+    return family_index;
   }
 
-  family_names_[family_name] = *index;
-  return S_OK;
+  if (hresult_out)
+    *hresult_out = E_FAIL;
+  return absl::nullopt;
 }
 
 HRESULT DWriteFontCollectionProxy::GetFontFamily(
