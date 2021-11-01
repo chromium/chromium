@@ -193,7 +193,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
                 mStartSurfaceState = startSurface.getController().getStartSurfaceState();
                 mStartSurfaceStateObserver = (newState, shouldShowToolbar) -> {
-                    assert ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+                    assert ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mContext);
                     mStartSurfaceState = newState;
                 };
                 startSurface.addStateChangeObserver(mStartSurfaceStateObserver);

@@ -361,10 +361,8 @@ public final class ReturnToChromeExperimentsUtil {
      */
     private static ChromeActivity getActivityPresentingOverviewWithOmnibox(
             String url, boolean skipOverviewCheck) {
-        if (!isStartSurfaceHomepageEnabled()) return null;
-
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        if (!(activity instanceof ChromeActivity)) return null;
+        if (!isStartSurfaceEnabled(activity) || !(activity instanceof ChromeActivity)) return null;
 
         ChromeActivity chromeActivity = (ChromeActivity) activity;
 
@@ -378,35 +376,15 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
-     * @return true when both Start Surface and homepage is enabled.
-     */
-    public static boolean isStartSurfaceHomepageEnabled() {
-        return HomepageManager.isHomepageEnabled()
-                && StartSurfaceConfiguration.isStartSurfaceFlagEnabled();
-    }
-
-    /**
-     * @return true when Start Surface is enabled. It includes checks of:
-     * 1) whether home page is enabled and whether it is Chrome' home page url;
-     * 2) whether Start surface is enabled with current accessibility settings;
-     * 3) whether it is on phone.
-     */
-    public static boolean isStartSurfaceEnabled(Context context) {
-        return shouldShowStartSurfaceAsTheHomePageNoTabs(context)
-                && HomepageManager.isHomepageEnabled();
-    }
-
-    /**
      * Check whether we should show Start Surface as the home page. This is used for all cases
      * except initial tab creation, which uses {@link
-     * #shouldShowStartSurfaceAsTheHomePageNoTabs(Context)}.
+     * ReturnToChromeExperimentsUtil#isStartSurfaceEnabled(Context)}.
      *
      * @return Whether Start Surface should be shown as the home page.
      * @param context The activity context
      */
     public static boolean shouldShowStartSurfaceAsTheHomePage(Context context) {
-        return shouldShowStartSurfaceAsTheHomePageNoTabs(context)
-                && HomepageManager.isHomepageEnabled()
+        return isStartSurfaceEnabled(context)
                 && !StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START.getValue();
     }
 
@@ -428,17 +406,21 @@ public final class ReturnToChromeExperimentsUtil {
     }
 
     /**
-     * Check whether we should show Start Surface as the home page for initial tab creation.
+     * Check whether Start Surface is enabled. It includes checks of:
+     * 1) whether home page is enabled and whether it is Chrome' home page url;
+     * 2) whether Start surface is enabled with current accessibility settings;
+     * 3) whether it is on phone.
      *
      * @return Whether Start Surface should be shown as the home page.
      * @param context The activity context.
      */
-    public static boolean shouldShowStartSurfaceAsTheHomePageNoTabs(Context context) {
+    public static boolean isStartSurfaceEnabled(Context context) {
         // When creating initial tab, i.e. cold start without restored tabs, we should only show
         // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
         String homePageUrl = HomepageManager.getHomepageUri();
         return StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
+                && HomepageManager.isHomepageEnabled()
                 && (TextUtils.isEmpty(homePageUrl)
                         || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl))
                 && !shouldHideStartSurfaceWithAccessibilityOn(context)
@@ -500,7 +482,7 @@ public final class ReturnToChromeExperimentsUtil {
                 && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return true;
         }
-        if (ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(context)
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)
                 && IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeExperimentsUtil.getTotalTabCount(context, tabModelSelector) <= 0) {
             // Handle initial tab creation.
@@ -516,7 +498,7 @@ public final class ReturnToChromeExperimentsUtil {
         // If the overview page won't be shown on startup, stops here.
         if (!tabSwitcherOnReturn) return false;
 
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)) {
             if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
                 // We only check the sync status when flag CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP
                 // and the Start surface are both enabled.

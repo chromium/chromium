@@ -94,7 +94,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer {
         // If it's a cold start and Instant Start is turned on, we render MV tiles placeholder here
         // pre-native.
         if (!mInitializationComplete
-                && ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()
+                && ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivity)
                 && TabUiFeatureUtilities.supportInstantStart(
                         DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity), mActivity)) {
             try {
