@@ -87792,6 +87792,55 @@ others/histograms.xml -->
   <int value="5" label="WireGuard"/>
 </enum>
 
+<enum name="VPNIPsecDHGroup">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ECP_256"/>
+  <int value="2" label="ECP_384"/>
+  <int value="3" label="ECP_521"/>
+  <int value="4" label="ECP_256_BP"/>
+  <int value="5" label="ECP_384_BP"/>
+  <int value="6" label="ECP_512_BP"/>
+  <int value="7" label="CURVE_25519"/>
+  <int value="8" label="CURVE_448"/>
+  <int value="9" label="MODP_1024"/>
+  <int value="10" label="MODP_1536"/>
+  <int value="11" label="MODP_2048"/>
+  <int value="12" label="MODP_3072"/>
+  <int value="13" label="MODP_4096"/>
+  <int value="14" label="MODP_6144"/>
+  <int value="15" label="MODP_8192"/>
+</enum>
+
+<enum name="VPNIPsecEncryptionAlgorithm">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AES_CBC_128"/>
+  <int value="2" label="AES_CBC_192"/>
+  <int value="3" label="AES_CBC_256"/>
+  <int value="4" label="CAMELLIA_CBC_128"/>
+  <int value="5" label="CAMELLIA_CBC_192"/>
+  <int value="6" label="CAMELLIA_CBC_256"/>
+  <int value="7" label="3DES_CBC"/>
+  <int value="8" label="AES_GCM_16_128"/>
+  <int value="9" label="AES_GCM_16_192"/>
+  <int value="10" label="AES_GCM_16_256"/>
+  <int value="11" label="AES_GCM_12_128"/>
+  <int value="12" label="AES_GCM_12_192"/>
+  <int value="13" label="AES_GCM_12_256"/>
+  <int value="14" label="AES_GCM_8_128"/>
+  <int value="15" label="AES_GCM_8_192"/>
+  <int value="16" label="AES_GCM_8_256"/>
+</enum>
+
+<enum name="VPNIPsecIntegrirtyAlgorithm">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="HMAC_SHA2_256_128"/>
+  <int value="2" label="HMAC_SHA2_384_192"/>
+  <int value="3" label="HMAC_SHA2_512_256"/>
+  <int value="4" label="HMAC_SHA1_96"/>
+  <int value="5" label="AES_XCBC_96"/>
+  <int value="6" label="AES_CMAC_96"/>
+</enum>
+
 <enum name="VPNL2TPIPsecTunnelGroupUsage">
   <int value="0" label="Tunnel group is not used"/>
   <int value="1" label="Tunnel group is used"/>

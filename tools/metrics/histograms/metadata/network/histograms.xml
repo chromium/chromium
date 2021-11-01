@@ -1664,6 +1664,66 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Vpn.L2tpIpsec.EspEncryptionAlgorithm"
+    enum="VPNIPsecEncryptionAlgorithm" expires_after="2022-06-30">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network usage metric emitted on each successful L2TP/IPsec VPN
+    connection that tracks the encryption algorithm used by the ESP protocol in
+    this connection.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.L2tpIpsec.EspIntegrityAlgorithm"
+    enum="VPNIPsecIntegrirtyAlgorithm" expires_after="2022-06-30">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network usage metric emitted on each successful L2TP/IPsec VPN
+    connection that tracks the integrity algorithm used by the ESP protocol in
+    this connection.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.L2tpIpsec.IkeDHGroup" enum="VPNIPsecDHGroup"
+    expires_after="2022-06-30">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network usage metric emitted on each successful L2TP/IPsec VPN
+    connection that tracks the DH group used by the IKE protocol in this
+    connection.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.L2tpIpsec.IkeEncryptionAlgorithm"
+    enum="VPNIPsecEncryptionAlgorithm" expires_after="2022-06-30">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network usage metric emitted on each successful L2TP/IPsec VPN
+    connection that tracks the encryption algorithm used by the IKE protocol in
+    this connection.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.Vpn.L2tpIpsec.IkeIntegrityAlgorithm"
+    enum="VPNIPsecIntegrirtyAlgorithm" expires_after="2022-06-30">
+  <owner>jiejiang@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Chrome OS network usage metric emitted on each successful L2TP/IPsec VPN
+    connection that tracks the integrity algorithm used by the IKE protocol in
+    this connection.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Vpn.L2tpIpsecTunnelGroupUsage"
     enum="VPNL2TPIPsecTunnelGroupUsage" expires_after="2022-01-30">
   <owner>jiejiang@chromium.org</owner>
