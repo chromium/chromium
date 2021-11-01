@@ -5,7 +5,7 @@
 /**
  * @fileoverview
  * 'settings-prefs' exposes a singleton model of Chrome settings and
- * preferences, which listens to changes to Chrome prefs whitelisted in
+ * preferences, which listens to changes to Chrome prefs allowed in
  * chrome.settingsPrivate. When changing prefs in this element's 'prefs'
  * property via the UI, the singleton model tries to set those preferences in
  * Chrome. Whether or not the calls to settingsPrivate.setPref succeed, 'prefs'
