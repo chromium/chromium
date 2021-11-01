@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
@@ -343,11 +344,26 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
                                                   first_is_lookalike);
   }
 
-  RecordUMAFromMatchType(first_is_lookalike ? first_match_type
-                                            : last_match_type);
+  LookalikeUrlMatchType match_type =
+      first_is_lookalike ? first_match_type : last_match_type;
+  if (match_type == LookalikeUrlMatchType::kCharacterSwapSiteEngagement ||
+      match_type == LookalikeUrlMatchType::kCharacterSwapTop500) {
+    GURL lookalike_url = first_is_lookalike ? first_url : last_url;
+
+    navigation_handle()->GetWebContents()->GetMainFrame()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        base::StringPrintf(
+            "Chrome has determined that %s could be fake or fraudulent.\n\n"
+            "Future Chrome versions will show a warning on this domain name. "
+            "If you believe this is shown in error please visit "
+            "https://g.co/chrome/lookalike-warnings",
+            lookalike_url.host().c_str()));
+  }
+
+  RecordUMAFromMatchType(match_type);
   // Interstitial normally records UKM, but still record when it's not shown.
   RecordUkmForLookalikeUrlBlockingPage(
-      source_id, first_is_lookalike ? first_match_type : last_match_type,
+      source_id, match_type,
       LookalikeUrlBlockingPageUserAction::kInterstitialNotShown,
       first_is_lookalike);
   return NavigationThrottle::PROCEED;

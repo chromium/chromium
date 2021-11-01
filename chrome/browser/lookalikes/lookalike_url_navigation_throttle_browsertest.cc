@@ -781,7 +781,14 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   // Advance clock to force a fetch of new engaged sites list.
   test_clock()->Advance(base::Hours(1));
 
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsConsoleObserver console_observer(tab);
+  console_observer.SetPattern("Chrome has determined that*character-wsap.com*");
+
   TestInterstitialNotShown(browser(), kNavigatedUrl);
+  console_observer.Wait();
+
   histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
   histograms.ExpectBucketCount(
       lookalikes::kHistogramName,
