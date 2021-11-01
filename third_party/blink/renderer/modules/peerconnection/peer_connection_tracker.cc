@@ -1108,12 +1108,12 @@ void PeerConnectionTracker::TrackCreateDataChannel(
       value);
 }
 
-void PeerConnectionTracker::TrackStop(RTCPeerConnectionHandler* pc_handler) {
+void PeerConnectionTracker::TrackClose(RTCPeerConnectionHandler* pc_handler) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
   int id = GetLocalIDForHandler(pc_handler);
   if (id == -1)
     return;
-  SendPeerConnectionUpdate(id, "stop", String(""));
+  SendPeerConnectionUpdate(id, "close", String(""));
 }
 
 void PeerConnectionTracker::TrackSignalingStateChange(

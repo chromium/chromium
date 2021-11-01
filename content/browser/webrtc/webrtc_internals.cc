@@ -222,7 +222,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
                value == "closed" || value == "new") {
       MaybeMarkPeerConnectionAsNotConnected(&*it);
     }
-  } else if (type == "stop") {
+  } else if (type == "close") {
     MaybeClosePeerConnection(&*it);
   } else if (type == "setConfiguration") {
     // Update the configuration we have for this connection.

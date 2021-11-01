@@ -191,8 +191,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       WebLocalFrame* web_frame,
       ExceptionState& exception_state);
 
-  virtual void Stop();
-  virtual void StopAndUnregister();
+  virtual void Close();
+  virtual void CloseAndUnregister();
 
   virtual Vector<std::unique_ptr<RTCRtpTransceiverPlatform>> CreateOffer(
       RTCSessionDescriptionRequest* request,
@@ -453,14 +453,14 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // |client_| is a raw pointer to the blink object (blink::RTCPeerConnection)
   // that owns this object.
   // It is valid for the lifetime of this object, but is cleared when
-  // StopAndUnregister() is called, in order to make sure it doesn't
+  // CloseAndUnregister() is called, in order to make sure it doesn't
   // interfere with garbage collection of the owner object.
   RTCPeerConnectionHandlerClient* client_ = nullptr;
   // True if this PeerConnection has been closed.
   // After the PeerConnection has been closed, this object may no longer
   // forward callbacks to blink.
   bool is_closed_ = false;
-  // True if StopAndUnregister has been called.
+  // True if CloseAndUnregister has been called.
   bool is_unregistered_ = false;
 
   // Transition from kHaveLocalOffer to kHaveRemoteOffer indicates implicit
@@ -468,7 +468,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   webrtc::PeerConnectionInterface::SignalingState previous_signaling_state_ =
       webrtc::PeerConnectionInterface::kStable;
 
-  // Will be reset to nullptr when the handler is `StopAndUnregister()`-ed, so
+  // Will be reset to nullptr when the handler is `CloseAndUnregister()`-ed, so
   // it doesn't prevent the factory from being garbage-collected.
   Persistent<PeerConnectionDependencyFactory> dependency_factory_;
 
