@@ -10,10 +10,6 @@ rootWebArea focusable
 ++++++++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++listBox ignored invisible
-++++++++++++genericContainer ignored invisible
-++++++++++++++listBoxOption ignored invisible
-++++++++++++++listBoxOption ignored invisible
-++++++++++++++listBoxOption ignored invisible
 ++++++genericContainer
 ++++++++genericContainer ignored
 ++++++++++popUpButton collapsed name='Custom selectmenu button' setSize=0 haspopup=menu

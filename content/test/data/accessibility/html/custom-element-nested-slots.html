@@ -1,0 +1,33 @@
+<!--
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:htmlTag=*
+@BLINK-ALLOW:className=*
+-->
+<template id="template">
+  <div class="div-inside-template">
+    <slot name="outer-slot" class="outer">
+        <slot name="inner-slot" class="inner"></slot>
+    </slot>
+  </div>
+</template>
+
+<my-element>
+  <p slot="inner-slot">Slot contents</p>
+</my-element>
+
+<script>
+customElements.define(
+    'my-element',
+    class extends HTMLElement {
+        constructor() {
+            super();
+            let template = document.getElementById('template');
+            let templateContent = template.content;
+
+            const shadowRoot = this.attachShadow({mode: 'open'})
+                  .appendChild(templateContent.cloneNode(true));
+        }
+    }
+);
+</script>
