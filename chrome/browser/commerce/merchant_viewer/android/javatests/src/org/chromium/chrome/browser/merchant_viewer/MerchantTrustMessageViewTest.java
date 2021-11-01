@@ -25,7 +25,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageActionsHandler;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -67,7 +67,7 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
 
     private Activity mActivity;
     private MessageBannerView mMessageBannerView;
-    private MerchantTrustSignals mMerchantTrustSignals;
+    private MerchantTrustSignalsV2 mMerchantTrustSignals;
     private LayoutParams mParams;
 
     @Override
@@ -76,7 +76,7 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
         mActivity = getActivity();
         mMessageBannerView = (MessageBannerView) LayoutInflater.from(mActivity).inflate(
                 R.layout.message_banner_view, null, false);
-        mMerchantTrustSignals = MerchantTrustSignals.newBuilder()
+        mMerchantTrustSignals = MerchantTrustSignalsV2.newBuilder()
                                         .setMerchantStarRating(3.51234f)
                                         .setMerchantCountRating(1640)
                                         .setMerchantDetailsPageUrl("http://dummy/url")

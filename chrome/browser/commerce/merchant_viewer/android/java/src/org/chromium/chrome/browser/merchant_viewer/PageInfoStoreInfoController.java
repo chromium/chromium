@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
@@ -31,7 +31,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     /** Handles the actions needed by the "store info" row. */
     public interface StoreInfoActionHandler {
         /** Called when the "store info" row is clicked. */
-        void onStoreInfoClicked(MerchantTrustSignals trustSignals);
+        void onStoreInfoClicked(MerchantTrustSignalsV2 trustSignals);
     }
 
     private final Supplier<StoreInfoActionHandler> mActionHandlerSupplier;
@@ -64,7 +64,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     }
 
     @SuppressLint("ResourceType")
-    private void setupStoreInfoRow(@Nullable MerchantTrustSignals trustSignals) {
+    private void setupStoreInfoRow(@Nullable MerchantTrustSignalsV2 trustSignals) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         if (mActionHandlerSupplier == null || mActionHandlerSupplier.get() == null
                 || trustSignals == null) {
@@ -94,7 +94,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
         mRowView.setParams(rowParams);
     }
 
-    private CharSequence getRowSubtitle(MerchantTrustSignals trustSignals) {
+    private CharSequence getRowSubtitle(MerchantTrustSignalsV2 trustSignals) {
         // TODO(zhiyuancai): Set subtitle based on trustSignals after updating the proto.
         return MerchantTrustMessageViewModel.getMessageDescription(mContext, trustSignals);
     }

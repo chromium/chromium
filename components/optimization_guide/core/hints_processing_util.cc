@@ -62,6 +62,8 @@ std::string GetStringNameForOptimizationType(
       return "BloomFilterValidation";
     case proto::OptimizationType::ABOUT_THIS_SITE:
       return "AboutThisSite";
+    case proto::OptimizationType::MERCHANT_TRUST_SIGNALS_V2:
+      return "MerchantTrustSignalsV2";
   }
   NOTREACHED();
   return std::string();

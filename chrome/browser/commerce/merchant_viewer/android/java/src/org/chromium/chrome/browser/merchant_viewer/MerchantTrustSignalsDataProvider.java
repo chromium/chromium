@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.merchant_viewer;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
@@ -25,39 +28,40 @@ class MerchantTrustSignalsDataProvider {
     private static final String TAG = "MTDP";
     private static final OptimizationGuideBridgeFactory sOptimizationGuideBridgeFactory =
             new OptimizationGuideBridgeFactory(
-                    Arrays.asList(HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS));
+                    Arrays.asList(HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS_V2));
 
     /**
-     * Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge} based on {@link
-     * NavigationHandle}.
+     * Fetches {@link MerchantTrustSignalsV2} through {@link OptimizationGuideBridge} based on
+     * {@link NavigationHandle}.
      */
     public void getDataForNavigationHandle(
-            NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
+            NavigationHandle navigationHandle, Callback<MerchantTrustSignalsV2> callback) {
         sOptimizationGuideBridgeFactory.create().canApplyOptimizationAsync(navigationHandle,
-                HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
+                HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS_V2, (decision, metadata) -> {
                     onOptimizationGuideDecision(decision, metadata, callback);
                 });
     }
 
     /**
-     * Fetches {@link MerchantTrustSignals} through {@link OptimizationGuideBridge} based on {@link
-     * GURL}.
+     * Fetches {@link MerchantTrustSignalsV2} through {@link OptimizationGuideBridge} based on
+     * {@link GURL}.
      */
-    public void getDataForUrl(GURL url, Callback<MerchantTrustSignals> callback) {
-        sOptimizationGuideBridgeFactory.create().canApplyOptimization(
-                url, HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS, (decision, metadata) -> {
+    public void getDataForUrl(GURL url, Callback<MerchantTrustSignalsV2> callback) {
+        sOptimizationGuideBridgeFactory.create().canApplyOptimization(url,
+                HintsProto.OptimizationType.MERCHANT_TRUST_SIGNALS_V2, (decision, metadata) -> {
                     onOptimizationGuideDecision(decision, metadata, callback);
                 });
     }
 
     private void onOptimizationGuideDecision(@OptimizationGuideDecision int decision,
-            @Nullable Any metadata, Callback<MerchantTrustSignals> callback) {
+            @Nullable Any metadata, Callback<MerchantTrustSignalsV2> callback) {
         if (decision != OptimizationGuideDecision.TRUE || metadata == null) {
             callback.onResult(null);
             return;
         }
         try {
-            MerchantTrustSignals trustSignals = MerchantTrustSignals.parseFrom(metadata.getValue());
+            MerchantTrustSignalsV2 trustSignals =
+                    MerchantTrustSignalsV2.parseFrom(metadata.getValue());
             callback.onResult(isValidMerchantTrustSignals(trustSignals) ? trustSignals : null);
         } catch (IOException e) {
             // Catching Exception instead of InvalidProtocolBufferException in order to
@@ -67,8 +71,10 @@ class MerchantTrustSignalsDataProvider {
         }
     }
 
-    private boolean isValidMerchantTrustSignals(MerchantTrustSignals trustSignals) {
-        return trustSignals.hasMerchantCountRating() && trustSignals.hasMerchantStarRating()
-                && trustSignals.hasMerchantDetailsPageUrl();
+    @VisibleForTesting
+    boolean isValidMerchantTrustSignals(MerchantTrustSignalsV2 trustSignals) {
+        return (!TextUtils.isEmpty(trustSignals.getMerchantDetailsPageUrl()))
+                && (!trustSignals.getContainsSensitiveContent())
+                && (trustSignals.getMerchantStarRating() > 0 || trustSignals.getHasReturnPolicy());
     }
 }

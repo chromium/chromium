@@ -10877,6 +10877,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              logged-in"/>
   <suffix name="MerchantTrustSignals"
       label="Provides trust data related to the merchant."/>
+  <suffix name="MerchantTrustSignalsV2"
+      label="Provides trust data related to the merchant -- version 2."/>
   <suffix name="MetadataFetchValidation"
       label="Validates metadata fetch on navigation"/>
   <suffix name="NoScript"

@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
-import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
+import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignalsV2;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
@@ -104,8 +104,8 @@ public class PageInfoStoreInfoViewTest {
     @Mock
     private StoreInfoActionHandler mMockStoreInfoActionHandler;
 
-    private final MerchantTrustSignals mFakeMerchantTrustSigals =
-            MerchantTrustSignals.newBuilder()
+    private final MerchantTrustSignalsV2 mFakeMerchantTrustSigals =
+            MerchantTrustSignalsV2.newBuilder()
                     .setMerchantStarRating(4.5f)
                     .setMerchantCountRating(100)
                     .setMerchantDetailsPageUrl("http://dummy/url")
@@ -178,7 +178,7 @@ public class PageInfoStoreInfoViewTest {
         verifyStoreRowShowing(true);
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID)).perform(click());
         verify(mMockStoreInfoActionHandler, times(1))
-                .onStoreInfoClicked(any(MerchantTrustSignals.class));
+                .onStoreInfoClicked(any(MerchantTrustSignalsV2.class));
     }
 
     private void mockOptimizationGuideResponse(OptimizationGuideBridge.Natives optimizationGuideJni,
