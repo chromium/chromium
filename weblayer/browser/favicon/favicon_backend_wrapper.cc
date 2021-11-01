@@ -31,7 +31,7 @@ void FaviconBackendWrapper::Init(const base::FilePath& db_path) {
   db_path_ = db_path;
   favicon_backend_ = favicon::FaviconBackend::Create(db_path, this);
   if (!favicon_backend_) {
-    LOG(WARNING) << "Could not make the icon database.";
+    LOG(WARNING) << "Could not create the icon database. Please reload the website";
 
     // The favicon db is not critical. On failure initializing try deleting
     // the file and repeating. Note that FaviconDatabase already tries to
@@ -40,7 +40,7 @@ void FaviconBackendWrapper::Init(const base::FilePath& db_path) {
 
     favicon_backend_ = favicon::FaviconBackend::Create(db_path, this);
     if (!favicon_backend_) {
-      LOG(WARNING) << "the system has given up making the icons on the website you are viewing.";
+      LOG(WARNING) << "the system has given up making the icons on the website you are viewing. Try again later";
       return;
     }
   }
