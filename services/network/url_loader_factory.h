@@ -63,6 +63,17 @@ class URLLoaderFactory : public mojom::URLLoaderFactory {
                                 traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
+  // Allows starting a URLLoader with a synchronous URLLoaderClient as an
+  // optimization.
+  void CreateLoaderAndStartWithSyncClient(
+      mojo::PendingReceiver<mojom::URLLoader> receiver,
+      int32_t request_id,
+      uint32_t options,
+      const ResourceRequest& url_request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      base::WeakPtr<mojom::URLLoaderClient> sync_client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
   // Called by URLLoaders created by this factory each time before a request is
   // sent.
   void OnBeforeURLRequest();

@@ -94,6 +94,24 @@ void URLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  CreateLoaderAndStartWithSyncClient(
+      std::move(receiver), request_id, options, url_request, std::move(client),
+      /* sync_client= */ nullptr, traffic_annotation);
+}
+
+void URLLoaderFactory::Clone(
+    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
+  NOTREACHED();
+}
+
+void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
+    mojo::PendingReceiver<mojom::URLLoader> receiver,
+    int32_t request_id,
+    uint32_t options,
+    const ResourceRequest& url_request,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
+    base::WeakPtr<mojom::URLLoaderClient> sync_client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // Requests with |trusted_params| when params_->is_trusted is not set should
   // have been rejected at the CorsURLLoader layer.
   DCHECK(!url_request.trusted_params || params_->is_trusted);
@@ -238,6 +256,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
                      base::Unretained(cors_url_loader_factory_)),
       std::move(receiver), options, url_request, std::move(client),
+      std::move(sync_client),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       params_.get(), cors_url_loader_factory_->coep_reporter(), request_id,
       keepalive_request_size, context_->require_network_isolation_key(),
@@ -249,11 +268,6 @@ void URLLoaderFactory::CreateLoaderAndStart(
       std::move(accept_ch_frame_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
-}
-
-void URLLoaderFactory::Clone(
-    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTREACHED();
 }
 
 mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {

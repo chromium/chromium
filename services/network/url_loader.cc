@@ -449,6 +449,33 @@ bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
 
 }  // namespace
 
+URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
+    mojo::PendingRemote<mojom::URLLoaderClient> mojo_client,
+    base::WeakPtr<mojom::URLLoaderClient> sync_client)
+    : mojo_client_(std::move(mojo_client)),
+      sync_client_(std::move(sync_client)) {}
+
+URLLoader::MaybeSyncURLLoaderClient::~MaybeSyncURLLoaderClient() = default;
+
+void URLLoader::MaybeSyncURLLoaderClient::Reset() {
+  mojo_client_.reset();
+  sync_client_.reset();
+}
+
+mojo::PendingReceiver<mojom::URLLoaderClient>
+URLLoader::MaybeSyncURLLoaderClient::BindNewPipeAndPassReceiver() {
+  sync_client_.reset();
+  return mojo_client_.BindNewPipeAndPassReceiver();
+}
+
+mojom::URLLoaderClient* URLLoader::MaybeSyncURLLoaderClient::Get() {
+  if (sync_client_)
+    return sync_client_.get();
+  if (mojo_client_)
+    return mojo_client_.get();
+  return nullptr;
+}
+
 URLLoader::URLLoader(
     net::URLRequestContext* url_request_context,
     URLLoaderFactory* url_loader_factory,
@@ -458,6 +485,7 @@ URLLoader::URLLoader(
     int32_t options,
     const ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> url_loader_client,
+    base::WeakPtr<mojom::URLLoaderClient> sync_url_loader_client,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const mojom::URLLoaderFactoryParams* factory_params,
     mojom::CrossOriginEmbedderPolicyReporter* coep_reporter,
@@ -490,7 +518,8 @@ URLLoader::URLLoader(
       keepalive_(request.keepalive),
       do_not_prompt_for_login_(request.do_not_prompt_for_login),
       receiver_(this, std::move(url_loader_receiver)),
-      url_loader_client_(std::move(url_loader_client)),
+      url_loader_client_(std::move(url_loader_client),
+                         std::move(sync_url_loader_client)),
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunnerHandle::Get()),
@@ -1169,7 +1198,8 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
                           &redirect_info.new_url, *factory_params_,
                           origin_access_list_);
 
-  url_loader_client_->OnReceiveRedirect(redirect_info, std::move(response));
+  url_loader_client_.Get()->OnReceiveRedirect(redirect_info,
+                                              std::move(response));
 }
 
 // static
@@ -1516,7 +1546,7 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
       int64_t delta = total_encoded_bytes - reported_total_encoded_bytes_;
       DCHECK_LE(0, delta);
       if (delta)
-        url_loader_client_->OnTransferSizeUpdated(delta);
+        url_loader_client_.Get()->OnTransferSizeUpdated(delta);
       reported_total_encoded_bytes_ = total_encoded_bytes;
     }
   }
@@ -1816,7 +1846,7 @@ void URLLoader::NotifyCompleted(int error_code) {
         url_request_->GetTotalSentBytes());
   }
 
-  if (url_loader_client_) {
+  if (url_loader_client_.Get()) {
     if (consumer_handle_.is_valid())
       SendResponseToClient();
 
@@ -1844,7 +1874,7 @@ void URLLoader::NotifyCompleted(int error_code) {
       status.ssl_info = url_request_->ssl_info();
     }
 
-    url_loader_client_->OnComplete(status);
+    url_loader_client_.Get()->OnComplete(status);
   }
 
   DeleteSelf();
@@ -1874,8 +1904,9 @@ void URLLoader::DeleteSelf() {
 void URLLoader::SendResponseToClient() {
   TRACE_EVENT1("loading", "network::URLLoader::SendResponseToClient", "url",
                url_request_->url().possibly_invalid_spec());
-  url_loader_client_->OnReceiveResponse(std::move(response_));
-  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
+  url_loader_client_.Get()->OnReceiveResponse(std::move(response_));
+  url_loader_client_.Get()->OnStartLoadingResponseBody(
+      std::move(consumer_handle_));
 }
 
 void URLLoader::CompletePendingWrite(bool success) {
@@ -1903,7 +1934,7 @@ void URLLoader::SetRawResponseHeaders(
 void URLLoader::NotifyEarlyResponse(
     scoped_refptr<const net::HttpResponseHeaders> headers) {
   DCHECK(!has_received_response_);
-  DCHECK(url_loader_client_);
+  DCHECK(url_loader_client_.Get());
   DCHECK(headers);
   DCHECK_EQ(headers->response_code(), 103);
 
@@ -1928,7 +1959,7 @@ void URLLoader::NotifyEarlyResponse(
     origin_trial_tokens.push_back(value);
   }
 
-  url_loader_client_->OnReceiveEarlyHints(
+  url_loader_client_.Get()->OnReceiveEarlyHints(
       mojom::EarlyHints::New(std::move(parsed_headers), ip_address_space,
                              std::move(origin_trial_tokens)));
 }
@@ -1989,7 +2020,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
 }
 
 void URLLoader::SendUploadProgress(const net::UploadProgress& progress) {
-  url_loader_client_->OnUploadProgress(
+  url_loader_client_.Get()->OnUploadProgress(
       progress.position(), progress.size(),
       base::BindOnce(&URLLoader::OnUploadProgressACK,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -2077,11 +2108,11 @@ void URLLoader::CompleteBlockedResponse(
   status.decoded_body_length = 0;
   status.should_report_corb_blocking = should_report_corb_blocking;
   status.blocked_by_response_reason = reason;
-  url_loader_client_->OnComplete(status);
+  url_loader_client_.Get()->OnComplete(status);
 
   // Reset the connection to the URLLoaderClient.  This helps ensure that we
   // won't accidentally leak any data to the renderer from this point on.
-  url_loader_client_.reset();
+  url_loader_client_.Reset();
 }
 
 URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
@@ -2095,7 +2126,7 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
 
   // Send stripped headers to the real URLLoaderClient.
   corb::SanitizeBlockedResponseHeaders(*response_);
-  url_loader_client_->OnReceiveResponse(response_->Clone());
+  url_loader_client_.Get()->OnReceiveResponse(response_->Clone());
 
   // Send empty body to the real URLLoaderClient.
   mojo::ScopedDataPipeProducerHandle producer_handle;
@@ -2104,7 +2135,8 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb(
                                 consumer_handle),
            MOJO_RESULT_OK);
   producer_handle.reset();
-  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  url_loader_client_.Get()->OnStartLoadingResponseBody(
+      std::move(consumer_handle));
 
   // Tell the real URLLoaderClient that the response has been completed.
   if (corb_detachable_) {

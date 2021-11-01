@@ -26,6 +26,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_operation_metrics_recorder.h"
 #include "services/network/url_loader.h"
+#include "services/network/url_loader_factory.h"
 #include "url/url_util.h"
 
 namespace network {
@@ -209,6 +210,11 @@ absl::optional<CorsErrorStatus> CheckRedirectLocation(
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 
+// Whether the sync client optimization is used for communication between the
+// CorsURLLoader and URLLoader.
+constexpr base::Feature kURLLoaderSyncClient{"URLLoaderSyncClient",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace
 
 CorsURLLoader::CorsURLLoader(
@@ -223,6 +229,7 @@ CorsURLLoader::CorsURLLoader(
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojom::URLLoaderFactory* network_loader_factory,
+    URLLoaderFactory* sync_network_loader_factory,
     const OriginAccessList* origin_access_list,
     PreflightController* preflight_controller,
     const base::flat_set<std::string>* allowed_exempt_headers,
@@ -235,6 +242,7 @@ CorsURLLoader::CorsURLLoader(
       options_(options),
       delete_callback_(std::move(delete_callback)),
       network_loader_factory_(network_loader_factory),
+      sync_network_loader_factory_(sync_network_loader_factory),
       request_(resource_request),
       forwarding_client_(std::move(client)),
       traffic_annotation_(traffic_annotation),
@@ -387,6 +395,7 @@ void CorsURLLoader::FollowRedirect(
       (fetch_cors_flag_ && original_method != request_.method)) {
     DCHECK_NE(request_.mode, mojom::RequestMode::kNoCors);
     network_client_receiver_.reset();
+    sync_client_receiver_factory_.InvalidateWeakPtrs();
     StartRequest();
     return;
   }
@@ -708,10 +717,18 @@ void CorsURLLoader::StartNetworkRequest(
   // Binding |this| as an unretained pointer is safe because
   // |network_client_receiver_| shares this object's lifetime.
   network_loader_.reset();
-  network_loader_factory_->CreateLoaderAndStart(
-      network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
-      request_, network_client_receiver_.BindNewPipeAndPassRemote(),
-      traffic_annotation_);
+  if (sync_network_loader_factory_ &&
+      base::FeatureList::IsEnabled(kURLLoaderSyncClient)) {
+    sync_network_loader_factory_->CreateLoaderAndStartWithSyncClient(
+        network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, network_client_receiver_.BindNewPipeAndPassRemote(),
+        sync_client_receiver_factory_.GetWeakPtr(), traffic_annotation_);
+  } else {
+    network_loader_factory_->CreateLoaderAndStart(
+        network_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, network_client_receiver_.BindNewPipeAndPassRemote(),
+        traffic_annotation_);
+  }
   network_client_receiver_.set_disconnect_handler(
       base::BindOnce(&CorsURLLoader::OnMojoDisconnect, base::Unretained(this)));
 

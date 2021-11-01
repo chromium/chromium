@@ -289,6 +289,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         factory_override_ &&
             factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
         std::move(client), traffic_annotation, inner_url_loader_factory,
+        factory_override_ ? nullptr : network_loader_factory_.get(),
         origin_access_list_, context_->cors_preflight_controller(),
         context_->cors_exempt_header_list(),
         GetAllowAnyCorsExemptHeaderForBrowser(), isolation_info_,
