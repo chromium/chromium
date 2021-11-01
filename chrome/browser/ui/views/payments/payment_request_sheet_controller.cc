@@ -27,7 +27,7 @@
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/layout_types.h"
+#include "ui/views/layout/grid_layout.h"
 #include "ui/views/painter.h"
 
 namespace payments {
@@ -237,38 +237,48 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   // layer) won't do proper clipping.
   view->SetPaintToLayer();
 
-  views::BoxLayout* layout =
-      view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
+  views::GridLayout* layout =
+      view->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   // Note: each view is responsible for its own padding (insets).
-  header_view_ = view->AddChildView(std::make_unique<views::View>());
+  views::ColumnSet* columns = layout->AddColumnSet(0);
+  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+
+  layout->StartRow(views::GridLayout::kFixedSize, 0);
+  header_view_ = layout->AddView(std::make_unique<views::View>());
   PopulateSheetHeaderView(
       ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
       base::BindRepeating(&PaymentRequestSheetController::BackButtonPressed,
                           base::Unretained(this)),
       header_view_, GetHeaderBackground(header_view_));
 
+  layout->StartRow(views::GridLayout::kFixedSize, 0);
   header_content_separator_container_ =
-      view->AddChildView(std::make_unique<views::View>());
+      layout->AddView(std::make_unique<views::View>());
   header_content_separator_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
 
+  layout->StartRow(1.0, 0);
   // |content_view| will go into a views::ScrollView so it needs to be sized now
   // otherwise it'll be sized to the ScrollView's viewport height, preventing
   // the scroll bar from ever being shown.
-  scroll_ = view->AddChildView(DisplayDynamicBorderForHiddenContents()
-                                   ? std::make_unique<BorderedScrollView>()
-                                   : std::make_unique<views::ScrollView>());
+  scroll_ = layout->AddView(DisplayDynamicBorderForHiddenContents()
+                                ? std::make_unique<BorderedScrollView>()
+                                : std::make_unique<views::ScrollView>());
   scroll_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  layout->SetFlexForView(scroll_, 1);
-
   pane_ = scroll_->SetContents(std::make_unique<views::View>());
-  pane_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  views::GridLayout* pane_layout =
+      pane_->SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* pane_columns = pane_layout->AddColumnSet(0);
+  pane_columns->AddColumn(
+      views::GridLayout::Alignment::FILL, views::GridLayout::Alignment::LEADING,
+      views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
+      dialog_->GetActualDialogWidth(), dialog_->GetActualDialogWidth());
+  pane_layout->StartRow(views::GridLayout::kFixedSize, 0);
   // This is owned by its parent. It's the container passed to FillContentView.
-  content_view_ = pane_->AddChildView(std::make_unique<views::View>());
+  content_view_ = pane_layout->AddView(std::make_unique<views::View>());
   content_view_->SetPaintToLayer();
   content_view_->layer()->SetFillsBoundsOpaquely(true);
   content_view_->SetBackground(views::CreateThemedSolidBackground(
@@ -276,8 +286,10 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   content_view_->SetID(static_cast<int>(DialogViewID::CONTENT_VIEW));
   pane_->SizeToPreferredSize();
 
-  if (footer)
-    view->AddChildView(std::move(footer));
+  if (footer) {
+    layout->StartRow(views::GridLayout::kFixedSize, 0);
+    layout->AddView(std::move(footer));
+  }
 
   UpdateContentView();
 
@@ -416,30 +428,37 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
   // The distance between the elements and the dialog borders.
   container->SetBorder(views::CreateEmptyBorder(gfx::Insets(16)));
 
-  views::BoxLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  views::GridLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::GridLayout>());
 
+  views::ColumnSet* columns = layout->AddColumnSet(0);
+  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  columns->AddPaddingColumn(1.0, 0);
+  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+
+  layout->StartRow(views::GridLayout::kFixedSize, 0);
   std::unique_ptr<views::View> extra_view = CreateExtraFooterView();
-  if (extra_view) {
-    container->AddChildView(std::move(extra_view));
-    layout->SetFlexForView(
-        container->AddChildView(std::make_unique<views::View>()), 1);
-  }
+  if (extra_view)
+    layout->AddView(std::move(extra_view));
+  else
+    layout->SkipColumns(1);
 
-  auto* trailing_buttons_container =
-      container->AddChildView(std::make_unique<views::View>());
+  auto trailing_buttons_container = std::make_unique<views::View>();
   trailing_buttons_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
           kPaymentRequestButtonSpacing));
 
 #if defined(OS_MAC)
-  AddSecondaryButton(trailing_buttons_container);
-  AddPrimaryButton(trailing_buttons_container);
+  AddSecondaryButton(trailing_buttons_container.get());
+  AddPrimaryButton(trailing_buttons_container.get());
 #else
-  AddPrimaryButton(trailing_buttons_container);
-  AddSecondaryButton(trailing_buttons_container);
+  AddPrimaryButton(trailing_buttons_container.get());
+  AddSecondaryButton(trailing_buttons_container.get());
 #endif  // defined(OS_MAC)
 
   if (container->children().empty() &&
@@ -448,6 +467,8 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
     // footer should be rendered.
     return nullptr;
   }
+
+  layout->AddView(std::move(trailing_buttons_container));
 
   return container;
 }
