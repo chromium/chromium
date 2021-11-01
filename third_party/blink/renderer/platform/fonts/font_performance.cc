@@ -15,9 +15,6 @@ base::TimeDelta FontPerformance::system_fallback_;
 base::TimeDelta FontPerformance::shaping_;
 unsigned FontPerformance::in_style_ = 0;
 
-const base::Feature kAsyncFontAccess{"AsyncFontAccess",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
-
 // static
 void FontPerformance::MarkFirstContentfulPaint() {
   UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP",
