@@ -211,6 +211,25 @@ std::string GetDebugJSONForClusters(
       debug_visit.SetIntKey("visit_id",
                             visit.annotated_visit.visit_row.visit_id);
       debug_visit.SetDoubleKey("score", visit.score);
+      base::ListValue debug_categories;
+      for (const auto& category : visit.annotated_visit.content_annotations
+                                      .model_annotations.categories) {
+        base::DictionaryValue debug_category;
+        debug_category.SetStringKey("name", category.id);
+        debug_category.SetIntKey("value", category.weight);
+        debug_categories.Append(std::move(debug_category));
+      }
+      debug_visit.SetKey("categories", std::move(debug_categories));
+      base::ListValue debug_entities;
+      for (const auto& entity : visit.annotated_visit.content_annotations
+                                    .model_annotations.entities) {
+        base::DictionaryValue debug_entity;
+        debug_entity.SetStringKey("name", entity.id);
+        debug_entity.SetIntKey("value", entity.weight);
+        debug_entities.Append(std::move(debug_entity));
+      }
+      debug_visit.SetKey("entities", std::move(debug_entities));
+
       debug_visits.Append(std::move(debug_visit));
     }
     debug_cluster.SetKey("visits", std::move(debug_visits));
