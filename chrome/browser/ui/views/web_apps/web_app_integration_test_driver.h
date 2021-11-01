@@ -159,6 +159,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void SwitchProfileClients(const std::string& client_mode);
   void SyncTurnOff();
   void SyncTurnOn();
+  void UninstallFromList(const std::string& site_mode);
   void UninstallFromMenu(const std::string& site_mode);
   void UninstallPolicyApp(const std::string& site_mode);
 

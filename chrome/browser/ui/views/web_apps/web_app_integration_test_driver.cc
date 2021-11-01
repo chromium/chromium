@@ -69,6 +69,13 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/any_widget_observer.h"
 
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -395,8 +402,6 @@ void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   base::ListValue web_app_ids;
   web_app_ids.Append(app_state->id);
 
-  base::RunLoop run_loop;
-
   WebAppTestInstallWithOsHooksObserver observer(profile());
   observer.BeginListening();
   handler.HandleInstallAppLocally(&web_app_ids);
@@ -634,7 +639,53 @@ void WebAppIntegrationTestDriver::SyncTurnOn() {
   AfterStateChangeAction();
 }
 
-// TODO(https://crbug.com/1159651): Support this action on CrOS.
+void WebAppIntegrationTestDriver::UninstallFromList(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state) << "App not installed: " << site_mode;
+
+  WebAppTestUninstallObserver observer(profile());
+  observer.BeginListening();
+  extensions::ScopedTestDialogAutoConfirm auto_confirm(
+      extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::AppServiceProxy* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  base::RunLoop run_loop;
+  app_service_proxy->UninstallForTesting(app_state->id, nullptr,
+                                         run_loop.QuitClosure());
+  run_loop.Run();
+
+  ASSERT_NE(nullptr, AppUninstallDialogView::GetActiveViewForTesting());
+  AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The lacros implementation doesn't use a confirmation dialog so we can
+  // call the normal method.
+  apps::AppServiceProxy* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  app_service_proxy->Uninstall(app_state->id,
+                               apps::mojom::UninstallSource::kAppList, nullptr);
+#else
+  content::TestWebUI test_web_ui;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+  DCHECK(web_contents);
+  test_web_ui.set_web_contents(web_contents);
+  TestAppLauncherHandler handler(/*extension_service=*/nullptr, provider(),
+                                 &test_web_ui);
+  base::ListValue web_app_ids;
+  web_app_ids.Append(app_state->id);
+  handler.HandleUninstallApp(&web_app_ids);
+#endif
+
+  observer.Wait();
+
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::UninstallFromMenu(
     const std::string& site_mode) {
   BeforeStateChangeAction();

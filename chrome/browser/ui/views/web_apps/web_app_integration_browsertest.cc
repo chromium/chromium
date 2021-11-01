@@ -9,6 +9,16 @@
 
 namespace web_app {
 
+// Manual tests:
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, UninstallFromList) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.UninstallFromList("SiteA");
+  helper_.CheckAppNotInList("SiteA");
+}
+
+// Automated tests:
+
 IN_PROC_BROWSER_TEST_F(
     WebAppIntegrationBrowserTest,
     WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_InstPlcyTabNoShctSiteA_InListWinSiteA_NavSiteA_LaunchIconShown) {
