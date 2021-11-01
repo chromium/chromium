@@ -4913,9 +4913,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|N64|NVDA",
         short_name = "STV",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4924,9 +4921,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|L32",
         short_name = "N5",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4935,9 +4929,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|M64|QCOM",
         short_name = "N5X",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4946,9 +4937,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|M64|NVDA",
         short_name = "N9",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4957,9 +4945,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|P32|QCOM",
         short_name = "P2",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4968,9 +4953,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|R32|QCOM",
         short_name = "P4",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4979,9 +4961,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|skgl|M64",
         short_name = "N5X",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
@@ -4990,9 +4969,6 @@ ci.gpu_fyi_linux_builder(
         category = "Android|skv|P32",
         short_name = "P2",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu_fyi_linux_builder(
