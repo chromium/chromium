@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
+#include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/style_recalc.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -56,17 +57,29 @@ double ContainerQueryEvaluator::Height() const {
 }
 
 bool ContainerQueryEvaluator::Eval(
-    const ContainerQuery& container_query) const {
+    const ContainerQuery& container_query,
+    MediaQueryResultList* viewport_dependent) const {
   if (container_query.QueriedAxes() == PhysicalAxes(kPhysicalAxisNone))
     return false;
   if (!IsSufficientlyContained(contained_axes_, container_query.QueriedAxes()))
     return false;
   DCHECK(media_query_evaluator_);
-  return media_query_evaluator_->Eval(*container_query.media_queries_);
+  return media_query_evaluator_->Eval(*container_query.media_queries_,
+                                      {viewport_dependent, nullptr});
 }
 
 void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
   results_.Set(&query, result);
+}
+
+bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
+                                         MatchResult& match_result) {
+  MediaQueryResultList viewport_dependent;
+  bool result = Eval(query, &viewport_dependent);
+  if (!viewport_dependent.IsEmpty())
+    match_result.SetDependsOnViewportContainerQueries();
+  Add(query, result);
+  return result;
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(

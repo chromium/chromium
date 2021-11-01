@@ -16,6 +16,7 @@ namespace blink {
 class ContainerQuery;
 class Document;
 class Element;
+class MatchResult;
 class StyleRecalcContext;
 
 class CORE_EXPORT ContainerQueryEvaluator final
@@ -33,18 +34,12 @@ class CORE_EXPORT ContainerQueryEvaluator final
   double Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
 
-  bool Eval(const ContainerQuery&) const;
-
   // Add a dependent query to this evaluator. During calls to ContainerChanged,
   // all dependent queries are checked to see if the new size/axis information
   // causes a change in the evaluation result.
   void Add(const ContainerQuery&, bool result);
 
-  bool EvalAndAdd(const ContainerQuery& query) {
-    bool result = Eval(query);
-    Add(query, result);
-    return result;
-  }
+  bool EvalAndAdd(const ContainerQuery& query, MatchResult& match_result);
 
   enum class Change {
     // The update has no effect on the evaluation of queries associated with
@@ -69,9 +64,13 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void Trace(Visitor*) const;
 
  private:
+  friend class ContainerQueryEvaluatorTest;
+
   void SetData(Document&, PhysicalSize, PhysicalAxes contained_axes);
   void ClearResults();
   Change ComputeChange() const;
+  bool Eval(const ContainerQuery&,
+            MediaQueryResultList* viewport_dependent = nullptr) const;
 
   // TODO(crbug.com/1145970): Don't lean on MediaQueryEvaluator.
   Member<MediaQueryEvaluator> media_query_evaluator_;
