@@ -674,8 +674,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.Pseudo.{Metrics}" units="seconds/MB"
-    expires_after="2021-11-14">
+<histogram name="UMA.Pseudo.{Metrics}" units="seconds/MB" expires_after="never">
+<!-- expires-never: needed for ensuring correct UMA operation -->
+
   <owner>sweilun@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
