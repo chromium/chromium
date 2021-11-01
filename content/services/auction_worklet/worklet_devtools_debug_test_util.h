@@ -100,6 +100,12 @@ class TestDevToolsAgentClient : public blink::mojom::DevToolsSessionHost {
   std::list<Event> events_;
 };
 
+// Returns JSON for EventBreakpoints.`verb`IntrumentationBreakpoint command with
+// id `seq_number` targeting name `event_name`.
+std::string MakeInstrumentationBreakpointCommand(int seq_number,
+                                                 const char* verb,
+                                                 const char* event_name);
+
 }  // namespace auction_worklet
 
 #endif  // CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_DEVTOOLS_DEBUG_TEST_UTIL_H_

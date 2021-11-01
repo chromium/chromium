@@ -178,6 +178,14 @@ class AuctionV8Helper
                                       base::span<v8::Local<v8::Value>> args,
                                       std::vector<std::string>& error_out);
 
+  // If any debugging session targeting `context_group_id` has set an active
+  // DOM instrumentation breakpoint `name`, asks for v8 to do a debugger pause
+  // on the next statement.
+  //
+  // Expected to be run before a corresponding RunScript.
+  void MaybeTriggerInstrumentationBreakpoint(int context_group_id,
+                                             const std::string& name);
+
   void set_script_timeout_for_testing(base::TimeDelta script_timeout);
 
   // If non-nullptr, this returns a pointer to the of vector representing the

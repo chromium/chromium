@@ -2842,6 +2842,23 @@ domain DOMDebugger
       # Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
       string url
 
+# EventBreakpoints permits setting breakpoints on particular operations and
+# events in targets that run JavaScript but do not have a DOM.
+# JavaScript execution will stop on these operations as if there was a regular
+# breakpoint set.
+experimental domain EventBreakpoints
+  # Sets breakpoint on particular native event.
+  command setInstrumentationBreakpoint
+    parameters
+      # Instrumentation name to stop on.
+      string eventName
+
+  # Removes breakpoint on particular native event.
+  command removeInstrumentationBreakpoint
+    parameters
+      # Instrumentation name to stop on.
+      string eventName
+
 # This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 experimental domain DOMSnapshot
   depends on CSS

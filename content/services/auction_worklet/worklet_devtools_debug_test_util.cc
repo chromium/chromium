@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
@@ -169,6 +170,18 @@ void TestDevToolsAgentClient::LogEvent(
   EXPECT_EQ(session_id_, *session);
 
   events_.push_back(std::move(event));
+}
+
+std::string MakeInstrumentationBreakpointCommand(int seq_number,
+                                                 const char* verb,
+                                                 const char* event_name) {
+  const char kTemplate[] = R"({
+        "id":%d,
+        "method":"EventBreakpoints.%sInstrumentationBreakpoint",
+        "params": {
+          "eventName": "%s"
+        }})";
+  return base::StringPrintf(kTemplate, seq_number, verb, event_name);
 }
 
 }  // namespace auction_worklet
