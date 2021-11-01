@@ -256,7 +256,7 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
   absolute_point +=
       gfx::PointF(containing_block->Location()).OffsetFromOrigin();
 
-  float closest_distance = std::numeric_limits<float>::max();
+  double closest_distance = std::numeric_limits<double>::max();
   float position_in_fragment = 0;
   const SVGTextFragment* closest_distance_fragment = nullptr;
   SVGInlineTextBox* closest_distance_box = nullptr;
@@ -269,7 +269,7 @@ PositionWithAffinity LayoutSVGInlineText::PositionForPoint(
     for (const SVGTextFragment& fragment : text_box->TextFragments()) {
       gfx::RectF fragment_rect = fragment.BoundingBox(baseline);
 
-      float distance =
+      double distance =
           (fragment_rect.ClosestPoint(absolute_point) - absolute_point)
               .LengthSquared();
       if (distance <= closest_distance) {
