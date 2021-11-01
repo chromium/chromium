@@ -32,10 +32,10 @@ public abstract class ByteCodeRewriter {
         if (!inputJar.exists()) {
             throw new FileNotFoundException("Input jar not found: " + inputJar.getPath());
         }
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(inputJar))) {
-            try (OutputStream outputStream = new FileOutputStream(outputJar)) {
-                processZip(inputStream, outputStream);
-            }
+
+        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(inputJar));
+                OutputStream outputStream = new FileOutputStream(outputJar)) {
+            processZip(inputStream, outputStream);
         }
     }
 
@@ -57,8 +57,8 @@ public abstract class ByteCodeRewriter {
             String classPath, ClassVisitor delegate);
 
     private void processZip(InputStream inputStream, OutputStream outputStream) {
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
-            ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+                ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 // Get the uncompressed contents of the current zip entry and wrap in an input
@@ -74,14 +74,19 @@ public abstract class ByteCodeRewriter {
                     ZipEntry newEntry = new ZipEntry(entry.getName());
                     zipOutputStream.putNextEntry(newEntry);
                     zipOutputStream.write(outputBuffer.toByteArray(), 0, outputBuffer.size());
+                    zipOutputStream.closeEntry();
                 } else {
-                    zipOutputStream.putNextEntry(entry);
+                    ZipEntry newEntry = new ZipEntry(entry.getName());
+                    zipOutputStream.putNextEntry(newEntry);
                     // processClassEntry may have advanced currentEntryInputStream, so reset it to
                     // copy zip entry contents unmodified.
                     currentEntryInputStream.reset();
                     currentEntryInputStream.transferTo(zipOutputStream);
+                    zipOutputStream.closeEntry();
                 }
             }
+
+            zipOutputStream.finish();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

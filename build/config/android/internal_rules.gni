@@ -598,6 +598,34 @@ template("write_build_config") {
     if (defined(invoker.add_view_trace_events) &&
         invoker.add_view_trace_events) {
       args += [ "--add-view-trace-events" ]
+
+      # Adding trace events involves rewriting bytecode and generating a new set
+      # of jar files. In order to avoid conflicts between bundles we save the
+      # new jars in a bundle specific gen/ directory. The build config for the
+      # bundle, and each one of its modules need a path to a bundle specific
+      # gen/ directory in order to generate a list of rewritten jar paths.
+      # We use the base module's target_gen_dir because non-base modules and the
+      # app bundle targets have a reference to it (base_module_target).
+      if (_type == "android_app_bundle") {
+        _base_module_target_name =
+            get_label_info(_parent_invoker.base_module_target, "name")
+        _base_module_gen_dir =
+            get_label_info(_base_module_target_name, "target_gen_dir")
+      } else {
+        if (defined(invoker.base_module_target)) {
+          _base_module_name = get_label_info(invoker.base_module_target, "name")
+          _base_module_gen_dir =
+              get_label_info(_base_module_name, "target_gen_dir")
+        } else {
+          _grandparent_invoker = _parent_invoker.invoker
+          _base_module_gen_dir =
+              get_label_info(_grandparent_invoker.target_name, "target_gen_dir")
+        }
+      }
+      args += [
+        "--base-module-gen-dir",
+        rebase_path(_base_module_gen_dir, root_build_dir),
+      ]
     }
     if (defined(invoker.version_name)) {
       args += [
@@ -3929,48 +3957,6 @@ if (enable_java_templates) {
           assert(_unprocessed_jar_path == _device_processed_jar_path)
           _process_device_jar_deps =
               _unprocessed_jar_deps + _full_classpath_deps
-        }
-
-        if (invoker.type == "android_app_bundle_module" &&
-            enable_trace_event_bytecode_rewriting &&
-            defined(invoker.add_view_trace_events) &&
-            invoker.add_view_trace_events) {
-          _rebased_build_config = rebase_path(_build_config, root_build_dir)
-          _trace_event_rewriter_target =
-              "//build/android/bytecode:trace_event_adder"
-          _rewritten_jar_target_name = "${target_name}__trace_event_rewritten"
-          _rewriter_path = root_build_dir + "/bin/helper/trace_event_adder"
-          _stamp = "${target_gen_dir}/${target_name}.trace_event_rewrite.stamp"
-          action_with_pydeps(_rewritten_jar_target_name) {
-            script = "//build/android/gyp/trace_event_bytecode_rewriter.py"
-            inputs = [
-              _rewriter_path,
-              _build_config,
-            ]
-            outputs = [ _stamp ]
-            depfile = "$target_gen_dir/$target_name.d"
-            args = [
-              "--stamp",
-              rebase_path(_stamp, root_build_dir),
-              "--depfile",
-              rebase_path(depfile, root_build_dir),
-              "--script",
-              rebase_path(_rewriter_path, root_build_dir),
-              "--classpath",
-              "@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
-              "--classpath",
-              "@FileArg($_rebased_build_config:android:sdk_jars)",
-              "--input-jars",
-              "@FileArg($_rebased_build_config:deps_info:device_classpath)",
-              "--output-jars",
-              "@FileArg($_rebased_build_config:deps_info:trace_event_rewritten_device_classpath)",
-            ]
-            deps = [
-                     _trace_event_rewriter_target,
-                     ":$_build_config_target_name",
-                   ] + _process_device_jar_deps
-          }
-          _public_deps += [ ":${_rewritten_jar_target_name}" ]
         }
 
         dex("${target_name}__dex") {
