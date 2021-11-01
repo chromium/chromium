@@ -4352,9 +4352,9 @@ TEST_P(PaintPropertyTreeBuilderTest,
     return;
 
   SetBodyInnerHTML(R"HTML(
-    <div id=fixed style='position: fixed; columns: 2'>
-      <div style='width: 50px; height: 20px; background: lightblue'></div>
-      <div style='width: 50px; height: 20px; background: lightgray'></div>
+    <div id=fixed style='position: fixed; columns: 2; column-gap: 20px; width: 120px;'>
+      <div style='height: 20px; background: lightblue'></div>
+      <div style='height: 20px; background: lightgray'></div>
     </div>
     <div style='height: 2000px'></div>
   )HTML");
@@ -4366,8 +4366,15 @@ TEST_P(PaintPropertyTreeBuilderTest,
       multicol_container->FirstFragment().NextFragment()->NextFragment());
   EXPECT_EQ(PhysicalOffset(),
             multicol_container->FirstFragment().PaintOffset());
-  EXPECT_EQ(PhysicalOffset(51, -20),
-            multicol_container->FirstFragment().NextFragment()->PaintOffset());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(
+        PhysicalOffset(70, 0),
+        multicol_container->FirstFragment().NextFragment()->PaintOffset());
+  } else {
+    EXPECT_EQ(
+        PhysicalOffset(70, -20),
+        multicol_container->FirstFragment().NextFragment()->PaintOffset());
+  }
 
   GetDocument().View()->LayoutViewport()->ScrollBy(
       ScrollOffset(0, 25), mojom::blink::ScrollType::kUser);
@@ -4378,8 +4385,15 @@ TEST_P(PaintPropertyTreeBuilderTest,
       multicol_container->FirstFragment().NextFragment()->NextFragment());
   EXPECT_EQ(PhysicalOffset(),
             multicol_container->FirstFragment().PaintOffset());
-  EXPECT_EQ(PhysicalOffset(51, -20),
-            multicol_container->FirstFragment().NextFragment()->PaintOffset());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(
+        PhysicalOffset(70, 0),
+        multicol_container->FirstFragment().NextFragment()->PaintOffset());
+  } else {
+    EXPECT_EQ(
+        PhysicalOffset(70, -20),
+        multicol_container->FirstFragment().NextFragment()->PaintOffset());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FragmentsUnderMultiColumn) {
