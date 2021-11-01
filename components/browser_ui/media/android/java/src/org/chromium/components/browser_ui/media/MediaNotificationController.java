@@ -832,16 +832,9 @@ public class MediaNotificationController {
     /**
      * Compute the actions to be shown in BigView media notification.
      *
-     * The method assumes STOP cannot coexist with switch track actions and seeking actions. It also
-     * assumes PLAY and PAUSE cannot coexist.
+     * The method assumes PLAY and PAUSE cannot coexist.
      */
     private static List<Integer> computeBigViewActions(Set<Integer> actions) {
-        // STOP cannot coexist with switch track actions and seeking actions.
-        assert !actions.contains(MediaSessionAction.STOP)
-                || !(actions.contains(MediaSessionAction.PREVIOUS_TRACK)
-                        && actions.contains(MediaSessionAction.NEXT_TRACK)
-                        && actions.contains(MediaSessionAction.SEEK_BACKWARD)
-                        && actions.contains(MediaSessionAction.SEEK_FORWARD));
         // PLAY and PAUSE cannot coexist.
         assert !actions.contains(MediaSessionAction.PLAY)
                 || !actions.contains(MediaSessionAction.PAUSE);
@@ -860,11 +853,10 @@ public class MediaNotificationController {
         List<Integer> sortedActions = new ArrayList<>();
         for (int action : actionByOrder) {
             if (actions.contains(action)) sortedActions.add(action);
+            // Actions are not prioritized ,so when total actions are more then
+            // {@link BIG_VIEW_ACTIONS_COUNT} ACTION_STOP will be dropped per the decided order.
+            if (sortedActions.size() == BIG_VIEW_ACTIONS_COUNT) break;
         }
-
-        // There can't be move actions than BIG_VIEW_ACTIONS_COUNT. We do this check after we have
-        // sorted the actions since there may be more actions that we do not support.
-        assert sortedActions.size() <= BIG_VIEW_ACTIONS_COUNT;
 
         return sortedActions;
     }
@@ -872,19 +864,12 @@ public class MediaNotificationController {
     /**
      * Compute the actions to be shown in CompactView media notification.
      *
-     * The method assumes STOP cannot coexist with switch track actions and seeking actions. It also
-     * assumes PLAY and PAUSE cannot coexist.
+     * The method assumes PLAY and PAUSE cannot coexist.
      *
      * Actions in pairs are preferred if there are more actions than |COMPACT_VIEW_ACTIONS_COUNT|.
      */
     @VisibleForTesting
     static int[] computeCompactViewActionIndices(List<Integer> actions) {
-        // STOP cannot coexist with switch track actions and seeking actions.
-        assert !actions.contains(MediaSessionAction.STOP)
-                || !(actions.contains(MediaSessionAction.PREVIOUS_TRACK)
-                        && actions.contains(MediaSessionAction.NEXT_TRACK)
-                        && actions.contains(MediaSessionAction.SEEK_BACKWARD)
-                        && actions.contains(MediaSessionAction.SEEK_FORWARD));
         // PLAY and PAUSE cannot coexist.
         assert !actions.contains(MediaSessionAction.PLAY)
                 || !actions.contains(MediaSessionAction.PAUSE);
