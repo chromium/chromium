@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
+#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/common/autofill_tick_clock.h"
+
 namespace autofill {
 
 CreditCardOtpAuthenticator::OtpAuthenticationResponse::
@@ -23,8 +26,10 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
     const std::string& context_token,
     int64_t billing_customer_number) {
   if (!card) {
-    return requester->OnOtpAuthenticationComplete(
+    requester->OnOtpAuthenticationComplete(
         OtpAuthenticationResponse().with_did_succeed(false));
+    Reset();
+    return;
   }
   // Currently only virtual cards are supported for OTP authentication.
   // If non-virtual cards are allowed for OTP unmasking in the future,
@@ -48,6 +53,8 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
   DCHECK(payments_client_);
   payments_client_->Prepare();
 
+  AutofillMetrics::LogOtpAuthAttempt();
+
   // Send user selected challenge option to server.
   SendSelectChallengeOptionRequest();
 }
@@ -62,6 +69,8 @@ void CreditCardOtpAuthenticator::SendSelectChallengeOptionRequest() {
       billing_customer_number_;
   select_challenge_option_request_->context_token = context_token_;
 
+  select_challenge_option_request_timestamp_ = AutofillTickClock::NowTicks();
+
   // Send SelectChallengeOption request to server, the callback is
   // |OnDidSelectChallengeOption|.
   payments_client_->SelectChallengeOption(
@@ -73,6 +82,12 @@ void CreditCardOtpAuthenticator::SendSelectChallengeOptionRequest() {
 void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     AutofillClient::PaymentsRpcResult result,
     const std::string& context_token) {
+  if (select_challenge_option_request_timestamp_.has_value()) {
+    AutofillMetrics::LogOtpAuthSelectChallengeOptionRequestLatency(
+        AutofillTickClock::NowTicks() -
+        *select_challenge_option_request_timestamp_);
+  }
+
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     DCHECK(!context_token.empty());
     // Update the |context_token_| with the new one.
@@ -81,16 +96,30 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     ShowOtpDialog();
     return;
   }
+
+  // End Session.
+  requester_->OnOtpAuthenticationComplete(
+      OtpAuthenticationResponse().with_did_succeed(false));
+  Reset();
+
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the rest failure cases
   // since currently only virtual card is supported.
   autofill_client_->ShowVirtualCardErrorDialog(
       /*is_permanent_error=*/result ==
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
-  // End Session.
-  Reset();
-  requester_->OnOtpAuthenticationComplete(
-      OtpAuthenticationResponse().with_did_succeed(false));
+
+  if (result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    AutofillMetrics::LogOtpAuthResult(
+        AutofillMetrics::OtpAuthEvent::
+            kSelectedChallengeOptionVirtualCardRetrievalError);
+  } else {
+    AutofillMetrics::LogOtpAuthResult(
+        AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError);
+  }
 }
 
 void CreditCardOtpAuthenticator::ShowOtpDialog() {
@@ -141,6 +170,21 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptAccepted(
   }
 }
 
+void CreditCardOtpAuthenticator::OnUnmaskPromptClosed(
+    bool dismiss_by_cancellation) {
+  // This function will be invoked when the prompt closes, no matter if it is
+  // due to success or cancellation by users. If |dismiss_by_cancellation| is
+  // false we should return early in this case.
+  if (!dismiss_by_cancellation)
+    return;
+
+  requester_->OnOtpAuthenticationComplete(
+      OtpAuthenticationResponse().with_did_succeed(false));
+  Reset();
+  AutofillMetrics::LogOtpAuthResult(
+      AutofillMetrics::OtpAuthEvent::kFlowCancelled);
+}
+
 void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
     const std::string& risk_data) {
   risk_data_ = risk_data;
@@ -155,7 +199,7 @@ void CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData(
 
 void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
   unmask_request_->risk_data = risk_data_;
-
+  unmask_card_request_timestamp_ = AutofillTickClock::NowTicks();
   payments_client_->UnmaskCard(
       *unmask_request_,
       base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetRealPan,
@@ -165,7 +209,11 @@ void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
 void CreditCardOtpAuthenticator::OnDidGetRealPan(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
-  // TODO(crbug.com/1243475): Add latency logging.
+  if (unmask_card_request_timestamp_.has_value()) {
+    AutofillMetrics::LogOtpAuthUnmaskCardRequestLatency(
+        AutofillTickClock::NowTicks() - *unmask_card_request_timestamp_);
+  }
+
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     if (response_details.card_type !=
         AutofillClient::PaymentsRpcCardType::kVirtualCard) {
@@ -173,6 +221,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
       NOTREACHED();
       requester_->OnOtpAuthenticationComplete(
           OtpAuthenticationResponse().with_did_succeed(false));
+      Reset();
       return;
     }
     // If |flow_status| is present, this intermediate status allows the user to
@@ -182,12 +231,19 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
       DCHECK(!response_details.context_token.empty());
       // Update the |context_token_| with the new one.
       context_token_ = response_details.context_token;
+
       // TODO(crbug.com/1243475): Invoke autofill_client to update the OTP
       // dialog with the flow status, e.g. OTP mismatch or expired.
-      // Once user retries with a new OTP input, we wil invoke
-      // |OnUnmaskPromptAccepted(new_otp)|.
-      // If user asks for a new OTP code, we will invoke
-      // |SendSelectChallengeOptionRequest()| again.
+      if (response_details.flow_status.find("INCORRECT_OTP") !=
+          std::string::npos) {
+        AutofillMetrics::LogOtpAuthRetriableError(
+            AutofillMetrics::OtpAuthEvent::kOtpMismatch);
+      } else {
+        DCHECK(response_details.flow_status.find("EXPIRED_OTP") !=
+               std::string::npos);
+        AutofillMetrics::LogOtpAuthRetriableError(
+            AutofillMetrics::OtpAuthEvent::kOtpExpired);
+      }
       return;
     }
 
@@ -210,17 +266,32 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     response.card = &(unmask_request_->card);
     response.cvc = base::UTF8ToUTF16(response_details.dcvv);
     requester_->OnOtpAuthenticationComplete(response);
+    Reset();
+
+    AutofillMetrics::LogOtpAuthResult(AutofillMetrics::OtpAuthEvent::kSuccess);
     return;
   }
+
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the rest failure cases
   // since currently only virtual card is supported.
   autofill_client_->ShowVirtualCardErrorDialog(
       /*is_permanent_error=*/result ==
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
-  Reset();
   requester_->OnOtpAuthenticationComplete(
       OtpAuthenticationResponse().with_did_succeed(false));
+  Reset();
+
+  if (result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    AutofillMetrics::LogOtpAuthResult(
+        AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
+  } else {
+    AutofillMetrics::LogOtpAuthResult(
+        AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError);
+  }
 }
 
 void CreditCardOtpAuthenticator::Reset() {
@@ -234,6 +305,8 @@ void CreditCardOtpAuthenticator::Reset() {
   billing_customer_number_ = 0;
   select_challenge_option_request_.reset();
   unmask_request_.reset();
+  select_challenge_option_request_timestamp_ = absl::nullopt;
+  unmask_card_request_timestamp_ = absl::nullopt;
 }
 
 }  // namespace autofill

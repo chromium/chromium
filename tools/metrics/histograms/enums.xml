@@ -6460,6 +6460,26 @@ others/histograms.xml -->
   <int value="2" label="User did not interact with the infobar"/>
 </enum>
 
+<enum name="AutofillOtpAuthEvent">
+  <int value="0" label="Unknown result"/>
+  <int value="1" label="OTP auth succeeded"/>
+  <int value="2" label="OTP auth failed due to flow being cancelled"/>
+  <int value="3"
+      label="OTP auth failed due to generic error in SelectChallengeOption
+             request"/>
+  <int value="4"
+      label="OTP auth failed due to virtual card retrieval error in
+             SelectChallengeOption request"/>
+  <int value="5"
+      label="OTP auth failed due to auth error in UnmaskCard request"/>
+  <int value="6"
+      label="OTP auth failed due to virtual card retrieval error in
+             UnmaskCard request"/>
+  <int value="7" label="OTP auth temporarily failed due to OTP being expired"/>
+  <int value="8"
+      label="OTP auth temporarily failed due to OTP being incorrect"/>
+</enum>
+
 <enum name="AutofillPredictionSource">
   <int value="0" label="PREDICTION_SOURCE_UNKNOWN"/>
   <int value="1" label="PREDICTION_SOURCE_HEURISTIC"/>

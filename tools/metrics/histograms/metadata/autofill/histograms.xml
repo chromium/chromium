@@ -61,6 +61,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
                from the FreeListingCouponService."/>
 </variants>
 
+<variants name="Autofill.OtpAuth.Type">
+  <variant name="SmsOtp" summary="The OTP authentication with a SMS OTP."/>
+</variants>
+
 <variants name="Autofill.PaymentBubble.Show">
   <variant name="FirstShow" summary="The bubble is shown for the first time."/>
   <variant name="Reshows" summary="The bubble is re-shown."/>
@@ -2021,6 +2025,59 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     {OfferType}. Recorded when the infobar is closed.
   </summary>
   <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
+<histogram name="Autofill.OtpAuth.{OtpAuthType}.Attempt"
+    enum="BooleanAttempted" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when an OTP authentication starts and does not emit any value
+    otherwise.
+  </summary>
+  <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
+</histogram>
+
+<histogram
+    name="Autofill.OtpAuth.{OtpAuthType}.RequestLatency.SelectChallengeOptionRequest"
+    units="ms" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the roundtrip latency of the SelectChallengeOptionRequest in the OTP
+    authentication.
+  </summary>
+  <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
+</histogram>
+
+<histogram
+    name="Autofill.OtpAuth.{OtpAuthType}.RequestLatency.UnmaskCardRequest"
+    units="ms" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the roundtrip latency of the UnmaskCardRequest in the OTP
+    authentication.
+  </summary>
+  <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
+</histogram>
+
+<histogram name="Autofill.OtpAuth.{OtpAuthType}.Result"
+    enum="AutofillOtpAuthEvent" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>Logs the result of the OTP authentication.</summary>
+  <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
+</histogram>
+
+<histogram name="Autofill.OtpAuth.{OtpAuthType}.RetriableError"
+    enum="AutofillOtpAuthEvent" expires_after="2022-05-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs any retriable failure before the OTP authentication completes.
+  </summary>
+  <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
 <histogram name="Autofill.PageTranslationStatus" enum="Boolean"
