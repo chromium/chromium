@@ -390,6 +390,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SetNeedsBeginFrameForFlingProgress();
 
  protected:
+  ~RenderWidgetHostViewAndroid() override;
+
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
@@ -402,8 +404,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   friend class RenderWidgetHostViewAndroidRotationTest;
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            GestureManagerListensToChildFrames);
-
-  ~RenderWidgetHostViewAndroid() override;
 
   bool ShouldReportAllRootScrolls();
 
