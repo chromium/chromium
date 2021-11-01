@@ -9,8 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -657,9 +655,6 @@ void PermissionManager::UnsubscribePermissionStatusChange(
   if (!subscription)
     return;
 
-  if (is_processing_permission_change_)
-    base::debug::DumpWithoutCrashing();
-
   ContentSettingsType type = subscription->permission;
   subscriptions_.Remove(subscription_id);
   auto type_count = subscription_type_counts_.find(type);
@@ -688,10 +683,6 @@ void PermissionManager::OnPermissionChanged(
 
   std::vector<base::OnceClosure> callbacks;
   callbacks.reserve(subscriptions_.size());
-  base::AutoReset<bool> reset(&is_processing_permission_change_, true);
-  SCOPED_CRASH_KEY_NUMBER(
-      "PermissionManager", "content_type",
-      static_cast<int>(content_type_set.GetTypeOrDefault()));
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
     Subscription* subscription = iter.GetCurrentValue();
