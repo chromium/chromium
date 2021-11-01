@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
+#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
 namespace {
@@ -82,7 +83,7 @@ GURL StreamingRuntimeApplication::ProcessWebView(
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), network_context_getter_, std::move(client_port), this,
-      true, true);
+      true, app_id() != openscreen::cast::GetIosAppStreamingAudioVideoAppId());
   receiver_session_client_->LaunchStreamingReceiverAsync(cast_web_contents);
 
   std::string streaming_url =

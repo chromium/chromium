@@ -124,7 +124,7 @@ void RuntimeApplicationDispatcher::LoadApplication(
     GrpcMethod* callback) {
   const std::string& app_id = request.application_config().app_id();
 
-  if (openscreen::cast::IsCastStreamingAppId(app_id)) {
+  if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
     // Deliberately copy |network_context_getter_|.
     app_ = std::make_unique<StreamingRuntimeApplication>(
         web_service_.get(), task_runner_, network_context_getter_);
