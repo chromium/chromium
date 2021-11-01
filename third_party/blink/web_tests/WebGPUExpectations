@@ -332,17 +332,6 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="depth-only";type1="render-target";* [ Failure ]
 crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:subresources_and_binding_types_combination_for_aspect:format="depth24plus-stencil8";aspect1="stencil-only";type1="render-target";* [ Failure ]
 
-# Adapter limits change failures
-crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxTextureArrayLayers";* [ Failure ]
-crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:supported_limits:limit="maxStorageBuffersPerShaderStage";* [ Failure ]
-# Linux crash conflict with expectation of crbug.com/dawn/1064
-crbug.com/dawn/1112 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxTextureArrayLayers";* [ Failure ]
-crbug.com/dawn/1112 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxTextureArrayLayers";* [ Failure ]
-crbug.com/dawn/1112 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxStorageBuffersPerShaderStage";* [ Failure ]
-crbug.com/dawn/1112 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,adapter,requestDevice_limits:worse_than_default:limit="maxStorageBuffersPerShaderStage";* [ Failure ]
-crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:* [ Failure ]
-crbug.com/dawn/1112 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,uncompressed_format:* [ Failure ]
-
 ###
 ### Mac (Metal) specific
 ###
