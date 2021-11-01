@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "components/messages/android/jni_headers/MessageWrapper_jni.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 namespace messages {
 
@@ -121,6 +122,18 @@ void MessageWrapper::SetIconResourceId(int resource_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_setIconResourceId(env, java_message_wrapper_,
                                         resource_id);
+}
+
+bool MessageWrapper::IsValidIcon() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_isValidIcon(env, java_message_wrapper_);
+}
+
+void MessageWrapper::SetIcon(const SkBitmap& icon) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_bitmap =
+      gfx::ConvertToJavaBitmap(icon);
+  Java_MessageWrapper_setIcon(env, java_message_wrapper_, java_bitmap);
 }
 
 void MessageWrapper::DisableIconTint() {

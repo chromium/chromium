@@ -9,6 +9,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "url/gurl.h"
 
 namespace webapps {
 
@@ -72,7 +74,11 @@ void InstallableAmbientBadgeMessageControllerTest::EnqueueMessage() {
   EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage)
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&message_wrapper_),
                                testing::Return(true)));
-  message_controller_.EnqueueMessage(web_contents(), kAppName);
+  SkBitmap test_icon;
+  test_icon.allocPixels(
+      SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType));
+  message_controller_.EnqueueMessage(web_contents(), kAppName, test_icon,
+                                     GURL("https://example.com/"));
 }
 
 void InstallableAmbientBadgeMessageControllerTest::DismissMessage(
@@ -121,7 +127,9 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, MessagePropertyValues) {
   EnqueueMessage();
 
   EXPECT_NE(std::u16string::npos, message_wrapper()->GetTitle().find(kAppName));
+  EXPECT_FALSE(message_wrapper()->GetDescription().empty());
   EXPECT_FALSE(message_wrapper()->GetPrimaryButtonText().empty());
+  EXPECT_TRUE(message_wrapper()->IsValidIcon());
 
   DismissMessage(true);
 }

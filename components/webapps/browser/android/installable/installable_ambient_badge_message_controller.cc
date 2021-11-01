@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -28,7 +29,9 @@ bool InstallableAmbientBadgeMessageController::IsMessageEnqueued() {
 
 void InstallableAmbientBadgeMessageController::EnqueueMessage(
     content::WebContents* web_contents,
-    const std::u16string& app_name) {
+    const std::u16string& app_name,
+    const SkBitmap& icon,
+    const GURL& start_url) {
   DCHECK(!message_);
 
   message_ = std::make_unique<messages::MessageWrapper>(
@@ -40,9 +43,13 @@ void InstallableAmbientBadgeMessageController::EnqueueMessage(
           &InstallableAmbientBadgeMessageController::HandleMessageDismissed,
           base::Unretained(this)));
 
-  // TODO(crbug.com/1247374): Adjust title string, add description and icon.
   message_->SetTitle(l10n_util::GetStringFUTF16(
       IDS_AMBIENT_BADGE_INSTALL_ALTERNATIVE, app_name));
+  message_->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
+      start_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  // TODO(crbug.com/1247374): Add support for maskable primary icon.
+  message_->DisableIconTint();
+  message_->SetIcon(icon);
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_INSTALL));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,

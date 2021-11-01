@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
 #include "components/messages/android/message_enums.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace messages {
 
@@ -59,6 +60,8 @@ class MessageWrapper {
   // translate from chromium resource_id to Android drawable resource_id.
   int GetIconResourceId();
   void SetIconResourceId(int resource_id);
+  bool IsValidIcon();
+  void SetIcon(const SkBitmap& icon);
   // The icon is tinted to default_icon_color_blue by default.
   // Call this method to display icons of original colors.
   void DisableIconTint();
