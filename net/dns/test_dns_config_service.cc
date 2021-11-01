@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "net/dns/address_sorter.h"
 #include "net/dns/dns_hosts.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -34,10 +35,12 @@ void TestDnsConfigService::RefreshConfig() {
 }
 
 HostsReadingTestDnsConfigService::HostsReadingTestDnsConfigService(
-    HostsParserFactory hosts_parser_factory)
+    HostsParserFactory hosts_parser_factory,
+    AddressSorterFactory address_sorter_factory)
     : hosts_reader_(
           std::make_unique<HostsReader>(*this,
-                                        std::move(hosts_parser_factory))) {}
+                                        std::move(hosts_parser_factory),
+                                        std::move(address_sorter_factory))) {}
 
 HostsReadingTestDnsConfigService::~HostsReadingTestDnsConfigService() = default;
 
@@ -52,17 +55,20 @@ bool HostsReadingTestDnsConfigService::StartWatching() {
 
 HostsReadingTestDnsConfigService::HostsReader::HostsReader(
     TestDnsConfigService& service,
-    HostsParserFactory hosts_parser_factory)
+    HostsParserFactory hosts_parser_factory,
+    AddressSorterFactory address_sorter_factory)
     : DnsConfigService::HostsReader(
           /*hosts_file_path=*/base::FilePath::StringPieceType(),
           service),
-      hosts_parser_factory_(std::move(hosts_parser_factory)) {}
+      hosts_parser_factory_(std::move(hosts_parser_factory)),
+      address_sorter_factory_(std::move(address_sorter_factory)) {}
 
 HostsReadingTestDnsConfigService::HostsReader::~HostsReader() = default;
 
 std::unique_ptr<SerialWorker::WorkItem>
 HostsReadingTestDnsConfigService::HostsReader::CreateWorkItem() {
-  return std::make_unique<WorkItem>(hosts_parser_factory_.Run());
+  return std::make_unique<WorkItem>(hosts_parser_factory_.Run(),
+                                    address_sorter_factory_.Run());
 }
 
 HostsReadingTestDnsConfigService::Watcher::Watcher(DnsConfigService& service)

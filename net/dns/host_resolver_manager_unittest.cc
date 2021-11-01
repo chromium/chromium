@@ -4324,10 +4324,10 @@ TEST_F(HostResolverManagerDnsTest, LocalhostLookup) {
 // file is active.
 TEST_F(HostResolverManagerDnsTest, LocalhostLookupWithHosts) {
   DnsHosts hosts;
-  hosts[DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4)] =
-      IPAddress({192, 168, 1, 1});
-  hosts[DnsHostsKey("foo.localhost", ADDRESS_FAMILY_IPV4)] =
-      IPAddress({192, 168, 1, 2});
+  hosts[DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4)] = {
+      IPAddress({192, 168, 1, 1})};
+  hosts[DnsHostsKey("foo.localhost", ADDRESS_FAMILY_IPV4)] = {
+      IPAddress({192, 168, 1, 2})};
 
   DnsConfig config = CreateValidDnsConfig();
   config.hosts = hosts;
@@ -4715,10 +4715,10 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
   IPAddress local_ipv6 = IPAddress::IPv6Localhost();
 
   DnsHosts hosts;
-  hosts[DnsHostsKey("nx_ipv4", ADDRESS_FAMILY_IPV4)] = local_ipv4;
-  hosts[DnsHostsKey("nx_ipv6", ADDRESS_FAMILY_IPV6)] = local_ipv6;
-  hosts[DnsHostsKey("nx_both", ADDRESS_FAMILY_IPV4)] = local_ipv4;
-  hosts[DnsHostsKey("nx_both", ADDRESS_FAMILY_IPV6)] = local_ipv6;
+  hosts[DnsHostsKey("nx_ipv4", ADDRESS_FAMILY_IPV4)] = {local_ipv4};
+  hosts[DnsHostsKey("nx_ipv6", ADDRESS_FAMILY_IPV6)] = {local_ipv6};
+  hosts[DnsHostsKey("nx_both", ADDRESS_FAMILY_IPV4)] = {local_ipv4};
+  hosts[DnsHostsKey("nx_both", ADDRESS_FAMILY_IPV6)] = {local_ipv6};
 
   // Update HOSTS file.
   config.hosts = hosts;
@@ -4786,6 +4786,28 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
   EXPECT_FALSE(response_upper.request()->GetDnsAliasResults());
 }
 
+TEST_F(HostResolverManagerDnsTest, ServeMultiAddressEntryFromHosts) {
+  DnsHosts hosts;
+  hosts[DnsHostsKey("multi_address", ADDRESS_FAMILY_IPV4)] = {
+      IPAddress(1, 1, 1, 1), IPAddress(2, 2, 2, 2)};
+
+  // Update HOSTS file.
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = std::move(hosts);
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("multi_address", 443), NetworkIsolationKey(),
+      NetLogWithSource(),
+      /*optional_parameters=*/absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults().value().endpoints(),
+              testing::UnorderedElementsAre(CreateExpected("1.1.1.1", 443),
+                                            CreateExpected("2.2.2.2", 443)));
+  EXPECT_FALSE(response.request()->GetDnsAliasResults());
+}
+
 TEST_F(HostResolverManagerDnsTest, SkipHostsWithUpcomingProcTask) {
   // Disable the DnsClient.
   resolver_->SetInsecureDnsClientEnabled(
@@ -4798,7 +4820,8 @@ TEST_F(HostResolverManagerDnsTest, SkipHostsWithUpcomingProcTask) {
 
   DnsConfig config = CreateValidDnsConfig();
   DnsHosts hosts;
-  hosts[DnsHostsKey("hosts", ADDRESS_FAMILY_IPV4)] = IPAddress::IPv4Localhost();
+  hosts[DnsHostsKey("hosts", ADDRESS_FAMILY_IPV4)] = {
+      IPAddress::IPv4Localhost()};
 
   // Update HOSTS file.
   config.hosts = hosts;
@@ -7557,7 +7580,7 @@ TEST_F(HostResolverManagerDnsTest, SetDnsConfigOverrides) {
 
   DnsConfig original_config = CreateValidDnsConfig();
   original_config.hosts = {
-      {DnsHostsKey("host", ADDRESS_FAMILY_IPV4), IPAddress(192, 168, 1, 1)}};
+      {DnsHostsKey("host", ADDRESS_FAMILY_IPV4), {IPAddress(192, 168, 1, 1)}}};
   ChangeDnsConfig(original_config);
 
   // Confirm pre-override state.
