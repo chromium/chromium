@@ -82,10 +82,11 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
     bssl::UniquePtr<CRYPTO_BUFFER> backing_data,
     const ParseCertificateOptions& options,
     CertErrors* errors) {
-  if (!errors) {
-    CertErrors unused_errors;
-    return Create(std::move(backing_data), options, &unused_errors);
-  }
+  // |errors| is an optional parameter, but to keep the code simpler, use a
+  // dummy object when one wasn't provided.
+  CertErrors unused_errors;
+  if (!errors)
+    errors = &unused_errors;
 
   scoped_refptr<ParsedCertificate> result(new ParsedCertificate);
   result->cert_data_ = std::move(backing_data);
