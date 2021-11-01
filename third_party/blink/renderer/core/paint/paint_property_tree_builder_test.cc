@@ -4403,17 +4403,19 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentsUnderMultiColumn) {
       .space { height: 30px; }
       .abs { position: absolute; width: 20px; height: 20px; }
     </style>
-    <div style='columns:2; width: 200px; column-gap: 0'>
-      <div id=relpos style='position: relative'>
-        <div id=space1 class=space></div>
-        <div id=space2 class=space></div>
-        <div id=spanner style='column-span: all'>
-          <div id=normal style='height: 50px'></div>
-          <div id=top-left class=abs style='top: 0; left: 0'></div>
-          <div id=bottom-right class=abs style='bottom: 0; right: 0'></div>
+    <div style='position:relative; width:400px; height:400px;'>
+      <div style='columns:2; width: 200px; column-gap: 0'>
+        <div id=relpos style='position: relative'>
+          <div id=space1 class=space></div>
+          <div id=space2 class=space></div>
+          <div id=spanner style='column-span: all'>
+            <div id=normal style='height: 50px'></div>
+            <div id=top-left class=abs style='top: 0; left: 0'></div>
+            <div id=bottom-right class=abs style='bottom: 0; right: 0'></div>
+          </div>
+          <div id=space3 class=space></div>
+          <div id=space4 class=space></div>
         </div>
-        <div id=space3 class=space></div>
-        <div id=space4 class=space></div>
       </div>
     </div>
   )HTML");
@@ -4424,65 +4426,105 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentsUnderMultiColumn) {
   EXPECT_EQ(4u, NumFragments(flowthread));
 
   EXPECT_EQ(PhysicalOffset(), FragmentAt(relpos, 0).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(), FragmentAt(relpos, 0).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(), FragmentAt(relpos, 0).LogicalTopInFlowThread());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(0u, FragmentAt(relpos, 0).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(), FragmentAt(relpos, 0).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(), FragmentAt(relpos, 0).LogicalTopInFlowThread());
+  }
   EXPECT_EQ(nullptr, FragmentAt(relpos, 0).PaintProperties());
   EXPECT_EQ(PhysicalOffset(), FragmentAt(flowthread, 0).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(),
-            FragmentAt(flowthread, 0).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(), FragmentAt(flowthread, 0).LogicalTopInFlowThread());
-  const auto* fragment_clip =
-      FragmentAt(flowthread, 0).PaintProperties()->FragmentClip();
-  ASSERT_NE(nullptr, fragment_clip);
-  EXPECT_CLIP_RECT(FloatRect(-1000000, -1000000, 2000000, 1000030),
-                   fragment_clip);
-  EXPECT_EQ(fragment_clip,
-            &FragmentAt(relpos, 0).LocalBorderBoxProperties().Clip());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(0u, FragmentAt(flowthread, 0).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(),
+              FragmentAt(flowthread, 0).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(), FragmentAt(flowthread, 0).LogicalTopInFlowThread());
+    const auto* fragment_clip =
+        FragmentAt(flowthread, 0).PaintProperties()->FragmentClip();
+    ASSERT_NE(nullptr, fragment_clip);
+    EXPECT_CLIP_RECT(FloatRect(-1000000, -1000000, 2000000, 1000030),
+                     fragment_clip);
+    EXPECT_EQ(fragment_clip,
+              &FragmentAt(relpos, 0).LocalBorderBoxProperties().Clip());
+  }
 
-  EXPECT_EQ(PhysicalOffset(100, -30), FragmentAt(relpos, 1).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(100, -30),
-            FragmentAt(relpos, 1).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(30), FragmentAt(relpos, 1).LogicalTopInFlowThread());
-  EXPECT_EQ(nullptr, FragmentAt(relpos, 1).PaintProperties());
-  EXPECT_EQ(PhysicalOffset(100, -30), FragmentAt(flowthread, 1).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(100, -30),
-            FragmentAt(flowthread, 1).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(30), FragmentAt(flowthread, 1).LogicalTopInFlowThread());
-  fragment_clip = FragmentAt(flowthread, 1).PaintProperties()->FragmentClip();
-  ASSERT_NE(nullptr, fragment_clip);
-  EXPECT_CLIP_RECT(FloatRect(-999900, 0, 2000000, 30), fragment_clip);
-  EXPECT_EQ(fragment_clip,
-            &FragmentAt(relpos, 1).LocalBorderBoxProperties().Clip());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(relpos, 1).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(relpos, 1).FragmentID());
+    EXPECT_EQ(nullptr, FragmentAt(relpos, 1).PaintProperties());
+    EXPECT_EQ(PhysicalOffset(100, 0), FragmentAt(flowthread, 1).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(flowthread, 1).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(100, -30), FragmentAt(relpos, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(100, -30),
+              FragmentAt(relpos, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(30), FragmentAt(relpos, 1).LogicalTopInFlowThread());
+    EXPECT_EQ(nullptr, FragmentAt(relpos, 1).PaintProperties());
+    EXPECT_EQ(PhysicalOffset(100, -30),
+              FragmentAt(flowthread, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(100, -30),
+              FragmentAt(flowthread, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(30),
+              FragmentAt(flowthread, 1).LogicalTopInFlowThread());
+    const auto* fragment_clip =
+        FragmentAt(flowthread, 1).PaintProperties()->FragmentClip();
+    ASSERT_NE(nullptr, fragment_clip);
+    EXPECT_CLIP_RECT(FloatRect(-999900, 0, 2000000, 30), fragment_clip);
+    EXPECT_EQ(fragment_clip,
+              &FragmentAt(relpos, 1).LocalBorderBoxProperties().Clip());
+  }
 
-  EXPECT_EQ(PhysicalOffset(0, 20), FragmentAt(relpos, 2).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(0, 20),
-            FragmentAt(relpos, 2).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(60), FragmentAt(relpos, 2).LogicalTopInFlowThread());
-  EXPECT_EQ(nullptr, FragmentAt(relpos, 2).PaintProperties());
-  EXPECT_EQ(PhysicalOffset(0, 20), FragmentAt(flowthread, 2).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(0, 20),
-            FragmentAt(flowthread, 2).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(60), FragmentAt(flowthread, 2).LogicalTopInFlowThread());
-  fragment_clip = FragmentAt(flowthread, 2).PaintProperties()->FragmentClip();
-  ASSERT_NE(nullptr, fragment_clip);
-  EXPECT_CLIP_RECT(FloatRect(-1000000, 80, 2000000, 30), fragment_clip);
-  EXPECT_EQ(fragment_clip,
-            &FragmentAt(relpos, 2).LocalBorderBoxProperties().Clip());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 80), FragmentAt(relpos, 2).PaintOffset());
+    EXPECT_EQ(2u, FragmentAt(relpos, 2).FragmentID());
+    EXPECT_EQ(nullptr, FragmentAt(relpos, 2).PaintProperties());
+    EXPECT_EQ(PhysicalOffset(0, 80), FragmentAt(flowthread, 2).PaintOffset());
+    EXPECT_EQ(2u, FragmentAt(flowthread, 2).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(0, 20), FragmentAt(relpos, 2).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(0, 20),
+              FragmentAt(relpos, 2).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(60), FragmentAt(relpos, 2).LogicalTopInFlowThread());
+    EXPECT_EQ(nullptr, FragmentAt(relpos, 2).PaintProperties());
+    EXPECT_EQ(PhysicalOffset(0, 20), FragmentAt(flowthread, 2).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(0, 20),
+              FragmentAt(flowthread, 2).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(60),
+              FragmentAt(flowthread, 2).LogicalTopInFlowThread());
+    const auto* fragment_clip =
+        FragmentAt(flowthread, 2).PaintProperties()->FragmentClip();
+    ASSERT_NE(nullptr, fragment_clip);
+    EXPECT_CLIP_RECT(FloatRect(-1000000, 80, 2000000, 30), fragment_clip);
+    EXPECT_EQ(fragment_clip,
+              &FragmentAt(relpos, 2).LocalBorderBoxProperties().Clip());
+  }
 
-  EXPECT_EQ(PhysicalOffset(100, -10), FragmentAt(relpos, 3).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(100, -10),
-            FragmentAt(relpos, 3).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(90), FragmentAt(relpos, 3).LogicalTopInFlowThread());
-  EXPECT_EQ(nullptr, FragmentAt(relpos, 3).PaintProperties());
-  EXPECT_EQ(PhysicalOffset(100, -10), FragmentAt(flowthread, 3).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(100, -10),
-            FragmentAt(flowthread, 3).LegacyPaginationOffset());
-  EXPECT_EQ(LayoutUnit(90), FragmentAt(flowthread, 3).LogicalTopInFlowThread());
-  fragment_clip = FragmentAt(flowthread, 3).PaintProperties()->FragmentClip();
-  ASSERT_NE(nullptr, fragment_clip);
-  EXPECT_CLIP_RECT(FloatRect(-999900, 80, 2000000, 999910), fragment_clip);
-  EXPECT_EQ(fragment_clip,
-            &FragmentAt(relpos, 3).LocalBorderBoxProperties().Clip());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(100, 80), FragmentAt(relpos, 3).PaintOffset());
+    EXPECT_EQ(3u, FragmentAt(relpos, 3).FragmentID());
+    EXPECT_EQ(nullptr, FragmentAt(relpos, 3).PaintProperties());
+    EXPECT_EQ(PhysicalOffset(100, 80), FragmentAt(flowthread, 3).PaintOffset());
+    EXPECT_EQ(3u, FragmentAt(flowthread, 3).FragmentID());
+  } else {
+    EXPECT_EQ(PhysicalOffset(100, -10), FragmentAt(relpos, 3).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(100, -10),
+              FragmentAt(relpos, 3).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(90), FragmentAt(relpos, 3).LogicalTopInFlowThread());
+    EXPECT_EQ(nullptr, FragmentAt(relpos, 3).PaintProperties());
+    EXPECT_EQ(PhysicalOffset(100, -10),
+              FragmentAt(flowthread, 3).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(100, -10),
+              FragmentAt(flowthread, 3).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(90),
+              FragmentAt(flowthread, 3).LogicalTopInFlowThread());
+    const auto* fragment_clip =
+        FragmentAt(flowthread, 3).PaintProperties()->FragmentClip();
+    ASSERT_NE(nullptr, fragment_clip);
+    EXPECT_CLIP_RECT(FloatRect(-999900, 80, 2000000, 999910), fragment_clip);
+    EXPECT_EQ(fragment_clip,
+              &FragmentAt(relpos, 3).LocalBorderBoxProperties().Clip());
+  }
 
   // Above the spanner.
   // Column 1.
@@ -4522,19 +4564,31 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentsUnderMultiColumn) {
   const auto* top_left = GetLayoutObjectByElementId("top-left");
   EXPECT_EQ(1u, NumFragments(top_left));
   EXPECT_EQ(PhysicalOffset(), top_left->FirstFragment().PaintOffset());
-  fragment_clip = top_left->FirstFragment().PaintProperties()->FragmentClip();
-  EXPECT_EQ(FragmentAt(flowthread, 0).PaintProperties()->FragmentClip(),
-            fragment_clip->Parent());
+  if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    const auto* fragment_clip =
+        top_left->FirstFragment().PaintProperties()->FragmentClip();
+    EXPECT_EQ(FragmentAt(flowthread, 0).PaintProperties()->FragmentClip(),
+              fragment_clip->Parent());
+  }
 
-  // "bottom-right" should be aligned to the bottom-right corner of space4.
   const auto* bottom_right = GetLayoutObjectByElementId("bottom-right");
   EXPECT_EQ(1u, NumFragments(bottom_right));
-  EXPECT_EQ(PhysicalOffset(180, 90),
-            bottom_right->FirstFragment().PaintOffset());
-  fragment_clip =
-      bottom_right->FirstFragment().PaintProperties()->FragmentClip();
-  EXPECT_EQ(FragmentAt(flowthread, 3).PaintProperties()->FragmentClip(),
-            fragment_clip->Parent());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    // According to the spec (which LayoutNGBlockFragmentation follows, whereas
+    // legacy block fragmentation doesn't), the containing block of a spanner is
+    // the multicol container. Therefore, any OOF descendants of a spanner will
+    // ignore any containing blocks inside the multicol container.
+    EXPECT_EQ(PhysicalOffset(380, 380),
+              bottom_right->FirstFragment().PaintOffset());
+  } else {
+    // "bottom-right" should be aligned to the bottom-right corner of space4.
+    EXPECT_EQ(PhysicalOffset(180, 90),
+              bottom_right->FirstFragment().PaintOffset());
+    const auto* fragment_clip =
+        bottom_right->FirstFragment().PaintProperties()->FragmentClip();
+    EXPECT_EQ(FragmentAt(flowthread, 3).PaintProperties()->FragmentClip(),
+              fragment_clip->Parent());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
