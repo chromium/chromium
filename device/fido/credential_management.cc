@@ -116,6 +116,35 @@ CredentialManagementRequest CredentialManagementRequest::ForDeleteCredential(
 }
 
 // static
+CredentialManagementRequest
+CredentialManagementRequest::ForUpdateUserInformation(
+    Version version,
+    const pin::TokenResponse& token,
+    const PublicKeyCredentialDescriptor& credential_id,
+    const PublicKeyCredentialUserEntity& updated_user) {
+  cbor::Value::MapValue params_map;
+  params_map.emplace(
+      static_cast<int>(CredentialManagementRequestParamKey::kCredentialID),
+      AsCBOR(credential_id));
+  params_map.emplace(
+      static_cast<int>(CredentialManagementRequestParamKey::kUser),
+      AsCBOR(updated_user));
+
+  std::vector<uint8_t> pin_auth_bytes =
+      *cbor::Writer::Write(cbor::Value(params_map));
+  CredentialManagementRequest request(
+      version, CredentialManagementSubCommand::kUpdateUserInformation,
+      std::move(params_map));
+  pin_auth_bytes.insert(
+      pin_auth_bytes.begin(),
+      static_cast<uint8_t>(
+          CredentialManagementSubCommand::kUpdateUserInformation));
+  std::tie(request.pin_protocol, request.pin_auth) =
+      token.PinAuth(pin_auth_bytes);
+  return request;
+}
+
+// static
 absl::optional<CredentialsMetadataResponse> CredentialsMetadataResponse::Parse(
     const absl::optional<cbor::Value>& cbor_response) {
   CredentialsMetadataResponse response;
