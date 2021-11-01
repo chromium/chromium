@@ -5,6 +5,7 @@
 #include "ash/webui/diagnostics_ui/diagnostics_metrics_message_handler.h"
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash {
@@ -13,7 +14,9 @@ namespace metrics {
 
 DiagnosticsMetricsMessageHandler::DiagnosticsMetricsMessageHandler(
     NavigationView initial_view)
-    : current_view_(initial_view) {}
+    : current_view_(initial_view) {
+  navigation_started_ = base::Time::Now();
+}
 
 // content::WebUIMessageHandler:
 void DiagnosticsMetricsMessageHandler::RegisterMessages() {
@@ -23,6 +26,11 @@ void DiagnosticsMetricsMessageHandler::RegisterMessages() {
 // Test helpers:
 NavigationView DiagnosticsMetricsMessageHandler::GetCurrentViewForTesting() {
   return current_view_;
+}
+
+base::TimeDelta
+DiagnosticsMetricsMessageHandler::GetElapsedNavigationTimeDeltaForTesting() {
+  return base::Time::Now() - navigation_started_;
 }
 
 void DiagnosticsMetricsMessageHandler::SetWebUiForTesting(

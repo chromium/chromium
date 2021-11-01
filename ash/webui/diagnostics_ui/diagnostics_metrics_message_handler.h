@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_DIAGNOSTICS_UI_DIAGNOSTICS_METRICS_MESSAGE_HANDLER_H_
 #define ASH_WEBUI_DIAGNOSTICS_UI_DIAGNOSTICS_METRICS_MESSAGE_HANDLER_H_
 
+#include "base/time/time.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
 namespace content {
@@ -38,10 +39,12 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
   void RegisterMessages() override;
   // Test helper functions:
   NavigationView GetCurrentViewForTesting();
+  base::TimeDelta GetElapsedNavigationTimeDeltaForTesting();
   void SetWebUiForTesting(content::WebUI* web_ui);
 
  private:
   NavigationView current_view_;
+  base::Time navigation_started_;
 };
 }  // namespace metrics
 }  // namespace diagnostics
