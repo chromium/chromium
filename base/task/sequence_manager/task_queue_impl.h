@@ -241,7 +241,7 @@ class BASE_EXPORT TaskQueueImpl {
   // TODO(kraynov): Simplify non-nestable task logic https://crbug.com/845437.
   void RequeueDeferredNonNestableTask(DeferredNonNestableTask task);
 
-  void PushImmediateIncomingTaskForTest(Task&& task);
+  void PushImmediateIncomingTaskForTest(Task task);
 
   // Iterates over |delayed_incoming_queue| removing canceled tasks. In
   // addition MaybeShrinkQueue is called on all internal queues.
@@ -356,7 +356,7 @@ class BASE_EXPORT TaskQueueImpl {
     DelayedIncomingQueue& operator=(const DelayedIncomingQueue&) = delete;
     ~DelayedIncomingQueue();
 
-    void push(Task&& task);
+    void push(Task task);
     void pop();
     bool empty() const { return queue_.empty(); }
     size_t size() const { return queue_.size(); }
@@ -489,23 +489,23 @@ class BASE_EXPORT TaskQueueImpl {
   void UpdateCrossThreadQueueStateLocked()
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
 
-  void MaybeLogPostTask(PostedTask* task);
-  void MaybeAdjustTaskDelay(PostedTask* task, CurrentThread current_thread);
+  void MaybeLogPostTask(const PostedTask& task);
+  TimeDelta GetTaskDelayAdjustment(CurrentThread current_thread);
 
   // Reports the task if it was due to IPC and was posted to a disabled queue.
   // This should be called after WillQueueTask has been called for the task.
-  void MaybeReportIpcTaskQueuedFromMainThread(Task* pending_task,
+  void MaybeReportIpcTaskQueuedFromMainThread(const Task& pending_task,
                                               const char* task_queue_name);
   bool ShouldReportIpcTaskQueuedFromAnyThreadLocked(
       base::TimeDelta* time_since_disabled)
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
-  void MaybeReportIpcTaskQueuedFromAnyThreadLocked(Task* pending_task,
+  void MaybeReportIpcTaskQueuedFromAnyThreadLocked(const Task& pending_task,
                                                    const char* task_queue_name)
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);
   void MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(
-      Task* pending_task,
+      const Task& pending_task,
       const char* task_queue_name);
-  void ReportIpcTaskQueued(Task* pending_task,
+  void ReportIpcTaskQueued(const Task& pending_task,
                            const char* task_queue_name,
                            const base::TimeDelta& time_since_disabled);
 

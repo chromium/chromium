@@ -73,7 +73,7 @@ class BASE_EXPORT WorkQueue {
     TaskPusher(TaskPusher&& other);
     ~TaskPusher();
 
-    void Push(Task* task);
+    void Push(Task task);
 
    private:
     friend class WorkQueue;
