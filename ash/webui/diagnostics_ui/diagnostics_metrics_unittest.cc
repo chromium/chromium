@@ -14,15 +14,22 @@ namespace metrics {
 namespace {
 const char kDiagnosticsUmaFeatureFullPath[] =
     "ChromeOS.FeatureUsage.DiagnosticsUi";
+const char kDiagnosticsUmaFeatureUsetimeFullPath[] =
+    "ChromeOS.FeatureUsage.DiagnosticsUi.Usetime";
+const base::TimeDelta kDefaultTime = base::Minutes(10);
 
 class DiagnosticsMetricsTest : public testing::Test {
  public:
   DiagnosticsMetricsTest() = default;
-
   ~DiagnosticsMetricsTest() override = default;
 
+  void AdvanceClock(base::TimeDelta time) {
+    task_environment_.AdvanceClock(time);
+  }
+
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 }  // namespace
 
@@ -75,6 +82,42 @@ TEST_F(DiagnosticsMetricsTest, RecordUsage) {
       kDiagnosticsUmaFeatureFullPath,
       feature_usage::FeatureUsageMetrics::Event::kUsedWithFailure,
       expected_failure);
+}
+
+TEST_F(DiagnosticsMetricsTest, RecordUseTime) {
+  base::HistogramTester histograms;
+  DiagnosticsMetrics metrics;
+  size_t expected_use_time_record_count = 0;
+
+  // Initial state for usage timing.
+  EXPECT_FALSE(metrics.GetSuccessfulUsageStartedForTesting());
+  histograms.ExpectTimeBucketCount(kDiagnosticsUmaFeatureUsetimeFullPath,
+                                   /** sample */ base::Minutes(0),
+                                   expected_use_time_record_count);
+
+  metrics.RecordUsage(false);
+  AdvanceClock(kDefaultTime);
+  metrics.StopSuccessfulUsage();
+
+  // Usetime is related to successful usage only.
+  EXPECT_FALSE(metrics.GetSuccessfulUsageStartedForTesting());
+  histograms.ExpectTimeBucketCount(kDiagnosticsUmaFeatureUsetimeFullPath,
+                                   /** sample */ kDefaultTime,
+                                   expected_use_time_record_count);
+
+  // Start recording `Usetime`.
+  expected_use_time_record_count += 1;
+  metrics.RecordUsage(true);
+  EXPECT_TRUE(metrics.GetSuccessfulUsageStartedForTesting());
+
+  // Move clock and stop recording `Usetime`.
+  AdvanceClock(kDefaultTime);
+  metrics.StopSuccessfulUsage();
+
+  EXPECT_FALSE(metrics.GetSuccessfulUsageStartedForTesting());
+  histograms.ExpectTimeBucketCount(kDiagnosticsUmaFeatureUsetimeFullPath,
+                                   /** sample */ kDefaultTime,
+                                   expected_use_time_record_count);
 }
 }  // namespace metrics
 }  // namespace diagnostics

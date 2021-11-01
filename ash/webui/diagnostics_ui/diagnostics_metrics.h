@@ -24,9 +24,14 @@ class DiagnosticsMetrics final
 
   // feature_usage::FeatureUsageMetrics helpers:
   void RecordUsage(bool success);
+  void StopSuccessfulUsage();
+
+  // Test helpers:
+  bool GetSuccessfulUsageStartedForTesting();
 
  private:
   feature_usage::FeatureUsageMetrics feature_metrics_;
+  bool successful_usage_started_;
 };
 }  // namespace metrics
 }  // namespace diagnostics
