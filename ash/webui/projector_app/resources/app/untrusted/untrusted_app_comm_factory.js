@@ -78,11 +78,11 @@ const CLIENT_DELEGATE = {
   /**
    * Gets the list of pending screencasts that are uploading to drive on current
    * device.
-   * @return {Promise<Array<!projectorApp.PendingScreencast>>}
+   * @return {Promise<Array<projectorApp.PendingScreencast>>}
    */
-  // TODO(b/197015567): Wired this up with ProjectorMessageHandler.
   getPendingScreencasts() {
-    return Promise.resolve([]);
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'getPendingScreencasts', []);
   },
 
   /*
@@ -147,6 +147,10 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     });
     this.registerMethod('onSodaInstallError', (args) => {
       getAppElement().onSodaInstallError();
+    });
+
+    this.registerMethod('onScreencastsStateChange', (pendingScreencasts) => {
+      getAppElement().onScreencastsStateChange(pendingScreencasts);
     });
   }
 
