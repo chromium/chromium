@@ -493,7 +493,8 @@ void ChromeAppListModelUpdater::OnItemUpdated(
   // Preserve icon once it cannot be modified at ash.
   item->icon = chrome_item->icon();
 
-  item_manager_->UpdateChromeItem(item->id, std::move(item));
+  const auto id = item->id;
+  item_manager_->UpdateChromeItem(id, std::move(item));
   for (AppListModelUpdaterObserver& observer : observers_)
     observer.OnAppListItemUpdated(chrome_item);
 }
