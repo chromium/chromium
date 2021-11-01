@@ -29,13 +29,15 @@ namespace safe_browsing {
 
 namespace {
 
+constexpr size_t kReadFileChunkSize = 4096;
+
 std::string GetFileMimeType(const base::FilePath& path,
-                            const base::MemoryMappedFile& file) {
+                            base::StringPiece first_bytes) {
   std::string sniffed_mime_type;
   bool sniff_found = net::SniffMimeType(
-      base::StringPiece(
-          reinterpret_cast<const char*>(file.data()),
-          std::min(file.length(), static_cast<size_t>(net::kMaxBytesToSniff))),
+      base::StringPiece(first_bytes.data(),
+                        std::min(first_bytes.size(),
+                                 static_cast<size_t>(net::kMaxBytesToSniff))),
       net::FilePathToFileURL(path),
       /*type_hint*/ std::string(), net::ForceSniffFileUrlsForHtml::kDisabled,
       &sniffed_mime_type);
@@ -82,21 +84,34 @@ GetFileDataBlocking(const base::FilePath& path, bool detect_mime_type) {
                           BinaryUploadService::Request::Data());
   }
 
-  base::MemoryMappedFile mm_file;
-  if (!mm_file.Initialize(std::move(file)) || !mm_file.IsValid()) {
-    return std::make_pair(BinaryUploadService::Result::UNKNOWN,
-                          BinaryUploadService::Request::Data());
-  }
-
   BinaryUploadService::Request::Data file_data;
   file_data.size = file_size;
   file_data.path = path;
-  if (detect_mime_type)
-    file_data.mime_type = GetFileMimeType(path, mm_file);
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  secure_hash->Update(mm_file.data(), file_size);
+  size_t bytes_read = 0;
+  std::string buf;
+  buf.reserve(kReadFileChunkSize);
+
+  while (bytes_read < file_size) {
+    int64_t bytes_currently_read =
+        file.ReadAtCurrentPos(&buf[0], kReadFileChunkSize);
+    if (bytes_currently_read == -1) {
+      return {BinaryUploadService::Result::UNKNOWN,
+              BinaryUploadService::Request::Data()};
+    }
+
+    // Use the first read chunk to get the mimetype as necessary.
+    if (detect_mime_type && (bytes_read == 0)) {
+      file_data.mime_type = GetFileMimeType(
+          path, base::StringPiece(buf.data(), bytes_currently_read));
+    }
+
+    secure_hash->Update(buf.data(), bytes_currently_read);
+    bytes_read += bytes_currently_read;
+  }
+
   file_data.hash.resize(crypto::kSHA256Length);
   secure_hash->Finish(base::data(file_data.hash), crypto::kSHA256Length);
   file_data.hash =
