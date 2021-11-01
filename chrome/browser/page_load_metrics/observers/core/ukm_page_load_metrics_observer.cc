@@ -38,7 +38,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/browser/protocol_util.h"
-#include "components/page_load_metrics/common/page_load_type.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -63,7 +63,7 @@
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #endif
 
-using page_load_metrics::PageLoadType;
+using page_load_metrics::PageVisitFinalStatus;
 
 namespace {
 
@@ -1089,21 +1089,21 @@ void UkmPageLoadMetricsObserver::RecordAbortMetrics(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     base::TimeTicks page_end_time,
     ukm::builders::PageLoad* builder) {
-  PageLoadType page_load_type = PageLoadType::kNeverForegrounded;
+  PageVisitFinalStatus page_visit_status =
+      PageVisitFinalStatus::kNeverForegrounded;
   if (page_load_metrics::WasInForeground(GetDelegate())) {
-    page_load_type = timing.paint_timing->first_contentful_paint.has_value()
-                         ? PageLoadType::kReachedFCP
-                         : PageLoadType::kAborted;
+    page_visit_status = timing.paint_timing->first_contentful_paint.has_value()
+                            ? PageVisitFinalStatus::kReachedFCP
+                            : PageVisitFinalStatus::kAborted;
   }
   if (currently_in_foreground_ && !last_time_shown_.is_null()) {
     total_foreground_duration_ += page_end_time - last_time_shown_;
   }
-  UMA_HISTOGRAM_ENUMERATION("PageLoad.Experimental.PageLoadType",
-                            page_load_type);
+  UMA_HISTOGRAM_ENUMERATION("PageLoad.PageVisitFinalStatus", page_visit_status);
   PAGE_LOAD_LONG_HISTOGRAM("PageLoad.Experimental.TotalForegroundDuration",
                            total_foreground_duration_);
 
-  builder->SetExperimental_PageLoadType(static_cast<int>(page_load_type))
+  builder->SetPageVisitFinalStatus(static_cast<int>(page_visit_status))
       .SetExperimental_TotalForegroundDuration(
           ukm::GetExponentialBucketMinForUserTiming(
               total_foreground_duration_.InMilliseconds()));

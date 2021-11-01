@@ -38,7 +38,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
-#include "components/page_load_metrics/common/page_load_type.h"
+#include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -57,7 +57,7 @@
 using content::NavigationSimulator;
 using content::RenderFrameHost;
 using content::RenderFrameHostTester;
-using page_load_metrics::PageLoadType;
+using page_load_metrics::PageVisitFinalStatus;
 using testing::AnyNumber;
 using testing::Mock;
 using testing::Return;
@@ -557,8 +557,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, AbortNeverForegrounded) {
       entry, PageLoad::kNavigation_PageEndReason3Name,
       page_load_metrics::END_CLOSE);
   tester()->test_ukm_recorder().ExpectEntryMetric(
-      entry, PageLoad::kExperimental_PageLoadTypeName,
-      static_cast<int64_t>(PageLoadType::kNeverForegrounded));
+      entry, PageLoad::kPageVisitFinalStatusName,
+      static_cast<int64_t>(PageVisitFinalStatus::kNeverForegrounded));
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kNavigation_PageTransitionName,
       ui::PAGE_TRANSITION_LINK);

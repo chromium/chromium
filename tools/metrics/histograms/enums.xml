@@ -64424,14 +64424,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Metric value was less than 10 seconds"/>
 </enum>
 
-<enum name="PageLoadType">
-  <int value="0" label="Never foregrounded"/>
-  <int value="1"
-      label="Aborted: was foregrounded but never reached first contentful
-             paint"/>
-  <int value="2" label="Was foregrounded and reached first contentful paint"/>
-</enum>
-
 <enum name="PageScaleFactorRange">
   <int value="0" label="&lt;25%"/>
   <int value="1" label="25-49%"/>
@@ -64579,6 +64571,14 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PageUsed">
   <int value="0" label="Discarded"/>
   <int value="1" label="Used"/>
+</enum>
+
+<enum name="PageVisitFinalStatus">
+  <int value="0" label="Never foregrounded"/>
+  <int value="1"
+      label="Aborted: was foregrounded but never reached first contentful
+             paint"/>
+  <int value="2" label="Was foregrounded and reached first contentful paint"/>
 </enum>
 
 <enum name="PageVisitTransitionType">
