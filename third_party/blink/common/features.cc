@@ -59,8 +59,16 @@ const base::Feature kPaintHolding{"PaintHolding",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable defer commits to avoid flash of unstyled content, for all navigation.
-const base::Feature kPaintHoldingCrossOrigin{"PaintHoldingCrossOrigin",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+// Disabled on Mobile to allow for a delayed Finch roll-out. Enabled on
+// Desktop platforms.
+const base::Feature kPaintHoldingCrossOrigin {
+  "PaintHoldingCrossOrigin",
+#if defined(OS_ANDROID)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enable eagerly setting up a CacheStorage interface pointer and
 // passing it to service workers on startup as an optimization.
