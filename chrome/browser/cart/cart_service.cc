@@ -60,15 +60,11 @@ std::string eTLDPlusOne(const GURL& url) {
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-bool IsFakeDataEnabled() {
-  return base::GetFieldTrialParamValueByFeature(
-             ntp_features::kNtpChromeCartModule,
-             ntp_features::kNtpChromeCartModuleDataParam) == "fake";
-}
-
 std::string GetKeyForURL(const GURL& url) {
   std::string domain = eTLDPlusOne(url);
-  return IsFakeDataEnabled() ? std::string(kFakeDataPrefix) + domain : domain;
+  return cart_features::IsFakeDataEnabled()
+             ? std::string(kFakeDataPrefix) + domain
+             : domain;
 }
 
 bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
@@ -131,7 +127,8 @@ CartService::CartService(Profile* profile)
       coupon_service_(CouponServiceFactory::GetForProfile(profile)) {
   history_service_observation_.Observe(HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS));
-  if (IsFakeDataEnabled()) {
+  coupon_service_->MaybeFeatureStatusChanged(IsCartAndDiscountEnabled());
+  if (cart_features::IsFakeDataEnabled()) {
     AddCartsWithFakeData();
   } else {
     // In case last deconstruction is interrupted and fake data is not deleted.
@@ -153,7 +150,6 @@ CartService::CartService(Profile* profile)
                                       weak_ptr_factory_.GetWeakPtr());
   pref_change_registrar_.Add(prefs::kNtpDisabledModules, callback);
   pref_change_registrar_.Add(prefs::kCartDiscountEnabled, callback);
-  coupon_service_->MaybeFeatureStatusChanged(IsCartAndDiscountEnabled());
 }
 
 CartService::~CartService() = default;
@@ -272,7 +268,7 @@ bool CartService::ShouldShowWelcomeSurface() {
 }
 
 void CartService::AcknowledgeDiscountConsent(bool should_enable) {
-  if (IsFakeDataEnabled()) {
+  if (cart_features::IsFakeDataEnabled()) {
     return;
   }
   profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountAcknowledged, true);
@@ -290,7 +286,7 @@ void CartService::AcknowledgeDiscountConsent(bool should_enable) {
 void CartService::ShouldShowDiscountConsent(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (IsFakeDataEnabled()) {
+  if (cart_features::IsFakeDataEnabled()) {
     content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
         ->PostTask(FROM_HERE, base::BindOnce(
                                   [](base::OnceCallback<void(bool)> callback) {
@@ -460,7 +456,7 @@ void CartService::OnOperationFinishedWithCallback(
 
 void CartService::Shutdown() {
   history_service_observation_.Reset();
-  if (IsFakeDataEnabled()) {
+  if (cart_features::IsFakeDataEnabled()) {
     DeleteCartsWithFakeData();
   }
   // Delete content of all carts that are removed.
@@ -682,7 +678,7 @@ bool CartService::ShouldSkip(const GURL& url) {
 void CartService::OnLoadCarts(CartDB::LoadCallback callback,
                               bool success,
                               std::vector<CartDB::KeyAndValue> proto_pairs) {
-  if (IsFakeDataEnabled()) {
+  if (cart_features::IsFakeDataEnabled()) {
     std::sort(proto_pairs.begin(), proto_pairs.end(),
               CompareTimeStampForProtoPair);
     std::move(callback).Run(success, std::move(proto_pairs));

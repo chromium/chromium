@@ -23,6 +23,9 @@ bool IsRuleDiscountPartnerMerchant(const GURL& url);
 // TODO(crbug.com/1253633): Move this method to commerce_feature_list after
 // modularizing CartService-related components.
 bool IsPartnerMerchant(const GURL& url);
+
+// Check if the variation with fake data is enabled.
+bool IsFakeDataEnabled();
 }  // namespace cart_features
 
 #endif  // CHROME_BROWSER_CART_CART_FEATURES_H_
