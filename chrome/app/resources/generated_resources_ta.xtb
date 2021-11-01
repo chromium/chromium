@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">பணிச் சுயவிவரம்</translation>
 <translation id="1122198203221319518">&amp;கருவிகள்</translation>
 <translation id="1122242684574577509">அங்கீகரிப்பதில் தோல்வி. நீங்கள் பயன்படுத்தும் வைஃபை நெட்வொர்க்கிற்கான (<ph name="NETWORK_ID" />) உள்நுழைவுப் பக்கத்திற்குச் செல்ல, கிளிக் செய்யவும்.</translation>
+<translation id="1122913801042512795">உங்கள் கணக்கின் உள்நுழைவு விவரங்கள் காலாவதியாகிவிட்டன. தயவுசெய்து வெளியேறிவிட்டு மீண்டும் உள்நுழையவும்.</translation>
 <translation id="1122960773616686544">புத்தகக்குறியின் பெயர்</translation>
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (இயல்பு) போல் தெரிகிறது</translation>
@@ -7513,6 +7514,7 @@
 <translation id="8879284080359814990">தாவலாகக் &amp;காண்பி</translation>
 <translation id="8879921471468674457">உள்நுழைவுத் தகவல்களை நினைவில்கொள்</translation>
 <translation id="8880054210564666174">தொடர்புப் பட்டியலைப் பதிவிறக்க முடியவில்லை. நெட்வொர்க் இணைப்பைச் சரிபார்க்கவும் அல்லது <ph name="LINK_BEGIN" />மீண்டும் முயலவும்<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Linux அல்லது Parallels Desktop உடன் <ph name="USB_DEVICE_NAME" /> சாதனத்தை இணைக்க அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="8881020143150461183">மீண்டும் முயலவும். தொழில்நுட்ப உதவிக்கு <ph name="CARRIER_NAME" />ஐத் தொடர்பு கொள்ளவும்.</translation>
 <translation id="8883273463630735858">டச்பேட் துரிதப்படுத்தலை இயக்கு</translation>
 <translation id="8884570509232205463">சாதனம் இனி <ph name="UNLOCK_TIME" />க்குப் பூட்டப்படும்.</translation>

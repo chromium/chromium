@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Աշխատանքային</translation>
 <translation id="1122198203221319518">&amp;Գործիքներ</translation>
 <translation id="1122242684574577509">Նույնականացումը չստացվեց: Սեղմեք՝ ձեր օգտագործած Wi-Fi ցանցի էջում մուտք գործելու համար (<ph name="NETWORK_ID" />):</translation>
+<translation id="1122913801042512795">Ձեր հաշվի մուտքի տվյալները հնացել են։ Դուրս եկեք հաշվից և նորից մուտք գործեք։</translation>
 <translation id="1122960773616686544">Էջանիշի անունը</translation>
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (օրիգինալ)</translation>
@@ -7498,6 +7499,7 @@
 <translation id="8879284080359814990">&amp;Ցույց տալ որպես ներդիր</translation>
 <translation id="8879921471468674457">Հիշել մուտքային տվյալները</translation>
 <translation id="8880054210564666174">Չհաջողվեց ներբեռնել կոնտակտների ցանկը։ Ստուգեք կապը կամ <ph name="LINK_BEGIN" />նորից փորձեք<ph name="LINK_END" />։</translation>
+<translation id="8880344290593529089">Անցեք Կարգավորումներ՝ <ph name="USB_DEVICE_NAME" /> սարքը Լինուքսին կամ Parallels Desktop-ին միացնելու համար։</translation>
 <translation id="8881020143150461183">Նորից փորձեք: Տեխնիկական աջակցման համար կապվեք <ph name="CARRIER_NAME" />-ի հետ։</translation>
 <translation id="8883273463630735858">Միացնել հպահարթակի արագացումը</translation>
 <translation id="8884570509232205463">Ձեր սարքն այսուհետ կկողպվի <ph name="UNLOCK_TIME" />-ին:</translation>

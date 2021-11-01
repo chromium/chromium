@@ -24,6 +24,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Prikaz postavki pristupačnosti</translation>
 <translation id="1104621072296271835">Vaši uređaji funkcioniraju još bolje zajedno</translation>
+<translation id="1111781754511998498">Projektor</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> preporučuje da ažurirajte uređaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Način boje teme upotrebljava boje izdvojene iz vaše pozadine kako bi blago obojio sučelje.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
@@ -418,6 +419,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3969043077941541451">Isključeno</translation>
 <translation id="397105322502079400">Izračun u tijeku…</translation>
 <translation id="3977512764614765090">Baterija je na <ph name="PERCENTAGE" />% i puni se.</translation>
+<translation id="3986082989454912832">Odgovori</translation>
 <translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
 <translation id="40062176907008878">Rukopis</translation>
 <translation id="4017989525502048489">Laserski pokazivač</translation>
@@ -457,7 +459,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="4274537685965975248">Promijenjen je tipkovni prečac Ctrl + Alt + strelica prema dolje. Da biste upotrijebili tipku za kraj, pritisnite <ph name="LAUNCHER_KEY_NAME" /> + strelica desno.</translation>
 <translation id="4279490309300973883">Zrcaljenje</translation>
 <translation id="4285498937028063278">Otkvači</translation>
-<translation id="4292904812939562398">Nedavno korištene aplikacije</translation>
 <translation id="429402653707266969">Uključi/isključi lokaciju alatne trake</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Brisanje svih obavijesti (<ph name="COUNT" />)</translation>
@@ -907,6 +908,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="7595633564847427181">pon</translation>
 <translation id="7600875258240007829">Pogledajte sve obavijesti</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
+<translation id="7610198039767537854">Pregledajte nove snimljene fotografije s telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Marker</translation>

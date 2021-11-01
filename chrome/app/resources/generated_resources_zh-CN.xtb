@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
+<translation id="1122913801042512795">您的帐号登录详细信息已过期。请退出，然后重新登录。</translation>
 <translation id="1122960773616686544">书签名称</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
@@ -325,6 +326,7 @@
 <translation id="133535873114485416">首选输入模式</translation>
 <translation id="1335929031622236846">注册您的设备</translation>
 <translation id="1336902454946927954">您的安全密钥已被锁定，因为无法识别您的指纹。若要解锁，请输入 PIN 码。</translation>
+<translation id="1338631221631423366">正在配对…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> 想打开此应用。</translation>
 <translation id="1338950911836659113">正在删除…</translation>
 <translation id="1339009753652684748">只需说“Ok Google”即可使用您的 Google 助理。为了省电，请选择“开启（推荐）”。选择这一选项后，只有当您的设备已接通电源或正在充电时，Google 助理才会做出响应。</translation>
@@ -6540,6 +6542,7 @@
 <translation id="7887864092952184874">蓝牙鼠标已配对</translation>
 <translation id="7889371445710865055">更改语音输入语言</translation>
 <translation id="7890147169288018054">查看网络信息，例如您的 IP 或 MAC 地址</translation>
+<translation id="7892384782944609022">无法配对。请选择设备以重试。</translation>
 <translation id="7893008570150657497">通过计算机访问照片、音乐和其他媒体</translation>
 <translation id="7893153962594818789">此 <ph name="DEVICE_TYPE" /> 上的蓝牙处于关闭状态。请输入您的密码，然后开启蓝牙。</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" />（默认）</translation>
@@ -7488,6 +7491,7 @@
 <translation id="8879284080359814990">显示为标签页(&amp;S)</translation>
 <translation id="8879921471468674457">记住登录信息</translation>
 <translation id="8880054210564666174">无法下载联系人列表。请检查您的网络连接，或<ph name="LINK_BEGIN" />重试<ph name="LINK_END" />。</translation>
+<translation id="8880344290593529089">打开“设置”以将 <ph name="USB_DEVICE_NAME" /> 连接到 Linux 或 Parallels Desktop</translation>
 <translation id="8881020143150461183">请重试。如需技术支持，请联系<ph name="CARRIER_NAME" />。</translation>
 <translation id="8883273463630735858">启用触控板加速</translation>
 <translation id="8884570509232205463">现在，您的设备会在<ph name="UNLOCK_TIME" /> 锁定。</translation>

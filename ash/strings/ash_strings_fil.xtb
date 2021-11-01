@@ -24,6 +24,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="109942774857561566">Naiinip ako</translation>
 <translation id="1104084341931202936">Ipakita ang mga setting ng pagiging naa-access</translation>
 <translation id="1104621072296271835">Gagana nang mas maayos ang iyong mga device kung magkakasama</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252">Inirerekomenda ng <ph name="MANAGER" /> na i-update mo ang <ph name="DEVICE_TYPE" /> na ito.</translation>
 <translation id="1119348796022671382">Gumagamit ang themed color mode ng mga kulay na na-extract mula sa iyong wallpaper para kulayan nang kaunti ang interface.</translation>
 <translation id="112308213915226829">Awtomatikong itago ang shelf</translation>
@@ -373,6 +374,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3665889125180354336">I-record ang mikropono</translation>
 <translation id="3680908746918359504">I-clear ang lahat ng marker</translation>
 <translation id="36813544980941320">Ibabahagi ang mga Wi-Fi network sa pagitan ng iyong telepono at <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Puwede mo na ngayong baguhin kung saan nase-save ang mga screen capture</translation>
 <translation id="3702809606464356667">Ipinapakita ang mga window mula sa kasalukuyang desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa lahat ng desk</translation>
 <translation id="3702846122927433391">Populasyon sa Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3969043077941541451">I-off</translation>
 <translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="3977512764614765090">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge.</translation>
+<translation id="3986082989454912832">Sagutin</translation>
 <translation id="3995138139523574647">USB-C device (port sa kanang bahagi sa likod)</translation>
 <translation id="40062176907008878">Sulat-kamay</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
@@ -456,7 +459,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4285498937028063278">I-unpin</translation>
-<translation id="4292904812939562398">Mga app na ginamit kamakailan</translation>
 <translation id="429402653707266969">I-toggle ang lokasyon ng toolbar</translation>
 <translation id="4294319844246081198">Magandang umaga <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">I-clear ang lahat ng <ph name="COUNT" /> (na) notification</translation>
@@ -562,6 +564,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">I-off ang mga notification</translation>
 <translation id="4946376291507881335">I-capture</translation>
 <translation id="495046168593986294">Mag-scroll pataas</translation>
 <translation id="4952936045814352993">Hindi available ang paghanap sa telepono kapag naka-disable ang mga tunog ng alarm</translation>
@@ -905,6 +908,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7595633564847427181">L</translation>
 <translation id="7600875258240007829">Tingnan ang lahat ng notification</translation>
 <translation id="7607002721634913082">I-pause</translation>
+<translation id="7610198039767537854">Tingnan ang mga kamakailang larawan mula sa camera roll ng iyong telepono sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Marker pen</translation>

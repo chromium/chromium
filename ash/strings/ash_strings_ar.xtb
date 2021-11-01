@@ -24,6 +24,7 @@
 <translation id="109942774857561566">أشعر بالملل</translation>
 <translation id="1104084341931202936">عرض إعدادات إمكانية الوصول</translation>
 <translation id="1104621072296271835">تعمل أجهزتك بشكل أفضل وهي مرتبطة معًا</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252">يقترح <ph name="MANAGER" /> عليك تحديث جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="1119348796022671382">يستخدم وضع "الألوان" التلقائي ألوانًا مُستخرَجة من الخلفية لتلوين الواجهة قليلاً.</translation>
 <translation id="112308213915226829">الإخفاء التلقائي للرف</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">التسجيل من الميكروفون</translation>
 <translation id="3680908746918359504">محو جميع العلامات</translation>
 <translation id="36813544980941320">‏ستتم مشاركة شبكات Wi-Fi بين هاتفك وجهاز <ph name="DEVICE_NAME" />.</translation>
+<translation id="3701206655856637070">يمكنك الآن تغيير مكان حفظ لقطات الشاشة.</translation>
 <translation id="3702809606464356667">يتم الآن عرض النوافذ المفتوحة في سطح المكتب الحالي، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في جميع أسطح المكتب.</translation>
 <translation id="3702846122927433391">تعداد السكان في نيجيريا</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">متوقفة</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
 <translation id="3977512764614765090">مستوى البطارية عند <ph name="PERCENTAGE" />% ويجري شحنها.</translation>
+<translation id="3986082989454912832">ردّ</translation>
 <translation id="3995138139523574647">‏جهاز USB-C (المنفذ الخلفي الأيمن)</translation>
 <translation id="40062176907008878">الكتابة بخط اليد</translation>
 <translation id="4017989525502048489">مؤشر الليزر</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">‏تم تغيير اختصارات لوحة المفاتيح "Ctrl + Alt + السهم المتّجه للأسفل". لاستخدام مفتاح End، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه لليمين".</translation>
 <translation id="4279490309300973883">النسخ المطابق</translation>
 <translation id="4285498937028063278">إزالة تثبيت</translation>
-<translation id="4292904812939562398">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="429402653707266969">تبديل مكان شريط الأدوات</translation>
 <translation id="4294319844246081198">صباح الخير <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">محو جميع الإشعارات التي يبلغ عددها <ph name="COUNT" /></translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />،
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
 <translation id="4952936045814352993">ميزة "تحديد الموقع الجغرافي للهاتف" غير متاحة لأنّك أوقفت أصوات التنبيهات.</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">الإثنين</translation>
 <translation id="7600875258240007829">الاطّلاع على جميع الإشعارات</translation>
 <translation id="7607002721634913082">تعليق التحميل</translation>
+<translation id="7610198039767537854">عرض الصور الحديثة من ألبوم كاميرا الهاتف على جهاز <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">معتدل</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجة فهرنهايت</translation>
 <translation id="7631906263969450674">قلم تحديد</translation>

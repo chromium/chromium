@@ -24,6 +24,7 @@
 <translation id="109942774857561566">我好悶</translation>
 <translation id="1104084341931202936">顯示無障礙功能設定</translation>
 <translation id="1104621072296271835">連結您的裝置，以獲得更佳的體驗</translation>
+<translation id="1111781754511998498">投影機</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> 建議您更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1119348796022671382">主題顏色模式會使用從您桌布擷取的顏色，為介面添上淡雅色彩。</translation>
 <translation id="112308213915226829">自動隱藏捷徑列</translation>
@@ -418,6 +419,7 @@
 <translation id="3969043077941541451">關閉</translation>
 <translation id="397105322502079400">計算中…</translation>
 <translation id="3977512764614765090">電量有 <ph name="PERCENTAGE" />%，宜家差緊電。</translation>
+<translation id="3986082989454912832">接聽</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
 <translation id="40062176907008878">手寫</translation>
 <translation id="4017989525502048489">雷射筆</translation>
@@ -457,7 +459,6 @@
 <translation id="4274537685965975248">「Ctrl + Alt + 向下箭咀」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右箭咀。</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4285498937028063278">取消固定</translation>
-<translation id="4292904812939562398">最近使用過的應用程式</translation>
 <translation id="429402653707266969">切換工具列位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，早晨：</translation>
 <translation id="4296136865091727875">清除全部 <ph name="COUNT" /> 個通知</translation>
@@ -906,6 +907,7 @@
 <translation id="7595633564847427181">一</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暫停</translation>
+<translation id="7610198039767537854">在 <ph name="DEVICE_TYPE" /> 上查看手機相機膠卷的近期相片</translation>
 <translation id="7618774594543487847">中性色調</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7631906263969450674">箱頭筆</translation>

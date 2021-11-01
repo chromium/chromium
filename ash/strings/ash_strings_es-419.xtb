@@ -24,6 +24,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="109942774857561566">Me aburro</translation>
 <translation id="1104084341931202936">Mostrar la configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan incluso mejor juntos</translation>
+<translation id="1111781754511998498">Proyector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda actualizar este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">El modo de colores temático usa los colores de tu fondo de pantalla para aplicarlos ligeramente a la interfaz.</translation>
 <translation id="112308213915226829">Auto-ocultar biblioteca</translation>
@@ -373,6 +374,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3665889125180354336">Grabar con el micrófono</translation>
 <translation id="3680908746918359504">Borrar todos los marcadores</translation>
 <translation id="36813544980941320">Se compartirán las redes Wi-Fi entre tu teléfono y tu <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Ahora puedes cambiar la ubicación donde se guardan las capturas de pantalla.</translation>
 <translation id="3702809606464356667">Se muestran las ventanas del escritorio actual. Para ver las de todos los escritorios, presiona la flecha hacia arriba.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -418,6 +420,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3969043077941541451">No</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3977512764614765090">Nivel de la batería: <ph name="PERCENTAGE" />% y cargando</translation>
+<translation id="3986082989454912832">Responder</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
 <translation id="40062176907008878">Escritura a mano</translation>
 <translation id="4017989525502048489">Puntero láser</translation>
@@ -457,7 +460,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4274537685965975248">Se modificó la combinación de teclas Ctrl + Alt + flecha hacia abajo. Para usar la tecla Fin, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia la derecha.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4285498937028063278">No fijar</translation>
-<translation id="4292904812939562398">Apps que usaste recientemente</translation>
 <translation id="429402653707266969">Activar o desactivar la ubicación de la barra de herramientas</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
@@ -563,6 +565,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
 <translation id="4952936045814352993">La opción Ubicar teléfono no está disponible cuando se inhabilitan los sonidos de las alarmas</translation>
@@ -906,6 +909,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="7595633564847427181">L</translation>
 <translation id="7600875258240007829">Ver todas las notificaciones</translation>
 <translation id="7607002721634913082">Detenido</translation>
+<translation id="7610198039767537854">Visualiza fotos recientes de la galería de fotos del teléfono en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Lápiz marcador</translation>

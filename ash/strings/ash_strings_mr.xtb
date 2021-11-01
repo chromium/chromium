@@ -24,6 +24,7 @@
 <translation id="109942774857561566">मला कंटाळा आला आहे</translation>
 <translation id="1104084341931202936">ॲक्सेसिबिलिटी सेटिंग्ज दाखवा</translation>
 <translation id="1104621072296271835">तुमची डिव्हाइस एकत्र आणखी चांगले काम करतात</translation>
+<translation id="1111781754511998498">प्रोजेक्टर</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> तुम्हाला हे <ph name="DEVICE_TYPE" /> अपडेट करण्याची शिफारस करतो.</translation>
 <translation id="1119348796022671382">इंटरफेस हलकेसे रंगीत करण्यासाठी थीम असलेला रंग मोड तुमच्या वॉलपेपरमधून निवडलेल्या रंगांचा वापर करते.</translation>
 <translation id="112308213915226829">शेल्फ स्वयं लपवा</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">मायक्रोफोन वापरून रेकॉर्ड करा</translation>
 <translation id="3680908746918359504">सर्व मार्कर साफ करा</translation>
 <translation id="36813544980941320">तुमचा फोन आणि <ph name="DEVICE_NAME" /> यांच्या दरम्यान वाय-फाय नेटवर्क शेअर केली जातील</translation>
+<translation id="3701206655856637070">तुम्ही आता स्‍क्रीन कॅप्‍चर कुठे सेव्ह केले जातात हे बदलू शकता</translation>
 <translation id="3702809606464356667">सध्याच्या डेस्कवरील विंडो दाखवत आहे, सर्व डेस्कवरील विंडो दाखवण्यासाठी अप अ‍ॅरो की दाबा</translation>
 <translation id="3702846122927433391">नायजेरियामधील लोकसंख्या</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">बंद आहे</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="3977512764614765090">बॅटरी <ph name="PERCENTAGE" />% वर आहे आणि चार्ज होत आहे.</translation>
+<translation id="3986082989454912832">उत्तर</translation>
 <translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
 <translation id="4017989525502048489">लेझर पॉइंट</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow कीबोर्ड शॉर्टकट बदलला आहे. एंड की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + राइट अ‍ॅरो दाबा.</translation>
 <translation id="4279490309300973883">मिररिंग</translation>
 <translation id="4285498937028063278">अनपिन</translation>
-<translation id="4292904812939562398">अलीकडे वापरलेली अ‍ॅप्स</translation>
 <translation id="429402653707266969">टूलबारचे स्थान टॉगल करा</translation>
 <translation id="4294319844246081198">सुप्रभात <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सर्व <ph name="COUNT" /> सूचना साफ करा</translation>
@@ -562,6 +564,7 @@
 <ph name="NOTIFICATION" />,
 <ph name="IME" />
 <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">सूचना बंद करा</translation>
 <translation id="4946376291507881335">कॅप्चर करा</translation>
 <translation id="495046168593986294">वर स्क्रोल करा</translation>
 <translation id="4952936045814352993">अलार्मचे आवाज बंद केले असताना फोन शोधा उपलब्ध नाही</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">सो</translation>
 <translation id="7600875258240007829">सर्व सूचना पहा</translation>
 <translation id="7607002721634913082">विराम द्या</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> वर तुमच्या फोनच्या कॅमेरा रोलमधून अलीकडील फोटो पहा</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फॅ</translation>
 <translation id="7631906263969450674">मार्कर पेन</translation>

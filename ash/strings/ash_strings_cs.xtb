@@ -24,6 +24,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="109942774857561566">Nudím se</translation>
 <translation id="1104084341931202936">Zobrazit nastavení přístupnosti</translation>
 <translation id="1104621072296271835">Společně budou vaše zařízení fungovat ještě lépe</translation>
+<translation id="1111781754511998498">Projektor</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> aktualizovali.</translation>
 <translation id="1119348796022671382">Režim barvy podle motivu používá barvy z tapety k lehkému zabarvení rozhraní.</translation>
 <translation id="112308213915226829">Automaticky skrývat poličku</translation>
@@ -373,6 +374,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3665889125180354336">Záznam mikrofonu</translation>
 <translation id="3680908746918359504">Vymazat všechny značky</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Můžete změnit, kam se ukládají záznamy obrazovky</translation>
 <translation id="3702809606464356667">Zobrazují se okna z aktuální plochy, stisknutím šipky nahoru zobrazíte okna ze všech ploch</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3969043077941541451">Vypnout</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="3977512764614765090">Baterie je nabitá na <ph name="PERCENTAGE" /> % a nabíjí se.</translation>
+<translation id="3986082989454912832">Přijmout</translation>
 <translation id="3995138139523574647">Zařízení USB Type-C (pravý zadní port)</translation>
 <translation id="40062176907008878">Psaní rukou</translation>
 <translation id="4017989525502048489">Laserové ukazovátko</translation>
@@ -456,7 +459,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
 <translation id="4285498937028063278">Odepnout</translation>
-<translation id="4292904812939562398">Nedávno použité aplikace</translation>
 <translation id="429402653707266969">Přepnout umístění lišty</translation>
 <translation id="4294319844246081198">Dobré ráno, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Vymazat všechna oznámení (<ph name="COUNT" />)</translation>
@@ -562,6 +564,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
 <translation id="4952936045814352993">Když jsou vypnuté zvuky budíků, funkce Najít telefon není k dispozici</translation>
@@ -905,6 +908,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7595633564847427181">P</translation>
 <translation id="7600875258240007829">Zobrazit všechna oznámení</translation>
 <translation id="7607002721634913082">Přerušeno</translation>
+<translation id="7610198039767537854">Zobrazit nedávné fotky z alba fotoaparátu z telefonu v zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutrální</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Zvýrazňovač</translation>

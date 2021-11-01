@@ -24,6 +24,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="109942774857561566">Jag har tråkigt</translation>
 <translation id="1104084341931202936">Visa tillgänglighetsinställningar</translation>
 <translation id="1104621072296271835">Dina enheter fungerar ännu bättre tillsammans</translation>
+<translation id="1111781754511998498">Projektor</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> rekommenderar att du uppdaterar denna <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">I färgläget med tema används färger från bakgrunden till att lätt färgsätta gränssnittet.</translation>
 <translation id="112308213915226829">Dölj hyllan automatiskt</translation>
@@ -367,12 +368,13 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3626281679859535460">Ljusstyrka</translation>
 <translation id="3630697955794050612">av</translation>
 <translation id="3631369015426612114">Tillåt aviseringar från följande</translation>
-<translation id="3638400994746983214">Aktivera och inaktivera sekretesskärmen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Uppdatering försenad</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3665889125180354336">Spela in via mikrofon</translation>
 <translation id="3680908746918359504">Rensa alla markeringar</translation>
 <translation id="36813544980941320">wifi-nätverk delas mellan telefonen och <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Nu kan du ändra var skärmbilder/skärminspelningar sparas</translation>
 <translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
 <translation id="3977512764614765090">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas.</translation>
+<translation id="3986082989454912832">Svara</translation>
 <translation id="3995138139523574647">USB-C-enhet (bakre porten på högra sidan)</translation>
 <translation id="40062176907008878">Handskrift</translation>
 <translation id="4017989525502048489">Laserpekare</translation>
@@ -456,7 +459,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
 <translation id="4279490309300973883">Spegling</translation>
 <translation id="4285498937028063278">Lossa</translation>
-<translation id="4292904812939562398">Senast använda appar</translation>
 <translation id="429402653707266969">Byt plats för verktygsfältet</translation>
 <translation id="4294319844246081198">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Rensa alla <ph name="COUNT" /> aviseringar</translation>
@@ -525,7 +527,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
-<translation id="4702647871202761252">Sekretesskärmen är inaktiverad</translation>
+<translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4734965478015604180">Horisontell</translation>
 <translation id="4735498845456076464">Kortkommandot <ph name="LAUNCHER_KEY_NAME" /> + siffra har ändrats. Nu används <ph name="LAUNCHER_KEY_NAME" />-tangenten + en tangent i översta raden som funktionstangenter.</translation>
@@ -562,6 +564,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
         <ph name="NOTIFICATION" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Inaktivera aviseringar</translation>
 <translation id="4946376291507881335">Skärmbild/skärminspelning</translation>
 <translation id="495046168593986294">Rulla upp</translation>
 <translation id="4952936045814352993">Funktionen Hitta telefonen är inte tillgänglig när ljudet är avstängt för alarmet</translation>
@@ -664,7 +667,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5750765938512549687">Bluetooth är inaktiverat</translation>
 <translation id="576341972084747908">Den skadliga filen <ph name="FILENAME" /> laddas ned</translation>
 <translation id="576453121877257266">Nattljus är aktiverat.</translation>
-<translation id="5769373120130404283">Sekretesskärm</translation>
+<translation id="5769373120130404283">Integritetsskärm</translation>
 <translation id="5777841717266010279">Vill du avbryta skärmdelningen?</translation>
 <translation id="5779721926447984944">Filer som har fästs</translation>
 <translation id="5790085346892983794">Klart</translation>
@@ -767,7 +770,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
 <translation id="6612802754306526077">Skärminspelningsläget har valts</translation>
-<translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
+<translation id="6614169507485700968">Integritetsskärmen är aktiverad</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> vill använda mikrofonen</translation>
 <translation id="6630773993843701741">Öppna Bluetooth-inställningarna för att parkoppla enheten manuellt</translation>
@@ -905,6 +908,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Visa alla aviseringar</translation>
 <translation id="7607002721634913082">Pausad</translation>
+<translation id="7610198039767537854">Titta på de senaste kamerabilderna från telefonen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutralt</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Märkpenna</translation>

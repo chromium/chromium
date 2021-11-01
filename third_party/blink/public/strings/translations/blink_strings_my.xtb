@@ -37,7 +37,7 @@
 <translation id="1632409084477505723">ဒေါင်းလုဒ် သင်္ကေတ</translation>
 <translation id="1637811476055996098">ဖိုင်များရွေး</translation>
 <translation id="1650423536718072820">ကောက်နုတ်ဖော်ပြချက်</translation>
-<translation id="1658806147928973309">မိုက်အသံတိတ် သင်္ကေတ</translation>
+<translation id="1658806147928973309">မိုက်ပိတ်ရန် သင်္ကေတ</translation>
 <translation id="1677491356035817504">အောက်လှည့်မြား သင်္ကေတ၊ ‘ချဲ့ခြင်း’ ကိုလည်း ဆိုလိုနိုင်သည်</translation>
 <translation id="1681022320378710418">လက်ရှိအချိန်</translation>
 <translation id="1727839386348365796">အရောင်ရွေးစနစ်</translation>
@@ -122,7 +122,7 @@
 <translation id="3685101356851116974">အညွှန်းတပ်မထားသောပုံ</translation>
 <translation id="3706100364254443312">ခလုတ်</translation>
 <translation id="3732799496749320381">mm</translation>
-<translation id="3754210790023674521">တစ်ခုပေါ်တစ်ခု ထပ်၍ဖွင့်သည့် မုဒ်မှ ထွက်ရန်</translation>
+<translation id="3754210790023674521">နှစ်ခုထပ်၍ကြည့်ခြင်း မုဒ်မှ ထွက်ရန်</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3808586225841795776">သက်တမ်း</translation>
 <translation id="3822383571486410024">ကျေးဇူးပြုပြီး ဤစာသားကို စာလုံး <ph name="MIN_CHARACTERS" /> လုံး သို့မဟုတ် ထို့ထက်ပို ရှည်ပေးပါ (သင်သည် ယခု စာလုံး <ph name="CURRENT_LENGTH" /> လုံးကို သုံးထားသည်)။</translation>
@@ -163,7 +163,7 @@
 <translation id="4668956016107839909">နောက်ဆက်တွဲ</translation>
 <translation id="4679853894970977730">ကင်မရာ သင်္ကေတ၊ ‘ဓာတ်ပုံရိုက်ခြင်း’ ကိုလည်း ဆိုလိုနိုင်သည်</translation>
 <translation id="4698212723196775569">ကုဒ်</translation>
-<translation id="4718048029184481307">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်နေသည်</translation>
+<translation id="4718048029184481307">နှစ်ခုထပ်၍ကြည့်ခြင်း ဖွင့်နေသည်</translation>
 <translation id="4742539557769756338">မျက်နှာဖုံး</translation>
 <translation id="4748357248530471599">မျက်နှာပြင်ကို ဖြတ်ညှပ်ပြသသည့် စခရင်အပြည့်ကို ဖွင့်/ပိတ်လုပ်ရန်</translation>
 <translation id="4757246831282535685">တဘ်အကွက်</translation>
@@ -253,7 +253,7 @@
 <translation id="6247212328664111379">လူပုံစံ သင်္ကေတ</translation>
 <translation id="6281588256137006900">အလင်း</translation>
 <translation id="6281763101136022427">url</translation>
-<translation id="6310801910862476708">တစ်ခုပေါ်တစ်ခု ထပ်၍ဖွင့်သည့် မုဒ်မှ ထွက်ရန်</translation>
+<translation id="6310801910862476708">နှစ်ခုထပ်၍ကြည့်ခြင်းမှ ထွက်ရန်</translation>
 <translation id="6350382280299255966">အပြုံးမျက်နှာ သင်္ကေတ၊ ‘အီမိုဂျီ’ ကိုလည်း ဆိုလိုနိုင်သည်</translation>
 <translation id="6398862346408813489">လ ရွေးချယ်ရေး အကွက်ကို ပြပါ</translation>
 <translation id="6404546809543547843">အသံဖိုင် အချိန် ကြည့်ရှုစက်</translation>
@@ -319,7 +319,7 @@
 <translation id="7740050170769002709">HTML အကြောင်းအရာ</translation>
 <translation id="7742609585924342092">တည်နေရာ သင်္ကေတ</translation>
 <translation id="7745230546936012372">လိုအပ်နေသော ပုံအကြောင်းအရာများ ရယူရန် အကြောင်းအရာမီနူးကို ဖွင့်ပါ။</translation>
-<translation id="7750228210027921155">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်ရန်</translation>
+<translation id="7750228210027921155">နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
 <translation id="775297008183122718">မမှန်ကန်သည့် ဝင်ရောက်မှု</translation>
 <translation id="7782515065589691344">၁.၂၅</translation>
 <translation id="7789962463072032349">ဆိုင်းငံ့ထားရန်</translation>
@@ -390,17 +390,17 @@
 <translation id="9048119486235211610">သွားလာမှု</translation>
 <translation id="9062295712474918030">စာရွက်စာတမ်း</translation>
 <translation id="9073800864014589651">အဖွင့်ခလုတ် သင်္ကေတ</translation>
-<translation id="9093215626363556771">တစ်ခုပေါ်တစ်ခု ထပ်၍ဖွင့်သည့် မုဒ်မှ ထွက်ရန်</translation>
+<translation id="9093215626363556771">နှစ်ခုထပ်၍ကြည့်ခြင်း မုဒ်မှ ထွက်ရန်</translation>
 <translation id="9105500880071990795">အသံတိုး သင်္ကေတ</translation>
 <translation id="9108370397979208512">သင်္ချာ</translation>
 <translation id="9132465097189459683">အခြား...</translation>
 <translation id="913630661384792974">ဗီဒီယိုကင်မရာ သင်္ကေတ၊ ‘ဗီဒီယို ရိုက်ကူးခြင်း’ ကိုလည်း ဆိုလိုနိုင်သည်</translation>
 <translation id="9138385573473225930">သတိပေးချက်</translation>
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" />မှာ စတင်သည့် <ph name="WEEK" /></translation>
-<translation id="916607977885256133">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်ခြင်း</translation>
+<translation id="916607977885256133">နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
 <translation id="9168329111483466115">အောက်ခြေမှတ်ချက်</translation>
 <translation id="945780513535800434">တချို့တစ်ဝက်ကို အမှန်ခြစ်ထားသည်</translation>
 <translation id="947651054772746219">လူပုံစံ သင်္ကေတ</translation>
-<translation id="954003015749068518">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်သည့်မုဒ်ကို ဖွင့်ရန်</translation>
+<translation id="954003015749068518">နှစ်ခုထပ်၍ကြည့်ခြင်း ဖွင့်ရန်</translation>
 <translation id="966787709310836684">မီနူး</translation>
 </translationbundle>

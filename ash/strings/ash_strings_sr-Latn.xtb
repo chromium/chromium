@@ -24,6 +24,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Pregledajte podešavanja pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji zajedno funkcionišu još bolje</translation>
+<translation id="1111781754511998498">Projektor</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> preporučuje da ažurirate ovaj <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Režim tematskih boja koristi boje izvedene iz pozadine da bi se blago obojio intefejs.</translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
@@ -418,6 +419,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3969043077941541451">Isključi</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
 <translation id="3977512764614765090">Baterija je na <ph name="PERCENTAGE" />% i puni se.</translation>
+<translation id="3986082989454912832">Odgovori</translation>
 <translation id="3995138139523574647">Uređaj sa USB priključkom tipa C (desni zadnji port)</translation>
 <translation id="40062176907008878">Pisanje rukom</translation>
 <translation id="4017989525502048489">Laserski pokazivač</translation>
@@ -457,7 +459,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4274537685965975248">Tasterska prečica Ctrl + Alt + strelica nadole je promenjena. Da biste koristili taster End, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nadesno</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4285498937028063278">Otkači</translation>
-<translation id="4292904812939562398">Nedavno korišćene aplikacije</translation>
 <translation id="429402653707266969">Uključi/isključi lokaciju</translation>
 <translation id="4294319844246081198">Dobro jutro, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Obrišite sva obaveštenja (<ph name="COUNT" />)</translation>
@@ -907,6 +908,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7595633564847427181">P</translation>
 <translation id="7600875258240007829">Pogledajte sva obaveštenja</translation>
 <translation id="7607002721634913082">Pauzirano</translation>
+<translation id="7610198039767537854">Pregledajte nedavne slike sa telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutralno</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Olovka za marker</translation>

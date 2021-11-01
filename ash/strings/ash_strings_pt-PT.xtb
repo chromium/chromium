@@ -24,6 +24,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="109942774857561566">Estou aborrecido</translation>
 <translation id="1104084341931202936">Mostrar definições de acessibilidade</translation>
 <translation id="1104621072296271835">Os seus dispositivos funcionam ainda melhor juntos</translation>
+<translation id="1111781754511998498">Projetor</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> recomenda que atualize este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">O modo de cores temáticas utiliza cores extraídas da sua imagem de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar prateleira automaticamente</translation>
@@ -418,6 +419,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="397105322502079400">A calcular...</translation>
 <translation id="3977512764614765090">A bateria está <ph name="PERCENTAGE" />% cheia e a carregar.</translation>
+<translation id="3986082989454912832">Atender</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira do lado direito)</translation>
 <translation id="40062176907008878">Escrita manual</translation>
 <translation id="4017989525502048489">Ponteiro de laser</translation>
@@ -457,7 +459,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo foi alterado. Para utilizar a tecla Fim, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4285498937028063278">Soltar</translation>
-<translation id="4292904812939562398">Apps utilizadas recentemente</translation>
 <translation id="429402653707266969">Ativar/desativar a localização da barra de ferramentas</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>
@@ -907,6 +908,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7595633564847427181">S</translation>
 <translation id="7600875258240007829">Ver todas as notificações</translation>
 <translation id="7607002721634913082">Em pausa</translation>
+<translation id="7610198039767537854">Veja fotos recentes do rolo da câmara do telemóvel no dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Caneta de feltro</translation>

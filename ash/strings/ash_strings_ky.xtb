@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Зеригип жатам</translation>
 <translation id="1104084341931202936">Атайын мүмкүнчүлүктөрдүн жөндөөлөрүн көрсөтүү</translation>
 <translation id="1104621072296271835">Түзмөктөрүңүз бирге мындан да жакшы иштейт</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүн жаңыртууну сунуштап жатат.</translation>
 <translation id="1119348796022671382">Интерфейске бир аз боёк кошуу үчүн, тема кошулган түстүү режим тушкагазыңыздагы түстөрдү колдонот.</translation>
 <translation id="112308213915226829">Текчени авто-жашыруу</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Аудиону жаздыруу</translation>
 <translation id="3680908746918359504">Бардык белгилегичти тазалоо</translation>
 <translation id="36813544980941320">Wi-Fi тармактары телефонуңуз жана <ph name="DEVICE_NAME" /> түзмөгүңүз менен бөлүшүлөт</translation>
+<translation id="3701206655856637070">Эми скриншоттор кайда сакталарын өзгөртө аласыз</translation>
 <translation id="3702809606464356667">Учурдагы иш тактадагы терезелер көрсөтүлүп жатат. Бардык иш такталардагы терезелерди көрүү үчүн өйдө жебени басыңыз</translation>
 <translation id="3702846122927433391">Нигерия калкынын саны</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Өчүк</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="3977512764614765090">Батареянын деңгээли – <ph name="PERCENTAGE" /> %, кубатталууда.</translation>
+<translation id="3986082989454912832">Жооп берүү</translation>
 <translation id="3995138139523574647">USB-C түзмөгү (оң жактагы арткы оюкча)</translation>
 <translation id="40062176907008878">Кол жазма</translation>
 <translation id="4017989525502048489">Лазер көрсөткүчү</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + ылдый жебе ыкчам баскычы өзгөртүлдү. Аягы баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + oңго жебени басыңыз.</translation>
 <translation id="4279490309300973883">Чагылыштыруу</translation>
 <translation id="4285498937028063278">Бошотуу</translation>
-<translation id="4292904812939562398">Жакында иштетилген колдонмолор</translation>
 <translation id="429402653707266969">Куралдар тилкесинин жайгашкан жерин өчүрүү/күйгүзүү</translation>
 <translation id="4294319844246081198">Кутмандуу таңыңыз менен, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" /> билдирменин баарын өчүрүү</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Билдирмелерди өчүрүү</translation>
 <translation id="4946376291507881335">Сүрөткө тартуу</translation>
 <translation id="495046168593986294">Өйдө сыдыруу</translation>
 <translation id="4952936045814352993">Эскертүүлөрдүн үнү басылганда телефондун жайгашкан жерин аныктоо мүмкүн эмес</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">Дү</translation>
 <translation id="7600875258240007829">Бардык билдирмелерди көрүү</translation>
 <translation id="7607002721634913082">Бир азга токтотулду</translation>
+<translation id="7610198039767537854">Телефонуңуз менен тартылган акыркы сүрөттөрдү <ph name="DEVICE_TYPE" /> түзмөгүндө көрүңүз</translation>
 <translation id="7618774594543487847">Нейтралдуу</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Белгилегичтин калемсабы</translation>

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Мені нудно</translation>
 <translation id="1104084341931202936">Показати налаштування спеціальних можливостей</translation>
 <translation id="1104621072296271835">Ваші пристрої працюватимуть разом ще краще</translation>
+<translation id="1111781754511998498">Проектор</translation>
 <translation id="1118549423835582252">Домен <ph name="MANAGER" /> радить оновити цей пристрій <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">У цьому режимі кольори інтерфейсу відповідають гамі фонового малюнка.</translation>
 <translation id="112308213915226829">Автоматично ховати полицю</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Мікрофон для запису</translation>
 <translation id="3680908746918359504">Видалити всі маркери</translation>
 <translation id="36813544980941320">Ваш телефон і пристрій <ph name="DEVICE_NAME" /> підключатимуться до однакових мереж Wi-Fi</translation>
+<translation id="3701206655856637070">Тепер ви можете змінювати місце зберігання записів екрана</translation>
 <translation id="3702809606464356667">Показано вікна поточного робочого столу. Щоб показати вікна всіх робочих столів, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="3702846122927433391">Яка чисельність населення в Нігерії</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Вимкнено</translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3977512764614765090">Акумулятор заряджений на <ph name="PERCENTAGE" />% і продовжує заряджатися.</translation>
+<translation id="3986082989454912832">Відповісти</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
 <translation id="40062176907008878">Рукописне введення</translation>
 <translation id="4017989525502048489">Лазерний вказівник</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Комбінацію клавіш Ctrl + Alt + стрілка вниз змінено. Щоб скористатися клавішею End, натисніть клавішу <ph name="LAUNCHER_KEY_NAME" /> + стрілку вправо.</translation>
 <translation id="4279490309300973883">Дзеркальне відображення</translation>
 <translation id="4285498937028063278">Відкріпити</translation>
-<translation id="4292904812939562398">Останні використані додатки</translation>
 <translation id="429402653707266969">Змінити розташування панелі інструментів</translation>
 <translation id="4294319844246081198">Доброго ранку, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Видаліть усі сповіщення (<ph name="COUNT" />)</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Вимкнути сповіщення</translation>
 <translation id="4946376291507881335">Зробити знімок</translation>
 <translation id="495046168593986294">Прокрутити вгору</translation>
 <translation id="4952936045814352993">Функція "Пошук телефона" не доступна, оскільки ви вимкнули сигнали сповіщень</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">Пн</translation>
 <translation id="7600875258240007829">Переглянути всі сповіщення</translation>
 <translation id="7607002721634913082">Призупинено</translation>
+<translation id="7610198039767537854">Переглянути останні фото з фотоплівки телефона на <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Нейтральні кольори</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Перо-маркер</translation>

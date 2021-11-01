@@ -24,6 +24,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="109942774857561566">Mi annoio</translation>
 <translation id="1104084341931202936">Mostra impostazioni di accessibilità</translation>
 <translation id="1104621072296271835">I tuoi dispositivi funzionano ancora meglio insieme</translation>
+<translation id="1111781754511998498">Proiettore</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> ti consiglia di aggiornare questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">La modalità colore A tema usa i colori estratti dallo sfondo per colorare leggermente l'interfaccia.</translation>
 <translation id="112308213915226829">Nascondi automaticamente barra delle app</translation>
@@ -419,6 +420,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="3977512764614765090">Percentuale di carica della batteria: <ph name="PERCENTAGE" />%. La batteria è in carica.</translation>
+<translation id="3986082989454912832">Rispondi</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta posteriore destra)</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
@@ -458,7 +460,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Sblocca</translation>
-<translation id="4292904812939562398">App usate di recente</translation>
 <translation id="429402653707266969">Attiva/disattiva posizionamento barra degli strumenti</translation>
 <translation id="4294319844246081198">Buongiorno <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Cancella tutte e <ph name="COUNT" /> le notifiche</translation>
@@ -908,6 +909,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="7595633564847427181">L</translation>
 <translation id="7600875258240007829">Visualizza tutte le notifiche</translation>
 <translation id="7607002721634913082">In pausa</translation>
+<translation id="7610198039767537854">Visualizza le foto recenti del rullino del telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Evidenziatore</translation>

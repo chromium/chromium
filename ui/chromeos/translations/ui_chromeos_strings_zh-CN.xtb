@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">自动连接至隐藏的网络会导致其他人能查看您的设备和一些网络设置，因此我们建议不要这样做。</translation>
 <translation id="2125607626296734455">高棉语</translation>
 <translation id="2139545522194199494">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，连接</translation>
+<translation id="2141347188420181405">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，已被您的管理员禁用，详细信息</translation>
 <translation id="2142680004883808240">俄语注音 YaZHert 键盘</translation>
 <translation id="2143778271340628265">手动配置代理</translation>
 <translation id="2163152940313951844">字符无效：<ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">青蛙</translation>
 <translation id="2578394532502990878">泰米尔语注音</translation>
 <translation id="2579959351793446050">奥里亚语</translation>
+<translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> 视频</translation>
 <translation id="2617342710774726426">SIM 卡已被锁定</translation>
 <translation id="2620090360073999360">Google 云端硬盘目前无法访问。</translation>

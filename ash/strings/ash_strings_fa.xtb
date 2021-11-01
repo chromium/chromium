@@ -24,6 +24,7 @@
 <translation id="109942774857561566">‏I’m bored (حوصله‌ام سر رفته)</translation>
 <translation id="1104084341931202936">نشان دادن تنظیمات دسترس‌پذیری</translation>
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
+<translation id="1111781754511998498">پروژکتور</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> توصیه می‌کند این <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید.</translation>
 <translation id="1119348796022671382">حالت «رنگ‌مایه» بااستفاده از رنگ‌های استخراج‌شده از کاغذدیواری، به واسط اندکی رنگ اضافه می‌کند.</translation>
 <translation id="112308213915226829">پنهان کردن خودکار قفسه</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">ضبط میکروفون</translation>
 <translation id="3680908746918359504">پاک کردن همه قلم‌های نشان‌گذاری</translation>
 <translation id="36813544980941320">‏تلفنتان و <ph name="DEVICE_NAME" /> باهم از شبکه‌های Wi-Fi استفاده خواهند کرد</translation>
+<translation id="3701206655856637070">اکنون می‌توان محل ذخیره شدن ضبط صفحه‌نمایش را تغییر دهید</translation>
 <translation id="3702809606464356667">درحال نمایش پنجره‌های میزکار کنونی، برای نمایش پنجره‌های همه میزکارها، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="3702846122927433391">‏Population in Nigeria (جمعیت نیجریه)</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">خاموش</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3977512764614765090">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است.</translation>
+<translation id="3986082989454912832">پاسخ</translation>
 <translation id="3995138139523574647">‏دستگاه USB-C (درگاه عقب سمت راست)</translation>
 <translation id="40062176907008878">دست‌نویسی</translation>
 <translation id="4017989525502048489">اشاره‌گر لیزری</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">میان‌بر صفحه‌کلید «مهار + دگرساز + جهت‌نمای پایین» تغییر کرده است. برای استفاده از کلید «پایان»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای راست» را فشار دهید.</translation>
 <translation id="4279490309300973883">بازتاب می‌شود</translation>
 <translation id="4285498937028063278">برداشتن سنجاق</translation>
-<translation id="4292904812939562398">برنامه‌های اخیراً استفاده‌شده</translation>
 <translation id="429402653707266969">تغییر مکان نوار ابزار</translation>
 <translation id="4294319844246081198">صبح‌به‌خیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">پاک کردن همه <ph name="COUNT" /> اعلان</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />،
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">غیرفعال کردن اعلان‌ها</translation>
 <translation id="4946376291507881335">ضبط</translation>
 <translation id="495046168593986294">پیمایش به بالا</translation>
 <translation id="4952936045814352993">وقتی صداهای هشدار غیرفعال هستند، «پیدا کردن تلفن» دردسترس نیست</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">دوشنبه</translation>
 <translation id="7600875258240007829">دیدن همه اعلان‌ها</translation>
 <translation id="7607002721634913082">متوقف</translation>
+<translation id="7610198039767537854">عکس‌های جدید از حلقه فیلم دوربین تلفنتان را در <ph name="DEVICE_TYPE" /> تماشا کنید</translation>
 <translation id="7618774594543487847">خنثی</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> درجه فارنهایت</translation>
 <translation id="7631906263969450674">قلم نشان‌گذاری</translation>

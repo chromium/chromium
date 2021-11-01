@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium – Вхід у мережу– <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Якщо вашим комп’ютером користуєтесь не лише ви, а й ваші друзі чи сім’я, вони можуть налаштувати Chromium на свій смак.</translation>
 <translation id="2294245788148774212">Додатково: допоможіть покращувати функції та підвищувати продуктивність ОС Chromium, автоматично надсилаючи в Google дані про діагностику та використання.</translation>
+<translation id="2313870531055795960">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігаються в Chromium. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chromium також може надсилати в Безпечний перегляд URL-адреси, зокрема уривки контенту сторінки.</translation>
 <translation id="2343156876103232566">Щоб надіслати номер на телефон Android, увійдіть у Chromium на обох пристроях.</translation>
 <translation id="2347108572062610441">Це розширення змінило сторінку, яка відкривається під час запуску Chromium.</translation>
 <translation id="2396765026452590966">Розширення "<ph name="EXTENSION_NAME" />" змінило сторінку, яка відкривається під час запуску Chromium.</translation>
@@ -51,6 +52,7 @@
 <translation id="2799223571221894425">Перезапустити</translation>
 <translation id="2837693172913560447">Буде створено новий профіль Chromium для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2847479871509788944">Видалити з Chromium…</translation>
+<translation id="2850691299438350830">Захищає вас у Chromium і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="2885378588091291677">Диспетчер завдань</translation>
 <translation id="2910007522516064972">Про &amp;Chromium</translation>
 <translation id="2977470724722393594">У вас остання версія Chromium</translation>

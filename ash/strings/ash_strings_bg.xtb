@@ -24,6 +24,7 @@
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
 <translation id="1104084341931202936">Показване на настройките за достъпност</translation>
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
+<translation id="1111781754511998498">Проектор</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> препоръчва да актуализирате това устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Тематичният цветови режим придава лек оттенък на интерфейса с помощта на цветове, извлечени от тапета ви.</translation>
 <translation id="112308213915226829">Автоматично скриване на лавицата</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Записване от микрофона</translation>
 <translation id="3680908746918359504">Изчистване на всички маркери</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ще бъдат споделяни между телефона и устройството ви <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Вече можете да промените къде да се запазват заснеманията на екрана</translation>
 <translation id="3702809606464356667">Показани са прозорци от текущия работен кът. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от всички работни кътове</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Изключено</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="3977512764614765090">Батерията е на <ph name="PERCENTAGE" />% и се зарежда.</translation>
+<translation id="3986082989454912832">Отговор</translation>
 <translation id="3995138139523574647">устройство с USB-C (задният десен порт)</translation>
 <translation id="40062176907008878">Писане на ръка</translation>
 <translation id="4017989525502048489">Лазерна показалка</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Клавишната комбинация Ctrl + Alt + стрелка надолу се промени. За да използвате клавиша End, натиснете клавиша „<ph name="LAUNCHER_KEY_NAME" />“ + стрелката надясно.</translation>
 <translation id="4279490309300973883">Дублиране</translation>
 <translation id="4285498937028063278">Освобождаване</translation>
-<translation id="4292904812939562398">Наскоро използвани приложения</translation>
 <translation id="429402653707266969">Превключване на местоположението на лентата с инструменти</translation>
 <translation id="4294319844246081198">Добро утро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Изчистване на всичките <ph name="COUNT" /> известия</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />,
         <ph name="LOCALE" />.</translation>
+<translation id="4945196315133970626">Изключване на известията</translation>
 <translation id="4946376291507881335">Заснемане</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
 <translation id="4952936045814352993">Функцията за намиране на телефона не е налице, когато звуците на будилниците са деактивирани</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">пн</translation>
 <translation id="7600875258240007829">Преглед на всички известия</translation>
 <translation id="7607002721634913082">На пауза</translation>
+<translation id="7610198039767537854">Преглед на <ph name="DEVICE_TYPE" /> на скорошните снимки от филмовата ролка на телефона ви</translation>
 <translation id="7618774594543487847">Неутрален</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Маркер</translation>

@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">עבודה</translation>
 <translation id="1122198203221319518">&amp;כלים</translation>
 <translation id="1122242684574577509">‏האימות נכשל. יש ללחוץ כדי לעבור אל דף ההתחברות של רשת ה-Wi-Fi שבה משתמשים (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">פרטי הכניסה של החשבון שלך לא מעודכנים. עליך לצאת מהחשבון ולהיכנס מחדש.</translation>
 <translation id="1122960773616686544">שם סימנייה</translation>
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1125550662859510761">‏נראה כמו <ph name="WIDTH" /> x <ph name="HEIGHT" /> (במקור)</translation>
@@ -2088,6 +2089,7 @@
 <translation id="310671807099593501">‏האתר משתמש ב-Bluetooth</translation>
 <translation id="3108931485517391283">לא ניתן לקבל את הקובץ</translation>
 <translation id="3109724472072898302">מכווץ</translation>
+<translation id="311214366526552035">להוריד בכל זאת</translation>
 <translation id="311394601889664316">לא לאפשר לאתרים לערוך קבצים או תיקיות במכשיר</translation>
 <translation id="3115147772012638511">בהמתנה למטמון...</translation>
 <translation id="3115580024857770654">כיווץ הכול</translation>
@@ -2368,6 +2370,7 @@
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
 <translation id="3429271624041785769">השפות של תוכן האינטרנט</translation>
 <translation id="3429275422858276529">כדאי לסמן את הדף בסימנייה כדי לגשת אליו בקלות בהמשך</translation>
+<translation id="343115368966109153">להוריד את <ph name="FILE_NAME" />? כל מי שמשתמש במכשיר יוכל לראות את הקובץ.</translation>
 <translation id="3432227430032737297">‏הסרת כל קובצי ה-cookie המוצגים</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">אופס!  המערכת לא הצליחה ליצור את נעילת התכונות של המכשיר המתרחשת בזמן ההתקנה.</translation>
@@ -2709,6 +2712,7 @@
 <translation id="3777806571986431400">התוסף הופעל</translation>
 <translation id="3778152852029592020">ההורדה בוטלה.</translation>
 <translation id="3778208826288864398">מפתח האבטחה נעול כי הזנת קוד אימות שגוי יותר מדי פעמים. צריך לאפס את מפתח האבטחה.</translation>
+<translation id="3778369586810509692">הקובץ הזה יישמר במכשיר וכולם יוכלו לראות אותו.</translation>
 <translation id="3778740492972734840">&amp;כלים עבור מפתחים</translation>
 <translation id="3778868487658107119">‏אפשר לשאול אותו שאלות ולומר לו לבצע פעולות. העוזר הפרטי של Google מוכן תמיד לסייע לך.</translation>
 <translation id="3781742599892759500">‏גישה של Linux למיקרופון</translation>
@@ -7512,6 +7516,7 @@
 <translation id="8879284080359814990">הצ&amp;גה ככרטיסייה</translation>
 <translation id="8879921471468674457">שמירת פרטי הכניסה</translation>
 <translation id="8880054210564666174">לא ניתן להוריד את רשימת אנשי הקשר. יש לבדוק את החיבור לרשת, או <ph name="LINK_BEGIN" />לנסות שוב<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">‏צריך לפתוח את ההגדרות כדי לחבר את <ph name="USB_DEVICE_NAME" /> אל Linux או אל Parallels Desktop</translation>
 <translation id="8881020143150461183">יש לנסות שוב. לתמיכה טכנית יש לפנות אל <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">הפעלת האצה של לוח מגע</translation>
 <translation id="8884570509232205463">המכשיר שלך יינעל רק ב-<ph name="UNLOCK_TIME" />.</translation>

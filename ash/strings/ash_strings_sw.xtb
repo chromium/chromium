@@ -24,6 +24,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="109942774857561566">Nahitaji kuchangamshwa</translation>
 <translation id="1104084341931202936">Onyesha mipangilio ya ufikivu</translation>
 <translation id="1104621072296271835">Vifaa vyako vitafanya kazi vizuri vikiwa pamoja</translation>
+<translation id="1111781754511998498">Projekta</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> inapendekeza usasishe <ph name="DEVICE_TYPE" /> hii.</translation>
 <translation id="1119348796022671382">Hali ya rangi ya mandhari hutumia rangi zinazotolewa kwenye mandhari yako ili iweke rangi kiasi kwenye kiolesura.</translation>
 <translation id="112308213915226829">Ficha rafu kiotomatiki</translation>
@@ -418,6 +419,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3969043077941541451">Zima</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="3977512764614765090">Chaji ya betri ni <ph name="PERCENTAGE" />% na inaendelea kuchaji.</translation>
+<translation id="3986082989454912832">Jibu</translation>
 <translation id="3995138139523574647">Kifaa cha USB-C (mlango wa upande wa kulia nyuma)</translation>
 <translation id="40062176907008878">Mwandiko</translation>
 <translation id="4017989525502048489">Kielekezi cha leza</translation>
@@ -457,7 +459,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4274537685965975248">Mikato ya kibodi ya Ctrl + Alt + Kishale cha Chini imebadilika. Ili utumie kitufe cha End, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Kulia.</translation>
 <translation id="4279490309300973883">Kuakisi</translation>
 <translation id="4285498937028063278">Banua</translation>
-<translation id="4292904812939562398">Programu ulizotumia hivi majuzi</translation>
 <translation id="429402653707266969">Badilisha mahali upau wa vidhibiti ulipo</translation>
 <translation id="4294319844246081198">Habari za asubuhi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Futa arifa zote <ph name="COUNT" /></translation>
@@ -908,6 +909,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7595633564847427181">J3</translation>
 <translation id="7600875258240007829">Angalia arifa zote</translation>
 <translation id="7607002721634913082">Imepumzishwa</translation>
+<translation id="7610198039767537854">Angalia picha za hivi majuzi zilizo kwenye albamu ya kamera ya simu yako kwenye <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Wastani</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Kalamu ya kutia alama</translation>

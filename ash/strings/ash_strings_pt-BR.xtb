@@ -24,6 +24,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="109942774857561566">Que tédio</translation>
 <translation id="1104084341931202936">Mostrar configurações de acessibilidade</translation>
 <translation id="1104621072296271835">Seus dispositivos funcionam ainda melhor juntos</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> recomenda que você atualize este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">O modo de cores temático usa as cores extraídas do plano de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
@@ -373,6 +374,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3665889125180354336">Gravar microfone</translation>
 <translation id="3680908746918359504">Limpar todos os marcadores</translation>
 <translation id="36813544980941320">Redes Wi-Fi serão compartilhadas entre seu smartphone e o <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Agora, é possível mudar onde as capturas de tela são salvas</translation>
 <translation id="3702809606464356667">Mostrando janelas do espaço de trabalho atual. Pressione a tecla de seta para cima para mostrar as de todos os espaços de trabalho</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3977512764614765090">Bateria em <ph name="PERCENTAGE" />% e carregando.</translation>
+<translation id="3986082989454912832">Atender</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (porta traseira da direita)</translation>
 <translation id="40062176907008878">Escrita à mão</translation>
 <translation id="4017989525502048489">Apontador laser</translation>
@@ -456,7 +459,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4274537685965975248">O atalho de teclado Ctrl + Alt + seta para baixo mudou. Para usar a tecla End, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para a direita.</translation>
 <translation id="4279490309300973883">Espelhamento</translation>
 <translation id="4285498937028063278">Soltar</translation>
-<translation id="4292904812939562398">Apps usados recentemente</translation>
 <translation id="429402653707266969">Mudar o local da barra de ferramentas</translation>
 <translation id="4294319844246081198">Bom dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Limpar todas as <ph name="COUNT" /> notificações</translation>
@@ -562,6 +564,7 @@ Veja o que você pode fazer para começar.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
 <translation id="4952936045814352993">O recurso "Localizar smartphone" fica indisponível quando os sons do alarme estão desativados</translation>
@@ -905,6 +908,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="7595633564847427181">S</translation>
 <translation id="7600875258240007829">Ver todas as notificações</translation>
 <translation id="7607002721634913082">Pausado</translation>
+<translation id="7610198039767537854">Veja as fotos recentes do rolo da câmera do smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutro</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Marcador</translation>

@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Arbejde</translation>
 <translation id="1122198203221319518">&amp;Værktøjer</translation>
 <translation id="1122242684574577509">Godkendelsen mislykkedes. Klik for at gå til loginsiden for det Wi-Fi-netværk, du bruger (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Loginoplysningerne til din konto er forældede. Log ud og derefter ind igen.</translation>
 <translation id="1122960773616686544">Bogmærkets navn</translation>
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1125550662859510761">Ligner <ph name="WIDTH" /> x <ph name="HEIGHT" /> (oprindelig)</translation>
@@ -721,7 +722,7 @@
 <translation id="1719312230114180055">Bemærk! Adgang via fingeraftryk kan være mindre sikkert end adgang via en stærk adgangskode eller pinkode.</translation>
 <translation id="1720318856472900922">TLS WWW-servergodkendelse</translation>
 <translation id="1720941539803966190">Luk selvstudiet</translation>
-<translation id="172123215662733643">Søg på billeder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Søg efter billeder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Du skal have tilladelse fra <ph name="NAME" /> til at besøge dette website</translation>
 <translation id="1722460139690167654">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> administreres<ph name="END_LINK" /> af <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nyt vindue</translation>
@@ -1585,7 +1586,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2602501489742255173">Stryg opad for at komme i gang</translation>
 <translation id="2603115962224169880">Ryd op på computeren</translation>
 <translation id="2603355571917519942">Voice Match er klar</translation>
-<translation id="2604138917550693049">Søg efter billede med Google Lens</translation>
+<translation id="2604138917550693049">Søg efter billedet med Google Lens</translation>
 <translation id="2604255671529671813">Fejl i netværksforbindelsen</translation>
 <translation id="2605668923777146443">Gå til <ph name="LINK_BEGIN" />Indstillinger<ph name="LINK_END" /> for at se valgmulighederne for Better Together.</translation>
 <translation id="2606246518223360146">Tilknyt data</translation>
@@ -3884,7 +3885,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5051836348807686060">Stavekontrol understøttes ikke for de sprog, du har valgt</translation>
 <translation id="5052499409147950210">Rediger website</translation>
 <translation id="505347685865235222">Unavngiven gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Søg efter billede med Google Lens</translation>
+<translation id="5053962746715621840">Søg efter billedet med Google Lens</translation>
 <translation id="5056950756634735043">Opretter forbindelse til containeren</translation>
 <translation id="5057110919553308744">Når du klikker på udvidelsen</translation>
 <translation id="505776528429481161">Forbind og konfigurer nemt enheder i nærheden</translation>
@@ -5887,7 +5888,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7230222852462421043">&amp;Gendan vindue</translation>
 <translation id="7230787553283372882">Tilpas din tekststørrelse</translation>
 <translation id="7232750842195536390">Omdøbningen mislykkedes</translation>
-<translation id="723343421145275488">Søg på billeder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Søg efter billeder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Annullerer Linux-gendannelse</translation>
 <translation id="7235716375204803342">Henter aktiviteter...</translation>
 <translation id="7235737137505019098">Din sikkerhedsnøgle har ikke nok plads til flere konti.</translation>
@@ -7511,6 +7512,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8879284080359814990">&amp;Vis som fane</translation>
 <translation id="8879921471468674457">Husk loginoplysninger</translation>
 <translation id="8880054210564666174">Listen over kontakter kunne ikke downloades. Tjek din netværksforbindelse, eller <ph name="LINK_BEGIN" />prøv igen<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Åbn Indstillinger for at slutte <ph name="USB_DEVICE_NAME" /> til Linux eller Parallels Desktop</translation>
 <translation id="8881020143150461183">Prøv igen. Kontakt <ph name="CARRIER_NAME" /> for at få teknisk support.</translation>
 <translation id="8883273463630735858">Aktivér acceleration af touchplade</translation>
 <translation id="8884570509232205463">Din enhed låses nu kl. <ph name="UNLOCK_TIME" />.</translation>

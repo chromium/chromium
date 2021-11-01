@@ -24,6 +24,7 @@
 <translation id="109942774857561566">मुझे बोरियत हो रही है</translation>
 <translation id="1104084341931202936">सुलभता सेटिंग दिखाएं</translation>
 <translation id="1104621072296271835">साथ मिलकर आपके डिवाइस और बेहतर काम करते हैं</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> का सुझाव है कि आप इस <ph name="DEVICE_TYPE" /> को अपडेट कर दें.</translation>
 <translation id="1119348796022671382">थीम कलर मोड, इंटरफ़ेस को हल्के रंग से रंगने के लिए, आपके वॉलपेपर में काम में लिए गए रंगों का इस्तेमाल करता है.</translation>
 <translation id="112308213915226829">अलमारी कोअपने-आपछिपाएं</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">माइक्रोफ़ोन से ऑडियो रिकॉर्ड</translation>
 <translation id="3680908746918359504">सभी मार्कर मिटाएं</translation>
 <translation id="36813544980941320">आपके फ़ोन और <ph name="DEVICE_NAME" /> के बीच वाई-फ़ाई नेटवर्क शेयर किए जाएंगे</translation>
+<translation id="3701206655856637070">स्क्रीन कैप्चर कहां सेव किए जाएं, अब यह अपने हिसाब से तय किया जा सकता है</translation>
 <translation id="3702809606464356667">मौजूदा डेस्क की विंडो दिखाई जा रही हैं, सभी डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन दबाएं</translation>
 <translation id="3702846122927433391">नाइजीरिया की जनसंख्या बताओ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -418,6 +420,7 @@
 <translation id="3969043077941541451">बंद है</translation>
 <translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="3977512764614765090">बैटरी <ph name="PERCENTAGE" />% बाकी है और चार्ज हो रही है.</translation>
+<translation id="3986082989454912832">जवाब दें</translation>
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
 <translation id="40062176907008878">हैंडराइटिंग</translation>
 <translation id="4017989525502048489">लेज़र पॉइंटर</translation>
@@ -457,7 +460,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + डाउन ऐरो कीबोर्ड शॉर्टकट बदल गया है. End बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + राइट ऐरो दबाएं.</translation>
 <translation id="4279490309300973883">स्क्रीन शेयर करने की सुविधा चालू है</translation>
 <translation id="4285498937028063278">टैब बड़ी करें</translation>
-<translation id="4292904812939562398">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन</translation>
 <translation id="429402653707266969">टूलबार की जगह बदलें</translation>
 <translation id="4294319844246081198">गुड मॉर्निंग <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सभी <ph name="COUNT" /> सूचनाएं हटाएं</translation>
@@ -563,6 +565,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">सूचनाएं पाने की सुविधा बंद करें</translation>
 <translation id="4946376291507881335">कैप्चर करें</translation>
 <translation id="495046168593986294">ऊपर स्क्रोल करें</translation>
 <translation id="4952936045814352993">अलार्म की आवाज़ें बंद करने पर, फ़ोन का पता लगाने की सुविधा उपलब्ध नहीं होती</translation>
@@ -906,6 +909,7 @@
 <translation id="7595633564847427181">सोम</translation>
 <translation id="7600875258240007829">सभी सूचनाएं देखें</translation>
 <translation id="7607002721634913082">रोका गया</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> पर अपने फ़ोन के कैमरा रोल से हाल ही की फ़ोटो देखें</translation>
 <translation id="7618774594543487847">न्यूट्रल</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फ़ैरनहाइट</translation>
 <translation id="7631906263969450674">मार्कर पेन</translation>

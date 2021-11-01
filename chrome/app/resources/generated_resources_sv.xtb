@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Arbete</translation>
 <translation id="1122198203221319518">&amp;Verktyg</translation>
 <translation id="1122242684574577509">Autentiseringen misslyckades. Klicka här om du vill visa inloggningssidan för wifi-nätverket du använder (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Dina inloggningsuppgifter för kontot är inaktuella. Logga ut och logga sedan in igen.</translation>
 <translation id="1122960773616686544">Bokmärkets namn</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (fast)</translation>
@@ -720,7 +721,7 @@
 <translation id="1719312230114180055">Obs! Fingeravtryck kan vara mindre säkra än starka lösenord och pinkoder.</translation>
 <translation id="1720318856472900922">TLS WWW-serverautentisering</translation>
 <translation id="1720941539803966190">Stäng självstudierna</translation>
-<translation id="172123215662733643">Sök efter bilder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Bildsökning med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Du behöver tillstånd från <ph name="NAME" /> om du vill besöka den här webbplatsen</translation>
 <translation id="1722460139690167654">Din <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> hanteras<ph name="END_LINK" /> av <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nytt fönster</translation>
@@ -1584,7 +1585,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2602501489742255173">Kom igång genom att svepa uppåt</translation>
 <translation id="2603115962224169880">Rensa upp på datorn</translation>
 <translation id="2603355571917519942">Voice Match har konfigurerats</translation>
-<translation id="2604138917550693049">Sök på bilden med Google Lens</translation>
+<translation id="2604138917550693049">Bildsökning med Google Lens</translation>
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
 <translation id="2605668923777146443">Du hittar alternativ för Better Together i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Länka Data</translation>
@@ -2088,6 +2089,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="310671807099593501">Webbplatsen använder Bluetooth</translation>
 <translation id="3108931485517391283">Det går inte att ta emot</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
+<translation id="311214366526552035">Ladda ned ändå</translation>
 <translation id="311394601889664316">Tillåt inte att webbplatser redigerar filer eller mappar på enheten</translation>
 <translation id="3115147772012638511">Väntar på cache-minnet...</translation>
 <translation id="3115580024857770654">Komprimera alla</translation>
@@ -2368,6 +2370,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3429160811076349561">Provfunktionerna är inaktiverade</translation>
 <translation id="3429271624041785769">Språk för webbinnehåll</translation>
 <translation id="3429275422858276529">Lägg till ett bokmärke för den här sidan så att du enkelt kan hitta tillbaka till den</translation>
+<translation id="343115368966109153">Vill du ladda ned <ph name="FILE_NAME" />? Alla som använder enheten kan se den.</translation>
 <translation id="3432227430032737297">Ta bort alla som visas</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Hoppsan! Det gick inte att fastställa enhetens attributlås för installationstid.</translation>
@@ -2709,6 +2712,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3777806571986431400">Tillägget har aktiverats</translation>
 <translation id="3778152852029592020">Nedladdnningen avbröts.</translation>
 <translation id="3778208826288864398">Säkerhetsnyckeln har låsts eftersom du har angett fel pinkod för många gånger. Du måste återställa säkerhetsnyckeln.</translation>
+<translation id="3778369586810509692">Den här filen lagras på enheten och alla kan se den.</translation>
 <translation id="3778740492972734840">&amp;Verktyg för programmerare</translation>
 <translation id="3778868487658107119">Ställ frågor. Be den att göra saker. Det är Google anpassat just för dig, alltid redo att hjälpa dig.</translation>
 <translation id="3781742599892759500">Mikrofonåtkomst i Linux</translation>
@@ -3883,7 +3887,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5051836348807686060">Stavningskontroll stöds inte för de språk du valt</translation>
 <translation id="5052499409147950210">Redigera webbplats</translation>
 <translation id="505347685865235222">Namnlös grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Sök på bilden med Google Lens</translation>
+<translation id="5053962746715621840">Bildsökning med Google Lens</translation>
 <translation id="5056950756634735043">Ansluter till behållaren</translation>
 <translation id="5057110919553308744">När du klickar på tillägget</translation>
 <translation id="505776528429481161">Anslut och konfigurera enkelt enheter i närheten</translation>
@@ -5166,7 +5170,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6446213738085045933">Skapa genväg på skrivbordet</translation>
 <translation id="6447210166804596538">Granska de viktigaste säkerhets- och integritetskontrollerna på ett och samma ställe</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6450876761651513209">Ändra sekretessrelaterade inställningar</translation>
+<translation id="6450876761651513209">Ändra integritetsrelaterade inställningar</translation>
 <translation id="6451344358166983408">Webbplats eller sida</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> och 1 flik till}other{<ph name="PAGE_TITLE" /> och # flikar till}}</translation>
 <translation id="6451689256222386810">Om du har glömt lösenfrasen eller vill ändra inställningen <ph name="BEGIN_LINK" />återställer du synkroniseringen<ph name="END_LINK" />.</translation>
@@ -5886,7 +5890,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7230222852462421043">&amp;Återställ fönster</translation>
 <translation id="7230787553283372882">Anpassa textstorleken</translation>
 <translation id="7232750842195536390">Det gick inte att byta namn</translation>
-<translation id="723343421145275488">Sök efter bilder med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Bildsökning med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Återställningen av Linux avbryts</translation>
 <translation id="7235716375204803342">Hämtar aktiviteter …</translation>
 <translation id="7235737137505019098">Det finns inte tillräckligt mycket utrymme på säkerhetsnyckeln för fler konton.</translation>
@@ -6567,7 +6571,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="789722939441020330">Tillåt inte att webbplatser laddar ned flera filer samtidigt</translation>
 <translation id="7897900149154324287">Tänk på att mata ut löstagbara enheter i appen Filer innan du kopplar loss dem. Annars kan det hända att data förloras.</translation>
 <translation id="7898725031477653577">Översätt alltid</translation>
-<translation id="790040513076446191">Ändra sekretessrelaterade inställningar</translation>
+<translation id="790040513076446191">Ändra integritetsrelaterade inställningar</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7901914889562552258">Förbättrat Chrome med sidmätvärden</translation>
 <translation id="7903345046358933331">Sidan har slutat svara. Du kan vänta tills den svarar eller stänga den.</translation>
@@ -7509,6 +7513,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8879284080359814990">&amp;Visa som flik</translation>
 <translation id="8879921471468674457">Kom ihåg inloggningsuppgifter</translation>
 <translation id="8880054210564666174">Det gick inte att ladda ned kontaktlistan. Kontrollera nätverksanslutningen eller <ph name="LINK_BEGIN" />försök igen<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Öppna inställningarna och anslut <ph name="USB_DEVICE_NAME" /> till Linux eller Parallels Desktop</translation>
 <translation id="8881020143150461183">Försök igen. Kontakta <ph name="CARRIER_NAME" /> om du behöver teknisk support.</translation>
 <translation id="8883273463630735858">Aktivera styrplatteacceleration</translation>
 <translation id="8884570509232205463">Nu låses enheten klockan <ph name="UNLOCK_TIME" />.</translation>

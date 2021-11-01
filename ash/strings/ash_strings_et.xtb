@@ -24,6 +24,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="109942774857561566">Mul on igav</translation>
 <translation id="1104084341931202936">Kuvab juurdepääsetavuse seaded</translation>
 <translation id="1104621072296271835">Teie seadmed töötavad koos veelgi paremini</translation>
+<translation id="1111781754511998498">Projektor</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> soovitab teil seadet <ph name="DEVICE_TYPE" /> värskendada.</translation>
 <translation id="1119348796022671382">Temaatiline värvirežiim kasutab taustapildist tuletatud värve, et liidest kergelt toonida.</translation>
 <translation id="112308213915226829">Riiuli automaatne peitmine</translation>
@@ -373,6 +374,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3665889125180354336">Mikrofoni salvestamine</translation>
 <translation id="3680908746918359504">Kustuta kõik markeeringud</translation>
 <translation id="36813544980941320">WiFi-võrke jagatakse teie telefoni ja seadme <ph name="DEVICE_NAME" /> vahel</translation>
+<translation id="3701206655856637070">Saate nüüd muuta, kuhu ekraanipildid salvestatakse</translation>
 <translation id="3702809606464356667">Kuvatud on praeguse töölaua aknad. Kõigi töölaudade akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="3702846122927433391">Nigeeria rahvaarv</translation>
 <translation id="3705722231355495246">-</translation>
@@ -418,6 +420,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3969043077941541451">Väljas</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="3977512764614765090">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse.</translation>
+<translation id="3986082989454912832">Vasta</translation>
 <translation id="3995138139523574647">C-tüüpi USB-seade (tagumine parempoolne port)</translation>
 <translation id="40062176907008878">Käsitsi kirjutamine</translation>
 <translation id="4017989525502048489">Laserkursor</translation>
@@ -457,7 +460,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4274537685965975248">Klaviatuuri otseteed Ctrl + Alt + allanool on muudetud. Lõpuklahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + paremnoolt.</translation>
 <translation id="4279490309300973883">Peegeldamine</translation>
 <translation id="4285498937028063278">Vabasta</translation>
-<translation id="4292904812939562398">Hiljuti kasutatud rakendused</translation>
 <translation id="429402653707266969">Tööriistariba asukoha vahetamine</translation>
 <translation id="4294319844246081198">Tere hommikust, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Kustuta kõik <ph name="COUNT" /> märguannet</translation>
@@ -563,6 +565,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Märguannete väljalülitamine</translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
 <translation id="495046168593986294">Keri üles</translation>
 <translation id="4952936045814352993">Telefoni asukoha määramine pole saadaval, kui alarmi helid on keelatud</translation>
@@ -906,6 +909,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="7595633564847427181">E</translation>
 <translation id="7600875258240007829">Kuva kõik märguanded</translation>
 <translation id="7607002721634913082">Peatatud</translation>
+<translation id="7610198039767537854">Vaadake oma telefoni kaamera albumi viimaseid fotosid seadmes <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutraalne</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Markerpliiats</translation>

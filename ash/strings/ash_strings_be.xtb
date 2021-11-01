@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Мне надакучыла</translation>
 <translation id="1104084341931202936">Паказаць налады спецыяльных магчымасцей</translation>
 <translation id="1104621072296271835">Разам вашы прылады працуюць яшчэ лепей</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> рэкамендуе вам абнавіць гэту прыладу <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Рэжым колеру "З тэмай" бярэ колеры са шпалер і злёгку расфарбоўвае імі інтэрфейс.</translation>
 <translation id="112308213915226829">Аўтаматычна хаваць паліцу</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Запіс з мікрафона</translation>
 <translation id="3680908746918359504">Выдаліць усе маркеры</translation>
 <translation id="36813544980941320">Інфармацыя пра сеткі Wi-Fi будзе абагульвацца паміж тэлефонам і прыладай <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Месца захоўвання файлаў, атрыманых у выніку здымання экрана, можна змяніць</translation>
 <translation id="3702809606464356667">Паказаны вокны бягучага працоўнага стала. Каб пераключыцца на рэжым паказу вокнаў усіх працоўных сталоў, націсніце стрэлку ўверх</translation>
 <translation id="3702846122927433391">Насельніцтва Нігерыі</translation>
 <translation id="3705722231355495246">–</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Выключана</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="3977512764614765090">Акумулятар зараджаецца, узровень зараду – <ph name="PERCENTAGE" /> %.</translation>
+<translation id="3986082989454912832">Адказаць</translation>
 <translation id="3995138139523574647">Прылада USB-C (задні порт справа)</translation>
 <translation id="40062176907008878">Рукапісны ўвод</translation>
 <translation id="4017989525502048489">Лазерная ўказка</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Змянілася прызначэнне спалучэння клавіш Ctrl + Alt + стрэлка ўніз. Каб выканаць дзеянне клавішы End, націсніце <ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўправа.</translation>
 <translation id="4279490309300973883">Адлюстраванне</translation>
 <translation id="4285498937028063278">Адмацаваць</translation>
-<translation id="4292904812939562398">Нядаўна выкарыстаныя праграмы</translation>
 <translation id="429402653707266969">Змяніць месцазнаходжанне панэлі інструментаў</translation>
 <translation id="4294319844246081198">Добрай раніцы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Выдаліць усе апавяшчэнні (<ph name="COUNT" />)</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Выключыць апавяшчэнні</translation>
 <translation id="4946376291507881335">Зняць</translation>
 <translation id="495046168593986294">Прагартаць уверх</translation>
 <translation id="4952936045814352993">Функцыя "Знайсці тэлефон" недаступная, бо вы адключылі гукі будзільніка</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">Пн</translation>
 <translation id="7600875258240007829">Паказаць усе апавяшчэнні</translation>
 <translation id="7607002721634913082">Прыпынена</translation>
+<translation id="7610198039767537854">Праглядайце нядаўнія фота з галерэі камеры вашага тэлефона на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Нейтральны</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Фламастар</translation>

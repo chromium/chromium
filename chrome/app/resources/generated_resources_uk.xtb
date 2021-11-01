@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Робочий профіль</translation>
 <translation id="1122198203221319518">&amp;Інструменти</translation>
 <translation id="1122242684574577509">Помилка автентифікації. Натисніть, щоб перейти на сторінку входу вашої мережі Wi-Fi (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Дані для входу в обліковий запис застаріли. Вийдіть з нього й увійдіть знову.</translation>
 <translation id="1122960773616686544">Назва закладки</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (оригінальна)</translation>
@@ -723,7 +724,7 @@
 <translation id="1719312230114180055">Примітка. Відбиток пальця може бути менш надійним, ніж пароль чи PIN-код.</translation>
 <translation id="1720318856472900922">Автентифікація сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрити навчальний посібник</translation>
-<translation id="172123215662733643">Шукати зображення за допомогою технології <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Пошук через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Вам потрібен дозвіл адміністратора <ph name="NAME" />, щоб перейти на цей сайт</translation>
 <translation id="1722460139690167654">Вашим пристроєм <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> керує домен <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Нове вікно</translation>
@@ -1587,7 +1588,7 @@
 <translation id="2602501489742255173">Гортайте вгору, щоб почати</translation>
 <translation id="2603115962224169880">Очистити комп’ютер</translation>
 <translation id="2603355571917519942">Voice Match налаштовано</translation>
-<translation id="2604138917550693049">Шукати зображення через Google Об'єктив</translation>
+<translation id="2604138917550693049">Пошук через Об’єктив</translation>
 <translation id="2604255671529671813">Помилка з’єднання з мережею</translation>
 <translation id="2605668923777146443">Перейдіть у <ph name="LINK_BEGIN" />Налаштування<ph name="LINK_END" />, щоб переглянути параметри функції Better Together.</translation>
 <translation id="2606246518223360146">Зв’язати профіль</translation>
@@ -3889,7 +3890,7 @@
 <translation id="5051836348807686060">Перевірка орфографії не підтримується для вибраних мов</translation>
 <translation id="5052499409147950210">Редагувати сайт</translation>
 <translation id="505347685865235222">Група без назви – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Шукати зображення через Google Об'єктив</translation>
+<translation id="5053962746715621840">Пошук через Об’єктив</translation>
 <translation id="5056950756634735043">Підключення до контейнера</translation>
 <translation id="5057110919553308744">Коли ви натискаєте розширення</translation>
 <translation id="505776528429481161">Легко підключайтеся до пристроїв поблизу та налаштовуйте їх</translation>
@@ -5892,7 +5893,7 @@
 <translation id="7230222852462421043">&amp;Відновити вікно</translation>
 <translation id="7230787553283372882">Налаштувати розмір тексту</translation>
 <translation id="7232750842195536390">Не вдалося перейменувати</translation>
-<translation id="723343421145275488">Шукати зображення за допомогою технології <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Пошук через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Скасовується відновлення Linux</translation>
 <translation id="7235716375204803342">Завантаження дій…</translation>
 <translation id="7235737137505019098">На вашому ключі безпеки замало місця, щоб створити ще один обліковий запис.</translation>
@@ -7518,6 +7519,7 @@
 <translation id="8879284080359814990">&amp;Показати як вкладку</translation>
 <translation id="8879921471468674457">Запам'ятати дані для входу</translation>
 <translation id="8880054210564666174">Не вдалося завантажити список контактів. Перевірте з'єднання з мережею або <ph name="LINK_BEGIN" />повторіть спробу<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Відкрийте налаштування, щоб підключити пристрій <ph name="USB_DEVICE_NAME" /> до Linux або Parallels Desktop</translation>
 <translation id="8881020143150461183">Повторіть спробу. Щоб отримати технічну підтримку, зв'яжіться з <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Увімкнути прискорення сенсорної панелі</translation>
 <translation id="8884570509232205463">Тепер пристрій блокується о <ph name="UNLOCK_TIME" />.</translation>

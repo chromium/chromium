@@ -32,6 +32,7 @@
 <translation id="2185166961232948079">Chromium - નેટવર્ક સાઇન ઇન - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી અને તેમને જોઇએ તેમ Chromium ને સેટ કરી શકે છે.</translation>
 <translation id="2294245788148774212">વૈકલ્પિક: Googleને નિદાન અને વપરાશ ડેટા ઑટોમૅટિક રીતે મોકલીને Chromium OSની સુવિધાઓ અને કાર્યપ્રદર્શનને સુધારવામાં સહાય કરો.</translation>
+<translation id="2313870531055795960">URLsને Chromiumમાં સંગ્રહિત અસુરક્ષિત સાઇટની સૂચિ સાથે ચેક કરે છે. જો કોઈ સાઇટ તમારો પાસવર્ડ ચોરી કરવાનો પ્રયાસ કરે અથવા તમે કોઈ નુકસાનકારક ફાઇલ ડાઉનલોડ કરો, ત્યારે Chromium પેજ કન્ટેન્ટના બિટની સાથોસાથ URLs પણ Safe Browsingને મોકલી શકે છે.</translation>
 <translation id="2343156876103232566">અહીંથી તમારા Android ફોન પર નંબર મોકલવા માટે, બન્ને ડિવાઇસ પર Chromiumમાં સાઇન ઇન કરો.</translation>
 <translation id="2347108572062610441">જ્યારે તમે Chromium શરૂ કરો છો ત્યારે જે પૃષ્ઠ દર્શાવવામાં આવે છે તે આ એક્સટેન્શને બદલ્યું છે.</translation>
 <translation id="2396765026452590966">જ્યારે તમે Chromium શરૂ કરો છો ત્યારે જે પૃષ્ઠ દર્શાવવામાં આવે છે તે <ph name="EXTENSION_NAME" /> એક્સટેન્શને બદલ્યું છે.</translation>
@@ -53,6 +54,7 @@
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
 <translation id="2837693172913560447">આને લીધે <ph name="USER_EMAIL_ADDRESS" /> માટે નવી Chromium પ્રોફાઇલ બનશે</translation>
 <translation id="2847479871509788944">Chromium માંથી દૂર કરો...</translation>
+<translation id="2850691299438350830">તમને Chromium પર સલામત રાખે છે અને જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે Googleની અન્ય ઍપમાં તમારી સુરક્ષા બહેતર બનાવવામાં કદાચ ઉપયોગમાં લેવાઈ શકે છે</translation>
 <translation id="2885378588091291677">કાર્ય વ્યવસ્થાપક</translation>
 <translation id="2910007522516064972">&amp;Chromium વિશે</translation>
 <translation id="2977470724722393594">Chromium અપ ટૂ ડેટ છે</translation>

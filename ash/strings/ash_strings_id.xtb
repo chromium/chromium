@@ -24,6 +24,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="109942774857561566">Saya bosan</translation>
 <translation id="1104084341931202936">Tampilkan setelan aksesibilitas</translation>
 <translation id="1104621072296271835">Perangkat berfungsi lebih baik jika digunakan bersama</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> menyarankan Anda memperbarui <ph name="DEVICE_TYPE" /> ini.</translation>
 <translation id="1119348796022671382">Mode warna tema menggunakan warna yang diekstrak dari wallpaper untuk sedikit mewarnai antarmuka.</translation>
 <translation id="112308213915226829">Sembunyikan otomatis rak</translation>
@@ -373,6 +374,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3665889125180354336">Rekam mikrofon</translation>
 <translation id="3680908746918359504">Hapus semua penanda</translation>
 <translation id="36813544980941320">Ponsel dan <ph name="DEVICE_NAME" /> akan menggunakan jaringan Wi-Fi yang sama</translation>
+<translation id="3701206655856637070">Anda kini dapat mengubah tempat penyimpanan screenshot</translation>
 <translation id="3702809606464356667">Menampilkan jendela dari desktop saat ini, tekan tombol Panah atas untuk menampilkan jendela dari semua desktop</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3969043077941541451">Nonaktif</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="3977512764614765090">Baterai <ph name="PERCENTAGE" />% dan masih mengisi.</translation>
+<translation id="3986082989454912832">Jawab</translation>
 <translation id="3995138139523574647">Perangkat USB-C (port belakang sebelah kanan)</translation>
 <translation id="40062176907008878">Tulis tangan</translation>
 <translation id="4017989525502048489">Penunjuk laser</translation>
@@ -456,7 +459,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="4274537685965975248">Pintasan keyboard Ctrl + Alt + Panah Bawah telah diubah. Untuk menggunakan tombol End, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Kanan.</translation>
 <translation id="4279490309300973883">Mencerminkan</translation>
 <translation id="4285498937028063278">Lepaskan</translation>
-<translation id="4292904812939562398">Aplikasi yang baru-baru ini digunakan</translation>
 <translation id="429402653707266969">Tombol lokasi toolbar</translation>
 <translation id="4294319844246081198">Selamat pagi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Hapus semua (<ph name="COUNT" />) notifikasi</translation>
@@ -562,6 +564,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Nonaktifkan notifikasi</translation>
 <translation id="4946376291507881335">Ambil gambar</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
 <translation id="4952936045814352993">Fitur temukan ponsel tidak tersedia saat suara alarm dinonaktifkan</translation>
@@ -905,6 +908,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="7595633564847427181">S</translation>
 <translation id="7600875258240007829">Lihat semua notifikasi</translation>
 <translation id="7607002721634913082">Dijeda</translation>
+<translation id="7610198039767537854">Lihat foto terbaru dari rol kamera ponsel di <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Netral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Pena penanda</translation>

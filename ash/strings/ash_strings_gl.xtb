@@ -24,6 +24,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="109942774857561566">Abúrrome</translation>
 <translation id="1104084341931202936">Mostrar a configuración de accesibilidade</translation>
 <translation id="1104621072296271835">Os dispositivos funcionan mellor xuntos</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> recomenda que actualices este dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="1119348796022671382">O modo de cor con tema usa cores extraídas do fondo de pantalla para colorear lixeiramente a interface.</translation>
 <translation id="112308213915226829">Ocultar estante automaticamente</translation>
@@ -373,6 +374,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3665889125180354336">Gravar sons do micrófono</translation>
 <translation id="3680908746918359504">Borrar todos os marcadores</translation>
 <translation id="36813544980941320">O teu teléfono e o dispositivo (<ph name="DEVICE_NAME" />) compartirán as redes wifi</translation>
+<translation id="3701206655856637070">Podes cambiar o lugar no que se gardan as capturas de pantalla</translation>
 <translation id="3702809606464356667">Estanse mostrando só as ventás do escritorio actual. Para que se mostren as de todos os escritorios, preme a tecla Frecha arriba</translation>
 <translation id="3702846122927433391">Poboación de Nixeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -418,6 +420,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3969043077941541451">Desactivar</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
+<translation id="3986082989454912832">Responder</translation>
 <translation id="3995138139523574647">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="40062176907008878">Escritura manual</translation>
 <translation id="4017989525502048489">Punteiro láser</translation>
@@ -457,7 +460,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4274537685965975248">O atallo Control + Alt + Frecha abaixo cambiou. Para usar a tecla Fin, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha dereita.</translation>
 <translation id="4279490309300973883">Proxección</translation>
 <translation id="4285498937028063278">Deixar de fixar</translation>
-<translation id="4292904812939562398">Aplicacións usadas recentemente</translation>
 <translation id="429402653707266969">Alternar localización da barra de ferramentas</translation>
 <translation id="4294319844246081198">Bos días, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
@@ -563,6 +565,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Desactivar notificacións</translation>
 <translation id="4946376291507881335">Zona que se capturará</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
 <translation id="4952936045814352993">A función Localizar teléfono non está dispoñible se están desactivados os sons das alarmas</translation>
@@ -906,6 +909,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7595633564847427181">L</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
 <translation id="7607002721634913082">En pausa</translation>
+<translation id="7610198039767537854">Mira as fotos recentes do carrete do teu teléfono neste dispositivo: <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Lapis marcador</translation>

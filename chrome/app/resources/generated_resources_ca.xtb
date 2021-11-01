@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Feina</translation>
 <translation id="1122198203221319518">&amp;Eines</translation>
 <translation id="1122242684574577509">L'autenticació ha fallat. Feu clic per accedir a la pàgina d'inici de sessió de la xarxa Wi-Fi que esteu utilitzant (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Els detalls d'inici de sessió del teu compte no estan actualitzats. Tanca la sessió i torna-la a iniciar.</translation>
 <translation id="1122960773616686544">Nom de l'adreça d'interès</translation>
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1125550662859510761">Resolució: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
@@ -709,7 +710,7 @@
 <translation id="1719312230114180055">Nota: és possible que fer servir una empremta digital sigui menys segur que utilitzar una contrasenya segura o un PIN.</translation>
 <translation id="1720318856472900922">Autenticació de servidor WWW de TLS</translation>
 <translation id="1720941539803966190">Tanca el tutorial</translation>
-<translation id="172123215662733643">Cerca imatges amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Cerca la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Cal que <ph name="NAME" /> et doni permís per visitar aquest lloc</translation>
 <translation id="1722460139690167654">El dispositiu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> està gestionat<ph name="END_LINK" /> per <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Finestra nova</translation>
@@ -1568,7 +1569,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2602501489742255173">Llisca cap amunt per començar</translation>
 <translation id="2603115962224169880">Neteja l'ordinador</translation>
 <translation id="2603355571917519942">Voice Match està a punt</translation>
-<translation id="2604138917550693049">Cerca una imatge amb Google Lens</translation>
+<translation id="2604138917550693049">Cerca la imatge amb Google Lens</translation>
 <translation id="2604255671529671813">Error de connexió a la xarxa</translation>
 <translation id="2605668923777146443">Per veure les opcions de Better Together, ves a <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Enllaça les dades</translation>
@@ -3865,7 +3866,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5051836348807686060">El corrector ortogràfic no és compatible amb els idiomes que has seleccionat</translation>
 <translation id="5052499409147950210">Edita el lloc</translation>
 <translation id="505347685865235222">Grup sense nom - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Cerca una imatge amb Google Lens</translation>
+<translation id="5053962746715621840">Cerca la imatge amb Google Lens</translation>
 <translation id="5056950756634735043">S'està connectant al contenidor</translation>
 <translation id="5057110919553308744">Quan facis clic a l'extensió</translation>
 <translation id="505776528429481161">Connecta i configura fàcilment els dispositius que siguin a prop</translation>
@@ -5870,7 +5871,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7230222852462421043">&amp;Restaura la finestra</translation>
 <translation id="7230787553283372882">Personalitza la mida del text</translation>
 <translation id="7232750842195536390">S'ha produït un error en canviar el nom</translation>
-<translation id="723343421145275488">Cerca imatges amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Cerca la imatge amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">S'està cancel·lant la restauració de Linux</translation>
 <translation id="7235716375204803342">S'estan obtenint les activitats...</translation>
 <translation id="7235737137505019098">La clau de seguretat no té prou espai per a més comptes.</translation>
@@ -7494,6 +7495,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8879284080359814990">&amp;Mostra com a pestanya</translation>
 <translation id="8879921471468674457">Recorda la informació d'inici de sessió</translation>
 <translation id="8880054210564666174">No es pot baixar la llista de contactes. Comprova la connexió a la xarxa o <ph name="LINK_BEGIN" />torna-ho a provar<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Obre Configuració per connectar el dispositiu <ph name="USB_DEVICE_NAME" /> a Linux o a Parallels Desktop</translation>
 <translation id="8881020143150461183">Torna-ho a provar. Per obtenir assistència tècnica, contacta amb <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Activa l'acceleració del ratolí tàctil</translation>
 <translation id="8884570509232205463">Ara el dispositiu es bloquejarà a les <ph name="UNLOCK_TIME" />.</translation>

@@ -125,7 +125,7 @@
 <translation id="1122068467107743258">Posao</translation>
 <translation id="1122198203221319518">&amp;Alati</translation>
 <translation id="1122242684574577509">Autentifikacija nije uspjela. Kliknite da posjetite stranicu za prijavu na WiFi mrežu koju koristite (<ph name="NETWORK_ID" />).</translation>
-<translation id="1122913801042512795">Vaši su podaci za prijavu na račun zastarjeli. Odjavite se i prijavite ponovo.</translation>
+<translation id="1122913801042512795">Detalji za prijavu na račun su zastarjeli. Odjavite se i ponovo prijavite.</translation>
 <translation id="1122960773616686544">Naziv oznake</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1125550662859510761">Izgleda kao <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Izvorno)</translation>
@@ -720,7 +720,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1719312230114180055">Napomena: Otisak prsta može biti manje siguran od jake lozinke ili PIN-a.</translation>
 <translation id="1720318856472900922">TLS WWW autentifikacija servera</translation>
 <translation id="1720941539803966190">Zatvaranje vodiča</translation>
-<translation id="172123215662733643">Pretražujte slike koristeći <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Pretraži slike uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Da pristupite ovoj web lokaciji potrebna vam je dozvola osobe <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Uređajem <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> upravlja<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Novi prozor</translation>
@@ -1584,7 +1584,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2602501489742255173">Prevucite prema gore da počnete</translation>
 <translation id="2603115962224169880">Očisti računar</translation>
 <translation id="2603355571917519942">Voice Match je spreman</translation>
-<translation id="2604138917550693049">Pretraži sliku pomoću Google Objektiva</translation>
+<translation id="2604138917550693049">Pretraži sliku uz Google Objektiv</translation>
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2605668923777146443">Idite u <ph name="LINK_BEGIN" />Postavke<ph name="LINK_END" /> da vidite opcije za Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -3885,7 +3885,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5051836348807686060">Alat za provjeru pravopisa nije podržan za odabrane jezike</translation>
 <translation id="5052499409147950210">Uredite web lokaciju</translation>
 <translation id="505347685865235222">Neimenovana grupa – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pretraži sliku pomoću Google Objektiva</translation>
+<translation id="5053962746715621840">Pretraži sliku uz Google Objektiv</translation>
 <translation id="5056950756634735043">Povezivanje sa spremnikom</translation>
 <translation id="5057110919553308744">Kada kliknete na ekstenziju</translation>
 <translation id="505776528429481161">Jednostavno se povežite i postavite uređaje blizu</translation>
@@ -5888,7 +5888,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7230222852462421043">&amp;Vrati prozor</translation>
 <translation id="7230787553283372882">Prilagodite veličinu teksta</translation>
 <translation id="7232750842195536390">Promjena naziva nije uspjela</translation>
-<translation id="723343421145275488">Pretražujte slike koristeći <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Pretraži slike uz <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Otkazivanje vraćanja Linuxa</translation>
 <translation id="7235716375204803342">Dohvatanje aktivnosti...</translation>
 <translation id="7235737137505019098">Na sigurnosnom ključu nema dovoljno prostora za dodatne račune.</translation>
@@ -7513,7 +7513,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8879284080359814990">&amp;Prikaži kao karticu</translation>
 <translation id="8879921471468674457">Zapamtiti informacije za prijavu</translation>
 <translation id="8880054210564666174">Nije moguće preuzeti listu kontakata. Provjerite mrežnu vezu ili <ph name="LINK_BEGIN" />pokušajte ponovo<ph name="LINK_END" />.</translation>
-<translation id="8880344290593529089">Otvorite Postavke za povezivanje uređaja <ph name="USB_DEVICE_NAME" /> s Linuxom ili Parallels Desktopom</translation>
+<translation id="8880344290593529089">Otvorite Postavke da povežete uređaj <ph name="USB_DEVICE_NAME" /> s Linuxom ili Parallels Desktopom</translation>
 <translation id="8881020143150461183">Pokušaj ponovo. Za tehničku podršku kontaktirajte <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Omogući ubrzavanje dodirne podloge</translation>
 <translation id="8884570509232205463">Vaš uređaj se sada zaključava u <ph name="UNLOCK_TIME" /></translation>

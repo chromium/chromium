@@ -64,7 +64,6 @@
 <translation id="1332501820983677155">Hurtigtaster for funksjoner i Google Chrome.</translation>
 <translation id="1344653310988386453">Inkluder link til markert tekst</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
-<translation id="1353372385686746892">For å bidra til å gjøre appen bedre sender Chrome diagnostikkdata til Google. <ph name="BEGIN_LINK" />Endre<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
 <translation id="1373696734384179344">Det er ikke nok ledig minne til å laste ned det valgte innholdet.</translation>
 <translation id="1376578503827013741">Beregner …</translation>
@@ -405,6 +404,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3398320232533725830">Åpne bokmerkebehandlingen</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
+<translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
 <translation id="3440975416244667276">Trykk og hold for mer relevant informasjon</translation>
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
 <translation id="3444179773590444986">Vil du dele tilbakemeldinger om mørkt tema for nettsteder?</translation>

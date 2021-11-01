@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">งาน</translation>
 <translation id="1122198203221319518">&amp;เครื่องมือ</translation>
 <translation id="1122242684574577509">การตรวจสอบสิทธิ์ล้มเหลว คลิกเพื่อไปที่หน้าการเข้าสู่ระบบสำหรับเครือข่าย Wi-Fi ที่คุณกำลังใช้อยู่ (<ph name="NETWORK_ID" />)</translation>
+<translation id="1122913801042512795">รายละเอียดการลงชื่อเข้าใช้บัญชีของคุณล้าสมัยแล้ส โปรดออกจากระบบและลงชื่อเข้าใช้ใหม่</translation>
 <translation id="1122960773616686544">ชื่อบุ๊กมาร์ก</translation>
 <translation id="1124772482545689468">ผู้ใช้</translation>
 <translation id="1125550662859510761">ดูเหมือน <ph name="WIDTH" /> x <ph name="HEIGHT" /> (ค่าดั้งเดิม)</translation>
@@ -7493,6 +7494,7 @@
 <translation id="8879284080359814990">แ&amp;สดงเป็นแถบ</translation>
 <translation id="8879921471468674457">จำข้อมูลการลงชื่อเข้าใช้</translation>
 <translation id="8880054210564666174">ดาวน์โหลดข้อมูลรายชื่อติดต่อไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่าย หรือ<ph name="LINK_BEGIN" />ลองอีกครั้ง<ph name="LINK_END" /></translation>
+<translation id="8880344290593529089">เปิดการตั้งค่าเพื่อเชื่อมต่อ <ph name="USB_DEVICE_NAME" /> กับ Linux หรือ Parallels Desktop</translation>
 <translation id="8881020143150461183">โปรดลองอีกครั้ง หรือติดต่อ <ph name="CARRIER_NAME" /> เพื่อรับการสนับสนุนด้านเทคนิค</translation>
 <translation id="8883273463630735858">เปิดใช้การเร่งความเร็วทัชแพด</translation>
 <translation id="8884570509232205463">ตอนนี้อุปกรณ์จะล็อกที่เวลา <ph name="UNLOCK_TIME" /></translation>

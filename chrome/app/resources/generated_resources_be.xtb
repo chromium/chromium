@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Праца</translation>
 <translation id="1122198203221319518">&amp;Інструменты</translation>
 <translation id="1122242684574577509">Памылка аўтэнтыфікацыі. Націсніце тут, каб перайсці на старонку ўваходу для сеткі Wi-Fi, якой вы карыстаецеся (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Даныя для ўваходу ва ўліковы запіс устарэлі. Выйдзіце з уліковага запісу і ўвайдзіце ў яго зноў.</translation>
 <translation id="1122960773616686544">Назва закладкі</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1125550662859510761">Здаецца, гэта <ph name="WIDTH" /> × <ph name="HEIGHT" /> (уласная)</translation>
@@ -712,7 +713,7 @@
 <translation id="1719312230114180055">Заўвага. Выкарыстанне адбітка пальца можа быць менш бяспечным, чым надзейны пароль або PIN-код.</translation>
 <translation id="1720318856472900922">Аўтэнтыфікацыя сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
-<translation id="172123215662733643">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Шукаць праз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Каб наведаць гэты сайт, вам патрабуецца дазвол ад карыстальніка <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
@@ -1572,7 +1573,7 @@
 <translation id="2602501489742255173">Каб пачаць, правядзіце пальцам уверх</translation>
 <translation id="2603115962224169880">Ачыстка камп'ютара</translation>
 <translation id="2603355571917519942">Функцыя Voice Match гатовая да работы</translation>
-<translation id="2604138917550693049">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
+<translation id="2604138917550693049">Шукаць праз Аб'ектыў</translation>
 <translation id="2604255671529671813">Памылка падключэння да сеткі</translation>
 <translation id="2605668923777146443">Каб прагледзець параметры функцыі Better Together, перайдзіце ў <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Звязаць даныя</translation>
@@ -3870,7 +3871,7 @@
 <translation id="5051836348807686060">Праверка правапісу для выбраных моў не падтрымліваецца</translation>
 <translation id="5052499409147950210">Рэдагаванне сайта</translation>
 <translation id="505347685865235222">Група без назвы – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
+<translation id="5053962746715621840">Шукаць праз Аб'ектыў</translation>
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
 <translation id="505776528429481161">Лёгкае падключэнне і наладжванне прылад паблізу</translation>
@@ -5873,7 +5874,7 @@
 <translation id="7230222852462421043">Аднавіць акно</translation>
 <translation id="7230787553283372882">Наладжванне памеру тэксту</translation>
 <translation id="7232750842195536390">Не ўдалося перайменаваць</translation>
-<translation id="723343421145275488">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Шукаць праз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Ідзе скасаванне аднаўлення кантэйнера Linux</translation>
 <translation id="7235716375204803342">Ідзе атрыманне дзеянняў...</translation>
 <translation id="7235737137505019098">На вашым ключы бяспекі недастаткова месца для стварэння іншых уліковых запісаў.</translation>
@@ -7497,6 +7498,7 @@
 <translation id="8879284080359814990">&amp;Паказаць як укладку</translation>
 <translation id="8879921471468674457">Запомніць уліковыя даныя</translation>
 <translation id="8880054210564666174">Не ўдалося спампаваць спіс кантактаў. Праверце падключэнне да сеткі і <ph name="LINK_BEGIN" />паўтарыце спробу<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />" да Linux або Parallels Desktop, адкрыйце Налады</translation>
 <translation id="8881020143150461183">Паўтарыце спробу. Па тэхнічную падтрымку звяртайцеся да аператара <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Уключыць паскарэнне сэнсарнай панэлі</translation>
 <translation id="8884570509232205463">Ваша прылада цяпер блакіруецца ў <ph name="UNLOCK_TIME" />.</translation>

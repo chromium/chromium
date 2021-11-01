@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ደብሮኛል</translation>
 <translation id="1104084341931202936">የተደራሽነት ቅንብሮችን አሳይ</translation>
 <translation id="1104621072296271835">የእርስዎ መሣሪያዎች እንዲያውም የተሻለ ይሠራሉ</translation>
+<translation id="1111781754511998498">ፕሮጄክተር</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> እርስዎ ይህን <ph name="DEVICE_TYPE" /> እንዲያዘምኑ ይመክራል።</translation>
 <translation id="1119348796022671382">ገጽታ የተላበሰው የቀለም ሁነታ በይነገጹን በስሱ ቀለም ለመቀባት ከእርስዎ የግድግዳ ወረቀት የወጡ ቀለማትን ይጠቀማል።</translation>
 <translation id="112308213915226829">መደርደሪያን በራስ ሰር ደብቅ</translation>
@@ -418,6 +419,7 @@
 <translation id="3969043077941541451">አጥፋ</translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="3977512764614765090">በ <ph name="PERCENTAGE" />% ላይ ባትሪ እና ኃይል እየሞላ ነው።</translation>
+<translation id="3986082989454912832">መልስ</translation>
 <translation id="3995138139523574647">የUSB-C መሣሪያ (የቀኝ ጎን የኋላ ወደብ)</translation>
 <translation id="40062176907008878">የእጅ ጽሑፍ</translation>
 <translation id="4017989525502048489">የሌዘር ጨረር</translation>
@@ -457,7 +459,6 @@
 <translation id="4274537685965975248">የCtrl + Alt + የታች ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የመጨረሻውን ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የቀኝ ቀስት ይጫኑ።</translation>
 <translation id="4279490309300973883">በማንጸባረቅ ላይ</translation>
 <translation id="4285498937028063278">ይንቀሉ</translation>
-<translation id="4292904812939562398">በቅርብ ጊዜ ስራ ላይ የዋሉ መተግበሪያዎች</translation>
 <translation id="429402653707266969">የመሣሪያ አሞሌ አካባቢን ቀያይር</translation>
 <translation id="4294319844246081198">ደህና አደሩ <ph name="GIVEN_NAME" />፣</translation>
 <translation id="4296136865091727875">ሁሉንም <ph name="COUNT" /> ማሳወቂያዎች አጽዳ</translation>
@@ -907,6 +908,7 @@
 <translation id="7595633564847427181">ሰ</translation>
 <translation id="7600875258240007829">ሁሉንም ማሳወቂያዎች ይመልከቱ</translation>
 <translation id="7607002721634913082">ለአፍታ ቆሟል</translation>
+<translation id="7610198039767537854">በ<ph name="DEVICE_TYPE" /> ላይ ከስልክዎ የካሜራ ጥቅል የቅርብ ጊዜ ፎቶዎችን ይመልከቱ</translation>
 <translation id="7618774594543487847">ገለልተኛ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ፋ</translation>
 <translation id="7631906263969450674">ምልክት ማድረጊያ ብዕር</translation>

@@ -24,6 +24,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="109942774857561566">M'avorreixo</translation>
 <translation id="1104084341931202936">Mostra la configuració d'accessibilitat</translation>
 <translation id="1104621072296271835">Els teus dispositius funcionen encara millor junts</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> et recomana que actualitzis aquest <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">El mode de color temàtic utilitza colors extrets del fons de pantalla per acolorir lleugerament la interfície.</translation>
 <translation id="112308213915226829">Amaga el prestatge automàticament</translation>
@@ -373,6 +374,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3665889125180354336">Grava el micròfon</translation>
 <translation id="3680908746918359504">Esborra tots els marcadors</translation>
 <translation id="36813544980941320">Les xarxes Wi-Fi es compartiran entre el teu telèfon i el dispositiu <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Ara pots canviar el lloc on es desen les captures de pantalla</translation>
 <translation id="3702809606464356667">S'estan mostrant les finestres de l'escriptori actual. Prem la tecla de fletxa amunt per mostrar les finestres de tots els escriptoris.</translation>
 <translation id="3702846122927433391">Quants habitants té Nigèria?</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3969043077941541451">Desactivada</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
+<translation id="3986082989454912832">Respon</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
 <translation id="40062176907008878">Escriptura a mà</translation>
 <translation id="4017989525502048489">Punter làser</translation>
@@ -456,7 +459,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4285498937028063278">No fixis</translation>
-<translation id="4292904812939562398">Aplicacions utilitzades fa poc</translation>
 <translation id="429402653707266969">Commuta la ubicació de la barra d'eines</translation>
 <translation id="4294319844246081198">Bon dia, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Esborra les <ph name="COUNT" /> notificacions</translation>
@@ -562,6 +564,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Desactiva les notificacions</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>
 <translation id="4952936045814352993">La funció Localitza el telèfon no està disponible quan els sons d'alarma estan desactivats</translation>
@@ -905,6 +908,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7595633564847427181">Dl.</translation>
 <translation id="7600875258240007829">Mostra totes les notificacions</translation>
 <translation id="7607002721634913082">En pausa</translation>
+<translation id="7610198039767537854">Mostra fotos recents del carret del telèfon a <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Bolígraf marcador</translation>
