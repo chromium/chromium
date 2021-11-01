@@ -64,16 +64,37 @@ BroadcastChannel* BroadcastChannel::Create(ExecutionContext* execution_context,
 BroadcastChannel::~BroadcastChannel() = default;
 
 void BroadcastChannel::Dispose() {
-  close();
+  CloseInternal();
 }
 
 void BroadcastChannel::postMessage(const ScriptValue& message,
                                    ExceptionState& exception_state) {
+  // If the receiver is not bound because `close` was called on this
+  // BroadcastChannel instance, raise an exception per the spec. Otherwise,
+  // in cases like the instance being created in an iframe that is now detached,
+  // just ignore the postMessage call.
   if (!receiver_.is_bound()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Channel is closed");
+    if (explicitly_closed_) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Channel is closed");
+    }
     return;
   }
+
+  // Silently ignore the postMessage call if this BroadcastChannel instance is
+  // associated with a closing worker. This case needs to be handled explicitly
+  // because the mojo connection to the worker won't be torn down until the
+  // worker actually goes away.
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (execution_context->IsWorkerGlobalScope()) {
+    WorkerGlobalScope* worker_global_scope =
+        DynamicTo<WorkerGlobalScope>(execution_context);
+    DCHECK(worker_global_scope);
+    if (worker_global_scope->IsClosing()) {
+      return;
+    }
+  }
+
   scoped_refptr<SerializedScriptValue> value = SerializedScriptValue::Serialize(
       message.GetIsolate(), message.V8Value(),
       SerializedScriptValue::SerializeOptions(), exception_state);
@@ -82,12 +103,16 @@ void BroadcastChannel::postMessage(const ScriptValue& message,
 
   BlinkCloneableMessage msg;
   msg.message = std::move(value);
-  msg.sender_origin =
-      GetExecutionContext()->GetSecurityOrigin()->IsolatedCopy();
+  msg.sender_origin = execution_context->GetSecurityOrigin()->IsolatedCopy();
   remote_client_->OnMessage(std::move(msg));
 }
 
 void BroadcastChannel::close() {
+  explicitly_closed_ = true;
+  CloseInternal();
+}
+
+void BroadcastChannel::CloseInternal() {
   remote_client_.reset();
   if (receiver_.is_bound())
     receiver_.reset();
@@ -105,7 +130,7 @@ bool BroadcastChannel::HasPendingActivity() const {
 }
 
 void BroadcastChannel::ContextDestroyed() {
-  close();
+  CloseInternal();
 }
 
 void BroadcastChannel::Trace(Visitor* visitor) const {
@@ -138,7 +163,7 @@ void BroadcastChannel::OnMessage(BlinkCloneableMessage message) {
 }
 
 void BroadcastChannel::OnError() {
-  close();
+  CloseInternal();
 }
 
 BroadcastChannel::BroadcastChannel(ExecutionContext* execution_context,
@@ -192,6 +217,10 @@ BroadcastChannel::BroadcastChannel(ExecutionContext* execution_context,
     WorkerGlobalScope* worker_global_scope =
         DynamicTo<WorkerGlobalScope>(execution_context);
     DCHECK(worker_global_scope);
+
+    if (worker_global_scope->IsClosing()) {
+      return;
+    }
 
     mojo::Remote<mojom::blink::BroadcastChannelProvider>& provider =
         GetWorkerThreadSpecificProvider(*worker_global_scope);
