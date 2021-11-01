@@ -4,7 +4,7 @@ Chrome OS comes with a port of the open-source eSpeak-NG speech synthesis
 engine. eSpeak-NG is lower quality than Google's "PATTS" speech engine,
 but it's faster, uses less resources, and supports more languages.
 
-[Read more about Text-to-Speech in Chrome](tts.md).
+[Read more about Text-to-Speech in Chrome](../browser/tts.md).
 
 [See also Google's "PATTS" speech engine](patts.md).
 

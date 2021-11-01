@@ -4,13 +4,13 @@ This document explains the technical details behind Chrome accessibility
 code by starting at a high level and progressively adding more levels of
 detail.
 
-Please read the accessibility [overview](overview.md) first.
+Please read the accessibility [overview](../overview.md) first.
 
 [TOC]
 
 ## Accessibility for a simple (non-browser) application
 
-As described in the [overview](overview.md), every platform has its own
+As described in the [overview](../overview.md), every platform has its own
 accessibility APIs that are used by both assistive technology and sometimes
 by automation software. To better understand the challenges of accessibility
 support in Chromium, let's first explore what it's like to build an

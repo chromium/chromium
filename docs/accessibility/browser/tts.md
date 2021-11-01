@@ -56,7 +56,7 @@ platform.
     forwards speech events to PATTS, or the network speech engine, or,
     coming soon, third-party speech engines.
 
-    - [PATTS](patts.md) is the built-in Chrome OS text-to-speech engine.
+    - [PATTS](../os/patts.md) is the built-in Chrome OS text-to-speech engine.
 
 ### Testing
 
