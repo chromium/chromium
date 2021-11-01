@@ -483,9 +483,9 @@ void StyleRuleGroup::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
 }
 
-namespace {
-
-String LayerNameAsString(const StyleRuleBase::LayerName& name_parts) {
+// static
+String StyleRuleBase::LayerNameAsString(
+    const StyleRuleBase::LayerName& name_parts) {
   StringBuilder result;
   for (const auto& part : name_parts) {
     if (result.length())
@@ -494,8 +494,6 @@ String LayerNameAsString(const StyleRuleBase::LayerName& name_parts) {
   }
   return result.ToString();
 }
-
-}  // namespace
 
 StyleRuleLayerBlock::StyleRuleLayerBlock(
     LayerName&& name,
