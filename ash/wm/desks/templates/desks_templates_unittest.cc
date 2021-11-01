@@ -11,6 +11,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/button_style.h"
+#include "ash/wm/desks/close_desk_button.h"
+#include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
@@ -21,6 +23,7 @@
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/zero_state_button.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -467,10 +470,7 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
 TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
   UpdateDisplay("800x600,800x600");
 
-  const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
-  const std::string name_1 = "template_1";
-  base::Time time_1 = base::Time::Now();
-  AddEntry(uuid_1, name_1, time_1);
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
 
   auto test_window = CreateTestWindow();
 
@@ -487,6 +487,70 @@ TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
   // Exit overview mode. The window is restored and visible again.
   ToggleOverview();
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
+}
+
+// Tests that when thetemplates grid is shown and the active desk is closed,
+// overview items stay hidden.
+TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
+
+  // Create a test window in the current desk.
+  DesksController* desks_controller = DesksController::Get();
+  auto test_window_1 = CreateTestWindow();
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+  EXPECT_EQ(1ul, desks_controller->active_desk()->windows().size());
+
+  // Create and activate a new desk, and create a test window there.
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  Desk* desk = desks_controller->desks().back().get();
+  ActivateDesk(desk);
+  auto test_window_2 = CreateTestWindow();
+  // Check that the active desk is the second desk, and that it contains one
+  // window.
+  ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
+  auto active_desk_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  EXPECT_EQ(1ul, active_desk_windows.size());
+  auto all_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
+  EXPECT_EQ(2ul, all_windows.size());
+
+  // Start overview mode. `test_window_2` should be visible in overview mode.
+  ToggleOverview();
+  WaitForUI();
+  ASSERT_TRUE(GetOverviewSession());
+  EXPECT_EQ(1.0f, test_window_2->layer()->opacity());
+  auto& overview_grid = GetOverviewGridList()[0];
+  EXPECT_FALSE(overview_grid->GetOverviewItemContaining(test_window_1.get()));
+  EXPECT_TRUE(overview_grid->GetOverviewItemContaining(test_window_2.get()));
+
+  // Open the desk templates grid. This should hide `test_window_2`.
+  ShowDesksTemplatesGrids();
+  WaitForUI();
+  EXPECT_EQ(0.0f, test_window_2->layer()->opacity());
+
+  // While in the desk templates grid, delete the active desk by clicking on the
+  // mini view close button.
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  auto* mini_view =
+      desks_bar_view->FindMiniViewForDesk(desks_controller->active_desk());
+  ClickOnView(mini_view->close_desk_button());
+
+  // Expect we stay in the templates grid.
+  ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+
+  // Expect that the active desk is now the first desk.
+  ASSERT_EQ(0, desks_controller->GetActiveDeskIndex());
+
+  // Expect both windows are not visible.
+  EXPECT_EQ(0.0f, test_window_1->layer()->opacity());
+  EXPECT_EQ(0.0f, test_window_2->layer()->opacity());
+
+  // Exit overview mode.
+  ToggleOverview();
+  // Expect both windows are visible.
+  EXPECT_EQ(1.0f, test_window_1->layer()->opacity());
+  EXPECT_EQ(1.0f, test_window_2->layer()->opacity());
 }
 
 // Tests the modality of the dialogs shown in desks templates.
