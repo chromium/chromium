@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +47,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/features.h"
@@ -677,29 +679,37 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   EXPECT_TRUE(test_loader_factory->has_received_request());
 }
 
+// Android doesn't support PRE_ tests.
+// TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
+#if !defined(OS_ANDROID)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceBrowserCacheResetTest() = default;
 
  protected:
-  void StoreTime(base::Time time) {
+  void StoreUrl(const GURL& url) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
     base::FilePath data_file =
         shell()->web_contents()->GetBrowserContext()->GetPath().Append(
             FILE_PATH_LITERAL("TestData"));
     std::string data;
-    base::JSONWriter::Write(base::TimeToValue(time), &data);
+    base::JSONWriter::Write(base::Value(url.spec()), &data);
     EXPECT_TRUE(base::WriteFile(data_file, data));
   }
 
-  void RetrieveTime(base::Time& time) {
+  void RetrieveUrl(GURL& url) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
     base::FilePath data_file =
         shell()->web_contents()->GetBrowserContext()->GetPath().Append(
             FILE_PATH_LITERAL("TestData"));
     std::string data;
     EXPECT_TRUE(base::ReadFileToString(data_file, &data));
     auto json_data = base::JSONReader::Read(data);
-    EXPECT_TRUE(json_data.has_value());
-    time = base::ValueToTime(json_data.value()).value();
+    ASSERT_TRUE(json_data.has_value());
+    url = GURL(json_data->GetString());
+    EXPECT_TRUE(url.is_valid());
   }
 
   base::FilePath GetNetworkContextPath() {
@@ -711,9 +721,15 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
     return GetNetworkContextPath().Append(FILE_PATH_LITERAL("Cache"));
   }
 
-  // Creates a network context, optionally with http cache being reset, and then
-  // make a request on the network context to force cache to appear.
-  void MakeNetworkContentAndLoadUrl(bool reset_cache) {
+  // Creates a Network context and attempts to make a request to a resource that
+  // is cacheable. Returns the net error code. If `load_only_from_cache` is
+  // specified then the request will fail if the resource cannot be served from
+  // the cache. `url` specifies the URL to connect to on the
+  // embedded_test_server host which does not need to have a server actively
+  // listening on it if `load_only_from_cache` is true.
+  int MakeNetworkContentAndLoadUrl(bool reset_cache,
+                                   bool load_only_from_cache,
+                                   const GURL& url) {
     auto file_paths = network::mojom::NetworkContextFilePaths::New();
     base::FilePath context_path = GetNetworkContextPath();
     file_paths->data_path = context_path.Append(FILE_PATH_LITERAL("Data"));
@@ -743,8 +759,32 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
         url_loader_factory.BindNewPipeAndPassReceiver(),
         std::move(url_loader_params));
 
-    LoadURL(embedded_test_server()->GetURL("/title1.html"),
-            url_loader_factory.get());
+    std::unique_ptr<network::ResourceRequest> request =
+        std::make_unique<network::ResourceRequest>();
+    request->url = url;
+    url::Origin origin = url::Origin::Create(url);
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateForInternalRequest(origin);
+    request->site_for_cookies =
+        request->trusted_params->isolation_info.site_for_cookies();
+
+    if (load_only_from_cache)
+      request->load_flags |= net::LOAD_ONLY_FROM_CACHE;
+    auto loader = network::SimpleURLLoader::Create(
+        std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    scoped_refptr<net::HttpResponseHeaders> headers;
+    base::RunLoop loop;
+    loader->DownloadHeadersOnly(
+        url_loader_factory.get(),
+        base::BindLambdaForTesting(
+            [&](scoped_refptr<net::HttpResponseHeaders> passed_headers) {
+              headers = passed_headers;
+              loop.Quit();
+            }));
+    loop.Run();
+    return loader->NetError();
   }
 
   void GetCacheFileInfo(base::File::Info& info) {
@@ -758,69 +798,44 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
   }
 };
 
-// Create a network context and make an HTTP request which causes cache to be
-// created. Store the creation time of a cache file into the persistent json
-// store.
+// Create a network context and make an HTTP request which causes cache entry to
+// be created.
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
                        PRE_PRE_CacheResetTest) {
-  if (IsInProcessNetworkService())
-    return;
-  base::ScopedAllowBlockingForTesting allow_blocking;
+  GURL url = embedded_test_server()->GetURL("/echoheadercache");
+  // Store the URL so the requests made by the subsequent parts of this test
+  // are to the same origin. Otherwise, the embedded test server might be
+  // operating on a different port causing incorrect cache misses.
+  ASSERT_NO_FATAL_FAILURE(StoreUrl(url));
 
-  ASSERT_NO_FATAL_FAILURE(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false));
-  base::File::Info info;
-  ASSERT_NO_FATAL_FAILURE(GetCacheFileInfo(info));
-  ASSERT_NO_FATAL_FAILURE(StoreTime(info.creation_time));
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(
+                  /*reset_cache=*/false, /*load_only_from_cache=*/false, url),
+              net::test::IsOk());
 }
 
 // Using the same network context, make an HTTP request and verify that the
-// cache files are not recreated.
+// cache entry is correctly used.
 IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
                        PRE_CacheResetTest) {
-  if (IsInProcessNetworkService())
-    return;
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  // File info creation time is only accurate to one second on POSIX so sleep
-  // for a second.
-  base::PlatformThread::Sleep(base::Seconds(1));
+  GURL url;
+  ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
 
-  ASSERT_NO_FATAL_FAILURE(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false));
-  base::File::Info info;
-  ASSERT_NO_FATAL_FAILURE(GetCacheFileInfo(info));
-  base::Time previous_time;
-  ASSERT_NO_FATAL_FAILURE(RetrieveTime(previous_time));
-
-  // Cache was not reset, verify that the creation_time is the same as before.
-  ASSERT_EQ(previous_time, info.creation_time);
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false,
+                                           /*load_only_from_cache=*/true, url),
+              net::test::IsOk());
 }
 
-// Using the same network context, make an HTTP request with
-// `reset_http_cache_backend` set to true, and verify that the cache files are
-// recreated successfully.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_FUCHSIA)
-#define MAYBE_CacheResetTest DISABLED_CacheResetTest
-#else
-#define MAYBE_CacheResetTest CacheResetTest
-#endif
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, MAYBE_CacheResetTest) {
-  if (IsInProcessNetworkService())
-    return;
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  // File info creation time is only accurate to one second on POSIX so sleep
-  // for a second.
-  base::PlatformThread::Sleep(base::Seconds(1));
+// Using the same network context, reset the cache backend and verify that cache
+// miss is correctly reported.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
+  GURL url;
+  ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
 
-  ASSERT_NO_FATAL_FAILURE(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true));
-  base::File::Info info;
-  ASSERT_NO_FATAL_FAILURE(GetCacheFileInfo(info));
-  base::Time previous_time;
-  ASSERT_NO_FATAL_FAILURE(RetrieveTime(previous_time));
-
-  // Cache was reset, this means that there are new files, and their creation
-  // time should be different.
-  ASSERT_NE(previous_time, info.creation_time);
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
+                                           /*load_only_from_cache=*/true, url),
+              net::test::IsError(net::ERR_CACHE_MISS));
 }
+#endif  // !defined(OS_ANDROID)
 
 enum class FailureType {
   kNoFailures = 0,
