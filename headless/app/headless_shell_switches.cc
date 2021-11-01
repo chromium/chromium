@@ -22,11 +22,6 @@ const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
 // Enable crash reporter for headless.
 const char kEnableCrashReporter[] = "enable-crash-reporter";
 
-// If enabled, generate a tagged (accessible) file when printing to PDF.
-// The plan is for this to go away once tagged PDFs become the default.
-// See https://crbug.com/607777
-const char kExportTaggedPDF[] = "export-tagged-pdf";
-
 // Disable crash reporter for headless. It is enabled by default in official
 // builds.
 const char kDisableCrashReporter[] = "disable-crash-reporter";

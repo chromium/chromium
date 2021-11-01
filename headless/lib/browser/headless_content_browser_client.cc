@@ -261,9 +261,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
     command_line->AppendSwitch(::switches::kEnableCrashReporter);
 #endif  // defined(HEADLESS_USE_BREAKPAD)
 
-  if (old_command_line.HasSwitch(switches::kExportTaggedPDF))
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
-
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
       command_line->GetSwitchValueASCII(::switches::kProcessType);
