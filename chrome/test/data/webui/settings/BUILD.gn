@@ -16,13 +16,157 @@ preprocessed_files = [
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, move it to the list above.
 non_preprocessed_files = [
+  "a11y/about_a11y_test.js",
+  "a11y/accessibility_a11y_test.js",
+  "a11y/basic_a11y_test.js",
+  "a11y/manage_profile_a11y_test.js",
+  "a11y/passwords_a11y_test.js",
+  "a11y/sign_out_a11y_test.js",
+  "about_page_tests.js",
+  "advanced_page_test.js",
+  "all_sites_tests.js",
+  "appearance_fonts_page_test.js",
+  "appearance_page_test.js",
+  "autofill_page_test.js",
+  "autofill_section_test.js",
+  "avatar_icon_test.js",
+  "basic_page_test.js",
+  "category_default_setting_tests.js",
+  "category_setting_exceptions_tests.js",
+  "checkbox_tests.js",
+  "chooser_exception_list_entry_tests.js",
+  "chooser_exception_list_tests.js",
+  "clear_browsing_data_test.js",
+  "collapse_radio_button_tests.js",
+  "controlled_button_tests.js",
+  "controlled_radio_button_tests.js",
+  "cookies_page_test.js",
+  "do_not_track_toggle_test.js",
+  "downloads_page_test.js",
+  "dropdown_menu_tests.js",
+  "ensure_lazy_loaded.js",
+  "extension_controlled_indicator_tests.js",
+  "fake_language_settings_private.js",
+  "fake_settings_private.js",
+  "help_page_test.js",
+  "idle_load_tests.js",
+  "languages_page_metrics_test_browser.js",
+  "languages_page_tests.js",
+  "languages_subpage_details_tests.js",
+  "languages_subpage_tests.js",
+  "multi_store_exception_entry_test.js",
+  "multi_store_password_ui_entry_test.js",
+  "on_startup_page_tests.js",
+  "password_check_test.js",
+  "password_edit_dialog_test.js",
+  "passwords_and_autofill_fake_data.js",
+  "passwords_device_section_test.js",
+  "passwords_export_test.js",
+  "passwords_section_test.js",
+  "payments_section_interactive_test.js",
+  "payments_section_test.js",
+  "people_page_sync_controls_test.js",
+  "people_page_sync_page_interactive_test.js",
+  "people_page_sync_page_test.js",
+  "people_page_test.js",
+  "personalization_options_test.js",
+  "prefs_test_cases.js",
+  "prefs_tests.js",
+  "pref_util_tests.js",
+  "privacy_review_page_test.js",
+  "privacy_sandbox_test.js",
+  "protocol_handlers_tests.js",
+  "recent_site_permissions_test.js",
+  "reset_page_test.js",
+  "reset_profile_banner_test.js",
+  "safety_check_page_test.js",
+  "search_engines_page_test.js",
+  "search_page_test.js",
+  "search_settings_test.js",
+  "secure_dns_interactive_test.js",
+  "secure_dns_test.js",
+  "security_keys_subpage_test.js",
+  "security_page_test.js",
+  "settings_animated_pages_test.js",
+  "settings_category_default_radio_group_tests.js",
+  "settings_main_test.js",
+  "settings_menu_interactive_ui_test.js",
+  "settings_menu_test.js",
+  "settings_page_test_util.js",
+  "settings_slider_tests.js",
+  "settings_subpage_test.js",
+  "settings_textarea_tests.js",
+  "settings_ui_tests.js",
+  "site_data_details_subpage_tests.js",
+  "site_data_test.js",
+  "site_details_permission_tests.js",
+  "site_details_tests.js",
+  "site_entry_tests.js",
+  "site_favicon_test.js",
+  "site_list_entry_tests.js",
+  "site_list_tests.js",
+  "site_settings_page_test.js",
+  "startup_urls_page_test.js",
+  "sync_account_control_test.js",
+  "sync_test_util.js",
+  "test_about_page_browser_proxy.js",
+  "test_android_info_browser_proxy.js",
+  "test_chrome_cleanup_proxy.js",
   "test_clear_browsing_data_browser_proxy.js",
+  "test_extension_control_browser_proxy.js",
   "test_hats_browser_proxy.js",
+  "test_languages_browser_proxy.js",
+  "test_lifetime_browser_proxy.js",
+  "test_local_data_browser_proxy.js",
   "test_metrics_browser_proxy.js",
+  "test_open_window_proxy.js",
+  "test_password_manager_proxy.js",
   "test_privacy_page_browser_proxy.js",
+  "test_profile_info_browser_proxy.js",
+  "test_reset_browser_proxy.js",
+  "test_search_engines_browser_proxy.js",
   "test_site_settings_prefs_browser_proxy.js",
+  "test_sync_browser_proxy.js",
   "test_util.js",
+  "zoom_levels_tests.js",
 ]
+
+if (!is_chromeos_ash && !is_chromeos_lacros) {
+  non_preprocessed_files += [
+    "default_browser_browsertest.js",
+    "import_data_dialog_test.js",
+    "system_page_tests.js",
+  ]
+}
+
+if (!is_mac && !is_chromeos_ash) {
+  non_preprocessed_files += [
+    "a11y/edit_dictionary_a11y_test.js",
+    "edit_dictionary_page_test.js",
+  ]
+}
+
+if (is_chromeos_ash) {
+  non_preprocessed_files += [
+    "passwords_section_test_cros.js",
+    "people_page_test_cros.js",
+    "site_list_tests_cros.js",
+  ]
+} else {
+  non_preprocessed_files += [
+    "languages_tests.js",
+    "metrics_reporting_tests.js",
+    "people_page_manage_profile_test.js",
+  ]
+}
+
+if (is_win) {
+  non_preprocessed_files += [
+    "chrome_cleanup_page_test.js",
+    "incompatible_applications_page_test.js",
+    "safety_check_chrome_cleaner_test.js",
+  ]
+}
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
