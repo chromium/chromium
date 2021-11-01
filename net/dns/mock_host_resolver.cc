@@ -231,6 +231,9 @@ class MockHostResolverBase::RequestImpl
     resolve_error_info_ = ResolveErrorInfo(error);
   }
 
+  // Sets `address_results_` to `address_results`, after fixing them up.  Also
+  // sets `error` to OK if the fixed up AddressList is non-empty, or
+  // ERR_NAME_NOT_RESOLVED otherwise.
   void SetAddressResults(const AddressList& address_results,
                          absl::optional<HostCache::EntryStaleness> staleness) {
     // Should only be called at most once and before request is marked
@@ -240,6 +243,17 @@ class MockHostResolverBase::RequestImpl
     DCHECK(!parameters_.is_speculative);
 
     address_results_ = FixupAddressList(address_results);
+
+    // If there are no addresses, either as a result of FixupAddressList(), as
+    // in the originally passed in value, clear results and set an error.
+    if (address_results_->empty()) {
+      address_results_.reset();
+      SetError(ERR_NAME_NOT_RESOLVED);
+      return;
+    }
+
+    SetError(OK);
+
     sanitized_dns_alias_results_ =
         dns_alias_utility::SanitizeDnsAliases(address_results_->dns_aliases());
     staleness_ = std::move(staleness);
@@ -287,6 +301,14 @@ class MockHostResolverBase::RequestImpl
   }
 
   bool complete() { return complete_; }
+
+  // Similar get GetAddressResults() and GetResolveErrorInfo(), but only exposed
+  // through the HostResolver::ResolveHostRequest interface, and don't have the
+  // DCHECKs that `complete_` is true.
+  const absl::optional<AddressList>& address_results() const {
+    return address_results_;
+  }
+  ResolveErrorInfo resolve_error_info() const { return resolve_error_info_; }
 
  private:
   AddressList FixupAddressList(const AddressList& list) {
@@ -843,9 +865,12 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
       request->parameters().source, request->parameters().cache_usage,
       &addresses, &stale_info);
 
-  request->SetError(rv);
-  if (rv == OK && !request->parameters().is_speculative)
+  if (rv == OK && !request->parameters().is_speculative) {
     request->SetAddressResults(addresses, std::move(stale_info));
+  } else {
+    request->SetError(rv);
+  }
+
   if (rv != ERR_DNS_CACHE_MISS ||
       request->parameters().source == HostResolverSource::LOCAL_ONLY) {
     return SquashErrorCode(rv);
@@ -962,25 +987,23 @@ int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
       request.request_endpoint(), request.parameters().dns_query_type,
       request.parameters().source);
 
-  Error error = ERR_UNEXPECTED;
-  absl::optional<HostCache::Entry> cache_entry;
-
   const AddressList* address_results = absl::get_if<AddressList>(&result);
   if (address_results) {
-    error = address_results->empty() ? ERR_NAME_NOT_RESOLVED : OK;
     request.SetAddressResults(*address_results,
                               /*staleness=*/absl::nullopt);
-    cache_entry.emplace(error, *address_results,
-                        HostCache::Entry::SOURCE_UNKNOWN);
   } else {
     DCHECK(absl::holds_alternative<RuleResolver::ErrorResult>(result));
-    error = absl::get<RuleResolver::ErrorResult>(result);
-    cache_entry.emplace(error, HostCache::Entry::SOURCE_UNKNOWN);
+    request.SetError(absl::get<RuleResolver::ErrorResult>(result));
   }
-  request.SetError(error);
 
+  int error = request.resolve_error_info().error;
   if (cache_.get()) {
-    DCHECK(cache_entry.has_value());
+    HostCache::Entry cache_entry =
+        request.address_results()
+            ? HostCache::Entry(error, *request.address_results(),
+                               HostCache::Entry::SOURCE_UNKNOWN)
+            : HostCache::Entry(error, HostCache::Entry::SOURCE_UNKNOWN);
+
     HostCache::Key key(
         GetCacheHost(request.request_endpoint()),
         request.parameters().dns_query_type, request.host_resolver_flags(),
@@ -992,7 +1015,7 @@ int MockHostResolverBase::DoSynchronousResolution(RequestImpl& request) {
       if (initial_cache_invalidation_num_ > 0)
         cache_invalidation_nums_[key] = initial_cache_invalidation_num_;
     }
-    cache_->Set(key, cache_entry.value(), tick_clock_->NowTicks(), ttl);
+    cache_->Set(key, cache_entry, tick_clock_->NowTicks(), ttl);
   }
 
   return SquashErrorCode(error);
