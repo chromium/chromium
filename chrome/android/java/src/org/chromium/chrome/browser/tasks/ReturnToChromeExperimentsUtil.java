@@ -382,7 +382,18 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static boolean isStartSurfaceHomepageEnabled() {
         return HomepageManager.isHomepageEnabled()
-                && StartSurfaceConfiguration.isStartSurfaceEnabled();
+                && StartSurfaceConfiguration.isStartSurfaceFlagEnabled();
+    }
+
+    /**
+     * @return true when Start Surface is enabled. It includes checks of:
+     * 1) whether home page is enabled and whether it is Chrome' home page url;
+     * 2) whether Start surface is enabled with current accessibility settings;
+     * 3) whether it is on phone.
+     */
+    public static boolean isStartSurfaceEnabled(Context context) {
+        return shouldShowStartSurfaceAsTheHomePageNoTabs(context)
+                && HomepageManager.isHomepageEnabled();
     }
 
     /**
@@ -427,7 +438,7 @@ public final class ReturnToChromeExperimentsUtil {
         // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
         // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
         String homePageUrl = HomepageManager.getHomepageUri();
-        return StartSurfaceConfiguration.isStartSurfaceSinglePaneEnabled()
+        return StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
                 && (TextUtils.isEmpty(homePageUrl)
                         || UrlUtilities.isCanonicalizedNTPUrl(homePageUrl))
                 && !shouldHideStartSurfaceWithAccessibilityOn(context)

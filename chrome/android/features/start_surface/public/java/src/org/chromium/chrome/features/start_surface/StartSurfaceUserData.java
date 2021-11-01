@@ -67,7 +67,7 @@ public class StartSurfaceUserData implements UserData {
      * StartSurfaceUserData is created without Start surface.
      */
     public static void setOpenedFromStart(Tab tab) {
-        if (tab == null || !StartSurfaceConfiguration.isStartSurfaceEnabled()) return;
+        if (tab == null || !StartSurfaceConfiguration.isStartSurfaceFlagEnabled()) return;
 
         StartSurfaceUserData startSurfaceUserData = get(tab);
         if (startSurfaceUserData == null) {
