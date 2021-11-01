@@ -40,8 +40,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_DOWNLOAD_LATER = 25;
     public static final int BACKGROUND_TASK_OFFLINE_MEASUREMENTS = 26;
     public static final int BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE = 27;
+    public static final int BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH = 28;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 28;
+    public static final int BACKGROUND_TASK_COUNT = 29;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -139,6 +140,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_OFFLINE_MEASUREMENTS;
             case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
+            case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:
+                return BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH;
             default:
                 assert false;
         }

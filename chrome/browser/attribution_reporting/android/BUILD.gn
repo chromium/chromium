@@ -15,7 +15,11 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//components/background_task_scheduler:background_task_scheduler_java",
   ]
 
-  sources = [ "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java" ]
+  sources = [
+    "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
+    "internal/java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingJobFactory.java",
+  ]
 }

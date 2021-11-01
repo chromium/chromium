@@ -94,7 +94,25 @@ public class ImpressionPersistentStoreUnitTest {
     public void testStoreImpression() throws Exception {
         when(mFileManager.getForPackage(PACKAGE_1, ImpressionPersistentStore.VERSION))
                 .thenReturn(Pair.create(mOutputStream, 0L));
-        mImpressionStore.storeImpression(PARAMS_1);
+        Assert.assertFalse(mImpressionStore.storeImpression(PARAMS_1));
+        mInOrder.verify(mOutputStream).writeUTF(EVENT_ID_1);
+        mInOrder.verify(mOutputStream).writeUTF(DESTINATION_1);
+        mInOrder.verify(mOutputStream).writeUTF(REPORT_TO_1);
+        mInOrder.verify(mOutputStream).writeLong(EXPIRY_1);
+        mInOrder.verify(mOutputStream).writeLong(anyLong());
+        mInOrder.verify(mOutputStream).writeChar(ImpressionPersistentStore.SENTINEL);
+        mInOrder.verify(mOutputStream).close();
+        mInOrder.verifyNoMoreInteractions();
+        Mockito.verifyNoMoreInteractions(mOutputStream);
+    }
+
+    @Test
+    @SmallTest
+    public void testStoreImpression_NearlyFull() throws Exception {
+        when(mFileManager.getForPackage(PACKAGE_1, ImpressionPersistentStore.VERSION))
+                .thenReturn(Pair.create(
+                        mOutputStream, (long) ImpressionPersistentStore.STORAGE_FLUSH_THRESHOLD));
+        Assert.assertTrue(mImpressionStore.storeImpression(PARAMS_1));
         mInOrder.verify(mOutputStream).writeUTF(EVENT_ID_1);
         mInOrder.verify(mOutputStream).writeUTF(DESTINATION_1);
         mInOrder.verify(mOutputStream).writeUTF(REPORT_TO_1);
@@ -112,7 +130,7 @@ public class ImpressionPersistentStoreUnitTest {
         when(mFileManager.getForPackage(PACKAGE_1, ImpressionPersistentStore.VERSION))
                 .thenReturn(Pair.create(
                         mOutputStream, ImpressionPersistentStore.MAX_STORAGE_BYTES_PER_PACKAGE));
-        mImpressionStore.storeImpression(PARAMS_1);
+        Assert.assertTrue(mImpressionStore.storeImpression(PARAMS_1));
         mInOrder.verify(mOutputStream).close();
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
@@ -124,7 +142,7 @@ public class ImpressionPersistentStoreUnitTest {
         when(mFileManager.getForPackage(PACKAGE_1, ImpressionPersistentStore.VERSION))
                 .thenReturn(Pair.create(mOutputStream, 0L));
         doThrow(new IOException()).when(mOutputStream).writeUTF(EVENT_ID_1);
-        mImpressionStore.storeImpression(PARAMS_1);
+        Assert.assertFalse(mImpressionStore.storeImpression(PARAMS_1));
         mInOrder.verify(mOutputStream).writeUTF(EVENT_ID_1);
         mInOrder.verify(mOutputStream).close();
         mInOrder.verifyNoMoreInteractions();
@@ -136,7 +154,7 @@ public class ImpressionPersistentStoreUnitTest {
     public void testStoreImpression_GetFileException() throws Exception {
         when(mFileManager.getForPackage(PACKAGE_1, ImpressionPersistentStore.VERSION))
                 .thenThrow(new IOException());
-        mImpressionStore.storeImpression(PARAMS_1);
+        Assert.assertFalse(mImpressionStore.storeImpression(PARAMS_1));
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
     }

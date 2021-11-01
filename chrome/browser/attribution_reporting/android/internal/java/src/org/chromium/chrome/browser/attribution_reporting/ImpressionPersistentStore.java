@@ -8,7 +8,6 @@ import android.util.Pair;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.FileProperties;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 
 import java.io.Closeable;
 import java.io.DataInput;
@@ -41,16 +40,30 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
     // Sentinel used to detect file truncations.
     /* package */ static final char SENTINEL = '\0';
 
-    // 50k ought be enough for anyone. This value is mostly intended to prevent spam while Chrome
-    // is backgrounded, and isn't intended to set limits on how many impressions apps can report
-    // under normal circumstances.
+    // The minimum interval at which we allow the browser to be started in the background in order
+    // to report attribution events.
     // TODO(https://crbug.com/1210171): Figure out what a reasonable value here is. Should this be
     // controllable by finch?
+    /* package */ static final long MIN_REPORTING_INTERVAL_HOURS = 2;
+
+    // An estimate of the size of each attribution.
+    private static final long BYTES_PER_ATTRIBUTION_ESTIMATE = 500;
+
+    // The maximum number of impressions per hour beyond which any more may be considered spam and
+    // discarded.
+    private static final long MAX_REPORTS_PER_PACKAGE_PER_HOUR = 250;
+
+    // This value is mostly intended to prevent spam while Chrome  is backgrounded, and isn't
+    // intended to set limits on how many impressions apps can report under normal circumstances.
+    // TODO(https://crbug.com/1210171): Should this be controllable by finch?
     // TODO(https://crbug.com/1210171): Periodically flush the storage to enable cross-device
-    // attribution and ensure more recent attributions aren't prevented by stale attributions if
-    // browser hasn't been launched in a while.
-    /* package */ static final long MAX_STORAGE_BYTES_PER_PACKAGE =
-            50 * ConversionUtils.BYTES_PER_KILOBYTE;
+    // attribution.
+    /* package */ static final long MAX_STORAGE_BYTES_PER_PACKAGE = MIN_REPORTING_INTERVAL_HOURS
+            * MAX_REPORTS_PER_PACKAGE_PER_HOUR * BYTES_PER_ATTRIBUTION_ESTIMATE;
+
+    // Flushing the storage is async so allow some additional attributions to be inserted while
+    // waiting for the storage to be flushed.
+    /* package */ static final double STORAGE_FLUSH_THRESHOLD = MAX_STORAGE_BYTES_PER_PACKAGE * 0.8;
 
     // Shared lock across all files because getAndClearStoredImpressions() reads then deletes all
     // files. Very unlikely to be contended as multiple packages will rarely report impressions at
@@ -63,7 +76,11 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
         mFileManager = fileManager;
     }
 
-    public void storeImpression(final AttributionParameters parameters) {
+    /**
+     * Persists the provided {@link AttributionParameters} to a file.
+     * @return true if the storage is nearly full (or full) and should be flushed.
+     */
+    public boolean storeImpression(final AttributionParameters parameters) {
         synchronized (sFileLock) {
             W stream = null;
             try {
@@ -73,7 +90,8 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
                 long fileSize = filePair.second;
 
                 // TODO(https://crbug.com/1210171): Record metrics for dropped impressions.
-                if (fileSize >= MAX_STORAGE_BYTES_PER_PACKAGE) return;
+                if (fileSize >= MAX_STORAGE_BYTES_PER_PACKAGE) return true;
+
                 stream.writeUTF(parameters.getSourceEventId());
                 stream.writeUTF(parameters.getDestination());
                 stream.writeUTF(parameters.getReportTo() == null ? "" : parameters.getReportTo());
@@ -83,8 +101,10 @@ public class ImpressionPersistentStore<W extends DataOutput & Closeable, R
                 // purposes).
                 stream.writeLong(System.currentTimeMillis());
                 stream.writeChar(SENTINEL);
+                return fileSize + BYTES_PER_ATTRIBUTION_ESTIMATE >= STORAGE_FLUSH_THRESHOLD;
             } catch (Exception e) {
                 Log.w(TAG, WRITE_FAILURE, e);
+                return false;
             } finally {
                 try {
                     if (stream != null) stream.close();

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.background_task_scheduler;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.attribution_reporting.AttributionReportingJobFactory;
 import org.chromium.chrome.browser.background_sync.BackgroundSyncBackgroundTask;
 import org.chromium.chrome.browser.background_sync.PeriodicBackgroundSyncChromeWakeUpTask;
 import org.chromium.chrome.browser.download.service.DownloadBackgroundTask;
@@ -85,6 +86,8 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
                 return new PeriodicBackgroundSyncChromeWakeUpTask();
             case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
                 return new OfflineMeasurementsBackgroundTask();
+            case TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID:
+                return AttributionReportingJobFactory.getAttributionReportingProviderFlushTask();
             // End of Java tasks. All native tasks should be listed here.
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:

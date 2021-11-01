@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.attribution_reporting;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.isNull;
 
 import android.content.ContentProviderClient;
 import android.content.ContentValues;
@@ -92,12 +93,18 @@ public class AttributionReportingProviderImplTest {
                     LibraryProcessType.PROCESS_BROWSER, false);
         });
         ContentValues values = makeContentValues(EVENT_ID, CONVERSION_URL, REPORT_TO_URL, EXPIRY);
-        Uri uri = mContentProviderClient.insert(mContentUri, values);
-        Assert.assertEquals(Uri.EMPTY, uri);
+        Assert.assertEquals(Uri.EMPTY, mContentProviderClient.insert(mContentUri, values));
         Mockito.verify(mAttributionReporter, Mockito.times(1))
                 .reportAppImpression(any(),
                         eq(ContextUtils.getApplicationContext().getPackageName()), eq(EVENT_ID),
                         eq(CONVERSION_URL), eq(REPORT_TO_URL), eq(EXPIRY));
+
+        values = makeContentValues(EVENT_ID, CONVERSION_URL, null, null);
+        Assert.assertEquals(Uri.EMPTY, mContentProviderClient.insert(mContentUri, values));
+        Mockito.verify(mAttributionReporter, Mockito.times(1))
+                .reportAppImpression(any(),
+                        eq(ContextUtils.getApplicationContext().getPackageName()), eq(EVENT_ID),
+                        eq(CONVERSION_URL), isNull(), eq(0L));
     }
 
     @Test
