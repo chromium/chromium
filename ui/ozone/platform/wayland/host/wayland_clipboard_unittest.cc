@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,25 +146,30 @@ class CopyPasteOnlyClipboardTest : public WaylandTest {
 };
 
 TEST_P(WaylandClipboardTest, WriteToClipboard) {
-  // The client writes data to the clipboard ...
+  // 1. Offer sample text as selection data.
   OfferData(GetBuffer(), kSampleClipboardText, {kMimeTypeTextUtf8});
   Sync();
 
-  // ... and the server reads it.
-  base::RunLoop run_loop;
-  auto callback = base::BindOnce(
-      [](base::RunLoop* loop, std::vector<uint8_t>&& data) {
-        std::string string_data(data.begin(), data.end());
-        EXPECT_EQ(kSampleClipboardText, string_data);
-        loop->Quit();
-      },
-      &run_loop);
+  // 2. Emulate an external client requesting to read the offered data and make
+  // sure the appropriate string gets delivered.
+  std::string delivered_text;
+  base::MockCallback<wl::TestSelectionSource::ReadDataCallback> callback;
+  EXPECT_CALL(callback, Run(_)).WillOnce([&](std::vector<uint8_t>&& data) {
+    delivered_text = std::string(data.begin(), data.end());
+  });
+  GetServerSelectionSource()->ReadData(kMimeTypeTextUtf8, callback.Get());
+  Sync();
 
-  GetServerSelectionSource()->ReadData(kMimeTypeTextUtf8, std::move(callback));
-  run_loop.Run();
+  // 3. Ensure the requests/events are flushed and posted tasks get processed.
+  // wl::TestSelection{Source,Offer} currently use ThreadPool task runners.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(kSampleClipboardText, delivered_text);
 }
 
 TEST_P(WaylandClipboardTest, ReadFromClipboard) {
+  // 1. Emulate a selection data offer coming in.
   auto* device = GetServerSelectionDevice();
   auto* data_offer = device->OnDataOffer();
   data_offer->OnOffer(kMimeTypeTextUtf8,
@@ -171,22 +177,20 @@ TEST_P(WaylandClipboardTest, ReadFromClipboard) {
   device->OnSelection(data_offer);
   Sync();
 
-  // The client requests to read the clipboard data from the server. The Server
-  // writes in some sample data, and we check it matches expectation.
-  base::RunLoop run_loop;
-  auto callback = base::BindOnce(
-      [](base::OnceClosure quit_closure, const PlatformClipboard::Data& data) {
-        ASSERT_TRUE(data.get());
-        std::string string_data(data->front_as<const char>(), data->size());
-        EXPECT_EQ(kSampleClipboardText, string_data);
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure());
+  // 2. Request to read the offered data and check whether the read text matches
+  // the previously offered one.
+  std::string text;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
+  EXPECT_CALL(callback, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+    ASSERT_TRUE(data);
+    text = std::string(data->front_as<const char>(), data->size());
+  });
 
   clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
-                                   std::move(callback));
+                                   callback.Get());
   Sync();
-  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(kSampleClipboardText, text);
 }
 
 // Regression test for crbug.com/1183939. Ensures unicode mime types take
@@ -200,19 +204,18 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
   GetServerSelectionDevice()->OnSelection(data_offer);
   Sync();
 
-  base::RunLoop run_loop;
-  auto callback = base::BindOnce(
-      [](base::OnceClosure quit_closure, const PlatformClipboard::Data& data) {
-        std::string str(data->front_as<const char>(), data->size());
-        EXPECT_EQ("utf8_text", str);
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure());
+  std::string text;
+  base::MockCallback<PlatformClipboard::RequestDataClosure> callback;
+  EXPECT_CALL(callback, Run(_)).WillOnce([&](PlatformClipboard::Data data) {
+    ASSERT_TRUE(data);
+    text = std::string(data->front_as<const char>(), data->size());
+  });
 
   clipboard_->RequestClipboardData(GetBuffer(), kMimeTypeTextUtf8,
-                                   std::move(callback));
+                                   callback.Get());
   Sync();
-  run_loop.Run();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("utf8_text", text);
 }
 
 TEST_P(WaylandClipboardTest, ReadFromClipboardWithoutOffer) {
@@ -242,7 +245,7 @@ TEST_P(WaylandClipboardTest, IsSelectionOwner) {
 // Ensures WaylandClipboard correctly handles overlapping read requests for
 // different clipboard buffers.
 TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
-  // Offer a piece of text in kCopyPaste clipboard buffer.
+  // Offer a sample text as selection data.
   auto* data_offer = GetServerSelectionDevice()->OnDataOffer();
   data_offer->OnOffer(kMimeTypeTextUtf8,
                       ToClipboardData(std::string(kSampleClipboardText)));
@@ -250,7 +253,7 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
   Sync();
 
   // Post a read request for the other buffer, which will start its execution
-  // after the request above starts.
+  // after the request above.
   auto other_buffer = GetBuffer() == ClipboardBuffer::kSelection
                           ? ClipboardBuffer::kCopyPaste
                           : ClipboardBuffer::kSelection;
