@@ -380,15 +380,30 @@ void ContentTranslateDriver::GetLanguageDetectionModel(
     std::move(callback).Run(base::File());
     return;
   }
-  translate_model_service_->GetLanguageDetectionModelFile(
-      base::BindOnce(&ContentTranslateDriver::OnLanguageDetectionModelFile,
-                     weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+  // If the model file is not available, request the translate model service
+  // notify |this| when it is. The two-step process is to ensure that
+  // the model file and callback lifetimes are carefully managed so they
+  // are not freed without be handled on the appropriate thread, particularly
+  // for the model file.
+  if (!translate_model_service_->IsModelAvailable()) {
+    translate_model_service_->NotifyOnModelFileAvailable(base::BindOnce(
+        &ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged,
+        weak_pointer_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  OnLanguageModelFileAvailabilityChanged(std::move(callback), true);
 }
 
-void ContentTranslateDriver::OnLanguageDetectionModelFile(
+void ContentTranslateDriver::OnLanguageModelFileAvailabilityChanged(
     GetLanguageDetectionModelCallback callback,
-    base::File model_file) {
-  std::move(callback).Run(std::move(model_file));
+    bool is_available) {
+  if (!is_available) {
+    std::move(callback).Run(base::File());
+    return;
+  }
+  std::move(callback).Run(
+      translate_model_service_->GetLanguageDetectionModelFile());
 }
 
 }  // namespace translate
