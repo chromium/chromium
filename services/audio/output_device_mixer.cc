@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/audio/output_mixer.h"
+#include "services/audio/output_device_mixer.h"
 
 #include "base/notreached.h"
 
 namespace audio {
 
 // static
-std::unique_ptr<OutputMixer> OutputMixer::Create(
+std::unique_ptr<OutputDeviceMixer> OutputDeviceMixer::Create(
     const std::string& device_id,
     const media::AudioParameters& output_params,
     CreateStreamCallback create_stream_callback,
@@ -18,7 +18,7 @@ std::unique_ptr<OutputMixer> OutputMixer::Create(
   return nullptr;
 }
 
-OutputMixer::OutputMixer(const std::string& device_id)
+OutputDeviceMixer::OutputDeviceMixer(const std::string& device_id)
     : device_id_(device_id) {}
 
 }  // namespace audio

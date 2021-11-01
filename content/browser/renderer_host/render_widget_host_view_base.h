@@ -25,6 +25,7 @@
 #include "components/viz/host/hit_test/hit_test_query.h"
 #include "content/browser/renderer_host/display_feature.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -32,10 +33,8 @@
 #include "content/public/common/widget_type.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-forward.h"
@@ -134,12 +133,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   float GetDeviceScaleFactor() final;
   TouchSelectionControllerClientManager*
   GetTouchSelectionControllerClientManager() override;
-  void SetRecordContentToVisibleTimeRequest(
-      base::TimeTicks start_time,
-      bool destination_is_loaded,
-      bool show_reason_tab_switching,
-      bool show_reason_unoccluded,
-      bool show_reason_bfcache_restore) final;
   bool ShouldVirtualKeyboardOverlayContent() override;
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override {}
@@ -184,14 +177,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // and a new viz::LocalSurfaceId has been allocated.
   virtual viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata);
-
-  // Returns the time set by SetLastRecordContentToVisibleTimeRequest. If this
-  // was not preceded by a call to SetLastRecordContentToVisibleTimeRequest the
-  // |event_start_time| field of the returned struct will have a null
-  // timestamp. Calling this will reset |last_record_tab_switch_time_request_|
-  // to null.
-  blink::mojom::RecordContentToVisibleTimeRequestPtr
-  TakeRecordContentToVisibleTimeRequest();
 
   base::WeakPtr<RenderWidgetHostViewBase> GetWeakPtr();
 
@@ -555,6 +540,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual ui::Compositor* GetCompositor();
 
+  // Returns the object that tracks content to visible events for the
+  // RenderWidgetHostView.
+  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;
@@ -663,11 +652,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   absl::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 
-  // The last tab switch processing start request. This should only be set and
-  // retrieved using SetRecordContentToVisibleTimeRequest and
-  // TakeRecordContentToVisibleTimeRequest.
-  blink::mojom::RecordContentToVisibleTimeRequestPtr
-      last_record_tab_switch_time_request_;
+  VisibleTimeRequestTrigger visible_time_request_trigger_;
 
   // True when StopFlingingIfNecessary() calls StopFling().
   bool view_stopped_flinging_for_test_ = false;

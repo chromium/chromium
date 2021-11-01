@@ -47,6 +47,8 @@ blink_core_sources_css = [
   "css_condition_rule.h",
   "css_container_rule.cc",
   "css_container_rule.h",
+  "css_container_values.cc",
+  "css_container_values.h",
   "css_content_distribution_value.cc",
   "css_content_distribution_value.h",
   "css_counter_style_rule.cc",

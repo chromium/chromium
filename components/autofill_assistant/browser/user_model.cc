@@ -113,7 +113,7 @@ void UserModel::MergeWithProto(const ModelProto& another,
                                bool force_notifications) {
   for (const auto& another_value : another.values()) {
     if (another_value.value() == ValueProto()) {
-      // std::map::emplace does not overwrite existing values.
+      // base::flat_map::emplace does not overwrite existing values.
       if (values_.emplace(another_value.identifier(), another_value.value())
               .second ||
           force_notifications) {

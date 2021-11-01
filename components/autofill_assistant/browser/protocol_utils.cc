@@ -4,9 +4,9 @@
 
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
-#include <map>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
@@ -526,11 +526,12 @@ bool ProtocolUtils::ParseTriggerScripts(
   }
 
   if (!response_proto.script_parameters().empty()) {
-    std::map<std::string, std::string> parameters;
+    std::vector<std::pair<std::string, std::string>> parameters;
     for (const auto& param : response_proto.script_parameters()) {
-      parameters.emplace(param.name(), param.value());
+      parameters.emplace_back(param.name(), param.value());
     }
-    *script_parameters = std::make_unique<ScriptParameters>(parameters);
+    *script_parameters = std::make_unique<ScriptParameters>(
+        base::flat_map<std::string, std::string>(std::move(parameters)));
   }
   return true;
 }

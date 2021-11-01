@@ -47,6 +47,7 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
@@ -562,15 +563,17 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
   if (!host_->is_hidden())
     return;
 
+  auto* visible_time_request_trigger = GetVisibleTimeRequestTrigger();
   if (old_visibility == Visibility::OCCLUDED) {
-    SetRecordContentToVisibleTimeRequest(
+    visible_time_request_trigger->SetRecordContentToVisibleTimeRequest(
         base::TimeTicks::Now(), false /* destination_is_loaded */,
         false /* show_reason_tab_switching */,
         true /* show_reason_unoccluded */,
         false /* show_reason_bfcache_restore */);
   }
 
-  auto tab_switch_start_state = TakeRecordContentToVisibleTimeRequest();
+  auto tab_switch_start_state =
+      visible_time_request_trigger->TakeRecordContentToVisibleTimeRequest();
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
 
   bool show_reason_bfcache_restore =

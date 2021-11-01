@@ -38,14 +38,15 @@ class ContainerQueryEvaluatorTest : public PageTestBase,
     DCHECK(container_query);
     auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
     evaluator->ContainerChanged(
-        PhysicalSize(LayoutUnit(width), LayoutUnit(height)), contained_axes);
+        GetDocument(), PhysicalSize(LayoutUnit(width), LayoutUnit(height)),
+        contained_axes);
     return evaluator->Eval(*container_query);
   }
 
   bool ContainerChanged(ContainerQueryEvaluator* evaluator,
                         PhysicalSize size,
                         PhysicalAxes axes) {
-    return evaluator->ContainerChanged(size, axes) !=
+    return evaluator->ContainerChanged(GetDocument(), size, axes) !=
            ContainerQueryEvaluator::Change::kNone;
   }
 
@@ -95,7 +96,7 @@ TEST_F(ContainerQueryEvaluatorTest, ContainerChanged) {
   ASSERT_TRUE(container_query_200);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
-  evaluator->ContainerChanged(size_100, horizontal);
+  evaluator->ContainerChanged(GetDocument(), size_100, horizontal);
   ASSERT_TRUE(evaluator);
 
   EXPECT_TRUE(evaluator->EvalAndAdd(*container_query_100));
@@ -188,7 +189,7 @@ TEST_F(ContainerQueryEvaluatorTest, DependentQueries) {
   ASSERT_TRUE(query_min_200px);
 
   auto* evaluator = MakeGarbageCollected<ContainerQueryEvaluator>();
-  evaluator->ContainerChanged(size_100, horizontal);
+  evaluator->ContainerChanged(GetDocument(), size_100, horizontal);
 
   evaluator->EvalAndAdd(*query_min_200px);
   evaluator->EvalAndAdd(*query_max_300px);

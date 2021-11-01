@@ -63,6 +63,13 @@ const char* MaybeSocket() {
   return nullptr;
 #endif  // defined(OS_POSIX)
 }
+
+void OnPerfettoLogMessage(perfetto::base::LogMessageCallbackArgs args) {
+  // Perfetto levels start at 0, base's at -1.
+  int severity = static_cast<int>(args.level) - 1;
+  ::logging::LogMessage(args.filename, args.line, severity).stream()
+      << args.message;
+}
 }  // namespace
 
 PerfettoTracedProcess::DataSourceBase::DataSourceBase(const std::string& name)
@@ -348,6 +355,10 @@ void PerfettoTracedProcess::SetupClientLibrary() {
     init_args.tracing_policy = this;
   }
 #endif
+  // Proxy perfetto log messages into Chrome logs, so they are retained on all
+  // platforms. In particular, on Windows, Perfetto's stderr log messages are
+  // not reliabe.
+  init_args.log_message_callback = &OnPerfettoLogMessage;
   perfetto::Tracing::Initialize(init_args);
 }
 

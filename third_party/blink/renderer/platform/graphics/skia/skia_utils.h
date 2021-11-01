@@ -212,11 +212,13 @@ struct CrossThreadCopier<SkBitmap> {
 
   using Type = SkBitmap;
   static SkBitmap Copy(const SkBitmap& bitmap) {
-    CHECK(bitmap.isImmutable()) << "Only immutable bitmaps can be transferred.";
+    CHECK(bitmap.isImmutable() || bitmap.isNull())
+        << "Only immutable bitmaps can be transferred.";
     return bitmap;
   }
   static SkBitmap Copy(SkBitmap&& bitmap) {
-    CHECK(bitmap.isImmutable()) << "Only immutable bitmaps can be transferred.";
+    CHECK(bitmap.isImmutable() || bitmap.isNull())
+        << "Only immutable bitmaps can be transferred.";
     return std::move(bitmap);
   }
 };

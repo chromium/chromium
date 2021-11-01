@@ -126,7 +126,7 @@ export class ModeFactory {
   /**
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
    */
   constructor(constraints, captureResolution) {
     /**
@@ -152,7 +152,7 @@ export class ModeFactory {
 
     /**
      * Capture resolution.
-     * @type {?Resolution}
+     * @type {!Resolution}
      * @protected
      */
     this.captureResolution_ = captureResolution;

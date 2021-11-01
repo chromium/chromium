@@ -67,6 +67,8 @@ MediaValuesCached::MediaValuesCached() = default;
 MediaValuesCached::MediaValuesCached(const MediaValuesCachedData& data)
     : data_(data) {}
 
+MediaValuesCached::MediaValuesCached(Document& document) : data_(document) {}
+
 MediaValues* MediaValuesCached::Copy() const {
   return MakeGarbageCollected<MediaValuesCached>(data_);
 }

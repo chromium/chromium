@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_AUDIO_OUTPUT_MIXER_H_
-#define SERVICES_AUDIO_OUTPUT_MIXER_H_
+#ifndef SERVICES_AUDIO_OUTPUT_DEVICE_MIXER_H_
+#define SERVICES_AUDIO_OUTPUT_DEVICE_MIXER_H_
 
 #include <memory>
 #include <string>
@@ -24,52 +24,53 @@ namespace audio {
 // audio mix being rendered. If there is at least one listener connected, the
 // mixer is mixing all the audio output and rendering the mix as a single audio
 // output stream. Otherwise the streams are rendered independently.
-class OutputMixer : public ReferenceOutput {
+class OutputDeviceMixer : public ReferenceOutput {
  public:
-  // Callback to be used by OutputMixer to create actual output streams playing
-  // audio.
+  // Callback to be used by OutputDeviceMixer to create actual output streams
+  // playing audio.
   using CreateStreamCallback =
       base::RepeatingCallback<media::AudioOutputStream*(
           const std::string& device_id,
           const media::AudioParameters& params)>;
 
-  // A helper class for the clients to pass OutputMixer::Create around as a
-  // callback.
-  using CreateCallback = base::RepeatingCallback<std::unique_ptr<OutputMixer>(
-      const std::string& device_id,
-      const media::AudioParameters& output_params,
-      CreateStreamCallback create_stream_callback,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)>;
+  // A helper class for the clients to pass OutputDeviceMixer::Create around as
+  // a callback.
+  using CreateCallback =
+      base::RepeatingCallback<std::unique_ptr<OutputDeviceMixer>(
+          const std::string& device_id,
+          const media::AudioParameters& output_params,
+          CreateStreamCallback create_stream_callback,
+          scoped_refptr<base::SingleThreadTaskRunner> task_runner)>;
 
-  // Creates OutputMixer which manages playback to the device identified by
-  // |device_id|. |output_params| - parameters for the audio mix playback;
-  // |create_stream_callback| will be used by OutputMixer to create output
+  // Creates OutputDeviceMixer which manages playback to the device identified
+  // by |device_id|. |output_params| - parameters for the audio mix playback;
+  // |create_stream_callback| will be used by OutputDeviceMixer to create output
   // streams playing audio; |task_runner| is the main task runner of
-  // OutputMixer.
-  static std::unique_ptr<OutputMixer> Create(
+  // OutputDeviceMixer.
+  static std::unique_ptr<OutputDeviceMixer> Create(
       const std::string& device_id,
       const media::AudioParameters& output_params,
       CreateStreamCallback create_stream_callback,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // |device_id| is the id of the output device to manage the playback to.
-  explicit OutputMixer(const std::string& device_id);
+  explicit OutputDeviceMixer(const std::string& device_id);
 
-  OutputMixer(const OutputMixer&) = delete;
-  OutputMixer& operator=(const OutputMixer&) = delete;
+  OutputDeviceMixer(const OutputDeviceMixer&) = delete;
+  OutputDeviceMixer& operator=(const OutputDeviceMixer&) = delete;
 
-  // Id of the device audio output to which is managed by OutputMixer.
+  // Id of the device audio output to which is managed by OutputDeviceMixer.
   const std::string& device_id() const { return device_id_; }
 
-  // Creates an audio output stream managed by the given OutputMixer.
+  // Creates an audio output stream managed by the given OutputDeviceMixer.
   // |params| - output stream parameters; |on_device_change_callback| - callback
   // to notify the AudioOutputStream client about device change events observed
-  // by OutputMixer.
+  // by OutputDeviceMixer.
   virtual media::AudioOutputStream* MakeMixableStream(
       const media::AudioParameters& params,
       base::OnceCallback<void()> on_device_change_callback) = 0;
 
-  // Notify OutputMixer about the device change event.
+  // Notify OutputDeviceMixer about the device change event.
   virtual void ProcessDeviceChange() = 0;
 
  private:
@@ -79,4 +80,4 @@ class OutputMixer : public ReferenceOutput {
 
 }  // namespace audio
 
-#endif  // SERVICES_AUDIO_OUTPUT_MIXER_H_
+#endif  // SERVICES_AUDIO_OUTPUT_DEVICE_MIXER_H_

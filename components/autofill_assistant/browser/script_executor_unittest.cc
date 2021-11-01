@@ -4,9 +4,9 @@
 
 #include "components/autofill_assistant/browser/script_executor.h"
 
-#include <map>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -61,7 +61,7 @@ class ScriptExecutorTest : public testing::Test,
         kScriptPath,
         std::make_unique<TriggerContext>(
             std::make_unique<ScriptParameters>(
-                std::map<std::string, std::string>{
+                base::flat_map<std::string, std::string>{
                     {"additional_param", "additional_param_value"}}),
             options),
         /* global_payload= */ "initial global payload",
@@ -186,7 +186,7 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
   options.experiment_ids = "exp";
   delegate_.SetTriggerContext(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"param", "value"}}),
+          base::flat_map<std::string, std::string>{{"param", "value"}}),
       options));
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
       .WillOnce(Invoke([](const std::string& script_path, const GURL& url,
@@ -202,7 +202,7 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
 
         EXPECT_THAT(
             trigger_context.GetScriptParameters().ToProto(),
-            UnorderedElementsAreArray(std::map<std::string, std::string>(
+            UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
                 {{"additional_param", "additional_param_value"},
                  {"param", "value"}})));
 

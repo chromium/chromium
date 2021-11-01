@@ -189,8 +189,8 @@ class MODULES_EXPORT PeerConnectionTracker
       const webrtc::DataChannelInterface* data_channel,
       Source source);
 
-  // Sends an update when a PeerConnection has been stopped.
-  virtual void TrackStop(RTCPeerConnectionHandler* pc_handler);
+  // Sends an update when a PeerConnection has been closed.
+  virtual void TrackClose(RTCPeerConnectionHandler* pc_handler);
 
   // Sends an update when the signaling state of a PeerConnection has changed.
   virtual void TrackSignalingStateChange(

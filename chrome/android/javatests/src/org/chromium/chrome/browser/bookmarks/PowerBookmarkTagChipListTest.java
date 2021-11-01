@@ -83,7 +83,6 @@ public class PowerBookmarkTagChipListTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTagChipList.populateTagMapForPowerBookmarkMeta(meta.build());
             mTagChipList.populateChipListFromCurrentTagMap();
-            mTagChipList.notifyObservers();
         });
 
         onView(withText(allOf(containsString("foo")))).check(matches(isDisplayed()));
@@ -112,7 +111,6 @@ public class PowerBookmarkTagChipListTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTagChipList.populateTagMapForPowerBookmarkMeta(meta.build());
             mTagChipList.populateChipListFromCurrentTagMap();
-            mTagChipList.notifyObservers();
         });
 
         onView(withText(allOf(containsString("heeeeeeelllllllooooooo"))))
@@ -138,7 +136,6 @@ public class PowerBookmarkTagChipListTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTagChipList.populateTagMapForPowerBookmarkMeta(meta.build());
             mTagChipList.populateChipListFromCurrentTagMap();
-            mTagChipList.notifyObservers();
         });
 
         onView(withText(allOf(containsString("foo")))).check(matches(isDisplayed()));
@@ -168,7 +165,6 @@ public class PowerBookmarkTagChipListTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTagChipList.populateTagMapForPowerBookmarkMeta(meta.build());
             mTagChipList.populateChipListFromCurrentTagMap();
-            mTagChipList.notifyObservers();
         });
 
         onView(withText(allOf(containsString("foo")))).check(matches(isDisplayed()));

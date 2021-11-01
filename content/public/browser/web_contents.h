@@ -1318,6 +1318,15 @@ class WebContents : public PageNavigator,
                                           cc::BrowserControlsState current,
                                           bool animate) = 0;
 
+  // Sets the last time a tab switch made this WebContents visible.
+  // `start_time` is the timestamp of the input event that triggered the tab
+  // switch. `destination_is_loaded` is true when
+  // ResourceCoordinatorTabHelper::IsLoaded() is true for the new tab contents.
+  // These will be used to record metrics with the latency between the input
+  // event and the time when the WebContents is painted.
+  virtual void SetTabSwitchStartTime(base::TimeTicks start_time,
+                                     bool destination_is_loaded) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class WebContentsImpl;

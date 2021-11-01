@@ -417,6 +417,56 @@ void AXRangeTest::SetUp() {
 
 }  // namespace
 
+TEST_F(AXRangeTest, RangeOfContents) {
+  const AXNode* root = GetNodeFromTree(ROOT_ID);
+  const TestPositionRange root_range =
+      TestPositionRange::RangeOfContents(*root);
+  const AXNode* text_field = GetNodeFromTree(TEXT_FIELD_ID);
+  const TestPositionRange text_field_range =
+      TestPositionRange::RangeOfContents(*text_field);
+  const AXNode* static_text = GetNodeFromTree(STATIC_TEXT1_ID);
+  const TestPositionRange static_text_range =
+      TestPositionRange::RangeOfContents(*static_text);
+  const AXNode* inline_box = GetNodeFromTree(INLINE_BOX1_ID);
+  const TestPositionRange inline_box_range =
+      TestPositionRange::RangeOfContents(*inline_box);
+
+  EXPECT_TRUE(root_range.anchor()->IsTreePosition());
+  EXPECT_EQ(root_range.anchor()->GetAnchor(), root);
+  EXPECT_EQ(root_range.anchor()->child_index(), 0);
+  EXPECT_TRUE(root_range.focus()->IsTreePosition());
+  EXPECT_EQ(root_range.focus()->GetAnchor(), root);
+  EXPECT_EQ(root_range.focus()->child_index(), 4);
+
+  EXPECT_TRUE(text_field_range.anchor()->IsTextPosition())
+      << "Atomic text fields should be leaf nodes hence we get a text "
+         "position.";
+  EXPECT_EQ(text_field_range.anchor()->GetAnchor(), text_field);
+  EXPECT_EQ(text_field_range.anchor()->text_offset(), 0);
+  EXPECT_TRUE(text_field_range.focus()->IsTextPosition())
+      << "Atomic text fields should be leaf nodes hence we get a text "
+         "position.";
+  EXPECT_EQ(text_field_range.focus()->GetAnchor(), text_field);
+  EXPECT_EQ(text_field_range.focus()->text_offset(), 14)
+      << "Should be length of \"Line 1\\nLine 2\\n\".";
+
+  EXPECT_TRUE(static_text_range.anchor()->IsTextPosition());
+  EXPECT_EQ(static_text_range.anchor()->GetAnchor(), static_text);
+  EXPECT_EQ(static_text_range.anchor()->text_offset(), 0);
+  EXPECT_TRUE(static_text_range.focus()->IsTextPosition());
+  EXPECT_EQ(static_text_range.focus()->GetAnchor(), static_text);
+  EXPECT_EQ(static_text_range.focus()->text_offset(), 6)
+      << "Should be length of \"Line 1\".";
+
+  EXPECT_TRUE(inline_box_range.anchor()->IsTextPosition());
+  EXPECT_EQ(inline_box_range.anchor()->GetAnchor(), inline_box);
+  EXPECT_EQ(inline_box_range.anchor()->text_offset(), 0);
+  EXPECT_TRUE(inline_box_range.focus()->IsTextPosition());
+  EXPECT_EQ(inline_box_range.focus()->GetAnchor(), inline_box);
+  EXPECT_EQ(inline_box_range.focus()->text_offset(), 6)
+      << "Should be length of \"Line 1\".";
+}
+
 TEST_F(AXRangeTest, EqualityOperators) {
   TestPositionInstance null_position = AXNodePosition::CreateNullPosition();
   TestPositionInstance test_position1 = AXNodePosition::CreateTextPosition(

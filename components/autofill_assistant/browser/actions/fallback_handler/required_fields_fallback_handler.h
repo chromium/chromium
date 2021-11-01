@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FALLBACK_HANDLER_REQUIRED_FIELDS_FALLBACK_HANDLER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_ACTIONS_FALLBACK_HANDLER_REQUIRED_FIELDS_FALLBACK_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -29,7 +29,7 @@ class RequiredFieldsFallbackHandler {
  public:
   explicit RequiredFieldsFallbackHandler(
       const std::vector<RequiredField>& required_fields,
-      const std::map<field_formatter::Key, std::string>& fallback_values,
+      const base::flat_map<field_formatter::Key, std::string>& fallback_values,
       ActionDelegate* delegate);
 
   RequiredFieldsFallbackHandler(const RequiredFieldsFallbackHandler&) = delete;
@@ -115,7 +115,7 @@ class RequiredFieldsFallbackHandler {
   ClientStatus client_status_;
 
   std::vector<RequiredField> required_fields_;
-  std::map<field_formatter::Key, std::string> fallback_values_;
+  base::flat_map<field_formatter::Key, std::string> fallback_values_;
   base::OnceCallback<void(const ClientStatus&)> status_update_callback_;
   ActionDelegate* action_delegate_;
   std::unique_ptr<BatchElementChecker> batch_element_checker_;

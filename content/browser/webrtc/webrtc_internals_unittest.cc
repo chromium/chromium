@@ -714,7 +714,7 @@ TEST_F(WebRtcInternalsTest, WakeLockMultplePeerConnections) {
   EXPECT_EQ(webrtc_internals.num_connected_connections(), 2);
   EXPECT_TRUE(webrtc_internals.HasWakeLock());
 
-  webrtc_internals.OnPeerConnectionUpdated(kFrameId, kLids[1], "stop",
+  webrtc_internals.OnPeerConnectionUpdated(kFrameId, kLids[1], "close",
                                            std::string());
   EXPECT_EQ(webrtc_internals.num_connected_connections(), 1);
   EXPECT_TRUE(webrtc_internals.HasWakeLock());

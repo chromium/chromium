@@ -71,9 +71,8 @@ class CORE_EXPORT MediaQueryEvaluator final
   // Creates evaluator which evaluates full media queries.
   explicit MediaQueryEvaluator(LocalFrame*);
 
-  // Creates evaluator which evaluates in a thread-safe manner a subset of media
-  // values.
-  explicit MediaQueryEvaluator(const MediaValues&);
+  // Create an evaluator for container queries and preload scanning.
+  explicit MediaQueryEvaluator(const MediaValues*);
 
   MediaQueryEvaluator(const MediaQueryEvaluator&) = delete;
   MediaQueryEvaluator& operator=(const MediaQueryEvaluator&) = delete;
@@ -117,7 +116,7 @@ class CORE_EXPORT MediaQueryEvaluator final
   const String MediaType() const;
 
   String media_type_;
-  Member<MediaValues> media_values_;
+  Member<const MediaValues> media_values_;
 
   // Even if UKM reporting is enabled, do not report any media query evaluation
   // results if this is set to true.

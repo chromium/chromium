@@ -14,6 +14,7 @@
 namespace blink {
 
 class ContainerQuery;
+class Document;
 class Element;
 class StyleRecalcContext;
 
@@ -63,12 +64,12 @@ class CORE_EXPORT ContainerQueryEvaluator final
   //
   // Dependent queries are cleared when kUnnamed/kNamed is returned (and left
   // unchanged otherwise).
-  Change ContainerChanged(PhysicalSize, PhysicalAxes contained_axes);
+  Change ContainerChanged(Document&, PhysicalSize, PhysicalAxes contained_axes);
 
   void Trace(Visitor*) const;
 
  private:
-  void SetData(PhysicalSize, PhysicalAxes contained_axes);
+  void SetData(Document&, PhysicalSize, PhysicalAxes contained_axes);
   void ClearResults();
   Change ComputeChange() const;
 

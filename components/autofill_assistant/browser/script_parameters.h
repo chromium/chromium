@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_PARAMETERS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_PARAMETERS_H_
 
-#include <map>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -19,7 +19,7 @@ class UserData;
 class ScriptParameters {
  public:
   // TODO(arbesser): Expect properly typed parameters instead.
-  ScriptParameters(const std::map<std::string, std::string>& parameters);
+  ScriptParameters(const base::flat_map<std::string, std::string>& parameters);
   ScriptParameters();
   ~ScriptParameters();
   ScriptParameters(const ScriptParameters&) = delete;
@@ -39,7 +39,7 @@ class ScriptParameters {
 
   // Update the device only parameters. New parameters always take precedence.
   void UpdateDeviceOnlyParameters(
-      const std::map<std::string, std::string>& parameters);
+      const base::flat_map<std::string, std::string>& parameters);
 
   // Write parameters and device only parameters to |UserData|, by adding them
   // to the additional values with a "param:" prefix.
@@ -73,7 +73,7 @@ class ScriptParameters {
  private:
   absl::optional<std::string> GetParameter(const std::string& name) const;
 
-  std::map<std::string, ValueProto> parameters_;
+  base::flat_map<std::string, ValueProto> parameters_;
 };
 
 }  // namespace autofill_assistant

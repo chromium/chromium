@@ -104,7 +104,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.browser_ui.widget.chips.Chip;
+import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.SelectionClient;
@@ -4208,8 +4208,9 @@ public class ContextualSearchManagerTest {
 
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
-                    mPanel.getRelatedSearchesInBarControl().getChipsForTest().get(0).textMaxWidthPx,
-                    Matchers.not(Chip.SHOW_WHOLE_TEXT));
+                    mPanel.getRelatedSearchesInBarControl().getChipsForTest().get(0).model.get(
+                            ChipProperties.TEXT_MAX_WIDTH_PX),
+                    Matchers.not(ChipProperties.SHOW_WHOLE_TEXT));
         });
 
         // Close the panel

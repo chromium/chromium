@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_CLIENT_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_CLIENT_ANDROID_H_
 
-#include <map>
 #include <memory>
 #include <string>
 

@@ -625,7 +625,7 @@ TEST_F(RTCPeerConnectionHandlerTest, Destruct) {
 }
 
 TEST_F(RTCPeerConnectionHandlerTest, NoCallbacksToClientAfterStop) {
-  pc_handler_->Stop();
+  pc_handler_->Close();
 
   EXPECT_CALL(*mock_client_.get(), NegotiationNeeded()).Times(0);
   pc_handler_->observer()->OnRenegotiationNeeded();
@@ -884,7 +884,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetStatsNoSelector) {
 TEST_F(RTCPeerConnectionHandlerTest, GetStatsAfterClose) {
   scoped_refptr<MockRTCStatsRequest> request(
       new rtc::RefCountedObject<MockRTCStatsRequest>());
-  pc_handler_->Stop();
+  pc_handler_->Close();
   RunMessageLoopsUntilIdle();
   pc_handler_->getStats(request.get());
   RunMessageLoopsUntilIdle();

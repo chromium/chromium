@@ -126,7 +126,7 @@ public class AutofillAssistantDirectActionHandler implements DirectActionHandler
     }
 
     private boolean isActionAvailable(String actionId) {
-        if (mDelegate == null) return false;
+        if (mDelegate == null || !mDelegate.hasRunFirstCheck()) return false;
         for (AutofillAssistantDirectAction action : mDelegate.getActions()) {
             if (action.getNames().contains(actionId)) return true;
         }

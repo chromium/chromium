@@ -92,14 +92,14 @@ TEST_F(PeerConnectionDependencyFactoryTest, CountOpenPeerConnections) {
   std::unique_ptr<RTCPeerConnectionHandler> pc2 =
       CreateRTCPeerConnectionHandler();
   EXPECT_EQ(dependency_factory_->open_peer_connections(), 2u);
-  pc1->Stop();
+  pc1->Close();
   EXPECT_EQ(dependency_factory_->open_peer_connections(), 1u);
-  pc2->Stop();
+  pc2->Close();
   EXPECT_EQ(dependency_factory_->open_peer_connections(), 0u);
   std::unique_ptr<RTCPeerConnectionHandler> pc3 =
       CreateRTCPeerConnectionHandler();
   EXPECT_EQ(dependency_factory_->open_peer_connections(), 1u);
-  pc3->Stop();
+  pc3->Close();
   EXPECT_EQ(dependency_factory_->open_peer_connections(), 0u);
 }
 
@@ -167,12 +167,12 @@ TEST_F(PeerConnectionDependencyFactoryTest,
 
   // Stop a peer connection. The stop count does not increase because there is
   // one more non-stopped peer connection.
-  pc1->Stop();
+  pc1->Close();
   EXPECT_EQ(fake_metronome_listener.start_count(), 1u);
   EXPECT_EQ(fake_metronome_listener.stop_count(), 0u);
 
   // The stop count increases when there are no more peer connections.
-  pc2->Stop();
+  pc2->Close();
   EXPECT_EQ(fake_metronome_listener.start_count(), 1u);
   EXPECT_EQ(fake_metronome_listener.stop_count(), 1u);
 
@@ -185,10 +185,9 @@ TEST_F(PeerConnectionDependencyFactoryTest,
       CreateRTCPeerConnectionHandler();
   EXPECT_EQ(fake_metronome_listener.start_count(), 2u);
   EXPECT_EQ(fake_metronome_listener.stop_count(), 1u);
-  pc3->Stop();
+  pc3->Close();
   EXPECT_EQ(fake_metronome_listener.start_count(), 2u);
   EXPECT_EQ(fake_metronome_listener.stop_count(), 2u);
-
   ExecutionContextMetronomeProvider::From(*scope.GetExecutionContext())
       .metronome_provider()
       ->RemoveListener(&fake_metronome_listener);

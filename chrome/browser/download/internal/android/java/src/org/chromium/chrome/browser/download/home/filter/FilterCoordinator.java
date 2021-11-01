@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
+import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.chips.ChipsCoordinator;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -54,7 +55,10 @@ public class FilterCoordinator {
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier) {
         mChipsProvider =
                 new FilterChipsProvider(context, type -> handleChipSelected(), chipFilterSource);
-        mChipsCoordinator = new ChipsCoordinator(context, mChipsProvider);
+        mChipsCoordinator = new ChipsCoordinator(context, mChipsProvider.getChips());
+        mChipsCoordinator.setSpaceItemDecoration(
+                context.getResources().getDimensionPixelSize(R.dimen.chip_list_chip_spacing),
+                context.getResources().getDimensionPixelSize(R.dimen.chip_list_side_padding));
         mExploreOfflineTabVisibilitySupplier = exploreOfflineTabVisibilitySupplier;
 
         mView = new FilterView(context);

@@ -66,11 +66,17 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   // Called when the mojo binding disconnects.
   void OnError();
 
+  // Close the mojo receivers and remotes.
+  void CloseInternal();
+
   String name_;
 
-  // BroadcastChannelClient receiver for messages sent from the browser to this
-  // channel and BroadcastChannelClient remote for messages sent from this
-  // channel to the browser.
+  // Tracks whether this BroadcastChannel object has had close.
+  bool explicitly_closed_ = false;
+
+  // BroadcastChannelClient receiver for messages sent from the browser to
+  // this channel and BroadcastChannelClient remote for messages sent from
+  // this channel to the browser.
   mojo::AssociatedReceiver<mojom::blink::BroadcastChannelClient> receiver_{
       this};
   mojo::AssociatedRemote<mojom::blink::BroadcastChannelClient> remote_client_;

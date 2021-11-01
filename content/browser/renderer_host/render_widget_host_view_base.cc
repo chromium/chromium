@@ -28,7 +28,6 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display_util.h"
@@ -812,31 +811,6 @@ RenderWidgetHostViewBase::GetTouchSelectionControllerClientManager() {
   return nullptr;
 }
 
-void RenderWidgetHostViewBase::SetRecordContentToVisibleTimeRequest(
-    base::TimeTicks start_time,
-    bool destination_is_loaded,
-    bool show_reason_tab_switching,
-    bool show_reason_unoccluded,
-    bool show_reason_bfcache_restore) {
-  auto record_tab_switch_time_request =
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start_time, destination_is_loaded, show_reason_tab_switching,
-          show_reason_unoccluded, show_reason_bfcache_restore);
-
-  if (last_record_tab_switch_time_request_) {
-    blink::UpdateRecordContentToVisibleTimeRequest(
-        *record_tab_switch_time_request, *last_record_tab_switch_time_request_);
-  } else {
-    last_record_tab_switch_time_request_ =
-        std::move(record_tab_switch_time_request);
-  }
-}
-
-blink::mojom::RecordContentToVisibleTimeRequestPtr
-RenderWidgetHostViewBase::TakeRecordContentToVisibleTimeRequest() {
-  return std::move(last_record_tab_switch_time_request_);
-}
-
 void RenderWidgetHostViewBase::SynchronizeVisualProperties() {
   if (host())
     host()->SynchronizeVisualProperties();
@@ -992,6 +966,11 @@ bool RenderWidgetHostViewBase::TransformPointToLocalCoordSpace(
 
 ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
   return nullptr;
+}
+
+VisibleTimeRequestTrigger*
+RenderWidgetHostViewBase::GetVisibleTimeRequestTrigger() {
+  return &visible_time_request_trigger_;
 }
 
 bool RenderWidgetHostViewBase::ShouldVirtualKeyboardOverlayContent() {

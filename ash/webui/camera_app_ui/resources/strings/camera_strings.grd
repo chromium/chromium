@@ -323,6 +323,9 @@
       <message desc="Label for expert mode option: enable expert mode." name="IDS_EXPERT_ENABLE_EXPERT_MODE">
         Enable expert mode
       </message>
+      <message desc="Label for expert mode option: enable full-sized video snapshot." name="IDS_EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT">
+        Enable full-sized video snaphost
+      </message>
       <message desc="Label for expert mode option: Show GIF recording option." name="IDS_EXPERT_SHOW_GIF_RECORDING_OPTION">
         Show GIF recording option
       </message>

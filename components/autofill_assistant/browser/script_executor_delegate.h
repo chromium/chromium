@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_DELEGATE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

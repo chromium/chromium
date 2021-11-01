@@ -102,10 +102,10 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   };
 
   MediaValuesCached();
-  explicit MediaValuesCached(LocalFrame*);
+  explicit MediaValuesCached(Document&);
   explicit MediaValuesCached(const MediaValuesCachedData&);
 
-  MediaValues* Copy() const override;
+  MediaValues* Copy() const;
   bool ComputeLength(double value,
                      CSSPrimitiveValue::UnitType,
                      int& result) const override;
@@ -113,8 +113,6 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
                      CSSPrimitiveValue::UnitType,
                      double& result) const override;
 
-  double ViewportWidth() const override;
-  double ViewportHeight() const override;
   int DeviceWidth() const override;
   int DeviceHeight() const override;
   float DevicePixelRatio() const override;
@@ -143,9 +141,12 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   int GetVerticalViewportSegments() const override;
   device::mojom::blink::DevicePostureType GetDevicePosture() const override;
 
-  void OverrideViewportDimensions(double width, double height) override;
+  void OverrideViewportDimensions(double width, double height);
 
  protected:
+  double ViewportWidth() const override;
+  double ViewportHeight() const override;
+
   MediaValuesCachedData data_;
 };
 

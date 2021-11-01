@@ -173,4 +173,59 @@ public class DirectActionsIntegrationTest {
         verify(mDirectActionResultCallback)
                 .onResult(argThat(bundle -> !bundle.getBoolean("success")));
     }
+
+    /**
+     * Regression test for b/200916720.
+     */
+    @Test
+    @MediumTest
+    @Features.
+    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    public void
+    testOnboardingTwice() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
+        mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+        Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                containsInAnyOrder("onboarding", "onboarding_and_start"));
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        // Tapping touch_area_one will make it disappear.
+        addTapSteps(toCssSelector("#touch_area_one"), list);
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setDirectAction(
+                                DirectActionProto.newBuilder()
+                                        .addNames("some_direct_action")
+                                        .build()))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        Bundle arguments = new Bundle();
+        arguments.putString("name", "some_direct_action");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.performDirectAction(
+                    "onboarding_and_start", arguments, mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("I agree"), isDisplayed());
+
+        // Don't agree to the onboarding. Instead, restart the direct action. This tests a case
+        // where the client already exists, but the controller does not.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.performDirectAction(
+                    "onboarding_and_start", arguments, mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("I agree"), isDisplayed());
+
+        onView(withText("I agree")).perform(click());
+        waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_one"));
+        verify(mDirectActionResultCallback)
+                .onResult(argThat(bundle -> bundle.getBoolean("success")));
+    }
 }

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"

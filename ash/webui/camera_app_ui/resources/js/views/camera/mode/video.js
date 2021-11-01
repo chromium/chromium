@@ -225,11 +225,14 @@ export class Video extends ModeBase {
   /**
    * @param {!MediaStream} stream Preview stream.
    * @param {?StreamConstraints} captureConstraints
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
+   * @param {!Resolution} snapshotResolution
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
    */
-  constructor(stream, captureConstraints, captureResolution, facing, handler) {
+  constructor(
+      stream, captureConstraints, captureResolution, snapshotResolution, facing,
+      handler) {
     super(stream, facing);
 
     /**
@@ -249,6 +252,12 @@ export class Video extends ModeBase {
       const {width, height} = stream.getVideoTracks()[0].getSettings();
       return new Resolution(width, height);
     })();
+
+    /**
+     * @const {!Resolution}
+     * @private
+     */
+    this.snapshotResolution_ = snapshotResolution;
 
     /**
      * @const {!VideoHandler}
@@ -374,8 +383,8 @@ export class Video extends ModeBase {
       let blob;
       if (await this.isBlobVideoSnapshotEnabled()) {
         const photoSettings = /** @type {!PhotoSettings} */ ({
-          imageWidth: this.captureResolution_.width,
-          imageHeight: this.captureResolution_.height,
+          imageWidth: this.snapshotResolution_.width,
+          imageHeight: this.snapshotResolution_.height,
         });
         const results = await this.crosImageCapture_.takePhoto(photoSettings);
         blob = await results[0];
@@ -744,11 +753,18 @@ export class VideoFactory extends ModeFactory {
   /**
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
+   * @param {!Resolution} snapshotResolution
    * @param {!VideoHandler} handler
    */
-  constructor(constraints, captureResolution, handler) {
+  constructor(constraints, captureResolution, snapshotResolution, handler) {
     super(constraints, captureResolution);
+
+    /**
+     * @const {!Resolution}
+     * @private
+     */
+    this.snapshotResolution_ = snapshotResolution;
 
     /**
      * @const {!VideoHandler}
@@ -777,6 +793,6 @@ export class VideoFactory extends ModeFactory {
     }
     return new Video(
         this.previewStream_, captureConstraints, this.captureResolution_,
-        this.facing_, this.handler_);
+        this.snapshotResolution_, this.facing_, this.handler_);
   }
 }

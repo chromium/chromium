@@ -5,7 +5,6 @@
 #include "components/autofill_assistant/browser/element_area.h"
 
 #include <algorithm>
-#include <map>
 #include <ostream>
 
 #include "base/bind.h"

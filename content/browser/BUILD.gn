@@ -1645,6 +1645,8 @@ source_set("browser") {
     "renderer_host/text_input_manager.h",
     "renderer_host/ui_events_helper.cc",
     "renderer_host/ui_events_helper.h",
+    "renderer_host/visible_time_request_trigger.cc",
+    "renderer_host/visible_time_request_trigger.h",
     "resource_context_impl.cc",
     "resource_context_impl.h",
     "resource_coordinator_service.cc",

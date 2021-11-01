@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_H_
 
 #include <deque>
-#include <map>
 #include <memory>
 #include <ostream>
 #include <set>

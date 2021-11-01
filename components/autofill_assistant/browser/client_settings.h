@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_SETTINGS_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CLIENT_SETTINGS_H_
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -31,7 +32,8 @@ struct ClientSettings {
   void UpdateFromProto(const ClientSettingsProto& proto);
 
   // Map of current display strings, if sent by the backend.
-  std::map<ClientSettingsProto::DisplayStringId, std::string> display_strings;
+  base::flat_map<ClientSettingsProto::DisplayStringId, std::string>
+      display_strings;
 
   // The locale of |display_strings|. If not specified, the client will display
   // strings in the current client locale. The locale follows the BCP 47 format,

@@ -872,7 +872,7 @@ void RTCPeerConnection::Dispose() {
   // Promptly clears the handler's pointer to |this|
   // so that content/ doesn't access it in a lazy sweeping phase.
   if (peer_handler_) {
-    peer_handler_->StopAndUnregister();
+    peer_handler_->CloseAndUnregister();
   }
 }
 
@@ -3434,7 +3434,7 @@ void RTCPeerConnection::UnregisterPeerConnectionHandler() {
   ice_connection_state_ = webrtc::PeerConnectionInterface::kIceConnectionClosed;
   signaling_state_ = webrtc::PeerConnectionInterface::SignalingState::kClosed;
 
-  peer_handler_->StopAndUnregister();
+  peer_handler_->CloseAndUnregister();
   dispatch_scheduled_events_task_handle_.Cancel();
   scheduled_events_.clear();
   feature_handle_for_scheduler_.reset();
@@ -3619,7 +3619,7 @@ bool RTCPeerConnection::SetPeerConnectionState(
 void RTCPeerConnection::CloseInternal() {
   DCHECK(signaling_state_ !=
          webrtc::PeerConnectionInterface::SignalingState::kClosed);
-  peer_handler_->Stop();
+  peer_handler_->Close();
   closed_ = true;
 
   ChangeIceConnectionState(

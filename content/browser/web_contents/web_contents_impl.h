@@ -129,6 +129,7 @@ class SiteInstance;
 class TestWCDelegateForDialogsAndFullscreen;
 class TestWebContents;
 class TextInputManager;
+class VisibleTimeRequestTrigger;
 class WakeLockContextHost;
 class WebContentsDelegate;
 class WebContentsImpl;
@@ -570,6 +571,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
+  void SetTabSwitchStartTime(base::TimeTicks start_time,
+                             bool destination_is_loaded) final;
 
   // Implementation of PageNavigator.
   WebContents* OpenURL(const OpenURLParams& params) override;
@@ -1823,6 +1826,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // null, in which case a fallback title is used (see
   // |page_title_when_no_navigation_entry_|).
   NavigationEntry* GetNavigationEntryForTitle();
+
+  // Returns the object that tracks the start of content to visible events for
+  // the WebContents. May return nullptr if there is no RenderWidgetHostView.
+  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
 
   // Data for core operation ---------------------------------------------------
 

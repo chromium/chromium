@@ -62,6 +62,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/ui_events_helper.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/android/content_jni_headers/RenderWidgetHostViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
@@ -1643,7 +1644,8 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
                                 absl::nullopt);
   }
 
-  auto content_to_visible_start_state = TakeRecordContentToVisibleTimeRequest();
+  auto content_to_visible_start_state =
+      GetVisibleTimeRequestTrigger()->TakeRecordContentToVisibleTimeRequest();
 
   // Only when page is restored from back-forward cache, record content to
   // visible time and for this case no need to check for saved frames to

@@ -4,10 +4,10 @@
 
 #include "components/autofill_assistant/browser/user_data_util.h"
 
-#include <map>
 #include <numeric>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -43,7 +43,7 @@ ClientStatus ExtractDataAndFormatClientValue(
     return ClientStatus(INVALID_ACTION);
   }
 
-  std::map<field_formatter::Key, std::string> data;
+  base::flat_map<field_formatter::Key, std::string> data;
   std::string localeOrDefault = locale.empty() ? kDefaultLocale : locale;
 
   if (client_value.has_profile()) {
@@ -107,8 +107,9 @@ void OnGetStoredPassword(
   std::move(callback).Run(OkClientStatus(), password);
 }
 
-bool EvaluateCondition(const std::map<field_formatter::Key, std::string>& data,
-                       const RequiredDataPiece::Condition& condition) {
+bool EvaluateCondition(
+    const base::flat_map<field_formatter::Key, std::string>& data,
+    const RequiredDataPiece::Condition& condition) {
   std::string value;
   auto it = data.find(field_formatter::Key(condition.key()));
   if (it != data.end()) {
@@ -131,7 +132,7 @@ bool EvaluateCondition(const std::map<field_formatter::Key, std::string>& data,
 }
 
 std::vector<std::string> GetValidationErrors(
-    const std::map<field_formatter::Key, std::string>& data,
+    const base::flat_map<field_formatter::Key, std::string>& data,
     const std::vector<RequiredDataPiece>& required_data_pieces) {
   std::vector<std::string> errors;
 
@@ -149,9 +150,9 @@ std::vector<std::string> GetValidationErrors(
 bool CompletenessCompareContacts(
     const CollectUserDataOptions& options,
     const autofill::AutofillProfile& a,
-    const std::map<field_formatter::Key, std::string>& data_a,
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
     const autofill::AutofillProfile& b,
-    const std::map<field_formatter::Key, std::string>& data_b) {
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   int incomplete_fields_a =
       GetValidationErrors(data_a, options.required_contact_data_pieces).size();
   int incomplete_fields_b =
@@ -178,9 +179,9 @@ int GetAddressEditorCompletenessRating(
 int CompletenessCompareAddresses(
     const std::vector<RequiredDataPiece>& required_data_pieces,
     const autofill::AutofillProfile& a,
-    const std::map<field_formatter::Key, std::string>& data_a,
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
     const autofill::AutofillProfile& b,
-    const std::map<field_formatter::Key, std::string>& data_b) {
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   // Compare by editor completeness first. This is done because the
   // AddressEditor only allows storing addresses it considers complete.
   int incomplete_fields_a = GetAddressEditorCompletenessRating(a);
@@ -202,9 +203,9 @@ int CompletenessCompareAddresses(
 bool CompletenessCompareShippingAddresses(
     const CollectUserDataOptions& options,
     const autofill::AutofillProfile& a,
-    const std::map<field_formatter::Key, std::string>& data_a,
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
     const autofill::AutofillProfile& b,
-    const std::map<field_formatter::Key, std::string>& data_b) {
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   int address_compare = CompletenessCompareAddresses(
       options.required_shipping_address_data_pieces, a, data_a, b, data_b);
   if (address_compare != 0) {
@@ -221,9 +222,9 @@ bool CompletenessCompareShippingAddresses(
 bool CompletenessComparePaymentInstruments(
     const CollectUserDataOptions& options,
     const PaymentInstrument& a,
-    const std::map<field_formatter::Key, std::string>& data_a,
+    const base::flat_map<field_formatter::Key, std::string>& data_a,
     const PaymentInstrument& b,
-    const std::map<field_formatter::Key, std::string>& data_b) {
+    const base::flat_map<field_formatter::Key, std::string>& data_b) {
   DCHECK(a.card);
   DCHECK(b.card);
   int incomplete_fields_a =
@@ -285,14 +286,15 @@ std::vector<std::string> GetContactValidationErrors(
   return GetValidationErrors(
       profile
           ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-          : std::map<field_formatter::Key, std::string>(),
+          : base::flat_map<field_formatter::Key, std::string>(),
       collect_user_data_options.required_contact_data_pieces);
 }
 
 std::vector<int> SortContactsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  std::vector<std::map<field_formatter::Key, std::string>> mapped_profiles;
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
+      mapped_profiles;
   for (const auto& profile : profiles) {
     mapped_profiles.push_back(
         field_formatter::CreateAutofillMappings(*profile, kDefaultLocale));
@@ -342,7 +344,7 @@ std::vector<std::string> GetShippingAddressValidationErrors(
     errors = GetValidationErrors(
         profile
             ? field_formatter::CreateAutofillMappings(*profile, kDefaultLocale)
-            : std::map<field_formatter::Key, std::string>(),
+            : base::flat_map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_shipping_address_data_pieces);
   }
 
@@ -361,7 +363,8 @@ std::vector<std::string> GetShippingAddressValidationErrors(
 std::vector<int> SortShippingAddressesByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<autofill::AutofillProfile>>& profiles) {
-  std::vector<std::map<field_formatter::Key, std::string>> mapped_profiles;
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
+      mapped_profiles;
   for (const auto& profile : profiles) {
     mapped_profiles.push_back(
         field_formatter::CreateAutofillMappings(*profile, kDefaultLocale));
@@ -402,7 +405,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const auto& card_errors = GetValidationErrors(
         credit_card ? field_formatter::CreateAutofillMappings(*credit_card,
                                                               kDefaultLocale)
-                    : std::map<field_formatter::Key, std::string>(),
+                    : base::flat_map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_credit_card_data_pieces);
     errors.insert(errors.end(), card_errors.begin(), card_errors.end());
   }
@@ -414,7 +417,7 @@ std::vector<std::string> GetPaymentInstrumentValidationErrors(
     const auto& address_errors = GetValidationErrors(
         billing_address ? field_formatter::CreateAutofillMappings(
                               *billing_address, kDefaultLocale)
-                        : std::map<field_formatter::Key, std::string>(),
+                        : base::flat_map<field_formatter::Key, std::string>(),
         collect_user_data_options.required_billing_address_data_pieces);
     errors.insert(errors.end(), address_errors.begin(), address_errors.end());
   }
@@ -446,14 +449,14 @@ std::vector<int> SortPaymentInstrumentsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<PaymentInstrument>>&
         payment_instruments) {
-  std::vector<std::map<field_formatter::Key, std::string>>
+  std::vector<base::flat_map<field_formatter::Key, std::string>>
       mapped_payment_instruments;
   for (const auto& payment_instrument : payment_instruments) {
-    std::map<field_formatter::Key, std::string> mapped_payment_instrument =
-        field_formatter::CreateAutofillMappings(*payment_instrument->card,
-                                                kDefaultLocale);
+    base::flat_map<field_formatter::Key, std::string>
+        mapped_payment_instrument = field_formatter::CreateAutofillMappings(
+            *payment_instrument->card, kDefaultLocale);
     if (payment_instrument->billing_address != nullptr) {
-      std::map<field_formatter::Key, std::string> mapped_address =
+      base::flat_map<field_formatter::Key, std::string> mapped_address =
           field_formatter::CreateAutofillMappings(
               *payment_instrument->billing_address, kDefaultLocale);
       mapped_payment_instrument.insert(mapped_address.begin(),

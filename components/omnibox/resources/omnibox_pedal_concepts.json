@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-10-20T21:14:08.142Z",
+  "time_generated": "2021-10-14T21:10:03.244Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -208,9 +208,9 @@
       "id": 26,
       "name": "CLOSE_INCOGNITO_WINDOWS",
       "enabled": true,
-      "url": "",
+      "url": "batch3",
       "description": "Close incognito browser windows\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_HINT\nIDS_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_CLOSE_INCOGNITO_WINDOWS",
-      "tags": "no_test,incognito,batch3"
+      "tags": "no_test,incognito"
     },
     {
       "id": 27,
@@ -9387,12 +9387,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Clear browsing data",
+            "button_text": "",
             "description_text": "Clear your browsing history, cookies, cache, and more in Chrome settings",
             "spoken_suggestion_description_suffix": "$1, press Tab then Enter to Clear your browsing history, cookies, cache, and more in Chrome settings",
             "spoken_button_focus_announcement": "Clear browsing data button, press Enter to clear your browsing history, cookies, cache, and more in Chrome settings"
           },
-          "date_modified_omnibox_ui_strings": "2021-10-20T18:20:30.389Z"
+          "date_modified_omnibox_ui_strings": "2021-03-20T02:13:41.238Z"
         },
         {
           "id": 2,
@@ -9432,12 +9432,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Manage passwords",
-            "description_text": "View and manage your passwords in Chrome settings",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to view and manage your passwords in Chrome settings",
-            "spoken_button_focus_announcement": "Manage passwords button, press Enter to view and manage your passwords in Chrome settings"
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
           },
-          "date_modified_omnibox_ui_strings": "2021-10-20T18:22:10.700Z"
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         },
         {
           "id": 3,
@@ -9482,12 +9482,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Manage payment methods",
-            "description_text": "Manage your payments and credit card info in Chrome settings",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to manage your payments and credit card info in Chrome settings",
-            "spoken_button_focus_announcement": "Manage payment methods button, press Enter to manage your payments and credit card info in Chrome settings"
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
           },
-          "date_modified_omnibox_ui_strings": "2021-10-20T18:23:01.221Z"
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         },
         {
           "id": 4,
@@ -9529,12 +9529,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Open Incognito window",
-            "description_text": "Open a new Incognito window to browse privately",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to open a new Incognito window to browse privately",
-            "spoken_button_focus_announcement": "Open Incognito Window button, press Enter to open a new Incognito window to browse privately"
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
           },
-          "date_modified_omnibox_ui_strings": "2021-10-20T18:23:51.338Z"
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         },
         {
           "id": 5,
@@ -9571,12 +9571,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Translate page",
-            "description_text": "Translate this page with Google Translate",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to translate this page with Google Translate",
-            "spoken_button_focus_announcement": "Translate page button, press Enter to translate this page with Google Translate"
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
           },
-          "date_modified_omnibox_ui_strings": "2021-10-20T18:24:25.273Z"
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         },
         {
           "id": 6,
@@ -9604,12 +9604,12 @@
           "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
-            "button_text": "Update Chrome",
-            "description_text": "Update Chrome from your Chrome settings",
-            "spoken_suggestion_description_suffix": "$1, press Tab then Enter to update Chrome from your Chrome settings",
-            "spoken_button_focus_announcement": "Update Chrome button, press Enter to update Chrome from your Chrome settings"
+            "button_text": "",
+            "description_text": "",
+            "spoken_suggestion_description_suffix": "$1",
+            "spoken_button_focus_announcement": ""
           },
-          "date_modified_omnibox_ui_strings": "2021-10-20T18:25:09.824Z"
+          "date_modified_omnibox_ui_strings": "1991-03-19T00:00:00+0000"
         },
         {
           "id": 7,
@@ -10552,10 +10552,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "close incognito window",
-            "end incognito"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Close all Incognito windows",
@@ -10585,11 +10582,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "play dino run",
-            "chrome dino",
-            "dino game"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Play Chrome Dino game",
@@ -10628,10 +10621,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "find lost phone",
-            "find my device"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Find your phone",
@@ -10664,10 +10654,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "manage google privacy",
-            "change google privacy settings"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage Google Account privacy settings",
@@ -10703,7 +10690,7 @@
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage my Google Ad Settings",
             "description_text": "Manage my Google Ad Settings",
@@ -10741,10 +10728,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "manage settings",
-            "change chrome settings"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage settings",
@@ -10785,10 +10769,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "manage chrome downloads",
-            "view downloads"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage downloads",
@@ -10825,10 +10806,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "see chrome history",
-            "view browsing history"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "View your Chrome history",
@@ -10852,7 +10830,6 @@
                 "share this page",
                 "cast this page",
                 "save this page",
-                "share this tab",
                 "save page as",
                 "cast screen",
                 "share link",
@@ -10864,10 +10841,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "share this page",
-            "share this tab"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Share this tab",
@@ -10909,10 +10883,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "manage accessibility settings",
-            "customize chrome accessibility"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Manage accessibility settings",
@@ -10961,8 +10932,7 @@
             }
           ],
           "cover_cases": [
-            "chrome fonts",
-            "change browser font"
+            "chrome fonts"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -11002,10 +10972,7 @@
               ]
             }
           ],
-          "cover_cases": [
-            "customize chrome appearance",
-            "manage chrome themes"
-          ],
+          "cover_cases": [],
           "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "Customize Chrome",
@@ -11057,8 +11024,7 @@
           ],
           "cover_cases": [
             "add custom search",
-            "manage search engines",
-            "search engines"
+            "manage search engines"
           ],
           "enabled": true,
           "omnibox_ui_strings": {
@@ -11090,7 +11056,6 @@
               "synonyms": [
                 "accessibility settings",
                 "accessibility features",
-                "chromeos accessibility",
                 "assistive technology",
                 "chrome accessibility",
                 "low vision settings",
@@ -11103,8 +11068,7 @@
             }
           ],
           "cover_cases": [
-            "manage accessibility settings",
-            "customize chromeos accessibility"
+            "manage chromeos accessibility"
           ],
           "enabled": true,
           "omnibox_ui_strings": {

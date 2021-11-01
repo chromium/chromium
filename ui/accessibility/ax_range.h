@@ -14,18 +14,22 @@
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
+#include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_offscreen_result.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 
 namespace ui {
 
-// Specifies how AXRange::GetText treats line breaks introduced by layout.
-// For example, consider the following HTML snippet: "A<div>B</div>C".
+// Specifies how AXRange::GetText treats any formatting changes, such as
+// paragraph breaks, that have been introduced by layout. For example, consider
+// the following HTML snippet: "A<div>B</div>C".
 enum class AXTextConcatenationBehavior {
-  // Preserve any introduced line breaks, e.g. GetText = "A\nB\nC".
+  // Preserve any introduced formatting, line breaks, e.g. GetText = "A\nB\nC".
   kAsInnerText,
-  // Ignore any introduced line breaks, e.g. GetText = "ABC".
+  // Ignore any introduced formatting, such as line breaks, e.g. GetText =
+  // "ABC".
   kAsTextContent
 };
 
@@ -51,6 +55,15 @@ template <class AXPositionType>
 class AXRange {
  public:
   using AXPositionInstance = std::unique_ptr<AXPositionType>;
+
+  // Creates an `AXRange` encompassing the contents of the given `AXNode`.
+  static AXRange RangeOfContents(const AXNode& node) {
+    AXPositionInstance start_position = AXNodePosition::CreatePosition(
+        node, /* child_index_or_text_offset */ 0);
+    AXPositionInstance end_position =
+        start_position->CreatePositionAtEndOfAnchor();
+    return AXRange(std::move(start_position), std::move(end_position));
+  }
 
   AXRange()
       : anchor_(AXPositionType::CreateNullPosition()),

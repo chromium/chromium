@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
+#include "third_party/blink/renderer/core/css/css_container_values.h"
 #include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
@@ -68,12 +70,13 @@ void ContainerQueryEvaluator::Add(const ContainerQuery& query, bool result) {
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ContainerChanged(
+    Document& document,
     PhysicalSize size,
     PhysicalAxes contained_axes) {
   if (size_ == size && contained_axes_ == contained_axes)
     return Change::kNone;
 
-  SetData(size, contained_axes);
+  SetData(document, size, contained_axes);
 
   Change change = ComputeChange();
 
@@ -92,15 +95,16 @@ void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(results_);
 }
 
-void ContainerQueryEvaluator::SetData(PhysicalSize size,
+void ContainerQueryEvaluator::SetData(Document& document,
+                                      PhysicalSize size,
                                       PhysicalAxes contained_axes) {
   size_ = size;
   contained_axes_ = contained_axes;
 
-  auto* cached_values = MakeGarbageCollected<MediaValuesCached>();
-  cached_values->OverrideViewportDimensions(size_.width, size_.height);
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      document, size.width.ToDouble(), size.height.ToDouble());
   media_query_evaluator_ =
-      MakeGarbageCollected<MediaQueryEvaluator>(*cached_values);
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
 
 void ContainerQueryEvaluator::ClearResults() {
