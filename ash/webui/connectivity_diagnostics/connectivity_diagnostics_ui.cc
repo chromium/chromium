@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/connectivity_diagnostics/connectivity_diagnostics_ui.h"
+#include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 
 #include <utility>
 
+#include "ash/grit/connectivity_diagnostics_resources.h"
+#include "ash/grit/connectivity_diagnostics_resources_map.h"
+#include "ash/webui/connectivity_diagnostics/url_constants.h"
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
-#include "chromeos/components/connectivity_diagnostics/url_constants.h"
-#include "chromeos/grit/connectivity_diagnostics_resources.h"
-#include "chromeos/grit/connectivity_diagnostics_resources_map.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -19,7 +19,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -132,8 +132,8 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   source->AddLocalizedString("closeBtn", IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE);
   source->AddLocalizedString("sendFeedbackBtn",
                              IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK);
-  network_diagnostics::AddResources(source);
-  network_health::AddResources(source);
+  chromeos::network_diagnostics::AddResources(source);
+  chromeos::network_health::AddResources(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
@@ -143,16 +143,17 @@ ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;
 
 void ConnectivityDiagnosticsUI::BindInterface(
     mojo::PendingReceiver<
-        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+        chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+        receiver) {
   bind_network_diagnostics_service_callback_.Run(std::move(receiver));
 }
 
 void ConnectivityDiagnosticsUI::BindInterface(
-    mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
+    mojo::PendingReceiver<chromeos::network_health::mojom::NetworkHealthService>
         receiver) {
   bind_network_health_service_callback_.Run(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ConnectivityDiagnosticsUI)
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Connectivity Diagnostics is Chrome OS only")
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 static_library("connectivity_diagnostics") {
   sources = [
@@ -15,8 +17,8 @@ static_library("connectivity_diagnostics") {
   deps = [
     "//ash/webui/network_ui:network_diagnostics_resource_provider",
     "//ash/webui/network_ui:network_health_resource_provider",
+    "//ash/webui/resources:connectivity_diagnostics_resources",
     "//chromeos/components/web_applications",
-    "//chromeos/resources:connectivity_diagnostics_resources",
     "//chromeos/services/network_health/public/mojom:mojom",
     "//chromeos/strings/",
     "//content/public/browser",

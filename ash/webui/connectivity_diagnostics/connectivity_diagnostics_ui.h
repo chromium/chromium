@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
-#define CHROMEOS_COMPONENTS_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
+#ifndef ASH_WEBUI_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
+#define ASH_WEBUI_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
 
 #include <string>
 
@@ -13,16 +13,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
-namespace chromeos {
+namespace ash {
 
 class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
  public:
   using BindNetworkDiagnosticsServiceCallback = base::RepeatingCallback<void(
       mojo::PendingReceiver<
-          network_diagnostics::mojom::NetworkDiagnosticsRoutines>)>;
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>)>;
 
   using BindNetworkHealthServiceCallback = base::RepeatingCallback<void(
-      mojo::PendingReceiver<network_health::mojom::NetworkHealthService>)>;
+      mojo::PendingReceiver<
+          chromeos::network_health::mojom::NetworkHealthService>)>;
 
   using SendFeedbackReportCallback =
       base::RepeatingCallback<void(const std::string& extra_diagnostics)>;
@@ -42,13 +43,14 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
   // interface passing the pending receiver that will be bound.
   void BindInterface(
       mojo::PendingReceiver<
-          network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver);
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          receiver);
 
   // Instantiates implementation of the mojom::NetworkHealthService mojo
   // interface passing the pending receiver that will be bound.
   void BindInterface(
-      mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
-          receiver);
+      mojo::PendingReceiver<
+          chromeos::network_health::mojom::NetworkHealthService> receiver);
 
  private:
   const BindNetworkDiagnosticsServiceCallback
@@ -61,6 +63,6 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_COMPONENTS_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
+#endif  // ASH_WEBUI_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_

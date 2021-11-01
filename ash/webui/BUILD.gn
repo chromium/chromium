@@ -62,6 +62,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     "//ash/webui/camera_app_ui:closure_compile",
+    "//ash/webui/connectivity_diagnostics:closure_compile",
     "//ash/webui/diagnostics_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
     "//ash/webui/file_manager/resources:closure_compile",
