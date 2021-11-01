@@ -3890,8 +3890,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 // Tests that a fling in the opposite direction of the overscroll cancels the
 // overscroll instead of completing it.
 // Flaky on Fuchsia:  http://crbug.com/810690.
-#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 #define MAYBE_ReverseFlingCancelsOverscroll \
   DISABLED_ReverseFlingCancelsOverscroll
 #else
@@ -4400,9 +4399,8 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollWithTouchEvents) {
 
 // Tests that touch-gesture end is dispatched to the renderer at the end of a
 // touch-gesture initiated overscroll.
-// TODO(crbug.com/776424): Disabled due to flakiness on Fuchsia and Linux tsan.
 TEST_F(RenderWidgetHostViewAuraOverscrollTest,
-       DISABLED_TouchGestureEndDispatchedAfterOverscrollComplete) {
+       TouchGestureEndDispatchedAfterOverscrollComplete) {
   SetUpOverscrollEnvironmentWithDebounce(10);
   auto touch_event_consumers = blink::mojom::TouchEventConsumers::New(
       HasTouchEventHandlers(true), HasHitTestableScrollbar(false));
