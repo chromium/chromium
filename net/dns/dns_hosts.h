@@ -66,11 +66,32 @@ void NET_EXPORT_PRIVATE ParseHostsWithCommaModeForTesting(
 void NET_EXPORT_PRIVATE ParseHosts(const std::string& contents,
                                    DnsHosts* dns_hosts);
 
-// As above but reads the file pointed to by |path|.
-bool NET_EXPORT_PRIVATE ParseHostsFile(const base::FilePath& path,
-                                       DnsHosts* dns_hosts);
+// Test-injectable HOSTS parser.
+class NET_EXPORT_PRIVATE DnsHostsParser {
+ public:
+  virtual ~DnsHostsParser();
 
+  // Parses HOSTS and stores results in `dns_hosts`, with addresses in the order
+  // in which they were read. Invalid lines are ignored (as in most
+  // implementations).
+  virtual bool ParseHosts(DnsHosts* hosts) const = 0;
+};
 
+// Implementation of `DnsHostsParser` that reads HOSTS from a given file.
+class NET_EXPORT_PRIVATE DnsHostsFileParser : public DnsHostsParser {
+ public:
+  explicit DnsHostsFileParser(base::FilePath hosts_file_path);
+  ~DnsHostsFileParser() override;
+
+  DnsHostsFileParser(const DnsHostsFileParser&) = delete;
+  DnsHostsFileParser& operator=(const DnsHostsFileParser&) = delete;
+
+  // DnsHostsParser:
+  bool ParseHosts(DnsHosts* dns_hosts) const override;
+
+ private:
+  const base::FilePath hosts_file_path_;
+};
 
 }  // namespace net
 
