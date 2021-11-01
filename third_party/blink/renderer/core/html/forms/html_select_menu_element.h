@@ -52,13 +52,13 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void CloseListbox();
   void UpdatePartElements();
 
-  Element* FirstOptionPart() const;
+  HTMLOptionElement* FirstOptionPart() const;
   Element* FirstValidButtonPart() const;
   Element* FirstValidListboxPart() const;
   Element* FirstValidSelectedValuePart() const;
   void EnsureSelectedOptionIsValid();
   Element* SelectedOption();
-  void SetSelectedOption(Element* selected_option);
+  void SetSelectedOption(HTMLOptionElement* selected_option);
   void SelectNextOption();
   void SelectPreviousOption();
   void UpdateSelectedValuePartContents();
@@ -72,8 +72,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void ListboxPartInserted(Element*);
   void ListboxPartRemoved(Element*);
   void UpdateListboxPart();
-  void OptionPartInserted(Element*);
-  void OptionPartRemoved(Element*);
+  void OptionPartInserted(HTMLOptionElement*);
+  void OptionPartRemoved(HTMLOptionElement*);
   void ResetOptionParts();
 
   bool IsValidButtonPart(const Node* node, bool show_warning) const;
@@ -125,7 +125,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
   static constexpr char kButtonPartName[] = "button";
   static constexpr char kSelectedValuePartName[] = "selected-value";
   static constexpr char kListboxPartName[] = "listbox";
-  static constexpr char kOptionPartName[] = "option";
 
   Member<ButtonPartEventListener> button_part_listener_;
   Member<OptionPartEventListener> option_part_listener_;
@@ -135,10 +134,10 @@ class CORE_EXPORT HTMLSelectMenuElement final
   Member<Element> button_part_;
   Member<Element> selected_value_part_;
   Member<HTMLPopupElement> listbox_part_;
-  HeapLinkedHashSet<Member<Element>> option_parts_;
+  HeapLinkedHashSet<Member<HTMLOptionElement>> option_parts_;
   Member<HTMLSlotElement> button_slot_;
   Member<HTMLSlotElement> listbox_slot_;
-  Member<Element> selected_option_;
+  Member<HTMLOptionElement> selected_option_;
 };
 
 }  // namespace blink

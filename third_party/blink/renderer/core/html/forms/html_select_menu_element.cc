@@ -131,8 +131,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartInserted(
     select_->SelectedValuePartInserted(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartInserted(element);
-  } else if (part_name == kOptionPartName || IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartInserted(element);
+  } else if (IsA<HTMLOptionElement>(element)) {
+    select_->OptionPartInserted(DynamicTo<HTMLOptionElement>(element));
   }
 }
 
@@ -146,8 +146,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::PartRemoved(
     select_->SelectedValuePartRemoved(element);
   } else if (part_name == kListboxPartName) {
     select_->ListboxPartRemoved(element);
-  } else if (part_name == kOptionPartName || IsA<HTMLOptionElement>(element)) {
-    select_->OptionPartRemoved(element);
+  } else if (IsA<HTMLOptionElement>(element)) {
+    select_->OptionPartRemoved(DynamicTo<HTMLOptionElement>(element));
   }
 }
 
@@ -159,6 +159,8 @@ void HTMLSelectMenuElement::SelectMutationCallback::SlotChanged(
   } else if (slot_name == kButtonPartName) {
     select_->UpdateButtonPart();
     select_->UpdateSelectedValuePart();
+  } else if (slot_name.IsEmpty()) {
+    select_->ResetOptionParts();
   }
 }
 
@@ -193,7 +195,8 @@ HTMLSelectMenuElement::PartType HTMLSelectMenuElement::AssignedPartType(
     return PartType::kButton;
   } else if (node == listbox_part_) {
     return PartType::kListBox;
-  } else if (option_parts_.Contains(DynamicTo<Element>(node))) {
+  } else if (IsA<HTMLOptionElement>(node) &&
+             option_parts_.Contains(DynamicTo<HTMLOptionElement>(node))) {
     return PartType::kOption;
   }
 
@@ -419,9 +422,7 @@ bool HTMLSelectMenuElement::IsValidListboxPart(const Node* node,
 bool HTMLSelectMenuElement::IsValidOptionPart(const Node* node,
                                               bool show_warning) const {
   auto* element = DynamicTo<Element>(node);
-  if (!element ||
-      (element->getAttribute(html_names::kPartAttr) != kOptionPartName &&
-       !IsA<HTMLOptionElement>(element))) {
+  if (!element || !IsA<HTMLOptionElement>(element)) {
     return false;
   }
 
@@ -580,12 +581,13 @@ void HTMLSelectMenuElement::ResetOptionParts() {
   for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
        node = SelectMenuPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
-      OptionPartInserted(DynamicTo<Element>(node));
+      OptionPartInserted(DynamicTo<HTMLOptionElement>(node));
     }
   }
 }
 
-void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
+void HTMLSelectMenuElement::OptionPartInserted(
+    HTMLOptionElement* new_option_part) {
   if (!IsValidOptionPart(new_option_part, /*show_warning=*/true)) {
     return;
   }
@@ -619,7 +621,7 @@ void HTMLSelectMenuElement::OptionPartInserted(Element* new_option_part) {
   }
 }
 
-void HTMLSelectMenuElement::OptionPartRemoved(Element* option_part) {
+void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
   if (!option_parts_.Contains(option_part)) {
     return;
   }
@@ -647,14 +649,14 @@ void HTMLSelectMenuElement::OptionPartRemoved(Element* option_part) {
   }
 }
 
-Element* HTMLSelectMenuElement::FirstOptionPart() const {
+HTMLOptionElement* HTMLSelectMenuElement::FirstOptionPart() const {
   // TODO(crbug.com/1121840) This is going to be replaced by an option part
   // list iterator, or we could reuse OptionListIterator if we decide that just
   // <option>s are supported as option parts.
   for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
        node = SelectMenuPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
-      return DynamicTo<Element>(node);
+      return DynamicTo<HTMLOptionElement>(node);
     }
   }
 
@@ -677,7 +679,8 @@ Element* HTMLSelectMenuElement::SelectedOption() {
   return selected_option_;
 }
 
-void HTMLSelectMenuElement::SetSelectedOption(Element* selected_option) {
+void HTMLSelectMenuElement::SetSelectedOption(
+    HTMLOptionElement* selected_option) {
   if (selected_option_ == selected_option)
     return;
 
@@ -690,7 +693,7 @@ void HTMLSelectMenuElement::SelectNextOption() {
   for (Node* node = SelectMenuPartTraversal::Next(*SelectedOption(), this);
        node; node = SelectMenuPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
-      auto* element = DynamicTo<Element>(node);
+      auto* element = DynamicTo<HTMLOptionElement>(node);
       SetSelectedOption(element);
       element->focus();
       return;
@@ -702,7 +705,7 @@ void HTMLSelectMenuElement::SelectPreviousOption() {
   for (Node* node = SelectMenuPartTraversal::Previous(*SelectedOption(), this);
        node; node = SelectMenuPartTraversal::Previous(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
-      auto* element = DynamicTo<Element>(node);
+      auto* element = DynamicTo<HTMLOptionElement>(node);
       SetSelectedOption(element);
       element->focus();
       return;
@@ -750,8 +753,8 @@ void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
 void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
                                                             Event* event) {
   if (event->type() == event_type_names::kClick) {
-    Element* target_element =
-        DynamicTo<Element>(event->currentTarget()->ToNode());
+    auto* target_element =
+        DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
     DCHECK(target_element);
     DCHECK(select_menu_element_->option_parts_.Contains(target_element));
     select_menu_element_->SetSelectedOption(target_element);
@@ -763,8 +766,8 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
       return;
     switch (keyboard_event->keyCode()) {
       case VKEY_RETURN: {
-        Element* target_element =
-            DynamicTo<Element>(event->currentTarget()->ToNode());
+        auto* target_element =
+            DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
         DCHECK(target_element);
         DCHECK(select_menu_element_->option_parts_.Contains(target_element));
         select_menu_element_->SetSelectedOption(target_element);
@@ -836,6 +839,5 @@ void HTMLSelectMenuElement::Trace(Visitor* visitor) const {
 constexpr char HTMLSelectMenuElement::kButtonPartName[];
 constexpr char HTMLSelectMenuElement::kSelectedValuePartName[];
 constexpr char HTMLSelectMenuElement::kListboxPartName[];
-constexpr char HTMLSelectMenuElement::kOptionPartName[];
 
 }  // namespace blink

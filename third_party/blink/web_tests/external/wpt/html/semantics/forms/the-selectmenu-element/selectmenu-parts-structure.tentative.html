@@ -10,12 +10,11 @@
 
 <selectmenu id="selectMenu0">
   <popup slot="listbox" part="listbox">
-    <option>one</option>
+    <option id="selectMenu0-child1">one</option>
     <option id="selectMenu0-child2">two</option>
     <div part="option" id="selectMenu0-child3">three</div>
   </popup>
   <option id="selectMenu0-child4">four</option>
-  <div part="option" id="selectMenu0-child5">five</div>
 </selectmenu>
 
 <selectmenu id="selectMenu1">
@@ -98,7 +97,7 @@
 </selectmenu>
 
 <selectmenu id="selectMenu10">
-  <div slot="button" id="selectMenu10-div">Test 10</div>
+  <option slot="button" id="selectMenu10-slottedOption">Test 10</option>
   <option>one</option>
   <option id="selectMenu10-option2">two</option>
 </selectmenu>
@@ -121,10 +120,9 @@
 
   promise_test(async () => {
     const selectMenu0 = document.getElementById("selectMenu0");
+    const selectMenu0Child1 = document.getElementById("selectMenu0-child1");
     const selectMenu0Child2 = document.getElementById("selectMenu0-child2");
     const selectMenu0Child3 = document.getElementById("selectMenu0-child3");
-    const selectMenu0Child4 = document.getElementById("selectMenu0-child4");
-    const selectMenu0Child5 = document.getElementById("selectMenu0-child5");
     assert_equals(selectMenu0.value, "one");
     await clickOn(selectMenu0);
     await clickOn(selectMenu0Child2);
@@ -132,16 +130,24 @@
 
     await clickOn(selectMenu0);
     await clickOn(selectMenu0Child3);
-    assert_equals(selectMenu0.value, "three");
+    assert_equals(selectMenu0.value, "two", "Clicking a non-HTMLOptionElement labeled as an option should do nothing");
 
+    await clickOn(selectMenu0Child1);
+    assert_equals(selectMenu0.value, "one");
+    assert_false(selectMenu0.open);
+  }, "HTMLOptionElements (and not other element types) should receive option controller code");
+
+
+  promise_test(async () => {
+    const selectMenu0 = document.getElementById("selectMenu0");
+    const selectMenu0Child4 = document.getElementById("selectMenu0-child4");
+
+    assert_equals(selectMenu0.value, "one");
     await clickOn(selectMenu0);
+    assert_true(selectMenu0.open);
     selectMenu0Child4.click();
-    assert_equals(selectMenu0.value, "three", "Clicking an option outside of the popup should not change the value");
-
-    await clickOn(selectMenu0);
-    selectMenu0Child5.click();
-    assert_equals(selectMenu0.value, "three", "Clicking an option part outside of the popup should not change the value");
-  }, "To receive option part controller code, an element labeled as an option must be a descendant of the listbox part in a flat tree traversal");
+    assert_equals(selectMenu0.value, "one", "Clicking an option outside of the popup should not change the value");
+  }, "To receive option part controller code, an option must be a descendant of the listbox part in a flat tree traversal");
 
   promise_test(async () => {
     const selectMenu1 = document.getElementById("selectMenu1");
@@ -276,23 +282,23 @@ promise_test(async () => {
 
   promise_test(async () => {
     const selectMenu = document.getElementById("selectMenu10");
-    const selectMenu10Div = document.getElementById("selectMenu10-div");
+    const selectMenu10SlottedOption = document.getElementById("selectMenu10-slottedOption");
 
-    await clickOn(selectMenu10Div);
+    await clickOn(selectMenu10SlottedOption);
     assert_false(selectMenu.open, "Controller code not applied due to part attribute missing");
-    selectMenu10Div.part = "button";
-    await clickOn(selectMenu10Div);
+    selectMenu10SlottedOption.part = "button";
+    await clickOn(selectMenu10SlottedOption);
     assert_true(selectMenu.open);
 
     const option2 = document.getElementById("selectMenu10-option2");
     await clickOn(option2);
     assert_equals(selectMenu.value, "two");
+    assert_false(selectMenu.open);
 
-    selectMenu10Div.slot = "";
+    selectMenu10SlottedOption.slot = "";
     await clickOn(selectMenu);
     assert_true(selectMenu.open, "Default button part should be used");
-    selectMenu10Div.part = "option";
-    await clickOn(selectMenu10Div);
+    await clickOn(selectMenu10SlottedOption);
     assert_equals(selectMenu.value, "Test 10");
   }, "Ensure that controller code is applied after updating the slot attribute");
 
