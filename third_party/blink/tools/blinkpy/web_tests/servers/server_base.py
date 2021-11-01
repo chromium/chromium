@@ -314,13 +314,20 @@ class ServerBase(object):
             raise ServerError('Server exited')
 
         for mapping in self._mappings:
-            s = socket.socket()
             port = mapping['port']
             scheme = mapping['scheme']
             if scheme == 'webtransport-h3':
                 if not _is_webtransport_h3_server_running(port):
+                    _log.log(failure_log_level,
+                             'WebTransportH3 server NOT running on '\
+                             'https://localhost:%d', port)
                     return False
+                _log.log(
+                    success_log_level,
+                    'WebTransportH3 server running on https://localhost:%d',
+                    port)
                 continue
+            s = socket.socket()
             try:
                 s.connect(('localhost', port))
                 _log.log(success_log_level,
