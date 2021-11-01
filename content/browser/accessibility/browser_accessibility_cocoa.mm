@@ -40,8 +40,6 @@
 
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 
-using AXTextMarkerRangeRef = CFTypeRef;
-using AXTextMarkerRef = CFTypeRef;
 using StringAttribute = ax::mojom::StringAttribute;
 using content::AccessibilityMatchPredicate;
 using content::BrowserAccessibility;
@@ -249,33 +247,29 @@ NSDictionary* attributeToMethodNameMap = nil;
 // VoiceOver uses -1 to mean "no limit" for AXResultsLimit.
 const int kAXResultsLimitNoLimit = -1;
 
-extern "C" {
-
 // The following are private accessibility APIs required for cursor navigation
 // and text selection. VoiceOver started relying on them in Mac OS X 10.11.
+// They are public as of the 12.0 SDK.
+#if !defined(MAC_OS_VERSION_12_0) || \
+    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
+using AXTextMarkerRangeRef = CFTypeRef;
+using AXTextMarkerRef = CFTypeRef;
+extern "C" {
 CFTypeID AXTextMarkerGetTypeID();
-
-AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef allocator,
+AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef,
                                    const UInt8* bytes,
                                    CFIndex length);
-
-const UInt8* AXTextMarkerGetBytePtr(AXTextMarkerRef text_marker);
-
-size_t AXTextMarkerGetLength(AXTextMarkerRef text_marker);
+size_t AXTextMarkerGetLength(AXTextMarkerRef);
+const UInt8* AXTextMarkerGetBytePtr(AXTextMarkerRef);
 
 CFTypeID AXTextMarkerRangeGetTypeID();
-
-AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef allocator,
-                                             AXTextMarkerRef start_marker,
-                                             AXTextMarkerRef end_marker);
-
-AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(
-    AXTextMarkerRangeRef text_marker_range);
-
-AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(
-    AXTextMarkerRangeRef text_marker_range);
-
+AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef,
+                                             AXTextMarkerRef start,
+                                             AXTextMarkerRef end);
+AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(AXTextMarkerRangeRef);
+AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(AXTextMarkerRangeRef);
 }  // extern "C"
+#endif
 
 // AXTextMarkerCreate is a system function that makes a copy of the data buffer
 // given to it.
@@ -803,7 +797,8 @@ id content::AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
 
 id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   AXTextMarkerRangeRef cf_marker_range = AXTextMarkerRangeCreate(
-      kCFAllocatorDefault, anchor_textmarker, focus_textmarker);
+      kCFAllocatorDefault, static_cast<AXTextMarkerRef>(anchor_textmarker),
+      static_cast<AXTextMarkerRef>(focus_textmarker));
   return [static_cast<id>(cf_marker_range) autorelease];
 }
 
