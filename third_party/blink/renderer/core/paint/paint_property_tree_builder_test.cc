@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -4302,15 +4303,31 @@ TEST_P(PaintPropertyTreeBuilderTest,
     </div>
   )HTML");
 
-  LayoutObject* parent = GetLayoutObjectByElementId("parent");
-  // Parent has 1 fragment regardless of the overflowing child.
-  ASSERT_EQ(1u, NumFragments(parent));
+  const LayoutBox* parent = GetLayoutBoxByElementId("parent");
+
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    // The parent will need to generate 2 fragments, to hold child fragments
+    // that contribute to layout overflow.
+    ASSERT_EQ(2u, NumFragments(parent));
+    EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(parent, 1).PaintOffset());
+    // But since the #parent doesn't take up any space on its own in the second
+    // fragment, the block-size should be 0.
+    ASSERT_EQ(2u, parent->PhysicalFragmentCount());
+    EXPECT_EQ(LayoutUnit(100), parent->GetPhysicalFragment(0)->Size().height);
+    EXPECT_EQ(LayoutUnit(), parent->GetPhysicalFragment(1)->Size().height);
+  } else {
+    // Parent has 1 fragment regardless of the overflowing child.
+    ASSERT_EQ(1u, NumFragments(parent));
+  }
   EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(parent, 0).PaintOffset());
 
   LayoutObject* child = GetLayoutObjectByElementId("child");
   ASSERT_EQ(2u, NumFragments(child));
   EXPECT_EQ(PhysicalOffset(8, 8), FragmentAt(child, 0).PaintOffset());
-  EXPECT_EQ(PhysicalOffset(158, -92), FragmentAt(child, 1).PaintOffset());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    EXPECT_EQ(PhysicalOffset(158, 8), FragmentAt(child, 1).PaintOffset());
+  else
+    EXPECT_EQ(PhysicalOffset(158, -92), FragmentAt(child, 1).PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SpanFragmentsLimitedToSize) {
