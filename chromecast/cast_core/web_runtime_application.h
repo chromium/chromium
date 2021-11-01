@@ -27,26 +27,18 @@ class WebRuntimeApplication final : public RuntimeApplicationBase,
   // RuntimeApplicationBase implementation:
   void HandleMessage(const cast::web::Message& message,
                      cast::web::MessagePortStatus* response) override;
-  bool Load(const cast::runtime::LoadApplicationRequest& request) override;
-  void SetUrlRewriteRules(const cast::v2::SetUrlRewriteRulesRequest& request,
-                          cast::v2::SetUrlRewriteRulesResponse* response,
-                          GrpcMethod* callback) override;
-  CastWebView::Scoped CreateWebView(
-      CoreApplicationServiceGrpc* grpc_stub) override;
-  GURL ProcessWebView(CoreApplicationServiceGrpc* grpc_stub,
-                      CastWebContents* cast_web_contents) override;
 
-  // CastWebContentsObserver implementation:
+  GURL InitializeAndGetInitialURL(CoreApplicationServiceGrpc* grpc_stub,
+                                  CastWebContents* cast_web_contents) override;
+
+  // CastWebContents::Observer implementation:
   void RenderFrameCreated(int render_process_id,
                           int render_frame_id,
                           mojo::PendingAssociatedRemote<
                               chromecast::mojom::IdentificationSettingsManager>
                               settings_manager) override;
 
-  std::string app_url_;
-
   std::unique_ptr<BindingsManagerWebRuntime> bindings_manager_;
-  std::unique_ptr<UrlRewriteRulesAdapter> url_rewrite_adapter_;
 };
 
 }  // namespace chromecast

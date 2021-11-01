@@ -15,6 +15,7 @@
 #include "chromecast/cast_core/runtime_application.h"
 #include "chromecast/cast_core/runtime_application_service_grpc_impl.h"
 #include "chromecast/cast_core/runtime_message_port_application_service_grpc_impl.h"
+#include "chromecast/cast_core/url_rewrite_rules_adapter.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
 
 namespace chromecast {
@@ -40,21 +41,6 @@ class RuntimeApplicationBase
                          CastWebService* web_service,
                          scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // Processes an incoming |message|, returning the status of this processing in
-  // |response| after being received over gRPC.
-  virtual void HandleMessage(const cast::web::Message& message,
-                             cast::web::MessagePortStatus* response) = 0;
-
-  // Called when a new CastWebView is created.
-  virtual CastWebView::Scoped CreateWebView(
-      CoreApplicationServiceGrpc* grpc_stub);
-
-  // Called following the creation of a CastWebView, with which
-  // |cast_web_contents  is associated. Returns the GURL to which the
-  // CastWebView should navigate.
-  virtual GURL ProcessWebView(CoreApplicationServiceGrpc* grpc_stub,
-                              CastWebContents* cast_web_contents) = 0;
-
   // Stops the running application. Must be called before destruction of any
   // instance of the implementing object.
   virtual void StopApplication();
@@ -63,6 +49,7 @@ class RuntimeApplicationBase
   // application-specific.
   void SetApplicationStarted();
 
+  // Returns current TaskRunner.
   scoped_refptr<base::SequencedTaskRunner> task_runner() {
     return task_runner_;
   }
@@ -70,16 +57,36 @@ class RuntimeApplicationBase
   // Returns a pointer to CastWebService.
   CastWebService* cast_web_service() const { return web_service_; }
 
-  // RuntimeApplication implementation:
-  bool Load(const cast::runtime::LoadApplicationRequest& request) override;
-  bool Launch(const cast::runtime::LaunchApplicationRequest& request) override;
+  // Returns UrlRewriteAdapter.
+  UrlRewriteRulesAdapter* url_rewrite_adapter() {
+    return url_rewrite_adapter_.get();
+  }
 
   // RuntimeApplicationServiceDelegate implementation:
   void SetUrlRewriteRules(const cast::v2::SetUrlRewriteRulesRequest& request,
                           cast::v2::SetUrlRewriteRulesResponse* response,
                           GrpcMethod* callback) override;
 
+  // Processes an incoming |message|, returning the status of this processing in
+  // |response| after being received over gRPC.
+  virtual void HandleMessage(const cast::web::Message& message,
+                             cast::web::MessagePortStatus* response) = 0;
+
+  // Called following the creation of a CastWebView, with which
+  // |cast_web_contents  is associated. Returns the GURL to which the
+  // CastWebView should navigate.
+  virtual GURL InitializeAndGetInitialURL(
+      CoreApplicationServiceGrpc* grpc_stub,
+      CastWebContents* cast_web_contents) = 0;
+
  private:
+  // RuntimeApplication implementation:
+  bool Load(const cast::runtime::LoadApplicationRequest& request) final;
+  bool Launch(const cast::runtime::LaunchApplicationRequest& request) final;
+
+  // Called when a new CastWebView is created.
+  void CreateCastWebView();
+
   // Called following Launch() on |task_runner_|.
   void FinishLaunch(std::string core_application_service_endpoint);
 
@@ -100,6 +107,7 @@ class RuntimeApplicationBase
   // The WebView associated with the window in which the Cast application is
   // displayed.
   CastWebView::Scoped cast_web_view_;
+  std::unique_ptr<UrlRewriteRulesAdapter> url_rewrite_adapter_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

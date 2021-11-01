@@ -66,7 +66,7 @@ void StreamingRuntimeApplication::StartAvSettingsQuery(
                                        std::move(message_port));
 }
 
-GURL StreamingRuntimeApplication::ProcessWebView(
+GURL StreamingRuntimeApplication::InitializeAndGetInitialURL(
     CoreApplicationServiceGrpc* grpc_stub,
     CastWebContents* cast_web_contents) {
   message_port_service_ = std::make_unique<MessagePortService>(
@@ -83,7 +83,9 @@ GURL StreamingRuntimeApplication::ProcessWebView(
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
       task_runner(), network_context_getter_, std::move(client_port), this,
-      true, app_id() != openscreen::cast::GetIosAppStreamingAudioVideoAppId());
+      true,
+      app_config().app_id() !=
+          openscreen::cast::GetIosAppStreamingAudioVideoAppId());
   receiver_session_client_->LaunchStreamingReceiverAsync(cast_web_contents);
 
   std::string streaming_url =
