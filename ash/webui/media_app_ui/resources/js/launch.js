@@ -942,10 +942,7 @@ async function processOtherFilesInDirectory(
       }
     }
   } catch (e) {
-    // Likely source of b/163639398 crashes. This can probably be turned into a
-    // "console.warn()". Attempting to re-open the directory is probably not
-    // worth the added complexity, given the crash rate.
-    console.error(e, '(failed to traverse directory)');
+    console.warn(e, '(failed to traverse directory)');
     // It's unlikely traversal can "resume", but try to continue with anything
     // obtained so far.
   }

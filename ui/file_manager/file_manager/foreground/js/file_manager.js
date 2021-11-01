@@ -1504,8 +1504,8 @@ export class FileManager extends EventTarget {
           });
         } catch (error2) {
           // Failed to resolve as either file or directory.
-          console.error(error1.stack || error1);
-          console.error(error2.stack || error2);
+          console.warn(error1.stack || error1);
+          console.warn(error2.stack || error2);
         }
       }
     }

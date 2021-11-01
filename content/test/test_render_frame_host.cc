@@ -544,9 +544,7 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
     params->should_replace_current_entry |= (GetLastCommittedURL() == url);
   } else {
     params->should_replace_current_entry |=
-        (!is_main_frame() &&
-         frame_tree_node()
-             ->is_on_initial_empty_document_or_subsequent_empty_documents());
+        (!is_main_frame() && frame_tree_node()->is_on_initial_empty_document());
   }
   params->contents_mime_type = "text/html";
   params->method = "GET";

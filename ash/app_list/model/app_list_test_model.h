@@ -24,7 +24,7 @@ namespace test {
 
 // Extends AppListModel with helper functions for use in tests. This class also
 // overrides `AppListModelDelegate` in order to emulate the process of handling
-// the requests to update app list items. In the product code, these requests
+// the requests to update app list items. In the production code, these requests
 // are handled in the browser side.
 class AppListTestModel : public AppListModel, public AppListModelDelegate {
  public:
@@ -67,8 +67,9 @@ class AppListTestModel : public AppListModel, public AppListModelDelegate {
   AppListItem* AddItemToFolder(AppListItem* item, const std::string& folder_id);
   void MoveItemToFolder(AppListItem* item, const std::string& folder_id);
 
-  // Generates a name based on |id|.
-  std::string GetItemName(int id);
+  // Generates a name based on |id|. Note that the returned name is sometimes
+  // also used as a string id.
+  static std::string GetItemName(int id);
 
   // Populate the model with |n| items titled "Item #".
   void PopulateApps(int n);

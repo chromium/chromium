@@ -222,6 +222,9 @@ export class Modes {
     const prepareDeviceForPhoto =
         async (constraints, resolution, captureIntent) => {
       const deviceOperator = await DeviceOperator.getInstance();
+      if (deviceOperator === null) {
+        return;
+      }
       const deviceId = constraints.deviceId;
       await deviceOperator.setCaptureIntent(deviceId, captureIntent);
       await deviceOperator.setStillCaptureResolution(deviceId, resolution);
@@ -247,6 +250,10 @@ export class Modes {
           const deviceId = constraints.deviceId;
           await deviceOperator.setCaptureIntent(
               deviceId, CaptureIntent.VIDEO_RECORD);
+          if (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId)) {
+            await deviceOperator.setStillCaptureResolution(
+                deviceId, resolution);
+          }
 
           let /** number */ minFrameRate = 0;
           let /** number */ maxFrameRate = 0;

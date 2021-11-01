@@ -33,7 +33,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -62,23 +61,6 @@ void AddSearchResult(const std::string& id, const std::u16string& title) {
   search_result->set_display_type(SearchResultDisplayType::kList);
   search_result->set_title(title);
   GetSearchModel()->results()->Add(std::move(search_result));
-}
-
-// TODO(jamescook): Move this into AppListTestHelper. This will require
-// changing how AppListTestHelper::AddAppItems() names the apps.
-void AddRecentApps(int num_apps) {
-  auto* search_model = GetSearchModel();
-  for (int i = 0; i < num_apps; i++) {
-    auto result = std::make_unique<TestSearchResult>();
-    // Use the same "Item #" convention as AppListTestModel uses. The search
-    // result IDs must match app item IDs in the app list data model.
-    result->set_result_id(base::StringPrintf("Item %d", i));
-    result->set_result_type(AppListSearchResultType::kInstalledApp);
-    // TODO(crbug.com/1216662): Replace with a real display type after the ML
-    // team gives us a way to query directly for recent apps.
-    result->set_display_type(SearchResultDisplayType::kList);
-    search_model->results()->Add(std::move(result));
-  }
 }
 
 void AddContinueSuggestionResult(int num_suggestions) {
@@ -125,6 +107,10 @@ class AppListBubbleViewTest : public AshTestBase {
 
   // Shows the app list on the primary display.
   void ShowAppList() { GetAppListTestHelper()->ShowAppList(); }
+
+  void AddRecentApps(int num_apps) {
+    GetAppListTestHelper()->AddRecentApps(num_apps);
+  }
 
   void AddAppItems(int num_items) {
     app_list_test_model_->PopulateApps(num_items);

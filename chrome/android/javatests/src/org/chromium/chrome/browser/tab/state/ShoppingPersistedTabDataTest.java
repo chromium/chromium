@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab.state;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -18,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -693,7 +695,8 @@ public class ShoppingPersistedTabDataTest {
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         ShoppingPersistedTabData deserialized =
-                new ShoppingPersistedTabData(tab, serialized, config.getStorage(), config.getId());
+                new ShoppingPersistedTabData(tab, config.getStorage(), config.getId());
+        deserialized.deserializeAndLog(serialized);
         Assert.assertEquals(42_000_000L, deserialized.getPriceMicros());
     }
 
@@ -1094,5 +1097,59 @@ public class ShoppingPersistedTabDataTest {
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
         Assert.assertTrue(PersistedTabData.getSupportedMaintenanceClassesForTesting().contains(
                 ShoppingPersistedTabData.class));
+    }
+
+    @SmallTest
+    @Test
+    public void testVerifyDeserializationBackgroundThread() throws TimeoutException {
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
+        CallbackHelper helper = new CallbackHelper();
+        int count = helper.getCallCount();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab tab = MockTab.createAndInitialize(1, false);
+            tab.setIsTabSaveEnabled(true);
+            DeserializeAndLogCheckerShoppingPersistedTabData deserializeChecker =
+                    new DeserializeAndLogCheckerShoppingPersistedTabData(tab);
+            registerObserverSupplier(deserializeChecker);
+            deserializeChecker.save();
+            PersistedTabData.from(tab,
+                    (data, storage, id, factoryCallback)
+                            -> {
+                        factoryCallback.onResult(
+                                new DeserializeAndLogCheckerShoppingPersistedTabData(
+                                        tab, storage, id));
+                    },
+                    null, ShoppingPersistedTabData.class, (res) -> { helper.notifyCalled(); });
+        });
+        helper.waitForCallback(count);
+    }
+
+    static class DeserializeAndLogCheckerShoppingPersistedTabData extends ShoppingPersistedTabData {
+        DeserializeAndLogCheckerShoppingPersistedTabData(Tab tab) {
+            super(tab);
+        }
+
+        DeserializeAndLogCheckerShoppingPersistedTabData(Tab tab,
+                PersistedTabDataStorage persistedTabDataStorage, String persistedTabDataId) {
+            super(tab, persistedTabDataStorage, persistedTabDataId);
+        }
+
+        @Override
+        protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
+            ThreadUtils.assertOnBackgroundThread();
+            super.deserializeAndLog(bytes);
+        }
+
+        @Override
+        protected boolean needsUpdate() {
+            return false;
+        }
+    }
+
+    private static void registerObserverSupplier(
+            ShoppingPersistedTabData shoppingPersistedTabData) {
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(true);
+        shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
     }
 }

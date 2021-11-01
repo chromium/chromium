@@ -61,8 +61,8 @@ Polymer({
       value: false,
     },
 
-    /** @private {boolean} */
-    showNotificationAccessSetupDialog_: {
+    /** @private */
+    showPhonePermissionSetupDialog_: {
       type: Boolean,
       value: false,
     },
@@ -374,7 +374,7 @@ Polymer({
           return;
         case settings.PhoneHubNotificationAccessStatus
             .AVAILABLE_BUT_NOT_GRANTED:
-          this.showNotificationAccessSetupDialog_ = true;
+          this.showPhonePermissionSetupDialog_ = true;
           return;
         default:
           // Fall through and attempt to toggle feature.
@@ -475,7 +475,7 @@ Polymer({
     // param.
     const urlParams = settings.Router.getInstance().getQueryParameters();
     if (urlParams.get('showNotificationAccessSetupDialog') !== null) {
-      this.showNotificationAccessSetupDialog_ = true;
+      this.showPhonePermissionSetupDialog_ = true;
     }
   },
 
@@ -597,13 +597,36 @@ Polymer({
         settings.routes.NEARBY_SHARE, params);
   },
 
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showPermissionsSetupDialog_() {
+    if (!this.showPhonePermissionSetupDialog_) {
+      return false;
+    }
+    return !this.pageContentData.isPhoneHubPermissionsDialogSupported;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showNewPermissionsSetupDialog_() {
+    if (!this.showPhonePermissionSetupDialog_) {
+      return false;
+    }
+    return this.pageContentData.isPhoneHubPermissionsDialogSupported;
+  },
+
   /** @private */
-  onHideNotificationSetupAccessDialog_() {
+  onHidePhonePermissionsSetupDialog_() {
     // Don't close the main dialog if the password sub-dialog is open.
     if (this.isPasswordDialogShowing_) {
       return;
     }
-    this.showNotificationAccessSetupDialog_ = false;
+    this.showPhonePermissionSetupDialog_ = false;
   },
 
   /** @private */

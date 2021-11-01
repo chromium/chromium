@@ -615,10 +615,9 @@ void CameraDeviceDelegate::ReconfigureStreams(
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   chrome_capture_params_ = params;
   if (request_manager_) {
-    // ReconfigureStreams is used for video recording. It does not require
-    // photo.
-    request_manager_->StopPreview(base::BindOnce(
-        &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), false, absl::nullopt));
+    request_manager_->StopPreview(
+        base::BindOnce(&CameraDeviceDelegate::OnFlushed, GetWeakPtr(),
+                       ShouldUseBlobVideoSnapshot(), absl::nullopt));
   }
 }
 
@@ -666,13 +665,27 @@ void CameraDeviceDelegate::TakePhotoImpl() {
                      GetWeakPtr(), StreamType::kJpegOutput);
 
   if (request_manager_->HasStreamsConfiguredForTakePhoto()) {
-    camera_3a_controller_->Stabilize3AForStillCapture(
-        std::move(construct_request_cb));
+    auto camera_app_device =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_descriptor_.device_id);
+
+    // Skip 3A stabilization when taking video snapshot to avoid disrupting the
+    // video recording.
+    bool should_skip_3a = ShouldUseBlobVideoSnapshot() && camera_app_device &&
+                          camera_app_device->GetCaptureIntent() ==
+                              cros::mojom::CaptureIntent::VIDEO_RECORD;
+    if (should_skip_3a) {
+      std::move(construct_request_cb).Run();
+    } else {
+      camera_3a_controller_->Stabilize3AForStillCapture(
+          std::move(construct_request_cb));
+    }
     return;
   }
 
-  // Trigger the reconfigure process if it not yet triggered.
-  if (on_reconfigured_callbacks_.empty()) {
+  // Trigger the reconfigure process if it is required and is not yet triggered.
+  if (current_blob_resolution_.IsEmpty() &&
+      on_reconfigured_callbacks_.empty()) {
     request_manager_->StopPreview(base::BindOnce(
         &CameraDeviceDelegate::OnFlushed, GetWeakPtr(), true, absl::nullopt));
   }
@@ -825,6 +838,7 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
             base::safe_strerror(-result));
     return;
   }
+
   device_context_->SetState(CameraDeviceContext::State::kInitialized);
   bool require_photo = [&] {
     auto camera_app_device =
@@ -840,7 +854,7 @@ void CameraDeviceDelegate::OnInitialized(int32_t result) {
       case cros::mojom::CaptureIntent::STILL_CAPTURE:
         return true;
       case cros::mojom::CaptureIntent::VIDEO_RECORD:
-        return false;
+        return ShouldUseBlobVideoSnapshot();
       case cros::mojom::CaptureIntent::DOCUMENT:
         return true;
       default:
@@ -1097,12 +1111,12 @@ void CameraDeviceDelegate::ConstructDefaultRequestSettings(
              CameraDeviceContext::State::kStreamConfigured ||
          device_context_->GetState() == CameraDeviceContext::State::kCapturing);
 
+  auto camera_app_device =
+      CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+          device_descriptor_.device_id);
   if (stream_type == StreamType::kPreviewOutput) {
     // CCA uses the same stream for preview and video recording. Choose proper
     // template here so the underlying camera HAL can set 3A tuning accordingly.
-    auto camera_app_device =
-        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
-            device_descriptor_.device_id);
     auto request_template =
         camera_app_device && camera_app_device->GetCaptureIntent() ==
                                  cros::mojom::CaptureIntent::VIDEO_RECORD
@@ -1114,8 +1128,15 @@ void CameraDeviceDelegate::ConstructDefaultRequestSettings(
             &CameraDeviceDelegate::OnConstructedDefaultPreviewRequestSettings,
             GetWeakPtr()));
   } else if (stream_type == StreamType::kJpegOutput) {
+    auto request_template =
+        camera_app_device && camera_app_device->GetCaptureIntent() ==
+                                 cros::mojom::CaptureIntent::VIDEO_RECORD
+            ? cros::mojom::Camera3RequestTemplate::
+                  CAMERA3_TEMPLATE_VIDEO_SNAPSHOT
+            : cros::mojom::Camera3RequestTemplate::
+                  CAMERA3_TEMPLATE_STILL_CAPTURE;
     device_ops_->ConstructDefaultRequestSettings(
-        cros::mojom::Camera3RequestTemplate::CAMERA3_TEMPLATE_STILL_CAPTURE,
+        request_template,
         base::BindOnce(&CameraDeviceDelegate::
                            OnConstructedDefaultStillCaptureRequestSettings,
                        GetWeakPtr()));
@@ -1353,6 +1374,16 @@ mojom::RangePtr CameraDeviceDelegate::GetControlRangeByVendorTagName(
   range->current = current.value();
 
   return range;
+}
+
+bool CameraDeviceDelegate::ShouldUseBlobVideoSnapshot() {
+  auto level = GetMetadataEntryAsSpan<uint8_t>(
+      static_metadata_,
+      cros::mojom::CameraMetadataTag::ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL);
+  DCHECK_EQ(level.size(), 1u);
+  return level[0] ==
+         static_cast<uint8_t>(cros::mojom::AndroidInfoSupportedHardwareLevel::
+                                  ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_FULL);
 }
 
 void CameraDeviceDelegate::OnResultMetadataAvailable(

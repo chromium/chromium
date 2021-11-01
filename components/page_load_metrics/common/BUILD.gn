@@ -13,7 +13,7 @@ source_set("common") {
     "page_load_metrics_util.h",
     "page_load_timing.cc",
     "page_load_timing.h",
-    "page_load_type.h",
+    "page_visit_final_status.h",
   ]
   deps = [
     ":page_load_metrics_mojom",

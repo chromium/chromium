@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
@@ -96,7 +97,7 @@ void AppListTestHelper::AddAppItems(int num_apps) {
   const int num_apps_already_added = model->top_level_item_list()->item_count();
   for (int i = 0; i < num_apps; i++) {
     model->AddItem(std::make_unique<AppListItem>(
-        /*app_id=*/base::NumberToString(i + num_apps_already_added)));
+        test::AppListTestModel::GetItemName(i + num_apps_already_added)));
   }
 }
 
@@ -109,7 +110,9 @@ void AppListTestHelper::AddPageBreakItem() {
 void AppListTestHelper::AddRecentApps(int num_apps) {
   for (int i = 0; i < num_apps; i++) {
     auto result = std::make_unique<TestSearchResult>();
-    result->set_result_id(base::NumberToString(i));
+    // Use the same "Item #" convention as AppListTestModel uses. The search
+    // result IDs must match app item IDs in the app list data model.
+    result->set_result_id(test::AppListTestModel::GetItemName(i));
     result->set_result_type(AppListSearchResultType::kInstalledApp);
     // TODO(crbug.com/1216662): Replace with a real display type after the ML
     // team gives us a way to query directly for recent apps.

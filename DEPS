@@ -234,7 +234,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '88b36ad61e80e13f6a85b022e3b7e068c7f6d789',
+  'skia_revision': 'abbcc2cf1cba57242a370c8cc3993490ba2df261',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '858b2aba5e6a6b47a0c61a121927c8c1986a1f13',
+  'devtools_frontend_revision': 'fdde1904ade8bb1e49abf89173495190d9b18d38',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1598,7 +1598,7 @@ deps = {
   'src/third_party/usrsctp/usrsctplib':
     Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '62d7d0c928c9a040dce96aa2f16c00e7e67d59cb',
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@ee45938d0b75d2fb4fbb65101d5f7d7e71d1a6f9',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@d388b3abde67443db9ac21d726e83496fca33b6a',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'e0216a5484c8345f7d792fa16fad77ac63d89a70',
@@ -1637,7 +1637,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '7c6749771b96d008cbc9877c618bf9f9a7f127da',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '3cff17133342a6edf438c8614fe630728e88d8c0',
+    Var('webrtc_git') + '/src.git' + '@' + 'ff8caf1d569408a9cfa759e0fa58703cc67f7aae',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1695,7 +1695,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@86a0527df6272ff3a81594c309e2ca8a53ad9d9d',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@1a281be6dde2ef2ee0e4a5d58c78e36ad9651aa3',
     'condition': 'checkout_src_internal',
   },
 
@@ -1714,7 +1714,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'ffSVMYrncEY9S9zIaXi6YViJiEKq5_FwLjpAMLWqGKUC',
+        'version': 'ppTMSK0OxWFjVBly6sDtsD062L9V4BKH3oTjeMp-kj0C',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -1725,7 +1725,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'yYNT7Q_0F-TmR0ICnVGJUR7atq1KiVbqvUyBHTpH2t8C',
+        'version': 'ZsNIWApEsR-W8z_9xYMbCf4PhIlEHHFodC39wGUfiVwC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

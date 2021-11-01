@@ -434,8 +434,8 @@ bool RenderViewHostImpl::CreateRenderView(
     main_rfh->BindBrowserInterfaceBrokerReceiver(
         local_frame_params->interface_broker.InitWithNewPipeAndPassReceiver());
 
-    local_frame_params->has_committed_real_load =
-        main_rfh->frame_tree_node()->has_committed_real_load();
+    local_frame_params->is_on_initial_empty_document =
+        main_rfh->frame_tree_node()->is_on_initial_empty_document();
 
     // If this is a new RenderFrameHost for a frame that has already committed a
     // document, we don't have a PolicyContainerHost yet. Indeed, in that case,

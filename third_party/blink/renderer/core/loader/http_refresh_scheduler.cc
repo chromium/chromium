@@ -114,7 +114,7 @@ void HttpRefreshScheduler::NavigateTask() {
   // in a frame where there hasn't actually been a navigation yet. Therefore,
   // don't treat as a reload if all this frame has ever seen is empty documents.
   if (EqualIgnoringFragmentIdentifier(document_->Url(), refresh->url) &&
-      document_->GetFrame()->Loader().HasLoadedNonEmptyDocument()) {
+      document_->GetFrame()->Loader().HasLoadedNonInitialEmptyDocument()) {
     request.GetResourceRequest().SetCacheMode(
         mojom::FetchCacheMode::kValidateCache);
     load_type = WebFrameLoadType::kReload;

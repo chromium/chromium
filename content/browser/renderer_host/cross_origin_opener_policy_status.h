@@ -132,12 +132,14 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // had a value of same-origin-allow-popups-by-default.
   int soap_by_default_virtual_browsing_context_group_;
 
-  // Whether this is the first navigation happening in the browsing context.
-  // TODO(https://crbug.com/1216244): This should be set to whether this
-  // navigation happens on the initial empty document instead. Currently it's
-  // set to FrameTreeNode's has_committed_real_load(), which does not consider
-  // document.open(), etc.
-  const bool is_initial_navigation_;
+  // Whether this is a navigation away from the initial empty document. Note
+  // that this might be false in case it happens on a initial empty document
+  // whose input stream has been opened (e.g. due to document.open()), causing
+  // it to no longer be considered as the initial empty document per the HTML
+  // specification.
+  // For more details, see FrameTreeNode::is_on_initial_empty_document() and
+  // https://html.spec.whatwg.org/multipage/origin.html#browsing-context-group-switches-due-to-cross-origin-opener-policy:still-on-its-initial-about:blank-document
+  const bool is_navigation_from_initial_empty_document_;
 
   network::CrossOriginOpenerPolicy current_coop_;
 

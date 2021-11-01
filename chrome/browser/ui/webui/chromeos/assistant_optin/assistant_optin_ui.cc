@@ -86,6 +86,8 @@ AssistantOptInUI::AssistantOptInUI(content::WebUI* web_ui)
 
   source->AddLocalizedStrings(localized_strings);
   source->UseStringsJs();
+  source->AddResourcePath("i18n_template_process.js",
+                          IDR_ASSISTANT_OPTIN_I18N_TEMPLATE_PROCESS_JS);
   source->AddResourcePath("assistant_optin.js", IDR_ASSISTANT_OPTIN_JS);
   source->AddResourcePath("assistant_logo.png", IDR_ASSISTANT_LOGO_PNG);
   source->SetDefaultResource(IDR_ASSISTANT_OPTIN_HTML);

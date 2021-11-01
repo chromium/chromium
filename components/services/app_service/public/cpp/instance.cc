@@ -38,7 +38,7 @@ bool Instance::InstanceKey::operator<(const InstanceKey& other) const {
 }
 
 bool Instance::InstanceKey::operator==(const InstanceKey& other) const {
-  // TODO(crbug.com/1203992): This explicitly excludes is_web_contents_backed
+  // TODO(crbug.com/1251501): This explicitly excludes is_web_contents_backed
   // from the equality checks for now as there are some cases where
   // AppServiceInstanceRegistryHelper will create an InstanceKey with and
   // without is_web_contents_backed set for the same aura::Window object,
@@ -60,14 +60,26 @@ Instance::Instance(const std::string& app_id, InstanceKey&& instance_key)
   state_ = InstanceState::kUnknown;
 }
 
+Instance::Instance(const std::string& app_id, const base::UnguessableToken& id)
+    : app_id_(app_id),
+      id_(id),
+      instance_key_(InstanceKey::ForWindowBasedApp(nullptr)),
+      state_(InstanceState::kUnknown) {}
+
 Instance::~Instance() = default;
 
 std::unique_ptr<Instance> Instance::Clone() {
-  auto instance = std::make_unique<Instance>(
-      this->AppId(), apps::Instance::InstanceKey(this->GetInstanceKey()));
+  std::unique_ptr<Instance> instance;
+  if (this->Id()) {
+    instance = std::make_unique<Instance>(this->AppId(), this->Id());
+  } else {
+    instance = std::make_unique<Instance>(
+        this->AppId(), apps::Instance::InstanceKey(this->GetInstanceKey()));
+  }
   instance->SetLaunchId(this->LaunchId());
   instance->UpdateState(this->State(), this->LastUpdatedTime());
   instance->SetBrowserContext(this->BrowserContext());
+  instance->SetWindow(this->Window());
   return instance;
 }
 
@@ -79,6 +91,10 @@ void Instance::UpdateState(InstanceState state,
 
 void Instance::SetBrowserContext(content::BrowserContext* browser_context) {
   browser_context_ = browser_context;
+}
+
+void Instance::SetWindow(aura::Window* window) {
+  window_ = window;
 }
 
 std::ostream& operator<<(std::ostream& os,

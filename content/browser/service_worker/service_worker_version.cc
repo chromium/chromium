@@ -869,6 +869,10 @@ void ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap(
     // cause of the crash.
     BackForwardCacheCanStoreDocumentResult can_store;
     can_store.No(controllees_to_be_evicted_.at(client_uuid));
+    TRACE_EVENT(
+        "navigation",
+        "ServiceWorkerVersion::RestoreControlleeFromBackForwardCacheMap",
+        ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, can_store);
     SCOPED_CRASH_KEY_STRING32("RestoreForBFCache", "no_controllee_reason",
                               can_store.ToString());
     base::debug::DumpWithoutCrashing();

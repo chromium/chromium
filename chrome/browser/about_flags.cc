@@ -4447,6 +4447,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"spectre-v2-mitigation", flag_descriptions::kSpectreVariant2MitigationName,
      flag_descriptions::kSpectreVariant2MitigationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(sandbox::policy::features::kSpectreVariant2Mitigation)},
+    {"eche-phone-hub-permissions-onboarding",
+     flag_descriptions::kEchePhoneHubPermissionsOnboardingName,
+     flag_descriptions::kEchePhoneHubPermissionsOnboardingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kEchePhoneHubPermissionsOnboarding)},
     {"eche-swa", flag_descriptions::kEcheSWAName,
      flag_descriptions::kEcheSWADescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWA)},

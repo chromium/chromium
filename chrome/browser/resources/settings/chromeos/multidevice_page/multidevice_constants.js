@@ -108,7 +108,8 @@ cr.define('settings', function() {
    *   isAndroidSmsPairingComplete: boolean,
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
    *   isNearbyShareDisallowedByPolicy: boolean,
-   *   isPhoneHubAppsAccessGranted: boolean
+   *   isPhoneHubAppsAccessGranted: boolean,
+   *   isPhoneHubPermissionsDialogSupported: boolean
    * }}
    */
   /* #export */ let MultiDevicePageContentData;

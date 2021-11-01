@@ -606,10 +606,9 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
     // before recreating it. Re-adding it bumps it to the bottom of the
     // container, but its unlikely that the user will notice, since other things
     // are changing too.
-    if (certificate_button_) {
-      site_settings_view_->RemoveChildView(certificate_button_);
-      auto to_delete = std::make_unique<views::View*>(certificate_button_);
-    }
+    if (certificate_button_)
+      site_settings_view_->RemoveChildViewT(certificate_button_);
+
     certificate_button_ = site_settings_view_->AddChildView(
         std::make_unique<PageInfoHoverButton>(
             base::BindRepeating(

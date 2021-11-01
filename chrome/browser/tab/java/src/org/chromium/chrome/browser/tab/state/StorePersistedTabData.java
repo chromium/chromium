@@ -281,8 +281,10 @@ public class StorePersistedTabData extends PersistedTabData {
         // TODO(crbug.com/995852): Replace MISSING_TRAFFIC_ANNOTATION with a real traffic
         // annotation.
         PersistedTabData.from(tab,
-                (data, storage, id)
-                        -> { return new StorePersistedTabData(tab, data, storage, id); },
+                (data, storage, id, factoryCallback)
+                        -> {
+                    factoryCallback.onResult(new StorePersistedTabData(tab, storage, id));
+                },
                 (supplierCallback)
                         -> {
                     EndpointFetcher.fetchUsingOAuth(

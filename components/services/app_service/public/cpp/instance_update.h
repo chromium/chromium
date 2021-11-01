@@ -76,6 +76,9 @@ class InstanceUpdate {
   content::BrowserContext* BrowserContext() const;
   bool BrowserContextChanged() const;
 
+  aura::Window* Window() const;
+  bool WindowChanged() const;
+
  private:
   Instance* state_;
   Instance* delta_;

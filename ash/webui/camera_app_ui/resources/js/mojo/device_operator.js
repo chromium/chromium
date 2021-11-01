@@ -24,6 +24,7 @@ import {
   EntryType,
 } from '/media/capture/video/chromeos/mojom/camera_metadata.mojom-webui.js';
 import {
+  AndroidInfoSupportedHardwareLevel,
   CameraMetadataTag,
 } from
     '/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-webui.js';
@@ -670,6 +671,19 @@ export class DeviceOperator {
     await device.registerDocumentCornersObserver(
         observerCallbackRouter.$.bindNewPipeAndPassRemote());
     return observerCallbackRouter;
+  }
+
+  /**
+   * Returns whether the blob video snapshot feature is enabled on the device.
+   * @param {string} deviceId The id of target camera device.
+   * @return {!Promise<boolean>}
+   */
+  async isBlobVideoSnapshotEnabled(deviceId) {
+    const level = (await this.getStaticMetadata(
+        deviceId, CameraMetadataTag.ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL))[0];
+    return level ===
+        AndroidInfoSupportedHardwareLevel
+            .ANDROID_INFO_SUPPORTED_HARDWARE_LEVEL_FULL;
   }
 
   /**

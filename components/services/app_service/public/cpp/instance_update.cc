@@ -33,6 +33,9 @@ void InstanceUpdate::Merge(Instance* state, const Instance* delta) {
   if (delta->BrowserContext()) {
     state->SetBrowserContext(delta->BrowserContext());
   }
+  if (delta->Window()) {
+    state->SetWindow(delta->Window());
+  }
   // When adding new fields to the Instance class, this function should also be
   // updated.
 }
@@ -165,6 +168,21 @@ content::BrowserContext* InstanceUpdate::BrowserContext() const {
 bool InstanceUpdate::BrowserContextChanged() const {
   return delta_ && delta_->BrowserContext() &&
          (!state_ || (delta_->BrowserContext() != state_->BrowserContext()));
+}
+
+aura::Window* InstanceUpdate::Window() const {
+  if (delta_ && delta_->Window()) {
+    return delta_->Window();
+  }
+  if (state_ && state_->Window()) {
+    return state_->Window();
+  }
+  return nullptr;
+}
+
+bool InstanceUpdate::WindowChanged() const {
+  return delta_ && delta_->Window() &&
+         (!state_ || (delta_->Window() != state_->Window()));
 }
 
 }  // namespace apps

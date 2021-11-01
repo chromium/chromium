@@ -639,6 +639,9 @@ BackForwardCacheCanStoreDocumentResult BackForwardCacheImpl::CanStorePageNow(
   }
   DVLOG(1) << "CanStorePageNow: " << rfh->GetLastCommittedURL() << " : "
            << result.ToString();
+  TRACE_EVENT("navigation", "BackForwardCacheImpl::CanPotentiallyStorePageNow",
+              ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
+              result);
   return result;
 }
 
@@ -797,6 +800,9 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
 
   DVLOG(1) << "CanPotentiallyStorePageLater: " << rfh->GetLastCommittedURL()
            << " : " << result.ToString();
+  TRACE_EVENT(
+      "navigation", "BackForwardCacheImpl::CanPotentiallyStorePageLater",
+      ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, result);
   return result;
 }
 

@@ -59,7 +59,6 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom-forward.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
-#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-forward.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
@@ -452,15 +451,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static void SetBadMojoMessageCallbackForTesting(
       BadMojoMessageCallbackForTesting callback);
 
-  // Allows external code to supply a callback which handles a
-  // mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider>. Used for
-  // supplying test versions of the service.
-  using BroadcastChannelProviderReceiverHandler = base::RepeatingCallback<void(
-      RenderProcessHostImpl* rph,
-      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver)>;
-  static void SetBroadcastChannelProviderReceiverHandlerForTesting(
-      BroadcastChannelProviderReceiverHandler handler);
-
   // Sets this RenderProcessHost to be guest only. For Testing only.
   void SetForGuestsOnlyForTesting();
 
@@ -786,8 +776,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<viz::mojom::CompositingModeReporter> receiver);
   void CreateDomStorageProvider(
       mojo::PendingReceiver<blink::mojom::DomStorageProvider> receiver);
-  void CreateBroadcastChannelProvider(
-      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
   void CreateCodeCacheHost(
       mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver);
   void CreateRendererHost(

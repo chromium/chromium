@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -97,7 +98,13 @@ v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
   DCHECK(!wrapper_boilerplates_.Contains(type));
   v8::Context::Scope scope(GetContext());
   v8::Local<v8::Function> interface_object = ConstructorForType(type);
-  CHECK(!interface_object.IsEmpty());
+  if (UNLIKELY(interface_object.IsEmpty())) {
+    // For investigation of crbug.com/1199223
+    static crash_reporter::CrashKeyString<64> crash_key(
+        "blink__create_interface_object");
+    crash_key.Set(type->interface_name);
+    CHECK(!interface_object.IsEmpty());
+  }
   v8::Local<v8::Object> instance_template =
       V8ObjectConstructor::NewInstance(isolate_, interface_object)
           .ToLocalChecked();

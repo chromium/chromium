@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
+#include "chrome/browser/web_applications/app_service/link_capturing_migration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -1169,6 +1170,9 @@ void WebAppPublisherHelper::Init(bool observe_media_requests) {
   if (observe_media_requests) {
     media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
   }
+
+  link_capturing_migration_manager_ =
+      std::make_unique<LinkCapturingMigrationManager>(*profile());
 #endif
 }
 

@@ -5981,9 +5981,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
   FrameTreeNode* mixed_child = root->child_at(0)->child_at(0);
   ASSERT_TRUE(mixed_child);
   // The child iframe attempted to create a mixed iframe; this should
-  // have been blocked, so the mixed iframe should not have committed a
-  // load.
-  EXPECT_FALSE(mixed_child->has_committed_real_load());
+  // have been blocked, so the mixed iframe should still be on the initial empty
+  // document.
+  EXPECT_TRUE(mixed_child->is_on_initial_empty_document());
 }
 
 // Test that subresources with certificate errors get reported to the

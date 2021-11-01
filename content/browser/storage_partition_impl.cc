@@ -44,7 +44,7 @@
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices_map.h"
-#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/browsing_data/storage_partition_code_cache_data_remover.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -1269,8 +1269,6 @@ void StoragePartitionImpl::Initialize(
   payment_app_context_->Init(service_worker_context_);
 
   broadcast_channel_service_ = std::make_unique<BroadcastChannelService>();
-  broadcast_channel_provider_ =
-      std::make_unique<BroadcastChannelProvider>(weak_factory_.GetWeakPtr());
 
   bluetooth_allowed_devices_map_ =
       std::make_unique<BluetoothAllowedDevicesMap>();
@@ -1562,11 +1560,6 @@ PaymentAppContextImpl* StoragePartitionImpl::GetPaymentAppContext() {
 BroadcastChannelService* StoragePartitionImpl::GetBroadcastChannelService() {
   DCHECK(initialized_);
   return broadcast_channel_service_.get();
-}
-
-BroadcastChannelProvider* StoragePartitionImpl::GetBroadcastChannelProvider() {
-  DCHECK(initialized_);
-  return broadcast_channel_provider_.get();
 }
 
 BluetoothAllowedDevicesMap*

@@ -403,6 +403,10 @@ const base::Feature kDriveFsBidirectionalNativeMessaging{
 const base::Feature kDriveFsMirroring{"DriveFsMirroring",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Eche Phone Hub permission onboarding.
+const base::Feature kEchePhoneHubPermissionsOnboarding{
+    "EchePhoneHubPermissionsOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the System Web App (SWA) version of Eche.
 const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1395,6 +1399,10 @@ bool IsDragUnpinnedAppToPinEnabled() {
 
 bool IsDragWindowToNewDeskEnabled() {
   return base::FeatureList::IsEnabled(kDragWindowToNewDesk);
+}
+
+bool IsEchePhoneHubPermissionsOnboarding() {
+  return base::FeatureList::IsEnabled(kEchePhoneHubPermissionsOnboarding);
 }
 
 bool IsEcheSWAEnabled() {

@@ -143,6 +143,30 @@
     light_icon_color_warning: "$google_yellow_300",
 
     /*
+     * App shield colors.
+     */
+    app_shield_color: {
+      light: "rgb($google_grey_300_rgb)",
+      dark: "rgb($black_rgb)",
+    },
+    app_shield_80: {
+      light: "rgba($google_grey_300_rgb, 0.8)",
+      dark: "rgba($black_rgb, 0.8)",
+    },
+    app_shield_60: {
+      light: "rgba($google_grey_300_rgb, 0.6)",
+      dark: "rgba($black_rgb, 0.6)",
+    },
+    app_shield_40: {
+      light: "rgba($google_grey_300_rgb, 0.4)",
+      dark: "rgba($black_rgb, 0.4)",
+    },
+    app_shield_20: {
+      light: "rgba($google_grey_300_rgb, 0.2)",
+      dark: "rgba($black_rgb, 0.2)",
+    },
+
+    /*
      * Other foundational colors.
      */
     focus_ring_color: "$color_prominent",
@@ -164,6 +188,14 @@
       light: "$google_blue_50",
       dark: "rgba($google_blue_300_rgb, 0.3)",
       debug: "rgba($google_red_300_rgb, 0.3)",
+    },
+    highlight_color_hover: {
+      light: "rgba($google_grey_700_rgb, 0.2)",
+      dark: "rgba($white_rgb, 0.2)",
+    },
+    highlight_color_focus: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
     },
     ripple_color: {
       light: "rgba($black_rgb, 0.06)",

@@ -21,6 +21,9 @@ export const GlitchType = {
   UNKNOWN: 0,
   UNHANDLED_ERROR: 1,
   UNHANDLED_REJECTION: 2,
+  // Do not use it to report all caught exceptions. Only those exceptions that
+  // we catch to work around errors that should never occur.
+  CAUGHT_EXCEPTION: 3,
 };
 
 /**

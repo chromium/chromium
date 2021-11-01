@@ -21,7 +21,7 @@ static const uint16_t* ToUint16(const UChar* src) {
 
 CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
     CaseMapIntend case_map_intend,
-    AtomicString locale,
+    const AtomicString& locale,
     hb_buffer_t* harfbuzz_buffer,
     const String& text,
     unsigned start_index,
@@ -62,7 +62,7 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
 // here.
 void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     CaseMapIntend case_map_intend,
-    AtomicString locale,
+    const AtomicString& locale,
     const UChar* buffer,
     unsigned buffer_length,
     unsigned start_index,

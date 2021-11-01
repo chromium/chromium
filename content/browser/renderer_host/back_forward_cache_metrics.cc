@@ -330,11 +330,17 @@ void BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation(
     page_store_result_->No(NotRestoredReason::kBrowsingInstanceNotSwapped);
   }
 
+  TRACE_EVENT("navigation",
+              "BackForwardCacheMetrics::UpdateNotRestoredReasonsForNavigation",
+              ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
+              *(page_store_result_.get()));
+
   // This should not happen, but record this as an 'unknown' reason just in
   // case.
   if (page_store_result_->not_stored_reasons().Empty() &&
       !navigation->IsServedFromBackForwardCache()) {
     page_store_result_->No(NotRestoredReason::kUnknown);
+
     // TODO(altimin): Add a (D)CHECK here, but this code is reached in
     // unittests.
     return;

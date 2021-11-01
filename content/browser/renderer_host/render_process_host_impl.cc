@@ -72,7 +72,6 @@
 #include "components/viz/host/gpu_client.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
-#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -1270,14 +1269,6 @@ RenderProcessHostImpl::DomStorageBinder& GetDomStorageBinder() {
   return *binder;
 }
 
-RenderProcessHostImpl::BroadcastChannelProviderReceiverHandler&
-GetBroadcastChannelProviderReceiverHandler() {
-  static base::NoDestructor<
-      RenderProcessHostImpl::BroadcastChannelProviderReceiverHandler>
-      instance;
-  return *instance;
-}
-
 // Keep track of plugin process IDs that require exceptions for particular
 // initiator origins.
 struct PluginExceptionsForNetworkService {
@@ -1796,12 +1787,6 @@ void RenderProcessHostImpl::SetBadMojoMessageCallbackForTesting(
             GetBadMojoMessageCallbackForTesting().is_null());
 
   GetBadMojoMessageCallbackForTesting() = callback;
-}
-
-void RenderProcessHostImpl::
-    SetBroadcastChannelProviderReceiverHandlerForTesting(
-        BroadcastChannelProviderReceiverHandler handler) {
-  GetBroadcastChannelProviderReceiverHandler() = handler;
 }
 
 void RenderProcessHostImpl::SetForGuestsOnlyForTesting() {
@@ -2454,11 +2439,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::CreateDomStorageProvider,
                           weak_factory_.GetWeakPtr()));
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          &RenderProcessHostImpl::CreateBroadcastChannelProvider,
-          weak_factory_.GetWeakPtr()));
 
   AddUIThreadInterface(
       registry.get(),
@@ -2635,18 +2615,6 @@ void RenderProcessHostImpl::CreateDomStorageProvider(
     mojo::PendingReceiver<blink::mojom::DomStorageProvider> receiver) {
   DCHECK(!dom_storage_provider_receiver_.is_bound());
   dom_storage_provider_receiver_.Bind(std::move(receiver));
-}
-
-void RenderProcessHostImpl::CreateBroadcastChannelProvider(
-    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
-  if (!GetBroadcastChannelProviderReceiverHandler().is_null()) {
-    GetBroadcastChannelProviderReceiverHandler().Run(this, std::move(receiver));
-    return;
-  }
-
-  storage_partition_impl_->GetBroadcastChannelProvider()->Connect(
-      ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(id_),
-      std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateCodeCacheHost(

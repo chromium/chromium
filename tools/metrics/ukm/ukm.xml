@@ -11942,7 +11942,10 @@ be describing additional metrics about the same event.
       for quiescent windows. The unit of time is ms.
     </summary>
   </metric>
-  <metric name="Experimental.PageLoadType" enum="PageLoadType">
+  <metric name="Experimental.PageLoadType" enum="PageVisitFinalStatus">
+    <obsolete>
+      Renamed in 11/2021, use PageVisitFinalStatus instead.
+    </obsolete>
     <summary>
       Determines the PageLoadType for this page load. That is, records whether
       the page was never foregrounded, was foregrounded but did not reach FCP,
@@ -13136,6 +13139,16 @@ be describing additional metrics about the same event.
         </statistics>
       </history>
     </aggregation>
+  </metric>
+  <metric name="PageVisitFinalStatus" enum="PageVisitFinalStatus">
+    <summary>
+      Determines the final status for this page load. That is, records whether
+      the page was never foregrounded, was foregrounded but did not reach FCP,
+      or did reach FCP. The metric is recorded at the end of each page load. As
+      usual with PageLoad metrics, we consider app backgrounding on Android to
+      be the end of page load as well as the app could be evicted by Android
+      anytime after that happens.
+    </summary>
   </metric>
   <metric name="PaintTiming.NavigationToExperimentalLargestContentfulPaint">
     <obsolete>

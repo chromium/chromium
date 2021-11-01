@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab.state;
 
+import org.chromium.base.Callback;
+
 import java.nio.ByteBuffer;
 
 /**
@@ -15,6 +17,7 @@ public interface PersistedTabDataFactory<T extends PersistedTabData> {
      * @param data serialized {@link PersistedTabData}
      * @param storage storage method {@link PersistedTabDataStorage} for {@link PersistedTabData}
      * @param id identifier for {@link PersistedTabData} in storage
+     * @param callback {@link Callback} the {@link PersistedTabData} is passed back in
      */
-    T create(ByteBuffer data, PersistedTabDataStorage storage, String id);
+    void create(ByteBuffer data, PersistedTabDataStorage storage, String id, Callback<T> callback);
 }

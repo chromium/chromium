@@ -338,8 +338,11 @@ void FrameLoader::DispatchUnloadEvent(
 
 void FrameLoader::DidExplicitOpen() {
   probe::DidOpenDocument(frame_, GetDocumentLoader());
-  if (empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty)
-    empty_document_status_ = EmptyDocumentStatus::kOnlyEmptyButExplicitlyOpened;
+  if (initial_empty_document_status_ ==
+      InitialEmptyDocumentStatus::kInitialOrSynchronousAboutBlank) {
+    initial_empty_document_status_ = InitialEmptyDocumentStatus::
+        kInitialOrSynchronousAboutBlankButExplicitlyOpened;
+  }
 
   // Only model a document.open() as part of a navigation if its parent is not
   // done or in the process of completing.
@@ -479,8 +482,7 @@ WebFrameLoadType FrameLoader::HandleInitialEmptyDocumentReplacementIfNeeded(
   // needed.
   if (frame_load_type == WebFrameLoadType::kStandard ||
       frame_load_type == WebFrameLoadType::kReplaceCurrentItem) {
-    if (frame_->Tree().Parent() &&
-        empty_document_status_ == EmptyDocumentStatus::kOnlyEmpty) {
+    if (frame_->Tree().Parent() && IsOnInitialEmptyDocument()) {
       // Subframe navigations from the initial empty document should always do
       // replacement.
       return WebFrameLoadType::kReplaceCurrentItem;
@@ -1053,8 +1055,27 @@ void FrameLoader::CommitNavigation(
 
   tls_version_warning_origins_.clear();
 
-  if (!DocumentLoader::WillLoadUrlAsEmpty(navigation_params->url))
-    empty_document_status_ = EmptyDocumentStatus::kNonEmpty;
+  if (!navigation_params->is_synchronous_commit_for_bug_778318 ||
+      (!navigation_params->url.IsEmpty() &&
+       !KURL(navigation_params->url).IsAboutBlankURL())) {
+    // The new document is not the synchronously committed about:blank document,
+    // so lose the initial empty document status.
+    // Note 1: The actual initial empty document commit (with commit_reason set
+    // to CommitReason::kInitialization) won't go through this path since it
+    // immediately commits the DocumentLoader, so we only check for the
+    // synchronous about:blank commit here.
+    // Note 2: Even if the navigation is a synchronous one, it might be a
+    // non-about:blank/empty URL commit that is accidentally got caught by the
+    // synchronous about:blank path but can't easily be removed due to failing
+    // tests/compatibility risk (e.g. about:mumble).
+    // TODO(https://crbug.com/1215096): Tighten the conditions in
+    // RenderFrameImpl::BeginNavigation() for a navigation to enter the
+    // synchronous commit path to only accept about:blank or an empty URL which
+    // defaults to about:blank, per the spec:
+    // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank
+    DCHECK_NE(commit_reason, CommitReason::kInitialization);
+    SetIsNotOnInitialEmptyDocument();
+  }
 
   // TODO(dgozman): navigation type should probably be passed by the caller.
   // It seems incorrect to pass |false| for |have_event| and then use

@@ -224,11 +224,22 @@
           on-token-obtained="onTokenObtained_">
       </settings-password-prompt-dialog>
     </template>
-    <template is="dom-if" if="[[showNotificationAccessSetupDialog_]]" restamp>
+    <template is="dom-if" if="[[showPermissionsSetupDialog_(
+        showPhonePermissionSetupDialog_)]]"
+        restamp>
       <settings-multidevice-notification-access-setup-dialog
           is-password-dialog-showing="{{isPasswordDialogShowing_}}"
-          on-close="onHideNotificationSetupAccessDialog_">
+          on-close="onHidePhonePermissionsSetupDialog_">
       </settings-multidevice-notification-access-setup-dialog>
+    </template>
+    <template is="dom-if"
+        if="[[showNewPermissionsSetupDialog_(
+        showPhonePermissionSetupDialog_)]]"
+        restamp>
+      <settings-multidevice-permissions-setup-dialog
+          is-password-dialog-showing="{{isPasswordDialogShowing_}}"
+          on-close="onHidePhonePermissionsSetupDialog_">
+      </settings-multidevice-permissions-setup-dialog>
     </template>
   </template>
   <script src="multidevice_page.js"></script>

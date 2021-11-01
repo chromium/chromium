@@ -55,6 +55,8 @@ const char kIsAndroidSmsPairingComplete[] = "isAndroidSmsPairingComplete";
 const char kIsNearbyShareDisallowedByPolicy[] =
     "isNearbyShareDisallowedByPolicy";
 const char kIsPhoneHubAppsAccessGranted[] = "isPhoneHubAppsAccessGranted";
+const char kIsPhoneHubPermissionsDialogSupported[] =
+    "isPhoneHubPermissionsDialogSupported";
 
 constexpr char kAndroidSmsInfoOriginKey[] = "origin";
 constexpr char kAndroidSmsInfoEnabledKey[] = "enabled";
@@ -528,6 +530,11 @@ MultideviceHandler::GeneratePageContentDataDictionary() {
        NearbyShareEnabledState::kDisallowedByPolicy);
   page_content_dictionary->SetBoolean(kIsNearbyShareDisallowedByPolicy,
                                       is_nearby_share_disallowed_by_policy);
+
+  page_content_dictionary->SetBoolean(
+      kIsPhoneHubPermissionsDialogSupported,
+      base::FeatureList::IsEnabled(
+          chromeos::features::kEchePhoneHubPermissionsOnboarding));
 
   return page_content_dictionary;
 }

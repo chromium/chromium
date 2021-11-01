@@ -84,13 +84,6 @@ export class ScanHandler {
   handleResultDocument(result, name) {}
 
   /**
-   * Handles when cancel the capture for document.
-   * @param {{resolution: !Resolution}} result
-   * @abstract
-   */
-  handleCancelDocument(result) {}
-
-  /**
    * @return {!Promise}
    * @abstract
    */
@@ -121,7 +114,6 @@ class DocumentPhotoHandler {
     const reviewResult = await this.handler_.reviewDocument(
         {blob: rawBlob, resolution}, corners);
     if (reviewResult === null) {
-      this.handler_.handleCancelDocument({resolution});
       throw new CanceledError('Cancelled after review document');
     }
     const {docBlob, mimeType} = reviewResult;

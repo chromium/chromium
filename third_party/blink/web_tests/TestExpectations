@@ -7231,3 +7231,7 @@ crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-a
 crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/1264775 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
+
+# Flaky on Windows.
+# TODO(https://crbug.com/1265311): Make the test behave the same way on all platforms
+crbug.com/1265311 [ Win7 ] http/tests/navigation/location-change-repeated-from-blank.html [ Failure Pass ]

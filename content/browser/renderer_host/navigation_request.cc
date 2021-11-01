@@ -6969,12 +6969,8 @@ bool NavigationRequest::
     return false;
   }
 
-  if (!frame_tree_node_
-           ->is_on_initial_empty_document_or_subsequent_empty_documents()) {
-    // Return if we're not on the initial empty document (or subsequent empty
-    // documents).
-    // TODO(https://crbug.com/1215096): Only replace when we're on the initial
-    // empty document (don't replace on subsequent empty documents).
+  if (!frame_tree_node_->is_on_initial_empty_document()) {
+    // Return if we're not on the initial empty document.
     return false;
   }
 

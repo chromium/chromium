@@ -3352,6 +3352,13 @@ Unknown properties are collapsed to zero. -->
   <int value="17" label="CHROME_GOT_INVALID_RESULT"/>
 </enum>
 
+<enum name="AppListSearchAction">
+  <int value="0" label="Impression"/>
+  <int value="1" label="Launch"/>
+  <int value="2" label="Abandon"/>
+  <int value="3" label="Ignore"/>
+</enum>
+
 <enum name="AppListSearchResult">
   <int value="0" label="OMNIBOX_DEPRECATED"/>
   <int value="1" label="APP_DEPRECATED"/>
@@ -3448,6 +3455,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppListUserEvent">
+  <obsolete>
+    Deprecated November 2021.
+  </obsolete>
   <int value="0" label="Impression"/>
   <int value="1" label="Launch"/>
   <int value="2" label="Abandon"/>
@@ -3458,6 +3468,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Missing notifier"/>
   <int value="1" label="Result not found"/>
   <int value="2" label="Untracked location"/>
+  <int value="3" label="Untyped result"/>
 </enum>
 
 <enum name="AppListZeroStateResultRemovalConfirmation">
@@ -10433,6 +10444,11 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BootstrapTaskRunnerType">
   <int value="0" label="Posts at back of queue"/>
   <int value="1" label="Posts at front of queue"/>
+</enum>
+
+<enum name="BorealisGameModeResult">
+  <int value="0" label="Attempted"/>
+  <int value="1" label="Failed"/>
 </enum>
 
 <enum name="BorealisGetDiskInfoResult">
@@ -36531,6 +36547,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="Unhandled Error"/>
   <int value="2" label="Unhandled Rejection"/>
+  <int value="3" label="Caught Exception"/>
 </enum>
 
 <enum name="FileManagerListType">
@@ -48988,6 +49005,7 @@ from previous Chrome versions.
   <int value="-1466759286" label="TabModalJsDialog:disabled"/>
   <int value="-1466600231" label="WakeOnWifiAllowed:enabled"/>
   <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
+  <int value="-1466100014" label="EchePhoneHubPermissionsOnboarding:disabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
@@ -52750,6 +52768,7 @@ from previous Chrome versions.
   <int value="1394896630" label="PrinterStatusDialog:enabled"/>
   <int value="1397053154" label="ContextualSearchLiteralSearchTap:enabled"/>
   <int value="1397069250" label="NetworkService:disabled"/>
+  <int value="1398044738" label="EchePhoneHubPermissionsOnboarding:enabled"/>
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
   <int value="1399950951" label="AutofillTokenPrefixMatching:disabled"/>
@@ -63769,6 +63788,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1100" label="Manage Other People V2"/>
   <int value="1101" label="Security And Sign In V2"/>
   <int value="1102" label="Fingerprint V2"/>
+  <int value="1103" label="Smart Privacy Protections"/>
   <int value="1200" label="Languages And Input Details"/>
   <int value="1201" label="Manage Input Methods"/>
   <int value="1202" label="Smart Inputs"/>
@@ -64423,14 +64443,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Metric value was less than 10 seconds"/>
 </enum>
 
-<enum name="PageLoadType">
-  <int value="0" label="Never foregrounded"/>
-  <int value="1"
-      label="Aborted: was foregrounded but never reached first contentful
-             paint"/>
-  <int value="2" label="Was foregrounded and reached first contentful paint"/>
-</enum>
-
 <enum name="PageScaleFactorRange">
   <int value="0" label="&lt;25%"/>
   <int value="1" label="25-49%"/>
@@ -64578,6 +64590,14 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PageUsed">
   <int value="0" label="Discarded"/>
   <int value="1" label="Used"/>
+</enum>
+
+<enum name="PageVisitFinalStatus">
+  <int value="0" label="Never foregrounded"/>
+  <int value="1"
+      label="Aborted: was foregrounded but never reached first contentful
+             paint"/>
+  <int value="2" label="Was foregrounded and reached first contentful paint"/>
 </enum>
 
 <enum name="PageVisitTransitionType">
@@ -87790,6 +87810,55 @@ others/histograms.xml -->
   <int value="3" label="Third Party (Android)"/>
   <int value="4" label="PPTP"/>
   <int value="5" label="WireGuard"/>
+</enum>
+
+<enum name="VPNIPsecDHGroup">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="ECP_256"/>
+  <int value="2" label="ECP_384"/>
+  <int value="3" label="ECP_521"/>
+  <int value="4" label="ECP_256_BP"/>
+  <int value="5" label="ECP_384_BP"/>
+  <int value="6" label="ECP_512_BP"/>
+  <int value="7" label="CURVE_25519"/>
+  <int value="8" label="CURVE_448"/>
+  <int value="9" label="MODP_1024"/>
+  <int value="10" label="MODP_1536"/>
+  <int value="11" label="MODP_2048"/>
+  <int value="12" label="MODP_3072"/>
+  <int value="13" label="MODP_4096"/>
+  <int value="14" label="MODP_6144"/>
+  <int value="15" label="MODP_8192"/>
+</enum>
+
+<enum name="VPNIPsecEncryptionAlgorithm">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="AES_CBC_128"/>
+  <int value="2" label="AES_CBC_192"/>
+  <int value="3" label="AES_CBC_256"/>
+  <int value="4" label="CAMELLIA_CBC_128"/>
+  <int value="5" label="CAMELLIA_CBC_192"/>
+  <int value="6" label="CAMELLIA_CBC_256"/>
+  <int value="7" label="3DES_CBC"/>
+  <int value="8" label="AES_GCM_16_128"/>
+  <int value="9" label="AES_GCM_16_192"/>
+  <int value="10" label="AES_GCM_16_256"/>
+  <int value="11" label="AES_GCM_12_128"/>
+  <int value="12" label="AES_GCM_12_192"/>
+  <int value="13" label="AES_GCM_12_256"/>
+  <int value="14" label="AES_GCM_8_128"/>
+  <int value="15" label="AES_GCM_8_192"/>
+  <int value="16" label="AES_GCM_8_256"/>
+</enum>
+
+<enum name="VPNIPsecIntegrirtyAlgorithm">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="HMAC_SHA2_256_128"/>
+  <int value="2" label="HMAC_SHA2_384_192"/>
+  <int value="3" label="HMAC_SHA2_512_256"/>
+  <int value="4" label="HMAC_SHA1_96"/>
+  <int value="5" label="AES_XCBC_96"/>
+  <int value="6" label="AES_CMAC_96"/>
 </enum>
 
 <enum name="VPNL2TPIPsecTunnelGroupUsage">

@@ -20,10 +20,16 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   FakeResourcedClient& operator=(const FakeResourcedClient&) = delete;
 
   // ResourcedClient:
-  void SetGameMode(bool state, DBusMethodCallback<bool> callback) override;
+  void SetGameModeWithTimeout(bool state,
+                              uint32_t refresh_seconds,
+                              DBusMethodCallback<bool> callback) override;
 
-  void set_set_game_mode_response(absl::optional<bool> set_game_mode_response) {
-    set_game_mode_response_ = set_game_mode_response;
+  void set_set_game_mode_response(absl::optional<bool> response) {
+    set_game_mode_response_ = response;
+  }
+
+  void set_set_game_mode_with_timeout_response(absl::optional<bool> response) {
+    previous_game_mode_state_ = response;
   }
 
   int get_enter_game_mode_count() const { return enter_game_mode_count_; }
@@ -42,6 +48,7 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
 
  private:
   absl::optional<bool> set_game_mode_response_;
+  absl::optional<bool> previous_game_mode_state_ = false;
 
   int enter_game_mode_count_ = 0;
   int exit_game_mode_count_ = 0;

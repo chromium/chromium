@@ -2592,6 +2592,9 @@ extern const char kESimPolicyDescription[];
 extern const char kTrimOnMemoryPressureName[];
 extern const char kTrimOnMemoryPressureDescription[];
 
+extern const char kEchePhoneHubPermissionsOnboardingName[];
+extern const char kEchePhoneHubPermissionsOnboardingDescription[];
+
 extern const char kEcheSWAName[];
 extern const char kEcheSWADescription[];
 
