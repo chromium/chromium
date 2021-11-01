@@ -4,11 +4,14 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 
+#include <sys/mman.h>
+
+#include <cstddef>
+#include <cstring>
 #include <utility>
 
-#include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/unguessable_token.h"
 #include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
@@ -112,26 +115,26 @@ WaylandKeyboard::~WaylandKeyboard() {
 void WaylandKeyboard::Keymap(void* data,
                              wl_keyboard* obj,
                              uint32_t format,
-                             int32_t keymap_fd,
+                             int32_t fd,
                              uint32_t size) {
   WaylandKeyboard* keyboard = static_cast<WaylandKeyboard*>(data);
   DCHECK(keyboard);
 
-  base::ScopedFD fd(keymap_fd);
-  auto length = size - 1;
-  auto shmen = base::subtle::PlatformSharedMemoryRegion::Take(
-      std::move(fd), base::subtle::PlatformSharedMemoryRegion::Mode::kUnsafe,
-      length, base::UnguessableToken::Create());
-  auto mapped_memory =
-      base::UnsafeSharedMemoryRegion::Deserialize(std::move(shmen)).Map();
-  const char* keymap = mapped_memory.GetMemoryAs<char>();
-
-  if (!keymap || format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
+  if (!data || format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1)
     return;
 
-  bool success = keyboard->layout_engine_->SetCurrentLayoutFromBuffer(
-      keymap, mapped_memory.size());
-  DCHECK(success) << "Failed to set the XKB keyboard mapping.";
+  void* keymap = mmap(nullptr, size, PROT_READ, MAP_SHARED, fd, 0);
+  if (keymap == MAP_FAILED) {
+    DPLOG(ERROR) << "Failed to map XKB keymap.";
+    return;
+  }
+
+  const char* keymap_string = static_cast<const char*>(keymap);
+  if (!keyboard->layout_engine_->SetCurrentLayoutFromBuffer(
+          keymap_string, strnlen(keymap_string, size))) {
+    DLOG(ERROR) << "Failed to set XKB keymap.";
+  }
+  munmap(keymap, size);
 }
 
 void WaylandKeyboard::Enter(void* data,
