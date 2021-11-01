@@ -6,8 +6,16 @@
     <style include="cr-icons cr-shared-style"></style>
     <style>
       :host {
+        --nearby-page-linear-gradient-color-start: var(--google-blue-50);
         --nearby-page-space-block: 24px;
         --nearby-page-space-inline: 24px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host {
+          --nearby-page-linear-gradient-color-start:
+              rgba(var(--google-blue-300-rgb), 0.2);
+        }
       }
 
       #pageContainer {
