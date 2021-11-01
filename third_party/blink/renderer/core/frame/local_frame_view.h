@@ -741,6 +741,7 @@ class CORE_EXPORT LocalFrameView final
 
   bool HasDominantVideoElement() const;
 
+  // Gets the fullscreen overlay layer if present, or nullptr if there is none.
   PaintLayer* GetFullScreenOverlayLayer() const;
 
   void RunPaintBenchmark(int repeat_count, cc::PaintBenchmarkResult& result);
