@@ -138,6 +138,7 @@ void AppListTestModel::MoveItemToFolder(AppListItem* item,
   AppListModel::MoveItemToFolder(item, folder_id);
 }
 
+// static
 std::string AppListTestModel::GetItemName(int id) {
   return base::StringPrintf("Item %d", id);
 }
