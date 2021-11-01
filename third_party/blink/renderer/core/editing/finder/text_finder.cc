@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
+#include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -91,26 +92,20 @@ void TextFinder::FindMatch::Trace(Visitor* visitor) const {
   visitor->Trace(range_);
 }
 
-static void ScrollToVisible(Range* match) {
-  const EphemeralRangeInFlatTree range(match);
-  const Node& first_node = *match->FirstNode();
-
+static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
+  const Node& first_node = *range->FirstNode();
   bool needs_style_and_layout = false;
 
   if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
     // TODO(vmpstr): Rework this, since it is only used for bookkeeping.
-    DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(range);
+    DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
+        EphemeralRangeInFlatTree(range));
 
     // We need to update the style and layout since the event dispatched may
     // have modified it, and we need up-to-date layout to ScrollRectToVisible
     // below.
     needs_style_and_layout = true;
   }
-
-  // TODO(crbug.com/1250847): Make ExpandDetailsAncestors and
-  // RevealHiddenUntilFoundAncestors work better with iframes.
-  // It seems like Document::EnqueueAnimationFrameTask isn't getting fired for
-  // some iframes.
 
   // If the active match is hidden inside a <details> element, then we should
   // expand it so find-in-page can scroll to it.
@@ -128,6 +123,38 @@ static void ScrollToVisible(Range* match) {
           first_node.GetExecutionContext()) &&
       DisplayLockUtilities::RevealHiddenUntilFoundAncestors(first_node);
 
+  // Also reveal expandables up the frame tree.
+  for (Frame *frame = first_node.GetDocument().GetFrame(),
+             *parent = frame->Parent();
+       frame && parent; frame = parent, parent = parent->Parent()) {
+    LocalFrame* local_parent = DynamicTo<LocalFrame>(parent);
+    LocalFrame* local_frame = DynamicTo<LocalFrame>(frame);
+
+    if (local_frame && local_parent) {
+      // TODO(crbug.com/1250847): Consider replacing the usage of
+      // DeprecatedLocalOwner with a virtual function on FrameOwner when
+      // implementing this for RemoteFrames.
+      HTMLFrameOwnerElement* frame_element =
+          local_frame->DeprecatedLocalOwner();
+      DCHECK(frame_element);
+      bool frame_needs_style_and_layout = false;
+      frame_needs_style_and_layout |=
+          RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled() &&
+          HTMLDetailsElement::ExpandDetailsAncestors(*frame_element);
+      frame_needs_style_and_layout |=
+          RuntimeEnabledFeatures::BeforeMatchEventEnabled(
+              frame_element->GetExecutionContext()) &&
+          DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*frame_element);
+      if (frame_needs_style_and_layout) {
+        frame_element->GetDocument().UpdateStyleAndLayoutForNode(
+            frame_element, DocumentUpdateReason::kFindInPage);
+      }
+    } else {
+      // TODO(crbug.com/1250847): Implement an IPC signal to expand in parent
+      // RemoteFrames.
+    }
+  }
+
   if (needs_style_and_layout) {
     // If we changed dom or style in order to reveal the target element, then we
     // have to update style and layout before scrolling The modified attributes
@@ -135,6 +162,13 @@ static void ScrollToVisible(Range* match) {
     first_node.GetDocument().UpdateStyleAndLayoutForNode(
         &first_node, DocumentUpdateReason::kFindInPage);
   }
+}
+
+static void ScrollToVisible(Range* match) {
+  const EphemeralRangeInFlatTree range(match);
+  const Node& first_node = *match->FirstNode();
+
+  AutoExpandSearchableHiddenElementsUpFrameTree(match);
 
   // We don't always have a LayoutObject for the node we're trying to scroll to
   // after the async step: crbug.com/1129341
