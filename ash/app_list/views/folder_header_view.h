@@ -69,8 +69,11 @@ class ASH_EXPORT FolderHeaderView : public views::View,
   // Returns true if folder name is enabled, only for testing use.
   bool IsFolderNameEnabledForTest() const;
 
-  // Returns elided folder name from |folder_name|.
-  std::u16string GetElidedFolderName(const std::u16string& folder_name) const;
+  // Returns the folder name.
+  std::u16string GetFolderName() const;
+
+  // Returns elided folder name.
+  std::u16string GetElidedFolderName() const;
 
   // Returns whether |folder_name_view_| should clear focus based on
   // |key_event_|.

@@ -122,7 +122,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
   void OnFocus() override {
     SetNameViewBorderAndBackground(/*is_active=*/true);
-    SetText(base::UTF8ToUTF16(folder_header_view_->folder_item_->name()));
+    SetText(folder_header_view_->GetFolderName());
     starting_name_ = GetText();
     folder_header_view_->previous_folder_name_ = starting_name_;
 
@@ -140,8 +140,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
         this, base::CollapseWhitespace(GetText(), false));
 
     // Ensure folder name is truncated when FolderNameView loses focus.
-    SetText(folder_header_view_->GetElidedFolderName(
-        base::UTF8ToUTF16(folder_header_view_->folder_item_->name())));
+    SetText(folder_header_view_->GetElidedFolderName());
 
     // Record metric each time a folder is renamed.
     if (GetText() != starting_name_) {
@@ -307,8 +306,7 @@ void FolderHeaderView::Update() {
 
   folder_name_view_->SetVisible(folder_name_visible_);
   if (folder_name_visible_) {
-    std::u16string folder_name = base::UTF8ToUTF16(folder_item_->name());
-    std::u16string elided_folder_name = GetElidedFolderName(folder_name);
+    std::u16string elided_folder_name = GetElidedFolderName();
     folder_name_view_->SetText(elided_folder_name);
     UpdateFolderNameAccessibleName();
   }
@@ -360,9 +358,19 @@ int FolderHeaderView::GetMaxFolderNameCharLengthForTest() const {
   return kMaxFolderNameChars;
 }
 
-std::u16string FolderHeaderView::GetElidedFolderName(
-    const std::u16string& folder_name) const {
+std::u16string FolderHeaderView::GetFolderName() const {
+  if (!folder_item_)
+    return std::u16string();
+
+  return base::UTF8ToUTF16(folder_item_->name());
+}
+
+std::u16string FolderHeaderView::GetElidedFolderName() const {
+  if (!folder_item_)
+    return std::u16string();
+
   // Enforce the maximum folder name length.
+  std::u16string folder_name = GetFolderName();
   std::u16string name = folder_name.substr(0, kMaxFolderNameChars);
 
   // Get maximum text width for fitting into |folder_name_view_|.
