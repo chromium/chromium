@@ -431,6 +431,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
       ChromePage::POINTEROVERLAY,
       base_url.Resolve(chromeos::settings::mojom::kPointersSubpagePath));
   TestOpenOSSettingsChromePage(
+      ChromePage::SMARTPRIVACY,
+      base_url.Resolve(chromeos::settings::mojom::kSmartPrivacySubpagePath));
+  TestOpenOSSettingsChromePage(
       ChromePage::STORAGE,
       base_url.Resolve(chromeos::settings::mojom::kStorageSubpagePath));
   TestOpenOSSettingsChromePage(

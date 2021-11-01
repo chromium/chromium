@@ -109,6 +109,8 @@ const std::vector<SearchConcept>& GetPrivacySearchConcepts() {
             {.subpage = mojom::Subpage::kSecurityAndSignIn}}});
     }
 
+    // TODO(chromium:1262869): add smart privacy search concepts.
+
     return all_tags;
   }());
 
@@ -351,6 +353,12 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageOtherPeopleV2,
                             kManageOtherPeopleSettings, generator);
+
+  // Smart privacy.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_SMART_PRIVACY_TITLE, mojom::Subpage::kSmartPrivacy,
+      mojom::SearchResultIcon::kShield, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kSmartPrivacySubpagePath);
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {

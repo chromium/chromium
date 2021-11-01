@@ -95,6 +95,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2,
       chromeos::settings::mojom::kFingerprintSubpagePathV2,
       chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2,
+      chromeos::settings::mojom::kSmartPrivacySubpagePath,
 
       // Languages and Input section.
       chromeos::settings::mojom::kLanguagesAndInputSectionPath,
