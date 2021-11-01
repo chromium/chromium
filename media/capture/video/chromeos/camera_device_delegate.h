@@ -235,6 +235,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
       const std::string& range_name,
       const absl::optional<int32_t>& current);
 
+  bool ShouldUseBlobVideoSnapshot();
+
   // CaptureMetadataDispatcher::ResultMetadataObserver implementation.
   void OnResultMetadataAvailable(
       uint32_t frame_number,

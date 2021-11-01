@@ -20,6 +20,7 @@ import {
   GifSaver,
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
+import {DeviceOperator} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
@@ -354,12 +355,33 @@ export class Video extends ModeBase {
   }
 
   /**
+   * @return {!Promise<boolean>} Returns whether taking video sanpshot via Blob
+   *     stream is enabled.
+   */
+  async isBlobVideoSnapshotEnabled() {
+    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
+    return deviceOperator !== null &&
+        (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId));
+  }
+
+  /**
    * Takes a video snapshot during recording.
    * @return {!Promise} Promise resolved when video snapshot is finished.
    */
   takeSnapshot() {
     const doSnapshot = async () => {
-      const blob = await this.crosImageCapture_.grabJpegFrame();
+      let blob;
+      if (await this.isBlobVideoSnapshotEnabled()) {
+        const photoSettings = /** @type {!PhotoSettings} */ ({
+          imageWidth: this.captureResolution_.width,
+          imageHeight: this.captureResolution_.height,
+        });
+        const results = await this.crosImageCapture_.takePhoto(photoSettings);
+        blob = await results[0];
+      } else {
+        blob = await this.crosImageCapture_.grabJpegFrame();
+      }
 
       this.handler_.playShutterEffect();
       const imageName = (new Filenamer()).newImageName();
@@ -484,7 +506,14 @@ export class Video extends ModeBase {
           this.captureConstraints_);
     }
     if (this.crosImageCapture_ === null) {
-      this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
+      if (await this.isBlobVideoSnapshotEnabled()) {
+        // Blob stream is configured on the original device rather than the
+        // virtual one when multi-stream is enabled.
+        this.crosImageCapture_ =
+            new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+      } else {
+        this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
+      }
     }
 
     try {
