@@ -2930,8 +2930,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="ContentSettingsType" separator=".">
   <suffix name="app-banner" label="App banner exceptions"/>
+  <suffix name="auto-dark-web-content"
+      label="Auto-dark web contents exceptions"/>
   <suffix name="auto-select-certificate" label="Auto-select cert exceptions"/>
-  <suffix name="auto-dark-web-content" label="Auto-dark web contents exceptions"/>
   <suffix name="automatic-downloads" label="Automatic downloads exceptions"/>
   <suffix name="autoplay" label="Autoplay exception"/>
   <suffix name="background-sync" label="Background sync exceptions"/>
@@ -9868,9 +9869,6 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageProviders" separator=".">
-  <obsolete>
-    Removed in 06 2021.
-  </obsolete>
   <suffix name="allowlist"
       label="Installed allowlist entry point suggestions."/>
   <suffix name="client" label="Suggestions coming from the client."/>
