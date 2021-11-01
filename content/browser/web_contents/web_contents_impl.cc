@@ -91,6 +91,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/text_input_manager.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/screen_enumeration/screen_change_monitor.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/site_instance_impl.h"
@@ -9115,6 +9116,25 @@ void WebContentsImpl::UpdateBrowserControlsState(
   // Browser controls should be synchronised with the scroll state. Therefore,
   // they are controlled from the renderer by the main RenderFrame(Host).
   GetPrimaryPage().UpdateBrowserControlsState(constraints, current, animate);
+}
+
+void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
+                                            bool destination_is_loaded) {
+  auto* trigger = GetVisibleTimeRequestTrigger();
+  if (!trigger)
+    return;
+  trigger->SetRecordContentToVisibleTimeRequest(
+      start_time, destination_is_loaded, /*show_reason_tab_switching=*/true,
+      /*show_reason_unoccluded=*/false,
+      /*show_reason_bfcache_restore=*/false);
+}
+
+VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {
+  if (auto* view =
+          static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())) {
+    return view->GetVisibleTimeRequestTrigger();
+  }
+  return nullptr;
 }
 
 }  // namespace content
