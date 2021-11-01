@@ -7577,6 +7577,8 @@ static_library("test_support") {
       "sharesheet/sharesheet_test_util.h",
       "ui/app_list/test/chrome_app_list_test_support.cc",
       "ui/app_list/test/chrome_app_list_test_support.h",
+      "ui/app_list/test/test_app_list_controller.cc",
+      "ui/app_list/test/test_app_list_controller.h",
       "ui/app_list/test/test_app_list_controller_delegate.cc",
       "ui/app_list/test/test_app_list_controller_delegate.h",
     ]
