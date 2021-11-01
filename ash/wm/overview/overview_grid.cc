@@ -979,10 +979,13 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
     return;
 
   // Do not create or show the save desk as template button if there are no
-  // windows in this grid, during a window drag or in tablet mode.
-  const bool visible = !window_list_.empty() &&
-                       !overview_session_->GetCurrentDraggedOverviewItem() &&
-                       !Shell::Get()->tablet_mode_controller()->InTabletMode();
+  // windows in this grid, during a window drag or in tablet mode, or the desks
+  // templates grid is visible.
+  const bool visible =
+      !window_list_.empty() &&
+      !overview_session_->GetCurrentDraggedOverviewItem() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !IsShowingDesksTemplatesGrid();
 
   if (!visible) {
     if (save_desk_as_template_widget_)
@@ -992,7 +995,6 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
 
   if (!save_desk_as_template_widget_) {
     save_desk_as_template_widget_ = SaveDeskAsTemplateWidget(root_window_);
-    // TODO(sophiewen): Replace button label with localized text string.
     save_desk_as_template_widget_->SetContentsView(new PillButton(
         base::BindRepeating(&OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
                             base::Unretained(this)),
