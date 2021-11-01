@@ -127,7 +127,9 @@ void ParentAccessUI::SetUpResources() {
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
   source->AddString("webviewUrl", web_content_url_.spec());
-  source->AddString("eventOriginFilter", web_content_url_.spec());
+  // Set the filter to accept postMessages from the webviewURL's origin only.
+  source->AddString("eventOriginFilter",
+                    web_content_url_.GetWithEmptyPath().spec());
 
   // Enables use of test_loader.html
   webui::SetJSModuleDefaults(source.get());
