@@ -81,7 +81,8 @@ GURL StreamingRuntimeApplication::ProcessWebView(
 
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
-      task_runner(), network_context_getter_, std::move(client_port), this);
+      task_runner(), network_context_getter_, std::move(client_port), this,
+      true, true);
   receiver_session_client_->LaunchStreamingReceiverAsync(cast_web_contents);
 
   std::string streaming_url =

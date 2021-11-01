@@ -62,7 +62,9 @@ class StreamingReceiverSessionClient
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      Handler* handler);
+      Handler* handler,
+      bool supports_audio,
+      bool supports_video);
 
   ~StreamingReceiverSessionClient() override;
 
@@ -129,7 +131,9 @@ class StreamingReceiverSessionClient
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       cast_streaming::NetworkContextGetter network_context_getter,
       ReceiverSessionFactory factory,
-      Handler* handler);
+      Handler* handler,
+      bool supports_audio,
+      bool supports_video);
 
   friend inline LaunchState operator&(LaunchState first, LaunchState second) {
     return static_cast<LaunchState>(static_cast<int32_t>(first) &
@@ -193,6 +197,10 @@ class StreamingReceiverSessionClient
 
   // Current state in initialization of |receiver_session_|.
   LaunchState streaming_state_ = LaunchState::kStopped;
+
+  // Tracks if this session should be initiated as audio or video only.
+  bool supports_audio_ = true;
+  bool supports_video_ = true;
 
   base::WeakPtrFactory<StreamingReceiverSessionClient> weak_factory_;
 };
