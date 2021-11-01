@@ -390,10 +390,19 @@ void ChromeContentRendererClient::RenderThreadStarted() {
       base::BindRepeating(&CreateV8Unwinder,
                           base::Unretained(v8::Isolate::GetCurrent())));
 
+  const bool is_extension = IsStandaloneContentExtensionProcess();
+
   thread->SetRendererProcessType(
-      IsStandaloneContentExtensionProcess()
+      is_extension
           ? blink::scheduler::WebRendererProcessType::kExtensionRenderer
           : blink::scheduler::WebRendererProcessType::kRenderer);
+
+  if (is_extension) {
+    // The process name was set to "Renderer" in RendererMain(). Update it to
+    // "Extension Renderer" to highlight that it's hosting an extension.
+    base::trace_event::TraceLog::GetInstance()->set_process_name(
+        "Extension Renderer");
+  }
 
 #if defined(OS_WIN)
   mojo::PendingRemote<mojom::ModuleEventSink> module_event_sink;
