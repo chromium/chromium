@@ -2149,7 +2149,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     FrameTreeNode* child = root->child_at(0u);
 
     EXPECT_FALSE(injector.original_receiver_of_last_commit().is_valid());
-    EXPECT_TRUE(child->has_committed_real_load());
+    EXPECT_FALSE(child->is_on_initial_empty_document());
     EXPECT_EQ(subframe_url, child->current_url());
   }
 }
@@ -2201,7 +2201,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0u);
 
-  EXPECT_FALSE(child->has_committed_real_load());
+  EXPECT_TRUE(child->is_on_initial_empty_document());
   EXPECT_EQ(kSubframeURLTwo, child->current_url());
   EXPECT_EQ(url::Origin::Create(kMainFrameURL), child->current_origin());
 
@@ -2215,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(
   commit_observer.WaitForCommit();
   EXPECT_FALSE(injector.original_receiver_of_last_commit().is_valid());
 
-  EXPECT_TRUE(child->has_committed_real_load());
+  EXPECT_FALSE(child->is_on_initial_empty_document());
   EXPECT_EQ(kSubframeURLThree, child->current_url());
   EXPECT_EQ(url::Origin::Create(kMainFrameURL), child->current_origin());
 }

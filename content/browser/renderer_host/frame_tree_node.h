@@ -175,14 +175,6 @@ class CONTENT_EXPORT FrameTreeNode {
   void DidCommitNonInitialEmptyDocument();
 
   // Returns true if the frame has committed a document that is not the initial
-  // empty document. For more details, see the definition of
-  // `has_committed_real_load_`.
-  // TODO(https://crbug.com/1215096): Migrate most usage of
-  // has_committed_real_load() to call
-  // is_on_initial_empty_document() instead and remove this.
-  bool has_committed_real_load() const { return has_committed_real_load_; }
-
-  // Returns true if the frame has committed a document that is not the initial
   // empty document, or if the current document's input stream has been opened
   // with document.open(), causing the document to lose its "initial empty
   // document" status. For more details, see the definition of
@@ -616,14 +608,6 @@ class CONTENT_EXPORT FrameTreeNode {
   // - https://github.com/whatwg/html/issues/6863
   // - https://crbug.com/1215096
   bool is_on_initial_empty_document_ = true;
-
-  // Similar to `is_on_initial_empty_document_`, but is unaffected by
-  // document.open() opening the input stream of the document. In other words,
-  // `has_committed_real_load_` is false iff SetCurrentUrl() has been called
-  // for a non-initial-empty-document commit.
-  // TODO(https://crbug.com/1215096): Migrate all current usage of this to
-  // use `is_on_initial_empty_document_` instead and remove this.
-  bool has_committed_real_load_ = false;
 
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;

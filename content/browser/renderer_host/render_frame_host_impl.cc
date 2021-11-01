@@ -1421,8 +1421,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   if (lifecycle_state_ != LifecycleStateImpl::kSpeculative) {
     // Creating a RFH in kActive state implies that it is the RFH for a
-    // newly-created FTN, which should not have committed a real load yet.
-    DCHECK(!frame_tree_node_->has_committed_real_load());
+    // newly-created FTN, which should still be on its initial empty document.
+    DCHECK(frame_tree_node_->is_on_initial_empty_document());
 
     // The initial empty document gets its sandbox flags from either:
     // 1. The parent + iframe.sandbox for <iframe>.
@@ -11016,15 +11016,15 @@ void RenderFrameHostImpl::DidCommitNavigation(
     BindBrowserInterfaceBrokerReceiver(
         std::move(interface_params->browser_interface_broker_receiver));
   } else {
-    // If there had already been a real load committed in the frame, and this is
-    // not a same-document navigation, then both the active document as well as
-    // the global object was replaced in this browsing context. The RenderFrame
+    // If the frame is no longer on the initial empty document, and this is not
+    // a same-document navigation, then both the active document as well as the
+    // global object was replaced in this browsing context. The RenderFrame
     // should have rebound its BrowserInterfaceBroker to a new pipe, but failed
     // to do so. Kill the renderer, and reset the old receiver to ensure that
     // any pending interface requests originating from the previous document,
     // hence possibly from a different security origin, will no longer be
     // dispatched.
-    if (frame_tree_node_->has_committed_real_load()) {
+    if (!frame_tree_node_->is_on_initial_empty_document()) {
       broker_receiver_.reset();
       bad_message::ReceivedBadMessage(
           process, bad_message::RFH_INTERFACE_PROVIDER_MISSING);
@@ -11888,8 +11888,6 @@ void RenderFrameHostImpl::
                         request->commit_params().original_url.EqualsIgnoringRef(
                             GetLastCommittedURL()));
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "committed_real_load",
-                        request->frame_tree_node()->has_committed_real_load());
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "on_initial_empty_doc",
       request->frame_tree_node()->is_on_initial_empty_document());

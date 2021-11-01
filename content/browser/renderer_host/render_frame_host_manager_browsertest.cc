@@ -3993,7 +3993,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, CoReferencingFrames) {
   FrameTreeNode* bottom_child =
       root->child_at(0)->child_at(0)->child_at(0)->child_at(0);
   EXPECT_TRUE(bottom_child->current_url().is_empty());
-  EXPECT_FALSE(bottom_child->has_committed_real_load());
+  EXPECT_TRUE(bottom_child->is_on_initial_empty_document());
 }
 
 // Ensures that nested subframes with the same URL but different fragments can
@@ -4073,6 +4073,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   const GURL kExpectedSiteURL = AreDefaultSiteInstancesEnabled()
                                     ? SiteInstanceImpl::GetDefaultSiteURL()
                                     : GURL("http://a.com/");
+  // The FrameTreeVisualizer test ensure that the childmost frame is not loaded.
   EXPECT_EQ(std::string(" Site A\n"
                         "   +--Site A\n"
                         "        +--Site A\n"
@@ -4083,10 +4084,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             root->child_at(0)->child_at(0)->current_url());
 
-  // The frame is no longer on the initial empty document, but we don't consider
-  // it as having committed a real load.  The FrameTreeVisualizer test should be
-  // enough to ensure that the childmost frame is not loaded.
-  EXPECT_FALSE(root->child_at(0)->child_at(0)->has_committed_real_load());
+  // The frame is no longer on the initial empty document.
   EXPECT_FALSE(root->child_at(0)->child_at(0)->is_on_initial_empty_document());
 }
 

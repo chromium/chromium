@@ -3938,7 +3938,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child1" subframe to |url_2|.
@@ -3964,7 +3963,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child2" subframe to about:blank#foo, creating a
@@ -3977,7 +3975,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The subframe should still be on the initial empty document.
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child2" subframe to |url_2|.
@@ -3989,7 +3986,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The subframe should no longer be on the initial empty document.
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
   }
 
@@ -4007,7 +4003,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The new subframe should not be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child3" subframe to |url_2|.
@@ -4032,7 +4027,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child4" subframe to |url_2|.
@@ -4044,7 +4038,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The subframe should no longer be on the initial empty document.
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
   }
 
@@ -4061,7 +4054,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
     EXPECT_EQ(GURL("about:blank"), new_subframe->current_url());
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a document.open() on it.
@@ -4083,10 +4075,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(
         url_1,
         new_subframe->current_frame_host()->last_document_url_in_renderer());
-    // The frame lost its "initial empty document" status, but
-    // `has_committed_real_load` is still false because the last committed URL
-    // stays the same.
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
+    // The frame lost its "initial empty document" status.
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child5" subframe to |url_2|.
@@ -4097,9 +4086,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     expected_entry_count++;
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
-    // The frame's '`has_committed_real_load` is now true now that it has
-    // committed another document.
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
+    // The frame should still be marked as no longer being on the initial empty
+    // document.
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
   }
 
@@ -4116,7 +4104,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child6" subframe to |url_2|.
@@ -4128,7 +4115,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The subframe should no longer be on the initial empty document.
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
   }
 
@@ -4146,7 +4132,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The new subframe should be on the initial empty document.
     FrameTreeNode* new_subframe = root->child_at(subframe_index);
-    EXPECT_FALSE(new_subframe->has_committed_real_load());
     EXPECT_TRUE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child7" subframe to about:blank?foo, creating a
@@ -4161,7 +4146,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The subframe should no longer be on the the initial empty document.
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
 
     // Do a navigation on the "child7" subframe to |url_2|.
@@ -4173,7 +4157,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(expected_entry_count, controller.GetEntryCount());
 
     // The subframe is not on the initial empty document.
-    EXPECT_TRUE(new_subframe->has_committed_real_load());
     EXPECT_FALSE(new_subframe->is_on_initial_empty_document());
   }
 }
@@ -4227,7 +4210,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window should be on the initial empty document.
     FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to about:blank will be classified as NEW_ENTRY
@@ -4238,7 +4220,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_TRUE(controller.GetLastCommittedEntry());
 
     // The window is no longer on the initial empty document.
-    EXPECT_TRUE(new_root->has_committed_real_load());
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to about:blank#foo will be classified as a same-
@@ -4251,7 +4232,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window is still marked as no longer being on the initial empty
     // document.
-    EXPECT_TRUE(new_root->has_committed_real_load());
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
   }
 
@@ -4270,7 +4250,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window should be on the initial empty document.
     FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to about:blank#foo will be classified as a same-
@@ -4283,7 +4262,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_TRUE(controller.GetLastCommittedEntry());
 
     // The window should still be on the initial empty document.
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
   }
 
@@ -4304,7 +4282,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window should be on the initial empty document.
     FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Do a navigation on the window to about:blank#foo, creating a
@@ -4322,7 +4299,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     last_entry = controller.GetLastCommittedEntry();
 
     // The window should still be on the initial empty document.
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
@@ -4331,8 +4307,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(3, controller.GetEntryCount());
     EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
 
-    // The window is no longer on the initial empty document.
-    EXPECT_TRUE(new_root->has_committed_real_load());
+    // The window is no longer on theinitial empty document.
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
   }
 
@@ -4352,7 +4327,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window should be on the initial empty document.
     FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigate to |url_2|, and ensure that we won't wait for the |hung_url|
@@ -4363,7 +4337,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_TRUE(controller.GetLastCommittedEntry());
 
     // The window is no longer on the initial empty document.
-    EXPECT_TRUE(new_root->has_committed_real_load());
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
   }
 
@@ -4381,7 +4354,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window should be on its initial empty document.
     FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Do a document.open() on the blank window.
@@ -4404,10 +4376,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(main_window_url,
               new_contents->GetMainFrame()->last_document_url_in_renderer());
 
-    // The window lost its "initial empty document" status, but
-    // `has_committed_real_load` is still false because the last committed URL
-    // stays the same.
-    EXPECT_FALSE(new_root->has_committed_real_load());
+    // The window lost its "initial empty document" status.
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
@@ -4415,11 +4384,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
     EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_TRUE(controller.GetLastCommittedEntry());
-
-    // The window's `has_committed_real_load` status is now true after it
-    // committed a new document that replaced the initial empty document.
-    EXPECT_TRUE(new_root->has_committed_real_load());
-    EXPECT_FALSE(new_root->is_on_initial_empty_document());
   }
 
   // 7) Navigate to |url_2| on a new window that has navigated to a javascript:
@@ -4438,7 +4402,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // The window should be on its initial empty document.
     FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
-    EXPECT_FALSE(new_root->has_committed_real_load());
     EXPECT_TRUE(new_root->is_on_initial_empty_document());
 
     // Navigating the window to |url_2| will be classified as NEW_ENTRY and will
@@ -4448,7 +4411,6 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_TRUE(controller.GetLastCommittedEntry());
 
     // The window is no longer on the initial empty document.
-    EXPECT_TRUE(new_root->has_committed_real_load());
     EXPECT_FALSE(new_root->is_on_initial_empty_document());
   }
 }
@@ -4791,7 +4753,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 // Verify the tree of FrameNavigationEntries after initial about:blank commits
-// in subframes, which should not count as real committed loads.
+// in subframes should keep its "initial empty document" status.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        FrameNavigationEntry_BlankAutoSubframe) {
   GURL about_blank_url(url::kAboutBlankURL);
@@ -4827,7 +4789,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_FALSE(root_entry->initiator_origin().has_value());
 
   // Verify subframe entries.  The entry should now have one blank subframe
-  // FrameNavigationEntry, but this does not count as committing a real load.
+  // FrameNavigationEntry and should be on the initial empty document.
   ASSERT_EQ(1U, entry->root_node()->children.size());
   scoped_refptr<FrameNavigationEntry> frame_entry =
       entry->root_node()->children[0]->frame_entry.get();
@@ -4835,7 +4797,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(main_origin, frame_entry->committed_origin());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(main_origin, frame_entry->initiator_origin().value());
-  EXPECT_FALSE(root->child_at(0)->has_committed_real_load());
+  EXPECT_TRUE(root->child_at(0)->is_on_initial_empty_document());
 
   // 1a. A nested iframe with no URL should also create a subframe entry but not
   // count as a real load.
@@ -4848,14 +4810,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   // Verify subframe entries.  The nested entry should have one blank subframe
-  // FrameNavigationEntry, but this does not count as committing a real load.
+  // FrameNavigationEntry and should be on the initial empty document.
   ASSERT_EQ(1U, entry->root_node()->children[0]->children.size());
   frame_entry = entry->root_node()->children[0]->children[0]->frame_entry.get();
   EXPECT_EQ(about_blank_url, frame_entry->url());
   EXPECT_EQ(main_origin, frame_entry->committed_origin());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(main_origin, frame_entry->initiator_origin().value());
-  EXPECT_FALSE(root->child_at(0)->child_at(0)->has_committed_real_load());
+  EXPECT_TRUE(root->child_at(0)->child_at(0)->is_on_initial_empty_document());
 
   // 2. Create another iframe with an explicit about:blank URL.
   {
@@ -4871,14 +4833,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(entry, controller.GetLastCommittedEntry());
 
   // Verify subframe entries.  The new entry should have one blank subframe
-  // FrameNavigationEntry, but this does not count as committing a real load.
+  // FrameNavigationEntry and should be on the initial empty document.
   ASSERT_EQ(2U, entry->root_node()->children.size());
   frame_entry = entry->root_node()->children[1]->frame_entry.get();
   EXPECT_EQ(about_blank_url, frame_entry->url());
   EXPECT_EQ(main_origin, frame_entry->committed_origin());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(main_origin, frame_entry->initiator_origin().value());
-  EXPECT_FALSE(root->child_at(1)->has_committed_real_load());
+  EXPECT_TRUE(root->child_at(1)->is_on_initial_empty_document());
 
   // 3. A real same-site navigation in the nested iframe should be AUTO.
   GURL frame_url(embedded_test_server()->GetURL(
@@ -4907,9 +4869,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(url::Origin::Create(frame_url), frame_entry->committed_origin());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(main_origin, frame_entry->initiator_origin().value());
-  EXPECT_FALSE(root->child_at(0)->has_committed_real_load());
-  EXPECT_TRUE(root->child_at(0)->child_at(0)->has_committed_real_load());
-  EXPECT_FALSE(root->child_at(1)->has_committed_real_load());
+  EXPECT_TRUE(root->child_at(0)->is_on_initial_empty_document());
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->is_on_initial_empty_document());
+  EXPECT_TRUE(root->child_at(1)->is_on_initial_empty_document());
 
   // 4. A real cross-site navigation in the second iframe should be AUTO.
   GURL foo_url(embedded_test_server()->GetURL(
@@ -4937,9 +4899,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(url::Origin::Create(foo_url), frame_entry->committed_origin());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(main_origin, frame_entry->initiator_origin().value());
-  EXPECT_FALSE(root->child_at(0)->has_committed_real_load());
-  EXPECT_TRUE(root->child_at(0)->child_at(0)->has_committed_real_load());
-  EXPECT_TRUE(root->child_at(1)->has_committed_real_load());
+  EXPECT_TRUE(root->child_at(0)->is_on_initial_empty_document());
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->is_on_initial_empty_document());
+  EXPECT_FALSE(root->child_at(1)->is_on_initial_empty_document());
   EXPECT_EQ(frame_entry->committed_origin(),
             root->child_at(1)->current_frame_host()->GetLastCommittedOrigin());
 
@@ -4978,9 +4940,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(main_origin, frame_entry->committed_origin());
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(main_origin, frame_entry->initiator_origin().value());
-  EXPECT_FALSE(root->child_at(0)->has_committed_real_load());
-  EXPECT_TRUE(root->child_at(0)->child_at(0)->has_committed_real_load());
-  EXPECT_TRUE(root->child_at(1)->has_committed_real_load());
+  EXPECT_TRUE(root->child_at(0)->is_on_initial_empty_document());
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->is_on_initial_empty_document());
+  EXPECT_FALSE(root->child_at(1)->is_on_initial_empty_document());
 
   // Check the end result of the frame tree.
   if (AreAllSitesIsolatedForTesting()) {
@@ -5461,7 +5423,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry->initiator_origin().value());
-  EXPECT_TRUE(root->child_at(0)->has_committed_real_load());
+  EXPECT_FALSE(root->child_at(0)->is_on_initial_empty_document());
 
   // 2. Create a second, initially cross-site iframe.
   GURL foo_url(embedded_test_server()->GetURL(
@@ -5490,7 +5452,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_TRUE(frame_entry->initiator_origin().has_value());
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry->initiator_origin().value());
-  EXPECT_TRUE(root->child_at(1)->has_committed_real_load());
+  EXPECT_FALSE(root->child_at(1)->is_on_initial_empty_document());
 
   // 3. Create a nested iframe in the second subframe.
   {

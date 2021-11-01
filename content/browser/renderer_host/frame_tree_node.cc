@@ -325,7 +325,6 @@ void FrameTreeNode::SetCurrentURL(const GURL& url) {
 }
 
 void FrameTreeNode::DidCommitNonInitialEmptyDocument() {
-  has_committed_real_load_ = true;
   is_on_initial_empty_document_ = false;
 }
 
@@ -779,13 +778,13 @@ void FrameTreeNode::SetIsAdSubframe(bool is_ad_subframe) {
 
 void FrameTreeNode::SetInitialPopupURL(const GURL& initial_popup_url) {
   DCHECK(initial_popup_url_.is_empty());
-  DCHECK(!has_committed_real_load_);
+  DCHECK(is_on_initial_empty_document_);
   initial_popup_url_ = initial_popup_url;
 }
 
 void FrameTreeNode::SetPopupCreatorOrigin(
     const url::Origin& popup_creator_origin) {
-  DCHECK(!has_committed_real_load_);
+  DCHECK(is_on_initial_empty_document_);
   popup_creator_origin_ = popup_creator_origin;
 }
 
