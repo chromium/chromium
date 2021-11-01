@@ -588,7 +588,11 @@ void AppHistory::PromoteUpcomingNavigationToOngoing(const String& key) {
 
 bool AppHistory::HasEntriesAndEventsDisabled() const {
   auto* frame = GetSupplementable()->GetFrame();
-  return !frame || !frame->Loader().HasLoadedNonEmptyDocument() ||
+  return !frame ||
+         !GetSupplementable()
+              ->GetFrame()
+              ->Loader()
+              .HasLoadedNonInitialEmptyDocument() ||
          GetSupplementable()->GetSecurityOrigin()->IsOpaque();
 }
 

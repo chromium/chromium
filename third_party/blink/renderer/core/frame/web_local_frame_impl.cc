@@ -2389,16 +2389,16 @@ bool WebLocalFrameImpl::IsNavigationScheduledWithin(
          GetFrame()->GetDocument()->IsHttpRefreshScheduledWithin(interval);
 }
 
-void WebLocalFrameImpl::SetCommittedFirstRealLoad() {
+void WebLocalFrameImpl::SetIsNotOnInitialEmptyDocument() {
   DCHECK(GetFrame());
   GetFrame()->GetDocument()->OverrideIsInitialEmptyDocument();
-  GetFrame()->Loader().SetDidLoadNonEmptyDocument();
+  GetFrame()->Loader().SetIsNotOnInitialEmptyDocument();
   GetFrame()->SetShouldSendResourceTimingInfoToParent(false);
 }
 
-bool WebLocalFrameImpl::HasCommittedFirstRealLoad() {
+bool WebLocalFrameImpl::IsOnInitialEmptyDocument() {
   DCHECK(GetFrame());
-  return !GetFrame()->GetDocument()->IsInitialEmptyDocument();
+  return GetFrame()->GetDocument()->IsInitialEmptyDocument();
 }
 
 void WebLocalFrameImpl::BlinkFeatureUsageReport(

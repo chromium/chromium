@@ -2948,10 +2948,8 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   params->frame_owner_properties =
       frame_tree_node()->frame_owner_properties().Clone();
 
-  // TOOD(https://crbug.com/1215096): Make this use
-  // is_on_initial_empty_document_or_subsequent_empty_documents() instead.
-  params->has_committed_real_load =
-      frame_tree_node()->has_committed_real_load();
+  params->is_on_initial_empty_document =
+      frame_tree_node()->is_on_initial_empty_document();
 
   // The RenderWidgetHost takes ownership of its view. It is tied to the
   // lifetime of the current RenderProcessHost for this RenderFrameHost.
@@ -3510,6 +3508,19 @@ void RenderFrameHostImpl::DidNavigate(
   // The URL is set regardless of whether it's for a net error or not.
   navigation_request->frame_tree_node()->SetCurrentURL(params.url);
   SetLastCommittedOrigin(params.origin);
+
+  // If the navigation was a cross-document navigation and it's not the
+  // synchronous about:blank commit, then it committed a document that is not
+  // the initial empty document. Note that the
+  // DidCommitNonInitialEmptyDocument() call only actually changes the state of
+  // the FrameTreeNode the first time it was called (it changes the state from
+  // "is on the initial empty document" to "not on the initial empty document",
+  // and we never go back to the former state).
+  if (!navigation_request->IsSameDocument() &&
+      (!navigation_request->is_synchronous_renderer_commit() ||
+       !navigation_request->GetURL().IsAboutBlank())) {
+    navigation_request->frame_tree_node()->DidCommitNonInitialEmptyDocument();
+  }
 
   // For uuid-in-package: and urn: resources served from WebBundles, use the
   // Bundle's origin.
@@ -9780,9 +9791,9 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
 }
 
 bool IsInitialSynchronousAboutBlankCommit(const GURL& url,
-                                          bool has_committed_real_load) {
+                                          bool is_on_initial_empty_document) {
   return url.SchemeIs(url::kAboutScheme) && url != GURL(url::kAboutSrcdocURL) &&
-         !has_committed_real_load;
+         is_on_initial_empty_document;
 }
 
 std::unique_ptr<NavigationRequest>
@@ -9804,7 +9815,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   // after the initial empty document.
   // 2) This was a renderer-initiated same-document navigation.
   DCHECK(IsInitialSynchronousAboutBlankCommit(
-             url, frame_tree_node_->has_committed_real_load()) ||
+             url, frame_tree_node_->is_on_initial_empty_document()) ||
          is_same_document);
   DCHECK(!is_same_document_history_api_navigation || is_same_document);
 
@@ -10106,7 +10117,7 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
   // navigations won't have a NavigationRequest at this point, we need to check
   // |renderer_url_info_.was_loaded_from_load_data_with_base_url|.
   DCHECK(navigation_request || is_same_document_navigation ||
-         !frame_tree_node_->has_committed_real_load());
+         frame_tree_node_->is_on_initial_empty_document());
   bool bypass_checks_for_webview = false;
   if ((navigation_request && navigation_request->IsLoadDataWithBaseURL()) ||
       (is_same_document_navigation &&
@@ -10305,11 +10316,11 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // FrameHostMsg_DidCommitProvisionalLoad_Params at all.
   // TODO(https://crbug.com/1215096): Tighten the checks for case 1 so that only
   // the synchronous about:blank commit can actually go through (e.g. check
-  // if the frame's initial empty document state, instead of checking the
-  // less-accurate `has_committed_real_load`).
+  // if the URL is exactly "about:blank", currently we allow any "about:" URL
+  // except for "about:srcdoc").
   const bool is_synchronous_about_blank_commit =
       IsInitialSynchronousAboutBlankCommit(
-          params->url, frame_tree_node_->has_committed_real_load());
+          params->url, frame_tree_node_->is_on_initial_empty_document());
   if (!navigation_request && !is_synchronous_about_blank_commit &&
       !is_same_document_navigation) {
     LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
@@ -11881,8 +11892,7 @@ void RenderFrameHostImpl::
                         request->frame_tree_node()->has_committed_real_load());
   SCOPED_CRASH_KEY_BOOL(
       "VerifyDidCommit", "on_initial_empty_doc",
-      request->frame_tree_node()
-          ->is_on_initial_empty_document_or_subsequent_empty_documents());
+      request->frame_tree_node()->is_on_initial_empty_document());
 
   SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "last_committed_url",
                              GetLastCommittedURL().spec());

@@ -166,30 +166,35 @@ class CONTENT_EXPORT FrameTreeNode {
     return current_frame_host()->GetLastCommittedURL();
   }
 
-  // Sets the last committed URL for this frame and updates
-  // has_committed_real_load accordingly.
+  // Sets the last committed URL for this frame.
   void SetCurrentURL(const GURL& url);
 
-  // Returns true if SetCurrentURL has been called with a non-blank URL.
+  // The frame committed a document that is not the initial empty document.
+  // Update `has_committed_real_load_` and `is_on_initial_empty_document_`
+  // accordingly.
+  void DidCommitNonInitialEmptyDocument();
+
+  // Returns true if the frame has committed a document that is not the initial
+  // empty document. For more details, see the definition of
+  // `has_committed_real_load_`.
   // TODO(https://crbug.com/1215096): Migrate most usage of
   // has_committed_real_load() to call
-  // is_on_initial_empty_document_or_subsequent_empty_documents() instead.
+  // is_on_initial_empty_document() instead and remove this.
   bool has_committed_real_load() const { return has_committed_real_load_; }
 
-  // Returns true if SetCurrentURL has been called with a non-blank URL or
-  // if the current document's input stream has been opened with
-  // document.open(). For more details, see the definition of
-  // `is_on_initial_empty_document_or_subsequent_empty_documents_`.
-  bool is_on_initial_empty_document_or_subsequent_empty_documents() const {
-    return is_on_initial_empty_document_or_subsequent_empty_documents_;
+  // Returns true if the frame has committed a document that is not the initial
+  // empty document, or if the current document's input stream has been opened
+  // with document.open(), causing the document to lose its "initial empty
+  // document" status. For more details, see the definition of
+  // `is_on_initial_empty_document_`.
+  bool is_on_initial_empty_document() const {
+    return is_on_initial_empty_document_;
   }
 
-  // Sets `is_on_initial_empty_document_or_subsequent_empty_documents_` to
+  // Sets `is_on_initial_empty_document_` to
   // false. Must only be called after the current document's input stream has
   // been opened with document.open().
-  void DidOpenDocumentInputStream() {
-    is_on_initial_empty_document_or_subsequent_empty_documents_ = false;
-  }
+  void DidOpenDocumentInputStream() { is_on_initial_empty_document_ = false; }
 
   // Returns whether the frame's owner element in the parent document is
   // collapsed, that is, removed from the layout as if it did not exist, as per
@@ -593,27 +598,32 @@ class CONTENT_EXPORT FrameTreeNode {
   // Please refer to {Get,Set}PopupCreatorOrigin() documentation.
   url::Origin popup_creator_origin_;
 
-  // Returns true iff SetCurrentURL has been called with a non-blank URL.
-  // TODO(https://crbug.com/1215096): Migrate all current usage of this to
-  // use `is_on_initial_empty_document_or_subsequent_empty_documents_` instead.
-  bool has_committed_real_load_ = false;
+  // Whether this frame is still on the initial about:blank document or the
+  // synchronously committed about:blank document committed at frame creation,
+  // and its "initial empty document"-ness is still true.
+  // This will be false if either of these has happened:
+  // - SetCurrentUrl() was called after committing a document that is not the
+  //   initial about:blank document or the synchronously committed about:blank
+  //   document, per
+  //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
+  // - The document's input stream has been opened with document.open(), per
+  //   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+  // NOTE: we treat both the "initial about:blank document" and the
+  // "synchronously committed about:blank document" as the initial empty
+  // document. In the future, we plan to remove the synchronous about:blank
+  // commit so that this state will only be true if the frame is on the
+  // "initial about:blank document". See also:
+  // - https://github.com/whatwg/html/issues/6863
+  // - https://crbug.com/1215096
+  bool is_on_initial_empty_document_ = true;
 
-  // Whether this frame is still on the initial about:blank document or any
-  // subsequent about:blank documents committed after the initial about:blank
-  // document. This will be false if either of these has happened:
-  // - SetCurrentUrl() has been called with a non about:blank URL.
-  // - The document's input stream has been opened with document.open().
-  // See:
-  // https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
-  // TODO(https://crbug.com/1215096): Make this false after non-initial
-  // about:blank commits as well, making this only track whether the current
-  // document is the initial empty document or not. Currently we are still
-  // preserving most of the old behavior of `has_committed_real_load_` (except
-  // for the document.open() bit here) due to our current handling of initial
-  // empty document for session history and navigation (where we treat the
-  // the initial about:blank document and subsequent about:blank documents the
-  // same way).
-  bool is_on_initial_empty_document_or_subsequent_empty_documents_ = true;
+  // Similar to `is_on_initial_empty_document_`, but is unaffected by
+  // document.open() opening the input stream of the document. In other words,
+  // `has_committed_real_load_` is false iff SetCurrentUrl() has been called
+  // for a non-initial-empty-document commit.
+  // TODO(https://crbug.com/1215096): Migrate all current usage of this to
+  // use `is_on_initial_empty_document_` instead and remove this.
+  bool has_committed_real_load_ = false;
 
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;

@@ -235,7 +235,8 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
       params->tree_scope_type, std::move(params->replication_state),
       std::move(params->widget_params),
       std::move(params->frame_owner_properties),
-      params->has_committed_real_load, std::move(params->policy_container));
+      params->is_on_initial_empty_document,
+      std::move(params->policy_container));
 }
 
 void AgentSchedulingGroup::CreateFrameProxy(

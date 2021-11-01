@@ -1501,8 +1501,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       // WebString...
       WebString::FromUTF8(replication_state->name),
       replication_state->frame_policy.sandbox_flags);
-  if (params->has_committed_real_load)
-    render_frame->frame_->SetCommittedFirstRealLoad();
+  if (!params->is_on_initial_empty_document)
+    render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
   // Non-owning pointer that is self-referencing and destroyed by calling
   // Close(). The RenderViewImpl has a RenderWidget already, but not a
@@ -1580,7 +1580,7 @@ void RenderFrameImpl::CreateFrame(
     blink::mojom::FrameReplicationStatePtr replicated_state,
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
-    bool has_committed_real_load,
+    bool is_on_initial_empty_document,
     blink::mojom::PolicyContainerPtr policy_container) {
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the RenderView and RenderFrame for it. The
@@ -1762,8 +1762,8 @@ void RenderFrameImpl::CreateFrame(
     web_frame_widget->ApplyVisualProperties(widget_params->visual_properties);
   }
 
-  if (has_committed_real_load)
-    render_frame->frame_->SetCommittedFirstRealLoad();
+  if (!is_on_initial_empty_document)
+    render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
   render_frame->Initialize(web_frame->Parent());
 }
@@ -5247,9 +5247,10 @@ void RenderFrameImpl::BeginNavigation(
         // Mainly a proxy for checking about:blank, even though it can match
         // other things like about:srcdoc (or any empty document schemes that
         // are registered).
-        // TODO(https://crbug.com/1215096): This should be changed to only check
-        // for about:blank because the navigation triggered by browsing context
-        // creation will always navigate to about:blank.
+        // TODO(https://crbug.com/1215096): Tighten the condition to only accept
+        // about:blank or an empty URL which defaults to about:blank, per the
+        // spec:
+        // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-iframe-element:about:blank
         WebDocumentLoader::WillLoadUrlAsEmpty(url) &&
         // The navigation method must be "GET". This is to avoid issues like
         // https://crbug.com/1210653, where a form submits to about:blank
@@ -5262,16 +5263,16 @@ void RenderFrameImpl::BeginNavigation(
         // navigation can't possibly be triggered by browsing context creation,
         // which would have triggered the navigation synchronously as the first
         // navigation in this frame. Note that we check both
-        // HasCommittedFirstRealLoad() and `first_navigation_in_render_frame`
+        // IsOnInitialEmptyDocument() and `first_navigation_in_render_frame`
         // here because `first_navigation_in_render_frame` only tracks the state
         // in this *RenderFrame*, so it will be true even if this navigation
         // happens on a frame that has existed before in another process (e.g.
         // an <iframe> pointing to a.com being navigated to a cross-origin
         // about:blank document that happens in a new frame). Meanwhile,
-        // HasCommittedFirstRealLoad() tracks the state of the frame, so it will
+        // IsOnInitialEmptyDocument() tracks the state of the frame, so it will
         // be true in the aforementioned case and we would not do a synchronous
         // commit here.
-        !frame_->HasCommittedFirstRealLoad() &&
+        frame_->IsOnInitialEmptyDocument() &&
         first_navigation_in_render_frame &&
         // If this is a subframe history navigation that should be sent to the
         // browser, don't commit it synchronously.

@@ -4087,10 +4087,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // it as having committed a real load.  The FrameTreeVisualizer test should be
   // enough to ensure that the childmost frame is not loaded.
   EXPECT_FALSE(root->child_at(0)->child_at(0)->has_committed_real_load());
-  EXPECT_FALSE(
-      root->child_at(0)
-          ->child_at(0)
-          ->is_on_initial_empty_document_or_subsequent_empty_documents());
+  EXPECT_FALSE(root->child_at(0)->child_at(0)->is_on_initial_empty_document());
 }
 
 // Ensure that navigating a subframe to the same URL as its parent twice in a
