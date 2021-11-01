@@ -15,7 +15,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -59,8 +58,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-test-utils.h"
-#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom-test-utils.h"
 #include "url/gurl.h"
 
@@ -4932,113 +4929,6 @@ IN_PROC_BROWSER_TEST_F(
                   .allows_any_site());
 }
 
-// This class allows intercepting the BroadcastChannelProvider::ConnectToChannel
-// method and changing the `origin` parameter before passing the call to the
-// real implementation of BroadcastChannelProvider.
-class BroadcastChannelProviderInterceptor
-    : public blink::mojom::BroadcastChannelProviderInterceptorForTesting,
-      public RenderProcessHostObserver {
- public:
-  BroadcastChannelProviderInterceptor(
-      RenderProcessHostImpl* rph,
-      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver,
-      const url::Origin& origin_to_inject)
-      : origin_to_inject_(origin_to_inject) {
-    StoragePartitionImpl* storage_partition =
-        static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
-
-    // Bind the real BroadcastChannelProvider implementation.
-    mojo::ReceiverId receiver_id =
-        storage_partition->GetBroadcastChannelProvider()->Connect(
-            ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
-                rph->GetID()),
-            std::move(receiver));
-
-    // Now replace it with this object and keep a pointer to the real
-    // implementation.
-    original_broadcast_channel_provider_ =
-        storage_partition->GetBroadcastChannelProvider()
-            ->receivers_for_testing()
-            .SwapImplForTesting(receiver_id, this);
-
-    // Register the `this` as a RenderProcessHostObserver, so it can be
-    // correctly cleaned up when the process exits.
-    rph->AddObserver(this);
-  }
-
-  BroadcastChannelProviderInterceptor(
-      const BroadcastChannelProviderInterceptor&) = delete;
-  BroadcastChannelProviderInterceptor& operator=(
-      const BroadcastChannelProviderInterceptor&) = delete;
-
-  // Ensure this object is cleaned up when the process goes away, since it
-  // is not owned by anyone else.
-  void RenderProcessExited(RenderProcessHost* host,
-                           const ChildProcessTerminationInfo& info) override {
-    host->RemoveObserver(this);
-    delete this;
-  }
-
-  // Allow all methods that aren't explicitly overridden to pass through
-  // unmodified.
-  blink::mojom::BroadcastChannelProvider* GetForwardingInterface() override {
-    return original_broadcast_channel_provider_;
-  }
-
-  // Override this method to allow changing the origin. It simulates a
-  // renderer process sending incorrect data to the browser process, so
-  // security checks can be tested.
-  void ConnectToChannel(
-      const url::Origin& origin,
-      const std::string& name,
-      mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient>
-          client,
-      mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelClient>
-          connection) override {
-    GetForwardingInterface()->ConnectToChannel(
-        origin_to_inject_, name, std::move(client), std::move(connection));
-  }
-
- private:
-  // Keep a pointer to the original implementation of the service, so all
-  // calls can be forwarded to it.
-  blink::mojom::BroadcastChannelProvider* original_broadcast_channel_provider_;
-
-  url::Origin origin_to_inject_;
-};
-
-void CreateTestBroadcastChannelProvider(
-    const url::Origin& origin_to_inject,
-    RenderProcessHostImpl* rph,
-    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
-  // This object will register as RenderProcessHostObserver, so it will
-  // clean itself automatically on process exit.
-  new BroadcastChannelProviderInterceptor(rph, std::move(receiver),
-                                          origin_to_inject);
-}
-
-// Test verifying that a compromised renderer can't lie about `origin` argument
-// passed in the BroadcastChannelProvider::ConnectToChannel IPC message.
-IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, BroadcastChannelOriginEnforcement) {
-  auto mismatched_origin = url::Origin::Create(GURL("http://abc.foo.com"));
-  EXPECT_FALSE(IsIsolatedOrigin(mismatched_origin));
-  RenderProcessHostImpl::SetBroadcastChannelProviderReceiverHandlerForTesting(
-      base::BindRepeating(&CreateTestBroadcastChannelProvider,
-                          mismatched_origin));
-
-  GURL isolated_url(
-      embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
-  EXPECT_TRUE(IsIsolatedOrigin(url::Origin::Create(isolated_url)));
-  EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
-
-  content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
-      shell()->web_contents()->GetMainFrame()->GetProcess());
-  ExecuteScriptAsync(
-      shell()->web_contents()->GetMainFrame(),
-      "window.test_channel = new BroadcastChannel('test_channel');");
-  EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
-}
-
 class IsolatedOriginTestWithStrictSiteInstances : public IsolatedOriginTest {
  public:
   IsolatedOriginTestWithStrictSiteInstances() {
@@ -6107,7 +5997,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInAboutBlankSubframe) {
     EXPECT_TRUE(instance->RequiresDedicatedProcess());
   }
 }
-              
+
 // Helper class for testing site isolation triggered by different JIT policies
 // being applied.
 class JITIsolationTest : public IsolatedOriginTest,

@@ -50,6 +50,7 @@
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
@@ -213,6 +214,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -8291,6 +8293,18 @@ void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {
   GetProcess()->SetIsUsed();
 }
 
+void RenderFrameHostImpl::CreateBroadcastChannelProvider(
+    mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
+        receiver) {
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<BroadcastChannelProvider>(
+          storage_partition_impl->GetBroadcastChannelService(), storage_key()),
+      std::move(receiver));
+}
+
 void RenderFrameHostImpl::SetUpMojoConnection() {
   CHECK(!associated_registry_);
 
@@ -8442,6 +8456,10 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
         impl->delegate()->BindScreenOrientation(impl, std::move(receiver));
       },
       base::Unretained(this)));
+
+  associated_registry_->AddInterface(
+      base::BindRepeating(&RenderFrameHostImpl::CreateBroadcastChannelProvider,
+                          base::Unretained(this)));
 
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       remote_interfaces;

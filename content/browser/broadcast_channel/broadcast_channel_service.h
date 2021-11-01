@@ -23,7 +23,7 @@ class CONTENT_EXPORT BroadcastChannelService {
   ~BroadcastChannelService();
 
   void ConnectToChannel(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& name,
       mojo::PendingAssociatedRemote<blink::mojom::BroadcastChannelClient>
           client,
@@ -37,7 +37,8 @@ class CONTENT_EXPORT BroadcastChannelService {
   void ReceivedMessageOnConnection(Connection*,
                                    const blink::CloneableMessage& message);
 
-  std::map<url::Origin, std::multimap<std::string, std::unique_ptr<Connection>>>
+  std::map<blink::StorageKey,
+           std::multimap<std::string, std::unique_ptr<Connection>>>
       connections_;
 };
 

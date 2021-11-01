@@ -33,6 +33,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
@@ -124,6 +125,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
       mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver);
   void BindCacheStorage(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
+  void CreateBroadcastChannelProvider(
+      mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver);
 
   // Causes this instance to be deleted, which will terminate the worker. May
   // be done based on a UI action.
