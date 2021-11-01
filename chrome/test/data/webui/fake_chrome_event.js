@@ -6,9 +6,9 @@
  * @fileoverview Fake implementations of ChromeEvent.
  */
 
-// #import {assertFalse, assertTrue} from '../chai_assert.js';
+import {assertFalse, assertTrue} from '../chai_assert.js';
 
-/* #export */ class FakeChromeEvent {
+export class FakeChromeEvent {
   constructor() {
     /** @type {!Set<!Function>} */
     this.listeners_ = new Set();

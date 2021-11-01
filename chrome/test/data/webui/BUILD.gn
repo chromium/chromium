@@ -13,9 +13,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
 import("//ui/webui/webui_features.gni")
-import("./namespace_rewrites.gni")
 
 if (include_js_tests) {
   js2gtest("interactive_ui_tests_js_webui") {
@@ -42,13 +40,8 @@ if (include_js_tests) {
     ]
 
     deps = [
-      ":modulize",
       "//chrome/browser/ui",
       "//ui/webui/resources/js:webview_manager",
-    ]
-    data = [
-      "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
-      "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -122,7 +115,6 @@ if (include_js_tests) {
     ]
 
     deps = [
-      ":modulize",
       "net_internals:preprocess",
       "signin:preprocess",
       "//build:branding_buildflags",
@@ -140,6 +132,7 @@ if (include_js_tests) {
     if (is_chromeos_ash) {
       gen_include_files +=
           [ "settings/chromeos/a11y/os_settings_accessibility_v3_test.js" ]
+      deps += [ ":modulize" ]
     }
 
     if (is_chromeos_ash || is_win) {
@@ -201,9 +194,6 @@ if (include_js_tests) {
     }
 
     data = [
-      "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js",
-      "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js",
-      "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/main_test.js",
       "$root_gen_dir/chrome/test/data/webui/net_internals/test_util.js",
       "$root_gen_dir/chrome/test/data/webui/signin/profile_card_menu_test.js",
@@ -495,27 +485,14 @@ if (include_js_tests) {
   }
 }
 
-group("modulize") {
-  deps = [ ":modulize_local" ]
-
-  if (is_chromeos_ash) {
-    deps += [
+if (is_chromeos_ash) {
+  group("modulize") {
+    deps = [
       "./cr_components/chromeos:modulize",
       "./nearby_share/shared:modulize",
       "./settings/chromeos:modulize",
     ]
   }
-}
-
-js_modulizer("modulize_local") {
-  input_files = [
-    "fake_chrome_event.js",
-    "mock_controller.js",
-    "mock_timer.js",
-    "test_util.js",
-  ]
-  namespace_rewrites =
-      test_namespace_rewrites + [ "cr.addSingletonGetter|addSingletonGetter" ]
 }
 
 group("closure_compile") {
@@ -546,34 +523,24 @@ group("closure_compile") {
 
 js_type_check("closure_compile_local") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
   deps = [
     ":chai_assert",
-    ":fake_chrome_event.m",
-    ":mock_timer.m",
+    ":fake_chrome_event",
+    ":mock_timer",
     ":test_browser_proxy",
     ":test_plural_string_proxy",
     ":test_util",
   ]
 }
 
-js_library("fake_chrome_event.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/fake_chrome_event.m.js" ]
+js_library("fake_chrome_event") {
   deps = [ ":chai_assert" ]
-  extra_deps = [ ":modulize_local" ]
 }
 
-js_library("mock_controller.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/mock_controller.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+js_library("mock_controller") {
 }
 
-js_library("mock_timer.m") {
-  sources = [ "$root_gen_dir/chrome/test/data/webui/mock_timer.m.js" ]
-  extra_deps = [ ":modulize_local" ]
+js_library("mock_timer") {
 }
 
 js_library("test_util") {

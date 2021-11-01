@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Common utilities for extension ui tests. */
-import {MockController, MockMethod} from '../mock_controller.m.js';
+import {MockController, MockMethod} from '../mock_controller.js';
 import {isChildVisible} from '../test_util.js';
 
 import {TestKioskBrowserProxy} from './test_kiosk_browser_proxy.js';

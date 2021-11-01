@@ -7,7 +7,7 @@ import {LOTTIE_JS_URL} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {MockController, MockMethod} from '../mock_controller.m.js';
+import {MockController, MockMethod} from '../mock_controller.js';
 import {eventToPromise} from '../test_util.js';
 // clang-format on
 
