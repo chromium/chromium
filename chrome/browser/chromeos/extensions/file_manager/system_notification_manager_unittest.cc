@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/file_manager/copy_io_task.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
@@ -1214,7 +1214,8 @@ TEST_F(SystemNotificationManagerTest, CancelButtonIOTask) {
   auto dst = CreateTestFile("dest_dir/");
   status.destination_folder = dst;
 
-  auto task = std::make_unique<file_manager::io_task::CopyIOTask>(
+  auto task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+      file_manager::io_task::OperationType::kCopy,
       std::vector<storage::FileSystemURL>({src}), dst, GetProfile(),
       file_system_context);
 
