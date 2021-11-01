@@ -14,6 +14,7 @@
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +23,7 @@ namespace feed {
 namespace {
 
 using ::testing::Contains;
+using ::testing::IsSupersetOf;
 using ::testing::Not;
 
 TEST(ProtoUtilTest, CreateClientInfo) {
@@ -68,21 +70,21 @@ TEST(ProtoUtilTest, DefaultCapabilities) {
                                     /*consistency_token=*/std::string())
           .feed_request();
 
+  // Additional features may be present based on the current testing config.
   ASSERT_THAT(
       request.client_capability(),
-      testing::UnorderedElementsAre(
-          feedwire::Capability::REQUEST_SCHEDULE,
-          feedwire::Capability::LOTTIE_ANIMATIONS,
-          feedwire::Capability::LONG_PRESS_CARD_MENU,
-          feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
-          feedwire::Capability::DOWNLOAD_LINK,
-          feedwire::Capability::INFINITE_FEED,
-          feedwire::Capability::DISMISS_COMMAND,
-          feedwire::Capability::MATERIAL_NEXT_BASELINE,
-          feedwire::Capability::UI_THEME_V2,
-          feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
-          feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
-          feedwire::Capability::CONTENT_LIFETIME));
+      testing::IsSupersetOf(
+          {feedwire::Capability::REQUEST_SCHEDULE,
+           feedwire::Capability::LOTTIE_ANIMATIONS,
+           feedwire::Capability::LONG_PRESS_CARD_MENU,
+           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
+           feedwire::Capability::INFINITE_FEED,
+           feedwire::Capability::DISMISS_COMMAND,
+           feedwire::Capability::MATERIAL_NEXT_BASELINE,
+           feedwire::Capability::UI_THEME_V2,
+           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
+           feedwire::Capability::PREFETCH_METADATA, feedwire::Capability::SHARE,
+           feedwire::Capability::CONTENT_LIFETIME}));
 }
 
 TEST(ProtoUtilTest, HeartsEnabled) {
@@ -113,20 +115,20 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
                                     /*consistency_token=*/std::string())
           .feed_request();
 
+  // Additional features may be present based on the current testing config.
   ASSERT_THAT(
       request.client_capability(),
-      testing::UnorderedElementsAre(
-          feedwire::Capability::REQUEST_SCHEDULE,
-          feedwire::Capability::LOTTIE_ANIMATIONS,
-          feedwire::Capability::LONG_PRESS_CARD_MENU,
-          feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
-          feedwire::Capability::DOWNLOAD_LINK,
-          feedwire::Capability::DISMISS_COMMAND, feedwire::Capability::SHARE,
-          feedwire::Capability::MATERIAL_NEXT_BASELINE,
-          feedwire::Capability::UI_THEME_V2,
-          feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
-          feedwire::Capability::PREFETCH_METADATA,
-          feedwire::Capability::CONTENT_LIFETIME));
+      testing::IsSupersetOf(
+          {feedwire::Capability::REQUEST_SCHEDULE,
+           feedwire::Capability::LOTTIE_ANIMATIONS,
+           feedwire::Capability::LONG_PRESS_CARD_MENU,
+           feedwire::Capability::OPEN_IN_TAB, feedwire::Capability::CARD_MENU,
+           feedwire::Capability::DISMISS_COMMAND, feedwire::Capability::SHARE,
+           feedwire::Capability::MATERIAL_NEXT_BASELINE,
+           feedwire::Capability::UI_THEME_V2,
+           feedwire::Capability::UNDO_FOR_DISMISS_COMMAND,
+           feedwire::Capability::PREFETCH_METADATA,
+           feedwire::Capability::CONTENT_LIFETIME}));
 }
 
 TEST(ProtoUtilTest, PrivacyNoticeCardAcknowledged) {
@@ -281,6 +283,40 @@ TEST(ProtoUtilTest, OpenInNewTabFromNTP) {
     ASSERT_THAT(request.client_capability(),
                 Contains(feedwire::Capability::OPEN_IN_TAB));
   }
+}
+
+TEST(ProtoUtilTest, ReadLaterEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({reading_list::switches::kReadLater},
+                                       {});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::READ_LATER));
+  ASSERT_THAT(request.client_capability(),
+              Not(Contains((feedwire::Capability::DOWNLOAD_LINK))));
+}
+
+TEST(ProtoUtilTest, ReadLaterDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {reading_list::switches::kReadLater});
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(kForYouStream,
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string())
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::DOWNLOAD_LINK));
+  ASSERT_THAT(request.client_capability(),
+              Not(Contains((feedwire::Capability::READ_LATER))));
 }
 
 }  // namespace

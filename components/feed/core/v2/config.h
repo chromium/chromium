@@ -93,7 +93,6 @@ struct Config {
   // CreateFeedQueryRequest() for required capabilities.
   base::flat_set<feedwire::Capability> experimental_capabilities = {
       feedwire::Capability::DISMISS_COMMAND,
-      feedwire::Capability::DOWNLOAD_LINK,
       feedwire::Capability::INFINITE_FEED,
       feedwire::Capability::MATERIAL_NEXT_BASELINE,
       feedwire::Capability::PREFETCH_METADATA,
