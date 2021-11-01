@@ -2,19 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/swift_source_set.gni")
+
 source_set("safety_check_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "safety_check_bridge.h",
     "safety_check_consumer.h",
     "safety_check_navigation_commands.h",
     "safety_check_service_delegate.h",
-    "safety_check_table_view_controller.h",
-    "safety_check_table_view_controller.mm",
   ]
   deps = [
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/list_model:list_model",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
@@ -22,6 +24,11 @@ source_set("safety_check_ui") {
     "//ios/chrome/browser/ui/table_view",
     "//ui/base",
   ]
+}
+
+swift_source_set("safety_check_ui_swift") {
+  bridge_header = "safety_check_bridge.h"
+  sources = [ "safety_check_table_view_controller.swift" ]
 }
 
 source_set("safety_check") {
@@ -38,6 +45,7 @@ source_set("safety_check") {
   ]
   deps = [
     ":safety_check_ui",
+    ":safety_check_ui_swift",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",
