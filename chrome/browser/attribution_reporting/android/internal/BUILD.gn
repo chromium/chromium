@@ -66,6 +66,7 @@ android_library("junit_tests") {
 android_library("javatests") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderFlushTaskTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImplTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/ImpressionPersistentStoreFileTest.java",

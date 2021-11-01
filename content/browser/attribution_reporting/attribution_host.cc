@@ -238,7 +238,8 @@ bool AttributionHost::VerifyAndStoreImpression(
   attribution_host_utils::VerifyResult result =
       attribution_host_utils::VerifyAndStoreImpression(
           source_type, impression_origin, impression,
-          web_contents()->GetBrowserContext(), attribution_manager);
+          web_contents()->GetBrowserContext(), attribution_manager,
+          base::Time::Now());
   RecordRegisterImpressionAllowed(result.allowed);
   return result.stored;
 }

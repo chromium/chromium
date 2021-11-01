@@ -37,7 +37,8 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,
-                                      AttributionManager& attribution_manager);
+                                      AttributionManager& attribution_manager,
+                                      base::Time impression_time);
 
 CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_source_event_id,
