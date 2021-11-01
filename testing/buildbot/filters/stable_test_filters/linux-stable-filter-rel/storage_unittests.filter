@@ -1,3 +1,9 @@
+-All/QuotaDatabaseTest.EnsureOpened/0
+-All/QuotaDatabaseTest.EnsureOpened/1
+-All/QuotaDatabaseTest.SetStorageKeyLastAccessTime/0
+-All/QuotaDatabaseTest.SetStorageKeyLastAccessTime/1
+-All/QuotaDatabaseTest.SetStorageKeyLastModifiedTime/0
+-All/QuotaDatabaseTest.SetStorageKeyLastModifiedTime/1
 -BlobRegistryImplTest.Register_FileSystemFile_UnreadablFile
 -DatabaseQuotaClientTest.DeleteOriginData
 -DatabaseQuotaClientTest.GetOriginUsage
@@ -10,8 +16,6 @@
 -MockQuotaManagerTest.OriginDeletion
 -QuotaDatabaseTest.DumpOriginInfoTable
 -QuotaDatabaseTest.DumpQuotaTable
--All/QuotaDatabaseTest.EnsureOpened/0
--All/QuotaDatabaseTest.EnsureOpened/1
 -QuotaDatabaseTest.GetOriginInfo
 -QuotaDatabaseTest.HostQuota
 -QuotaDatabaseTest.LazyOpen
@@ -19,10 +23,6 @@
 -QuotaDatabaseTest.OriginLastEvicted
 -QuotaDatabaseTest.OriginLastModifiedBetween
 -QuotaDatabaseTest.RegisterInitialOriginInfo
--All/QuotaDatabaseTest.SetStorageKeyLastAccessTime/0
--All/QuotaDatabaseTest.SetStorageKeyLastAccessTime/1
--All/QuotaDatabaseTest.SetStorageKeyLastModifiedTime/0
--All/QuotaDatabaseTest.SetStorageKeyLastModifiedTime/1
 -QuotaDatabaseTest.UpgradeSchema
 -QuotaManagerImplTest.DeleteMultipleClientTypesSingleOrigin
 -QuotaManagerImplTest.DeleteOriginDataNoClients

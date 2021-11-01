@@ -24521,7 +24521,6 @@
 -external/wpt/scroll-animations/scroll-timelines/null-scroll-source-crash.html
 -external/wpt/scroll-animations/scroll-timelines/pause-animation.html
 -external/wpt/scroll-animations/scroll-timelines/play-animation.html
--external/wpt/scroll-animations/scroll-timelines/progress-based-current-time.tentative.html
 -external/wpt/scroll-animations/scroll-timelines/progress-based-effect-delay.tentative.html
 -external/wpt/scroll-animations/scroll-timelines/reverse-animation.html
 -external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html
@@ -38328,7 +38327,6 @@
 -virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/null-scroll-source-crash.html
 -virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/pause-animation.html
 -virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/play-animation.html
--virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/progress-based-current-time.tentative.html
 -virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/progress-based-effect-delay.tentative.html
 -virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/reverse-animation.html
 -virtual/delayed-animation-updates/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html
@@ -48971,7 +48969,6 @@
 -virtual/threaded/external/wpt/scroll-animations/scroll-timelines/null-scroll-source-crash.html
 -virtual/threaded/external/wpt/scroll-animations/scroll-timelines/pause-animation.html
 -virtual/threaded/external/wpt/scroll-animations/scroll-timelines/play-animation.html
--virtual/threaded/external/wpt/scroll-animations/scroll-timelines/progress-based-current-time.tentative.html
 -virtual/threaded/external/wpt/scroll-animations/scroll-timelines/progress-based-effect-delay.tentative.html
 -virtual/threaded/external/wpt/scroll-animations/scroll-timelines/reverse-animation.html
 -virtual/threaded/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html
