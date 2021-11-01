@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_MODEL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_MODEL_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -157,15 +157,17 @@ class UserModel {
  private:
   friend class UserModelTest;
 
-  std::map<std::string, ValueProto> values_;
+  base::flat_map<std::string, ValueProto> values_;
   // Guid to credit card map.
-  std::map<std::string, std::unique_ptr<autofill::CreditCard>> credit_cards_;
+  base::flat_map<std::string, std::unique_ptr<autofill::CreditCard>>
+      credit_cards_;
   // The selected credit card.
   std::unique_ptr<autofill::CreditCard> selected_card_;
   // Guid to profile map.
-  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>> profiles_;
+  base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+      profiles_;
   // Profile name to profile map.
-  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+  base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
       selected_profiles_;
 
   GURL current_url_;

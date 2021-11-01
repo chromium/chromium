@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -393,7 +394,7 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
                           Service::ResponseCallback& callback) {
         EXPECT_THAT(trigger_context.GetScriptParameters().ToProto(),
                     testing::UnorderedElementsAreArray(
-                        std::map<std::string, std::string>(
+                        base::flat_map<std::string, std::string>(
                             {{"required", "value"}, {"arg0", "value0"}})));
         EXPECT_TRUE(trigger_context.GetDirectAction());
 
@@ -405,8 +406,8 @@ TEST_F(ControllerTest, RunDirectActionWithArguments) {
   EXPECT_TRUE(controller_->PerformUserActionWithContext(
       0, std::make_unique<TriggerContext>(
              /* parameters = */ std::make_unique<ScriptParameters>(
-                 std::map<std::string, std::string>{{"required", "value"},
-                                                    {"arg0", "value0"}}),
+                 base::flat_map<std::string, std::string>{{"required", "value"},
+                                                          {"arg0", "value0"}}),
              options)));
 }
 
@@ -2281,7 +2282,7 @@ TEST_F(ControllerTest, SetOverlayColors) {
   controller_->Start(url,
                      std::make_unique<TriggerContext>(
                          /* parameters = */ std::make_unique<ScriptParameters>(
-                             std::map<std::string, std::string>{
+                             base::flat_map<std::string, std::string>{
                                  {"OVERLAY_COLORS", "#FF000000:#FFFFFFFF"}}),
                          TriggerContext::Options()));
 }
@@ -2293,10 +2294,11 @@ TEST_F(ControllerTest, EnableTts) {
 
   GURL url("http://a.example.com/path");
   controller_->Start(
-      url, std::make_unique<TriggerContext>(
-               /* parameters = */ std::make_unique<ScriptParameters>(
-                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
-               TriggerContext::Options()));
+      url,
+      std::make_unique<TriggerContext>(
+          /* parameters = */ std::make_unique<ScriptParameters>(
+              base::flat_map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+          TriggerContext::Options()));
 
   EXPECT_TRUE(controller_->GetTtsButtonVisible());
 }
@@ -2308,10 +2310,11 @@ TEST_F(ControllerTest, DoNotEnableTtsWhenAccessibilityEnabled) {
 
   GURL url("http://a.example.com/path");
   controller_->Start(
-      url, std::make_unique<TriggerContext>(
-               /* parameters = */ std::make_unique<ScriptParameters>(
-                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
-               TriggerContext::Options()));
+      url,
+      std::make_unique<TriggerContext>(
+          /* parameters = */ std::make_unique<ScriptParameters>(
+              base::flat_map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+          TriggerContext::Options()));
 
   EXPECT_FALSE(controller_->GetTtsButtonVisible());
 }
@@ -2347,14 +2350,15 @@ TEST_F(ControllerTest, SetTtsMessageReEnablesTtsButtonWithNonStickyStateExp) {
       .WillOnce(Return(false));
   GURL url("http://a.example.com/path");
   controller_->Start(
-      url, std::make_unique<TriggerContext>(
-               /* parameters = */ std::make_unique<ScriptParameters>(
-                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
-               TriggerContext::Options(
-                   /* experiment_ids= */ "4624822", /* is_cct= */ false,
-                   /* onboarding_shown= */ false, /* is_direct_action= */ false,
-                   /* initial_url= */ "http://a.example.com/path",
-                   /* is_in_chrome_triggered= */ false)));
+      url,
+      std::make_unique<TriggerContext>(
+          /* parameters = */ std::make_unique<ScriptParameters>(
+              base::flat_map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+          TriggerContext::Options(
+              /* experiment_ids= */ "4624822", /* is_cct= */ false,
+              /* onboarding_shown= */ false, /* is_direct_action= */ false,
+              /* initial_url= */ "http://a.example.com/path",
+              /* is_in_chrome_triggered= */ false)));
   SetTtsButtonStateForTest(TtsButtonState::DISABLED);
 
   EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
@@ -2368,10 +2372,11 @@ TEST_F(ControllerTest,
       .WillOnce(Return(false));
   GURL url("http://a.example.com/path");
   controller_->Start(
-      url, std::make_unique<TriggerContext>(
-               /* parameters = */ std::make_unique<ScriptParameters>(
-                   std::map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
-               TriggerContext::Options()));
+      url,
+      std::make_unique<TriggerContext>(
+          /* parameters = */ std::make_unique<ScriptParameters>(
+              base::flat_map<std::string, std::string>{{"ENABLE_TTS", "true"}}),
+          TriggerContext::Options()));
   SetTtsButtonStateForTest(TtsButtonState::DISABLED);
 
   EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(_)).Times(0);
@@ -2488,9 +2493,9 @@ TEST_F(ControllerTest, HidingUiStopsAnyOngoingTts) {
 
 TEST_F(ControllerTest, AddParametersToUserData) {
   auto script_parameters = std::make_unique<ScriptParameters>(
-      std::map<std::string, std::string>{{"PARAM_A", "a"}});
+      base::flat_map<std::string, std::string>{{"PARAM_A", "a"}});
   script_parameters->UpdateDeviceOnlyParameters(
-      std::map<std::string, std::string>{{"PARAM_B", "b"}});
+      base::flat_map<std::string, std::string>{{"PARAM_B", "b"}});
   GURL url("http://a.example.com/path");
   controller_->Start(
       url, std::make_unique<TriggerContext>(std::move(script_parameters),
@@ -2862,7 +2867,7 @@ TEST_F(ControllerTest, StartPasswordChangeFlow) {
   EXPECT_TRUE(controller_->Start(
       initialUrl, std::make_unique<TriggerContext>(
                       /* parameters = */ std::make_unique<ScriptParameters>(
-                          std::map<std::string, std::string>{
+                          base::flat_map<std::string, std::string>{
                               {"PASSWORD_CHANGE_USERNAME", "test_username"}}),
                       TriggerContext::Options())));
   // Initial navigation.

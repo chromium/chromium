@@ -4,8 +4,9 @@
 
 #include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
 
-#include <map>
 #include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -154,7 +155,7 @@ class TriggerScriptCoordinatorTest : public testing::Test {
 };
 
 TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
-  std::map<std::string, std::string> input_script_params{
+  base::flat_map<std::string, std::string> input_script_params{
       {"USER_EMAIL", "should.not.be.sent@chromium.org"},
       {"keyA", "valueA"},
       {"DEBUG_BUNDLE_ID", "bundle_id"},
@@ -164,7 +165,7 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
       {"FALLBACK_BUNDLE_ID", "fallback_id"},
       {"FALLBACK_BUNDLE_VERSION", "fallback_version"}};
 
-  std::map<std::string, std::string> expected_script_params{
+  base::flat_map<std::string, std::string> expected_script_params{
       {"DEBUG_BUNDLE_ID", "bundle_id"},
       {"DEBUG_SOCKET_ID", "socket_id"},
       {"DEBUG_BUNDLE_VERSION", "socket_version"},
@@ -178,7 +179,7 @@ TEST_F(TriggerScriptCoordinatorTest, StartSendsOnlyApprovedFields) {
         ASSERT_TRUE(request.ParseFromString(request_body));
         EXPECT_THAT(request.url(), Eq(kFakeDeepLink));
 
-        std::map<std::string, std::string> params;
+        base::flat_map<std::string, std::string> params;
         for (const auto& param : request.script_parameters()) {
           params[param.name()] = param.value();
         }
@@ -1206,8 +1207,9 @@ TEST_F(TriggerScriptCoordinatorTest, BackendCanOverrideScriptParameters) {
   coordinator_->Start(
       GURL(kFakeDeepLink),
       std::make_unique<TriggerContext>(
-          std::make_unique<ScriptParameters>(std::map<std::string, std::string>{
-              {"name_1", "old_value_1"}, {"name_3", "value_3"}}),
+          std::make_unique<ScriptParameters>(
+              base::flat_map<std::string, std::string>{
+                  {"name_1", "old_value_1"}, {"name_3", "value_3"}}),
           TriggerContext::Options()),
       mock_callback_.Get());
   EXPECT_THAT(coordinator_->GetTriggerContext().GetScriptParameters().ToProto(),

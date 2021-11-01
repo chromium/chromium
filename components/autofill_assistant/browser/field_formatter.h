@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FIELD_FORMATTER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_FIELD_FORMATTER_H_
 
-#include <map>
 #include <string>
+
+#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -54,14 +55,14 @@ struct Key {
 // than those from |mappings| will be left unchanged.
 absl::optional<std::string> FormatString(
     const std::string& input,
-    const std::map<std::string, std::string>& mappings,
+    const base::flat_map<std::string, std::string>& mappings,
     bool strict = true);
 
 // Turns a |value_expression| into a string, replacing |key| chunks with
 // corresponding values in |mappings|. This will fail if any of the keys are
 // not in |mappings|. If |quote_meta| the replacement pieces will be quoted.
 ClientStatus FormatExpression(const ValueExpression& value_expression,
-                              const std::map<Key, std::string>& mappings,
+                              const base::flat_map<Key, std::string>& mappings,
                               bool quote_meta,
                               std::string* out_value);
 
@@ -75,8 +76,9 @@ std::string GetHumanReadableValueExpression(
 // |autofill_data_model|.
 // |locale| should be a locale string such as "en-US".
 template <typename T>
-std::map<Key, std::string> CreateAutofillMappings(const T& autofill_data_model,
-                                                  const std::string& locale);
+base::flat_map<Key, std::string> CreateAutofillMappings(
+    const T& autofill_data_model,
+    const std::string& locale);
 
 }  // namespace field_formatter
 

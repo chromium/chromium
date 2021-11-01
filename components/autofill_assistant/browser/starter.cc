@@ -4,12 +4,11 @@
 
 #include "components/autofill_assistant/browser/starter.h"
 
-#include <map>
-
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -295,15 +294,14 @@ void Starter::OnHeuristicMatch(const GURL& url,
   Metrics::RecordInChromeTriggerAction(
       ukm_recorder_, source_id,
       Metrics::InChromeTriggerAction::TRIGGER_SCRIPT_REQUESTED);
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
+      {"INTENT",
+       base::JoinString(
+           std::vector<std::string>(intents.begin(), intents.end()), ",")},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
       {"ORIGINAL_DEEPLINK", url.spec()}};
-  script_parameters.emplace(
-      "INTENT",
-      base::JoinString(std::vector<std::string>(intents.begin(), intents.end()),
-                       ","));
   // Add/overwrite with debug parameters if specified.
   for (const auto& debug_param :
        implicit_triggering_debug_parameters_.additional_script_parameters()) {

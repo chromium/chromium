@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PROTOCOL_UTILS_H_
 
 #include <deque>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

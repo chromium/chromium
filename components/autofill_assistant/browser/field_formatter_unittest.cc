@@ -4,6 +4,10 @@
 
 #include "components/autofill_assistant/browser/field_formatter.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -204,28 +208,29 @@ class FieldFormatterStringTest : public ::testing::Test {
     return std::string();
   }
 
-  // |FormatString| requires a std::map<std::string, std::string>, while
-  // |GetAutofillMappings| returns a std::map<Key, std::string>. This
+  // |FormatString| requires a base::flat_map<std::string, std::string>, while
+  // |GetAutofillMappings| returns a base::flat_map<Key, std::string>. This
   // transforms the mappings from Key to std::string.
   template <typename T>
-  std::map<std::string, std::string> CreateAutofillTestMappings(
+  base::flat_map<std::string, std::string> CreateAutofillTestMappings(
       const T& form_group) {
     auto autofill_mappings = CreateAutofillMappings(form_group, "en-US");
-    std::map<std::string, std::string> test_mappings;
+    std::vector<std::pair<std::string, std::string>> test_mappings;
     for (const auto& it : autofill_mappings) {
-      test_mappings[GetKeyAsString(it.first)] = it.second;
+      test_mappings.emplace_back(GetKeyAsString(it.first), it.second);
     }
-    return test_mappings;
+    return base::flat_map<std::string, std::string>(std::move(test_mappings));
   }
 };
 
 TEST_F(FieldFormatterStringTest, FormatString) {
-  std::map<std::string, std::string> mappings = {{"keyA", "valueA"},
-                                                 {"keyB", "valueB"},
-                                                 {"keyC", "valueC"},
-                                                 {"keyD", "$30.5"},
-                                                 {"keyE", "30.5$"}
-                                                 /* keyF does not exist */};
+  base::flat_map<std::string, std::string> mappings = {
+      {"keyA", "valueA"},
+      {"keyB", "valueB"},
+      {"keyC", "valueC"},
+      {"keyD", "$30.5"},
+      {"keyE", "30.5$"}
+      /* keyF does not exist */};
 
   EXPECT_EQ(*FormatString("", mappings), "");
   EXPECT_EQ(*FormatString("input", mappings), "input");
@@ -355,8 +360,8 @@ TEST_F(FieldFormatterStringTest, SpecialCases) {
 }
 
 TEST(FieldFormatterTest, FormatExpression) {
-  std::map<Key, std::string> mappings = {{Key(1), "valueA"},
-                                         {Key(2), "val.ueB"}};
+  base::flat_map<Key, std::string> mappings = {{Key(1), "valueA"},
+                                               {Key(2), "val.ueB"}};
   std::string result;
 
   ValueExpression value_expression_1;
@@ -396,7 +401,7 @@ TEST(FieldFormatterTest, FormatExpression) {
 }
 
 TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
-  std::map<Key, std::string> mappings = {
+  base::flat_map<Key, std::string> mappings = {
       {Key(1), "A"}, {Key(2), "B"}, {Key(3), "+41"}};
   std::string result;
 
@@ -436,8 +441,8 @@ TEST(FieldFormatterTest, FormatExpressionWithReplacements) {
 }
 
 TEST(FieldFormatterTest, FormatExpressionWithMemoryKey) {
-  std::map<Key, std::string> mappings = {{Key("_var0"), "valueA"},
-                                         {Key("_var1"), "val.ueB"}};
+  base::flat_map<Key, std::string> mappings = {{Key("_var0"), "valueA"},
+                                               {Key("_var1"), "val.ueB"}};
   std::string result;
 
   ValueExpression value_expression;
@@ -467,7 +472,7 @@ TEST(FieldFormatterTest, FormatExpressionWithMemoryKey) {
 }
 
 TEST(FieldFormatterTest, NoKeyConflicts) {
-  std::map<Key, std::string> mappings = {{Key(1), "a"}, {Key("1"), "b"}};
+  base::flat_map<Key, std::string> mappings = {{Key(1), "a"}, {Key("1"), "b"}};
   std::string result;
 
   ValueExpression value_expression;
@@ -508,7 +513,7 @@ TEST(FieldFormatterTest, DifferentLocales) {
 }
 
 TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
-  std::map<Key, std::string> expected_values = {
+  base::flat_map<Key, std::string> expected_values = {
       {Key(-8), "US"},
       {Key(-6), "California"},
       {Key(3), "Alpha"},
@@ -541,7 +546,7 @@ TEST(FieldFormatterTest, AddsAllProfileFieldsUsAddress) {
 }
 
 TEST(FieldFormatterTest, AddsAllProfileFieldsForNonUsAddress) {
-  std::map<Key, std::string> expected_values = {
+  base::flat_map<Key, std::string> expected_values = {
       {Key(-8), "CH"},
       {Key(-6), "Canton Zurich"},
       {Key(3), "Alpha"},
@@ -574,20 +579,21 @@ TEST(FieldFormatterTest, AddsAllProfileFieldsForNonUsAddress) {
 }
 
 TEST(FieldFormatterTest, AddsAllCreditCardFields) {
-  std::map<Key, std::string> expected_values = {{Key(-7), "8"},
-                                                {Key(-5), "Visa"},
-                                                {Key(-4), "1111"},
-                                                {Key(-2), "visa"},
-                                                {Key(51), "Alpha Beta Gamma"},
-                                                {Key(52), "4111111111111111"},
-                                                {Key(53), "08"},
-                                                {Key(54), "50"},
-                                                {Key(55), "2050"},
-                                                {Key(56), "08/50"},
-                                                {Key(57), "08/2050"},
-                                                {Key(58), "Visa"},
-                                                {Key(91), "Alpha"},
-                                                {Key(92), "Gamma"}};
+  base::flat_map<Key, std::string> expected_values = {
+      {Key(-7), "8"},
+      {Key(-5), "Visa"},
+      {Key(-4), "1111"},
+      {Key(-2), "visa"},
+      {Key(51), "Alpha Beta Gamma"},
+      {Key(52), "4111111111111111"},
+      {Key(53), "08"},
+      {Key(54), "50"},
+      {Key(55), "2050"},
+      {Key(56), "08/50"},
+      {Key(57), "08/2050"},
+      {Key(58), "Visa"},
+      {Key(91), "Alpha"},
+      {Key(92), "Gamma"}};
 
   autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card, "Alpha Beta Gamma",

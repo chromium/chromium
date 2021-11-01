@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
+
+#include <utility>
+#include <vector>
+
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/flat_map.h"
 #include "base/notreached.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantChip_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantColor_jni.h"
@@ -484,7 +489,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
   return jlist;
 }
 
-std::map<std::string, std::string> CreateStringMapFromJava(
+base::flat_map<std::string, std::string> CreateStringMapFromJava(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& names,
     const base::android::JavaRef<jobjectArray>& values) {
@@ -493,12 +498,12 @@ std::map<std::string, std::string> CreateStringMapFromJava(
   std::vector<std::string> values_vector;
   base::android::AppendJavaStringArrayToStringVector(env, values,
                                                      &values_vector);
-  std::map<std::string, std::string> result;
+  std::vector<std::pair<std::string, std::string>> result;
   DCHECK_EQ(names_vector.size(), values_vector.size());
   for (size_t i = 0; i < names_vector.size(); ++i) {
-    result.insert(std::make_pair(names_vector[i], values_vector[i]));
+    result.emplace_back(names_vector[i], values_vector[i]);
   }
-  return result;
+  return base::flat_map<std::string, std::string>(std::move(result));
 }
 
 std::unique_ptr<TriggerContext> CreateTriggerContext(

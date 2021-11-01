@@ -4,7 +4,6 @@
 
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 
-#include <map>
 #include <memory>
 #include <utility>
 #include <vector>

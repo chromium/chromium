@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_DATA_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_USER_DATA_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/cud_condition.pb.h"
@@ -167,7 +167,7 @@ class UserData {
   friend class UserModel;
   // The address key requested by the autofill action.
   // Written by |UserModel| to ensure that it stays in sync.
-  std::map<std::string, std::unique_ptr<autofill::AutofillProfile>>
+  base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
       selected_addresses_;
 
   // The selected credit card.
@@ -179,7 +179,7 @@ class UserData {
   std::unique_ptr<LoginChoice> selected_login_choice_;
 
   // A set of additional key/value pairs to be stored in client_memory.
-  std::map<std::string, ValueProto> additional_values_;
+  base::flat_map<std::string, ValueProto> additional_values_;
 };
 
 // Struct for holding the payment request options.

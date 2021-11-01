@@ -7,6 +7,7 @@
 #include <array>
 #include <sstream>
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/user_data.h"
@@ -22,7 +23,7 @@ const char kParameterMemoryPrefix[] = "param:";
 // non-existent values. Expects bool parameters as 'false' and 'true'.
 template <typename T>
 absl::optional<T> GetTypedParameter(
-    const std::map<std::string, ValueProto> parameters,
+    const base::flat_map<std::string, ValueProto> parameters,
     const std::string& key) {
   auto iter = parameters.find(key);
   if (iter == parameters.end())
@@ -113,7 +114,7 @@ const char kDetailsTotalPriceLabel[] = "DETAILS_TOTAL_PRICE_LABEL";
 const char kDetailsTotalPrice[] = "DETAILS_TOTAL_PRICE";
 
 ScriptParameters::ScriptParameters(
-    const std::map<std::string, std::string>& parameters) {
+    const base::flat_map<std::string, std::string>& parameters) {
   for (const auto& it : parameters) {
     parameters_.emplace(
         it.first, SimpleValue(it.second, /* is_client_side_only= */ false));
@@ -277,7 +278,7 @@ absl::optional<std::string> ScriptParameters::GetDetailsTotalPrice() const {
 }
 
 void ScriptParameters::UpdateDeviceOnlyParameters(
-    const std::map<std::string, std::string>& parameters) {
+    const base::flat_map<std::string, std::string>& parameters) {
   for (const auto& parameter : parameters) {
     parameters_[parameter.first] =
         SimpleValue(parameter.second, /* is_client_side_only= */ true);

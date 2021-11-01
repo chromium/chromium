@@ -4,10 +4,10 @@
 
 #include "components/autofill_assistant/browser/starter.h"
 
-#include <map>
 #include <memory>
 #include <string>
 #include "base/base64url.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/lru_cache.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
@@ -253,8 +253,8 @@ class StarterTest : public testing::Test {
 };
 
 TEST_F(StarterTest, RegularScriptFailsWithoutInitialUrl) {
-  std::map<std::string, std::string> params = {{"ENABLED", "true"},
-                                               {"START_IMMEDIATELY", "true"}};
+  base::flat_map<std::string, std::string> params = {
+      {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}};
   TriggerContext::Options options;
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
 
@@ -271,7 +271,7 @@ TEST_F(StarterTest, RegularScriptFailsWithoutInitialUrl) {
 }
 
 TEST_F(StarterTest, TriggerScriptFailsWithoutInitialUrl) {
-  std::map<std::string, std::string> params = {
+  base::flat_map<std::string, std::string> params = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", "abc"}};
@@ -295,7 +295,7 @@ TEST_F(StarterTest, TriggerScriptFailsWithoutInitialUrl) {
 
 TEST_F(StarterTest, FailWithoutMandatoryScriptParameter) {
   // ENABLED is missing from |params|.
-  std::map<std::string, std::string> params = {
+  base::flat_map<std::string, std::string> params = {
       {"START_IMMEDIATELY", "false"}, {"TRIGGER_SCRIPTS_BASE64", "abc"}};
   TriggerContext::Options options;
   options.initial_url = kExampleDeeplink;
@@ -318,7 +318,7 @@ TEST_F(StarterTest, FailWithoutMandatoryScriptParameter) {
 }
 
 TEST_F(StarterTest, FailWhenFeatureDisabled) {
-  std::map<std::string, std::string> params = {
+  base::flat_map<std::string, std::string> params = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", "abc"}};
@@ -346,7 +346,7 @@ TEST_F(StarterTest, FailWhenFeatureDisabled) {
 
 TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
   SetupPlatformDelegateForReturningUser();
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -379,7 +379,7 @@ TEST_F(StarterTest, RegularStartupForReturningUsersSucceeds) {
 
 TEST_F(StarterTest, RegularStartupForFirstTimeUsersSucceeds) {
   SetupPlatformDelegateForFirstTimeUser();
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -421,7 +421,7 @@ TEST_F(StarterTest, ForceOnboardingFlagForReturningUsersSucceeds) {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kAutofillAssistantForceOnboarding, "true");
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", "https://www.example.com"}};
@@ -460,7 +460,7 @@ TEST_F(StarterTest, ForceFirstTimeUserExperienceForReturningUser) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kAutofillAssistantForceFirstTimeUser, "true");
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", base64_get_trigger_scripts_response},
@@ -477,7 +477,7 @@ TEST_F(StarterTest, RegularStartupFailsIfDfmInstallationFails) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installation_result_ =
       Metrics::FeatureModuleInstallation::DFM_FOREGROUND_INSTALLATION_FAILED;
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -507,7 +507,7 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
   fake_platform_delegate_.show_onboarding_result_ = OnboardingResult::REJECTED;
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink},
@@ -535,7 +535,7 @@ TEST_F(StarterTest, RegularStartupFailsIfOnboardingRejected) {
 TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
   SetupPlatformDelegateForReturningUser();
   fake_platform_delegate_.msbb_enabled_ = false;
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
@@ -565,7 +565,7 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfMsbbIsDisabled) {
 TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
   SetupPlatformDelegateForReturningUser();
   fake_platform_delegate_.proactive_help_enabled_ = false;
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
@@ -595,7 +595,7 @@ TEST_F(StarterTest, RpcTriggerScriptFailsIfProactiveHelpIsDisabled) {
 TEST_F(StarterTest, RpcTriggerScriptSucceeds) {
   SetupPlatformDelegateForFirstTimeUser();
   fake_platform_delegate_.feature_module_installed_ = true;
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
@@ -671,7 +671,7 @@ TEST_F(StarterTest, Base64TriggerScriptFailsForInvalidBase64) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", "#invalid_hashtag"},
@@ -706,7 +706,7 @@ TEST_F(StarterTest, Base64TriggerScriptFailsIfProactiveHelpIsDisabled) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -741,7 +741,7 @@ TEST_F(StarterTest, Base64TriggerScriptSucceeds) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64",
@@ -794,7 +794,7 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenTransitioningFromCctToTab) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -827,7 +827,7 @@ TEST_F(StarterTest, CancelPendingTriggerScriptWhenHandlingNewStartupRequest) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -859,7 +859,7 @@ TEST_F(StarterTest, RegularStartupFailsIfNavigationDuringOnboarding) {
   fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
   EXPECT_CALL(mock_start_regular_script_callback_, Run).Times(0);
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -888,7 +888,7 @@ TEST_F(StarterTest, TriggerScriptStartupFailsIfNavigationDuringOnboarding) {
   // Empty callback to keep the onboarding open indefinitely.
   fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64",
@@ -937,7 +937,7 @@ TEST_F(StarterTest, RegularStartupAllowsCertainNavigationsDuringOnboarding) {
   // Empty callback to keep the onboarding open indefinitely.
   fake_platform_delegate_.on_show_onboarding_callback_ = base::DoNothing();
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -975,7 +975,7 @@ TEST_F(StarterTest, TriggerScriptAllowsHttpToHttpsRedirect) {
   mock_trigger_script_service_request_sender_ = nullptr;
 
   SimulateNavigateToUrl(GURL("http://www.example.com"));
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -1001,7 +1001,7 @@ TEST_F(StarterTest, RegularStartupIgnoresLastCommittedUrl) {
   // the time of startup. All that matters is that it has received the startup
   // intent, and that there is a valid ORIGINAL_DEEPLINK to expect.
   SimulateNavigateToUrl(GURL("https://www.ignored.com"));
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -1172,7 +1172,7 @@ TEST_F(StarterTest, StartTriggerScriptBeforeRedirectRecordsUkmForTargetUrl) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -1214,7 +1214,7 @@ TEST_F(StarterTest, RedirectFailsDuringPendingTriggerScriptStart) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -1263,7 +1263,7 @@ TEST_F(StarterTest, StartTriggerScriptDuringRedirectRecordsUkmForTargetUrl) {
   fake_platform_delegate_.trigger_script_request_sender_for_test_ = nullptr;
   mock_trigger_script_service_request_sender_ = nullptr;
 
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"TRIGGER_SCRIPTS_BASE64", CreateBase64TriggerScriptResponseForTest()},
@@ -1307,7 +1307,7 @@ TEST_F(StarterTest, StartTriggerScriptDuringRedirectRecordsUkmForTargetUrl) {
 TEST_F(StarterTest, RegularStartupDoesNotWaitForNavigationToFinish) {
   SetupPlatformDelegateForReturningUser();
   auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -1350,7 +1350,7 @@ TEST_F(StarterTest, DoNotStartImplicitlyIfAlreadyRunning) {
   scoped_feature_list->InitAndEnableFeature(
       features::kAutofillAssistantInCCTTriggering);
   starter_->CheckSettings();
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "true"},
       {"ORIGINAL_DEEPLINK", kExampleDeeplink}};
@@ -1528,7 +1528,7 @@ TEST_F(StarterTest, EmptyTriggerScriptFetchesForImplicitStartupAreCached) {
   // However, explicit requests still communicate with the backend.
   EXPECT_CALL(*mock_trigger_script_service_request_sender_, OnSendRequest)
       .Times(1);
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
@@ -1553,7 +1553,7 @@ TEST_F(StarterTest, EmptyTriggerScriptFetchesForImplicitStartupAreCached) {
 }
 
 TEST_F(StarterTest, FailedExplicitTriggerFetchesAreCached) {
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"}};
@@ -1715,7 +1715,7 @@ TEST_F(StarterTest, RemoveEntryFromCacheOnSuccessForExplicitRequest) {
         trigger_script_coordinator_->PerformTriggerScriptAction(
             TriggerScriptProto::ACCEPT);
       });
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},
@@ -1790,7 +1790,7 @@ TEST_F(StarterTest, RecordsDependenciesInvalidatedOutsideFlow) {
 
 TEST_F(StarterTest, RecordsDependenciesInvalidatedDuringStartup) {
   SetupPlatformDelegateForFirstTimeUser();
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"}, {"START_IMMEDIATELY", "true"}};
   TriggerContext::Options options;
   options.initial_url = "https://redirect.com/to/www/example/com";
@@ -2096,7 +2096,7 @@ TEST_F(StarterPrerenderTest, DoNotAffectRecordUkmDuringPrendering) {
 
   TriggerContext::Options options;
   options.initial_url = kExampleDeeplink;
-  std::map<std::string, std::string> script_parameters = {
+  base::flat_map<std::string, std::string> script_parameters = {
       {"ENABLED", "true"},
       {"START_IMMEDIATELY", "false"},
       {"REQUEST_TRIGGER_SCRIPT", "true"},

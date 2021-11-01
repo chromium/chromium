@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -303,7 +304,7 @@ TEST_F(ProtocolUtilsTest, CreateGetTriggerScriptsRequest) {
   AssertClientContext(request.client_context());
   EXPECT_THAT(request.script_parameters(),
               UnorderedElementsAreArray(
-                  ScriptParameters(std::map<std::string, std::string>{
+                  ScriptParameters(base::flat_map<std::string, std::string>{
                                        {"DEBUG_BUNDLE_ID", "123"}})
                       .ToProto()));
   EXPECT_EQ("http://example.com/", request.url());

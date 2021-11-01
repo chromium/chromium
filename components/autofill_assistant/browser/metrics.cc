@@ -4,14 +4,13 @@
 
 #include "components/autofill_assistant/browser/metrics.h"
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/intent_strings.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-
-#include <map>
 
 namespace autofill_assistant {
 
@@ -38,7 +37,7 @@ const char kDependenciesInvalidated[] =
 static bool DROPOUT_RECORDED = false;
 
 std::string GetSuffixForIntent(const std::string& intent) {
-  std::map<std::string, std::string> histogramsSuffixes = {
+  base::flat_map<std::string, std::string> histogramsSuffixes = {
       {kBuyMovieTicket, ".BuyMovieTicket"},
       {kFlightsCheckin, ".FlightsCheckin"},
       {kFoodOrdering, ".FoodOrdering"},

@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/generic_ui_replace_placeholders.h"
 
+#include "base/containers/flat_map.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -12,7 +13,7 @@ namespace {
 using ::testing::_;
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInViews) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* root_view = input.mutable_root_view();
@@ -75,7 +76,7 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInViews) {
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInEvents) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* on_value_changed = input.mutable_interactions()
@@ -110,7 +111,7 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInEvents) {
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* callback_with_condition =
@@ -324,7 +325,7 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInModel) {
-  std::map<std::string, std::string> mappings{{"i", "1"}};
+  base::flat_map<std::string, std::string> mappings{{"i", "1"}};
 
   GenericUserInterfaceProto input;
   auto* value_a = input.mutable_model()->add_values();
