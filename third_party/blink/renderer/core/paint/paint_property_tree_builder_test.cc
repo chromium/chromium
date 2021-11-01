@@ -498,19 +498,26 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRLMulticol) {
       GetLayoutObjectByElementId("multicol")->SlowFirstChild();
   auto check_fragments = [flow_thread]() {
     ASSERT_EQ(2u, NumFragments(flow_thread));
-    const auto* fragment_clip0 =
-        FragmentAt(flow_thread, 0).PaintProperties()->FragmentClip();
-    EXPECT_EQ(410, fragment_clip0->LayoutClipRect().Rect().x());
-    EXPECT_EQ(410, fragment_clip0->PaintClipRect().Rect().x());
-    EXPECT_EQ(PhysicalOffset(360, 10),
-              FragmentAt(flow_thread, 0).PaintOffset());
+    if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+      EXPECT_EQ(PhysicalOffset(410, 10),
+                FragmentAt(flow_thread, 0).PaintOffset());
+      EXPECT_EQ(PhysicalOffset(410, 210),
+                FragmentAt(flow_thread, 1).PaintOffset());
+    } else {
+      const auto* fragment_clip0 =
+          FragmentAt(flow_thread, 0).PaintProperties()->FragmentClip();
+      EXPECT_EQ(410, fragment_clip0->LayoutClipRect().Rect().x());
+      EXPECT_EQ(410, fragment_clip0->PaintClipRect().Rect().x());
+      EXPECT_EQ(PhysicalOffset(360, 10),
+                FragmentAt(flow_thread, 0).PaintOffset());
 
-    const auto* fragment_clip1 =
-        FragmentAt(flow_thread, 1).PaintProperties()->FragmentClip();
-    EXPECT_EQ(460, fragment_clip1->LayoutClipRect().Rect().right());
-    EXPECT_EQ(460, fragment_clip1->PaintClipRect().Rect().right());
-    EXPECT_EQ(PhysicalOffset(410, 210),
-              FragmentAt(flow_thread, 1).PaintOffset());
+      const auto* fragment_clip1 =
+          FragmentAt(flow_thread, 1).PaintProperties()->FragmentClip();
+      EXPECT_EQ(460, fragment_clip1->LayoutClipRect().Rect().right());
+      EXPECT_EQ(460, fragment_clip1->PaintClipRect().Rect().right());
+      EXPECT_EQ(PhysicalOffset(410, 210),
+                FragmentAt(flow_thread, 1).PaintOffset());
+    }
   };
   check_fragments();
 
