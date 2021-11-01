@@ -5733,6 +5733,10 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentPaintOffsetUnderOverflowScroll) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FragmentClipPixelSnapped) {
+  // No FragmentClip with LayoutNGBlockFragmentation.
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <div id="container" style="columns: 2; column-gap: 0; width: 49.5px">
       <div style="height: 99px"></div>
