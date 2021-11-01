@@ -20,6 +20,7 @@ to set the default value. Can also be accessed through `try_.defaults`.
 load("./args.star", "args")
 load("./branches.star", "branches")
 load("./builders.star", "builder_url", "builders", "compilator_watcher_git_revision", "os", "os_category")
+load("//project.star", "settings")
 
 DEFAULT_EXCLUDE_REGEXPS = [
     # Contains documentation that doesn't affect the outputs
@@ -562,14 +563,14 @@ def orchestrator_pair_builders(
         name,
         builder_group_func,
         orchestrator_builder_group,
-        orchestrator_builderless,
         orchestrator_cores,
         orchestrator_tryjob,
-        compilator_builderless,
         compilator_cores,
         compilator_goma_jobs,
         compilator_name,
         compilator_os,
+        compilator_builderless = not settings.is_main,
+        orchestrator_builderless = not settings.is_main,
         **common_kwargs):
     common_description = common_kwargs.pop("description_html", "")
     if common_description:
