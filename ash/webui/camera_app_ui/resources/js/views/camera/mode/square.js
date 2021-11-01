@@ -83,7 +83,7 @@ export class Square extends Photo {
   /**
    * @param {!MediaStream} stream
    * @param {!Facing} facing
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
    * @param {!PhotoHandler} handler
    */
   constructor(stream, facing, captureResolution, handler) {

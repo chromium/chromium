@@ -412,6 +412,9 @@ export class Camera extends View {
     state.addObserver(state.State.SCREEN_OFF_AUTO, handleScreenStateChange);
     state.addObserver(state.State.HAS_EXTERNAL_SCREEN, handleScreenStateChange);
 
+    state.addObserver(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT, () => {
+      this.start();
+    });
     state.addObserver(state.State.ENABLE_MULTISTREAM_RECORDING, () => {
       this.start();
     });
@@ -1027,18 +1030,27 @@ export class Camera extends View {
     const deviceOperator = await DeviceOperator.getInstance();
     state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
     let resolCandidates;
+    let photoRs;
     if (deviceOperator) {
       resolCandidates = this.modes_.getResolutionCandidates(mode, deviceId);
+      photoRs = await deviceOperator.getPhotoResolutions(deviceId);
     } else {
       resolCandidates = this.modes_.getFakeResolutionCandidates(mode, deviceId);
+      photoRs = resolCandidates;
     }
+    const maxResolution =
+        photoRs.reduce((maxR, r) => r.area > maxR.area ? r : maxR);
     for (const {resolution: captureR, previewCandidates} of resolCandidates) {
       for (const constraints of previewCandidates) {
         if (this.isSuspended()) {
           throw new CameraSuspendedError();
         }
-        this.modes_.setCaptureParams(mode, constraints, captureR);
-
+        const videoSnapshotResolution =
+            state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
+            maxResolution :
+            captureR;
+        this.modes_.setCaptureParams(
+            mode, constraints, captureR, videoSnapshotResolution);
         try {
           await this.modes_.prepareDevice();
           const factory = this.modes_.getModeFactory(mode);

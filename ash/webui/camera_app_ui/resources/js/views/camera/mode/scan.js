@@ -148,7 +148,7 @@ export class Scan extends Photo {
   /**
    * @param {!MediaStream} stream
    * @param {!Facing} facing
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
    * @param {!ScanHandler} handler
    */
   constructor(stream, facing, captureResolution, handler) {
@@ -169,7 +169,7 @@ export class ScanFactory extends ModeFactory {
   /**
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
    * @param {!ScanHandler} handler
    */
   constructor(constraints, captureResolution, handler) {

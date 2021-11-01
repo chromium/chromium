@@ -50,6 +50,8 @@ const struct {
     {"error_msg_video_too_short", IDS_ERROR_MSG_VIDEO_TOO_SHORT},
     {"expert_custom_video_parameters", IDS_EXPERT_CUSTOM_VIDEO_PARAMETERS},
     {"expert_enable_expert_mode", IDS_EXPERT_ENABLE_EXPERT_MODE},
+    {"expert_enable_full_sized_video_snapshot",
+     IDS_EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT},
     {"expert_multistream_recording", IDS_EXPERT_MULTISTREAM_RECORDING},
     {"expert_mode_button", IDS_EXPERT_MODE_BUTTON},
     {"expert_preview_metadata", IDS_EXPERT_PREVIEW_METADATA},

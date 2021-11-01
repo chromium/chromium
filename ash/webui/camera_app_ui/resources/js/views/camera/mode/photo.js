@@ -77,7 +77,7 @@ export class Photo extends ModeBase {
   /**
    * @param {!MediaStream} stream
    * @param {!Facing} facing
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
    * @param {!PhotoHandler} handler
    */
   constructor(stream, facing, captureResolution, handler) {
@@ -86,7 +86,7 @@ export class Photo extends ModeBase {
     /**
      * Capture resolution. May be null on device not support of setting
      * resolution.
-     * @type {?Resolution}
+     * @type {!Resolution}
      * @protected
      */
     this.captureResolution_ = captureResolution;
@@ -262,7 +262,7 @@ export class PhotoFactory extends ModeFactory {
   /**
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
    * @param {!PhotoHandler} handler
    */
   constructor(constraints, captureResolution, handler) {
