@@ -21,7 +21,7 @@ class CaseMappingHarfBuzzBufferFiller {
 
  public:
   CaseMappingHarfBuzzBufferFiller(CaseMapIntend,
-                                  AtomicString locale,
+                                  const AtomicString& locale,
                                   hb_buffer_t* harfbuzz_buffer,
                                   const String& text,
                                   unsigned start_index,
@@ -29,7 +29,7 @@ class CaseMappingHarfBuzzBufferFiller {
 
  private:
   void FillSlowCase(CaseMapIntend,
-                    AtomicString locale,
+                    const AtomicString& locale,
                     const UChar* buffer,
                     unsigned buffer_length,
                     unsigned start_index,
