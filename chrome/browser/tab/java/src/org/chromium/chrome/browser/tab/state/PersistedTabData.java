@@ -74,17 +74,19 @@ public abstract class PersistedTabData implements UserData {
      * @param factory method for creating {@link PersistedTabData}
      * @param data serialized {@link PersistedTabData}
      * @param clazz {@link PersistedTabData} class
-     * @return deserialized {@link PersistedTabData}
+     * @param callback {@link Callback} the {@link PersistedTabData} is passed back in
      */
-    protected static <T extends PersistedTabData> T build(
-            Tab tab, PersistedTabDataFactory<T> factory, ByteBuffer data, Class<T> clazz) {
+    protected static <T extends PersistedTabData> void build(Tab tab,
+            PersistedTabDataFactory<T> factory, ByteBuffer data, Class<T> clazz,
+            Callback<T> callback) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
-        T persistedTabData = factory.create(data, config.getStorage(), config.getId());
-        if (persistedTabData != null) {
-            setUserData(tab, clazz, persistedTabData);
-        }
-        return persistedTabData;
+        factory.create(data, config.getStorage(), config.getId(), (persistedTabData) -> {
+            if (persistedTabData != null) {
+                setUserData(tab, clazz, persistedTabData);
+            }
+            callback.onResult(persistedTabData);
+        });
     }
 
     /**
@@ -141,16 +143,22 @@ public abstract class PersistedTabData implements UserData {
                     onPersistedTabDataResult(tabData, tab, clazz, key);
                 });
             } else {
-                T persistedTabDataFromStorage =
-                        factory.create(data, config.getStorage(), config.getId());
-                if (persistedTabDataFromStorage.needsUpdate()) {
-                    tabDataCreator.onResult((tabData) -> {
-                        updateLastUpdatedMs(tabData);
-                        onPersistedTabDataResult(tabData, tab, clazz, key);
-                    });
-                } else {
-                    onPersistedTabDataResult(persistedTabDataFromStorage, tab, clazz, key);
-                }
+                onPersistedTabDataRetrieved(data, config, factory, tabDataCreator, tab, clazz, key);
+            }
+        });
+    }
+
+    private static <T extends PersistedTabData> void onPersistedTabDataRetrieved(ByteBuffer data,
+            PersistedTabDataConfiguration config, PersistedTabDataFactory<T> factory,
+            Callback<Callback<T>> tabDataCreator, Tab tab, Class<T> clazz, String key) {
+        factory.create(data, config.getStorage(), config.getId(), (persistedTabDataFromStorage) -> {
+            if (persistedTabDataFromStorage.needsUpdate()) {
+                tabDataCreator.onResult((tabData) -> {
+                    updateLastUpdatedMs(tabData);
+                    onPersistedTabDataResult(tabData, tab, clazz, key);
+                });
+            } else {
+                onPersistedTabDataResult(persistedTabDataFromStorage, tab, clazz, key);
             }
         });
     }
