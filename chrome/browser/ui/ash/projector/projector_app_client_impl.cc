@@ -52,3 +52,16 @@ void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
   for (auto& observer : observers_)
     observer.OnNewScreencastPreconditionChanged(can_start);
 }
+
+// TODO(b/201468756): Implement a PendingScreencastManager to provide the set
+// of PendingScreencast.
+const std::set<ash::PendingScreencast>&
+ProjectorAppClientImpl::GetPendingScreencasts() const {
+  return pending_screencasts_;
+}
+
+void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
+    const std::set<ash::PendingScreencast>& pending_screencast) {
+  for (auto& observer : observers_)
+    observer.OnScreencastsPendingStatusChanged(pending_screencast);
+}
