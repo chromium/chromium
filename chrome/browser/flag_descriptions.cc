@@ -4511,6 +4511,12 @@ const char kTrimOnMemoryPressureName[] = "Trim Working Set on memory pressure";
 const char kTrimOnMemoryPressureDescription[] =
     "Trim Working Set periodically on memory pressure";
 
+const char kEchePhoneHubPermissionsOnboardingName[] =
+    "Enable Eche Phone Hub Permissions Onboarding";
+const char kEchePhoneHubPermissionsOnboardingDescription[] =
+    "Enable the new permissions onboarding flow for Phone Hub notifications "
+    "and Eche.";
+
 const char kEcheSWAName[] = "Enable Eche App SWA.";
 const char kEcheSWADescription[] = "Enable the SWA version of the Eche.";
 

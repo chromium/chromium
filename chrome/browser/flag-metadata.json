@@ -1338,6 +1338,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "eche-phone-hub-permissions-onboarding",
+    "owners": [ "dhnishi" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "eche-swa",
     "owners": [ "dhnishi" ],
     "expiry_milestone": 101

@@ -180,6 +180,10 @@ void VerifyPageContentDict(
   EXPECT_TRUE(
       page_content_dict->GetBoolean("isPhoneHubAppsAccessGranted",
                                     &is_phone_hub_apps_access_granted));
+  bool is_phone_hub_permissions_dialog_supported;
+  EXPECT_TRUE(page_content_dict->GetBoolean(
+      "isPhoneHubPermissionsDialogSupported",
+      &is_phone_hub_permissions_dialog_supported));
 }
 
 }  // namespace
@@ -233,7 +237,9 @@ class MultideviceHandlerTest : public testing::Test {
     handler_->AllowJavascript();
 
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA}, {});
+        {chromeos::features::kPhoneHub, chromeos::features::kEcheSWA,
+         chromeos::features::kEchePhoneHubPermissionsOnboarding},
+        {});
   }
 
   void CallGetPageContentData() {

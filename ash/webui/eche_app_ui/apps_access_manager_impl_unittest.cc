@@ -4,12 +4,14 @@
 
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/apps_access_setup_operation.h"
 #include "ash/webui/eche_app_ui/fake_eche_connector.h"
 #include "ash/webui/eche_app_ui/fake_eche_message_receiver.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +61,12 @@ class AppsAccessManagerImplTest : public testing::Test {
 
   void SetUp() override {
     AppsAccessManagerImpl::RegisterPrefs(pref_service_.registry());
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA,
+                              chromeos::features::
+                                  kEchePhoneHubPermissionsOnboarding},
+        /*disabled_features=*/{});
+
     fake_eche_connector_ = std::make_unique<FakeEcheConnector>();
     fake_eche_message_receiver_ = std::make_unique<FakeEcheMessageReceiver>();
     fake_feature_status_provider_ = std::make_unique<FakeFeatureStatusProvider>(
@@ -134,6 +142,7 @@ class AppsAccessManagerImplTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   FakeObserver fake_observer_;
   FakeOperationDelegate fake_delegate_;
   TestingPrefServiceSimple pref_service_;
