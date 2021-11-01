@@ -28,7 +28,7 @@ namespace lens {
 // Spec states a font size of 14px.
 constexpr int kTextFontSize = 14;
 constexpr int kCloseButtonSize = 17;
-constexpr int kCornerRadius = 15;
+constexpr int kCornerRadius = 18;
 
 LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     views::View* anchor_view,
