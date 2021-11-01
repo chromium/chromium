@@ -12,15 +12,20 @@ namespace chromeos {
 FakeResourcedClient::FakeResourcedClient() = default;
 FakeResourcedClient::~FakeResourcedClient() = default;
 
-void FakeResourcedClient::SetGameMode(bool status,
-                                      DBusMethodCallback<bool> callback) {
-  if (status) {
+void FakeResourcedClient::SetGameModeWithTimeout(
+    bool state,
+    uint32_t refresh_seconds,
+    DBusMethodCallback<bool> callback) {
+  absl::optional<bool> response = previous_game_mode_state_;
+  if (state) {
     enter_game_mode_count_++;
+    previous_game_mode_state_ = true;
   } else {
     exit_game_mode_count_++;
+    previous_game_mode_state_ = false;
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), set_game_mode_response_));
+      FROM_HERE, base::BindOnce(std::move(callback), response));
 }
 
 void FakeResourcedClient::AddObserver(Observer* observer) {

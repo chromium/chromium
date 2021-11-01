@@ -10435,6 +10435,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Posts at front of queue"/>
 </enum>
 
+<enum name="BorealisGameModeResult">
+  <int value="0" label="Attempted"/>
+  <int value="1" label="Failed"/>
+</enum>
+
 <enum name="BorealisGetDiskInfoResult">
   <int value="0" label="Success"/>
   <int value="1" label="A GetDiskInfo request is already in progress"/>

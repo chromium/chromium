@@ -168,6 +168,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Borealis.GameMode.Result" enum="BorealisGameModeResult"
+    expires_after="2022-01-02">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Records when game mode is entered and when the previous game mode call timed
+    out/failed. They will only be recorded the first time we detect that game
+    mode is entered/failed for each time that game mode is initially entered.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
     expires_after="2022-01-09">
   <owner>danielng@google.com</owner>

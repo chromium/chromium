@@ -51,7 +51,9 @@ class ResourcedClientImpl : public ResourcedClient {
   }
 
   // ResourcedClient interface.
-  void SetGameMode(bool state, DBusMethodCallback<bool> callback) override;
+  void SetGameModeWithTimeout(bool state,
+                              uint32_t refresh_seconds,
+                              DBusMethodCallback<bool> callback) override;
 
   void AddObserver(Observer* observer) override;
 
@@ -63,9 +65,8 @@ class ResourcedClientImpl : public ResourcedClient {
 
  private:
   // D-Bus response handlers.
-  void HandleSetGameModeResponse(DBusMethodCallback<bool> callback,
-                                 bool status,
-                                 dbus::Response* response);
+  void HandleSetGameModeWithTimeoutResponse(DBusMethodCallback<bool> callback,
+                                            dbus::Response* response);
 
   // D-Bus signal handlers.
   void MemoryPressureReceived(dbus::Signal* signal);
@@ -189,29 +190,33 @@ void ResourcedClientImpl::MemoryPressureConnected(
   PLOG_IF(ERROR, !success) << "Failed to connect to signal: " << signal_name;
 }
 
-// Response will be true if entering game mode, false if exiting.
-void ResourcedClientImpl::HandleSetGameModeResponse(
+// Response will be true if game mode was on previously, false otherwise.
+void ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse(
     DBusMethodCallback<bool> callback,
-    bool status,
     dbus::Response* response) {
-  if (!response) {
+  dbus::MessageReader reader(response);
+  uint8_t previous;
+  if (!reader.PopByte(&previous)) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
-  std::move(callback).Run(status);
+  std::move(callback).Run(previous);
 }
 
-void ResourcedClientImpl::SetGameMode(bool status,
-                                      DBusMethodCallback<bool> callback) {
+void ResourcedClientImpl::SetGameModeWithTimeout(
+    bool status,
+    uint32_t refresh_seconds,
+    DBusMethodCallback<bool> callback) {
   dbus::MethodCall method_call(resource_manager::kResourceManagerInterface,
-                               resource_manager::kSetGameModeMethod);
+                               resource_manager::kSetGameModeWithTimeoutMethod);
   dbus::MessageWriter writer(&method_call);
   writer.AppendByte(status);
+  writer.AppendUint32(refresh_seconds);
 
   proxy_->CallMethod(
       &method_call, kResourcedDBusTimeoutMilliseconds,
-      base::BindOnce(&ResourcedClientImpl::HandleSetGameModeResponse,
-                     weak_factory_.GetWeakPtr(), std::move(callback), status));
+      base::BindOnce(&ResourcedClientImpl::HandleSetGameModeWithTimeoutResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ResourcedClientImpl::AddObserver(Observer* observer) {

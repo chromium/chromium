@@ -75,7 +75,11 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
   static ResourcedClient* Get();
 
   // Attempts to enter game mode if state is true, exit if state is false.
-  virtual void SetGameMode(bool state, DBusMethodCallback<bool> callback) = 0;
+  // Will automatically exit game mode once refresh_seconds is reached.
+  // Callback will be called with whether game mode was on prior to this.
+  virtual void SetGameModeWithTimeout(bool state,
+                                      uint32_t refresh_seconds,
+                                      DBusMethodCallback<bool> callback) = 0;
 
   // Adds an observer to the observer list to listen on memory pressure events.
   virtual void AddObserver(Observer* observer) = 0;
