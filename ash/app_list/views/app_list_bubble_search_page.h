@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/ash_export.h"
 #include "base/timer/timer.h"
@@ -25,7 +26,8 @@ class SearchBoxView;
 // which is owned by a parent view.
 class ASH_EXPORT AppListBubbleSearchPage
     : public views::View,
-      public SearchResultContainerView::Delegate {
+      public SearchResultContainerView::Delegate,
+      public AppListModelProvider::Observer {
  public:
   METADATA_HEADER(AppListBubbleSearchPage);
 
@@ -41,6 +43,10 @@ class ASH_EXPORT AppListBubbleSearchPage
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // Returns true if there are search results that can be keyboard selected.
   bool CanSelectSearchResults();

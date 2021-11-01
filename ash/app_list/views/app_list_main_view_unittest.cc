@@ -289,7 +289,6 @@ TEST_P(AppListMainViewTest, ModelChanged) {
 
   const int kReplacementItems = 5;
   delegate_->ReplaceTestModel(kReplacementItems);
-  main_view()->ModelChanged();
   EXPECT_EQ(kReplacementItems, GetRootViewModel()->view_size());
 }
 

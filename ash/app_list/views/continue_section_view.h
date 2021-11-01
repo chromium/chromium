@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_CONTINUE_SECTION_VIEW_H_
 #define ASH_APP_LIST_VIEWS_CONTINUE_SECTION_VIEW_H_
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/continue_task_container_view.h"
 #include "ash/ash_export.h"
 #include "ui/views/view.h"
@@ -17,7 +18,8 @@ class ContinueTaskView;
 
 // The "Continue" section of the bubble launcher. This view wraps around
 // suggestions with tasks to continue.
-class ASH_EXPORT ContinueSectionView : public views::View {
+class ASH_EXPORT ContinueSectionView : public views::View,
+                                       public AppListModelProvider::Observer {
  public:
   METADATA_HEADER(ContinueSectionView);
 
@@ -27,6 +29,10 @@ class ASH_EXPORT ContinueSectionView : public views::View {
   ContinueSectionView(const ContinueSectionView&) = delete;
   ContinueSectionView& operator=(const ContinueSectionView&) = delete;
   ~ContinueSectionView() override;
+
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // Called when the |suggestion_container_| finishes updating the tasks.
   void OnSearchResultContainerResultsChanged();

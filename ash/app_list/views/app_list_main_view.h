@@ -39,8 +39,6 @@ class ASH_EXPORT AppListMainView : public views::View,
 
   void ShowAppListWhenReady();
 
-  void ModelChanged();
-
   SearchBoxView* search_box_view() const { return search_box_view_; }
 
   // If |drag_and_drop_host| is not nullptr it will be called upon drag and drop

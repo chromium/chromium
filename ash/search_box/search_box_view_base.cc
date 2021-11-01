@@ -308,7 +308,6 @@ void SearchBoxViewBase::Init(const InitParams& params) {
   SetupAssistantButton();
   SetupBackButton();
   SetupCloseButton();
-  ModelChanged();
 }
 
 bool SearchBoxViewBase::HasSearch() const {

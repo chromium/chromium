@@ -35,6 +35,7 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -153,7 +154,7 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
   suggestion_result->set_is_omnibox_search(true);
-  suggestion_result->set_display_type(ash::SearchResultDisplayType::kList);
+  suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;
   actions.push_back(SearchResultAction(gfx::ImageSkia(), u"Remove",
                                        true /*visible_on_hover*/));
@@ -2570,6 +2571,125 @@ TEST_P(AppListPresenterTest, TapAndClickEnablesSearchBox) {
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
   GetAppListTestHelper()->CheckVisibility(false);
+}
+
+// Tests that search box gets deactivated if the active search model gets
+// switched.
+TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
+  EnableTabletMode(true);
+
+  const bool test_mouse_event = TestMouseEventParam();
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  SearchBoxView* search_box_view = GetAppListView()->search_box_view();
+
+  // Tap/Click the search box, it should activate.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  if (test_mouse_event) {
+    generator->MoveMouseTo(GetPointInsideSearchbox());
+    generator->PressLeftButton();
+    generator->ReleaseLeftButton();
+  } else {
+    generator->GestureTapAt(GetPointInsideSearchbox());
+  }
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+
+  // Switch the active app list and search model, and verify the search box is
+  // deactivated.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+
+  GetAppListTestHelper()->CheckVisibility(true);
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+}
+
+// Tests that search UI gets closed if search model gets changed.
+TEST_P(AppListPresenterTest, SearchClearedOnModelChange) {
+  EnableTabletMode(true);
+
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  SearchBoxView* search_box_view = GetAppListView()->search_box_view();
+
+  // Press a key to start search, and activate the search box.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  SearchModel* search_model = GetSearchModel();
+  auto test_result = std::make_unique<TestSearchResult>();
+  test_result->set_result_id("test");
+  test_result->set_display_type(SearchResultDisplayType::kList);
+  search_model->results()->Add(std::move(test_result));
+
+  auto test_tile_result = std::make_unique<TestSearchResult>();
+  test_tile_result->set_result_id("test_tile");
+  test_tile_result->set_display_type(SearchResultDisplayType::kTile);
+  search_model->results()->Add(std::move(test_tile_result));
+
+  // The results are updated asynchronously. Wait until the update is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+
+  SearchResultContainerView* const tile_item_container =
+      search_result_page()->GetSearchResultTileItemListViewForTest();
+  ASSERT_EQ(1, tile_item_container->num_results());
+  EXPECT_EQ("test_tile",
+            tile_item_container->GetResultViewAt(0)->result()->id());
+
+  SearchResultContainerView* item_list_container =
+      search_result_page()->GetSearchResultListViewForTest();
+  ASSERT_EQ(1, item_list_container->num_results());
+  EXPECT_EQ("test", item_list_container->GetResultViewAt(0)->result()->id());
+
+  // Switch the active app list and search model, and verify the search UI gets
+  // cleared.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+
+  // Verify that the search UI shows results from the current active search
+  // model.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  auto test_result_override = std::make_unique<TestSearchResult>();
+  test_result_override->set_result_id("test_override");
+  test_result_override->set_display_type(SearchResultDisplayType::kList);
+  search_model_override->results()->Add(std::move(test_result_override));
+
+  auto test_tile_result_override = std::make_unique<TestSearchResult>();
+  test_tile_result_override->set_result_id("test_tile_override");
+  test_tile_result_override->set_display_type(SearchResultDisplayType::kTile);
+  search_model_override->results()->Add(std::move(test_tile_result_override));
+
+  // The results are updated asynchronously. Wait until the update is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+
+  ASSERT_EQ(1, tile_item_container->num_results());
+  EXPECT_EQ("test_tile_override",
+            tile_item_container->GetResultViewAt(0)->result()->id());
+
+  ASSERT_EQ(1, item_list_container->num_results());
+  EXPECT_EQ("test_override",
+            item_list_container->GetResultViewAt(0)->result()->id());
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
 }
 
 // Tests that the result selection will reset after closing the search box by

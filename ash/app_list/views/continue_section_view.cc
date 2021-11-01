@@ -55,6 +55,8 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
                                          bool tablet_mode) {
   DCHECK(view_delegate);
 
+  AppListModelProvider::Get()->AddObserver(this);
+
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets(kSectionVerticalPadding, kSectionHorizontalPadding),
@@ -81,7 +83,15 @@ ContinueSectionView::ContinueSectionView(AppListViewDelegate* view_delegate,
           tablet_mode));
 }
 
-ContinueSectionView::~ContinueSectionView() = default;
+ContinueSectionView::~ContinueSectionView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
+
+void ContinueSectionView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  UpdateSuggestionTasks();
+}
 
 size_t ContinueSectionView::GetTasksSuggestionsCount() const {
   return static_cast<size_t>(suggestions_container_->num_results());

@@ -246,6 +246,8 @@ END_METADATA
 
 AppsContainerView::AppsContainerView(ContentsView* contents_view)
     : contents_view_(contents_view) {
+  AppListModelProvider::Get()->AddObserver(this);
+
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
   scrollable_container_ = AddChildView(std::make_unique<views::View>());
@@ -342,6 +344,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
 }
 
 AppsContainerView::~AppsContainerView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+
   if (features::IsProductivityLauncherEnabled())
     apps_grid_view_->pagination_model()->RemoveObserver(this);
 
@@ -425,6 +429,16 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
   app_list_folder_view()->UpdateAppListConfig(app_list_config_.get());
   if (recent_apps_)
     recent_apps_->UpdateAppListConfig(app_list_config_.get());
+}
+
+void AppsContainerView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  // Nothing to do if the apps grid views have not yet been initialized.
+  if (!app_list_config_)
+    return;
+
+  UpdateForActiveAppListModel();
 }
 
 void AppsContainerView::ShowFolderForItemView(
@@ -823,15 +837,8 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   UpdateTopLevelGridDimensions();
 
   // Finish initialization of views that require app list config.
-  if (creating_initial_config) {
-    AppListModel* const model = AppListModelProvider::Get()->model();
-    apps_grid_view_->SetModel(model);
-    apps_grid_view_->SetItemList(model->top_level_item_list());
-    UpdateRecentApps();
-    UpdateSuggestionChips();
-
-    SetShowState(SHOW_APPS, false);
-  }
+  if (creating_initial_config)
+    UpdateForActiveAppListModel();
 }
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
@@ -1252,6 +1259,18 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
   result.first_page_rows = apps_grid_view_->CalculateFirstPageMaxRows(
       available_height, preferred_rows);
   return result;
+}
+
+void AppsContainerView::UpdateForActiveAppListModel() {
+  AppListModel* const model = AppListModelProvider::Get()->model();
+  apps_grid_view_->SetModel(model);
+  apps_grid_view_->SetItemList(model->top_level_item_list());
+  UpdateRecentApps();
+  UpdateSuggestionChips();
+
+  // If model changes, close the folder view if it's open, as the associated
+  // item list is about to go away.
+  SetShowState(SHOW_APPS, false);
 }
 
 void AppsContainerView::OnSuggestionChipsBlurDisablerReleased() {

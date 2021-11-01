@@ -85,9 +85,13 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
   result_container_views_.push_back(result_container);
 
   scroll->SetContents(std::move(scroll_contents));
+
+  AppListModelProvider::Get()->AddObserver(this);
 }
 
-AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
+AppListBubbleSearchPage::~AppListBubbleSearchPage() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
 
 void AppListBubbleSearchPage::OnSearchResultContainerResultsChanging() {
   // Block any result selection changes while result updates are in flight.
@@ -154,6 +158,13 @@ void AppListBubbleSearchPage::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   node_data->SetValue(value);
+}
+
+void AppListBubbleSearchPage::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  for (auto* container : result_container_views_)
+    container->SetResults(search_model->results());
 }
 
 void AppListBubbleSearchPage::OnSelectedResultChanged() {

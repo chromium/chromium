@@ -628,6 +628,21 @@ class AppsGridViewClamshellTest : public AppsGridViewTest,
 };
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewClamshellTest, testing::Bool());
 
+// Tests suite to test both tablet and clamshell mode behavior, additionally
+// parameterized by feature ProductivityLauncher.
+class AppsGridViewClamshellAndTabletTest
+    : public AppsGridViewTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AppsGridViewClamshellAndTabletTest() {
+    create_as_tablet_mode_ = std::get<0>(GetParam());
+    is_productivity_launcher_enabled_ = std::get<1>(GetParam());
+  }
+};
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewClamshellAndTabletTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
 // Tests suite parameterized by RTL locale.
 class AppsGridViewRTLTest : public AppsGridViewTest,
                             public testing::WithParamInterface<bool> {
@@ -3395,6 +3410,60 @@ TEST_F(AppsGridViewTest, NoPageBreakItemWithFullGrid) {
     model_content.append(",Item " + base::NumberToString(i));
 
   EXPECT_EQ(model_content, model_->GetModelContent());
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
+  model_->PopulateApps(2);
+  UpdateLayout();
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view_->view_model();
+  EXPECT_EQ(2, view_model->view_size());
+  TestAppListItemViewIndice();
+
+  // Update the model, and verify the apps grid gets updated.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  model_override->PopulateApps(3);
+  model_override->CreateAndPopulateFolderWithApps(5);
+  model_override->PopulateApps(3);
+
+  auto search_model_override = std::make_unique<SearchModel>();
+
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+  UpdateLayout();
+
+  // Verify that the view model size matches the new model.
+  EXPECT_EQ(7, view_model->view_size());
+  TestAppListItemViewIndice();
+
+  // Verify that clicking an item activates it.
+  SimulateLeftClickOnView(view_model->view_at(0));
+  EXPECT_EQ("Item 0", GetTestAppListClient()->activate_item_last_id());
+
+  // Clicking on the folder item transitions to folder view.
+  SimulateLeftClickOnView(view_model->view_at(3));
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  ASSERT_EQ(5, folder_apps_grid_view()->view_model()->view_size());
+
+  // Click on an item within the folder.
+  SimulateLeftClickOnView(folder_apps_grid_view()->view_model()->view_at(1));
+  EXPECT_EQ("Item 4", GetTestAppListClient()->activate_item_last_id());
+
+  // Switch model to original one, and verify the folder view gets closed.
+  Shell::Get()->app_list_controller()->SetActiveModel(model_.get(),
+                                                      search_model_.get());
+  UpdateLayout();
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_EQ(2, view_model->view_size());
+  TestAppListItemViewIndice();
+
+  SimulateLeftClickOnView(view_model->view_at(1));
+  EXPECT_EQ("Item 1", GetTestAppListClient()->activate_item_last_id());
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  EXPECT_EQ(0, view_model->view_size());
 }
 
 // This is a NonBubble test because page breaks are ignored with the

@@ -617,6 +617,8 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
     CreateScrollableAppsGrid();
   else
     CreatePagedAppsGrid(contents_view);
+
+  AppListModelProvider::Get()->AddObserver(this);
 }
 
 void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
@@ -718,6 +720,8 @@ void AppListFolderView::CreateScrollableAppsGrid() {
 }
 
 AppListFolderView::~AppListFolderView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+
   // This prevents the AppsGridView's destructor from calling the now-deleted
   // AppListFolderView's methods if a drag is in progress at the time.
   items_grid_view_->set_folder_delegate(nullptr);
@@ -747,7 +751,7 @@ void AppListFolderView::ConfigureForFolderItemView(
 
   folder_item_ = static_cast<AppListFolderItem*>(folder_item_view->item());
 
-  AppListModel* model = AppListModelProvider::Get()->model();
+  AppListModel* const model = AppListModelProvider::Get()->model();
   items_grid_view_->SetModel(model);
   items_grid_view_->SetItemList(folder_item_->item_list());
   folder_header_view_->SetFolderItem(folder_item_);
@@ -853,6 +857,29 @@ void AppListFolderView::Layout() {
 void AppListFolderView::ChildPreferredSizeChanged(views::View* child) {
   UpdatePreferredBounds();
   PreferredSizeChanged();
+}
+
+void AppListFolderView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  // If the active model changed, close the folder view, as the backing app list
+  // item is about to go away.
+  if (folder_item_) {
+    ResetState(/*restore_folder_item_view_state=*/false);
+
+    folder_controller_->ShowApps(/*folder_item_view=*/nullptr,
+                                 /*select_folder=*/false);
+  }
+}
+
+void AppListFolderView::OnViewIsDeleting(views::View* view) {
+  DCHECK_EQ(view, folder_item_view_);
+
+  // If the original view got removed, clear any references to it, this includes
+  // animations that may try to access the view to update its visibility.
+  folder_visibility_animations_.clear();
+  folder_item_view_observer_.Reset();
+  folder_item_view_ = nullptr;
 }
 
 void AppListFolderView::OnAppListItemWillBeDeleted(AppListItem* item) {

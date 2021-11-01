@@ -97,14 +97,6 @@ void AppListMainView::ShowAppListWhenReady() {
     GetWidget()->Show();
 }
 
-void AppListMainView::ModelChanged() {
-  search_box_view_->ModelChanged();
-  delete contents_view_;
-  contents_view_ = nullptr;
-  AddContentsViews();
-  Layout();
-}
-
 void AppListMainView::SetDragAndDropHostOfCurrentAppList(
     ApplicationDragAndDropHost* drag_and_drop_host) {
   contents_view_->SetDragAndDropHostOfCurrentAppList(drag_and_drop_host);
