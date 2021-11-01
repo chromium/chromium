@@ -122,16 +122,7 @@ PlatformType GetCurrentPlatformType() {
 #elif defined(OS_MAC)
   return OSX_PLATFORM;
 #else
-  // TODO(crbug.com/1030487): This file is, in fact, intended to be compiled on
-  // Android, the comment below is obsolete. We should be able to return
-  // ANDROID_PLATFORM here.
-  //
-  // This should ideally never compile but it is getting compiled on Android.
-  // See: https://bugs.chromium.org/p/chromium/issues/detail?id=621647
-  // TODO(vakh): Once that bug is fixed, this should be removed. If we leave
-  // the platform_type empty, the server won't recognize the request and
-  // return an error response which will pollute our UMA metrics.
-  return LINUX_PLATFORM;
+  return ANDROID_PLATFORM;
 #endif
 }
 
@@ -140,13 +131,7 @@ ListIdentifier GetChromeExtMalwareId() {
 }
 
 ListIdentifier GetChromeUrlApiId() {
-  // TODO(crbug.com/1030487): This special case for Android will no longer be
-  // needed once GetCurrentPlatformType() returns ANDROID_PLATFORM on Android.
-#if defined(OS_ANDROID)
-  return ListIdentifier(ANDROID_PLATFORM, URL, API_ABUSE);
-#else
   return ListIdentifier(GetCurrentPlatformType(), URL, API_ABUSE);
-#endif
 }
 
 ListIdentifier GetChromeUrlClientIncidentId() {
