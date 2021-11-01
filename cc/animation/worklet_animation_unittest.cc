@@ -70,14 +70,13 @@ class MockScrollTimeline : public ScrollTimeline {
 };
 
 TEST_F(WorkletAnimationTest, NonImplInstanceDoesNotTickKeyframe) {
+  scoped_refptr<WorkletAnimation> worklet_animation = WrapRefCounted(
+      new WorkletAnimation(1, worklet_animation_id_, "test_name", 1, nullptr,
+                           nullptr, false /* not impl instance*/));
   std::unique_ptr<MockKeyframeEffect> effect =
-      std::make_unique<MockKeyframeEffect>(worklet_animation_.get());
+      std::make_unique<MockKeyframeEffect>(worklet_animation.get());
   MockKeyframeEffect* mock_effect = effect.get();
-
-  scoped_refptr<WorkletAnimation> worklet_animation =
-      WrapRefCounted(new WorkletAnimation(
-          1, worklet_animation_id_, "test_name", 1, nullptr, nullptr,
-          false /* not impl instance*/, std::move(effect)));
+  worklet_animation->SetKeyframeEffectForTesting(std::move(effect));
 
   EXPECT_CALL(*mock_effect, Tick(_)).Times(0);
 

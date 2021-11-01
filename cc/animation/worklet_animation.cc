@@ -23,25 +23,7 @@ WorkletAnimation::WorkletAnimation(
     std::unique_ptr<AnimationOptions> options,
     std::unique_ptr<AnimationEffectTimings> effect_timings,
     bool is_controlling_instance)
-    : WorkletAnimation(cc_animation_id,
-                       worklet_animation_id,
-                       name,
-                       playback_rate,
-                       std::move(options),
-                       std::move(effect_timings),
-                       is_controlling_instance,
-                       nullptr) {}
-
-WorkletAnimation::WorkletAnimation(
-    int cc_animation_id,
-    WorkletAnimationId worklet_animation_id,
-    const std::string& name,
-    double playback_rate,
-    std::unique_ptr<AnimationOptions> options,
-    std::unique_ptr<AnimationEffectTimings> effect_timings,
-    bool is_controlling_instance,
-    std::unique_ptr<KeyframeEffect> effect)
-    : Animation(cc_animation_id, std::move(effect)),
+    : Animation(cc_animation_id),
       worklet_animation_id_(worklet_animation_id),
       name_(name),
       playback_rate_(playback_rate),
