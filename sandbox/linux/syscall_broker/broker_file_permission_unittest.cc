@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
-
 namespace syscall_broker {
 
 class BrokerFilePermissionTester {
@@ -300,7 +299,5 @@ TEST(BrokerFilePermission, ValidatePath) {
 }
 
 }  // namespace
-
 }  // namespace syscall_broker
-
 }  // namespace sandbox

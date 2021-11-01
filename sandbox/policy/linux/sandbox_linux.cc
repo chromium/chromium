@@ -103,7 +103,7 @@ base::ScopedFD OpenProc(int proc_fd) {
 bool UpdateProcessTypeAndEnableSandbox(
     SandboxLinux::PreSandboxHook broker_side_hook,
     SandboxLinux::Options options,
-    syscall_broker::BrokerCommandSet allowed_command_set) {
+    const syscall_broker::BrokerSandboxConfig& policy) {
   base::CommandLine::StringVector exec =
       base::CommandLine::ForCurrentProcess()->GetArgs();
   base::CommandLine::Reset();
@@ -127,7 +127,7 @@ bool UpdateProcessTypeAndEnableSandbox(
     CHECK(std::move(broker_side_hook).Run(options));
 
   return SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      std::make_unique<BrokerProcessPolicy>(allowed_command_set),
+      std::make_unique<BrokerProcessPolicy>(policy.allowed_command_set),
       base::ScopedFD());
 }
 
@@ -496,20 +496,22 @@ void SandboxLinux::StartBrokerProcess(
     std::vector<syscall_broker::BrokerFilePermission> permissions,
     PreSandboxHook broker_side_hook,
     const Options& options) {
-  // Leaked at shutdown, so use bare |new|.
   // Use EACCES as the policy's default error number to remain consistent with
   // other LSMs like AppArmor and Landlock. Some userspace code, such as
   // glibc's |dlopen|, expect to see EACCES rather than EPERM. See
   // crbug.com/1233028 for an example.
+  auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+      allowed_command_set, std::move(permissions), EACCES);
+  // Leaked at shutdown, so use bare |new|.
   broker_process_ = new syscall_broker::BrokerProcess(
-      EACCES, allowed_command_set, permissions,
+      std::move(policy),
       syscall_broker::BrokerProcess::BrokerType::SIGNAL_BASED);
 
   // The initialization callback will perform generic initialization and then
   // call broker_sandboxer_callback.
-  CHECK(broker_process_->Init(base::BindOnce(&UpdateProcessTypeAndEnableSandbox,
+  CHECK(broker_process_->Fork(base::BindOnce(&UpdateProcessTypeAndEnableSandbox,
                                              std::move(broker_side_hook),
-                                             options, allowed_command_set)));
+                                             options)));
 }
 
 bool SandboxLinux::ShouldBrokerHandleSyscall(int sysno) const {

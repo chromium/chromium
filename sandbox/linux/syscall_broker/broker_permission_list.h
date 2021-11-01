@@ -10,8 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/files/scoped_file.h"
 #include "base/macros.h"
-
+#include "base/types/pass_key.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 
 namespace sandbox {
@@ -29,8 +30,10 @@ class BrokerPermissionList {
   // |permissions| is a list of BrokerPermission objects that define
   // what the broker will allow.
   BrokerPermissionList(int denied_errno,
-                       const std::vector<BrokerFilePermission>& permissions);
+                       std::vector<BrokerFilePermission> permissions);
 
+  BrokerPermissionList(BrokerPermissionList&&) = delete;
+  BrokerPermissionList& operator=(BrokerPermissionList&&) = delete;
   BrokerPermissionList(const BrokerPermissionList&) = delete;
   BrokerPermissionList& operator=(const BrokerPermissionList&) = delete;
 
@@ -82,7 +85,10 @@ class BrokerPermissionList {
   int denied_errno() const { return denied_errno_; }
 
  private:
+  friend class BrokerSandboxConfigSerializer;
+
   const int denied_errno_;
+
   // The permissions_ vector is used as storage for the BrokerFilePermission
   // objects but is not referenced outside of the constructor as
   // vectors are unfriendly in async signal safe code.
