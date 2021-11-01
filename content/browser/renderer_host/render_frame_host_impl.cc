@@ -40,7 +40,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/optional_trace_event.h"
-#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -326,8 +325,6 @@ class RenderFrameHostOrProxy {
 };
 
 namespace {
-
-using perfetto::protos::pbzero::ChromeTrackEvent;
 
 constexpr int kSubframeProcessShutdownLongDelayInMSec = 8 * 1000;
 static_assert(kSubframeProcessShutdownLongDelayInMSec +
@@ -5864,7 +5861,11 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     const BackForwardCacheCanStoreDocumentResult& can_store) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::EvictFromBackForwardCache",
-               "can_store", can_store.ToString(), "render_frame_host", this);
+               "can_store", can_store.ToString(), "rfh",
+               static_cast<void*>(this));
+  TRACE_EVENT(
+      "navigation", "RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons",
+      ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, can_store);
   DCHECK(IsBackForwardCacheEnabled());
 
   if (is_evicted_from_back_forward_cache_)

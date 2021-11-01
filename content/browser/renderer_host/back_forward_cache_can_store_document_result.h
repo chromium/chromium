@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/containers/enum_set.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -20,6 +21,7 @@
 namespace content {
 
 using BlockListedFeatures = blink::scheduler::WebSchedulerTrackedFeatures;
+using ChromeTrackEvent = perfetto::protos::pbzero::ChromeTrackEvent;
 
 // Represents the result whether the page could be stored in the back-forward
 // cache with the reasons.
@@ -75,6 +77,11 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   }
 
   std::string ToString() const;
+
+  void WriteIntoTrace(
+      perfetto::TracedProto<
+          perfetto::protos::pbzero::BackForwardCacheCanStoreDocumentResult>
+          result) const;
 
  private:
   void AddNotStoredReason(BackForwardCacheMetrics::NotRestoredReason reason);

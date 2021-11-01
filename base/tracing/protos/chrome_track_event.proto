@@ -449,9 +449,78 @@ message ChromeThreadPoolTask {
   optional ShutdownBehavior shutdown_behavior = 4;
 }
 
+// TODO(crbug.com/1258495): Add more information.
+message BackForwardCacheCanStoreDocumentResult {
+  enum BackForwardCacheNotRestoredReason {
+    NOT_MAIN_FRAME = 1;
+    // BackForwardCache is disabled due to low memory device, base::Feature or
+    // command line. Note that the more specific NotRestoredReasons
+    // BACK_FORWARD_CACHE_DISABLED_BY_LOW_MEMORY and
+    // BACK_FORWARD_CACHE_DISABLED_BY_COMMAND_LINE will also be set as other
+    // reasons along with this when appropriate.
+    BACK_FORWARD_CACHE_DISABLED = 2;
+    RELATED_ACTIVE_CONTENTS_EXIST = 3;
+    HTTP_STATUS_NOT_OK = 4;
+    SCHEME_NOT_HTTP_OR_HTTPS = 5;
+    LOADING = 6;
+    WAS_GRANTED_MEDIA_ACCESS = 7;
+    BLOCKLISTED_FEATURES = 8;
+    DISABLE_FOR_RENDER_FRAME_HOST_CALLED = 9;
+    DOMAIN_NOT_ALLOWED = 10;
+    HTTP_METHOD_NOT_GET = 11;
+    SUBFRAME_IS_NAVIGATING = 12;
+    TIMEOUT = 13;
+    CACHE_LIMIT = 14;
+    JAVASCRIPT_EXECUTION = 15;
+    RENDERER_PROCESS_KILLED = 16;
+    RENDERER_PROCESS_CRASHED = 17;
+    GRANTED_MEDIA_STREAM_ACCESS = 19;
+    SCHEDULER_TRACKED_FEATURE_USED = 20;
+    CONFLICTING_BROWSING_INSTANCE = 21;
+    CACHE_FLUSHED = 22;
+    SERVICE_WORKER_VERSION_ACTIVATION = 23;
+    SESSION_RESTORED = 24;
+    UNKNOWN = 25;
+    SERVICE_WORKER_POST_MESSAGE = 26;
+    ENTERED_BACK_FORWARD_CACHE_BEFORE_SERVICE_WORKER_HOST_ADDED = 27;
+    NOT_MOST_RECENT_NAVIGATION_ENTRY = 28;
+    SERVICE_WORKER_CLAIM = 29;
+    IGNORE_EVENT_AND_EVICT = 30;
+    HAVE_INNER_CONTENTS = 31;
+    TIMEOUT_PUTTING_IN_CACHE = 32;
+    // BackForwardCache is disabled due to low memory device.
+    BACK_FORWARD_CACHE_DISABLED_BY_LOW_MEMORY = 33;
+    // BackForwardCache is disabled due to command-line switch (may include
+    // cases where the embedder disabled it due to, e.g., enterprise policy).
+    BACK_FORWARD_CACHE_DISABLED_BY_COMMAND_LINE = 34;
+    NETWORK_REQUEST_REDIRECTED = 35;
+    NETWORK_REQUEST_TIMEOUT = 36;
+    NETWORK_EXCEEDS_BUFFER_LIMIT = 37;
+    NAVIGATION_CANCELLED_WHILE_RESTORING = 38;
+    BACK_FORWARD_CACHE_DISABLED_FOR_PRERENDER = 39;
+    USER_AGENT_OVERRIDE_DIFFERS = 40;
+    NETWORK_REQUEST_DATAPIPE_DRAINED_AS_BYTES_CONSUMER = 41;
+    FOREGROUND_CACHE_LIMIT = 42;
+    BROWSING_INSTANCE_NOT_SWAPPED = 43;
+    BACK_FORWARD_CACHE_DISABLED_FOR_DELEGATE = 44;
+    OPT_IN_UNLOAD_HEADER_NOT_PRESENT = 45;
+    UNLOAD_HANDLER_EXISTS_IN_MAIN_FRAME = 46;
+    UNLOAD_HANDLER_EXISTS_IN_SUBFRAME = 47;
+    SERVICE_WORKER_UNREGISTRATION = 48;
+    CACHE_CONTROL_NO_STORE = 49;
+    CACHE_CONTROL_NO_STORE_COOKIE_MODIFIED = 50;
+    CACHE_CONTROL_NO_STORE_HTTP_ONLY_COOKIE_MODIFIED = 51;
+    NO_RESPONSE_HEAD = 52;
+    ACTIVATION_NAVIGATION_DISALLOWED_FOR_BUG_1234857 = 53;
+  }
+
+  optional BackForwardCacheNotRestoredReason
+      back_forward_cache_not_restored_reason = 1;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1030
+  // Next ID: 1031
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -515,5 +584,8 @@ message ChromeTrackEvent {
     optional RenderFrameHost render_frame_host = 1028;
 
     optional ChromeThreadPoolTask thread_pool_task = 1029;
+
+    optional BackForwardCacheCanStoreDocumentResult
+        back_forward_cache_can_store_document_result = 1030;
   }
 }
