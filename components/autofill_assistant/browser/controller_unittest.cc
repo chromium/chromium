@@ -2578,6 +2578,16 @@ TEST_F(ControllerTest, DisablingAccessibilityShouldNotEnableTts) {
   EXPECT_FALSE(controller_->GetTtsButtonVisible());
 }
 
+TEST_F(ControllerTest, HidingUiStopsAnyOngoingTts) {
+  EnableTtsForTest();
+  SetTtsButtonStateForTest(TtsButtonState::PLAYING);
+
+  EXPECT_CALL(*mock_tts_controller_, Stop());
+  EXPECT_CALL(mock_observer_, OnTtsButtonStateChanged(TtsButtonState::DEFAULT));
+  controller_->SetUiShown(/* shown= */ false);
+  EXPECT_EQ(controller_->GetTtsButtonState(), TtsButtonState::DEFAULT);
+}
+
 TEST_F(ControllerTest, AddParametersToUserData) {
   auto script_parameters = std::make_unique<ScriptParameters>(
       std::map<std::string, std::string>{{"PARAM_A", "a"}});

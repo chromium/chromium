@@ -18,7 +18,13 @@ AutofillAssistantTtsController::AutofillAssistantTtsController(
     content::TtsController* tts_controller)
     : tts_controller_(tts_controller) {}
 
-AutofillAssistantTtsController::~AutofillAssistantTtsController() {}
+AutofillAssistantTtsController::~AutofillAssistantTtsController() {
+  // Remove self from receiving any further Tts Events for any pending
+  // utterance. Also stops any ongoing/queued utterance with this delegate.
+  if (tts_controller_ != nullptr) {
+    tts_controller_->RemoveUtteranceEventDelegate(this);
+  }
+}
 
 void AutofillAssistantTtsController::Speak(const std::string& message,
                                            const std::string& locale) {

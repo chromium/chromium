@@ -514,6 +514,13 @@ void Controller::SetUiShown(bool shown) {
   if (runtime_manager_) {
     runtime_manager_->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
   }
+
+  // Stop any ongoing TTS if UI is hidden.
+  if (!shown && tts_button_state_ == TtsButtonState::PLAYING) {
+    // Will not cause any TTS event.
+    tts_controller_->Stop();
+    SetTtsButtonState(TtsButtonState::DEFAULT);
+  }
 }
 
 void Controller::SetGenericUi(
