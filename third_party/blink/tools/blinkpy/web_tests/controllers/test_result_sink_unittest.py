@@ -134,7 +134,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             },
             {
                 'key': 'web_tests_base_timeout',
-                'value': '6000'
+                'value': '6'
             },
             {
                 'key': 'web_tests_used_expectations_file',
@@ -194,7 +194,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             },
             {
                 'key': 'web_tests_base_timeout',
-                'value': '6000'
+                'value': '6'
             },
             {
                 'key': 'web_tests_used_expectations_file',
