@@ -204,12 +204,19 @@ bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
 bool BoundsOverlapWithOpenPermissionsPrompt(
     const gfx::Rect& screen_bounds,
     content::WebContents* web_contents) {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser)
+    return false;
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return false;
+
   views::View* const permission_bubble_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
           PermissionPromptBubbleView::kPermissionPromptBubbleViewIdentifier,
           views::ElementTrackerViews::GetInstance()->GetContextForView(
-              BrowserView::GetBrowserViewForBrowser(
-                  chrome::FindBrowserWithWebContents(web_contents))));
+              browser_view));
   if (!permission_bubble_view)
     return false;
 
