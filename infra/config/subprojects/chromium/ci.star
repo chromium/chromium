@@ -579,7 +579,7 @@ ci.android_builder(
         short_name = "64",
     ),
     cq_mirrors_console_view = "mirrors",
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 7 * time.hour,
     main_console_view = main_console_if_on_branch(),
 )
 
@@ -591,7 +591,7 @@ ci.android_builder(
         short_name = "32",
     ),
     cq_mirrors_console_view = "mirrors",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 6 * time.hour,
     main_console_view = main_console_if_on_branch(),
 )
 
