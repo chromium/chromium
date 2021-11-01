@@ -178,10 +178,13 @@ cr-menu.chrome-menu > [checked]::before {
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:hover {
-  background:
-      linear-gradient(var(--cros-button-background-color-primary-hover-overlay),
-                      var(--cros-button-background-color-primary-hover-overlay)),
-              var(--cros-button-background-color-primary);
+  background: linear-gradient(rgba(0 0 0 / 8%), rgba(0 0 0 / 8%)),
+                              var(--cros-button-background-color-primary);
+}
+
+.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-primary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
 }
 
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-ok[disabled],
@@ -201,6 +204,11 @@ cr-menu.chrome-menu > [checked]::before {
   background: var(--cros-button-background-color-secondary-hover);
 }
 
+.cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+}
+
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel[disabled],
 .cr-dialog-container.files-ng .cr-dialog-buttons > button.cr-dialog-cancel[disabled]:hover  {
   border: 1px solid var(--cros-button-stroke-color-secondary-disabled);
@@ -209,16 +217,16 @@ cr-menu.chrome-menu > [checked]::before {
 
 :root.focus-outline-visible .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus,
 :host-context(:root.focus-outline-visible) .cr-dialog-container.files-ng .cr-dialog-buttons > button:not(:active):focus {
-  box-shadow: 0 0 0 2px var(--google-blue-500-rgb);
-  outline: 2px auto rgba(var(--google-blue-600-rgb), 40%);
+  outline: 2px auto var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 /* Some files confirm dialogs need to focus their 'Cancel' button by default,
    rather than the 'OK' button. The dialog buttons should have focus rings in
    this case (regardless of mouse, pointer, keyboard interaction). */
 .cr-dialog-container.files-ng .cr-dialog-frame.files-confirm-dialog-cancel-default .cr-dialog-buttons > button:not(:active):focus {
-  box-shadow: 0 0 0 2px var(--google-blue-500-rgb);
-  outline: 2px auto rgba(var(--google-blue-600-rgb), 40%);
+  outline: 2px auto var(--cros-focus-ring-color);
+  outline-offset: 2px;
 }
 
 .buttonbar button {
@@ -250,7 +258,7 @@ html[dir='rtl'] .entry-name {
 
 /* Pop-up dialogs. */
 .cr-dialog-container.files-ng.shown {
-  background-color: rgba(var(--google-grey-900-rgb), 60%);
+  background-color: var(--cros-app-shield-60);
 }
 
 .cr-dialog-container.files-ng {
@@ -266,10 +274,9 @@ html[dir='rtl'] .entry-name {
 }
 
 .cr-dialog-container.files-ng .cr-dialog-frame {
-  background-color: var(--cros-bg-color);
+  background-color: var(--cros-bg-color-elevation-3);
   border-radius: 12px;
-  box-shadow: 0 4px 8px 3px rgba(var(--google-grey-800-rgb), 15%),
-              0 1px 3px 0 rgba(var(--google-grey-800-rgb), 30%);
+  box-shadow: var(--cros-elevation-3-shadow);
   color: var(--cros-text-color-primary);
   cursor: default;
   display: flex;
