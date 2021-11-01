@@ -216,6 +216,8 @@ if (host_toolchain == "") {
     }
   } else if (host_os == "aix") {
     host_toolchain = "//build/toolchain/aix:$host_cpu"
+  } else if (host_os == "zos") {
+    host_toolchain = "//build/toolchain/zos:$host_cpu"
   } else {
     assert(false, "Unsupported host_os: $host_os")
   }
@@ -258,6 +260,8 @@ if (target_os == "android") {
   _default_toolchain = "//build/toolchain/win:uwp_$target_cpu"
 } else if (target_os == "aix") {
   _default_toolchain = "//build/toolchain/aix:$target_cpu"
+} else if (target_os == "zos") {
+  _default_toolchain = "//build/toolchain/zos:$target_cpu"
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
