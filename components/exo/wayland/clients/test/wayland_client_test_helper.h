@@ -44,8 +44,6 @@ class WaylandClientTestHelper {
   virtual void SetUpOnUIThread(base::WaitableEvent* event);
 
  private:
-  class WaylandWatcher;
-
   void TearDownOnUIThread(base::WaitableEvent* event);
 
   // Below objects can only be accessed from UI thread.
@@ -54,7 +52,6 @@ class WaylandClientTestHelper {
   std::unique_ptr<WMHelper> wm_helper_;
   std::unique_ptr<Display> display_;
   std::unique_ptr<wayland::Server> wayland_server_;
-  std::unique_ptr<WaylandWatcher> wayland_watcher_;
 };
 
 }  // namespace exo
