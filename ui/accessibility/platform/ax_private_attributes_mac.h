@@ -24,5 +24,28 @@ AX_EXPORT constexpr NSString* const NSAccessibilityARIARelevantAttribute =
     @"AXARIARelevant";
 AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
+AX_EXPORT constexpr NSString* const
+    NSAccessibilityMathFractionNumeratorAttribute = @"AXMathFractionNumerator";
+AX_EXPORT constexpr NSString* const
+    NSAccessibilityMathFractionDenominatorAttribute =
+        @"AXMathFractionDenominator";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathRootRadicandAttribute =
+    @"AXMathRootRadicand";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathRootIndexAttribute =
+    @"AXMathRootIndex";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathBaseAttribute =
+    @"AXMathBase";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathSubscriptAttribute =
+    @"AXMathSubscript";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathSuperscriptAttribute =
+    @"AXMathSuperscript";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathUnderAttribute =
+    @"AXMathUnder";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathOverAttribute =
+    @"AXMathOver";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathPostscriptsAttribute =
+    @"AXMathPostscripts";
+AX_EXPORT constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
+    @"AXMathPrescripts";
 
 #endif  // UI_ACCESSIBILITY_PLATFORM_AX_PRIVATE_ATTRIBUTES_MAC_H_

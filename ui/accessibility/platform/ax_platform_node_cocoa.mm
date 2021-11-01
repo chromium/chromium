@@ -680,6 +680,60 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kToggleButton:
       [axAttributes addObjectsFromArray:kValueAttributes];
       break;
+    case ax::mojom::Role::kMathMLFraction:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathFractionNumeratorAttribute,
+        NSAccessibilityMathFractionDenominatorAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLSquareRoot:
+      [axAttributes addObject:NSAccessibilityMathRootRadicandAttribute];
+      break;
+    case ax::mojom::Role::kMathMLRoot:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathRootRadicandAttribute,
+        NSAccessibilityMathRootIndexAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLSub:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute, NSAccessibilityMathSubscriptAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLSup:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute,
+        NSAccessibilityMathSuperscriptAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLSubSup:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute, NSAccessibilityMathSubscriptAttribute,
+        NSAccessibilityMathSuperscriptAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLUnder:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute, NSAccessibilityMathUnderAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLOver:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute, NSAccessibilityMathOverAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLUnderOver:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathBaseAttribute, NSAccessibilityMathUnderAttribute,
+        NSAccessibilityMathOverAttribute
+      ]];
+      break;
+    case ax::mojom::Role::kMathMLMultiscripts:
+      [axAttributes addObjectsFromArray:@[
+        NSAccessibilityMathPostscriptsAttribute,
+        NSAccessibilityMathPrescriptsAttribute
+      ]];
+      break;
       // TODO(tapted): Add additional attributes based on role.
     default:
       break;
@@ -1426,6 +1480,205 @@ bool IsAXSetter(SEL selector) {
       if (native_cell)
         [ret addObject:native_cell];
     }
+  }
+  return [ret count] ? ret : nil;
+}
+
+// MathML attributes.
+// TODO(crbug.com/1051115): The MathML aam considers only in-flow children.
+// TODO(crbug.com/1051115): When/if it is needed to expose this for other a11y
+// APIs, then some of the logic below should probably be moved to the
+// platform-independent classes.
+
+- (id)AXMathFractionNumerator {
+  if (![self instanceActive] ||
+      _node->GetRole() != ax::mojom::Role::kMathMLFraction) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if ([children count] >= 1)
+    return children[0];
+  return nil;
+}
+
+- (id)AXMathFractionDenominator {
+  if (![self instanceActive] ||
+      _node->GetRole() != ax::mojom::Role::kMathMLFraction) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if ([children count] >= 2)
+    return children[1];
+  return nil;
+}
+
+- (id)AXMathRootRadicand {
+  if (![self instanceActive] ||
+      !(_node->GetRole() == ax::mojom::Role::kMathMLRoot ||
+        _node->GetRole() == ax::mojom::Role::kMathMLSquareRoot)) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if (_node->GetRole() == ax::mojom::Role::kMathMLRoot) {
+    if ([children count] >= 1)
+      return [[NSArray arrayWithObjects:children[0], nil] autorelease];
+    return nil;
+  }
+  return children;
+}
+
+- (id)AXMathRootIndex {
+  if (![self instanceActive] ||
+      _node->GetRole() != ax::mojom::Role::kMathMLRoot) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if ([children count] >= 2)
+    return children[1];
+  return nil;
+}
+
+- (id)AXMathBase {
+  if (![self instanceActive] ||
+      !(_node->GetRole() == ax::mojom::Role::kMathMLSub ||
+        _node->GetRole() == ax::mojom::Role::kMathMLSup ||
+        _node->GetRole() == ax::mojom::Role::kMathMLSubSup ||
+        _node->GetRole() == ax::mojom::Role::kMathMLUnder ||
+        _node->GetRole() == ax::mojom::Role::kMathMLOver ||
+        _node->GetRole() == ax::mojom::Role::kMathMLUnderOver ||
+        _node->GetRole() == ax::mojom::Role::kMathMLMultiscripts)) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if ([children count] >= 1)
+    return children[0];
+  return nil;
+}
+
+- (id)AXMathUnder {
+  if (![self instanceActive] ||
+      !(_node->GetRole() == ax::mojom::Role::kMathMLUnder ||
+        _node->GetRole() == ax::mojom::Role::kMathMLUnderOver)) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if ([children count] >= 2)
+    return children[1];
+  return nil;
+}
+
+- (id)AXMathOver {
+  if (![self instanceActive] ||
+      !(_node->GetRole() == ax::mojom::Role::kMathMLOver ||
+        _node->GetRole() == ax::mojom::Role::kMathMLUnderOver)) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if (_node->GetRole() == ax::mojom::Role::kMathMLOver &&
+      [children count] >= 2) {
+    return children[1];
+  }
+  if (_node->GetRole() == ax::mojom::Role::kMathMLUnderOver &&
+      [children count] >= 3) {
+    return children[2];
+  }
+  return nil;
+}
+
+- (id)AXMathSubscript {
+  if (![self instanceActive] ||
+      !(_node->GetRole() == ax::mojom::Role::kMathMLSub ||
+        _node->GetRole() == ax::mojom::Role::kMathMLSubSup)) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if ([children count] >= 2)
+    return children[1];
+  return nil;
+}
+
+- (id)AXMathSuperscript {
+  if (![self instanceActive] ||
+      !(_node->GetRole() == ax::mojom::Role::kMathMLSup ||
+        _node->GetRole() == ax::mojom::Role::kMathMLSubSup)) {
+    return nil;
+  }
+  NSArray* children = [self AXChildren];
+  if (_node->GetRole() == ax::mojom::Role::kMathMLSup &&
+      [children count] >= 2) {
+    return children[1];
+  }
+  if (_node->GetRole() == ax::mojom::Role::kMathMLSubSup &&
+      [children count] >= 3) {
+    return children[2];
+  }
+  return nil;
+}
+
+static NSDictionary* createMathSubSupScriptsPair(
+    AXPlatformNodeCocoa* subscript,
+    AXPlatformNodeCocoa* superscript) {
+  AXPlatformNodeCocoa* nodes[2];
+  NSString* keys[2];
+  NSUInteger count = 0;
+  if (subscript) {
+    nodes[count] = subscript;
+    keys[count] = NSAccessibilityMathSubscriptAttribute;
+    count++;
+  }
+  if (superscript) {
+    nodes[count] = superscript;
+    keys[count] = NSAccessibilityMathSuperscriptAttribute;
+    count++;
+  }
+  return [[NSDictionary alloc] initWithObjects:nodes forKeys:keys count:count];
+}
+
+- (NSArray*)AXMathPostscripts {
+  if (![self instanceActive] ||
+      _node->GetRole() != ax::mojom::Role::kMathMLMultiscripts)
+    return nil;
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+  bool foundBaseElement = false;
+  AXPlatformNodeCocoa* subscript = nullptr;
+  for (AXPlatformNodeCocoa* child in [self AXChildren]) {
+    if ([child node]->GetRole() == ax::mojom::Role::kMathMLPrescriptDelimiter)
+      break;
+    if (!foundBaseElement) {
+      foundBaseElement = true;
+      continue;
+    }
+    if (!subscript) {
+      subscript = child;
+      continue;
+    }
+    AXPlatformNodeCocoa* superscript = child;
+    [ret addObject:createMathSubSupScriptsPair(subscript, superscript)];
+    subscript = nullptr;
+  }
+  return [ret count] ? ret : nil;
+}
+
+- (NSArray*)AXMathPrescripts {
+  if (![self instanceActive] ||
+      _node->GetRole() != ax::mojom::Role::kMathMLMultiscripts)
+    return nil;
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+  bool foundPrescriptDelimiter = false;
+  AXPlatformNodeCocoa* subscript = nullptr;
+  for (AXPlatformNodeCocoa* child in [self AXChildren]) {
+    if (!foundPrescriptDelimiter) {
+      foundPrescriptDelimiter = ([child node]->GetRole() ==
+                                 ax::mojom::Role::kMathMLPrescriptDelimiter);
+      continue;
+    }
+    if (!subscript) {
+      subscript = child;
+      continue;
+    }
+    AXPlatformNodeCocoa* superscript = child;
+    [ret addObject:createMathSubSupScriptsPair(subscript, superscript)];
+    subscript = nullptr;
   }
   return [ret count] ? ret : nil;
 }
