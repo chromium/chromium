@@ -103,6 +103,18 @@ SessionRateImpact::SessionRateImpact(const SessionRateImpact& other) = default;
 
 SessionRateImpact::~SessionRateImpact() = default;
 
+BlockedBy::BlockedBy() = default;
+
+BlockedBy::BlockedBy(const BlockedBy& other) = default;
+
+BlockedBy::~BlockedBy() = default;
+
+Blocking::Blocking() = default;
+
+Blocking::Blocking(const Blocking& other) = default;
+
+Blocking::~Blocking() = default;
+
 SnoozeParams::SnoozeParams() = default;
 
 SnoozeParams::SnoozeParams(const SnoozeParams& other) = default;
@@ -128,6 +140,11 @@ std::ostream& operator<<(std::ostream& os, const SessionRateImpact& impact) {
 }
 
 bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs) {
+  return std::tie(lhs.type, lhs.affected_features) ==
+         std::tie(rhs.type, rhs.affected_features);
+}
+
+bool operator==(const BlockedBy& lhs, const BlockedBy& rhs) {
   return std::tie(lhs.type, lhs.affected_features) ==
          std::tie(rhs.type, rhs.affected_features);
 }

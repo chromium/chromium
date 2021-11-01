@@ -43,6 +43,13 @@ SessionRateImpact CreateSessionRateImpactExplicit(
   return impact;
 }
 
+BlockedBy CreateBlockedByExplicit(std::vector<std::string> affected_features) {
+  BlockedBy blocked_by;
+  blocked_by.type = BlockedBy::Type::EXPLICIT;
+  blocked_by.affected_features = affected_features;
+  return blocked_by;
+}
+
 class ChromeVariationsConfigurationTest : public ::testing::Test {
  public:
   ChromeVariationsConfigurationTest() {
@@ -334,6 +341,143 @@ TEST_F(ChromeVariationsConfigurationTest, OnlyTriggerAndUsedIsValid) {
       kConfigParseEventName,
       static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
   histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+}
+
+void RunBlockedByTest(ChromeVariationsConfigurationTest* test,
+                      ChromeVariationsConfiguration* configuration,
+                      std::vector<const base::Feature*> features,
+                      std::string blocked_by_param_value,
+                      BlockedBy expected_blocked_by,
+                      bool is_valid) {
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = blocked_by_param_value;
+  test->SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  configuration->ParseFeatureConfigs(features);
+  FeatureConfig foo = configuration->GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(is_valid, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = is_valid;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by = expected_blocked_by;
+  EXPECT_EQ(expected_foo, foo);
+  if (is_valid) {
+    histogram_tester.ExpectBucketCount(
+        kConfigParseEventName,
+        static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        kConfigParseEventName,
+        static_cast<int>(stats::ConfigParsingEvent::FAILURE), 1);
+  }
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockingNone) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["blocking"] = "none";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.blocking.type, Blocking::Type::NONE);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockingAll) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["blocking"] = "all";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.blocking.type, Blocking::Type::ALL);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseInvalidBlockingParams) {
+  std::map<std::string, std::string> foo_params;
+  // Anything other than all/none should be invalid.
+  foo_params["blocking"] = "123";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.blocking.type, Blocking::Type::ALL);
+  EXPECT_FALSE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByAll) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "all",
+                   BlockedBy(), true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByNone) {
+  BlockedBy blocked_by;
+  blocked_by.type = BlockedBy::Type::NONE;
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "none",
+                   blocked_by, true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitSelf) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo},
+                   kChromeTestFeatureFoo.name,
+                   CreateBlockedByExplicit({kChromeTestFeatureFoo.name}),
+                   true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitOther) {
+  RunBlockedByTest(this, &configuration_,
+                   {&kChromeTestFeatureFoo, &kChromeTestFeatureBar},
+                   kChromeTestFeatureBar.name,
+                   CreateBlockedByExplicit({kChromeTestFeatureBar.name}),
+                   true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitMultiple) {
+  RunBlockedByTest(
+      this, &configuration_,
+      {&kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux},
+      "test_bar,test_qux",
+      CreateBlockedByExplicit(
+          {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name}),
+      true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitEmpty) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "",
+                   BlockedBy(), false /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitOnlySeparator) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, ",",
+                   BlockedBy(), false /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseBlockedByExplicitUnknownFeature) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "random",
+                   BlockedBy(), false /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitAll) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo},
+                   "all,test_foo", BlockedBy(), false /* is_valid */);
 }
 
 void RunSessionRateImpactTest(ChromeVariationsConfigurationTest* test,

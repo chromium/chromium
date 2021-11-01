@@ -105,6 +105,47 @@ struct SessionRateImpact {
   absl::optional<std::vector<std::string>> affected_features;
 };
 
+// BlockedBy describes which features the |blocked_by| of a given
+// FeatureConfig should affect. It can affect either |ALL| (default), |NONE|,
+// or an |EXPLICIT| list of the features. In the latter case, a list of affected
+// features is given as their base::Feature name.
+struct BlockedBy {
+ public:
+  enum class Type {
+    ALL = 0,      // Affects all other features.
+    NONE = 1,     // Affects no other features.
+    EXPLICIT = 2  // Affects only features in |affected_features|.
+  };
+
+  BlockedBy();
+  BlockedBy(const BlockedBy& other);
+  ~BlockedBy();
+
+  // Describes which features are impacted.
+  Type type{Type::ALL};
+
+  // In the case of the Type |EXPLICIT|, this is the list of affected
+  // base::Feature names.
+  absl::optional<std::vector<std::string>> affected_features;
+};
+
+// Blocking describes which features the |blocking| of a given FeatureConfig
+// should affect. It can affect either |ALL| (default) or |NONE|.
+struct Blocking {
+ public:
+  enum class Type {
+    ALL = 0,   // Affects all other features.
+    NONE = 1,  // Affects no other features.
+  };
+
+  Blocking();
+  Blocking(const Blocking& other);
+  ~Blocking();
+
+  // Describes which features are impacted.
+  Type type{Type::ALL};
+};
+
 // A SnoozeParams describes the parameters for snoozable options of in-product
 // help.
 struct SnoozeParams {
@@ -150,6 +191,12 @@ struct FeatureConfig {
 
   // Which features the showing this in-product help impacts.
   SessionRateImpact session_rate_impact;
+
+  // Which features the current in-product help is blocked by.
+  BlockedBy blocked_by;
+
+  // Which features the current in-product help is blocking.
+  Blocking blocking;
 
   // Number of days the in-product help has been available must fit this
   // comparison.
