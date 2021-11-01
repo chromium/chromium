@@ -36536,6 +36536,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Unknown"/>
   <int value="1" label="Unhandled Error"/>
   <int value="2" label="Unhandled Rejection"/>
+  <int value="3" label="Caught Exception"/>
 </enum>
 
 <enum name="FileManagerListType">

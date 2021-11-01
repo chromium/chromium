@@ -36,7 +36,10 @@ js_library("main_js") {
     "main.js",
     "script_loader.js",
   ]
-  deps = [ "//ash/webui/file_manager/mojom:mojom_webui_js" ]
+  deps = [
+    "//ash/webui/file_manager/mojom:mojom_webui_js",
+    "//ui/file_manager/file_manager/common/js:glitch",
+  ]
 
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
