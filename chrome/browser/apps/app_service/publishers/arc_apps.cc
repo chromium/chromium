@@ -344,15 +344,6 @@ void ResetVerifiedLinks(
       SetVerifiedLinks);
   if (instance) {
     instance->SetVerifiedLinks(package_names, /*always_open=*/false);
-    return;
-  }
-
-  // TODO(crbug.com/1251026): Remove ResetVerifiedLinks method.
-  instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(),
-      ResetVerifiedLinksDeprecated);
-  if (instance) {
-    instance->ResetVerifiedLinksDeprecated(package_names);
   }
 }
 

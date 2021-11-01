@@ -365,10 +365,6 @@ interface IntentHelperInstance {
                                      IntentFilter intent_filter,
                                      IntentInfo intent_info);
 
-  // DEPRECATED. Use SetVerifiedLinks instead.
-  // TODO(crbug.com/1251026): Remove method.
-  [MinVersion=35] ResetVerifiedLinksDeprecated@18(array<string> package_names);
-
   // Set the verified link domain status to either always open (|always_open| is
   // true) or always ask (|always_open| is false) for the |package_names|.
   // This method will be called when Chrome OS changes the link capturing

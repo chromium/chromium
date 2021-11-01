@@ -76,9 +76,6 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
                        IntentFilter intent_filter,
                        mojom::IntentInfoPtr intent) override;
 
-  void ResetVerifiedLinksDeprecated(
-      const std::vector<std::string>& package_names) override;
-
   void SetVerifiedLinks(const std::vector<std::string>& package_names,
                         bool always_open) override;
 
