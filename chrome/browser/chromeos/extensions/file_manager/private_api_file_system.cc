@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -1429,8 +1430,12 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
           std::move(source_urls), std::move(destination_folder_url),
           file_system_context);
       break;
+    case file_manager::io_task::OperationType::kDelete:
+      task = std::make_unique<file_manager::io_task::DeleteIOTask>(
+          std::move(source_urls), file_system_context);
+      break;
     default:
-      // TODO(b/199804935): Replace with {Move/Delete}IOTask when implemented.
+      // TODO(b/199804935): Replace with MoveIOTask when implemented.
       task = std::make_unique<file_manager::io_task::DummyIOTask>(
           std::move(source_urls), std::move(destination_folder_url), *type);
       break;
