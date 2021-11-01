@@ -83,9 +83,10 @@ class CastCRLTrustStore {
   CastCRLTrustStore() {
     // Initialize the trust store with the root certificate.
     net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert =
-        net::ParsedCertificate::CreateWithoutCopyingUnsafe(
-            kCastCRLRootCaDer, sizeof(kCastCRLRootCaDer), {}, &errors);
+    scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
+        net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(
+            kCastCRLRootCaDer),
+        {}, &errors);
     CHECK(cert) << errors.ToDebugString();
     // Enforce pathlen constraints and policies defined on the root certificate.
     store_.AddTrustAnchorWithConstraints(std::move(cert));

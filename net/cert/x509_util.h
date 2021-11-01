@@ -109,6 +109,12 @@ NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
     const char* invalid_data);
 
+// Creates a CRYPTO_BUFFER in the same pool returned by GetBufferPool backed by
+// |data| without copying. |data| must be immutable and last for the lifetime
+// of the address space.
+NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER>
+CreateCryptoBufferFromStaticDataUnsafe(base::span<const uint8_t> data);
+
 // Compares two CRYPTO_BUFFERs and returns true if they have the same contents.
 NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
                                   const CRYPTO_BUFFER* b);
