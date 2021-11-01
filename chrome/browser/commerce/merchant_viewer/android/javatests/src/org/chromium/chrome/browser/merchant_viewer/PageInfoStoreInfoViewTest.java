@@ -171,6 +171,53 @@ public class PageInfoStoreInfoViewTest {
 
     @Test
     @MediumTest
+    @Feature({"RenderTest"})
+    public void testStoreInfoRowVisibleWithData_WithoutReviews() throws IOException {
+        MerchantTrustSignalsV2 fakeMerchantTrustSigals =
+                MerchantTrustSignalsV2.newBuilder()
+                        .setMerchantStarRating(4.5f)
+                        .setMerchantCountRating(0)
+                        .setMerchantDetailsPageUrl("http://dummy/url")
+                        .build();
+
+        Any anyMerchantTrustSignals =
+                Any.newBuilder()
+                        .setValue(ByteString.copyFrom(fakeMerchantTrustSigals.toByteArray()))
+                        .build();
+
+        mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
+                OptimizationGuideDecision.TRUE, anyMerchantTrustSignals);
+        openPageInfo();
+        verifyStoreRowShowing(true);
+        renderTestForStoreInfoRow("page_info_store_info_row_without_reviews");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStoreInfoRowVisibleWithData_WithoutRating() throws IOException {
+        MerchantTrustSignalsV2 fakeMerchantTrustSigals =
+                MerchantTrustSignalsV2.newBuilder()
+                        .setMerchantStarRating(0)
+                        .setMerchantCountRating(0)
+                        .setMerchantDetailsPageUrl("http://dummy/url")
+                        .setHasReturnPolicy(true)
+                        .build();
+
+        Any anyMerchantTrustSignals =
+                Any.newBuilder()
+                        .setValue(ByteString.copyFrom(fakeMerchantTrustSigals.toByteArray()))
+                        .build();
+
+        mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
+                OptimizationGuideDecision.TRUE, anyMerchantTrustSignals);
+        openPageInfo();
+        verifyStoreRowShowing(true);
+        renderTestForStoreInfoRow("page_info_store_info_row_without_rating");
+    }
+
+    @Test
+    @MediumTest
     public void testStoreInfoRowClick() {
         mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
                 OptimizationGuideDecision.TRUE, mAnyMerchantTrustSignals);

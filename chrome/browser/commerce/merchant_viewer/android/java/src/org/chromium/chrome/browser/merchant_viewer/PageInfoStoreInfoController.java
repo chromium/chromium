@@ -95,8 +95,14 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     }
 
     private CharSequence getRowSubtitle(MerchantTrustSignalsV2 trustSignals) {
-        // TODO(zhiyuancai): Set subtitle based on trustSignals after updating the proto.
-        return MerchantTrustMessageViewModel.getMessageDescription(mContext, trustSignals);
+        if (trustSignals.getMerchantStarRating() > 0) {
+            return MerchantTrustMessageViewModel.getMessageDescription(mContext, trustSignals);
+        } else if (trustSignals.getHasReturnPolicy()) {
+            return mContext.getResources().getString(
+                    R.string.page_info_store_info_description_with_no_rating);
+        }
+        assert false : "Invalid trust signal";
+        return "";
     }
 
     // PageInfoSubpageController implementations. We don't use subpage for "store info" row.
