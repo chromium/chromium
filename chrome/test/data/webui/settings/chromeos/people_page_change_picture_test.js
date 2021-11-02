@@ -392,6 +392,23 @@ cr.define('settings_people_page_change_picture', function() {
       assertTrue(!!profileImage);
       expectEquals(profileImage, changePicture.selectedItem_);
     });
+
+    test('ChangePictureImagePendingStateCheck', async function() {
+      // oldImagePending_ should be false when no camera photo pending.
+      expectFalse(changePicture.oldImagePending_);
+      expectEquals(crPictureList.oldImageUrl_, '');
+      // Simulate photo taken event.
+      crPicturePane.fire('photo-taken', {photoDataUrl: 'camera-image.jpg'});
+      Polymer.dom.flush();
+      // oldImagePending_ should be true due to pending camera image.
+      expectTrue(changePicture.oldImagePending_);
+
+      cr.webUIListenerCallback('old-image-changed', 'camera-image.jpg');
+      Polymer.dom.flush();
+      // oldImagePending_ should be false after the image has been received.
+      expectFalse(changePicture.oldImagePending_);
+      expectEquals(crPictureList.oldImageUrl_, 'camera-image.jpg');
+    });
   });
 
   // #cr_define_end
