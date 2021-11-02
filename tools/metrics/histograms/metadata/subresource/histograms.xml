@@ -751,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SubresourceRedirect.Blink.Ineligibility"
-    enum="BlinkSubresourceRedirectIneligibility" expires_after="2022-02-06">
+    enum="BlinkSubresourceRedirectIneligibility" expires_after="2022-05-01">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
