@@ -15,7 +15,8 @@ class OmniboxChipButton : public views::MdTextButton {
  public:
   METADATA_HEADER(OmniboxChipButton);
   explicit OmniboxChipButton(PressedCallback callback,
-                             const gfx::VectorIcon& icon,
+                             const gfx::VectorIcon& icon_on,
+                             const gfx::VectorIcon& icon_off,
                              std::u16string message,
                              bool is_prominent);
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
@@ -49,7 +50,7 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetTheme(Theme theme);
   void SetForceExpandedForTesting(bool force_expanded_for_testing);
 
-  void SetShowBlockedBadge(bool show_blocked_badge);
+  void SetShowBlockedIcon(bool show_blocked_icon);
 
   Theme get_theme_for_testing() { return theme_; }
 
@@ -85,9 +86,10 @@ class OmniboxChipButton : public views::MdTextButton {
   // without text.
   bool fully_collapsed_ = false;
 
-  const gfx::VectorIcon& icon_;
+  const gfx::VectorIcon& icon_on_;
+  const gfx::VectorIcon& icon_off_;
 
-  bool show_blocked_badge_ = false;
+  bool show_blocked_icon_ = false;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
 

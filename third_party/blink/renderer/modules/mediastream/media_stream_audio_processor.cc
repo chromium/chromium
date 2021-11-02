@@ -275,12 +275,12 @@ void MediaStreamAudioProcessor::PushCaptureData(
 }
 
 bool MediaStreamAudioProcessor::ProcessAndConsumeData(
-    int volume,
+    double volume,
     int num_preferred_channels,
     bool key_pressed,
     media::AudioBus** processed_data,
     base::TimeDelta* capture_delay,
-    int* new_volume) {
+    absl::optional<double>* new_volume) {
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
   DCHECK(processed_data);
   DCHECK(capture_delay);
@@ -294,7 +294,7 @@ bool MediaStreamAudioProcessor::ProcessAndConsumeData(
 
   // Use the process bus directly if audio processing is disabled.
   MediaStreamAudioBus* output_bus = process_bus;
-  *new_volume = 0;
+  *new_volume = absl::nullopt;
   if (audio_processing_) {
     output_bus = output_bus_.get();
     *new_volume =
@@ -633,13 +633,14 @@ void MediaStreamAudioProcessor::InitializeCaptureFifo(
   }
 }
 
-int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
-                                           int process_frames,
-                                           base::TimeDelta capture_delay,
-                                           int volume,
-                                           bool key_pressed,
-                                           int num_preferred_channels,
-                                           float* const* output_ptrs) {
+absl::optional<double> MediaStreamAudioProcessor::ProcessData(
+    const float* const* process_ptrs,
+    int process_frames,
+    base::TimeDelta capture_delay,
+    double volume,
+    bool key_pressed,
+    int num_preferred_channels,
+    float* const* output_ptrs) {
   DCHECK(audio_processing_);
   DCHECK_CALLED_ON_VALID_THREAD(capture_thread_checker_);
 
@@ -672,8 +673,29 @@ int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
   max_num_preferred_output_channels_ =
       std::max(max_num_preferred_output_channels_, num_preferred_channels);
 
-  DCHECK_LE(volume, WebRtcAudioDeviceImpl::kMaxVolumeLevel);
-  ap->set_stream_analog_level(volume);
+  // Upscale the volume to the range expected by the WebRTC automatic gain
+  // controller.
+#if defined(OS_WIN) || defined(OS_MAC)
+  DCHECK_LE(volume, 1.0);
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_OPENBSD)
+  // We have a special situation on Linux where the microphone volume can be
+  // "higher than maximum". The input volume slider in the sound preference
+  // allows the user to set a scaling that is higher than 100%. It means that
+  // even if the reported maximum levels is N, the actual microphone level can
+  // go up to 1.5x*N and that corresponds to a normalized |volume| of 1.5x.
+  DCHECK_LE(volume, 1.6);
+#endif
+  // Map incoming volume range of [0.0, 1.0] to [0, 255] used by AGC.
+  // The volume can be higher than 255 on Linux, and it will be cropped to
+  // 255 since AGC does not allow values out of range.
+  const int max_analog_gain_level = media::MaxWebRtcAnalogGainLevel();
+  int current_analog_gain_level =
+      static_cast<int>((volume * max_analog_gain_level) + 0.5);
+  current_analog_gain_level =
+      std::min(current_analog_gain_level, max_analog_gain_level);
+  DCHECK_LE(current_analog_gain_level, max_analog_gain_level);
+
+  ap->set_stream_analog_level(current_analog_gain_level);
   ap->set_stream_key_pressed(key_pressed);
 
   // Depending on how many channels the sinks prefer, the number of APM output
@@ -712,9 +734,15 @@ int MediaStreamAudioProcessor::ProcessData(const float* const* process_ptrs,
       CrossThreadBindOnce(&MediaStreamAudioProcessor::UpdateAecStats,
                           rtc::scoped_refptr<MediaStreamAudioProcessor>(this)));
 
-  // Return 0 if the volume hasn't been changed, and otherwise the new volume.
-  const int recommended_volume = ap->recommended_stream_analog_level();
-  return (recommended_volume == volume) ? 0 : recommended_volume;
+  // Return a new mic volume, if the volume has been changed.
+  const int recommended_analog_gain_level =
+      ap->recommended_stream_analog_level();
+  if (recommended_analog_gain_level == current_analog_gain_level) {
+    return absl::nullopt;
+  } else {
+    return static_cast<double>(recommended_analog_gain_level) /
+           media::MaxWebRtcAnalogGainLevel();
+  }
 }
 
 void MediaStreamAudioProcessor::UpdateAecStats() {

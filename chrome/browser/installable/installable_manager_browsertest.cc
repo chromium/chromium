@@ -1780,8 +1780,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
             tester->errors());
 }
 
+// TODO(https://crbug.com/1256938): Fix the flake and re-enable this test.
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       GetAllInstallabilityErrorsNoErrors) {
+                       DISABLED_GetAllInstallabilityErrorsNoErrors) {
   EXPECT_EQ(std::vector<content::InstallabilityError>{},
             NavigateAndGetAllInstallabilityErrors(
                 browser(), "/banners/manifest_test_page.html"));

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that color-related mix-cased CSS properties are actually color aware.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
 
   var colorAwareProperties = ['bAckground-ColoR', 'COloR', 'Border-coLoR', 'border-right-color', 'BOX-SHADOW'];

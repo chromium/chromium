@@ -32,7 +32,7 @@ ShareActionCache::ShareActionCache(Profile* profile) {
   AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>(profile));
   if (base::FeatureList::IsEnabled(features::kSharesheetCopyToClipboard)) {
     AddShareAction(
-        std::make_unique<ash::sharesheet::CopyToClipboardShareAction>());
+        std::make_unique<ash::sharesheet::CopyToClipboardShareAction>(profile));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

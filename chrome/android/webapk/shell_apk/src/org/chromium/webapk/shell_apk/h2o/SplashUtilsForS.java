@@ -11,10 +11,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Insets;
 import android.graphics.Paint;
+import android.graphics.drawable.Icon;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
+import android.widget.ImageView;
 
 import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.WebApkUtils;
@@ -149,6 +151,13 @@ class SplashUtilsForS {
      * will never see them side by side).
      */
     static View createSplashView(Context context) {
-        return LayoutInflater.from(context).inflate(R.layout.splash_screen_view, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.splash_screen_view, null);
+        if (WebApkUtils.isSplashIconAdaptive(context)) {
+            Bitmap icon = WebApkUtils.decodeBitmapFromDrawable(
+                    context.getResources(), R.drawable.splash_icon);
+            ImageView imageView = (ImageView) view.findViewById(R.id.splashscreen_icon_view);
+            imageView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
+        }
+        return view;
     }
 }

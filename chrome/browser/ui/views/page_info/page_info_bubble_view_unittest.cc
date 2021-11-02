@@ -142,6 +142,11 @@ class PageInfoBubbleViewTestApi {
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
   }
 
+  const views::View* permissions_view() const {
+    return bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
+  }
+
   views::View* cookie_button() {
     return bubble_delegate_->GetViewByID(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG);
@@ -249,17 +254,23 @@ class PageInfoBubbleViewTestApi {
     toggle->SetIsOn(!toggle->GetIsOn());
   }
 
-  bool ValidatePermissionsChildrenCount(int expected_count) {
-    // In page info v2, not-empty permission section has a reset all button
-    // after all permission rows.
-    const int kAdditionalViewsCount = 1;
-    const int actual_count =
-        permissions_view() ? permissions_view()->children().size() : 0;
-    if (expected_count == 0 || !is_version_two_) {
-      return expected_count == actual_count;
-    } else {
-      return expected_count + kAdditionalViewsCount == actual_count;
+  size_t GetPermissionsCount() const {
+    // In page info v1, non-empty permission and object sections are containers.
+    const views::View* parent = permissions_view();
+    size_t actual_count = 0;
+    if (parent && !parent->children().empty() && !is_version_two_) {
+      actual_count += parent->children()[1]->children().size();
+      parent = parent->children().front();
     }
+    if (parent)
+      actual_count += parent->children().size();
+
+    // In page info v2, non-empty permission section has a reset all button
+    // after all permission rows.
+    if (actual_count && is_version_two_)
+      --actual_count;
+
+    return actual_count;
   }
 
   // Simulates updating the number of cookies.
@@ -283,9 +294,14 @@ class PageInfoBubbleViewTestApi {
   }
 
   const views::View::Views& GetChosenObjectChildren() {
+    // In page info v1, non-empty permission and object sections are containers.
+    const views::View* parent = permissions_view();
+    if (!is_version_two_)
+      parent = parent->children()[1];
+
     const int object_view_index = 0;
-    ChosenObjectView* object_view = static_cast<ChosenObjectView*>(
-        permissions_view()->children()[object_view_index]);
+    ChosenObjectView* object_view =
+        static_cast<ChosenObjectView*>(parent->children()[object_view_index]);
     views::View* row_view = object_view->children()[0];
     return row_view->children();
   }
@@ -516,7 +532,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
 
   // Initially, no permissions are shown because they are all set to default.
   size_t num_expected_children = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
   if (is_page_info_v2_enabled()) {
     EXPECT_FALSE(api_->reset_permissions_button());
   }
@@ -526,7 +542,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
                                : kViewsPerPermissionRow * list.size();
   list.back().setting = CONTENT_SETTING_ALLOW;
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 
   if (is_page_info_v2_enabled()) {
     EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
@@ -563,7 +579,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
   } else {
     api_->SimulateUserSelectingComboboxItemAt(0, 1);
   }
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
   if (is_page_info_v2_enabled()) {
     EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(0));
   } else {
@@ -587,7 +603,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
     // Setting to the default via the UI should keep the button around.
     api_->SimulateUserSelectingComboboxItemAt(0, 0);
     EXPECT_EQ(u"Ask (default)", api_->GetPermissionComboboxTextAt(0));
-    EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+    EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
   }
 
   // However, since the setting is now default, recreating the dialog with those
@@ -597,7 +613,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
   // that |num_expected_children| is not, at this point, 0 and therefore the
   // permission is not being omitted from the UI.
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 }
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
@@ -622,12 +638,12 @@ TEST_P(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
 
   // Initially, no permissions are shown because they are all set to default.
   size_t num_expected_children = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
   EXPECT_FALSE(api_->reset_permissions_button());
 
   num_expected_children = list.size();
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 
   // Because permission is autoblocked, no reset button initially is shown.
   EXPECT_FALSE(api_->reset_permissions_button()->GetVisible());
@@ -649,7 +665,7 @@ TEST_P(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
 
   num_expected_children = list.size();
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 
   // Because a non-managed permission was added, reset button is visible and
   // enabled.
@@ -687,7 +703,7 @@ TEST_P(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
   constexpr size_t kExpectedChildren = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
 
   const auto origin = url::Origin::Create(GURL(kUrl));
 
@@ -705,7 +721,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
 
   PermissionInfoList list;
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
 
   const auto& chosen_object_children = api_->GetChosenObjectChildren();
   EXPECT_EQ(3u, chosen_object_children.size());
@@ -718,7 +734,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
                              ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
 }
 
@@ -730,7 +746,7 @@ TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
   EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
 
   constexpr size_t kExpectedChildren = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
   EXPECT_FALSE(api_->reset_permissions_button());
 
   const auto origin = url::Origin::Create(GURL(kUrl));
@@ -749,7 +765,7 @@ TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
 
   PermissionInfoList list;
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
   EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
   EXPECT_TRUE(api_->reset_permissions_button()->GetEnabled());
   EXPECT_EQ(u"Reset permission", api_->reset_permissions_button()->GetText());
@@ -765,7 +781,7 @@ TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
   views::test::ButtonTestApi(api_->reset_permissions_button())
       .NotifyClick(event);
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
   EXPECT_FALSE(api_->reset_permissions_button());
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
 }
@@ -785,7 +801,7 @@ constexpr char kWebUsbPolicySetting[] = R"(
 // Test UI construction and reconstruction with policy USB devices.
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
   constexpr size_t kExpectedChildren = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
 
   const auto origin = url::Origin::Create(GURL(kUrl));
 
@@ -800,7 +816,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
 
   PermissionInfoList list;
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
 
   const auto& chosen_object_children = api_->GetChosenObjectChildren();
   EXPECT_EQ(3u, chosen_object_children.size());
@@ -820,7 +836,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
                              ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
 }
 
 // Test UI construction and reconstruction with both user and policy USB
@@ -828,7 +844,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
   EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
   constexpr size_t kExpectedChildren = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
 
   const auto origin = url::Origin::Create(GURL(kUrl));
 
@@ -854,7 +870,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 
   PermissionInfoList list;
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 2));
+  EXPECT_EQ(kExpectedChildren + 2, api_->GetPermissionsCount());
 
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
@@ -876,7 +892,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 
     views::test::ButtonTestApi(button).NotifyClick(event);
     api_->SetPermissionInfo(list);
-    EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+    EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
     EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
   }
 
@@ -899,7 +915,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 
     views::test::ButtonTestApi(button).NotifyClick(event);
     api_->SetPermissionInfo(list);
-    EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+    EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
   }
 }
 
@@ -916,7 +932,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
 
   // Initially, no permissions are shown because they are all set to default.
   size_t num_expected_children = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 
   // Verify calling SetPermissionInfo() directly updates the UI.
   num_expected_children += is_page_info_v2_enabled()
@@ -937,7 +953,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   } else {
     api_->SimulateUserSelectingComboboxItemAt(0, 2);
   }
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
   if (is_page_info_v2_enabled()) {
     EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(0));
   } else {
@@ -949,7 +965,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
     // Setting to the default via the UI should keep the button around.
     api_->SimulateUserSelectingComboboxItemAt(0, 0);
     EXPECT_EQ(u"Ask (default)", api_->GetPermissionComboboxTextAt(0));
-    EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+    EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
   }
 
   // However, since the setting is now default, recreating the dialog with
@@ -959,13 +975,13 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
   // that |num_expected_children| is not, at this point, 0 and therefore the
   // permission is not being omitted from the UI.
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 }
 
 // Test UI construction and reconstruction with policy USB devices.
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
   constexpr size_t kExpectedChildren = 0;
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(kExpectedChildren, api_->GetPermissionsCount());
 
   // Add the policy setting to prefs.
   web_contents_helper_->local_state()->Set(
@@ -978,7 +994,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
 
   PermissionInfoList list;
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
 
   const auto& chosen_object_children = api_->GetChosenObjectChildren();
   EXPECT_EQ(3u, chosen_object_children.size());
@@ -999,7 +1015,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
                              ui::EventTimeForNow(), 0, 0);
   views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
-  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_EQ(kExpectedChildren + 1, api_->GetPermissionsCount());
 }
 
 // Test that updating the number of cookies used by the current page doesn't add

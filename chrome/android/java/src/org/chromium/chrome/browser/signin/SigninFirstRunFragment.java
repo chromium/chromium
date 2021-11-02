@@ -40,7 +40,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  * This fragment handles the sign-in without sync consent during the FRE.
  */
 public class SigninFirstRunFragment extends Fragment implements FirstRunFragment,
-                                                                SigninFirstRunCoordinator.Listener,
+                                                                SigninFirstRunCoordinator.Delegate,
                                                                 FreUMADialogCoordinator.Listener {
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
@@ -96,10 +96,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
     }
 
-    /** Implements {@link SigninFirstRunCoordinator.Listener}. */
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
     public void addAccount() {
-        getPageDelegate().recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
+        recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
         AccountManagerFacadeProvider.getInstance().createAddAccountIntent(
                 (@Nullable Intent intent) -> {
                     if (intent != null) {
@@ -113,6 +113,12 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
                 });
     }
 
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void recordFreProgressHistogram(@MobileFreProgress int state) {
+        getPageDelegate().recordFreProgressHistogram(state);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
@@ -124,7 +130,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         }
     }
 
-    /** Implements {@link SigninFirstRunCoordinator.Listener}. */
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
     public void acceptTermsOfService() {
         getPageDelegate().acceptTermsOfService(mAllowCrashUpload);

@@ -1249,6 +1249,8 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
       DCHECK(!line_info.IsEmptyLine());
       container_builder_.SetLineBoxBfcBlockOffset(
           line_info.BfcOffset().block_offset + ruby_block_start_adjust);
+      container_builder_.SetAnnotationBlockOffsetAdjustment(
+          ruby_block_start_adjust);
     }
 
     // We now can check the block-size of the fragment, and it fits within the

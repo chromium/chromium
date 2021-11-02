@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Checks that JavaScriptSourceFrame show breakpoints correctly\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/edit-me-breakpoints.js');
 

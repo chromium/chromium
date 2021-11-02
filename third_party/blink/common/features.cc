@@ -1108,6 +1108,9 @@ bool IsSetTimeoutWithoutClampEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kSetTimeoutWithoutClamp);
 }
 
+const base::Feature kTabSwitchMetrics2{"TabSwitchMetrics2",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls where third_party/blink/renderer/core/frame/deprecation.cc logs to.
 const base::Feature kDeprecationWillLogToConsole{
     "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.MainThread;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -18,13 +19,19 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @MainThread
 public class SigninFirstRunCoordinator {
-    /** Listener for signin fist run MVC. */
-    public interface Listener {
+    /** Delegate for signin fist run MVC. */
+    public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */
         void addAccount();
 
         /** Notifies when the user accepts the terms of service. */
         void acceptTermsOfService();
+
+        /**
+         * Records the FRE progress histogram MobileFre.Progress.*.
+         * @param state FRE state to record.
+         */
+        void recordFreProgressHistogram(@MobileFreProgress int state);
     }
 
     private final SigninFirstRunMediator mMediator;
@@ -36,11 +43,11 @@ public class SigninFirstRunCoordinator {
      * @param view is the FRE bottom group view including the selected account, the continue/
      *        dismiss buttons and other view components that change according to different state.
      * @param modalDialogManager is used to open dialogs like account picker dialog and uma dialog.
-     * @param listener is invoked to interact with classes outside the module.
+     * @param delegate is invoked to interact with classes outside the module.
      */
     public SigninFirstRunCoordinator(
-            Context context, View view, ModalDialogManager modalDialogManager, Listener listener) {
-        mMediator = new SigninFirstRunMediator(context, modalDialogManager, listener);
+            Context context, View view, ModalDialogManager modalDialogManager, Delegate delegate) {
+        mMediator = new SigninFirstRunMediator(context, modalDialogManager, delegate);
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
     }

@@ -770,7 +770,9 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
       width = item->Size().width;
       height = info.inline_size;
     }
-    gfx::RectF scaled_rect(x, y, width, height);
+    // Clamp values in order to avoid infinity values.
+    gfx::RectF scaled_rect(ClampTo<float>(x), ClampTo<float>(y),
+                           ClampTo<float>(width), ClampTo<float>(height));
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     gfx::RectF unscaled_rect = gfx::ScaleRect(scaled_rect, 1 / scaling_factor);

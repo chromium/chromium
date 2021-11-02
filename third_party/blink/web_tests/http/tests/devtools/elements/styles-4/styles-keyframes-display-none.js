@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that keyframes are shown in styles pane inside display:none.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style>

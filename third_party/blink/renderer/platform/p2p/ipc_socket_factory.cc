@@ -130,11 +130,11 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
 
  private:
   enum InternalState {
-    IS_UNINITIALIZED,
-    IS_OPENING,
-    IS_OPEN,
-    IS_CLOSED,
-    IS_ERROR,
+    kIsUninitialized,
+    kIsOpening,
+    kIsOpen,
+    kIsClosed,
+    kIsError,
   };
 
   // Increment the counter for consecutive bytes discarded as socket is running
@@ -231,7 +231,7 @@ class AsyncAddressResolverImpl : public rtc::AsyncResolverInterface {
 
 IpcPacketSocket::IpcPacketSocket()
     : type_(network::P2P_SOCKET_UDP),
-      state_(IS_UNINITIALIZED),
+      state_(kIsUninitialized),
       send_bytes_available_(kMaximumInFlightBytes),
       writable_signal_expected_(false),
       error_(0),
@@ -245,7 +245,7 @@ IpcPacketSocket::IpcPacketSocket()
 }
 
 IpcPacketSocket::~IpcPacketSocket() {
-  if (state_ == IS_OPENING || state_ == IS_OPEN || state_ == IS_ERROR) {
+  if (state_ == kIsOpening || state_ == kIsOpen || state_ == kIsError) {
     Close();
   }
 
@@ -278,14 +278,14 @@ bool IpcPacketSocket::Init(network::P2PSocketType type,
                            uint16_t max_port,
                            const rtc::SocketAddress& remote_address) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, IS_UNINITIALIZED);
+  DCHECK_EQ(state_, kIsUninitialized);
 
   type_ = type;
   auto* client_ptr = client.get();
   client_ = std::move(client);
   local_address_ = local_address;
   remote_address_ = remote_address;
-  state_ = IS_OPENING;
+  state_ = kIsOpening;
 
   net::IPEndPoint local_endpoint;
   if (!jingle_glue::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
@@ -323,12 +323,12 @@ void IpcPacketSocket::InitAcceptedTcp(
     const rtc::SocketAddress& local_address,
     const rtc::SocketAddress& remote_address) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, IS_UNINITIALIZED);
+  DCHECK_EQ(state_, kIsUninitialized);
 
   client_ = std::move(client);
   local_address_ = local_address;
   remote_address_ = remote_address;
-  state_ = IS_OPEN;
+  state_ = kIsOpen;
   TraceSendThrottlingState();
   client_->SetDelegate(this);
 }
@@ -358,19 +358,19 @@ int IpcPacketSocket::SendTo(const void* data,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   switch (state_) {
-    case IS_UNINITIALIZED:
+    case kIsUninitialized:
       NOTREACHED();
       error_ = EWOULDBLOCK;
       return -1;
-    case IS_OPENING:
+    case kIsOpening:
       error_ = EWOULDBLOCK;
       return -1;
-    case IS_CLOSED:
+    case kIsClosed:
       error_ = ENOTCONN;
       return -1;
-    case IS_ERROR:
+    case kIsError:
       return -1;
-    case IS_OPEN:
+    case kIsOpen:
       // Continue sending the packet.
       break;
   }
@@ -439,7 +439,7 @@ int IpcPacketSocket::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   client_->Close();
-  state_ = IS_CLOSED;
+  state_ = kIsClosed;
 
   return 0;
 }
@@ -448,22 +448,22 @@ rtc::AsyncPacketSocket::State IpcPacketSocket::GetState() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   switch (state_) {
-    case IS_UNINITIALIZED:
+    case kIsUninitialized:
       NOTREACHED();
       return STATE_CLOSED;
 
-    case IS_OPENING:
+    case kIsOpening:
       return STATE_BINDING;
 
-    case IS_OPEN:
+    case kIsOpen:
       if (IsTcpClientSocket(type_)) {
         return STATE_CONNECTED;
       } else {
         return STATE_BOUND;
       }
 
-    case IS_CLOSED:
-    case IS_ERROR:
+    case kIsClosed:
+    case kIsError:
       return STATE_CLOSED;
   }
 
@@ -493,8 +493,8 @@ int IpcPacketSocket::SetOption(rtc::Socket::Option option, int value) {
 
   options_[p2p_socket_option] = value;
 
-  if (state_ == IS_OPEN) {
-    // Options will be applied when state becomes IS_OPEN in OnOpen.
+  if (state_ == kIsOpen) {
+    // Options will be applied when state becomes kIsOPEN in OnOpen.
     return DoSetOption(p2p_socket_option, value);
   }
   return 0;
@@ -502,7 +502,7 @@ int IpcPacketSocket::SetOption(rtc::Socket::Option option, int value) {
 
 int IpcPacketSocket::DoSetOption(network::P2PSocketOption option, int value) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, IS_OPEN);
+  DCHECK_EQ(state_, kIsOpen);
 
   client_->SetOption(option, value);
   return 0;
@@ -529,7 +529,7 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
     return;
   }
 
-  state_ = IS_OPEN;
+  state_ = kIsOpen;
   TraceSendThrottlingState();
 
   // Set all pending options if any.
@@ -596,8 +596,8 @@ void IpcPacketSocket::OnSendComplete(
 
 void IpcPacketSocket::OnError() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  bool was_closed = (state_ == IS_ERROR || state_ == IS_CLOSED);
-  state_ = IS_ERROR;
+  bool was_closed = (state_ == kIsError || state_ == kIsClosed);
+  state_ = kIsError;
   error_ = ECONNABORTED;
   if (!was_closed) {
     SignalClose(this, 0);

@@ -16,11 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 #include "components/arc/compat_mode/arc_window_property_util.h"
 #include "components/arc/compat_mode/compat_mode_button_controller.h"
 #include "components/arc/compat_mode/metrics.h"
+#include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace arc {
@@ -177,7 +180,11 @@ ArcResizeLockManager::ArcResizeLockManager(
     content::BrowserContext* browser_context,
     ArcBridgeService* arc_bridge_service)
     : compat_mode_button_controller_(
-          std::make_unique<CompatModeButtonController>()) {
+          std::make_unique<CompatModeButtonController>()),
+      touch_mode_mouse_rewriter_(
+          base::FeatureList::IsEnabled(arc::kTouchModeMouse)
+              ? std::make_unique<TouchModeMouseRewriter>()
+              : nullptr) {
   if (aura::Env::HasInstance())
     env_observation.Observe(aura::Env::GetInstance());
 }
@@ -272,6 +279,13 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   if (!inserted)
     return;
 
+  if (base::FeatureList::IsEnabled(arc::kTouchModeMouse)) {
+    // TODO(tetsui): Reconsider the trigger condition after experimenting i.e.
+    // whether it is reasonable to have it enabled when ResizeLock is enabled.
+    window->GetHost()->GetEventSource()->AddEventRewriter(
+        touch_mode_mouse_rewriter_.get());
+  }
+
   const auto app_id = GetAppId(window);
   DCHECK(app_id);
   // The state is |ArcResizeLockState::READY| only when we enable the resize
@@ -305,6 +319,11 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
   // Hide shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
+
+  if (base::FeatureList::IsEnabled(arc::kTouchModeMouse)) {
+    window->GetHost()->GetEventSource()->RemoveEventRewriter(
+        touch_mode_mouse_rewriter_.get());
+  }
 }
 
 void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {

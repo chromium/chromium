@@ -14,6 +14,7 @@
 #include "base/files/file_error_or.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/speedometer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -77,6 +78,10 @@ class CopyOrMoveIOTask : public IOTask {
   // Stores the id of the copy or move operation if one is in progress. Used so
   // the transfer can be cancelled.
   absl::optional<storage::FileSystemOperationRunner::OperationID> operation_id_;
+
+  // Speedometer for this operation, used to calculate the remaining time to
+  // finish the operation.
+  Speedometer speedometer_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;

@@ -49,7 +49,7 @@ class CORE_EXPORT LinkWebBundle final : public LinkResource,
   String GetCacheIdentifier() const override;
   const KURL& GetBundleUrl() const override;
   const base::UnguessableToken& WebBundleToken() const override;
-  void NotifyLoaded() override;
+  void NotifyLoadingFinished() override;
   void OnWebBundleError(const String& message) const override;
   bool IsScriptWebBundle() const override;
   bool WillBeReleased() const override;

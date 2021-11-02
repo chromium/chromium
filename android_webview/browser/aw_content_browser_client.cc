@@ -594,8 +594,12 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
         AwBrowserProcess::GetInstance()
             ->browser_policy_connector()
             ->GetPolicyService()));
-    throttles.push_back(
-        std::make_unique<AwSafeBrowsingNavigationThrottle>(navigation_handle));
+
+    std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
+        AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+            navigation_handle);
+    if (safe_browsing_throttle)
+      throttles.push_back(std::move(safe_browsing_throttle));
   }
   return throttles;
 }

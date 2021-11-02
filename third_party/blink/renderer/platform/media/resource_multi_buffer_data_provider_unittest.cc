@@ -48,7 +48,7 @@ const int kDataSize = 1024;
 const int kHttpOK = 200;
 const int kHttpPartialContent = 206;
 
-enum NetworkState { NONE, LOADED, LOADING };
+enum NetworkState { kNone, kLoaded, kLoading };
 
 static bool want_frfr = false;
 

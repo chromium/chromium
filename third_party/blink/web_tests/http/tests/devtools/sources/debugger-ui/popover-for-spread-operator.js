@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests popver for spread operator.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await SourcesTestRunner.startDebuggerTestPromise(/* quiet */ true);

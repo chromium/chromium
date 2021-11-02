@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that UISourceCodeFrames are highlighted based on their network UISourceCode.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/foo_js_without_extension');

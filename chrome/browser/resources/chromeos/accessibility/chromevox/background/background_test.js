@@ -1436,12 +1436,12 @@ TEST_F_WITH_PREAMBLE(
                 .expectSpeechWithQueueMode('go', QueueMode.CATEGORY_FLUSH)
 
                 .call(div.doDefault.bind(div))
-                .expectSpeechWithQueueMode('e', QueueMode.FLUSH)
                 .expectSpeechWithQueueMode('queued', QueueMode.QUEUE)
+                .expectSpeechWithQueueMode('e', QueueMode.CATEGORY_FLUSH)
 
                 .call(div.doDefault.bind(div))
-                .expectSpeechWithQueueMode('s', QueueMode.FLUSH)
                 .expectSpeechWithQueueMode('interrupted', QueueMode.QUEUE)
+                .expectSpeechWithQueueMode('s', QueueMode.CATEGORY_FLUSH)
 
                 .replay();
           });

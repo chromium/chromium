@@ -177,8 +177,9 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   WeakPtr<ThreadControllerImpl> weak_ptr = weak_factory_.GetWeakPtr();
   // TODO(scheduler-dev): Consider moving to a time based work batch instead.
   for (int i = 0; i < main_sequence_only().work_batch_size_; i++) {
-    Task* task = sequence_->SelectNextTask();
-    if (!task)
+    absl::optional<SequencedTaskSource::SelectedTask> selected_task =
+        sequence_->SelectNextTask();
+    if (!selected_task)
       break;
 
     // [OnTaskStarted(), OnTaskEnded()] must outscope all other tracing calls
@@ -192,7 +193,15 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
       // See https://crbug.com/681863 and https://crbug.com/874982
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
 
-      task_annotator_.RunTask("ThreadControllerImpl::RunTask", *task);
+      // Note: all arguments after task are just passed to a TRACE_EVENT for
+      // logging so lambda captures are safe as lambda is executed inline.
+      task_annotator_.RunTask(
+          "ThreadControllerImpl::RunTask", selected_task->task,
+          [&selected_task](perfetto::EventContext& ctx) {
+            if (selected_task->task_execution_trace_logger)
+              selected_task->task_execution_trace_logger.Run(
+                  ctx, selected_task->task);
+          });
       if (!weak_ptr)
         return;
 

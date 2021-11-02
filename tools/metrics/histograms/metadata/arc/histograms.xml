@@ -202,32 +202,39 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AppInstalledReason" enum="InstallationCounterReasonEnum"
     expires_after="2022-04-24">
-  <owner>robsc@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Record a reason when an arc application completes installation successfully,
     including policy based applications, default applications and user prompted
-    installations.
+    installations. Warning: this histogram was expired from 09/01/2021 to
+    10/01/2021; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.AppListRecommendedImp.AllImpression" units="count"
-    expires_after="2021-08-09">
-  <owner>robsc@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
+    expires_after="2022-01-09">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Record a count of an impression of FAR result. This is a count _any_ time
-    it's shown, even for a millisecond.
+    it's shown, even for a millisecond. Warning: this histogram was expired from
+    09/01/2021 to 10/01/2021; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Arc.AppListRecommendedImp.CountedImpression" units="count"
-    expires_after="2020-10-04">
-  <owner>robsc@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
+    expires_after="2022-01-09">
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Record a count of an impression of FAR result. This is a count of heuristic
     real impressions: a new showing after a while, a longer showing, etc.
+    Warning: this histogram was expired from 09/01/2021 to 10/01/2021; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -280,11 +287,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AppUninstallReason" enum="UninstallCounterReasonEnum"
     expires_after="2022-04-24">
-  <owner>robsc@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
   <summary>
     Record a reason why an application was uninstalled when uninstall is
-    completed.
+    completed. Warning: this histogram was expired from 09/01/2021 to
+    10/01/2021; data may be missing.
   </summary>
 </histogram>
 
@@ -395,7 +404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Auth.MainAccountHashMigration.Status"
-    enum="ArcMainAccountHashMigrationStatus" expires_after="2021-12-31">
+    enum="ArcMainAccountHashMigrationStatus" expires_after="2022-05-01">
   <owner>vsomani@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -1360,7 +1369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PrintPreview.RendererError" enum="PrintPreviewFailureType"
-    expires_after="2021-12-26">
+    expires_after="2022-05-01">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>

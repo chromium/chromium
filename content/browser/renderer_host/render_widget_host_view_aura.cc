@@ -563,7 +563,10 @@ void RenderWidgetHostViewAura::WasUnOccluded() {
   if (!host_->is_hidden())
     return;
 
-  auto* visible_time_request_trigger = GetVisibleTimeRequestTrigger();
+  auto* visible_time_request_trigger = host_->GetVisibleTimeRequestTrigger();
+  // The only way this should be null is if there is no RenderWidgetHostView.
+  DCHECK(visible_time_request_trigger);
+
   if (old_visibility == Visibility::OCCLUDED) {
     visible_time_request_trigger->SetRecordContentToVisibleTimeRequest(
         base::TimeTicks::Now(), false /* destination_is_loaded */,

@@ -1644,8 +1644,11 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
                                 absl::nullopt);
   }
 
+  auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
+  // The only way this should be null is if there is no RenderWidgetHostView.
+  DCHECK(visible_time_request_trigger);
   auto content_to_visible_start_state =
-      GetVisibleTimeRequestTrigger()->TakeRecordContentToVisibleTimeRequest();
+      visible_time_request_trigger->TakeRecordContentToVisibleTimeRequest();
 
   // Only when page is restored from back-forward cache, record content to
   // visible time and for this case no need to check for saved frames to

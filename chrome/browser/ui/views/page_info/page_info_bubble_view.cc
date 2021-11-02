@@ -82,8 +82,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/table_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -103,6 +103,23 @@ namespace {
 // Bubble width constraints.
 constexpr int kMinBubbleWidth = 320;
 constexpr int kMaxBubbleWidth = 1000;
+
+// Adds a row showing `text` in `parent`.
+void AddSecondaryLabelRow(views::TableLayoutView* parent,
+                          const std::u16string& text) {
+  parent->AddRows(1, views::TableLayout::kFixedSize);
+  parent->AddChildView(std::make_unique<views::View>());
+  auto* sublabel = parent->AddChildView(std::make_unique<views::Label>(text));
+  sublabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  sublabel->SetEnabledColor(PageInfoUI::GetSecondaryTextColor());
+  sublabel->SetMultiLine(true);
+  // Long labels that cannot fit in the existing space under the permission
+  // label should be allowed to use up to |kMaxSecondaryLabelWidth| for
+  // display.
+  constexpr int kMaxSecondaryLabelWidth = 140;
+  sublabel->SetMaximumWidth(kMaxSecondaryLabelWidth);
+  parent->AddChildView(std::make_unique<views::View>());
+}
 
 }  // namespace
 
@@ -274,39 +291,27 @@ PageInfoBubbleView::PageInfoBubbleView(
   const int bottom_margin = hover_list_spacing;
   set_margins(gfx::Insets(margins().top(), 0, bottom_margin, 0));
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  constexpr int kColumnId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   header_ =
-      layout->AddView(std::make_unique<SecurityInformationView>(side_margin));
+      AddChildView(std::make_unique<SecurityInformationView>(side_margin));
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  permissions_view_ = layout->AddView(std::make_unique<views::View>());
+  permissions_view_ = AddChildView(std::make_unique<views::View>());
   permissions_view_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  layout->AddView(std::make_unique<views::Separator>());
+  AddChildView(std::make_unique<views::Separator>())
+      ->SetProperty(views::kMarginsKey,
+                    gfx::Insets(0, 0, hover_list_spacing, 0));
 
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
-                              views::GridLayout::kFixedSize,
-                              hover_list_spacing);
   ui_delegate_ =
       std::make_unique<ChromePageInfoUiDelegate>(web_contents(), url);
-  site_settings_view_ = layout->AddView(CreateSiteSettingsView());
+  site_settings_view_ = AddChildView(CreateSiteSettingsView());
 
   int link_text_id = 0;
   int tooltip_text_id = 0;
   if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id)) {
-    layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
-                                views::GridLayout::kFixedSize, 0);
-
-    site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
+    site_settings_link = AddChildView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
               view->HandleMoreInfoRequest(view->site_settings_link);
@@ -320,8 +325,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   }
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  page_feature_info_view_ = layout->AddView(std::make_unique<views::View>());
+  page_feature_info_view_ = AddChildView(std::make_unique<views::View>());
 #endif
 
   views::BubbleDialogDelegateView::CreateBubble(this);
@@ -459,36 +463,79 @@ void PageInfoBubbleView::SetPermissionInfo(
   if (!permissions_view_->children().empty())
     return;
 
-  views::GridLayout* layout = permissions_view_->SetLayoutManager(
-      std::make_unique<views::GridLayout>());
-  const bool is_list_empty =
-      permission_info_list.empty() && chosen_object_info_list.empty();
-  LayoutPermissionsLikeUiRow(layout, is_list_empty, kPermissionColumnSetId);
-
-  // |ChosenObjectView| will layout itself, so just add the missing padding
-  // here.
-  constexpr int kChosenObjectSectionId = 1;
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int list_item_padding =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+  if (permission_info_list.empty() && chosen_object_info_list.empty()) {
+    // If nothing to show, just add padding above the separator and exit.
+    auto* layout = permissions_view_->SetLayoutManager(
+        std::make_unique<views::TableLayout>());
+    layout->AddPaddingRow(views::TableLayout::kFixedSize,
+                          layout_provider->GetDistanceMetric(
+                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+    return;
+  }
+
   const int side_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-  views::ColumnSet* chosen_object_set =
-      layout->AddColumnSet(kChosenObjectSectionId);
-  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                      side_margin);
-  chosen_object_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                               1.0,
-                               views::GridLayout::ColumnSize::kUsePreferred,
-                               views::GridLayout::kFixedSize, 0);
-  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                      side_margin);
+  const int list_item_padding =
+      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+  auto* layout =
+      permissions_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          gfx::Insets(list_item_padding, side_margin)));
+
+  // A permissions row will have an icon, title, and combobox, with a padding
+  // column on either side to match the dialog insets. Note the combobox can be
+  // variable widths depending on the text inside.
+  // *----------------------------------------------*
+  // |++| Icon | Permission Title     | Combobox |++|
+  // *----------------------------------------------*
+  auto* permissions = permissions_view_->AddChildView(
+      std::make_unique<views::TableLayoutView>());
+  permissions->AddColumn(
+      views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+      views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
+      kIconColumnWidth, 0);
+  permissions->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                layout_provider->GetDistanceMetric(
+                                    views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+  permissions->AddColumn(views::LayoutAlignment::kStretch,
+                         views::LayoutAlignment::kCenter, 1.0f,
+                         views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+  permissions->AddPaddingColumn(
+      views::TableLayout::kFixedSize,
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+  permissions->AddColumn(views::LayoutAlignment::kEnd,
+                         views::LayoutAlignment::kStretch,
+                         views::TableLayout::kFixedSize,
+                         views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
+    const int list_item_padding =
+        layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL) / 2;
+    permissions->AddPaddingRow(views::TableLayout::kFixedSize,
+                               list_item_padding);
+    permissions->AddRows(1, views::TableLayout::kFixedSize);
     std::unique_ptr<PermissionSelectorRow> selector =
         std::make_unique<PermissionSelectorRow>(ui_delegate_.get(), permission,
-                                                layout);
+                                                permissions);
+
+    // Add extra details as sublabel.
+    std::u16string detail = ui_delegate_->GetPermissionDetail(permission.type);
+    if (!detail.empty())
+      AddSecondaryLabelRow(permissions, detail);
+
+    // Show the permission decision reason, if it was not the user.
+    std::u16string reason = PageInfoUI::PermissionDecisionReasonToUIString(
+        ui_delegate_.get(), permission);
+    if (!reason.empty())
+      AddSecondaryLabelRow(permissions, reason);
+
+    permissions->AddPaddingRow(views::TableLayout::kFixedSize,
+                               selector->CalculatePaddingBeneathPermissionRow(
+                                   !detail.empty() || !reason.empty()));
+
     selector->AddObserver(this);
     min_height_for_permission_rows = std::max(
         min_height_for_permission_rows, selector->MinHeightForPermissionRow());
@@ -512,21 +559,30 @@ void PageInfoBubbleView::SetPermissionInfo(
   for (const auto& selector : selector_rows_)
     selector->SetMinComboboxWidth(combobox_width);
 
+  // |ChosenObjectView| will layout itself, so just add the missing padding
+  // here.
+  auto* chosen_objects = permissions_view_->AddChildView(
+      std::make_unique<views::TableLayoutView>());
+  chosen_objects->AddColumn(views::LayoutAlignment::kStretch,
+                            views::LayoutAlignment::kStretch, 1.0,
+                            views::TableLayout::ColumnSize::kUsePreferred,
+                            views::TableLayout::kFixedSize, 0);
+
+  // Since chosen objects are presented after permissions in the same list, make
+  // sure their heights are the same as the permissions row's minimum height
+  // plus padding.
+  chosen_objects->AddRows(chosen_object_info_list.size(),
+                          views::TableLayout::kFixedSize,
+                          min_height_for_permission_rows + list_item_padding);
   for (auto& object : chosen_object_info_list) {
-    // Since chosen objects are presented after permissions in the same list,
-    // make sure its height is the same as the permissions row's minimum height
-    // plus padding.
-    layout->StartRow(1.0, kChosenObjectSectionId,
-                     min_height_for_permission_rows + list_item_padding);
     // The view takes ownership of the object info.
     auto object_view = std::make_unique<ChosenObjectView>(
         std::move(object),
         presenter_->GetChooserContextFromUIInfo(object->ui_info)
             ->GetObjectDisplayName(object->chooser_object->value));
     object_view->AddObserver(this);
-    layout->AddView(std::move(object_view));
+    chosen_objects->AddChildView(std::move(object_view));
   }
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, list_item_padding);
 
   layout->Layout(permissions_view_);
   SizeToContents();
@@ -715,56 +771,6 @@ PageInfoBubbleView::GetSecurityDescriptionType() const {
 void PageInfoBubbleView::SetSecurityDescriptionType(
     const PageInfoUI::SecurityDescriptionType& type) {
   security_description_type_ = type;
-}
-
-void PageInfoBubbleView::LayoutPermissionsLikeUiRow(views::GridLayout* layout,
-                                                    bool is_list_empty,
-                                                    int column_id) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  if (is_list_empty) {
-    // If nothing to show, just add padding above the separator and exit.
-    layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                          layout_provider->GetDistanceMetric(
-                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-    return;
-  }
-
-  const int list_item_padding =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, list_item_padding);
-
-  const int side_margin =
-      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-  // A permissions row will have an icon, title, and combobox, with a padding
-  // column on either side to match the dialog insets. Note the combobox can be
-  // variable widths depending on the text inside.
-  // *----------------------------------------------*
-  // |++| Icon | Permission Title     | Combobox |++|
-  // *----------------------------------------------*
-  views::ColumnSet* permissions_set = layout->AddColumnSet(column_id);
-  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
-  permissions_set->AddColumn(
-      views::GridLayout::CENTER, views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-      kIconColumnWidth, 0);
-  permissions_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  permissions_set->AddColumn(views::GridLayout::LEADING,
-                             views::GridLayout::CENTER, 1.0,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             views::GridLayout::kFixedSize, 0);
-  permissions_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  permissions_set->AddColumn(views::GridLayout::TRAILING,
-                             views::GridLayout::FILL,
-                             views::GridLayout::kFixedSize,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             views::GridLayout::kFixedSize, 0);
-  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
 }
 
 void PageInfoBubbleView::DidChangeVisibleSecurityState() {

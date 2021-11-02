@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -24,7 +25,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/escape.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
@@ -68,21 +68,44 @@ void RecordDeviceNotificationUserActionMetric(
                             type);
 }
 
-std::u16string GetDisplayableFileName(GURL file_url) {
-  // Try to convert %20 to spaces, if this produces any invalid char, use the
-  // file name URL encoded.
-  std::string file_name;
-  if (!net::UnescapeBinaryURLComponentSafe(file_url.ExtractFileName(),
-                                           /*fail_on_path_separators=*/true,
-                                           &file_name)) {
-    file_name = file_url.ExtractFileName();
+using file_manager::io_task::OperationType;
+using file_manager::io_task::ProgressStatus;
+using file_manager::util::GetDisplayableFileName16;
+using l10n_util::GetStringFUTF16;
+
+std::u16string GetIOTaskMessage(const ProgressStatus& status) {
+  switch (status.type) {
+    case OperationType::kCopy:
+      if (status.sources.size() > 1) {
+        return GetStringFUTF16(IDS_FILE_BROWSER_COPY_ITEMS_REMAINING,
+                               base::NumberToString16(status.sources.size()));
+      }
+      return GetStringFUTF16(
+          IDS_FILE_BROWSER_COPY_FILE_NAME,
+          GetDisplayableFileName16(status.sources.back().url));
+    case OperationType::kMove:
+      if (status.sources.size() > 1) {
+        return GetStringFUTF16(IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING,
+                               base::NumberToString16(status.sources.size()));
+      }
+      return GetStringFUTF16(
+          IDS_FILE_BROWSER_MOVE_FILE_NAME,
+          GetDisplayableFileName16(status.sources.back().url));
+    case OperationType::kDelete:
+      // TODO: Add the right message here.
+      return u"delete";
+    case OperationType::kZip:
+      if (status.sources.size() > 1) {
+        return GetStringFUTF16(IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING,
+                               base::NumberToString16(status.sources.size()));
+      }
+      return GetStringFUTF16(
+          IDS_FILE_BROWSER_ZIP_FILE_NAME,
+          GetDisplayableFileName16(status.sources.back().url));
+    default:
+      NOTREACHED();
+      return u"Unknown operation type";
   }
-
-  return base::UTF8ToUTF16(file_name);
-}
-
-std::u16string GetDisplayableFileName(storage::FileSystemURL file_url) {
-  return GetDisplayableFileName(file_url.ToGURL());
 }
 
 }  // namespace
@@ -352,7 +375,7 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
           DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
         message = l10n_util::GetStringFUTF16(
             IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
-            GetDisplayableFileName(file_url));
+            util::GetDisplayableFileName16(file_url));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE:
@@ -361,9 +384,9 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
                                IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
-        message =
-            l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE,
-                                       GetDisplayableFileName(file_url));
+        message = l10n_util::GetStringFUTF16(
+            IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE,
+            util::GetDisplayableFileName16(file_url));
         notification = CreateNotification(id, title, message);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
@@ -372,8 +395,9 @@ SystemNotificationManager::MakeDriveSyncErrorNotification(
                                IDS_FILE_BROWSER_DRIVE_OUT_OF_SPACE_HEADER);
         break;
       case file_manager_private::DRIVE_SYNC_ERROR_TYPE_MISC:
-        message = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_SYNC_MISC_ERROR,
-                                             GetDisplayableFileName(file_url));
+        message = l10n_util::GetStringFUTF16(
+            IDS_FILE_BROWSER_SYNC_MISC_ERROR,
+            util::GetDisplayableFileName16(file_url));
         notification = CreateNotification(id, title, message);
         break;
       default:
@@ -477,7 +501,7 @@ SystemNotificationManager::UpdateDriveSyncNotification(
                            : IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE;
     message = l10n_util::GetStringFUTF16(
         message_template,
-        GetDisplayableFileName(GURL(transfer_status.file_url)));
+        util::GetDisplayableFileName16(GURL(transfer_status.file_url)));
   } else {
     message_template = is_sync_operation
                            ? IDS_FILE_BROWSER_SYNC_FILE_NUMBER
@@ -561,7 +585,7 @@ void SystemNotificationManager::HandleCopyEvent(
   if (status.source_url) {
     message = l10n_util::GetStringFUTF16(
         IDS_FILE_BROWSER_COPY_FILE_NAME,
-        GetDisplayableFileName(GURL(*status.source_url)));
+        util::GetDisplayableFileName16(GURL(*status.source_url)));
   } else {
     message = l10n_util::GetStringUTF16(IDS_FILE_BROWSER_FILE_ERROR_GENERIC);
   }
@@ -634,14 +658,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // From here state is kQueued or kInProgress:
   std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
 
-  std::u16string message =
-      status.sources.size() > 1
-          ? l10n_util::GetStringFUTF16(
-                IDS_FILE_BROWSER_COPY_ITEMS_REMAINING,
-                base::NumberToString16(status.sources.size()))
-          : l10n_util::GetStringFUTF16(
-                IDS_FILE_BROWSER_COPY_FILE_NAME,
-                GetDisplayableFileName(status.sources.back().url));
+  std::u16string message = GetIOTaskMessage(status);
 
   int progress = 0;
   if (status.total_bytes > 0) {

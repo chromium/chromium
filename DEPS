@@ -234,11 +234,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '15f17c05762447108e2f4eab9ef1b45d9da512a4',
+  'skia_revision': '05d3f48d0f3fa706ebea9789d67f9aaa37c24416',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'd5db1cb553b480fdf02f35e2894df40fe31ff025',
+  'v8_revision': '6623807ba1b7300a01d92bc4d3b66ff68626a08d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -301,7 +301,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '2c76b34a46bfc1bd1b925b35dba7704d287ae0f5',
+  'catapult_revision': '8bea65a06b5a033698626e9683ae9c9ba5795454',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
@@ -309,7 +309,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'a654d5cfb376f3cb9beef0c878de06f26a539b88',
+  'devtools_frontend_revision': '884171e732534c6f711a50f19a15e2f2f4bfd6d3',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -349,7 +349,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': 'ff9a1f7b20d7ff9a56714d6d0000b5f892b65544',
+  'dawn_revision': '983d13235dc30838db578813175e4802db5bda22',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -1416,7 +1416,7 @@ deps = {
   },
 
   'src/third_party/perfetto':
-    Var('android_git') + '/platform/external/perfetto.git' + '@' + '438b94977df5ad27c67dac05ae8d8a6606921f20',
+    Var('android_git') + '/platform/external/perfetto.git' + '@' + '39fb1aaed4fc80f766734bf028ac1bfef3e8ea89',
 
   'src/third_party/perl': {
       'url': Var('chromium_git') + '/chromium/deps/perl.git' + '@' + '6f3e5028eb65d0b4c5fdd792106ac4c84eee1eb3',
@@ -1598,7 +1598,7 @@ deps = {
   'src/third_party/usrsctp/usrsctplib':
     Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '62d7d0c928c9a040dce96aa2f16c00e7e67d59cb',
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@d388b3abde67443db9ac21d726e83496fca33b6a',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@9e34fc816e86db3986c6212e550579860a89b3a7',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'e0216a5484c8345f7d792fa16fad77ac63d89a70',
@@ -1637,7 +1637,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '7c6749771b96d008cbc9877c618bf9f9a7f127da',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'ff8caf1d569408a9cfa759e0fa58703cc67f7aae',
+    Var('webrtc_git') + '/src.git' + '@' + '08a6e358484a9f772a7aeac5ccfe7c484a0beb28',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1695,7 +1695,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@87f69da1fa95f56dcd1b29f125435bd5469cb418',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@dd894a41645b41b7bc6ab932fb8c536cef9f1276',
     'condition': 'checkout_src_internal',
   },
 
@@ -1736,7 +1736,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/projector_app/app',
-        'version': '85GvO1qx31LyZ0AcZ9xGZflzgsugrgRI96_Ex9cBvHsC',
+        'version': 'w0OJwLFcfk8m3qEGakAdAPdC8qExSRXhPKQZmE3Q1nQC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',

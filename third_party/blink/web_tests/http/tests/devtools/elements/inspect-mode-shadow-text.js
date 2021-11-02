@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test that devtools can inspect text element under shadow root.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div><div><div id="host"></div></div></div>

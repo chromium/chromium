@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <vector>
@@ -49,7 +50,10 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
@@ -414,6 +418,27 @@ void UpdatePolicyViaLocalPolicyMixin(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Simulates a server error according to the current error mode, or returns no
+// response when no error is configured. Note that this function is called on
+// the IO thread.
+std::unique_ptr<net::test_server::HttpResponse> ErrorSimulatingRequestHandler(
+    std::atomic<ExtensionForceInstallMixin::ServerErrorMode>* server_error_mode,
+    const net::test_server::HttpRequest& /*request*/) {
+  switch (server_error_mode->load()) {
+    case ExtensionForceInstallMixin::ServerErrorMode::kNone: {
+      return nullptr;
+    }
+    case ExtensionForceInstallMixin::ServerErrorMode::kHung: {
+      return std::make_unique<net::test_server::HungResponse>();
+    }
+    case ExtensionForceInstallMixin::ServerErrorMode::kInternalError: {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
+  }
+}
+
 }  // namespace
 
 ExtensionForceInstallMixin::ExtensionForceInstallMixin(
@@ -561,11 +586,25 @@ const extensions::Extension* ExtensionForceInstallMixin::GetEnabledExtension(
   return registry->enabled_extensions().GetByID(extension_id);
 }
 
+void ExtensionForceInstallMixin::SetServerErrorMode(
+    ServerErrorMode server_error_mode) {
+  server_error_mode_.store(server_error_mode);
+}
+
 void ExtensionForceInstallMixin::SetUpOnMainThread() {
+  // Create a temporary directory for keeping served and auxiliary files.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   const base::FilePath served_dir_path =
       temp_dir_.GetPath().AppendASCII(kServedDirName);
   ASSERT_TRUE(base::CreateDirectory(served_dir_path));
+
+  // Start the embedded test server. The first request handler is a handler for
+  // simulating errors as configured (note that the error mode is shared via an
+  // atomic variable, so that its changes on the main thread are correctly
+  // picked up by the handler on the IO thread). The default handler is serving
+  // files from the directory created above.
+  embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &ErrorSimulatingRequestHandler, base::Unretained(&server_error_mode_)));
   embedded_test_server_.ServeFilesFromDirectory(served_dir_path);
   ASSERT_TRUE(embedded_test_server_.Start());
 }

@@ -130,10 +130,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
   void SetPageFeatureInfo(const PageFeatureInfo& info) override;
 
-  void LayoutPermissionsLikeUiRow(views::GridLayout* layout,
-                                  bool is_list_empty,
-                                  int column_id);
-
   // WebContentsObserver:
   void DidChangeVisibleSecurityState() override;
 

@@ -337,9 +337,9 @@ TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
         power_monitor_.IsProcessInPowerSuspendState()
             ? SequencedTaskSource::SelectTaskOption::kSkipDelayedTask
             : SequencedTaskSource::SelectTaskOption::kDefault;
-    Task* task =
+    absl::optional<SequencedTaskSource::SelectedTask> selected_task =
         main_thread_only().task_source->SelectNextTask(select_task_option);
-    if (!task)
+    if (!selected_task)
       break;
 
     // Execute the task and assume the worst: it is probably not reentrant.
@@ -351,7 +351,15 @@ TimeTicks ThreadControllerWithMessagePumpImpl::DoWorkImpl(
     // See https://crbug.com/681863 and https://crbug.com/874982
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "RunTask");
 
-    task_annotator_.RunTask("ThreadControllerImpl::RunTask", *task);
+    // Note: all arguments after task are just passed to a TRACE_EVENT for
+    // logging so lambda captures are safe as lambda is executed inline.
+    task_annotator_.RunTask("ThreadControllerImpl::RunTask",
+                            selected_task->task,
+                            [&selected_task](perfetto::EventContext& ctx) {
+                              if (selected_task->task_execution_trace_logger)
+                                selected_task->task_execution_trace_logger.Run(
+                                    ctx, selected_task->task);
+                            });
 
     // This processes microtasks and is intentionally included in
     // |work_item_scope|.

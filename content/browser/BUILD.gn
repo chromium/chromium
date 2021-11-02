@@ -2028,6 +2028,8 @@ source_set("browser") {
     "websockets/websocket_handshake_request_info_impl.h",
     "webtransport/web_transport_connector_impl.cc",
     "webtransport/web_transport_connector_impl.h",
+    "webtransport/web_transport_throttle_context.cc",
+    "webtransport/web_transport_throttle_context.h",
     "webui/content_web_ui_controller_factory.cc",
     "webui/content_web_ui_controller_factory.h",
     "webui/network_error_url_loader.cc",

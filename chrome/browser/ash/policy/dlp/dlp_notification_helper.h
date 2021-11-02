@@ -14,6 +14,9 @@ namespace policy {
 // Shows a notification that printing is not allowed due to DLP rules.
 void ShowDlpPrintDisabledNotification();
 
+// Shows a notification that screen share is not allowed due to DLP rules.
+void ShowDlpScreenShareDisabledNotification(const std::u16string& app_title);
+
 // Shows/hides a notification that screen share was paused because confidential
 // content appeared in the captured area, or resumed when it left the captured
 // area. Different screen shares are identified by |share_id| and separated

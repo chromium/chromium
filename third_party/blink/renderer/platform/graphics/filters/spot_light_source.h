@@ -56,7 +56,7 @@ class PLATFORM_EXPORT SpotLightSource final : public LightSource {
                   const FloatPoint3D& direction,
                   float specular_exponent,
                   float limiting_cone_angle)
-      : LightSource(LS_SPOT),
+      : LightSource(kLsSpot),
         position_(position),
         direction_(direction),
         specular_exponent_(ClampTo(specular_exponent, 1.0f, 128.0f)),

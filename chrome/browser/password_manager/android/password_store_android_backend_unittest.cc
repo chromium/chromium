@@ -151,7 +151,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
 
   PasswordForm form = CreateTestLogin();
   EXPECT_CALL(*bridge(), AddLogin(form)).WillOnce(Return(kJobId));
-  backend().RemoveLoginAsync(form, mock_reply.Get());
+  backend().AddLoginAsync(form, mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(

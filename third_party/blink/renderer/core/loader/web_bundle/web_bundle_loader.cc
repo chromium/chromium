@@ -98,10 +98,15 @@ void WebBundleLoader::OnWebBundleError(
 }
 
 void WebBundleLoader::OnWebBundleLoadFinished(bool success) {
-  if (failed_)
+  if (load_state_ != kInProgress)
     return;
-  failed_ = !success;
-  subresource_web_bundle_->NotifyLoaded();
+  if (success) {
+    load_state_ = kSuccess;
+  } else {
+    load_state_ = kFailed;
+  }
+
+  subresource_web_bundle_->NotifyLoadingFinished();
 }
 
 void WebBundleLoader::ClearReceivers() {
@@ -111,10 +116,10 @@ void WebBundleLoader::ClearReceivers() {
 }
 
 void WebBundleLoader::DidFailInternal() {
-  if (failed_)
+  if (load_state_ != kInProgress)
     return;
-  failed_ = true;
-  subresource_web_bundle_->NotifyLoaded();
+  load_state_ = kFailed;
+  subresource_web_bundle_->NotifyLoadingFinished();
 }
 
 }  // namespace blink

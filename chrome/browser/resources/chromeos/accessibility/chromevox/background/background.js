@@ -271,7 +271,6 @@ export class Background extends ChromeVoxState {
 
     o.withRichSpeechAndBraille(
          selectedRange || range, prevRange, OutputEventType.NAVIGATE)
-        .withQueueMode(QueueMode.FLUSH)
         .withInitialSpeechProperties(opt_speechProps);
 
     if (msg) {

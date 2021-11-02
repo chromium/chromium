@@ -80,7 +80,7 @@ v8::Local<v8::Object> CustomWrappableAdapter::CreateAndInitializeWrapper(
   V8DOMWrapper::AssociateObjectWithWrapper(
       isolate, this, &custom_wrappable_info, wrapper_object);
   wrapper_.Reset(isolate, wrapper_object);
-  custom_wrappable_info.ConfigureWrapper(&wrapper_.Get());
+  custom_wrappable_info.ConfigureWrapper(&wrapper_);
   return wrapper_object;
 }
 

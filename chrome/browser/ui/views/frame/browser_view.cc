@@ -626,6 +626,54 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// BrowserView::SidePanelButtonHighlighter:
+//
+// Coordinating class that manages the button highlight.
+// TODO(pbos): This is only here because there's no coordinating SidePanel entry
+// but instead multiple SidePanels, and views::Button doesn't track multiple
+// "reasons" for being highlighted (i.e. the interface is SetHighlighted(true)
+// rather than adding/removing reasons for highlighting). Remove this once
+// SidePanel is a single entry.
+class BrowserView::SidePanelButtonHighlighter : public views::ViewObserver {
+ public:
+  SidePanelButtonHighlighter(views::Button* button,
+                             std::vector<views::View*> side_panels)
+      : button_(button), side_panels_(std::move(side_panels)) {
+    DCHECK(button_);
+    DCHECK(!side_panels_.empty());
+    for (views::View* view : side_panels_)
+      view->AddObserver(this);
+    UpdateHighlight();
+  }
+
+  ~SidePanelButtonHighlighter() override {
+    for (views::View* view : side_panels_)
+      view->RemoveObserver(this);
+  }
+
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               View* starting_from) override {
+    UpdateHighlight();
+  }
+
+ private:
+  void UpdateHighlight() {
+    bool any_panel_visible = false;
+    for (views::View* view : side_panels_) {
+      if (view->GetVisible()) {
+        any_panel_visible = true;
+        break;
+      }
+    }
+    button_->SetHighlighted(any_panel_visible);
+  }
+
+  views::Button* const button_;
+  const std::vector<views::View*> side_panels_;
+};
+
+///////////////////////////////////////////////////////////////////////////////
 // BrowserView, public:
 
 BrowserView::BrowserView(std::unique_ptr<Browser> browser)
@@ -808,6 +856,11 @@ BrowserView::~BrowserView() {
   // TabStrip first so that it can cleanly remove the listener.
   if (tabstrip_)
     tabstrip_->parent()->RemoveChildViewT(tabstrip_);
+
+  // This highlighter refers to side-panel objects (children of this) and to
+  // children inside ToolbarView and of this, remove this observer before those
+  // children are removed.
+  side_panel_button_highlighter_.reset();
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -3205,6 +3258,20 @@ void BrowserView::AddedToWidget() {
 #endif
 
   toolbar_->Init();
+
+  // TODO(pbos): Manage this either inside SidePanel or the corresponding button
+  // when SidePanel is singular, at least per button/side.
+  if (base::FeatureList::IsEnabled(features::kSidePanelBorder) &&
+      (lens_side_panel_ || right_aligned_side_panel_)) {
+    std::vector<View*> panels;
+    if (lens_side_panel_)
+      panels.push_back(lens_side_panel_);
+    if (right_aligned_side_panel_)
+      panels.push_back(right_aligned_side_panel_);
+    side_panel_button_highlighter_ =
+        std::make_unique<SidePanelButtonHighlighter>(
+            toolbar_->read_later_button(), panels);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // TopControlsSlideController must be initialized here in AddedToWidget()

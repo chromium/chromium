@@ -149,11 +149,18 @@ class ElementRareData final : public NodeRareData {
     return element_internals_;
   }
 
-  RegionCaptureCropId* GetRegionCaptureCropId() const {
+  // Returns the crop-ID if one was set, or nullptr otherwise.
+  const RegionCaptureCropId* GetRegionCaptureCropId() const {
     return region_capture_crop_id_.get();
   }
-  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> value) {
-    region_capture_crop_id_ = std::move(value);
+
+  // Sets a crop-ID on the item. Must be called at most once. Cannot be used
+  // to unset a previously set crop-ID.
+  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id) {
+    DCHECK(!GetRegionCaptureCropId());
+    DCHECK(crop_id);
+    DCHECK(!crop_id->value().is_zero());
+    region_capture_crop_id_ = std::move(crop_id);
   }
 
   void SetStyleShouldForceLegacyLayout(bool force) {

@@ -14,6 +14,24 @@
 
 namespace safe_browsing {
 
+// static
+std::unique_ptr<content::NavigationThrottle>
+SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+    content::NavigationHandle* handle,
+    SafeBrowsingUIManager* ui_manager) {
+  if (!ui_manager)
+    return nullptr;
+
+  // Only outer-most main frames show the interstitial through the navigation
+  // throttle. In other cases, the interstitial is shown via
+  // BaseUIManager::DisplayBlockingPage.
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
+    return nullptr;
+
+  return base::WrapUnique(
+      new SafeBrowsingNavigationThrottle(handle, ui_manager));
+}
+
 SafeBrowsingNavigationThrottle::SafeBrowsingNavigationThrottle(
     content::NavigationHandle* handle,
     SafeBrowsingUIManager* manager)
@@ -25,14 +43,16 @@ const char* SafeBrowsingNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 SafeBrowsingNavigationThrottle::WillFailRequest() {
-  if (!manager_) {
-    return content::NavigationThrottle::PROCEED;
-  }
+  DCHECK(manager_);
 
   security_interstitials::UnsafeResource resource;
   content::NavigationHandle* handle = navigation_handle();
 
   if (manager_->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
+    // Subframes and nested frame trees will show an interstitial directly from
+    // BaseUIManager::DisplayBlockingPage.
+    DCHECK(handle->IsInPrimaryMainFrame() ||
+           handle->IsInPrerenderedMainFrame());
     SafeBrowsingBlockingPage* blocking_page =
         manager_->blocking_page_factory()->CreateSafeBrowsingPage(
             manager_, handle->GetWebContents(), handle->GetURL(), {resource},

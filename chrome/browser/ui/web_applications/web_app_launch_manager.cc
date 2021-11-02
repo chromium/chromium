@@ -222,6 +222,15 @@ content::WebContents* LaunchProcess::Run() {
   bool is_file_handling = false;
   std::tie(launch_url, is_file_handling) = GetLaunchUrl(share_target);
 
+#if defined(OS_CHROMEOS)
+  // TODO(crbug.com/1265381): URL Handlers allows web apps to be opened with
+  // associated origin URLs. There's no utility function to test whether a URL
+  // is in a web app's extended scope at the moment.
+  // Because URL Handlers is not implemented for Chrome OS we can perform this
+  // DCHECK on the basic scope.
+  DCHECK(provider_.registrar().IsUrlInAppScope(launch_url, params_.app_id));
+#endif
+
   // System Web Apps have their own launch code path.
   // TODO(crbug.com/1231886): Don't use a separate code path so that SWAs can
   // maintain feature parity with regular web apps (e.g. launch_handler
@@ -438,10 +447,13 @@ void LaunchProcess::MaybeEnqueueWebLaunchParams(
     const GURL& launch_url,
     bool is_file_handling,
     content::WebContents* web_contents) {
-  if (!is_file_handling)
-    return;
-  web_launch::WebLaunchFilesHelper::SetLaunchPaths(web_contents, launch_url,
-                                                   params_.launch_files);
+  if (is_file_handling || web_app_->launch_handler().has_value()) {
+    web_launch::WebLaunchFilesHelper::EnqueueLaunchParams(
+        web_contents, launch_url,
+        /*launch_dir=*/{},
+        is_file_handling ? params_.launch_files
+                         : std::vector<base::FilePath>());
+  }
 }
 
 void LaunchProcess::RecordMetrics(const GURL& launch_url,

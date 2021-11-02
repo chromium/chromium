@@ -26,7 +26,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
-#include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "components/permissions/permission_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -426,11 +425,9 @@ class MetricsChromeBackForwardCacheBrowserTest
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Set BufferTimerDelayMillis to a high number so that metrics update on the
-    // renderer won't be sent to the browser by the periodic upload.
-    EnableFeatureAndSetParams(
-        page_load_metrics::kPageLoadMetricsTimerDelayFeature,
-        "BufferTimerDelayMillis", "100000");
+    // TODO(crbug.com/1224780): This test used an experiment param (which no
+    // longer exists) to suppress the metrics send timer. If and when the test
+    // is re-enabled, it should be updated to use a different mechanism.
     ChromeBackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

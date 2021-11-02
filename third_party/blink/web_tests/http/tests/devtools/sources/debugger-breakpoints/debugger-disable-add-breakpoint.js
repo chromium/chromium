@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that breakpoints are correctly handled while debugger is turned off\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-disable-add-breakpoint.html');

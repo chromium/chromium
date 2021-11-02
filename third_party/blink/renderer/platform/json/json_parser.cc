@@ -279,7 +279,7 @@ Error SkipWhitespaceAndComments(Cursor<CharType>* cursor,
       cursor->line++;
       ++(cursor->pos);
       cursor->line_start = cursor->pos;
-    } else if (c == ' ' || c == '\n' || c == '\r' || c == '\t') {
+    } else if (c == ' ' || c == '\r' || c == '\t') {
       ++(cursor->pos);
     } else if (c == '/') {
       *has_comments = true;

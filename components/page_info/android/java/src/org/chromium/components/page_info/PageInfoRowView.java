@@ -50,10 +50,13 @@ public class PageInfoRowView extends FrameLayout {
         mIcon = findViewById(R.id.page_info_row_icon);
         mTitle = findViewById(R.id.page_info_row_title);
         mSubtitle = findViewById(R.id.page_info_row_subtitle);
+        setVisibility(GONE);
     }
 
     public void setParams(ViewParams params) {
         setVisibility(params.visible ? VISIBLE : GONE);
+        if (!params.visible) return;
+
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         mIcon.setImageResource(params.iconResId);
         if (params.decreaseIconSize) {

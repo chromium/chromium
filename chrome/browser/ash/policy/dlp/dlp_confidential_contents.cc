@@ -12,11 +12,12 @@ namespace policy {
 DlpConfidentialContent::DlpConfidentialContent(
     content::WebContents* web_contents)
     : icon(favicon::TabFaviconFromWebContents(web_contents).AsImageSkia()),
-      title(web_contents->GetTitle()) {}
+      title(web_contents->GetTitle()),
+      url(web_contents->GetLastCommittedURL()) {}
 
 bool DlpConfidentialContent::operator==(
     const DlpConfidentialContent& other) const {
-  return title == other.title;
+  return url.EqualsIgnoringRef(other.url);
 }
 
 bool DlpConfidentialContent::operator!=(
@@ -74,6 +75,13 @@ bool DlpConfidentialContents::IsEmpty() const {
 
 void DlpConfidentialContents::UnionWith(const DlpConfidentialContents& other) {
   contents_.insert(other.contents_.begin(), other.contents_.end());
+}
+
+void DlpConfidentialContents::DifferenceWith(
+    const DlpConfidentialContents& other) {
+  base::EraseIf(contents_, [&other](const DlpConfidentialContent& content) {
+    return other.contents_.contains(content);
+  });
 }
 
 }  // namespace policy

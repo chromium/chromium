@@ -394,5 +394,13 @@ void TaskQueue::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
   impl_->SetOnTaskPostedHandler(std::move(handler));
 }
 
+void TaskQueue::SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) {
+  DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
+  if (!impl_)
+    return;
+
+  impl_->SetTaskExecutionTraceLogger(std::move(logger));
+}
+
 }  // namespace sequence_manager
 }  // namespace base

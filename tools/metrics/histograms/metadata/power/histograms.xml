@@ -1122,7 +1122,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.NumberOfAlsAdjustmentsPerSession" units="units"
-    expires_after="M100">
+    expires_after="2022-05-01">
   <owner>tbroch@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <summary>

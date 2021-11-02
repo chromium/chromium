@@ -267,6 +267,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
   // If unsafe content is loaded in a portal, we treat its embedder as
   // dangerous.
+  // TODO(https://crbug.com/1254770): This will have to be updated for Portals
+  // on MPArch.
   content::WebContents* outermost_contents =
       GetEmbeddingWebContentsForInterstitial(web_contents);
 
@@ -279,20 +281,30 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
     unsafe_url = entry->GetURL();
   }
 
+  // In top-document navigation cases, we just mark the resource unsafe and
+  // cancel the load from here, the actual interstitial will be shown from the
+  // SafeBrowsingNavigationThrottle when the navigation fails.
+  //
+  // In other cases, the error interstitial is manually loaded here, after the
+  // load is canceled:
+  // - Subresources: since only documents load using a navigation, these
+  //   won't hit the throttle.
+  // - Nested frames and WebContents: The interstitial should be shown in the
+  //   top, outer-most frame but the navigation is occurring in a nested
+  //   context.
+  // - Delayed Warning Experiment: When enabled, this method is only called
+  //   after the navigation completes and a user action occurs so the throttle
+  //   cannot be used.
   const bool load_post_commit_error_page = !resource.IsMainPageLoadBlocked() ||
                                            resource.is_delayed_warning ||
                                            outermost_contents != web_contents;
   if (!load_post_commit_error_page) {
     AddUnsafeResource(unsafe_url, resource);
   }
-  // If the delayed warnings experiment is not enabled, with committed
-  // interstitials we just cancel the load from here, the actual interstitial
-  // will be shown from the SafeBrowsingNavigationThrottle.
-  // showed_interstitial is set to false for subresources since this
+
+  // `showed_interstitial` is set to false for subresources since this
   // cancellation doesn't correspond to the navigation that triggers the error
   // page (the call to LoadPostCommitErrorPage creates another navigation).
-  //
-  // If the experiment is enabled, the interstitial is shown below.
   resource.DispatchCallback(
       FROM_HERE, false /* proceed */,
       resource.IsMainPageLoadBlocked() /* showed_interstitial */);
@@ -303,9 +315,8 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 
   if (load_post_commit_error_page) {
     DCHECK(!IsAllowlisted(resource));
-    // For subresource triggered interstitials, we trigger the error page
-    // navigation from here since there will be no navigation to intercept
-    // in the throttle.
+    // In some cases the interstitial must be loaded here since there will be
+    // no navigation to intercept in the throttle.
     std::unique_ptr<BaseBlockingPage> blocking_page =
         base::WrapUnique(CreateBlockingPageForSubresource(
             outermost_contents, unsafe_url, resource));

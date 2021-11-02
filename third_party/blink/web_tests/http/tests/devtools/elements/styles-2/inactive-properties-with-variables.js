@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that longhands overridden by a shorthand with var() are displayed as inactive in the sidebar.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

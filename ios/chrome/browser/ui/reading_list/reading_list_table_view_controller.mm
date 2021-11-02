@@ -594,7 +594,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self.dataSource removeEntryFromItem:item];
   };
   [self updateItemsInSection:SectionIdentifierRead withItemUpdater:updater];
-  [self exitEditingModeAnimated:YES];
 
   // Update the model and table view for the deleted items.
   UITableView* tableView = self.tableView;
@@ -610,6 +609,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self batchEditDidFinish];
   };
   [self performBatchTableViewUpdates:updates completion:completion];
+  [self exitEditingModeAnimated:YES];
 }
 
 - (void)deleteSelectedReadingListItems {
@@ -986,9 +986,6 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self.dataSource removeEntryFromItem:item];
   };
   [self updateItemsAtIndexPaths:indexPaths withItemUpdater:updater];
-  if (endEditing) {
-    [self exitEditingModeAnimated:YES];
-  }
   // Update the model and table view for the deleted items.
   UITableView* tableView = self.tableView;
   NSArray* sortedIndexPaths =
@@ -1009,6 +1006,9 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     };
   }
   [self performBatchTableViewUpdates:updates completion:completion];
+  if (endEditing) {
+    [self exitEditingModeAnimated:YES];
+  }
 }
 
 // Deletes the ListItem corresponding to |indexPath| in the model.
@@ -1036,12 +1036,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
   NSArray* sortedIndexPaths =
       [indexPaths sortedArrayUsingSelector:@selector(compare:)];
   [self updateItemsAtIndexPaths:sortedIndexPaths withItemUpdater:updater];
-  [self exitEditingModeAnimated:YES];
 
   // Move the items to the appropriate section.
   SectionIdentifier toSection =
       read ? SectionIdentifierRead : SectionIdentifierUnread;
   [self moveItemsAtIndexPaths:sortedIndexPaths toSection:toSection];
+  [self exitEditingModeAnimated:YES];
 }
 
 // Marks items from |section| with as read or unread dending on |read|.
@@ -1057,12 +1057,12 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     [self.dataSource setReadStatus:read forItem:item];
   };
   [self updateItemsInSection:section withItemUpdater:updater];
-  [self exitEditingModeAnimated:YES];
 
   // Move the items to the appropriate section.
   SectionIdentifier toSection =
       read ? SectionIdentifierRead : SectionIdentifierUnread;
   [self moveItemsFromSection:section toSection:toSection];
+  [self exitEditingModeAnimated:YES];
 }
 
 // Cleanup function called in the completion block of editing operations.

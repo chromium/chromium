@@ -27,7 +27,6 @@ class PageInfoBubbleViewTestApi;
 }
 
 namespace views {
-class GridLayout;
 class Label;
 class View;
 class Combobox;
@@ -43,12 +42,16 @@ class PermissionSelectorRow {
   // The |PermissionSelectorRow|'s constituent views are added to |layout|.
   PermissionSelectorRow(ChromePageInfoUiDelegate* delegate,
                         const PageInfo::PermissionInfo& permission,
-                        views::GridLayout* layout);
+                        views::View* parent);
 
   PermissionSelectorRow(const PermissionSelectorRow&) = delete;
   PermissionSelectorRow& operator=(const PermissionSelectorRow&) = delete;
 
   virtual ~PermissionSelectorRow();
+
+  // Calculates the amount of padding to add beneath a |PermissionSelectorRow|
+  // depending on whether it has an accompanying permission decision reason.
+  int CalculatePaddingBeneathPermissionRow(bool has_reason);
 
   // Retrieve the minimum height a |PermissionSelectorRow| can be.
   int MinHeightForPermissionRow();
@@ -65,18 +68,7 @@ class PermissionSelectorRow {
  private:
   friend class test::PageInfoBubbleViewTestApi;
 
-  // Adds a row showing `text` in `layout`.
-  void AddSecondaryLabelRow(views::GridLayout* layout,
-                            const std::u16string& text);
-
-  // Calculates the amount of padding to add beneath a |PermissionSelectorRow|
-  // depending on whether it has an accompanying permission decision reason.
-  int CalculatePaddingBeneathPermissionRow(bool has_reason);
-
   void PermissionChanged(const PageInfo::PermissionInfo& permission);
-
-  void InitializeComboboxView(views::GridLayout* layout,
-                              const PageInfo::PermissionInfo& permission);
 
   // Model for the permission's menu.
   std::unique_ptr<PermissionMenuModel> menu_model_;

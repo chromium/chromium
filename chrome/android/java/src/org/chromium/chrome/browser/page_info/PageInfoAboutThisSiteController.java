@@ -20,6 +20,7 @@ import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
@@ -35,7 +36,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
     private final Tab mTab;
-    private final @Nullable SiteInfo mSiteInfo;
+    private @Nullable SiteInfo mSiteInfo;
 
     public PageInfoAboutThisSiteController(PageInfoMainController mainController,
             PageInfoRowView rowView, PageInfoControllerDelegate delegate, Tab tab) {
@@ -43,7 +44,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         mRowView = rowView;
         mDelegate = delegate;
         mTab = tab;
-        mSiteInfo = getSiteInfo();
         setupRow();
     }
 
@@ -78,22 +78,31 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     public void onSubpageRemoved() {}
 
     private void setupRow() {
-        PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
-        String subtitle = null;
-        if (mSiteInfo != null && mSiteInfo.hasDescription()) {
-            subtitle = mSiteInfo.getDescription().getDescription();
+        if (!mDelegate.isSiteSettingsAvailable() || mDelegate.isIncognito()) {
+            return;
         }
 
+        if (mMainController.getSecurityLevel() != ConnectionSecurityLevel.SECURE) {
+            return;
+        }
+
+        mSiteInfo = getSiteInfo();
+        if (mSiteInfo == null) {
+            return;
+        }
+
+        assert mSiteInfo.hasDescription();
+        String subtitle = mSiteInfo.getDescription().getDescription();
+
+        PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = mRowView.getContext().getResources().getString(
                 R.string.page_info_about_this_site_title);
         rowParams.subtitle = subtitle;
         rowParams.singleLineSubTitle = true;
-        rowParams.visible =
-                subtitle != null && mDelegate.isSiteSettingsAvailable() && !mDelegate.isIncognito();
+        rowParams.visible = true;
         rowParams.iconResId = R.drawable.ic_info_outline_grey_24dp;
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
-
         mRowView.setParams(rowParams);
     }
 

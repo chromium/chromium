@@ -107,8 +107,8 @@ public class PageInfoAboutThisSiteTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
-        sActivityTestRule.loadUrl(
-                mTestServerRule.getServer().getURLWithHostName("www.example.com", sSimpleHtml));
+        mTestServerRule.setServerUsesHttps(true);
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
     }
 
     private void openPageInfo() {
@@ -142,7 +142,7 @@ public class PageInfoAboutThisSiteTest {
     }
 
     private byte[] createDescription() {
-        String url = mTestServerRule.getServer().getURLWithHostName("www.example.com", sSimpleHtml);
+        String url = mTestServerRule.getServer().getURL(sSimpleHtml);
         SiteDescription.Builder description =
                 SiteDescription.newBuilder()
                         .setDescription("Some description about example.com for testing purposes")
@@ -157,6 +157,16 @@ public class PageInfoAboutThisSiteTest {
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
         onView(withText(containsString("Some description"))).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testAboutThisSiteRowWithDataOnInsecureSite() {
+        sActivityTestRule.loadUrl(
+                mTestServerRule.getServer().getURLWithHostName("invalidcert.com", sSimpleHtml));
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
     }
 
     @Test

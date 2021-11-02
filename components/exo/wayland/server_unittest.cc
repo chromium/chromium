@@ -12,8 +12,10 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process_handle.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
@@ -83,6 +85,24 @@ TEST_F(ServerTest, GetFileDescriptor) {
   // Check that the returned file descriptor is valid.
   int fd = server->GetFileDescriptor();
   DCHECK_GE(fd, 0);
+}
+
+TEST_F(ServerTest, CustomSocketPath) {
+  std::unique_ptr<Display> display(new Display);
+
+  base::ScopedTempDir non_xdg_dir;
+  ASSERT_TRUE(non_xdg_dir.CreateUniqueTempDir());
+
+  std::unique_ptr<Server> server = Server::Create(
+      display.get(), non_xdg_dir.GetPath().Append("custom-socket"));
+  EXPECT_TRUE(server);
+
+  // Check that Create() has put the socket in the directory. Actually two files
+  // will be created (the socket and its .lock), so we use StartsWith().
+  base::FileEnumerator enumerator(non_xdg_dir.GetPath(), /*recursive=*/false,
+                                  base::FileEnumerator::FILES);
+  EXPECT_TRUE(base::StartsWith(enumerator.Next().BaseName().MaybeAsASCII(),
+                               "custom-socket"));
 }
 
 void ConnectToServer(const std::string socket_name,

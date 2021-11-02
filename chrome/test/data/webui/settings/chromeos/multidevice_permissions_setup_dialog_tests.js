@@ -192,6 +192,7 @@ suite('Multidevice', () => {
   });
 
   test('Test phone enabled but ChromeOS disabled screen lock', async () => {
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
     buttonContainer.querySelector('#getStartedButton').click();
@@ -199,6 +200,7 @@ suite('Multidevice', () => {
   });
 
   test('Test phone and ChromeOS enabled screen lock', async () => {
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: true});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: true});
     buttonContainer.querySelector('#getStartedButton').click();
@@ -206,6 +208,7 @@ suite('Multidevice', () => {
   });
 
   test('Test phone disabled but ChromeOS enabled screen lock', async () => {
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: true});
     buttonContainer.querySelector('#getStartedButton').click();
@@ -213,6 +216,7 @@ suite('Multidevice', () => {
   });
 
   test('Test phone and ChromeOS disabled screen lock', async () => {
+    loadTimeData.overrideValues({isEcheAppEnabled: true});
     loadTimeData.overrideValues({isPhoneScreenLockEnabled: false});
     loadTimeData.overrideValues({isChromeosScreenLockEnabled: false});
     buttonContainer.querySelector('#getStartedButton').click();

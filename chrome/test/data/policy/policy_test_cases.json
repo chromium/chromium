@@ -160,13 +160,24 @@
       "chromeos_lacros"
     ],
     "can_be_recommended": true,
-    "policy_pref_mapping_tests": [
+    "policy_pref_mapping_tests": [      
       {
+        "note": "Checking default value (no policies set).",
+        "prefs": {
+          "alternate_error_pages.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AlternateErrorPagesEnabled": false
         },
         "prefs": {
-          "alternate_error_pages.enabled": {}
+          "alternate_error_pages.enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -5688,11 +5699,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "zero_state_app_install_recommendation.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "AppRecommendationZeroStateEnabled": false
+          "AppRecommendationZeroStateEnabled": true
         },
         "prefs": {
-          "zero_state_app_install_recommendation.enabled": {}
+          "zero_state_app_install_recommendation.enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -8504,11 +8526,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "power.allow_wake_locks": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AllowWakeLocks": false
         },
         "prefs": {
-          "power.allow_wake_locks": {}
+          "power.allow_wake_locks": {
+            "value": false
+          }
         }
       }
     ]
@@ -8519,11 +8552,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "power.allow_screen_wake_locks": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AllowScreenWakeLocks": false
         },
         "prefs": {
-          "power.allow_screen_wake_locks": {}
+          "power.allow_screen_wake_locks": {
+            "value": false
+          }
         }
       }
     ]
@@ -9788,11 +9832,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "allow_screen_lock": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "AllowScreenLock": true
+          "AllowScreenLock": false
         },
         "prefs": {
-          "allow_screen_lock": {}
+          "allow_screen_lock": {
+            "value": false
+          }
         }
       }
     ]
@@ -10328,14 +10383,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Checking default value (no policies set).",
+        "policies": {},
+        "prefs": {
+          "intl.allowed_languages": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "AllowedLanguages": [
-            "en-US",
-            "de"
-          ]
+          "AllowedLanguages": [ "en-US", "de" ]
         },
         "prefs": {
-          "intl.allowed_languages": {}
+          "intl.allowed_languages": {
+            "value": [ "en-US", "de" ]
+          }
         }
       }
     ]
@@ -10542,12 +10606,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "auth.ambient_auth_in_private_modes": {
+            "location": "local_state",
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "AmbientAuthenticationInPrivateModesEnabled": 0
+          "AmbientAuthenticationInPrivateModesEnabled": 3
         },
         "prefs": {
           "auth.ambient_auth_in_private_modes": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": 3
           }
         }
       }
@@ -11993,11 +12068,53 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value when SafeBrowsingEnabled is disabled.",
+        "policies": {
+          "SafeBrowsingEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": false
+          },
+          "abusive_experience_intervention_enforce": {
+            "default_value" : true
+          }
+        }
+      },
+      {
+        "note": "Default value when SafeBrowsingEnabled is on.",
+        "policies": {
+          "SafeBrowsingEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          },
+          "abusive_experience_intervention_enforce": {
+            "default_value" : true
+          }
+        }
+      },
+      {
+        "note": "AbusiveExperienceInterventionEnforce is false.",
         "policies": {
           "AbusiveExperienceInterventionEnforce": false
         },
         "prefs": {
-          "abusive_experience_intervention_enforce": {}
+          "abusive_experience_intervention_enforce": {
+            "value" : false
+          }
+        }
+      },
+      {
+        "note": "AbusiveExperienceInterventionEnforce is true.",
+        "policies": {
+          "AbusiveExperienceInterventionEnforce": true
+        },
+        "prefs": {
+          "abusive_experience_intervention_enforce": {
+            "value" : true
+          }
         }
       }
     ]
@@ -12614,11 +12731,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Checking default value (no policies set).",
+        "prefs": {
+          "arc.app_install_event_logging_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "ArcAppInstallEventLoggingEnabled": true
         },
         "prefs": {
-          "arc.app_install_event_logging_enabled": {}
+          "arc.app_install_event_logging_enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -13687,12 +13815,32 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "BackupAndRestoreDisabled (0) sets pref false.",
         "policies": {
           "ArcBackupRestoreServiceEnabled": 0
         },
         "prefs": {
           "arc.backup_restore.enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "note": "BackupAndRestoreEnabled (2) sets pref true.",
+        "policies": {
+          "ArcBackupRestoreServiceEnabled": 2
+        },
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "value": true
           }
         }
       }
@@ -13704,12 +13852,32 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {
-          "ArcGoogleLocationServicesEnabled": 0
-        },
+        "note": "Default value (no policies set).",
         "prefs": {
           "arc.location_service.enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "note": "Default value, user decides.",
+        "policies": {
+          "ArcGoogleLocationServicesEnabled": 1
+        },
+        "prefs": {
+          "arc.location_service.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value, disabled.",
+        "policies": {
+          "ArcGoogleLocationServicesEnabled": 2
+        },
+        "prefs": {
+          "arc.location_service.enabled": {
+            "value": true
           }
         }
       }
@@ -13978,6 +14146,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.alternative_browser_parameters": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AlternativeBrowserParameters": [
             "-foreground",
@@ -13985,7 +14162,12 @@
           ]
         },
         "prefs": {
-          "browser_switcher.alternative_browser_parameters": {}
+          "browser_switcher.alternative_browser_parameters": {
+            "value": [
+              "-foreground",
+              "-new-window"
+            ]
+          }
         }
       }
     ]

@@ -126,6 +126,11 @@ bool RenderWidgetHostDelegate::IsWidgetForPrimaryMainFrame(
   return false;
 }
 
+VisibleTimeRequestTrigger*
+RenderWidgetHostDelegate::GetVisibleTimeRequestTrigger() {
+  return nullptr;
+}
+
 ukm::SourceId RenderWidgetHostDelegate::GetCurrentPageUkmSourceId() {
   return ukm::kInvalidSourceId;
 }

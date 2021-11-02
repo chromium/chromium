@@ -5798,6 +5798,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5849,6 +5850,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5900,6 +5902,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -5951,6 +5954,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6004,6 +6008,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6055,6 +6060,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6106,6 +6112,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6158,6 +6165,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6210,6 +6218,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6262,6 +6271,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6317,6 +6327,7 @@
     "gtest_tests": [
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6368,6 +6379,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6419,6 +6431,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6470,6 +6483,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6523,6 +6537,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6574,6 +6589,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6625,6 +6641,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6677,6 +6694,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6729,6 +6747,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -6781,6 +6800,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -72599,6 +72619,9 @@
   "linux-backuprefptr-x64-fyi-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72617,6 +72640,9 @@
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72636,7 +72662,8 @@
       },
       {
         "args": [
-          "angle_unittests"
+          "angle_unittests",
+          "--enable-features=PartitionAllocBackupRefPtr"
         ],
         "merge": {
           "args": [],
@@ -72657,6 +72684,9 @@
         "use_isolated_scripts_api": true
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72675,6 +72705,9 @@
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72693,6 +72726,9 @@
         "test_id_prefix": "ninja://ui/aura:aura_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72711,6 +72747,9 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72729,6 +72768,9 @@
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72747,6 +72789,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72765,6 +72810,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72783,6 +72831,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72802,6 +72853,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72820,6 +72874,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72838,6 +72895,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72858,7 +72918,8 @@
       },
       {
         "args": [
-          "--gtest_filter=-*UsingRealWebcam*"
+          "--gtest_filter=-*UsingRealWebcam*",
+          "--enable-features=PartitionAllocBackupRefPtr"
         ],
         "merge": {
           "args": [],
@@ -72878,6 +72939,9 @@
         "test_id_prefix": "ninja://media/capture:capture_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72896,6 +72960,9 @@
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72914,6 +72981,9 @@
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72932,6 +73002,9 @@
         "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72950,6 +73023,9 @@
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72968,6 +73044,9 @@
         "test_id_prefix": "ninja://ui/color:color_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72986,6 +73065,9 @@
         "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73004,6 +73086,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73022,6 +73107,9 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73041,6 +73129,9 @@
         "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73059,6 +73150,9 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73077,6 +73171,9 @@
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73095,6 +73192,9 @@
         "test_id_prefix": "ninja://components/cronet:cronet_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73113,6 +73213,9 @@
         "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73131,6 +73234,9 @@
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73149,6 +73255,9 @@
         "test_id_prefix": "ninja://dbus:dbus_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73167,6 +73276,9 @@
         "test_id_prefix": "ninja://device:device_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73185,6 +73297,9 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73203,6 +73318,9 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73221,6 +73339,9 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73239,6 +73360,9 @@
         "test_id_prefix": "ninja://extensions:extensions_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73257,6 +73381,9 @@
         "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73275,6 +73402,9 @@
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73293,6 +73423,9 @@
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73311,6 +73444,9 @@
         "test_id_prefix": "ninja://gin:gin_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73329,6 +73465,9 @@
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73347,6 +73486,9 @@
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73365,6 +73507,9 @@
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73383,6 +73528,9 @@
         "test_id_prefix": "ninja://headless:headless_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73401,6 +73549,9 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73420,6 +73571,9 @@
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73438,6 +73592,9 @@
         "test_id_prefix": "ninja://ipc:ipc_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73456,6 +73613,9 @@
         "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73474,6 +73634,9 @@
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73492,6 +73655,9 @@
         "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73510,6 +73676,9 @@
         "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73528,6 +73697,9 @@
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73546,6 +73718,9 @@
         "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73564,6 +73739,9 @@
         "test_id_prefix": "ninja://media/midi:midi_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73582,6 +73760,9 @@
         "test_id_prefix": "ninja://mojo/core:mojo_core_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73600,6 +73781,9 @@
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73618,6 +73802,9 @@
         "test_id_prefix": "ninja://components/nacl/loader:nacl_helper_nonsfi_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73636,6 +73823,9 @@
         "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73654,6 +73844,9 @@
         "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73672,6 +73865,9 @@
         "test_id_prefix": "ninja://net:net_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73690,6 +73886,9 @@
         "test_id_prefix": "ninja://chrome/browser/media/router:openscreen_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73708,6 +73907,9 @@
         "test_id_prefix": "ninja://ui/ozone:ozone_x11_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73726,6 +73928,9 @@
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73744,6 +73949,9 @@
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73762,6 +73970,9 @@
         "test_id_prefix": "ninja://ppapi:ppapi_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73780,6 +73991,9 @@
         "test_id_prefix": "ninja://printing:printing_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73798,6 +74012,9 @@
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73816,6 +74033,9 @@
         "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73834,6 +74054,9 @@
         "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73852,6 +74075,9 @@
         "test_id_prefix": "ninja://services:services_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73870,6 +74096,9 @@
         "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73888,6 +74117,9 @@
         "test_id_prefix": "ninja://skia:skia_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73906,6 +74138,9 @@
         "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73924,6 +74159,9 @@
         "test_id_prefix": "ninja://sql:sql_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73942,6 +74180,9 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73960,6 +74201,9 @@
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73978,6 +74222,9 @@
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -73996,6 +74243,9 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74014,6 +74264,9 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74032,6 +74285,9 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74050,6 +74306,9 @@
         "test_id_prefix": "ninja://ui/views:views_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74068,6 +74327,9 @@
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74086,6 +74348,9 @@
         "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74104,6 +74369,9 @@
         "test_id_prefix": "ninja://chrome/browser/vr:vr_pixeltests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74122,6 +74390,9 @@
         "test_id_prefix": "ninja://weblayer/test:weblayer_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74140,6 +74411,9 @@
         "test_id_prefix": "ninja://weblayer/test:weblayer_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74158,6 +74432,9 @@
         "test_id_prefix": "ninja://ui/wm:wm_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74176,6 +74453,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74194,6 +74474,9 @@
         "test_id_prefix": "ninja://ui/platform_window/x11:x11_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -74213,6 +74496,9 @@
         "test_id_prefix": "ninja://chrome/test:xr_browser_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94059,6 +94345,9 @@
   "win-backuprefptr-x64-fyi-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94077,6 +94366,9 @@
         "test_id_prefix": "ninja://third_party/abseil-cpp:absl_hardening_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94096,7 +94388,8 @@
       },
       {
         "args": [
-          "angle_unittests"
+          "angle_unittests",
+          "--enable-features=PartitionAllocBackupRefPtr"
         ],
         "merge": {
           "args": [],
@@ -94117,6 +94410,9 @@
         "use_isolated_scripts_api": true
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94135,6 +94431,9 @@
         "test_id_prefix": "ninja://extensions/shell:app_shell_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94153,6 +94452,9 @@
         "test_id_prefix": "ninja://ui/aura:aura_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94171,6 +94473,9 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94189,6 +94494,9 @@
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94207,6 +94515,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_fuzzer_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94225,6 +94536,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/heap:blink_heap_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94243,6 +94557,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94262,6 +94579,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94280,6 +94600,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_crypto_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94298,6 +94621,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94317,6 +94643,7 @@
       },
       {
         "args": [
+          "--enable-features=PartitionAllocBackupRefPtr",
           "--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter"
         ],
         "merge": {
@@ -94339,7 +94666,8 @@
       },
       {
         "args": [
-          "--gtest_filter=-*UsingRealWebcam*"
+          "--gtest_filter=-*UsingRealWebcam*",
+          "--enable-features=PartitionAllocBackupRefPtr"
         ],
         "merge": {
           "args": [],
@@ -94359,6 +94687,9 @@
         "test_id_prefix": "ninja://media/capture:capture_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94377,6 +94708,9 @@
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94395,6 +94729,9 @@
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94413,6 +94750,9 @@
         "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94431,6 +94771,9 @@
         "test_id_prefix": "ninja://chrome/chrome_cleaner:chrome_cleaner_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94449,6 +94792,9 @@
         "test_id_prefix": "ninja://chrome/chrome_elf:chrome_elf_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94467,6 +94813,9 @@
         "test_id_prefix": "ninja://chrome/test/chromedriver:chromedriver_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94485,6 +94834,9 @@
         "test_id_prefix": "ninja://ui/color:color_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94503,6 +94855,9 @@
         "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94521,6 +94876,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94539,6 +94897,9 @@
         "test_id_prefix": "ninja://ui/compositor:compositor_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94558,6 +94919,9 @@
         "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94576,6 +94940,9 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94594,6 +94961,9 @@
         "test_id_prefix": "ninja://courgette:courgette_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94612,6 +94982,9 @@
         "test_id_prefix": "ninja://third_party/crashpad/crashpad:crashpad_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94630,6 +95003,9 @@
         "test_id_prefix": "ninja://components/cronet:cronet_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94648,6 +95024,9 @@
         "test_id_prefix": "ninja://components/cronet:cronet_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94666,6 +95045,9 @@
         "test_id_prefix": "ninja://crypto:crypto_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94684,6 +95066,9 @@
         "test_id_prefix": "ninja://chrome/test:delayloads_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94702,6 +95087,9 @@
         "test_id_prefix": "ninja://device:device_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94720,6 +95108,9 @@
         "test_id_prefix": "ninja://ui/display:display_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94738,6 +95129,9 @@
         "test_id_prefix": "ninja://chrome/elevation_service:elevation_service_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94756,6 +95150,9 @@
         "test_id_prefix": "ninja://ui/events:events_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94774,6 +95171,9 @@
         "test_id_prefix": "ninja://extensions:extensions_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94792,6 +95192,9 @@
         "test_id_prefix": "ninja://extensions:extensions_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94810,6 +95213,9 @@
         "test_id_prefix": "ninja://components/services/filesystem:filesystem_service_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94828,6 +95234,9 @@
         "test_id_prefix": "ninja://google_apis/gcm:gcm_unit_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94846,6 +95255,9 @@
         "test_id_prefix": "ninja://chrome/credential_provider/test:gcp_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94864,6 +95276,9 @@
         "test_id_prefix": "ninja://ui/gfx:gfx_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94882,6 +95297,9 @@
         "test_id_prefix": "ninja://gin:gin_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94900,6 +95318,9 @@
         "test_id_prefix": "ninja://google_apis:google_apis_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94918,6 +95339,9 @@
         "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94936,6 +95360,9 @@
         "test_id_prefix": "ninja://components/gwp_asan:gwp_asan_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94954,6 +95381,9 @@
         "test_id_prefix": "ninja://headless:headless_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94972,6 +95402,9 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -94990,6 +95423,9 @@
         "test_id_prefix": "ninja://chrome/install_static:install_static_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95009,6 +95445,9 @@
         "test_id_prefix": "ninja://chrome/installer/util:installer_util_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95028,6 +95467,9 @@
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95046,6 +95488,9 @@
         "test_id_prefix": "ninja://ipc:ipc_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95064,6 +95509,9 @@
         "test_id_prefix": "ninja://jingle:jingle_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95082,6 +95530,9 @@
         "test_id_prefix": "ninja://ui/latency:latency_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95100,6 +95551,9 @@
         "test_id_prefix": "ninja://third_party/libjingle_xmpp:libjingle_xmpp_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95118,6 +95572,9 @@
         "test_id_prefix": "ninja://third_party/liburlpattern:liburlpattern_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95136,6 +95593,9 @@
         "test_id_prefix": "ninja://media:media_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95154,6 +95614,9 @@
         "test_id_prefix": "ninja://ui/message_center:message_center_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95172,6 +95635,9 @@
         "test_id_prefix": "ninja://media/midi:midi_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95190,6 +95656,9 @@
         "test_id_prefix": "ninja://mojo/core:mojo_core_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95208,6 +95677,9 @@
         "test_id_prefix": "ninja://mojo:mojo_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95226,6 +95698,9 @@
         "test_id_prefix": "ninja://components/nacl/loader:nacl_loader_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95244,6 +95719,9 @@
         "test_id_prefix": "ninja://ui/native_theme:native_theme_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95262,6 +95740,9 @@
         "test_id_prefix": "ninja://net:net_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95280,6 +95761,9 @@
         "test_id_prefix": "ninja://chrome/notification_helper:notification_helper_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95298,6 +95782,9 @@
         "test_id_prefix": "ninja://pdf:pdf_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95316,6 +95803,9 @@
         "test_id_prefix": "ninja://third_party/perfetto:perfetto_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95334,6 +95824,9 @@
         "test_id_prefix": "ninja://ppapi:ppapi_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95352,6 +95845,9 @@
         "test_id_prefix": "ninja://printing:printing_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95370,6 +95866,9 @@
         "test_id_prefix": "ninja://remoting:remoting_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95389,6 +95888,9 @@
         "test_id_prefix": "ninja://sandbox/win:sbox_integration_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95407,6 +95909,9 @@
         "test_id_prefix": "ninja://sandbox/win:sbox_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95425,6 +95930,9 @@
         "test_id_prefix": "ninja://sandbox/win:sbox_validation_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95443,6 +95951,9 @@
         "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95461,6 +95972,9 @@
         "test_id_prefix": "ninja://services:services_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95480,6 +95994,9 @@
         "test_id_prefix": "ninja://chrome/installer/setup:setup_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95498,6 +96015,9 @@
         "test_id_prefix": "ninja://ui/shell_dialogs:shell_dialogs_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95516,6 +96036,9 @@
         "test_id_prefix": "ninja://skia:skia_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95534,6 +96057,9 @@
         "test_id_prefix": "ninja://ui/snapshot:snapshot_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95552,6 +96078,9 @@
         "test_id_prefix": "ninja://sql:sql_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95570,6 +96099,9 @@
         "test_id_prefix": "ninja://storage:storage_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95588,6 +96120,9 @@
         "test_id_prefix": "ninja://chrome/test:sync_integration_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95606,6 +96141,9 @@
         "test_id_prefix": "ninja://ui/base:ui_base_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95624,6 +96162,9 @@
         "test_id_prefix": "ninja://ui/touch_selection:ui_touch_selection_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95645,7 +96186,8 @@
         "args": [
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--enable-features=PartitionAllocBackupRefPtr"
         ],
         "merge": {
           "args": [],
@@ -95670,7 +96212,8 @@
           "--test-launcher-timeout=90000",
           "--ui-test-action-max-timeout=45000",
           "--ui-test-action-timeout=40000",
-          "--ui-test-action-timeout=40000"
+          "--ui-test-action-timeout=40000",
+          "--enable-features=PartitionAllocBackupRefPtr"
         ],
         "merge": {
           "args": [],
@@ -95690,6 +96233,9 @@
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95708,6 +96254,9 @@
         "test_id_prefix": "ninja://url:url_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95726,6 +96275,9 @@
         "test_id_prefix": "ninja://ui/views:views_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95744,6 +96296,9 @@
         "test_id_prefix": "ninja://components/viz:viz_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95762,6 +96317,9 @@
         "test_id_prefix": "ninja://chrome/browser/vr:vr_common_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95780,6 +96338,9 @@
         "test_id_prefix": "ninja://chrome/browser/vr:vr_pixeltests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95798,6 +96359,9 @@
         "test_id_prefix": "ninja://weblayer/test:weblayer_browsertests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95816,6 +96380,9 @@
         "test_id_prefix": "ninja://weblayer/test:weblayer_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95834,6 +96401,9 @@
         "test_id_prefix": "ninja://ui/wm:wm_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95852,6 +96422,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform/wtf:wtf_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95870,6 +96443,9 @@
         "test_id_prefix": "ninja://third_party/zlib:zlib_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95892,6 +96468,9 @@
   "win-backuprefptr-x86-fyi-rel": {
     "gtest_tests": [
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95910,6 +96489,9 @@
         "test_id_prefix": "ninja://base:base_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95928,6 +96510,9 @@
         "test_id_prefix": "ninja://third_party/blink/common:blink_common_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95946,6 +96531,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95965,6 +96553,9 @@
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -95983,6 +96574,9 @@
         "test_id_prefix": "ninja://media/cast:cast_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -96001,6 +96595,9 @@
         "test_id_prefix": "ninja://cc:cc_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -96019,6 +96616,9 @@
         "test_id_prefix": "ninja://components:components_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -96037,6 +96637,9 @@
         "test_id_prefix": "ninja://content/test:content_unittests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -96055,6 +96658,9 @@
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
       },
       {
+        "args": [
+          "--enable-features=PartitionAllocBackupRefPtr"
+        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

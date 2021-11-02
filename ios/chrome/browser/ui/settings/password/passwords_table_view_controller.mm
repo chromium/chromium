@@ -662,7 +662,14 @@ void RemoveFormsToBeDeleted(
   TableViewInfoButtonItem* managedSavePasswordItem =
       [[TableViewInfoButtonItem alloc]
           initWithType:ItemTypeManagedSavePasswords];
-  managedSavePasswordItem.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSupportForAddPasswordsInSettings)) {
+    managedSavePasswordItem.text =
+        l10n_util::GetNSString(IDS_IOS_OFFER_TO_SAVE_PASSWORDS);
+  } else {
+    managedSavePasswordItem.text =
+        l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORDS);
+  }
   managedSavePasswordItem.statusText =
       [_passwordManagerEnabled value]
           ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)

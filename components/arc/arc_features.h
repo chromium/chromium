@@ -33,6 +33,7 @@ extern const base::Feature kPictureInPictureFeature;
 extern const base::Feature kRtVcpuDualCore;
 extern const base::Feature kRtVcpuQuadCore;
 extern const base::Feature kSaveRawFilesOnTracing;
+extern const base::Feature kTouchModeMouse;
 extern const base::Feature kUsbDeviceDefaultAttachToArcVm;
 extern const base::Feature kUsbStorageUIFeature;
 extern const base::Feature kUseDalvikMemoryProfile;

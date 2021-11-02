@@ -1855,7 +1855,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
       keep_alive_durations = process->GetKeepAliveDurations();
       shutdown_delay_ref_count =
           base::NumberToString(process->GetShutdownDelayRefCount());
-      process_rfh_count = base::NumberToString(process->GetRfhCount());
+      process_rfh_count =
+          base::NumberToString(process->GetRenderFrameHostCount());
     }
   } else {
     keep_alive_durations = "no durations available: on IO thread.";

@@ -24,13 +24,15 @@ constexpr int kExtraRightPadding = 4;
 }  // namespace
 
 OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
-                                     const gfx::VectorIcon& icon,
+                                     const gfx::VectorIcon& icon_on,
+                                     const gfx::VectorIcon& icon_off,
                                      std::u16string message,
                                      bool is_prominent)
     : MdTextButton(std::move(callback),
                    std::u16string(),
                    views::style::CONTEXT_BUTTON_MD),
-      icon_(icon) {
+      icon_on_(icon_on),
+      icon_off_(icon_off) {
   views::InstallPillHighlightPathGenerator(this);
   SetProminent(is_prominent);
   SetText(message);
@@ -117,11 +119,10 @@ void OmniboxChipButton::UpdateIconAndColors() {
   if (!GetWidget())
     return;
   SetEnabledTextColors(GetForegroundColor());
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          icon_, GetForegroundColor(), GetIconSize(),
-          show_blocked_badge_ ? &vector_icons::kBlockedBadgeIcon : nullptr));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    show_blocked_icon_ ? icon_off_ : icon_on_,
+                    GetForegroundColor(), GetIconSize(), nullptr));
   SetBgColorOverride(GetBackgroundColor());
 }
 
@@ -155,9 +156,10 @@ void OmniboxChipButton::SetForceExpandedForTesting(
   force_expanded_for_testing_ = force_expanded_for_testing;
 }
 
-void OmniboxChipButton::SetShowBlockedBadge(bool show_blocked_badge) {
-  if (show_blocked_badge_ != show_blocked_badge) {
-    show_blocked_badge_ = show_blocked_badge;
+void OmniboxChipButton::SetShowBlockedIcon(bool show_blocked_icon) {
+  if (show_blocked_icon_ != show_blocked_icon) {
+    show_blocked_icon_ = show_blocked_icon;
+    theme_ = show_blocked_icon ? Theme::kGray : Theme::kBlue;
     UpdateIconAndColors();
   }
 }

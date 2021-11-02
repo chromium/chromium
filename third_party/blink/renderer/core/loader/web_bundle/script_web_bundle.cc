@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/web_bundle_loader.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
@@ -37,16 +39,18 @@ class ScriptWebBundle::ReleaseResourceTask {
 };
 
 ScriptWebBundle* ScriptWebBundle::CreateOrReuseInline(
-    Document& element_document,
+    ScriptElementBase& element,
     const String& source_text) {
-  auto rule =
-      ScriptWebBundleRule::ParseJson(source_text, element_document.BaseURL());
-  if (!rule)
+  Document& document = element.GetDocument();
+  auto rule = ScriptWebBundleRule::ParseJson(source_text, document.BaseURL());
+  if (!rule) {
     return nullptr;
+  }
 
-  ResourceFetcher* resource_fetcher = element_document.Fetcher();
-  if (!resource_fetcher)
+  ResourceFetcher* resource_fetcher = document.Fetcher();
+  if (!resource_fetcher) {
     return nullptr;
+  }
   SubresourceWebBundleList* active_bundles =
       resource_fetcher->GetOrCreateSubresourceWebBundleList();
 
@@ -57,21 +61,21 @@ ScriptWebBundle* ScriptWebBundle::CreateOrReuseInline(
     // released.
     DCHECK(found->IsScriptWebBundle());
     ScriptWebBundle* reused_script_web_bundle = To<ScriptWebBundle>(found);
-    DCHECK_EQ(reused_script_web_bundle->element_document_, element_document);
-    reused_script_web_bundle->SetRule(std::move(*rule));
-    reused_script_web_bundle->CancelRelease();
+    reused_script_web_bundle->ReusedWith(element, std::move(*rule));
     return reused_script_web_bundle;
   }
-  return MakeGarbageCollected<ScriptWebBundle>(element_document, *rule);
+  return MakeGarbageCollected<ScriptWebBundle>(element, document, *rule);
 }
 
-ScriptWebBundle::ScriptWebBundle(Document& element_document,
+ScriptWebBundle::ScriptWebBundle(ScriptElementBase& element,
+                                 Document& element_document,
                                  const ScriptWebBundleRule& rule)
-    : element_document_(&element_document), rule_(rule) {
+    : element_(&element), element_document_(&element_document), rule_(rule) {
   CreateBundleLoaderAndRegister();
 }
 
 void ScriptWebBundle::Trace(Visitor* visitor) const {
+  visitor->Trace(element_);
   visitor->Trace(element_document_);
   visitor->Trace(bundle_loader_);
   SubresourceWebBundle::Trace(visitor);
@@ -116,9 +120,34 @@ String ScriptWebBundle::GetCacheIdentifier() const {
   return bundle_loader_->url().GetString();
 }
 
-// TODO(crbug.com/1245166): Implement these.
-void ScriptWebBundle::OnWebBundleError(const String& message) const {}
-void ScriptWebBundle::NotifyLoaded() {}
+void ScriptWebBundle::OnWebBundleError(const String& message) const {
+  // |element_document_| might not be alive here.
+  if (element_document_) {
+    ExecutionContext* context = element_document_->GetExecutionContext();
+    if (!context)
+      return;
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning, message));
+  }
+}
+
+// |bundle_loader_| can be null here, if the script element
+// is removed from the document and the microtask already
+// cleaned up the pointer to the loader.
+// TODO(crbug/1263783): Add a test for the divergent behaviour
+// between <link> and <script> API when the element is removed.
+void ScriptWebBundle::NotifyLoadingFinished() {
+  if (!element_ || !bundle_loader_)
+    return;
+  if (bundle_loader_->HasLoaded()) {
+    element_->DispatchLoadEvent();
+  } else if (bundle_loader_->HasFailed()) {
+    element_->DispatchErrorEvent();
+  } else {
+    NOTREACHED();
+  }
+}
 
 bool ScriptWebBundle::IsScriptWebBundle() const {
   return true;
@@ -178,9 +207,35 @@ void ScriptWebBundle::WillReleaseBundleLoaderAndUnregister() {
   // Tentative spec:
   // https://docs.google.com/document/d/1GEJ3wTERGEeTG_4J0QtAwaNXhPTza0tedd00A7vPVsw/edit#heading=h.y88lpjmx2ndn
   will_be_released_ = true;
+  element_ = nullptr;
   auto task = std::make_unique<ReleaseResourceTask>(*this);
   Microtask::EnqueueMicrotask(
       WTF::Bind(&ReleaseResourceTask::Run, std::move(task)));
+}
+
+// This function updates the WebBundleRule, element_ and cancels the release
+// of a reused WebBundle. Also if the reused bundle fired load/error events,
+// fire them again as we reuse the bundle.
+// TODO(crbug/1263783): Explore corner cases of WebBundle reusing and how
+// load/error events should be handled then.
+void ScriptWebBundle::ReusedWith(ScriptElementBase& element,
+                                 ScriptWebBundleRule rule) {
+  DCHECK_EQ(element_document_, element.GetDocument());
+  DCHECK(will_be_released_);
+  DCHECK(!element_);
+  rule_ = std::move(rule);
+  will_be_released_ = false;
+  element_ = element;
+  DCHECK(bundle_loader_);
+  if (bundle_loader_->HasLoaded()) {
+    element_document_->GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(FROM_HERE, WTF::Bind(&ScriptElementBase::DispatchLoadEvent,
+                                        WrapPersistent(element_.Get())));
+  } else if (bundle_loader_->HasFailed()) {
+    element_document_->GetTaskRunner(TaskType::kDOMManipulation)
+        ->PostTask(FROM_HERE, WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
+                                        WrapPersistent(element_.Get())));
+  }
 }
 
 }  // namespace blink

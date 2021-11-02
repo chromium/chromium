@@ -27,7 +27,8 @@ class PermissionChip : public views::AccessiblePaneView,
  protected:
   // Holds all parameters needed for a chip initialization.
   struct DisplayParams {
-    const gfx::VectorIcon& icon;
+    const gfx::VectorIcon& icon_on;
+    const gfx::VectorIcon& icon_off;
     std::u16string message;
     bool should_start_open;
     bool is_prominent;
@@ -79,7 +80,9 @@ class PermissionChip : public views::AccessiblePaneView,
   views::Widget* GetPromptBubbleWidget();
 
   virtual void Collapse(bool allow_restart);
-  void ShowBlockedBadge();
+  void ShowBlockedIcon();
+
+  virtual void OnPromptBubbleDismissed();
 
  private:
   void Show(bool always_open_bubble);
@@ -88,7 +91,7 @@ class PermissionChip : public views::AccessiblePaneView,
   void RestartTimersOnInteraction();
   void StartCollapseTimer();
   void StartDismissTimer();
-  void Dismiss();
+  void Finalize();
 
   void AnimateCollapse();
   void AnimateExpand();

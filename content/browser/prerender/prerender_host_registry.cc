@@ -77,63 +77,71 @@ int PrerenderHostRegistry::CreateAndStartHost(
                "attributes", attributes, "initiator_origin",
                attributes.initiator_origin.GetURL().spec());
 
-  // Ensure observers are notified that a trigger occurred.
-  base::ScopedClosureRunner notify_trigger(
-      base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
-                     base::Unretained(this), attributes.prerendering_url));
+  int frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId;
 
-  // Don't prerender when the trigger is in the background.
-  DCHECK(web_contents);
-  if (web_contents->GetVisibility() == Visibility::HIDDEN) {
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
-        PrerenderHost::FinalStatus::kTriggerBackgrounded);
-    return RenderFrameHost::kNoFrameTreeNodeId;
+  {
+    // Ensure observers are notified that a trigger occurred.
+    base::ScopedClosureRunner notify_trigger(
+        base::BindOnce(&PrerenderHostRegistry::NotifyTrigger,
+                       base::Unretained(this), attributes.prerendering_url));
+
+    // Don't prerender when the trigger is in the background.
+    DCHECK(web_contents);
+    if (web_contents->GetVisibility() == Visibility::HIDDEN) {
+      base::UmaHistogramEnumeration(
+          "Prerender.Experimental.PrerenderHostFinalStatus",
+          PrerenderHost::FinalStatus::kTriggerBackgrounded);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    // Don't prerender on low-end devices.
+    // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch
+    // since the memory requirements are different.
+    if (!DeviceHasEnoughMemoryForPrerender()) {
+      base::UmaHistogramEnumeration(
+          "Prerender.Experimental.PrerenderHostFinalStatus",
+          PrerenderHost::FinalStatus::kLowEndDevice);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    // TODO(crbug.com/1176054): Support cross-origin prerendering.
+    if (!attributes.initiator_origin.IsSameOriginWith(
+            url::Origin::Create(attributes.prerendering_url))) {
+      base::UmaHistogramEnumeration(
+          "Prerender.Experimental.PrerenderHostFinalStatus",
+          PrerenderHost::FinalStatus::kCrossOriginNavigation);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    // Ignore prerendering requests for the same URL.
+    for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+      if (iter.second->GetInitialUrl() == attributes.prerendering_url)
+        return iter.first;
+    }
+
+    // TODO(crbug.com/1197133): Cancel the started prerender and start a new
+    // one if the score of the new candidate is higher than the started one's.
+    if (prerender_host_by_frame_tree_node_id_.size() ==
+        kMaxNumOfRunningPrerenders) {
+      base::UmaHistogramEnumeration(
+          "Prerender.Experimental.PrerenderHostFinalStatus",
+          PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
+    auto prerender_host =
+        std::make_unique<PrerenderHost>(attributes, web_contents);
+    frame_tree_node_id = prerender_host->frame_tree_node_id();
+
+    CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
+                          frame_tree_node_id));
+    prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
+        std::move(prerender_host);
   }
 
-  // Don't prerender on low-end devices.
-  // TODO(https://crbug.com/1176120): Fallback to NoStatePrefetch
-  // since the memory requirements are different.
-  if (!DeviceHasEnoughMemoryForPrerender()) {
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
-        PrerenderHost::FinalStatus::kLowEndDevice);
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
-  // TODO(crbug.com/1176054): Support cross-origin prerendering.
-  if (!attributes.initiator_origin.IsSameOriginWith(
-          url::Origin::Create(attributes.prerendering_url))) {
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
-        PrerenderHost::FinalStatus::kCrossOriginNavigation);
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
-  // Ignore prerendering requests for the same URL.
-  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->GetInitialUrl() == attributes.prerendering_url)
-      return iter.first;
-  }
-
-  // TODO(crbug.com/1197133): Cancel the started prerender and start a new
-  // one if the score of the new candidate is higher than the started one's.
-  if (prerender_host_by_frame_tree_node_id_.size() ==
-      kMaxNumOfRunningPrerenders) {
-    base::UmaHistogramEnumeration(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
-        PrerenderHost::FinalStatus::kMaxNumOfRunningPrerendersExceeded);
-    return RenderFrameHost::kNoFrameTreeNodeId;
-  }
-
-  auto prerender_host =
-      std::make_unique<PrerenderHost>(attributes, web_contents);
-  const int frame_tree_node_id = prerender_host->frame_tree_node_id();
-
-  CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
-                        frame_tree_node_id));
-  prerender_host_by_frame_tree_node_id_[frame_tree_node_id] =
-      std::move(prerender_host);
+  // Outside the NotifyTrigger ScopedClosureRunner since tests use the trigger
+  // to register observers.  Observers may be notified about start in the call
+  // below.
   if (!prerender_host_by_frame_tree_node_id_[frame_tree_node_id]
            ->StartPrerendering()) {
     // TODO(nhiroki): Pass a more suitable cancellation reason like

@@ -22,6 +22,7 @@ class BrowserContext;
 namespace arc {
 
 class ArcBridgeService;
+class TouchModeMouseRewriter;
 
 // Manager for ARC resize lock feature.
 class ArcResizeLockManager : public KeyedService,
@@ -67,6 +68,8 @@ class ArcResizeLockManager : public KeyedService,
 
   // Using unique_ptr to allow unittest to override.
   std::unique_ptr<CompatModeButtonController> compat_mode_button_controller_;
+
+  std::unique_ptr<TouchModeMouseRewriter> touch_mode_mouse_rewriter_;
 
   base::flat_set<aura::Window*> resize_lock_enabled_windows_;
 

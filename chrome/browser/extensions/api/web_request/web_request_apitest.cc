@@ -3599,8 +3599,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Ensure web request listeners can intercept requests for a web bundle and its
 // subresources.
+// TODO(https://crbug.com/1264982): Fix flane and re-enable test.
 IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
-                       RequestIntercepted) {
+                       DISABLED_RequestIntercepted) {
   const std::string urn_uuid_script_url =
       "urn:uuid:6a059ece-62f4-4c79-a9e2-1c641cbdbaaf";
   const std::string uuid_in_package_script_url =

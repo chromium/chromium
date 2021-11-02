@@ -438,7 +438,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                               SourceDrawingBuffer src_buffer,
                               const CopyFunction& copy_function);
 
-  enum ClearOption { ClearOnlyMultisampledFBO, ClearAllFBOs };
+  enum ClearOption { kClearOnlyMultisampledFBO, kClearAllFBOs };
 
   // Clears out newly-allocated framebuffers (really, renderbuffers / textures).
   void ClearNewlyAllocatedFramebuffers(ClearOption clear_option);
@@ -457,9 +457,9 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void ResolveIfNeeded();
 
   enum CheckForDestructionResult {
-    DestroyedOrLost,
-    ContentsUnchanged,
-    ContentsResolvedIfNeeded
+    kDestroyedOrLost,
+    kContentsUnchanged,
+    kContentsResolvedIfNeeded
   };
 
   // This method:

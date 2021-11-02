@@ -31,7 +31,7 @@ P2PSocketClientImpl::P2PSocketClientImpl(
     : dispatcher_(dispatcher),
       socket_id_(0),
       delegate_(nullptr),
-      state_(STATE_UNINITIALIZED),
+      state_(kStateUninitialized),
       traffic_annotation_(traffic_annotation),
       random_socket_id_(0),
       next_packet_id_(0) {
@@ -39,7 +39,7 @@ P2PSocketClientImpl::P2PSocketClientImpl(
 }
 
 P2PSocketClientImpl::~P2PSocketClientImpl() {
-  CHECK(state_ == STATE_CLOSED || state_ == STATE_UNINITIALIZED);
+  CHECK(state_ == kStateClosed || state_ == kStateUninitialized);
 }
 
 void P2PSocketClientImpl::Init(
@@ -54,8 +54,8 @@ void P2PSocketClientImpl::Init(
   // |delegate_| is only accessesed on |delegate_message_loop_|.
   delegate_ = delegate;
 
-  DCHECK_EQ(state_, STATE_UNINITIALIZED);
-  state_ = STATE_OPENING;
+  DCHECK_EQ(state_, kStateUninitialized);
+  state_ = kStateOpening;
   auto dispatcher = dispatcher_.Lock();
   CHECK(dispatcher);
   dispatcher->GetP2PSocketManager()->CreateSocket(
@@ -72,8 +72,8 @@ uint64_t P2PSocketClientImpl::Send(const net::IPEndPoint& address,
   uint64_t unique_id = GetUniqueId(random_socket_id_, ++next_packet_id_);
 
   // Can send data only when the socket is open.
-  DCHECK(state_ == STATE_OPEN || state_ == STATE_ERROR);
-  if (state_ == STATE_OPEN) {
+  DCHECK(state_ == kStateOpen || state_ == kStateError);
+  if (state_ == kStateOpen) {
     SendWithPacketId(address, data, options, unique_id);
   }
 
@@ -92,8 +92,8 @@ void P2PSocketClientImpl::SendWithPacketId(const net::IPEndPoint& address,
 
 void P2PSocketClientImpl::SetOption(network::P2PSocketOption option,
                                     int value) {
-  DCHECK(state_ == STATE_OPEN || state_ == STATE_ERROR);
-  if (state_ == STATE_OPEN)
+  DCHECK(state_ == kStateOpen || state_ == kStateError);
+  if (state_ == kStateOpen)
     socket_->SetOption(option, value);
 }
 
@@ -104,7 +104,7 @@ void P2PSocketClientImpl::Close() {
   if (socket_)
     socket_.reset();
 
-  state_ = STATE_CLOSED;
+  state_ = kStateClosed;
 }
 
 int P2PSocketClientImpl::GetSocketID() const {
@@ -119,7 +119,7 @@ void P2PSocketClientImpl::SetDelegate(
 
 void P2PSocketClientImpl::SocketCreated(const net::IPEndPoint& local_address,
                                         const net::IPEndPoint& remote_address) {
-  state_ = STATE_OPEN;
+  state_ = kStateOpen;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (delegate_)
     delegate_->OnOpen(local_address, remote_address);
@@ -135,14 +135,14 @@ void P2PSocketClientImpl::SendComplete(
 void P2PSocketClientImpl::DataReceived(const net::IPEndPoint& socket_address,
                                        const Vector<int8_t>& data,
                                        base::TimeTicks timestamp) {
-  DCHECK_EQ(STATE_OPEN, state_);
+  DCHECK_EQ(kStateOpen, state_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (delegate_)
     delegate_->OnDataReceived(socket_address, data, timestamp);
 }
 
 void P2PSocketClientImpl::OnConnectionError() {
-  state_ = STATE_ERROR;
+  state_ = kStateError;
   if (delegate_)
     delegate_->OnError();
 }

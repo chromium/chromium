@@ -49,7 +49,6 @@ FontFallbackList::FontFallbackList(FontFallbackMap& font_fallback_map)
       generation_(FontCache::GetFontCache()->Generation()),
       has_loading_fallback_(false),
       has_custom_font_(false),
-      has_advance_override_(false),
       can_shape_word_by_word_(false),
       can_shape_word_by_word_computed_(false),
       is_invalid_(false) {}

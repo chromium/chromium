@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that matching selectors are marked properly after new rule creation and selector change.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected"></div>

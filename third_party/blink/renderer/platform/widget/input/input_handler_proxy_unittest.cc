@@ -3359,8 +3359,8 @@ class InputHandlerProxyMainThreadScrollingReasonTest
     : public InputHandlerProxyTest {
  public:
   enum TestEventType {
-    Touch,
-    MouseWheel,
+    kTouch,
+    kMouseWheel,
   };
 
   InputHandlerProxyMainThreadScrollingReasonTest() : InputHandlerProxyTest() {}
@@ -3379,13 +3379,13 @@ class InputHandlerProxyMainThreadScrollingReasonTest
     gesture_scroll_begin_ = WebGestureEvent(
         WebInputEvent::Type::kGestureScrollBegin, WebInputEvent::kNoModifiers,
         WebInputEvent::GetStaticTimeStampForTests(),
-        type == TestEventType::MouseWheel ? WebGestureDevice::kTouchpad
-                                          : WebGestureDevice::kTouchscreen);
+        type == TestEventType::kMouseWheel ? WebGestureDevice::kTouchpad
+                                           : WebGestureDevice::kTouchscreen);
     gesture_scroll_end_ = WebGestureEvent(
         WebInputEvent::Type::kGestureScrollEnd, WebInputEvent::kNoModifiers,
         WebInputEvent::GetStaticTimeStampForTests(),
-        type == TestEventType::MouseWheel ? WebGestureDevice::kTouchpad
-                                          : WebGestureDevice::kTouchscreen);
+        type == TestEventType::kMouseWheel ? WebGestureDevice::kTouchpad
+                                           : WebGestureDevice::kTouchscreen);
     touch_start_.touches_length = 1;
     touch_start_.touch_start_or_first_touch_move = true;
     touch_start_.touches[0] =
@@ -3429,7 +3429,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest, ReasonToBucket) {
 TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        GestureScrollNotScrollOnMain) {
   // Touch start with passive event listener.
-  SetupEvents(TestEventType::Touch);
+  SetupEvents(TestEventType::kTouch);
 
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
@@ -3481,7 +3481,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        GestureScrollTouchEventHandlerRegion) {
   // The touch event hits a touch event handler that is acked from the
   // compositor thread.
-  SetupEvents(TestEventType::Touch);
+  SetupEvents(TestEventType::kTouch);
 
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
@@ -3535,7 +3535,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   // do not collect HandlingScrollFromMainThread when there are other reasons
   // present, TouchEventHandler is the only reason being collected in the
   // histogram.
-  SetupEvents(TestEventType::Touch);
+  SetupEvents(TestEventType::kTouch);
 
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
@@ -3588,7 +3588,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        GestureScrollHandlingScrollFromMainThread) {
   // Gesture scrolling on main thread. We only record
   // HandlingScrollFromMainThread when it's the only available reason.
-  SetupEvents(TestEventType::Touch);
+  SetupEvents(TestEventType::kTouch);
   EXPECT_CALL(mock_input_handler_,
               EventListenerTypeForTouchStartOrMoveAt(
                   testing::Property(&gfx::Point::x, testing::Gt(0)), _))
@@ -3657,7 +3657,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        WheelScrollNotScrollingOnMain) {
   // Even if a scroller is composited, we still need to record its main thread
   // scrolling reason if it is blocked on a main thread event handler.
-  SetupEvents(TestEventType::MouseWheel);
+  SetupEvents(TestEventType::kMouseWheel);
 
   // We can scroll on impl for an wheel event with passive event listener.
   EXPECT_CALL(mock_input_handler_, HasBlockingWheelEventHandlerAt(_))
@@ -3699,7 +3699,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
   // Wheel event with blocking event listener. If there is a wheel event handler
   // at the point, we do not need to call GetEventListenerProperties since it
   // indicates kBlocking.
-  SetupEvents(TestEventType::MouseWheel);
+  SetupEvents(TestEventType::kMouseWheel);
   EXPECT_CALL(mock_input_handler_, HasBlockingWheelEventHandlerAt(_))
       .WillRepeatedly(testing::Return(true));
   expected_disposition_ = InputHandlerProxy::DID_NOT_HANDLE;
@@ -3737,7 +3737,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        WheelScrollWheelEventHandlerRegionAndHandlingScrollFromMainThread) {
   // Wheel scrolling on main thread. Because we also block scrolling with wheel
   // event handler, we should record that reason as well.
-  SetupEvents(TestEventType::MouseWheel);
+  SetupEvents(TestEventType::kMouseWheel);
   EXPECT_CALL(mock_input_handler_, HasBlockingWheelEventHandlerAt(_))
       .WillRepeatedly(testing::Return(true));
   expected_disposition_ = InputHandlerProxy::DID_NOT_HANDLE;
@@ -3775,7 +3775,7 @@ TEST_P(InputHandlerProxyMainThreadScrollingReasonTest,
        WheelScrollHandlingScrollFromMainThread) {
   // Gesture scrolling on main thread. We only record
   // HandlingScrollFromMainThread when it's the only available reason.
-  SetupEvents(TestEventType::MouseWheel);
+  SetupEvents(TestEventType::kMouseWheel);
   EXPECT_CALL(mock_input_handler_, HasBlockingWheelEventHandlerAt(_))
       .WillRepeatedly(testing::Return(false));
   EXPECT_CALL(mock_input_handler_,

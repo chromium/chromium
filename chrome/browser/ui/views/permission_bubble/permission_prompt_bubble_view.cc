@@ -148,8 +148,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extra_text_label->SetMultiLine(true);
   }
-  View::SetProperty(views::kElementIdentifierKey,
-                    kPermissionPromptBubbleViewIdentifier);
+  SetProperty(views::kElementIdentifierKey,
+              kPermissionPromptBubbleViewIdentifier);
 }
 
 PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
@@ -270,6 +270,15 @@ std::u16string PermissionPromptBubbleView::GetWindowTitle() const {
     message_id = IDS_PERMISSIONS_BUBBLE_PROMPT;
   }
   return l10n_util::GetStringFUTF16(message_id, GetDisplayName());
+}
+
+void PermissionPromptBubbleView::OnWidgetDestroying(views::Widget* widget) {
+  if (on_bubble_dismissed_by_user_callback_ &&
+      (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+       widget->closed_reason() ==
+           views::Widget::ClosedReason::kCloseButtonClicked)) {
+    std::move(on_bubble_dismissed_by_user_callback_).Run();
+  }
 }
 
 std::u16string PermissionPromptBubbleView::GetAccessibleWindowTitle() const {

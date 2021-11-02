@@ -679,6 +679,7 @@ component("base") {
     "task/sequence_manager/sequence_manager.h",
     "task/sequence_manager/sequence_manager_impl.cc",
     "task/sequence_manager/sequence_manager_impl.h",
+    "task/sequence_manager/sequenced_task_source.cc",
     "task/sequence_manager/sequenced_task_source.h",
     "task/sequence_manager/task_queue.cc",
     "task/sequence_manager/task_queue.h",

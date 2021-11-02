@@ -98,12 +98,12 @@ class PLATFORM_EXPORT BlobData {
  public:
   static constexpr int64_t kToEndOfFile = -1;
   enum class FileCompositionStatus {
-    SINGLE_UNKNOWN_SIZE_FILE,
-    NO_UNKNOWN_SIZE_FILES
+    kSingleUnknownSizeFile,
+    kNoUnknownSizeFiles
   };
 
   explicit BlobData(
-      FileCompositionStatus = FileCompositionStatus::NO_UNKNOWN_SIZE_FILES);
+      FileCompositionStatus = FileCompositionStatus::kNoUnknownSizeFiles);
   BlobData(const BlobData&) = delete;
   BlobData& operator=(const BlobData&) = delete;
   ~BlobData();
@@ -156,7 +156,7 @@ class PLATFORM_EXPORT BlobData {
   uint64_t length() const;
 
   bool IsSingleUnknownSizeFile() const {
-    return file_composition_ == FileCompositionStatus::SINGLE_UNKNOWN_SIZE_FILE;
+    return file_composition_ == FileCompositionStatus::kSingleUnknownSizeFile;
   }
 
  private:

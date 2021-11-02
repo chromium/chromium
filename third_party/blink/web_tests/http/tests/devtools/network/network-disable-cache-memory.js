@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests disabling cache from inspector.\n`);
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise('resources/random-script-page.html');
 

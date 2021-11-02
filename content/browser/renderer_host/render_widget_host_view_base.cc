@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
@@ -970,6 +971,8 @@ ui::Compositor* RenderWidgetHostViewBase::GetCompositor() {
 
 VisibleTimeRequestTrigger*
 RenderWidgetHostViewBase::GetVisibleTimeRequestTrigger() {
+  DCHECK(
+      !visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled());
   return &visible_time_request_trigger_;
 }
 

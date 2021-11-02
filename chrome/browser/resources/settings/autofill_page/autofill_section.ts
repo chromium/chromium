@@ -20,10 +20,11 @@ import './address_edit_dialog.js';
 import './address_remove_confirmation_dialog.js';
 import './passwords_shared_css.js';
 
+import {I18nMixin, I18nMixinInterface} from '//resources/js/i18n_mixin.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -119,7 +120,12 @@ interface SettingsAutofillSectionElement {
   };
 }
 
-class SettingsAutofillSectionElement extends PolymerElement {
+const SettingsAutofillSectionElementBase =
+    mixinBehaviors([], I18nMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nMixinInterface};
+
+class SettingsAutofillSectionElement extends
+    SettingsAutofillSectionElementBase {
   static get is() {
     return 'settings-autofill-section';
   }
@@ -272,6 +278,15 @@ class SettingsAutofillSectionElement extends PolymerElement {
   private saveAddress_(event:
                            CustomEvent<chrome.autofillPrivate.AddressEntry>) {
     this.autofillManager_.saveAddress(event.detail);
+  }
+
+  /**
+   * @returns the title for the More Actions button corresponding to the address
+   *     which is described by `label` and `sublabel`.
+   */
+  private moreActionsTitle_(label: string, sublabel: string) {
+    return this.i18n(
+        'moreActionsForAddress', label + (sublabel ? sublabel : ''));
   }
 }
 

@@ -11862,6 +11862,14 @@ be describing additional metrics about the same event.
       Records an enum value representing which action on the Page Info Bubble
       was taken.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 

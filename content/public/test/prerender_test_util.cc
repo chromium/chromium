@@ -123,9 +123,10 @@ void PrerenderHostRegistryObserver::NotifyOnTrigger(
 class PrerenderHostObserverImpl : public PrerenderHost::Observer {
  public:
   PrerenderHostObserverImpl(WebContents& web_contents, int host_id) {
-    StartObserving(
-        web_contents,
-        GetPrerenderHostById(&web_contents, host_id)->GetInitialUrl());
+    PrerenderHost* host = GetPrerenderHostById(&web_contents, host_id);
+    DCHECK(host)
+        << "A PrerenderHost with the given id does not, or no longer, exists.";
+    StartObserving(*host);
   }
 
   PrerenderHostObserverImpl(WebContents& web_contents, const GURL& gurl) {
@@ -133,11 +134,11 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
         std::make_unique<PrerenderHostRegistryObserver>(web_contents);
     if (PrerenderHost* host = GetPrerenderHostRegistry(&web_contents)
                                   .FindHostByUrlForTesting(gurl)) {
-      StartObserving(web_contents, host->GetInitialUrl());
+      StartObserving(*host);
     } else {
       registry_observer_->NotifyOnTrigger(
           gurl,
-          base::BindOnce(&PrerenderHostObserverImpl::StartObserving,
+          base::BindOnce(&PrerenderHostObserverImpl::OnTrigger,
                          base::Unretained(this), std::ref(web_contents), gurl));
     }
   }
@@ -175,12 +176,16 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   bool was_activated() const { return was_activated_; }
 
  private:
-  void StartObserving(WebContents& web_contents, const GURL& gurl) {
+  void OnTrigger(WebContents& web_contents, const GURL& gurl) {
     PrerenderHost* host =
         GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(gurl);
-    DCHECK_NE(host, nullptr);
+    DCHECK(host) << "Attempted to trigger a prerender for [" << gurl << "] "
+                 << "but canceled before a PrerenderHost was created.";
+    StartObserving(*host);
+  }
+  void StartObserving(PrerenderHost& host) {
     did_observe_ = true;
-    observation_.Observe(host);
+    observation_.Observe(&host);
 
     // This method may be bound and called from |registry_observer_| so don't
     // add code below the reset.

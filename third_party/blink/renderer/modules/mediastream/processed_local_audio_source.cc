@@ -134,7 +134,6 @@ ProcessedLocalAudioSource::ProcessedLocalAudioSource(
       audio_processing_properties_(audio_processing_properties),
       num_requested_channels_(num_requested_channels),
       started_callback_(std::move(started_callback)),
-      volume_(0),
       allow_invalid_render_frame_id_for_testing_(false) {
   DCHECK(frame.DomWindow());
   SetDevice(device);
@@ -445,22 +444,11 @@ void ProcessedLocalAudioSource::SetOutputWillBeMuted(bool muted) {
   }
 }
 
-void ProcessedLocalAudioSource::SetVolume(int volume) {
+void ProcessedLocalAudioSource::SetVolume(double volume) {
   DVLOG(1) << "ProcessedLocalAudioSource::SetVolume()";
-  DCHECK_LE(volume, MaxVolume());
-  const double normalized_volume = static_cast<double>(volume) / MaxVolume();
+  DCHECK_LE(volume, 1.0);
   if (source_)
-    source_->SetVolume(normalized_volume);
-}
-
-int ProcessedLocalAudioSource::Volume() const {
-  // Note: Using NoBarrier_Load() because the timing of visibility of the
-  // updated volume information on other threads can be relaxed.
-  return base::subtle::NoBarrier_Load(&volume_);
-}
-
-int ProcessedLocalAudioSource::MaxVolume() const {
-  return WebRtcAudioDeviceImpl::kMaxVolumeLevel;
+    source_->SetVolume(volume);
 }
 
 void ProcessedLocalAudioSource::OnCaptureStarted() {
@@ -517,28 +505,8 @@ void ProcessedLocalAudioSource::CaptureUsingProcessor(
     base::TimeTicks audio_capture_time,
     double volume,
     bool key_pressed) {
-#if defined(OS_WIN) || defined(OS_MAC)
-  DCHECK_LE(volume, 1.0);
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_OPENBSD)
-  // We have a special situation on Linux where the microphone volume can be
-  // "higher than maximum". The input volume slider in the sound preference
-  // allows the user to set a scaling that is higher than 100%. It means that
-  // even if the reported maximum levels is N, the actual microphone level can
-  // go up to 1.5x*N and that corresponds to a normalized |volume| of 1.5x.
-  DCHECK_LE(volume, 1.6);
-#endif
-
   TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
                audio_capture_time);
-
-  // Map internal volume range of [0.0, 1.0] into [0, 255] used by AGC.
-  // The volume can be higher than 255 on Linux, and it will be cropped to
-  // 255 since AGC does not allow values out of range.
-  int current_volume = static_cast<int>((volume * MaxVolume()) + 0.5);
-  // Note: Using NoBarrier_Store() because the timing of visibility of the
-  // updated volume information on other threads can be relaxed.
-  base::subtle::NoBarrier_Store(&volume_, current_volume);
-  current_volume = std::min(current_volume, MaxVolume());
 
   // Sanity-check the input audio format in debug builds.  Then, notify the
   // tracks if the format has changed.
@@ -564,13 +532,13 @@ void ProcessedLocalAudioSource::CaptureUsingProcessor(
   // data in the processor.
   media::AudioBus* processed_data = nullptr;
   base::TimeDelta processed_data_audio_delay;
-  int new_volume = 0;
+  absl::optional<double> new_volume;
 
   // Maximum number of channels used by the sinks.
   const int num_preferred_channels = NumPreferredChannels();
 
   while (audio_processor_->ProcessAndConsumeData(
-      current_volume, num_preferred_channels, key_pressed, &processed_data,
+      volume, num_preferred_channels, key_pressed, &processed_data,
       &processed_data_audio_delay, &new_volume)) {
     DCHECK(processed_data);
 
@@ -582,9 +550,7 @@ void ProcessedLocalAudioSource::CaptureUsingProcessor(
       PostCrossThreadTask(
           *GetTaskRunner(), FROM_HERE,
           CrossThreadBindOnce(&ProcessedLocalAudioSource::SetVolume,
-                              weak_factory_.GetWeakPtr(), new_volume));
-      // Update the |current_volume| to avoid passing the old volume to AGC.
-      current_volume = new_volume;
+                              weak_factory_.GetWeakPtr(), *new_volume));
     }
   }
 }

@@ -341,3 +341,19 @@ fuzzer_test("variable_expander_fuzzer") {
     "//base/test:test_support",
   ]
 }
+
+fuzzer_test("onc_validator_fuzzer") {
+  sources = [ "onc/onc_validator_fuzzer.cc" ]
+  deps = [
+    ":network",
+    "//base",
+  ]
+}
+
+fuzzer_test("onc_normalizer_fuzzer") {
+  sources = [ "onc/onc_normalizer_fuzzer.cc" ]
+  deps = [
+    ":network",
+    "//base",
+  ]
+}

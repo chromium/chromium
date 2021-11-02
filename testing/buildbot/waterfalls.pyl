@@ -2752,6 +2752,9 @@
           'walleye',
         ],
         'os_type': 'android',
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
+        ],
       },
       'android-backuprefptr-arm64-fyi-rel': {
         'test_suites': {
@@ -2763,6 +2766,9 @@
           'walleye',
         ],
         'os_type': 'android',
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
+        ],
       },
       'android-code-coverage': {
         'mixins': [
@@ -3132,6 +3138,9 @@
         'mixins': [
           'linux-bionic',
           'x86-64',
+        ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
         ],
       },
       'linux-blink-animation-use-time-delta': {
@@ -3504,6 +3513,9 @@
           'win10',
           'x86-64',
         ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
+        ],
       },
       'win-backuprefptr-x86-fyi-rel': {
         'test_suites': {
@@ -3512,6 +3524,9 @@
         'mixins': [
           'win10',
           'x86-64',
+        ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
         ],
       },
       'win-pixel-tester-rel': {

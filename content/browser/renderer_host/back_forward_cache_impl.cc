@@ -26,7 +26,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_thread.h"
@@ -361,8 +361,10 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
   // cases like page navigating back with window.history.back(), while being
   // hidden.
   if (rfh->delegate()->GetVisibility() != Visibility::HIDDEN) {
-    auto* trigger = static_cast<RenderWidgetHostViewBase*>(rfh->GetView())
-                        ->GetVisibleTimeRequestTrigger();
+    auto* trigger = rfh->GetRenderWidgetHost()->GetVisibleTimeRequestTrigger();
+    // The only way this should be null is if there is no RenderWidgetHostView.
+    DCHECK(rfh->GetView());
+    DCHECK(trigger);
     trigger->SetRecordContentToVisibleTimeRequest(
         navigation_start, false /* destination_is_loaded */,
         false /* show_reason_tab_switching */,

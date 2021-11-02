@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that filtering in StylesSidebarPane works as expected.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

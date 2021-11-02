@@ -71,11 +71,11 @@ class P2PSocketClientImpl : public blink::P2PSocketClient,
 
  private:
   enum State {
-    STATE_UNINITIALIZED,
-    STATE_OPENING,
-    STATE_OPEN,
-    STATE_CLOSED,
-    STATE_ERROR,
+    kStateUninitialized,
+    kStateOpening,
+    kStateOpen,
+    kStateClosed,
+    kStateError,
   };
 
   friend class P2PSocketDispatcher;

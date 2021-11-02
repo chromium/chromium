@@ -9,6 +9,8 @@
 
 #include "base/bind.h"
 #include "base/task/common/scoped_defer_task_posting.h"
+#include "base/trace_event/base_tracing.h"
+#include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -20,6 +22,9 @@ namespace scheduler {
 namespace internal {
 using base::sequence_manager::internal::TaskQueueImpl;
 }
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
+using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
 // static
 const char* MainThreadTaskQueue::NameForQueueType(
@@ -131,6 +136,8 @@ MainThreadTaskQueue::MainThreadTaskQueue(
         &MainThreadTaskQueue::OnTaskStarted, base::Unretained(this)));
     task_queue_->SetOnTaskCompletedHandler(base::BindRepeating(
         &MainThreadTaskQueue::OnTaskCompleted, base::Unretained(this)));
+    task_queue_->SetTaskExecutionTraceLogger(base::BindRepeating(
+        &MainThreadTaskQueue::LogTaskExecution, base::Unretained(this)));
   }
 }
 
@@ -152,6 +159,22 @@ void MainThreadTaskQueue::OnTaskCompleted(
   if (main_thread_scheduler_) {
     main_thread_scheduler_->OnTaskCompleted(weak_ptr_factory_.GetWeakPtr(),
                                             task, task_timing, lazy_now);
+  }
+}
+
+void MainThreadTaskQueue::LogTaskExecution(
+    perfetto::EventContext& ctx,
+    const base::sequence_manager::Task& task) {
+  static const uint8_t* enabled =
+      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("scheduler");
+  if (!*enabled)
+    return;
+  RendererMainThreadTaskExecution* execution =
+      ctx.event<ChromeTrackEvent>()->set_renderer_main_thread_task_execution();
+  execution->set_task_type(
+      TaskTypeToProto(static_cast<blink::TaskType>(task.task_type)));
+  if (frame_scheduler_) {
+    frame_scheduler_->WriteIntoTrace(ctx.Wrap(execution));
   }
 }
 
@@ -178,6 +201,8 @@ void MainThreadTaskQueue::DetachFromMainThreadScheduler() {
                           main_thread_scheduler_->GetWeakPtr(), nullptr));
   task_queue_->SetOnTaskPostedHandler(
       internal::TaskQueueImpl::OnTaskPostedHandler());
+  task_queue_->SetTaskExecutionTraceLogger(
+      internal::TaskQueueImpl::TaskExecutionTraceLogger());
 
   ClearReferencesToSchedulers();
 }

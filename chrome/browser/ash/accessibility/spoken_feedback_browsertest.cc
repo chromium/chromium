@@ -267,7 +267,6 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeHardwareKeys) {
         browser()->profile(), extension_misc::kChromeVoxExtensionId,
         "CommandHandler.onCommand('showKbExplorerPage');");
   });
-  sm_.ExpectSpeech("ChromeVox Learn Mode");
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");
@@ -305,7 +304,6 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
         browser()->profile(), extension_misc::kChromeVoxExtensionId,
         "CommandHandler.onCommand('showKbExplorerPage');");
   });
-  sm_.ExpectSpeech("ChromeVox Learn Mode");
   sm_.ExpectSpeechPattern(
       "Press a qwerty key, refreshable braille key, or touch gesture to learn "
       "*");

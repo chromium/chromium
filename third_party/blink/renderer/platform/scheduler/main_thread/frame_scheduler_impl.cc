@@ -44,6 +44,7 @@ namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 using QueueTraits = MainThreadTaskQueue::QueueTraits;
+using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
 namespace {
 
@@ -791,6 +792,21 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
 
   if (blame_context_)
     dict.Add("blame_context", blame_context_);
+}
+
+void FrameSchedulerImpl::WriteIntoTrace(
+    perfetto::TracedProto<
+        perfetto::protos::pbzero::RendererMainThreadTaskExecution> proto)
+    const {
+  proto->set_frame_visible(frame_visible_);
+  proto->set_page_visible(parent_page_scheduler_->IsPageVisible());
+  proto->set_frame_type(
+      frame_type_ == FrameScheduler::FrameType::kMainFrame
+          ? RendererMainThreadTaskExecution::FRAME_TYPE_MAIN_FRAME
+          : IsCrossOriginToMainFrame() ? RendererMainThreadTaskExecution::
+                                             FRAME_TYPE_CROSS_ORIGIN_SUBFRAME
+                                       : RendererMainThreadTaskExecution::
+                                             FRAME_TYPE_SAME_ORIGIN_SUBFRAME);
 }
 
 void FrameSchedulerImpl::SetPageVisibilityForTracing(
