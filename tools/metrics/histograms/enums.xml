@@ -35152,6 +35152,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4070" label="WebCodecsVideoFrameDefaultTimestamp"/>
   <int value="4071" label="WebCodecsVideoFrameFromImage"/>
   <int value="4072" label="WebCodecsVideoFrameFromBuffer"/>
+  <int value="4073" label="OpenWebDatabaseInsecureContext"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

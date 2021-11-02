@@ -227,6 +227,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kWebCodecsVideoFrameDefaultTimestamp,
           WebFeature::kWebCodecsVideoFrameFromImage,
           WebFeature::kWebCodecsVideoFrameFromBuffer,
+          WebFeature::kOpenWebDatabaseInsecureContext,
       }));
   return *opt_in_features;
 }
