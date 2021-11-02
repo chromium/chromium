@@ -31,12 +31,18 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
+using content::RenderFrameHost;
+using content::WebContents;
+using content::test::PrerenderHostObserver;
+using content::test::PrerenderHostRegistryObserver;
+using content::test::PrerenderTestHelper;
 using ui_test_utils::BrowserChangeObserver;
 
 namespace {
@@ -283,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   InstallTestApp();
 
   ExpectTabs(browser(), {about_blank_});
-  content::WebContents* reparent_web_contents =
+  WebContents* reparent_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigations from a fresh about:blank page should reparent.
@@ -507,6 +513,84 @@ INSTANTIATE_TEST_SUITE_P(
     /*persistence=*/testing::Values(false),
 #endif
     &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
+
+class WebAppDeclarativeLinkCapturingPrerenderBrowserTest
+    : public WebAppDeclarativeLinkCapturingBrowserTest {
+ public:
+  WebAppDeclarativeLinkCapturingPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &WebAppDeclarativeLinkCapturingPrerenderBrowserTest::web_contents,
+            base::Unretained(this))) {}
+  ~WebAppDeclarativeLinkCapturingPrerenderBrowserTest() override = default;
+
+ protected:
+  WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingPrerenderBrowserTest,
+                       CaptureLinksCancelPrerendering) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  InstallTestApp(
+      "/web_apps/get_manifest.html?capture_links_existing_client_navigate.json",
+      /*await_metric=*/true);
+
+  if (IsIntentPickerPersistenceEnabled())
+    TurnOnLinkCapturing();
+
+  // Prerender can only be triggered from the same origin page so use the test
+  // server like the in_scope URLs do.
+  GURL out_of_scope_same_origin(embedded_test_server()->GetURL("/empty.html"));
+  GURL out_of_scope_same_origin2(
+      embedded_test_server()->GetURL("/simple.html"));
+  Navigate(browser(), out_of_scope_same_origin);
+
+  // Trigger a prerender of an in scope URL. It should be canceled and no new
+  // window opened.
+  {
+    PrerenderHostObserver host_observer(*web_contents, in_scope_1_);
+    prerender_helper_.AddPrerenderAsync(in_scope_1_);
+    host_observer.WaitForDestroyed();
+    EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
+  }
+
+  // In scope navigation should open an app window (because there are none
+  // already open).
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+  ExpectTabs(browser(), {out_of_scope_same_origin});
+  ExpectTabs(app_browser, {in_scope_1_});
+
+  // Trigger a prerender again, now that an app window is already open, to
+  // another in scope URL. As before, the prerender should be canceled without
+  // navigating the app window, it should remain on in_scope_1_.
+  {
+    ASSERT_TRUE(
+        content::NavigateToURL(web_contents, out_of_scope_same_origin2));
+    PrerenderHostObserver host_observer(*web_contents, in_scope_2_);
+    prerender_helper_.AddPrerenderAsync(in_scope_2_);
+    host_observer.WaitForDestroyed();
+
+    ExpectTabs(browser(), {out_of_scope_same_origin2});
+    ExpectTabs(app_browser, {in_scope_1_});
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebAppDeclarativeLinkCapturingPrerenderBrowserTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    /*persistence=*/testing::Values(true, false),
+#else
+    // App service intent handling is not yet available outside of Chrome OS.
+    /*persistence=*/testing::Values(false),
+#endif
+    &WebAppDeclarativeLinkCapturingPrerenderBrowserTest::ParamToString);
 
 class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
     : public WebAppLinkCapturingBrowserTest {
