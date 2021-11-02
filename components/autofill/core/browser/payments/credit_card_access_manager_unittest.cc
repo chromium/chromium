@@ -2190,7 +2190,7 @@ TEST_F(CreditCardAccessManagerTest,
   credit_card_access_manager_->OnVirtualCardUnmaskResponseReceived(
       AutofillClient::PaymentsRpcResult::kSuccess, response);
   credit_card_access_manager_->OnUserAcceptedAuthenticationSelectionDialog(
-      challenge_option);
+      challenge_option.id);
 
   // Expect the CreditCardAccessManager to invoke the OTP authenticator.
   DCHECK(otp_authenticator_);
@@ -2345,7 +2345,7 @@ TEST_F(
   credit_card_access_manager_->OnVirtualCardUnmaskResponseReceived(
       AutofillClient::PaymentsRpcResult::kSuccess, response);
   credit_card_access_manager_->OnUserAcceptedAuthenticationSelectionDialog(
-      challenge_option);
+      challenge_option.id);
 
   // Expect the CreditCardAccessManager invokes the OTP authenticator.
   DCHECK(otp_authenticator_);
@@ -2404,7 +2404,7 @@ TEST_F(
   credit_card_access_manager_->OnVirtualCardUnmaskResponseReceived(
       AutofillClient::PaymentsRpcResult::kSuccess, response);
   credit_card_access_manager_->OnUserAcceptedAuthenticationSelectionDialog(
-      challenge_option);
+      challenge_option.id);
 
   // Expect the CreditCardAccessManager invokes the FIDO authenticator first.
   DCHECK(fido_authenticator_);
@@ -2418,7 +2418,7 @@ TEST_F(
       .did_succeed = false};
   credit_card_access_manager_->OnFIDOAuthenticationComplete(fido_response);
   credit_card_access_manager_->OnUserAcceptedAuthenticationSelectionDialog(
-      challenge_option);
+      challenge_option.id);
 
   // Expect the CreditCardAccessManager invokes the OTP authenticator as a
   // fallback.

@@ -31,6 +31,7 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -326,6 +328,24 @@ void ChromeAutofillClient::OnUnmaskVerificationResult(
       return;
   }
 #endif  // OS_ANDROID
+}
+
+void ChromeAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOrCreate(
+      web_contents())
+      ->ShowDialog(challenge_options,
+                   std::move(confirm_unmask_challenge_option_callback),
+                   std::move(cancel_unmasking_closure));
+}
+
+void ChromeAutofillClient::DismissUnmaskAuthenticatorSelectionDialog() {
+  CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOrCreate(
+      web_contents())
+      ->DismissDialogUponServerAcceptAuthenticationMethod();
 }
 
 #if !defined(OS_ANDROID)

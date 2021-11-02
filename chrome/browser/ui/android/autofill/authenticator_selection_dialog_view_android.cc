@@ -55,7 +55,11 @@ CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
   return dialog_view;
 }
 
-void AuthenticatorSelectionDialogViewAndroid::OnControllerDestroying() {
+void AuthenticatorSelectionDialogViewAndroid::Dismiss(bool user_closed_dialog) {
+  if (controller_) {
+    controller_->OnDialogClosed(user_closed_dialog);
+    controller_ = nullptr;
+  }
   JNIEnv* env = base::android::AttachCurrentThread();
   if (java_object_) {
     Java_AuthenticatorSelectionDialogBridge_dismiss(env, java_object_);
@@ -70,12 +74,14 @@ void AuthenticatorSelectionDialogViewAndroid::OnOptionSelected(
   std::string cardUnmaskChallengeOptionId =
       base::android::ConvertJavaStringToUTF8(env,
                                              authenticatorOptionIdentifier);
-  // TODO(crbug.com/1196021): notify the controller of the user's selection
+  controller_->OnOkButtonClicked(cardUnmaskChallengeOptionId);
 }
 
 void AuthenticatorSelectionDialogViewAndroid::OnDismissed(JNIEnv* env) {
+  // If |controller_| is not nullptr, it means the dismissal was triggered by
+  // user cancellation.
   if (controller_) {
-    controller_->OnDialogClosed();
+    controller_->OnDialogClosed(/*user_closed_dialog=*/true);
     controller_ = nullptr;
   }
   delete this;

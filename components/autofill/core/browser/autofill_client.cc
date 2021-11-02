@@ -59,6 +59,20 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
   return profile_metrics::BrowserProfileType::kRegular;
 }
 
+void AutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
+}
+
+void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog() {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
+}
+
 #if !defined(OS_IOS)
 std::unique_ptr<webauthn::InternalAuthenticator>
 AutofillClient::CreateCreditCardInternalAuthenticator(

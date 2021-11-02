@@ -29,7 +29,7 @@ class CardUnmaskAuthenticationSelectionDialogViews
   ~CardUnmaskAuthenticationSelectionDialogViews() override;
 
   // CardUnmaskAuthenticationSelectionDialogView:
-  void OnControllerDestroying() override;
+  void Dismiss(bool user_closed_dialog) override;
 
   // views::DialogDelegateView:
   bool Accept() override;

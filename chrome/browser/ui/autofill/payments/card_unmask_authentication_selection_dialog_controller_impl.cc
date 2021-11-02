@@ -25,24 +25,67 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
   // CardUnmaskAuthenticationSelectionDialogViews::dtor() is called,
   // but the reference to controller is not reset. This reference needs to be
   // reset via
-  // CardUnmaskAuthenticationSelectionDialogView::OnControllerDestroying() to
-  // avoid a crash.
+  // CardUnmaskAuthenticationSelectionDialogView::Dismiss() to avoid a crash.
   if (dialog_view_)
-    dialog_view_->OnControllerDestroying();
+    dialog_view_->Dismiss(/*user_closed_dialog=*/true);
+}
+
+// Static
+CardUnmaskAuthenticationSelectionDialogControllerImpl*
+CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOrCreate(
+    content::WebContents* web_contents) {
+  CardUnmaskAuthenticationSelectionDialogControllerImpl::CreateForWebContents(
+      web_contents);
+  CardUnmaskAuthenticationSelectionDialogControllerImpl* controller =
+      CardUnmaskAuthenticationSelectionDialogControllerImpl::FromWebContents(
+          web_contents);
+  DCHECK(controller);
+  return controller;
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
-    const std::vector<CardUnmaskChallengeOption>& challenge_options) {
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmasking_method_callback,
+    base::OnceClosure cancel_unmasking_closure) {
   if (dialog_view_)
     return;
 
-  challenge_options_ = challenge_options;
+  // Currently we only display the first challenge option available.
+  DCHECK(!challenge_options.empty());
+  challenge_options_ = {challenge_options[0]};
+
+  confirm_unmasking_method_callback_ =
+      std::move(confirm_unmasking_method_callback);
+  cancel_unmasking_closure_ = std::move(cancel_unmasking_closure);
+
   dialog_view_ = CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
       this, web_contents());
 }
 
-void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed() {
+void CardUnmaskAuthenticationSelectionDialogControllerImpl::
+    DismissDialogUponServerAcceptAuthenticationMethod() {
+  if (!dialog_view_)
+    return;
+
+  dialog_view_->Dismiss(/*user_closed_dialog=*/false);
+}
+
+void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed(
+    bool user_closed_dialog) {
+  if (user_closed_dialog)
+    std::move(cancel_unmasking_closure_).Run();
+  else
+    cancel_unmasking_closure_.Reset();
+
   dialog_view_ = nullptr;
+  confirm_unmasking_method_callback_.Reset();
+}
+
+void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnOkButtonClicked(
+    const std::string& selected_challenge_option_id) {
+  std::move(confirm_unmasking_method_callback_)
+      .Run(selected_challenge_option_id);
 }
 
 std::u16string

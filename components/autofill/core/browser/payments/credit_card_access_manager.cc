@@ -403,7 +403,7 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
 
   // Then we should let users confirm the OTP auth, trigger the selection
   // dialog and wait for user's response.
-  // TODO(crbug.com/1243475): Trigger auth selection dialog.
+  ShowUnmaskAuthenticatorSelectionDialog();
 }
 
 void CreditCardAccessManager::GetAuthenticationTypeForMaskedServerCard(
@@ -738,7 +738,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableVirtualCardsRiskBasedAuthentication)) {
-      // TODO(crbug.com/1243475): Show authentication selection dialog.
+      ShowUnmaskAuthenticatorSelectionDialog();
     } else {
       unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;
       Authenticate();
@@ -1023,11 +1023,8 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
 }
 
 void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
-    const CardUnmaskChallengeOption& selected_challenge_option) {
-  // Currently only SMS OTP auth go through this dialog.
-  DCHECK_EQ(selected_challenge_option.type,
-            CardUnmaskChallengeOptionType::kSmsOtp);
-  selected_challenge_option_id_ = selected_challenge_option.id;
+    const std::string& selected_challenge_option_id) {
+  selected_challenge_option_id_ = selected_challenge_option_id;
   UnmaskAuthFlowType selected_authentication_type =
       unmask_auth_flow_type_ == UnmaskAuthFlowType::kFido
           ? UnmaskAuthFlowType::kOtpFallbackFromFido
@@ -1072,6 +1069,16 @@ void CreditCardAccessManager::HandleFidoOptInStatusChange() {
   // Reset |opt_in_intention_| after the authentication completes.
   opt_in_intention_ = UserOptInIntention::kUnspecified;
 #endif
+}
+
+void CreditCardAccessManager::ShowUnmaskAuthenticatorSelectionDialog() {
+  client_->ShowUnmaskAuthenticatorSelectionDialog(
+      virtual_card_unmask_response_details_.card_unmask_challenge_options,
+      base::BindOnce(
+          &CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog,
+          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&CreditCardAccessManager::OnVirtualCardUnmaskCancelled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace autofill
