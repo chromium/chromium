@@ -901,7 +901,7 @@ const base::Feature kChromeOSSharingHub{"ChromeOSSharingHub",
 
 #if defined(OS_ANDROID)
 const base::Feature kShareUsageRanking{"ShareUsageRanking",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kShareUsageRankingFixedMore{
     "ShareUsageRankingFixedMore", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
