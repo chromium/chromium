@@ -71,7 +71,7 @@ public class SigninBridgeTest {
 
     @After
     public void tearDown() {
-        SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
+        SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
     }
 
     @Test
@@ -96,7 +96,7 @@ public class SigninBridgeTest {
         when(mSigninManagerMock.isSignInAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount("account@test.com");
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT,
+                ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
         SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
         checkHistogramRecording(AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS);

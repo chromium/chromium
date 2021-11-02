@@ -234,7 +234,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         }
-        SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
+        SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
         mAccountPickerDelegate.signIn(mSelectedAccountName, this::onSigninFailed);
     }
 

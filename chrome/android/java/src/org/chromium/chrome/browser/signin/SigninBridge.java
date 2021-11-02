@@ -91,7 +91,7 @@ final class SigninBridge {
                     AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS);
             return;
         }
-        if (SigninPreferencesManager.getInstance().getAccountPickerBottomSheetActiveDismissalCount()
+        if (SigninPreferencesManager.getInstance().getWebSigninAccountPickerActiveDismissalCount()
                 >= ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT) {
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS);
