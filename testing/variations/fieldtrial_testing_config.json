@@ -7324,7 +7324,7 @@
             ]
         }
     ],
-    "SideSearch": [
+    "SideSearchGoogle": [
         {
             "platforms": [
                 "chromeos"
