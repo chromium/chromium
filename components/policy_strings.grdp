@@ -668,6 +668,12 @@ Additional details:
   <message name="IDS_POLICY_DLP_PRINTING_WARN_CANCEL_BUTTON" desc="Cancel dialog button label for warning before printing.">
     Cancel
   </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE" desc="The title for notification informing the user that screen share is blocked.">
+    Capture confidential content
+  </message>
+  <message name="IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_MESSAGE" desc="The message for notification informing the user that screen share is blocked.">
+    Administrator policy disables screen sharing with <ph name="APPLICATION_TITLE">$1<ex>example.com</ex></ph> when confidential content is visible
+  </message>
   <message name="IDS_POLICY_DLP_SCREEN_SHARE_PAUSED_TITLE" desc="The title for notification informing the user that screen share is paused.">
     Screen capture paused
   </message>

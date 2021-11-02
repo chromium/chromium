@@ -24,6 +24,7 @@ namespace policy {
 namespace {
 
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
+constexpr char kScreenShareBlockedNotificationId[] = "screen_share_dlp_blocked";
 constexpr char kScreenSharePausedNotificationPrefix[] =
     "screen_share_dlp_paused-";
 constexpr char kScreenShareResumedNotificationPrefix[] =
@@ -80,6 +81,14 @@ void ShowDlpPrintDisabledNotification() {
       kPrintBlockedNotificationId,
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_TITLE),
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_PRINTING_BLOCKED_MESSAGE));
+}
+
+void ShowDlpScreenShareDisabledNotification(const std::u16string& app_title) {
+  ShowDlpNotification(
+      kScreenShareBlockedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_TITLE),
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_SCREEN_SHARE_BLOCKED_MESSAGE,
+                                 app_title));
 }
 
 void HideDlpScreenSharePausedNotification(const std::string& share_id) {

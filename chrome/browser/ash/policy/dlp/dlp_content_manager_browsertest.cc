@@ -69,6 +69,7 @@ const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kBlock);
 
+constexpr char kScreenShareBlockedNotificationId[] = "screen_share_dlp_blocked";
 constexpr char kScreenSharePausedNotificationId[] =
     "screen_share_dlp_paused-label";
 constexpr char kScreenShareResumedNotificationId[] =
@@ -133,8 +134,7 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
   SetupReporting();
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -215,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -268,8 +267,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
   SetupReporting();
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -341,8 +339,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -391,8 +388,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -442,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -493,8 +488,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -539,8 +533,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -595,6 +588,40 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+                       ScreenShareDisabledNotification) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  DlpContentManager* manager = helper_.GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  manager->CheckScreenShareRestriction(media_id, u"example.com",
+                                       base::DoNothing());
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false, 1);
+
+  helper_.ChangeConfidentiality(web_contents, kScreenShareRestricted);
+
+  manager->CheckScreenShareRestriction(media_id, u"example.com",
+                                       base::DoNothing());
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+  EXPECT_TRUE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
+
+  helper_.ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
