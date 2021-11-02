@@ -33,8 +33,7 @@ namespace views {
 
 class Button;
 
-class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
-                                          public ui::PropertyHandler {
+class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
   BubbleDialogDelegate(
       View* anchor_view,
@@ -215,7 +214,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
     title_margins_ = title_margins;
   }
 
-  // Sets whether or not CreateClientView() returns a layer backed ClientView.
+  // Sets whether or not CreateClientView() returns a Layer backed ClientView.
+  // TODO(pbos): Remove all calls to this, then remove `paint_client_to_layer_`.
+  // See comment around `paint_client_to_layer_`.
   void SetPaintClientToLayer(bool paint_client_to_layer);
 
   // Sets the content margins to a default picked for smaller bubbles.
@@ -368,6 +369,17 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
 
   // Pointer to this bubble's ClientView.
   ClientView* client_view_ = nullptr;
+
+  // A BubbleFrameView will apply a masking path to its ClientView to ensure
+  // contents are appropriately clipped to the frame's rounded corners. If the
+  // bubble uses layers in its views hierarchy, these will not be clipped to
+  // the client mask unless the ClientView is backed by a textured ui::Layer.
+  // This flag tracks whether or not to to create a layer backed ClientView.
+  //
+  // TODO(tluk): Fix all cases where bubble transparency is used and have bubble
+  // ClientViews always paint to a layer.
+  // TODO(tluk): Flip this to true for all bubbles.
+  bool paint_client_to_layer_ = false;
 
 #if defined(OS_MAC)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is

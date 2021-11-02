@@ -148,8 +148,8 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     extra_text_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     extra_text_label->SetMultiLine(true);
   }
-  View::SetProperty(views::kElementIdentifierKey,
-                    kPermissionPromptBubbleViewIdentifier);
+  SetProperty(views::kElementIdentifierKey,
+              kPermissionPromptBubbleViewIdentifier);
 }
 
 PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;

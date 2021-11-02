@@ -536,7 +536,7 @@ TranslateBubbleView::TranslateBubbleView(
         std::make_unique<WebContentMouseHandler>(this, web_contents);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetFootnoteView(CreateWordmarkView());
-  View::SetProperty(views::kElementIdentifierKey, kIdentifier);
+  SetProperty(views::kElementIdentifierKey, kIdentifier);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::TRANSLATE);
 }
 

@@ -71,17 +71,6 @@ std::vector<BubbleDialogDelegate*>& GetAnchorVector(View* view) {
   return *(view->GetProperty(kAnchorVector));
 }
 
-// A BubbleFrameView will apply a masking path to its ClientView to ensure
-// contents are appropriately clipped to the frame's rounded corners. If the
-// bubble uses layers in its views hierarchy, these will not be clipped to
-// the client mask unless the ClientView is backed by a textured ui::Layer.
-// This flag tracks whether or not to to create a layer backed ClientView.
-//
-// TODO(tluk): Fix all cases where bubble transparency is used and have bubble
-// ClientViews always paint to a layer.
-// TODO(tluk): Flip this to true for all bubbles.
-DEFINE_UI_CLASS_PROPERTY_KEY(bool, kPaintClientToLayer, false)
-
 // Override base functionality of Widget to give bubble dialogs access to the
 // theme provider of the window they're anchored to.
 class BubbleWidget : public Widget {
@@ -507,7 +496,7 @@ ClientView* BubbleDialogDelegate::CreateClientView(Widget* widget) {
   // rounded corner clip we must paint the client view to a layer. This is
   // necessary because layers do not respect the clip of a non-layer backed
   // parent.
-  if (GetProperty(kPaintClientToLayer)) {
+  if (paint_client_to_layer_) {
     client_view_->SetPaintToLayer();
     client_view_->layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(GetCornerRadius()));
@@ -644,7 +633,7 @@ ui::LayerType BubbleDialogDelegate::GetLayerType() const {
 
 void BubbleDialogDelegate::SetPaintClientToLayer(bool paint_client_to_layer) {
   DCHECK(!client_view_);
-  SetProperty(kPaintClientToLayer, paint_client_to_layer);
+  paint_client_to_layer_ = paint_client_to_layer;
 }
 
 void BubbleDialogDelegate::UseCompactMargins() {
