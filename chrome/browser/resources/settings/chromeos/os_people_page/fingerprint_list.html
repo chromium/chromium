@@ -43,10 +43,6 @@
         --cr-input-error-display: none;
       }
 
-      paper-ripple {
-        color: var(--google-grey-700);
-      }
-
       #fingerprintTooltip {
         --paper-tooltip-animation: {
           box-shadow: var(--cr-card-shadow);
@@ -88,7 +84,6 @@
       <iron-list id="fingerprintsList" items="[[fingerprints_]]">
         <template>
           <div class="list-item">
-            <paper-ripple noink></paper-ripple>
             <cr-input value="{{item}}" on-change="onFingerprintLabelChanged_">
             </cr-input>
             <cr-icon-button class="icon-delete-gray"
