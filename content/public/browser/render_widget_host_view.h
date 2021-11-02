@@ -243,12 +243,12 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // This method returns the ScreenInfo used by the view to render. If the
   // information is not knowable (e.g, because the view is not attached to a
   // screen yet), then a default best-guess will be used.
-  virtual void GetScreenInfo(display::ScreenInfo* screen_info) = 0;
+  virtual display::ScreenInfo GetScreenInfo() const = 0;
 
   // This method returns the ScreenInfos used by the view to render. If the
   // information is not knowable (e.g, because the view is not attached to a
   // screen yet), then a default best-guess will be used.
-  virtual display::ScreenInfos GetScreenInfos() = 0;
+  virtual display::ScreenInfos GetScreenInfos() const = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;

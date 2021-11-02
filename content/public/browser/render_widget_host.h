@@ -259,11 +259,11 @@ class CONTENT_EXPORT RenderWidgetHost {
   virtual void RemoveObserver(RenderWidgetHostObserver* observer) = 0;
 
   // Get info regarding the screen showing this RenderWidgetHost.
-  virtual void GetScreenInfo(display::ScreenInfo* screen_info) = 0;
+  virtual display::ScreenInfo GetScreenInfo() const = 0;
 
   // Get info regarding all screens, including which screen is currently showing
   // this RenderWidgetHost.
-  virtual display::ScreenInfos GetScreenInfos() = 0;
+  virtual display::ScreenInfos GetScreenInfos() const = 0;
 
   // This must always return the same device scale factor as GetScreenInfo.
   virtual float GetDeviceScaleFactor() = 0;

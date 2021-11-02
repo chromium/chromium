@@ -155,10 +155,8 @@ class TestView : public TestRenderWidgetHostView {
 
   void InvalidateLocalSurfaceId() { local_surface_id_allocator_.Invalidate(); }
 
-  void GetScreenInfo(display::ScreenInfo* screen_info) override {
-    *screen_info = screen_info_;
-  }
-  display::ScreenInfos GetScreenInfos() override {
+  display::ScreenInfo GetScreenInfo() const override { return screen_info_; }
+  display::ScreenInfos GetScreenInfos() const override {
     return display::ScreenInfos(screen_info_);
   }
 

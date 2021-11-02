@@ -424,10 +424,6 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
   return GetActiveWidget();
 }
 
-void RenderWidgetHostViewMac::GetScreenInfo(display::ScreenInfo* screen_info) {
-  *screen_info = screen_infos_.current();
-}
-
 void RenderWidgetHostViewMac::Show() {
   is_visible_ = true;
   ns_view_->SetVisible(is_visible_);
@@ -736,15 +732,6 @@ void RenderWidgetHostViewMac::UpdateTooltipUnderCursor(
 void RenderWidgetHostViewMac::UpdateTooltip(
     const std::u16string& tooltip_text) {
   SetTooltipText(tooltip_text);
-}
-
-display::ScreenInfos RenderWidgetHostViewMac::GetScreenInfos() {
-  // Return cached screen infos, which may originate from a remote process that
-  // hosts the associated NSWindow. The latest display::Screen info observed
-  // directly in this process may be intermittently out-of-sync with that info.
-  // Also, RenderWidgetHostViewMac does not update its cached screen info
-  // during auto-resize.
-  return screen_infos_;
 }
 
 void RenderWidgetHostViewMac::UpdateScreenInfo() {

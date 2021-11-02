@@ -121,7 +121,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void ShowDefinitionForSelection() override;
   void SpeakSelection() override;
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
-  void GetScreenInfo(display::ScreenInfo* screen_info) override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool IsHTMLFormPopup() const override;
 
@@ -158,7 +157,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
-  display::ScreenInfos GetScreenInfos() override;
   void UpdateScreenInfo() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;

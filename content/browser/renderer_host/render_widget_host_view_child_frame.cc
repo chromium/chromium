@@ -823,11 +823,9 @@ void RenderWidgetHostViewChildFrame::CopyFromSurface(
   if (src_subrect.IsEmpty()) {
     request->set_area(gfx::Rect(GetCompositorViewportPixelSize()));
   } else {
-    display::ScreenInfo screen_info;
-    GetScreenInfo(&screen_info);
     // |src_subrect| is in DIP coordinates; convert to Surface coordinates.
     request->set_area(
-        gfx::ScaleToRoundedRect(src_subrect, screen_info.device_scale_factor));
+        gfx::ScaleToRoundedRect(src_subrect, GetDeviceScaleFactor()));
   }
 
   if (!output_size.IsEmpty()) {
@@ -939,15 +937,6 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
   }
 
   return blink::mojom::InputEventResultState::kNotConsumed;
-}
-
-void RenderWidgetHostViewChildFrame::GetScreenInfo(
-    display::ScreenInfo* screen_info) {
-  *screen_info = screen_infos_.current();
-}
-
-display::ScreenInfos RenderWidgetHostViewChildFrame::GetScreenInfos() {
-  return screen_infos_;
 }
 
 void RenderWidgetHostViewChildFrame::EnableAutoResize(

@@ -5945,9 +5945,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   SetWebEventPositions(&click_event, gfx::Point(1, 1), rwhv_root);
   rwhv_child->ProcessMouseEvent(click_event, ui::LatencyInfo());
 
-  display::ScreenInfo screen_info;
-  shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
-      &screen_info);
+  display::ScreenInfo screen_info =
+      shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo();
 
   popup_waiter->Wait();
   gfx::Rect popup_rect = popup_waiter->last_initial_rect();
@@ -6081,9 +6080,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_EQ(popup_rect.x(), 9);
   EXPECT_EQ(popup_rect.y(), 9);
 #else
-  display::ScreenInfo screen_info;
-  shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
-      &screen_info);
+  display::ScreenInfo screen_info =
+      shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo();
   if (!IsScreenTooSmallForPopup(screen_info)) {
     EXPECT_EQ(popup_rect.x() - rwhv_root->GetViewBounds().x(), 354);
     EXPECT_EQ(popup_rect.y() - rwhv_root->GetViewBounds().y(), 154);

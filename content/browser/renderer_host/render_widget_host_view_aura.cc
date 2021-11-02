@@ -745,6 +745,10 @@ void RenderWidgetHostViewAura::RenderProcessGone() {
 
 void RenderWidgetHostViewAura::ShowWithVisibility(
     Visibility web_contents_visibility) {
+  // Make sure we grab updated ScreenInfos before synchronizing visual
+  // properties, in case they have changed or this is the initial show.
+  UpdateScreenInfo();
+
   // If the viz::LocalSurfaceId is invalid, we may have been evicted,
   // and no other visual properties have since been changed. Allocate a new id
   // and start synchronizing.

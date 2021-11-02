@@ -124,8 +124,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
       base::OnceCallback<void(const SkBitmap&)> callback) override;
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> CreateVideoCapturer()
       override;
-  void GetScreenInfo(display::ScreenInfo* screen_info) override;
-  display::ScreenInfos GetScreenInfos() override;
+  display::ScreenInfo GetScreenInfo() const override;
+  display::ScreenInfos GetScreenInfos() const override;
 
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
@@ -625,6 +625,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
                            NoFallbackAfterHiddenNavigationFails);
 
   void SynchronizeVisualProperties();
+
+  // Generates the most current set of ScreenInfos from the current set of
+  // displays in the system for use in UpdateScreenInfo.
+  display::ScreenInfos GetNewScreenInfosForUpdate();
 
   // Called when display properties that need to be synchronized with the
   // renderer process changes. This method is called before notifying
