@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests show that ssp isn't rebuild on every dom mutation\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="parent">

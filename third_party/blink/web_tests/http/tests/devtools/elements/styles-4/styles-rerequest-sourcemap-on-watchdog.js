@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Verifies that the sourceMap is in fact re-requested from network as SASS watchdog updates the CSS file.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`<link rel="stylesheet">`);

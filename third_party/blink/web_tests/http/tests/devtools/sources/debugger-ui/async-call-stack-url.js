@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that call stack sidebar contains correct urls for call frames.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('../debugger/resources/unformatted-async.js');
   await TestRunner.evaluateInPagePromise(`

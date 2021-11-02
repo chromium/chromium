@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that style updates are throttled during DOM traversal. Bug 77643.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div></div>

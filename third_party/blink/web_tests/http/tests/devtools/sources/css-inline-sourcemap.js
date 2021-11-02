@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`The test verifies that source maps are loaded if specified inside style tag.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   await TestRunner.loadHTML(`

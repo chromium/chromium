@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test verifies that similarly-sized grids with different writing-modes share the same grid information but have a different writingMode value.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

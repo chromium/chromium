@@ -4,7 +4,7 @@
 
 (async function test() {
   TestRunner.addResult('Checks that we update breakpoint location on source map loading error.');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   const brokenSourceMap = {"version":3,"file":"a.js","sourceRoot":"","sources":["a.ts"],"names":[],"mappings":"AAAA;IACE,OAAO,CAAC,GAAG,CAAC,EAAE,CAAC,CAAC;AAClB,CAAC","sourcesContent":["function foo() {\n  console.log(42);\n}\n"]};

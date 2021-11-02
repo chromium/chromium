@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that highlighter type for SCSS file loaded via sourceMap is correct.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addStylesheetTag('resources/empty.css');
 

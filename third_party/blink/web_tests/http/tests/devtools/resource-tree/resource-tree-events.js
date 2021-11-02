@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests top frame navigation events.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
 
   // Reset resourceTreeModel.

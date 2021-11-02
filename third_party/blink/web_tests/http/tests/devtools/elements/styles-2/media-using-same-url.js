@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that media query stack is computed correctly when several stylesheets share the same URL.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks text editor javascript formatting.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
 <pre id="codeSnippet">/**

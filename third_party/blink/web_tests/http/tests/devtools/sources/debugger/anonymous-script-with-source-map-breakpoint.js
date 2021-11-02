@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests breakpoint in anonymous script with source map on reload.`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise();
   TestRunner.navigatePromise(

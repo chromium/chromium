@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the empty web animations do not show up in animation timeline.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="node" style="background-color: red; height: 100px"></div>

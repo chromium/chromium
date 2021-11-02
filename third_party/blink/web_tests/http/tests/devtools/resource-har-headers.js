@@ -5,7 +5,7 @@
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests the nondeterministic bits of HAR conversion via the magic of hard-coded values.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
 
   function visibleNewlines(s) {

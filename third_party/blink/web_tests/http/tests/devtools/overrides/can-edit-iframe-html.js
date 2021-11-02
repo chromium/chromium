@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Ensures iframes are overridable if overrides are setup.\n`);
   await TestRunner.loadTestModule('bindings_test_runner');
-  await TestRunner.loadModule('sources');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.loadLegacyModule('sources');
 
   var {project} = await BindingsTestRunner.createOverrideProject('file:///tmp/');

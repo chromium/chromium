@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the Styles pane.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>

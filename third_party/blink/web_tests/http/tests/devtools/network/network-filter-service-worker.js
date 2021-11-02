@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Tests service worker filters in network log.');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.loadTestModule('network_test_runner');
   await ApplicationTestRunner.resetState();
   await TestRunner.showPanel('network');

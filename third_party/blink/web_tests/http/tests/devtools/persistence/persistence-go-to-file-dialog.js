@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify that GoTo source dialog filters out mapped uiSourceCodes.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.loadLegacyModule('quick_open');
   await TestRunner.addScriptTag('resources/foo.js');
