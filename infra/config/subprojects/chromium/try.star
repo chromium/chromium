@@ -303,6 +303,9 @@ try_.chromium_android_builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
+    # TODO (kimstephanie): Change to cores = 16 and ssd = True once bots have
+    # landed
+    cores = "8|16",
     executable = "recipe:binary_size_trybot",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
