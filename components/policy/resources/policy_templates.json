@@ -4057,8 +4057,8 @@
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
-      'future_on': ['android','ios'],
+      'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'ios:96-'],
+      'future_on': ['android'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
