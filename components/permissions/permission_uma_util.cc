@@ -728,7 +728,7 @@ PermissionUmaUtil::ScopedRevocationReporter::ScopedRevocationReporter(
 PermissionUmaUtil::ScopedRevocationReporter::~ScopedRevocationReporter() {
   if (!is_initially_allowed_)
     return;
-  if (!PermissionUtil::IsPermission(content_type_))
+  if (!IsRequestablePermissionType(content_type_))
     return;
   HostContentSettingsMap* settings_map =
       PermissionsClient::Get()->GetSettingsMap(browser_context_);
@@ -790,6 +790,7 @@ void PermissionUmaUtil::RecordPermissionAction(
   PredictionRequestFeatures::ActionCounts actions_counts;
 
   if (permission_actions_history != nullptr) {
+    DCHECK(IsRequestablePermissionType(permission));
     auto loud_ui_actions_per_request_type =
         permission_actions_history->GetHistory(
             cutoff, ContentSettingsTypeToRequestType(permission),
