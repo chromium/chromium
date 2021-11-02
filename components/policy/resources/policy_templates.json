@@ -19339,20 +19339,17 @@
           'caption': 'Prevent sites from using SharedArrayBuffers',
         },
       ],
-      'example_value': True,
+      'example_value': False,
       'default': False,
       'id': 852,
       'caption': '''Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context''',
       'tags': ['system-security'],
       'desc': '''
-      Specifies whether SharedArrayBuffers can be used in a non cross-origin-
-      isolated context. Chrome will require cross-origin isolation when using
-      SharedArrayBuffers from Chrome 91 onward (2021-05-25) for Web Compatibility
-      reasons. Additional details can be found on:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      When set to True, sites can use SharedArrayBuffer with no restrictions.
-      When set to False or not set, sites can only use SharedArrayBuffers when
-      cross-origin isolated.''',
+      Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will require cross-origin isolation when using SharedArrayBuffers from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 91 onward (2021-05-25) for Web Compatibility reasons. Additional details can be found on: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      When set to Enabled, sites can use SharedArrayBuffer with no restrictions.
+
+      When set to Disabled or not set, sites can only use SharedArrayBuffers when cross-origin isolated.''',
     },
     {
       'name': 'SandboxExternalProtocolBlocked',
@@ -19389,10 +19386,7 @@
 
       This defaults to True: security feature enabled.
 
-      This can be used by administrators who need more time to update their
-      internal website affected by this new restriction. This Enterprise policy
-      is temporary; it's intended to be removed after
-      <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 104.
+      This can be used by administrators who need more time to update their internal website affected by this new restriction. This Enterprise policy is temporary; it's intended to be removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 104.
       ''',
     },
     {
@@ -19422,18 +19416,11 @@
       'caption': '''Specifies whether WebAssembly modules can be sent cross-origin''',
       'tags': ['system-security'],
       'desc': '''
-      Specifies whether WebAssembly modules can be sent to another window or
-      worker cross-origin. Cross-origin WebAssembly module sharing will be
-      deprecated as part of the efforts to deprecate document.domain, see
-      https://github.com/mikewest/deprecating-document-domain. This policy
-      allows to re-enable cross-origin WebAssembly module sharing to offer a
-      longer transition period in the deprecation process.
+      Specifies whether WebAssembly modules can be sent to another window or worker cross-origin. Cross-origin WebAssembly module sharing will be deprecated as part of the efforts to deprecate document.domain, see https://github.com/mikewest/deprecating-document-domain. This policy allows to re-enable cross-origin WebAssembly module sharing to offer a longer transition period in the deprecation process.
 
-      When set to True, sites can send WebAssembly modules also cross-origin
-      without restrictions.
+      When set to True, sites can send WebAssembly modules also cross-origin without restrictions.
 
-      When set to False or not set, sites can only send WebAssembly modules to
-      windows and workers in the same origin.''',
+      When set to False or not set, sites can only send WebAssembly modules to windows and workers in the same origin.''',
     },
     {
       'name': 'DisplayCapturePermissionsPolicyEnabled',
@@ -19466,22 +19453,11 @@
       'caption': 'Specifies whether the display-capture permissions-policy is checked or skipped.',
       'tags': ['system-security'],
       'desc': '''
-      The display-capture permissions-policy gates access to getDisplayMedia(),
-      as per this spec:
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration
-      However, if this policy is Disabled, this requirement is not enforced,
-      and getDisplayMedia() is allowed from contexts that would otherwise be
-      forbidden. This Enterprise policy is temporary; it's intended to be
-      removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 100.
-      It is intended to unblock Enterprise users whose application is non-spec compliant,
-      but needs time to be fixed.
+      The display-capture permissions-policy gates access to getDisplayMedia(), as per this spec: https://www.w3.org/TR/screen-capture/#feature-policy-integration. However, if this policy is Disabled, this requirement is not enforced, and getDisplayMedia() is allowed from contexts that would otherwise be forbidden. This Enterprise policy is temporary; it's intended to be removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 100. It is intended to unblock Enterprise users whose application is non-spec compliant, but needs time to be fixed.
 
-      When enabled or not set, sites can only call getDisplayMedia() from
-      contexts which are allowlisted by the display-capture permissions-policy.
+      When enabled or not set, sites can only call getDisplayMedia() from contexts which are allowlisted by the display-capture permissions-policy.
 
-      When disabled, sites can call getDisplayMedia() even from contexts
-      which are not allowlisted by the display-capture permissions policy.
-      Note that other restrictions may still apply.''',
+      When disabled, sites can call getDisplayMedia() even from contexts which are not allowlisted by the display-capture permissions policy. Note that other restrictions may still apply.''',
     },
     {
       'name': 'WebDriverOverridesIncompatiblePolicies',
@@ -19503,15 +19479,13 @@
       This policy was removed in M80, because it is not necessary anymore as
       WebDriver is now compatible with all existing policies.
 
-      This policy allows users of the WebDriver feature to override
-      policies which can interfere with its operation.
+      This policy allows users of the WebDriver feature to override policies which can interfere with its operation.
 
       Currently this policy disables SitePerProcess and IsolateOrigins policies.
 
-      If the policy is enabled, WebDriver will be able to override incomaptible
-      policies.
-      If the policy is disabled or not configured, WebDriver will not be allowed
-      to override incompatible policies.''',
+      If the policy is enabled, WebDriver will be able to override incomaptible policies.
+
+      If the policy is disabled or not configured, WebDriver will not be allowed to override incompatible policies.''',
     },
     {
       'name': 'UnsafelyTreatInsecureOriginAsSecure',
@@ -19535,29 +19509,15 @@
       'desc': '''Deprecated in M69. Use
       OverrideSecurityRestrictionsOnInsecureOrigin instead.
 
-      The policy specifies a list of origins (URLs) or hostname patterns (such
-      as "*.example.com") for which security restrictions on insecure origins
-      will not apply.
+      The policy specifies a list of origins (URLs) or hostname patterns (such as "*.example.com") for which security restrictions on insecure origins will not apply.
 
-      The intent is to allow organizations to allow origins for legacy
-      applications that cannot deploy TLS, or to set up a staging server for
-      internal web development so that their developers can test out features
-      requiring secure contexts without having to deploy TLS on the staging
-      server. This policy will also prevent the origin from being labeled
-      "Not Secure" in the omnibox.
+      The intent is to allow organizations to allow origins for legacy applications that cannot deploy TLS, or to set up a staging server for internal web development so that their developers can test out features requiring secure contexts without having to deploy TLS on the staging server. This policy will also prevent the origin from being labeled "Not Secure" in the omnibox.
 
-      Setting a list of URLs in this policy has the same effect as setting the
-      command-line flag '--unsafely-treat-insecure-origin-as-secure' to a
-      comma-separated list of the same URLs. If the policy is set, it will
-      override the command-line flag.
+      Setting a list of URLs in this policy has the same effect as setting the command-line flag '--unsafely-treat-insecure-origin-as-secure' to a comma-separated list of the same URLs. If the policy is set, it will override the command-line flag.
 
-      This policy is deprecated in M69 in favor of
-      OverrideSecurityRestrictionsOnInsecureOrigin. If both policies are
-      present, OverrideSecurityRestrictionsOnInsecureOrigin will override this
-      policy.
+      This policy is deprecated in M69 in favor of OverrideSecurityRestrictionsOnInsecureOrigin. If both policies are present, OverrideSecurityRestrictionsOnInsecureOrigin will override this policy.
 
-      For more information on secure contexts, see
-      https://www.w3.org/TR/secure-contexts/
+      For more information on secure contexts, see https://www.w3.org/TR/secure-contexts/
       '''
     },
     {
