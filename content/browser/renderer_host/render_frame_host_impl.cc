@@ -10527,6 +10527,8 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {
+    // Set coep reporter to the document reporting source.
+    coep_reporter_->set_reporting_source(GetReportingSource());
     mojo::PendingRemote<blink::mojom::ReportingObserver> remote;
     mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver =
         remote.InitWithNewPipeAndPassReceiver();

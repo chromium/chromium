@@ -50,6 +50,8 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   CrossOriginEmbedderPolicyReporter& operator=(
       const CrossOriginEmbedderPolicyReporter&) = delete;
 
+  void set_reporting_source(const base::UnguessableToken& reporting_source);
+
   // network::mojom::CrossOriginEmbedderPolicyReporter implementation.
   void QueueCorpViolationReport(const GURL& blocked_url,
                                 network::mojom::RequestDestination destination,
@@ -86,7 +88,11 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   const GURL context_url_;
   const absl::optional<std::string> endpoint_;
   const absl::optional<std::string> report_only_endpoint_;
-  const base::UnguessableToken reporting_source_;
+  // This reporting source is not owned by COEPReporter in any way. The
+  // COEPReporter is not responsible for cleaning up the reporting source, the
+  // actual owner of this token needs to manage the lifecycle (including
+  // cleaning up the reporting source from reporting cache).
+  base::UnguessableToken reporting_source_;
   const net::NetworkIsolationKey network_isolation_key_;
 
   mojo::ReceiverSet<network::mojom::CrossOriginEmbedderPolicyReporter>
