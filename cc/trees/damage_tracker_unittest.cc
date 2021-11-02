@@ -1686,7 +1686,7 @@ TEST_F(DamageTrackerTest, VerifyDamageWithNoContributingLayers) {
   EmulateDrawingOneFrame(root);
 
   DCHECK_EQ(GetRenderSurface(empty_surface), empty_surface->render_target());
-  RenderSurfaceImpl* target_surface = GetRenderSurface(empty_surface);
+  const RenderSurfaceImpl* target_surface = GetRenderSurface(empty_surface);
   gfx::Rect damage_rect;
   EXPECT_TRUE(
       target_surface->damage_tracker()->GetDamageRectIfValid(&damage_rect));

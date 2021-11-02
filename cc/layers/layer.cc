@@ -236,9 +236,9 @@ bool Layer::IsMutationAllowed() const {
 }
 
 void Layer::CaptureContent(const gfx::Rect& rect,
-                           std::vector<NodeInfo>* content) {}
+                           std::vector<NodeInfo>* content) const {}
 
-sk_sp<SkPicture> Layer::GetPicture() const {
+sk_sp<const SkPicture> Layer::GetPicture() const {
   return nullptr;
 }
 

@@ -185,11 +185,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Returns the UIResourceManager used to create UIResources for
   // UIResourceLayers pushed to the LayerTree.
-  UIResourceManager* GetUIResourceManager() const;
+  UIResourceManager* GetUIResourceManager();
 
   // Returns the TaskRunnerProvider used to access the main and compositor
   // thread task runners.
-  TaskRunnerProvider* GetTaskRunnerProvider() const;
+  TaskRunnerProvider* GetTaskRunnerProvider();
 
   // Returns the settings used by this host. These settings are constants given
   // at startup.
@@ -381,7 +381,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // attached to it and will be added/removed along with the root Layer. The
   // LayerTreeHost retains ownership of a reference to the root Layer.
   void SetRootLayer(scoped_refptr<Layer> root_layer);
-  Layer* root_layer() const { return pending_commit_state()->root_layer.get(); }
+  Layer* root_layer() { return pending_commit_state()->root_layer.get(); }
+  const Layer* root_layer() const {
+    return pending_commit_state()->root_layer.get();
+  }
 
   // Sets the collection of viewport property ids, defined to allow viewport
   // pinch-zoom etc. on the compositor thread. This is set only on the
@@ -391,8 +394,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   ViewportPropertyIds ViewportPropertyIdsForTesting() const {
     return pending_commit_state()->viewport_property_ids;
   }
-  Layer* InnerViewportScrollLayerForTesting() const;
-  Layer* OuterViewportScrollLayerForTesting() const;
+  Layer* InnerViewportScrollLayerForTesting();
+  Layer* OuterViewportScrollLayerForTesting();
 
   ElementId OuterViewportScrollElementId() const;
 
@@ -580,7 +583,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void RegisterLayer(Layer* layer);
   void UnregisterLayer(Layer* layer);
-  Layer* LayerById(int id) const;
+  Layer* LayerById(int id);
 
   bool PaintContent(const LayerList& update_layer_list);
   bool in_paint_layer_contents() const { return in_paint_layer_contents_; }
@@ -609,7 +612,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Ensures a HUD layer exists if it is needed, and updates the HUD bounds and
   // position. If a HUD layer exists but is no longer needed, it is destroyed.
   void UpdateHudLayer(bool show_hud_info);
-  HeadsUpDisplayLayer* hud_layer() const { return hud_layer_.get(); }
+  HeadsUpDisplayLayer* hud_layer() { return hud_layer_.get(); }
+  const HeadsUpDisplayLayer* hud_layer() const { return hud_layer_.get(); }
   bool is_hud_layer(const Layer*) const;
 
   virtual void SetNeedsFullTreeSync();
@@ -626,11 +630,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void PushLayerTreeHostPropertiesTo(LayerTreeHostImpl* host_impl);
   void MoveChangeTrackingToLayers(LayerTreeImpl* tree_impl);
 
-  MutatorHost* mutator_host() const { return mutator_host_; }
+  MutatorHost* mutator_host() { return mutator_host_; }
 
   // Returns the layer with the given |element_id|. In layer-list mode, only
   // scrollable layers are registered in this map.
-  Layer* LayerByElementId(ElementId element_id) const;
+  Layer* LayerByElementId(ElementId element_id);
+  const Layer* LayerByElementId(ElementId element_id) const;
+
   void RegisterElement(ElementId element_id,
                        Layer* layer);
   void UnregisterElement(ElementId element_id);
@@ -643,10 +649,14 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void ClearActiveCommitStateForTesting() { active_commit_state_ = nullptr; }
 
   // Layer iterators.
-  LayerListIterator begin() const;
-  LayerListIterator end() const;
+  LayerListIterator begin();
+  LayerListConstIterator begin() const;
+  LayerListIterator end();
+  LayerListConstIterator end() const;
   LayerListReverseIterator rbegin();
+  LayerListReverseConstIterator rbegin() const;
   LayerListReverseIterator rend();
+  LayerListReverseConstIterator rend() const;
 
   // LayerTreeHost interface to Proxy.
   void WillBeginMainFrame();
@@ -704,7 +714,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return rendering_stats_instrumentation_.get();
   }
 
-  Proxy* proxy() const { return proxy_.get(); }
+  Proxy* proxy() { return proxy_.get(); }
 
   bool IsSingleThreaded() const;
   bool IsThreaded() const;
@@ -774,7 +784,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Captures the on-screen text content, if success, fills the associated
   // NodeInfo in |content| and return true, otherwise return false.
-  bool CaptureContent(std::vector<NodeInfo>* content);
+  bool CaptureContent(std::vector<NodeInfo>* content) const;
 
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata);

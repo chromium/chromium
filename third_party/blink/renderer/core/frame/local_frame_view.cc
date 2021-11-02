@@ -3050,9 +3050,13 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
   return repainted;
 }
 
-const cc::Layer* LocalFrameView::RootCcLayer() const {
+cc::Layer* LocalFrameView::RootCcLayer() {
   return paint_artifact_compositor_ ? paint_artifact_compositor_->RootLayer()
                                     : nullptr;
+}
+
+const cc::Layer* LocalFrameView::RootCcLayer() const {
+  return const_cast<LocalFrameView*>(this)->RootCcLayer();
 }
 
 void LocalFrameView::CreatePaintTimelineEvents() {

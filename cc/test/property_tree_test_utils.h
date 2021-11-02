@@ -25,7 +25,7 @@ void SetupRootProperties(LayerImpl* root);
 
 // Copies property tree indexes from |from| to |to|. For the |Layer| form, also
 // copies |from|'s layer_host_host and property_tree_sequence_number to |to|.
-void CopyProperties(const Layer* from, Layer* to);
+void CopyProperties(Layer* from, Layer* to);
 void CopyProperties(const LayerImpl* from, LayerImpl* to);
 
 // Each of the following functions creates a property node for the layer,
@@ -75,24 +75,43 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
 void SetupMaskProperties(LayerImpl* masked_layer, PictureLayerImpl* mask_layer);
 void SetupMaskProperties(Layer* masked_layer, PictureLayer* mask_layer);
 
-PropertyTrees* GetPropertyTrees(const Layer* layer);
-PropertyTrees* GetPropertyTrees(const LayerImpl* layer);
+PropertyTrees* GetPropertyTrees(Layer* layer);
+const PropertyTrees* GetPropertyTrees(const Layer* layer);
+PropertyTrees* GetPropertyTrees(LayerImpl* layer);
+const PropertyTrees* GetPropertyTrees(const LayerImpl* layer);
 
 template <typename LayerType>
-TransformNode* GetTransformNode(const LayerType* layer) {
+TransformNode* GetTransformNode(LayerType* layer) {
   return GetPropertyTrees(layer)->transform_tree.Node(
       layer->transform_tree_index());
 }
 template <typename LayerType>
-ClipNode* GetClipNode(const LayerType* layer) {
+const TransformNode* GetTransformNode(const LayerType* layer) {
+  return GetPropertyTrees(layer)->transform_tree.Node(
+      layer->transform_tree_index());
+}
+template <typename LayerType>
+ClipNode* GetClipNode(LayerType* layer) {
   return GetPropertyTrees(layer)->clip_tree.Node(layer->clip_tree_index());
 }
 template <typename LayerType>
-EffectNode* GetEffectNode(const LayerType* layer) {
+const ClipNode* GetClipNode(const LayerType* layer) {
+  return GetPropertyTrees(layer)->clip_tree.Node(layer->clip_tree_index());
+}
+template <typename LayerType>
+EffectNode* GetEffectNode(LayerType* layer) {
   return GetPropertyTrees(layer)->effect_tree.Node(layer->effect_tree_index());
 }
 template <typename LayerType>
-ScrollNode* GetScrollNode(const LayerType* layer) {
+const EffectNode* GetEffectNode(const LayerType* layer) {
+  return GetPropertyTrees(layer)->effect_tree.Node(layer->effect_tree_index());
+}
+template <typename LayerType>
+ScrollNode* GetScrollNode(LayerType* layer) {
+  return GetPropertyTrees(layer)->scroll_tree.Node(layer->scroll_tree_index());
+}
+template <typename LayerType>
+const ScrollNode* GetScrollNode(const LayerType* layer) {
   return GetPropertyTrees(layer)->scroll_tree.Node(layer->scroll_tree_index());
 }
 
@@ -103,7 +122,7 @@ void SetScrollOffset(LayerImpl*, const gfx::Vector2dF&);
 void SetScrollOffsetFromImplSide(Layer*, const gfx::Vector2dF&);
 
 template <typename LayerType>
-void SetLocalTransformChanged(const LayerType* layer) {
+void SetLocalTransformChanged(LayerType* layer) {
   DCHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
   transform_node->needs_local_transform_update = true;
@@ -112,8 +131,7 @@ void SetLocalTransformChanged(const LayerType* layer) {
 }
 
 template <typename LayerType>
-void SetWillChangeTransform(const LayerType* layer,
-                            bool will_change_transform) {
+void SetWillChangeTransform(LayerType* layer, bool will_change_transform) {
   DCHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
   transform_node->will_change_transform = will_change_transform;
@@ -122,19 +140,19 @@ void SetWillChangeTransform(const LayerType* layer,
 }
 
 template <typename LayerType>
-void SetTransform(const LayerType* layer, const gfx::Transform& transform) {
+void SetTransform(LayerType* layer, const gfx::Transform& transform) {
   GetTransformNode(layer)->local = transform;
   SetLocalTransformChanged(layer);
 }
 
 template <typename LayerType>
-void SetTransformOrigin(const LayerType* layer, const gfx::Point3F& origin) {
+void SetTransformOrigin(LayerType* layer, const gfx::Point3F& origin) {
   GetTransformNode(layer)->origin = origin;
   SetLocalTransformChanged(layer);
 }
 
 template <typename LayerType>
-void SetPostTranslation(const LayerType* layer,
+void SetPostTranslation(LayerType* layer,
                         const gfx::Vector2dF& post_translation) {
   GetTransformNode(layer)->post_translation = post_translation;
   SetLocalTransformChanged(layer);
@@ -142,7 +160,7 @@ void SetPostTranslation(const LayerType* layer,
 
 // This will affect all layers associated with this layer's effect node.
 template <typename LayerType>
-void SetOpacity(const LayerType* layer, float opacity) {
+void SetOpacity(LayerType* layer, float opacity) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->opacity = opacity;
   effect_node->effect_changed = true;
@@ -151,7 +169,7 @@ void SetOpacity(const LayerType* layer, float opacity) {
 
 // This will affect all layers associated with this layer's effect node.
 template <typename LayerType>
-void SetFilter(const LayerType* layer, const FilterOperations& filters) {
+void SetFilter(LayerType* layer, const FilterOperations& filters) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->filters = filters;
   effect_node->effect_changed = true;
@@ -160,8 +178,7 @@ void SetFilter(const LayerType* layer, const FilterOperations& filters) {
 
 // This will affect all layers associated with this layer's effect node.
 template <typename LayerType>
-void SetRenderSurfaceReason(const LayerType* layer,
-                            RenderSurfaceReason reason) {
+void SetRenderSurfaceReason(LayerType* layer, RenderSurfaceReason reason) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->render_surface_reason = reason;
   effect_node->effect_changed = true;
@@ -170,8 +187,7 @@ void SetRenderSurfaceReason(const LayerType* layer,
 
 // This will affect all layers associated with this layer's effect node.
 template <typename LayerType>
-void SetBackdropFilter(const LayerType* layer,
-                       const FilterOperations& filters) {
+void SetBackdropFilter(LayerType* layer, const FilterOperations& filters) {
   auto* effect_node = GetEffectNode(layer);
   effect_node->backdrop_filters = filters;
   effect_node->effect_changed = true;
@@ -180,7 +196,7 @@ void SetBackdropFilter(const LayerType* layer,
 
 // This will affect all layers associated with this layer's clip node.
 template <typename LayerType>
-void SetClipRect(const LayerType* layer, const gfx::RectF& clip) {
+void SetClipRect(LayerType* layer, const gfx::RectF& clip) {
   auto* clip_node = GetClipNode(layer);
   clip_node->clip = clip;
   GetPropertyTrees(layer)->clip_tree.set_needs_update(true);
@@ -205,7 +221,8 @@ void SetupViewport(LayerImpl* root,
                    const gfx::Size& content_size);
 
 // Returns the RenderSurfaceImpl into which the given layer draws.
-RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer);
+RenderSurfaceImpl* GetRenderSurface(LayerImpl* layer);
+const RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer);
 
 gfx::Vector2dF ScrollOffsetBase(const LayerImpl* layer);
 gfx::Vector2dF ScrollDelta(const LayerImpl* layer);

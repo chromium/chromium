@@ -134,7 +134,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // A layer is attached to a LayerTreeHost if it or an ancestor layer is set as
   // the root layer of a LayerTreeHost (while noting only a layer without a
   // parent may be set as the root layer).
-  LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
+  LayerTreeHost* layer_tree_host() { return layer_tree_host_; }
+  const LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
 
   // This requests the layer and its subtree be rendered and given to the
   // callback. If the copy is unable to be produced (the layer is destroyed
@@ -609,13 +610,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // Captures text content within the given |rect| and returns the associated
   // NodeInfo in |content|.
   virtual void CaptureContent(const gfx::Rect& rect,
-                              std::vector<NodeInfo>* content);
+                              std::vector<NodeInfo>* content) const;
 
   // For tracing. Gets a recorded rasterization of this layer's contents that
   // can be displayed inside representations of this layer. May return null, in
   // which case the layer won't be shown with any content in the tracing
   // display.
-  virtual sk_sp<SkPicture> GetPicture() const;
+  virtual sk_sp<const SkPicture> GetPicture() const;
 
   const LayerDebugInfo* debug_info() const { return debug_info_.get(); }
   LayerDebugInfo& EnsureDebugInfo();

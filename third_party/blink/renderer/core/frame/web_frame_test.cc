@@ -6378,7 +6378,7 @@ class CompositedSelectionBoundsTest
                                          : clm->MainGraphicsLayer();
   }
 
-  static int LayerIdFromNode(cc::Layer* root_layer, blink::Node* node) {
+  static int LayerIdFromNode(const cc::Layer* root_layer, blink::Node* node) {
     if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
       return GetExpectedLayerForSelection(node)->CcLayer().id();
     } else {

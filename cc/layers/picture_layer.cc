@@ -185,7 +185,7 @@ bool PictureLayer::Update() {
   return updated;
 }
 
-sk_sp<SkPicture> PictureLayer::GetPicture() const {
+sk_sp<const SkPicture> PictureLayer::GetPicture() const {
   if (!DrawsContent() || bounds().IsEmpty())
     return nullptr;
 
@@ -232,7 +232,7 @@ void PictureLayer::RunMicroBenchmark(MicroBenchmark* benchmark) {
 }
 
 void PictureLayer::CaptureContent(const gfx::Rect& rect,
-                                  std::vector<NodeInfo>* content) {
+                                  std::vector<NodeInfo>* content) const {
   if (!DrawsContent())
     return;
 
@@ -296,7 +296,7 @@ void PictureLayer::DropRecordingSourceContentIfInvalid(
   }
 }
 
-const DisplayItemList* PictureLayer::GetDisplayItemList() {
+const DisplayItemList* PictureLayer::GetDisplayItemList() const {
   return picture_layer_inputs_.display_list.get();
 }
 

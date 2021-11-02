@@ -283,11 +283,11 @@ int LayerTreeHost::SourceFrameNumber() const {
   return pending_commit_state()->source_frame_number;
 }
 
-UIResourceManager* LayerTreeHost::GetUIResourceManager() const {
+UIResourceManager* LayerTreeHost::GetUIResourceManager() {
   return ui_resource_manager_.get();
 }
 
-TaskRunnerProvider* LayerTreeHost::GetTaskRunnerProvider() const {
+TaskRunnerProvider* LayerTreeHost::GetTaskRunnerProvider() {
   return task_runner_provider_.get();
 }
 
@@ -897,14 +897,14 @@ std::string LayerTreeHost::LayersAsString() const {
   return layers;
 }
 
-bool LayerTreeHost::CaptureContent(std::vector<NodeInfo>* content) {
+bool LayerTreeHost::CaptureContent(std::vector<NodeInfo>* content) const {
   if (visual_device_viewport_intersection_rect_.IsEmpty())
     return false;
 
   gfx::Rect rect =
       gfx::Rect(visual_device_viewport_intersection_rect_.width(),
                 visual_device_viewport_intersection_rect_.height());
-  for (auto* layer : *this) {
+  for (const auto* layer : *this) {
     // Normally, the node won't be drawn in multiple layers, even it is, such as
     // text strokes, the visual rect don't have too much different.
     layer->CaptureContent(rect, content);
@@ -954,12 +954,12 @@ bool LayerTreeHost::DoUpdateLayers() {
                          property_trees_.AsTracedValue());
     // The HUD layer is managed outside the layer list sent to LayerTreeHost
     // and needs to have its property tree state set.
-    if (hud_layer_ && root_layer()) {
-      hud_layer_->SetTransformTreeIndex(root_layer()->transform_tree_index());
-      hud_layer_->SetEffectTreeIndex(root_layer()->effect_tree_index());
-      hud_layer_->SetClipTreeIndex(root_layer()->clip_tree_index());
-      hud_layer_->SetScrollTreeIndex(root_layer()->scroll_tree_index());
-      hud_layer_->set_property_tree_sequence_number(
+    if (hud_layer() && root_layer()) {
+      hud_layer()->SetTransformTreeIndex(root_layer()->transform_tree_index());
+      hud_layer()->SetEffectTreeIndex(root_layer()->effect_tree_index());
+      hud_layer()->SetClipTreeIndex(root_layer()->clip_tree_index());
+      hud_layer()->SetScrollTreeIndex(root_layer()->scroll_tree_index());
+      hud_layer()->set_property_tree_sequence_number(
           root_layer()->property_tree_sequence_number());
     }
   }
@@ -1259,9 +1259,9 @@ void LayerTreeHost::SetRootLayer(scoped_refptr<Layer> new_root_layer) {
     root_layer()->SetLayerTreeHost(this);
   }
 
-  if (hud_layer_.get()) {
+  if (hud_layer()) {
     WaitForCommitCompletion();
-    hud_layer_->RemoveFromParent();
+    hud_layer()->RemoveFromParent();
   }
 
   // Reset gpu rasterization tracking.
@@ -1281,13 +1281,13 @@ void LayerTreeHost::RegisterViewportPropertyIds(
           ids.outer_clip == ClipTree::kInvalidNodeId));
 }
 
-Layer* LayerTreeHost::InnerViewportScrollLayerForTesting() const {
+Layer* LayerTreeHost::InnerViewportScrollLayerForTesting() {
   auto* scroll_node = property_trees()->scroll_tree.Node(
       pending_commit_state()->viewport_property_ids.inner_scroll);
   return scroll_node ? LayerByElementId(scroll_node->element_id) : nullptr;
 }
 
-Layer* LayerTreeHost::OuterViewportScrollLayerForTesting() const {
+Layer* LayerTreeHost::OuterViewportScrollLayerForTesting() {
   return LayerByElementId(OuterViewportScrollElementId());
 }
 
@@ -1610,7 +1610,7 @@ void LayerTreeHost::UnregisterLayer(Layer* layer) {
   layer_id_map_.erase(layer->id());
 }
 
-Layer* LayerTreeHost::LayerById(int id) const {
+Layer* LayerTreeHost::LayerById(int id) {
   auto iter = layer_id_map_.find(id);
   return iter != layer_id_map_.end() ? iter->second : nullptr;
 }
@@ -1666,13 +1666,13 @@ void LayerTreeHost::SetElasticOverscrollFromImplSide(
 
 void LayerTreeHost::UpdateHudLayer(bool show_hud_info) {
   if (show_hud_info) {
-    if (!hud_layer_.get()) {
+    if (!hud_layer()) {
       hud_layer_ = HeadsUpDisplayLayer::Create();
-      pending_commit_state()->hud_layer_id = hud_layer_->id();
+      pending_commit_state()->hud_layer_id = hud_layer()->id();
     }
-    if (root_layer() && !hud_layer_->parent())
-      root_layer()->AddChild(hud_layer_);
-    hud_layer_->UpdateLocationAndSize(
+    if (root_layer() && !hud_layer()->parent())
+      root_layer()->AddChild(hud_layer());
+    hud_layer()->UpdateLocationAndSize(
         pending_commit_state()->device_viewport_rect.size(),
         pending_commit_state()->device_scale_factor);
     if (pending_commit_state()->debug_state.show_web_vital_metrics) {
@@ -1683,10 +1683,10 @@ void LayerTreeHost::UpdateHudLayer(bool show_hud_info) {
       // TODO(weiliangc): Get the page metrics for display.
       auto metrics = client_->GetWebVitalMetrics();
       if (metrics && metrics->HasValue())
-        hud_layer_->UpdateWebVitalMetrics(std::move(metrics));
+        hud_layer()->UpdateWebVitalMetrics(std::move(metrics));
     }
-  } else if (hud_layer_.get()) {
-    hud_layer_->RemoveFromParent();
+  } else if (hud_layer()) {
+    hud_layer()->RemoveFromParent();
     hud_layer_ = nullptr;
     pending_commit_state()->hud_layer_id = Layer::INVALID_ID;
   }
@@ -1816,7 +1816,12 @@ void LayerTreeHost::PushLayerTreeHostPropertiesTo(
       state->may_throttle_if_undrawn_frames);
 }
 
-Layer* LayerTreeHost::LayerByElementId(ElementId element_id) const {
+Layer* LayerTreeHost::LayerByElementId(ElementId element_id) {
+  auto iter = element_layers_map_.find(element_id);
+  return iter != element_layers_map_.end() ? iter->second : nullptr;
+}
+
+const Layer* LayerTreeHost::LayerByElementId(ElementId element_id) const {
   auto iter = element_layers_map_.find(element_id);
   return iter != element_layers_map_.end() ? iter->second : nullptr;
 }
@@ -1994,20 +1999,36 @@ void LayerTreeHost::QueueImageDecode(const PaintImage& image,
   SetNeedsCommit();
 }
 
-LayerListIterator LayerTreeHost::begin() const {
+LayerListIterator LayerTreeHost::begin() {
   return LayerListIterator(root_layer());
 }
 
-LayerListIterator LayerTreeHost::end() const {
+LayerListConstIterator LayerTreeHost::begin() const {
+  return LayerListConstIterator(root_layer());
+}
+
+LayerListIterator LayerTreeHost::end() {
   return LayerListIterator(nullptr);
+}
+
+LayerListConstIterator LayerTreeHost::end() const {
+  return LayerListConstIterator(nullptr);
 }
 
 LayerListReverseIterator LayerTreeHost::rbegin() {
   return LayerListReverseIterator(root_layer());
 }
 
+LayerListReverseConstIterator LayerTreeHost::rbegin() const {
+  return LayerListReverseConstIterator(root_layer());
+}
+
 LayerListReverseIterator LayerTreeHost::rend() {
   return LayerListReverseIterator(nullptr);
+}
+
+LayerListReverseConstIterator LayerTreeHost::rend() const {
+  return LayerListReverseConstIterator(nullptr);
 }
 
 void LayerTreeHost::SetPropertyTreesForTesting(
