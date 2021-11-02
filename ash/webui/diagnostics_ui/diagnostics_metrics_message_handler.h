@@ -43,6 +43,9 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
   void SetWebUiForTesting(content::WebUI* web_ui);
 
  private:
+  // Records navigation events between screens within Diagnostics App.
+  void HandleRecordNavigation(base::Value::ConstListView args);
+
   NavigationView current_view_;
   base::Time navigation_started_;
 };

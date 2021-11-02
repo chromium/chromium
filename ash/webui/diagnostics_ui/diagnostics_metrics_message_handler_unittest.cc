@@ -30,6 +30,15 @@ class DiagnosticsMetricsMessageHandlerTest : public testing::Test {
     handler_->RegisterMessages();
   }
 
+  void SendRecordNavigation(NavigationView from, NavigationView to) {
+    base::ListValue args;
+    args.Append(base::Value(static_cast<int>(from)));
+    args.Append(base::Value(static_cast<int>(to)));
+    web_ui_.HandleReceivedMessage("recordNavigation", &args);
+
+    task_environment_.RunUntilIdle();
+  }
+
  protected:
   void AdvanceClock(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
@@ -52,6 +61,20 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest, InitializedCorrectly) {
 
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
   EXPECT_EQ(kDefaultTimeDelta,
+            handler_->GetElapsedNavigationTimeDeltaForTesting());
+}
+
+TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleRecordNavigationMessage) {
+  NavigationView expected_initial_view = NavigationView::kSystem;
+  InitializeHandler(expected_initial_view);
+  EXPECT_EQ(expected_initial_view, handler_->GetCurrentViewForTesting());
+
+  AdvanceClock(kDefaultTimeDelta);
+  SendRecordNavigation(expected_initial_view, NavigationView::kConnectivity);
+
+  EXPECT_EQ(NavigationView::kConnectivity,
+            handler_->GetCurrentViewForTesting());
+  EXPECT_EQ(base::Minutes(0),
             handler_->GetElapsedNavigationTimeDeltaForTesting());
 }
 }  // namespace metrics
