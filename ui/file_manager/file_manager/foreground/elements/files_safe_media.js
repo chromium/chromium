@@ -100,6 +100,10 @@ const FilesSafeMedia = Polymer({
     node.style.width = '100%';
     node.style.height = '100%';
     node.style.border = '0px';
+    // Allow autoplay for audio files.
+    if (this.type === 'audio') {
+      node.setAttribute('allow', 'autoplay');
+    }
     this.$.content.appendChild(node);
     node.addEventListener('load', () => this.onSrcChange_());
     node.src = this.sourceFile_();
