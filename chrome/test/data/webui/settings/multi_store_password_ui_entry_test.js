@@ -7,7 +7,7 @@
  */
 
 import {MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
-import {createPasswordEntry} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
+import {createPasswordEntry} from './passwords_and_autofill_fake_data.js';
 
 suite('MultiStorePasswordUiEntry', function() {
   test('verifyIds', function() {

@@ -7,9 +7,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from 'chrome://settings/settings.js';
-import {createCreditCardEntry, createEmptyCreditCardEntry,TestPaymentsManager} from 'chrome://test/settings/passwords_and_autofill_fake_data.js';
-import {TestMetricsBrowserProxy} from 'chrome://test/settings/test_metrics_browser_proxy.js';
-import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://test/test_util.js';
+import {eventToPromise, isVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
+
+import {createCreditCardEntry, createEmptyCreditCardEntry,TestPaymentsManager} from './passwords_and_autofill_fake_data.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 

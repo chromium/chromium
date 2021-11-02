@@ -7,7 +7,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 // clang-format on

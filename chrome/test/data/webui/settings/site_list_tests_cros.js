@@ -6,9 +6,9 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AndroidInfoBrowserProxyImpl,ContentSetting,ContentSettingsTypes,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router} from 'chrome://settings/settings.js';
-import {TEST_ANDROID_SMS_ORIGIN, TestAndroidInfoBrowserProxy} from 'chrome://test/settings/test_android_info_browser_proxy.js';
-import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
-import {createContentSettingTypeToValuePair,createRawSiteException,createSiteSettingsPrefs} from 'chrome://test/settings/test_util.js';
+import {TEST_ANDROID_SMS_ORIGIN, TestAndroidInfoBrowserProxy} from './test_android_info_browser_proxy.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {createContentSettingTypeToValuePair,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
 
 // clang-format on
 

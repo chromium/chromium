@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
 /**

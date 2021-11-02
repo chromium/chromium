@@ -7,10 +7,11 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
 import {Route, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 
-import {assertEquals, assertFalse} from '../chai_assert.js';
-import {flushTasks, isChildVisible} from '../test_util.js';
+import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 

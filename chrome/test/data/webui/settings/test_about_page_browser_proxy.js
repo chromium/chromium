@@ -4,7 +4,7 @@
 
 import {isMac, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {UpdateStatus} from 'chrome://settings/settings.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /** @implements {AboutPageBrowserProxy} */
 export class TestAboutPageBrowserProxy extends TestBrowserProxy {
