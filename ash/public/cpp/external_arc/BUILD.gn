@@ -51,6 +51,7 @@ static_library("external_arc") {
     "//ui/aura",
     "//ui/color",
     "//ui/message_center",
+    "//ui/native_theme",
     "//ui/views",
     "//ui/wm",
   ]

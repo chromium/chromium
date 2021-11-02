@@ -48,13 +48,6 @@ MessageCenterScrollBar::MessageCenterScrollBar(
 
 MessageCenterScrollBar::~MessageCenterScrollBar() = default;
 
-bool MessageCenterScrollBar::OverlapsContent() const {
-  // Return false so that scrollbar thickness will be used in computation of
-  // notification width. Computation is performed in
-  // ui/views/controls/scroll_view.cc
-  return false;
-}
-
 bool MessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   if (!stats_recorded_ &&
       (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN)) {

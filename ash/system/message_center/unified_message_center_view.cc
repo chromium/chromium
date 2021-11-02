@@ -106,8 +106,6 @@ void UnifiedMessageCenterView::Init() {
   scroller_->SetContents(
       std::make_unique<ScrollerContentsView>(message_list_view_));
   scroller_->SetBackgroundColor(absl::nullopt);
-  scroller_->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
   scroller_->SetDrawOverflowIndicator(false);
   if (is_notifications_refresh_enabled_) {
