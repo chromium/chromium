@@ -141,10 +141,10 @@ Polymer({
     },
 
     /**
-     * Management domain displayed on SAML interstitial page.
+     * Management domain or admin displayed on SAML interstitial page.
      * @private
      */
-    samlInterstitialDomain_: {
+    samlInterstitialDomainManager_: {
       type: String,
       value: null,
     },
@@ -584,7 +584,7 @@ Polymer({
         this.loadAuthenticator_(false /* doSamlRedirect */);
         break;
       case AuthMode.SAML_INTERSTITIAL:
-        this.samlInterstitialDomain_ = data.enterpriseDisplayDomain;
+        this.samlInterstitialDomainManager_ = data.enterpriseDomainManager;
         this.loadingFrameContents_ = false;
         break;
     }

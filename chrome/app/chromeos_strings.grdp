@@ -1490,8 +1490,8 @@
   <message name="IDS_LOGIN_FATAL_ERROR_NO_AUTH_TOKEN" desc="Message to show when the authentication could not be completed because the user's auth token retrieved.">
     Sign-in failed because your access token could not be retrieved. Please check your network connection and try again.
   </message>
-  <message name="IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE" desc="Message to show on the SAML interstitial page to tell the user to continue signing in using their enterprise account.">
-    This device is managed by <ph name="DOMAIN">$1<ex>acmecorp.com</ex></ph> and requires you to sign in every time.
+  <message name="IDS_LOGIN_SAML_INTERSTITIAL_MESSAGE" desc="Message to show on the SAML interstitial page to tell the user to continue signing in using their enterprise account. MANAGER can be a domain or an email address.">
+    This device is managed by <ph name="MANAGER">$1<ex>acmecorp.com</ex></ph> and requires you to sign in every time.
   </message>
   <message name="IDS_LOGIN_SAML_INTERSTITIAL_CHANGE_ACCOUNT_LINK_TEXT" desc="Text of the link that allows the user to change the login account.">
     Sign in with a different account

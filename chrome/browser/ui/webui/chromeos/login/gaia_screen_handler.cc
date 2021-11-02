@@ -186,12 +186,6 @@ std::string GetEnterpriseDomainManager() {
   return connector->GetEnterpriseDomainManager();
 }
 
-std::string GetEnterpriseDisplayDomain() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetEnterpriseDisplayDomain();
-}
-
 std::string GetEnterpriseEnrollmentDomain() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -423,14 +417,11 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     params.SetStringKey("realm", realm);
   }
 
-  const std::string enterprise_display_domain(GetEnterpriseDisplayDomain());
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
   const std::string enterprise_domain_manager(GetEnterpriseDomainManager());
   const std::string sso_profile(GetSSOProfile());
 
-  if (!enterprise_display_domain.empty())
-    params.SetStringKey("enterpriseDisplayDomain", enterprise_display_domain);
   if (!enterprise_enrollment_domain.empty()) {
     params.SetStringKey("enterpriseEnrollmentDomain",
                         enterprise_enrollment_domain);
