@@ -48,6 +48,7 @@
 <translation id="2121284319307530122">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa de la <ph name="BEGIN_LINK" />configuració actual<ph name="END_LINK" /> per ajudar-nos a millorar Chrome</translation>
 <translation id="2151406531797534936">Reinicia Chrome ara</translation>
+<translation id="2189289170880510015">Personalitza algunes de les opcions de privadesa més importants de Chrome</translation>
 <translation id="2246246234298806438">Google Chrome no pot mostrar la previsualització d'impressió perquè falta el lector de PDF incorporat.</translation>
 <translation id="2290014774651636340">Falten les claus de l'API de Google. Es desactivaran algunes de les funcionalitats de Google Chrome.</translation>
 <translation id="2290095356545025170">Confirmeu que voleu desinstal·lar Google Chrome?</translation>
@@ -110,6 +111,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{L'administrador necessita que reiniciïs Chrome per aplicar una actualització}=1{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="3622797965165704966">Ara resulta més fàcil utilitzar Chrome amb el vostre compte de Google i en ordinadors compartits.</translation>
 <translation id="3673813398384385993">Chrome ha detectat que l'extensió "<ph name="EXTENSION_NAME" />" conté programari maliciós</translation>
+<translation id="3678552270983184277">La configuració predeterminada funciona per a la majoria de persones, però la pots personalitzar perquè s'ajusti a la teva manera d'utilitzar Chrome.</translation>
 <translation id="3718181793972440140">Amb aquesta acció, se suprimirà 1 element d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan inicieu Chrome.</translation>
 <translation id="3779473566290487688">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs OS X 10.11 o una versió posterior. Aquest ordinador utilitza OS X 10.10.</translation>

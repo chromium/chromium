@@ -986,6 +986,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     deliver a policy, which prevents the browser from fulfilling your request
     for <ph name="SITE" />. Origin policies can be used by site operators
     to configure security and other properties for a site.</translation>
+<translation id="4210602799576081649">Verification code expired. Request a new code</translation>
 <translation id="421066178035138955">Use virtual reality devices and data</translation>
 <translation id="4214357935346142455">sign-in screen profile</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1297,6 +1298,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5126510351761255129">Verify your card</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> may not resize well. Use preset window sizes to prevent the app from experiencing issues.</translation>
 <translation id="5135404736266831032">Manage addresses...</translation>
+<translation id="5136841603454277753">Enter correct code</translation>
 <translation id="5138014172396933048">Virtual card is not available at the moment; please contact your bank</translation>
 <translation id="5138227688689900538">Show less</translation>
 <translation id="5145883236150621069">Error code present in the policy response</translation>

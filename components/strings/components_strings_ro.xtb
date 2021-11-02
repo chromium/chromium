@@ -987,6 +987,7 @@
     nu a reușit să livreze o politică, ceea ce împiedică browserul să îți îndeplinească
     solicitarea pentru <ph name="SITE" />. Politicile de origine pot fi folosite de
     operatorii de site pentru a configura securitatea și alte proprietăți ale site-ului.</translation>
+<translation id="4210602799576081649">Codul de verificare a expirat. Solicită un cod nou.</translation>
 <translation id="421066178035138955">să folosească dispozitivele de realitate virtuală și datele conexe.</translation>
 <translation id="4214357935346142455">profil pentru ecranul de conectare</translation>
 <translation id="4215751373031079683">7x9 (Plic)</translation>
@@ -1298,6 +1299,7 @@
 <translation id="5126510351761255129">Confirmă cardul</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> poate să nu fie redimensionată corect. Folosește dimensiunile de fereastră presetate pentru a evita eventualele erori ale aplicației.</translation>
 <translation id="5135404736266831032">Gestionează adresele...</translation>
+<translation id="5136841603454277753">Introdu codul corect</translation>
 <translation id="5138014172396933048">Momentan, cardul virtual nu este disponibil. Contactează banca.</translation>
 <translation id="5138227688689900538">Afișează mai puțin</translation>
 <translation id="5145883236150621069">Răspunsul pentru politică include un cod de eroare</translation>

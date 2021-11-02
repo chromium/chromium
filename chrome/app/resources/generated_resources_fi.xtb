@@ -2080,6 +2080,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="310671807099593501">Sivusto käyttää Bluetoothia</translation>
 <translation id="3108931485517391283">Ei voi vastaanottaa</translation>
 <translation id="3109724472072898302">Tiivistetty</translation>
+<translation id="311214366526552035">Lataa silti</translation>
 <translation id="311394601889664316">Älä salli sivustojen muokata laitteen tiedostoja tai kansioita</translation>
 <translation id="3115147772012638511">Odotetaan välimuistia...</translation>
 <translation id="3115580024857770654">Tiivistä kaikki</translation>
@@ -2359,6 +2360,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3429271624041785769">Verkkosisällön kielet</translation>
 <translation id="3429275422858276529">Lisää tämä sivu kirjanmerkkeihin, niin löydät sen myöhemmin helposti.</translation>
+<translation id="343115368966109153">Ladataanko <ph name="FILE_NAME" />? Kaikki laitteen käyttäjät voivat nähdä sen.</translation>
 <translation id="3432227430032737297">Poista kaikki näytetyt</translation>
 <translation id="3432762828853624962">SharedWorkerit</translation>
 <translation id="3433621910545056227">Hups! Järjestelmä ei voi lukita laitteen asennuksen aikaisia attribuutteja.</translation>
@@ -2700,6 +2702,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3777806571986431400">Laajennus otettu käyttöön</translation>
 <translation id="3778152852029592020">Lataus peruutettiin.</translation>
 <translation id="3778208826288864398">Suojausavain on lukittu, koska väärä PIN-koodi syötettiin liian monta kertaa. Suojausavain on nollattava.</translation>
+<translation id="3778369586810509692">Tiedosto tallennetaan laitteelle, ja kaikki voivat nähdä sen.</translation>
 <translation id="3778740492972734840">&amp;Kehittäjän työkalut</translation>
 <translation id="3778868487658107119">Voit kysyä siltä tietoa ja pyytää asioita – se on henkilökohtainen Googlesi ja aina valmiina auttamaan.</translation>
 <translation id="3781742599892759500">Linuxin mikrofonin käyttöoikeus</translation>
@@ -4711,6 +4714,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="597235323114979258">Katso lisää kohteita</translation>
 <translation id="5972666587303800813">Automatisoitu palvelu</translation>
 <translation id="5972708806901999743">Siirrä alkuun</translation>
+<translation id="5972801171078377748">Älä näytä uudelleen</translation>
 <translation id="5972826969634861500">Käynnistä <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290"><ph name="CLIENT_NAME" /> aloitti selaimen virheenkorjauksen</translation>
 <translation id="5973605538625120605">Vaihda PIN-koodi</translation>

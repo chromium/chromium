@@ -108,6 +108,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Tyhjennä evästeet.<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Tarkista suojatun DNS:n asetukset</translation>
 <translation id="1307966114820526988">Käytöstä poistetut ominaisuudet</translation>
+<translation id="1308113895091915999">Tarjous saatavilla</translation>
 <translation id="1312803275555673949">Mikä todiste tukee sitä?</translation>
 <translation id="131405271941274527"><ph name="URL" /> haluaa lähettää ja vastaanottaa tietoja, kun kosketat puhelimella NFC-laitetta</translation>
 <translation id="1314509827145471431">Oikealla sidottu</translation>
@@ -987,6 +988,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
     , joten selain ei nyt voi toteuttaa
     <ph name="SITE" />-pyyntöäsi. Alkuperäkäytäntöjen avulla sivuston operaattorit
     voivat määrittää sen tietosuojan ja muita ominaisuuksia.</translation>
+<translation id="4210602799576081649">Vahvistuskoodi on vanhentunut, pyydä uutta koodia</translation>
 <translation id="421066178035138955">käyttää virtuaalitodellisuuslaitteita ja ‑dataa</translation>
 <translation id="4214357935346142455">kirjautumisnäytön profiili</translation>
 <translation id="4215751373031079683">7x9 (kirjekuori)</translation>
@@ -1298,6 +1300,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5126510351761255129">Vahvista kortti</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ei ehkä näy oikein, jos muutat kokoa. Käytä valmiita ikkunakokoja estääksesi sovelluksen ongelmat.</translation>
 <translation id="5135404736266831032">Hallinnoi osoitteita…</translation>
+<translation id="5136841603454277753">Lisää oikea koodi</translation>
 <translation id="5138014172396933048">Virtuaalinen kortti ei ole juuri nyt käytettävissä, ota yhteyttä pankkiin</translation>
 <translation id="5138227688689900538">Näytä vähemmän</translation>
 <translation id="5145883236150621069">Käytäntövastaus sisältää virhekoodin</translation>

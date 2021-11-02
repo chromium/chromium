@@ -700,7 +700,7 @@
 <translation id="1719312230114180055">Ескертпе: саусақ ізінің қауіпсіздік деңгейі күрделі өрнек не PIN кодына қарағанда төменірек болуы мүмкін.</translation>
 <translation id="1720318856472900922">TLS WWW сервер аутентификациясы</translation>
 <translation id="1720941539803966190">Оқулықты жабу</translation>
-<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы суреттерді іздеу</translation>
+<translation id="172123215662733643">Суреттерді <ph name="VISUAL_SEARCH_PROVIDER" /> арқылы іздеу</translation>
 <translation id="1721312023322545264">Бұл сайтқа кіру үшін <ph name="NAME" /> сізге рұқсат беруі керек</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> басқарады.</translation>
 <translation id="1723824996674794290">&amp;Жаңа терезе</translation>
@@ -1559,7 +1559,7 @@
 <translation id="2602501489742255173">Бастау үшін жоғары қарай сырғытыңыз.</translation>
 <translation id="2603115962224169880">Компьютерді тазалау</translation>
 <translation id="2603355571917519942">Voice Match дайын</translation>
-<translation id="2604138917550693049">Google Lens арқылы сурет іздеу</translation>
+<translation id="2604138917550693049">Суретті Google Lens арқылы іздеу</translation>
 <translation id="2604255671529671813">Желімен байланыс қатесі</translation>
 <translation id="2605668923777146443">Better Together опцияларын көру үшін <ph name="LINK_BEGIN" />Параметрлер<ph name="LINK_END" /> бөліміне өтіңіз.</translation>
 <translation id="2606246518223360146">Деректерді байланыстыру</translation>
@@ -2062,6 +2062,7 @@
 <translation id="310671807099593501">Сайт Bluetooth функциясын пайдалануда</translation>
 <translation id="3108931485517391283">Қабылдау мүмкін емес.</translation>
 <translation id="3109724472072898302">Жиылған</translation>
+<translation id="311214366526552035">Сонда да жүктеп алу</translation>
 <translation id="311394601889664316">Сайттардың құрылғыңыздағы файлдарды немесе қалталарды өзгертуіне рұқсат бермеу</translation>
 <translation id="3115147772012638511">Кэш күтілуде…</translation>
 <translation id="3115580024857770654">Барлығын жию</translation>
@@ -2341,6 +2342,7 @@
 <translation id="3429160811076349561">Сынақ нұсқасының функциялары өшірулі</translation>
 <translation id="3429271624041785769">Веб-мазмұн тілдері</translation>
 <translation id="3429275422858276529">Бетті кейінірек табу үшін оған бетбелгі қою</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> файлы жүктеп алынсын ба? Құрылғыны пайдаланатын кез келген адам оны көре алады.</translation>
 <translation id="3432227430032737297">Барлық көрсетілгендерді өшіру</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Жүйенің құрылғы орнату уақытының атрибуттары құлпын орнатуы сәтсіз аяқталды.</translation>
@@ -2682,6 +2684,7 @@
 <translation id="3777806571986431400">Кеңейтім қосылды</translation>
 <translation id="3778152852029592020">Жүктеуден бас тартылды.</translation>
 <translation id="3778208826288864398">PIN коды бірнеше рет қате енгізілгендіктен, қауіпсіздік кілті құлыпталған. Қауіпсіздік кілтін бастапқы күйге қайтаруыңыз қажет.</translation>
+<translation id="3778369586810509692">Бұл файл құрылғыда сақталады және барлығына көрінетін болады.</translation>
 <translation id="3778740492972734840">&amp;Әзірлеуші құралдары</translation>
 <translation id="3778868487658107119">Оған сұрақтар қойыңыз. Тапсырмалар беріңіз. Ол – әрқашан көмекке дайын жеке Google қызметіңіз.</translation>
 <translation id="3781742599892759500">Linux жүйесінде микрофонды пайдалану</translation>
@@ -3853,7 +3856,7 @@
 <translation id="5051836348807686060">Таңдалған тілдер үшін емлені тексеру функциясы қолданылмайды.</translation>
 <translation id="5052499409147950210">Сайтты өзгерту</translation>
 <translation id="505347685865235222">Атауы жоқ топ: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lens арқылы сурет іздеу</translation>
+<translation id="5053962746715621840">Суретті Google Lens арқылы іздеу</translation>
 <translation id="5056950756634735043">Контейнерге қосылуда</translation>
 <translation id="5057110919553308744">Кеңейтім басылғанда</translation>
 <translation id="5057403786441168405">Кірген аккаунттарды басқарыңыз. Рұқсаттарыңызға байланысты мүмкіндігіңізді реттеу үшін веб-сайттар, қолданбалар, Chrome және Google Play кеңейтімдері осы аккаунттарды пайдалануы мүмкін. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
@@ -4695,6 +4698,7 @@
 <translation id="597235323114979258">Басып шығарудың басқа белгіленген жерлерін көру</translation>
 <translation id="5972666587303800813">NOOP</translation>
 <translation id="5972708806901999743">Басына өту</translation>
+<translation id="5972801171078377748">Қайта көрсетілмесін</translation>
 <translation id="5972826969634861500"><ph name="PRODUCT_NAME" /> іске қосу</translation>
 <translation id="5973041996755340290">"<ph name="CLIENT_NAME" />" браузерді түзете бастады.</translation>
 <translation id="5973605538625120605">PIN кодын өзгерту</translation>
@@ -5850,7 +5854,7 @@
 <translation id="7230222852462421043">&amp;Терезені қалпына келтіру</translation>
 <translation id="7230787553283372882">Мәтін өлшемін реттеу</translation>
 <translation id="7232750842195536390">Аты өзгертілмеді</translation>
-<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> арқылы суреттерді іздеу</translation>
+<translation id="723343421145275488">Суреттерді <ph name="VISUAL_SEARCH_PROVIDER" /> арқылы іздеу</translation>
 <translation id="7234010996000898150">Linux контейнерін қалпына келтіруден бас тартылуда</translation>
 <translation id="7235716375204803342">Әрекеттер журналы алынуда...</translation>
 <translation id="7235737137505019098">Басқа аккаунттар үшін қауіпсіздік кілтіндегі орын жеткіліксіз.</translation>

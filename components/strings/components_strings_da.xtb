@@ -108,6 +108,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Prøv at rydde dine cookies<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Tjek indstillingerne for din sikre DNS</translation>
 <translation id="1307966114820526988">Udfasede funktioner</translation>
+<translation id="1308113895091915999">Der er et tilgængeligt kampagnetilbud</translation>
 <translation id="1312803275555673949">Hvilke beviser underbygger dette?</translation>
 <translation id="131405271941274527"><ph name="URL" /> ønsker at sende og modtage oplysninger, når du parrer din telefon med en NFC-enhed</translation>
 <translation id="1314509827145471431">Bind i højre side</translation>
@@ -986,6 +987,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     mislykkedes at levere en politik, hvilket forhindrer browseren i at opfylde
     din anmodning til <ph name="SITE" />. Politikker for oprindelse kan anvendes af
     websiteoperatorer til at konfigurere sikkerhed og andre egenskaber for et website.</translation>
+<translation id="4210602799576081649">Bekræftelseskoden udløb. Anmod om en ny kode.</translation>
 <translation id="421066178035138955">Anvende virtual reality-enheder og -data</translation>
 <translation id="4214357935346142455">profil på loginskærm</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1297,6 +1299,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5126510351761255129">Bekræft dit kort</translation>
 <translation id="512670116361803001">Størrelsen på <ph name="APP_NAME" /> kan muligvis ikke tilpasses uden problemer. Brug forindstillede vinduestørrelser for at sikre, at appen fungerer korrekt.</translation>
 <translation id="5135404736266831032">Administrer adresser...</translation>
+<translation id="5136841603454277753">Angiv den korrekte kode</translation>
 <translation id="5138014172396933048">Det virtuelle kort er ikke tilgængeligt lige nu. Du bedes kontakte din bank.</translation>
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="5145883236150621069">Fejlkode til stede i politiksvar</translation>

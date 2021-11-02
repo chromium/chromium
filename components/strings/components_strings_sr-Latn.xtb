@@ -987,6 +987,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
     pa pregledač ne može da ispuni vaš zahtev
     za <ph name="SITE" />. Pomoću smernica za poreklo operatori sajtova
     mogu da konfigurišu bezbednost i druga svojstva za sajt.</translation>
+<translation id="4210602799576081649">Verifikacioni kôd je istekao, zatražite novi</translation>
 <translation id="421066178035138955">koristi uređaje i podatke virtuelne realnosti</translation>
 <translation id="4214357935346142455">profil na ekranu za prijavljivanje</translation>
 <translation id="4215751373031079683">7x9 (koverat)</translation>
@@ -1298,6 +1299,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5126510351761255129">Verifikujte karticu</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> možda neće promeniti veličinu na pravilan način. Koristite unapred određene veličine prozora da biste sprečili da aplikacija ima probleme.</translation>
 <translation id="5135404736266831032">Upravljajte adresama...</translation>
+<translation id="5136841603454277753">Unesite ispravan kôd</translation>
 <translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Obratite se banci.</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
 <translation id="5145883236150621069">Kôd greške je prisutan u odgovoru na smernice</translation>

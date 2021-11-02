@@ -987,6 +987,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     cung cấp được chính sách. Điều này khiến trình duyệt không hoàn thành được
     yêu cầu của bạn là truy cập vào <ph name="SITE" />. Nhà điều hành trang web có thể dựa vào chính sách nguồn gốc
     để định cấu hình bảo mật và các thuộc tính khác cho trang web.</translation>
+<translation id="4210602799576081649">Mã xác minh đã hết hạn, hãy yêu cầu mã mới</translation>
 <translation id="421066178035138955">Sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="4214357935346142455">cấu hình màn hình đăng nhập</translation>
 <translation id="4215751373031079683">7x9 (Phong bì)</translation>
@@ -1298,6 +1299,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5126510351761255129">Xác minh thẻ của bạn</translation>
 <translation id="512670116361803001">Có thể <ph name="APP_NAME" /> sẽ thay đổi kích thước không chuẩn xác. Hãy dùng kích thước cửa sổ đặt trước để ngăn ứng dụng gặp sự cố.</translation>
 <translation id="5135404736266831032">Quản lý địa chỉ...</translation>
+<translation id="5136841603454277753">Nhập mã chính xác</translation>
 <translation id="5138014172396933048">Thẻ ảo hiện chưa dùng được, vui lòng liên hệ với ngân hàng của bạn</translation>
 <translation id="5138227688689900538">Ẩn bớt</translation>
 <translation id="5145883236150621069">Mã lỗi có trong phản hồi chính sách</translation>

@@ -974,6 +974,7 @@
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4209166701302774460">您要访问的服务器 <ph name="ORIGIN" /> 已要求收到的所有请求都应用一项来源政策。但该服务器目前并未提供任何政策，导致浏览器无法实现您对 <ph name="SITE" /> 的访问请求。网站运营商可以使用来源政策为网站配置安全属性及其他属性。</translation>
+<translation id="4210602799576081649">验证码已失效，请申请新的验证码</translation>
 <translation id="421066178035138955">使用虚拟实境设备和数据</translation>
 <translation id="4214357935346142455">登录屏幕个人资料</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1285,6 +1286,7 @@
 <translation id="5126510351761255129">验证您的银行卡</translation>
 <translation id="512670116361803001">“<ph name="APP_NAME" />”可能无法妥当地调整大小。请使用预设窗口大小，以防止该应用出现问题。</translation>
 <translation id="5135404736266831032">管理地址…</translation>
+<translation id="5136841603454277753">请输入正确的代码</translation>
 <translation id="5138014172396933048">暂时无法使用虚拟卡，请联系您的发卡行</translation>
 <translation id="5138227688689900538">收起</translation>
 <translation id="5145883236150621069">策略响应中存在错误代码</translation>

@@ -987,6 +987,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     le navigateur ne peut pas traiter votre requête
     concernant <ph name="SITE" />. Les exploitants de sites peuvent utiliser des règles d'origine
     pour en configurer la sécurité et d'autres propriétés.</translation>
+<translation id="4210602799576081649">Le code de validation a expiré. Demandez-en un autre.</translation>
 <translation id="421066178035138955">Utiliser vos données et appareils de réalité virtuelle</translation>
 <translation id="4214357935346142455">profil de l'écran de connexion</translation>
 <translation id="4215751373031079683">7x9 (enveloppe)</translation>
@@ -1298,6 +1299,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5126510351761255129">Valider votre carte</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Pour que l'appli fonctionne correctement, utilisez des tailles de fenêtre prédéfinies.</translation>
 <translation id="5135404736266831032">Gérer les adresses…</translation>
+<translation id="5136841603454277753">Saisissez le bon code</translation>
 <translation id="5138014172396933048">La carte virtuelle n'est pas disponible pour le moment. Veuillez contacter votre banque.</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la règle.</translation>

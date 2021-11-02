@@ -984,6 +984,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     è riuscito a pubblicare un criterio e ciò impedisce al browser
     di soddisfare la tua richiesta per il sito <ph name="SITE" />. I criteri di origine possono essere usati dagli
     operatori del sito per configurare la sicurezza e altre proprietà del sito.</translation>
+<translation id="4210602799576081649">Codice di verifica scaduto, richiedi nuovo codice</translation>
 <translation id="421066178035138955">Usare dati e dispositivi per realtà virtuale</translation>
 <translation id="4214357935346142455">profilo della schermata di accesso</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1295,6 +1296,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5126510351761255129">Verifica la carta</translation>
 <translation id="512670116361803001">Il ridimensionamento dell'app <ph name="APP_NAME" /> potrebbe non avvenire correttamente. Utilizza le dimensioni di finestra preimpostate per evitare problemi relativi all'app.</translation>
 <translation id="5135404736266831032">Gestisci indirizzi…</translation>
+<translation id="5136841603454277753">Inserisci il codice corretto</translation>
 <translation id="5138014172396933048">La carta virtuale non è al momento disponibile. Contatta la tua banca.</translation>
 <translation id="5138227688689900538">Mostra meno</translation>
 <translation id="5145883236150621069">Codice di errore presente nella risposta del criterio</translation>

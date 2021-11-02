@@ -985,6 +985,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     bemutatnia a házirendet, így a böngésző nem tudja teljesíteni
     a(z) <ph name="SITE" /> webhelyre irányuló kérelmet. Az eredetházirendek segítségével a webhelyek üzemeltetői
     a webhely biztonsági és egyéb tulajdonságait konfigurálhatják.</translation>
+<translation id="4210602799576081649">Az ellenőrző kód lejárt, kérjen újat.</translation>
 <translation id="421066178035138955">Virtuálisvalóság-eszközök és -adatok használata</translation>
 <translation id="4214357935346142455">bejelentkezési képernyőn használt profil</translation>
 <translation id="4215751373031079683">7x9 (boríték)</translation>
@@ -1296,6 +1297,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5126510351761255129">Kártya ellenőrzése</translation>
 <translation id="512670116361803001">Előfordulhat, hogy a(z) <ph name="APP_NAME" /> átméretezése nem működik megfelelően. Használjon előre beállított ablakméreteket a problémák elkerülése érdekében.</translation>
 <translation id="5135404736266831032">Címek kezelése…</translation>
+<translation id="5136841603454277753">Helyes kódot adjon meg</translation>
 <translation id="5138014172396933048">A virtuális kártya jelenleg nem áll rendelkezésre, vegye fel a kapcsolatot a bankjával</translation>
 <translation id="5138227688689900538">Kevesebb megjelenítése</translation>
 <translation id="5145883236150621069">Az irányelv válasza hibakódot tartalmaz</translation>

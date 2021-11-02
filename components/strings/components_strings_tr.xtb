@@ -980,6 +980,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4209092469652827314">Büyük</translation>
 <translation id="4209166701302774460">Ziyaret etmek üzere olduğunuz sunucu (<ph name="ORIGIN" />) kendisine gelen tüm isteklere bir kaynak politikası uygulanmasını talep etti. Ancak şimdi politika sunamadığı için tarayıcı, <ph name="SITE" /> sitesiyle ilgili isteğinizi yerine getiremiyor. Kaynak politikaları
     site operatörleri tarafından sitenin güvenliğini ve diğer özelliklerini yapılandırmak için kullanılabilir.</translation>
+<translation id="4210602799576081649">Doğrulama kodunun süresi doldu. Yeni bir kod isteyin</translation>
 <translation id="421066178035138955">Sanal gerçeklik cihazlarını ve verilerini kullanmak</translation>
 <translation id="4214357935346142455">oturum açma ekran profili</translation>
 <translation id="4215751373031079683">7x9 (Zarf)</translation>
@@ -1291,6 +1292,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5126510351761255129">Kartınızı doğrulayın</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> uygulaması düzgün bir şekilde yeniden boyutlandırılamayabilir. Uygulamanın sorun çıkarmasını önlemek için hazır ayar pencere boyutlarını kullanın.</translation>
 <translation id="5135404736266831032">Adresleri yönet...</translation>
+<translation id="5136841603454277753">Doğru kodu girin</translation>
 <translation id="5138014172396933048">Sanal kart şu anda kullanılamıyor. Lütfen bankanızla iletişim kurun</translation>
 <translation id="5138227688689900538">Daha az göster</translation>
 <translation id="5145883236150621069">Politika yanıtında hata kodu var</translation>

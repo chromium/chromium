@@ -108,6 +108,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Esborreu les galetes<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Revisa la configuració de DNS segur</translation>
 <translation id="1307966114820526988">Funcions obsoletes</translation>
+<translation id="1308113895091915999">Oferta disponible</translation>
 <translation id="1312803275555673949">Quines proves hi ha?</translation>
 <translation id="131405271941274527"><ph name="URL" /> vol enviar i rebre informació quan el teu telèfon toca un dispositiu NFC</translation>
 <translation id="1314509827145471431">Enquadernació a la dreta</translation>
@@ -977,6 +978,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comproveu la configuració del tallafoc i de l'antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Gran</translation>
 <translation id="4209166701302774460">El servidor de destinació, <ph name="ORIGIN" />, ha sol·licitat que s'apliqui una política d'origen a totes les sol·licituds que rebi. Tanmateix, no ha proporcionat cap política, de manera que el navegador no pot completar la sol·licitud que has fet per a <ph name="SITE" />. Els operadors de llocs web poden fer servir les polítiques d'origen per configurar la seguretat i altres propietats d'un lloc web.</translation>
+<translation id="4210602799576081649">El codi de verificació ha caducat; sol·licita'n un de nou</translation>
 <translation id="421066178035138955">Utilitza dades i dispositius de realitat virtual</translation>
 <translation id="4214357935346142455">perfil de la pantalla d'inici de sessió</translation>
 <translation id="4215751373031079683">7x9 (sobre)</translation>
@@ -1288,6 +1290,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5126510351761255129">Verifica la targeta</translation>
 <translation id="512670116361803001">És possible que l'aplicació <ph name="APP_NAME" /> no canviï de mida correctament. Utilitza les mides de la finestra predefinides per evitar que l'aplicació tingui problemes.</translation>
 <translation id="5135404736266831032">Gestiona les adreces...</translation>
+<translation id="5136841603454277753">Introdueix el codi correcte</translation>
 <translation id="5138014172396933048">La targeta virtual no està disponible en aquests moments. Contacta amb el teu banc.</translation>
 <translation id="5138227688689900538">Mostra'n menys</translation>
 <translation id="5145883236150621069">Hi ha un codi d'error en la resposta a la política</translation>

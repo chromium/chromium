@@ -987,6 +987,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     proporcionado ninguna política, lo que impide al navegador procesar tu solicitud
     de ir a <ph name="SITE" />. Los operadores de sitios pueden usar las políticas de origen
     para configurar la seguridad y otras propiedades de un sitio web.</translation>
+<translation id="4210602799576081649">El código de verificación ha caducado. Solicita uno nuevo.</translation>
 <translation id="421066178035138955">Usar dispositivos y datos de realidad virtual</translation>
 <translation id="4214357935346142455">perfil de pantalla de inicio de sesión</translation>
 <translation id="4215751373031079683">7x9 (sobre)</translation>
@@ -1298,6 +1299,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5126510351761255129">Verifica tu tarjeta</translation>
 <translation id="512670116361803001">Es posible que el tamaño de <ph name="APP_NAME" /> no se cambie correctamente. Usa los preajustes de tamaño de ventana para evitar que la aplicación dé problemas.</translation>
 <translation id="5135404736266831032">Gestiona tus direcciones...</translation>
+<translation id="5136841603454277753">Escribe el código correcto</translation>
 <translation id="5138014172396933048">La tarjeta virtual no está disponible en estos momentos, contacta con tu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5145883236150621069">Código de error presente en respuesta de la política</translation>

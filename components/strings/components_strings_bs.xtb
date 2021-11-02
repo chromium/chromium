@@ -987,6 +987,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
     isporučiti pravila, što sprečava preglednik da ispuni vaš zahtjev
     za web lokaciju <ph name="SITE" />. Operateri web lokacija mogu koristiti izvorna pravila
     za konfiguriranje sigurnosti i drugih osobina web lokacije.</translation>
+<translation id="4210602799576081649">Kôd za potvrdu je istekao. Zatražite novi</translation>
 <translation id="421066178035138955">Koristi uređaje za virtuelnu realnost i podatke</translation>
 <translation id="4214357935346142455">profil ekrana za prijavu</translation>
 <translation id="4215751373031079683">7 x 9 (koverta)</translation>
@@ -1298,6 +1299,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5126510351761255129">Potvrdite karticu</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> možda neće dobro promijeniti veličinu. Koristite zadane postavke veličina prozora da spriječite probleme s aplikacijom.</translation>
 <translation id="5135404736266831032">Upravljaj adresama...</translation>
+<translation id="5136841603454277753">Unesite tačan kôd</translation>
 <translation id="5138014172396933048">Virtuelna kartica trenutno nije dostupna. Kontaktirajte banku</translation>
 <translation id="5138227688689900538">Prikaži manje</translation>
 <translation id="5145883236150621069">Odgovor na pravilo sadrži kȏd greške</translation>

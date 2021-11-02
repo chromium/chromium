@@ -43,6 +43,7 @@
 <translation id="2577788541081224677">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään voidaksesi laittaa synkronoinnin päälle.</translation>
 <translation id="2583187216237139145">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chromium-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
+<translation id="2614883797045469742">Oletusasetukset sopivat suurimmalle osalle, mutta voit muuttaa niitä vastaamaan Chromiumin käyttöäsi</translation>
 <translation id="2648074677641340862">Asennuksessa ilmeni käyttöjärjestelmävirhe. Lataa Chromium uudelleen.</translation>
 <translation id="2661879430930417727">Jos käytät jaettua laitetta, kaverisi ja perheenjäsenesi voivat selata verkkoa erillään ja räätälöidä Chromiumista juuri itselleen sopivan</translation>
 <translation id="2711502716910134313">Chromium-välilehti</translation>
@@ -208,6 +209,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6990124437352146030">Chromium tarvitsee oikeuden käyttää mikrofoniasi tällä sivustolla.</translation>
 <translation id="705851970750939768">Päivitä Chromium</translation>
 <translation id="7067091210845072982">Jos kuvalla ei ole hyödyllistä kuvausta, Chromium yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
+<translation id="7147279922647361552">Muuta Chromiumin tärkeimpiä yksityisyysvalintoja</translation>
 <translation id="718435575166326686">Chromium tarvitsee kameran luvan tällä sivustolla</translation>
 <translation id="7196312274710523067">Chromiumin käynnistäminen epäonnistui. Yritä uudelleen.</translation>
 <translation id="7197677400338048821">Chromium ei voi tarkistaa salasanojasi. Yritä uudelleen 24 tunnin päästä.</translation>

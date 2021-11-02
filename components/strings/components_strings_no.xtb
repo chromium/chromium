@@ -987,6 +987,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     sende noen regel, og dette forhindrer nettleseren fra å effektuere forespørselen din
     til <ph name="SITE" />. Nettstedsoperatører kan bruke
     opphavsregler til å konfigurere sikkerhet og andre egenskaper for nettsteder.</translation>
+<translation id="4210602799576081649">Bekreftelseskoden er utløpt – be om en ny kode</translation>
 <translation id="421066178035138955">Bruk virtuell virkelighet-enheter og -data</translation>
 <translation id="4214357935346142455">profil for påloggingsskjermen</translation>
 <translation id="4215751373031079683">7x9 (konvolutt)</translation>
@@ -1298,6 +1299,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5126510351761255129">Bekreft kortet ditt</translation>
 <translation id="512670116361803001">Det fungerer kanskje ikke så bra å endre størrelse på <ph name="APP_NAME" />. Bruk forhåndsinnstilte vindusstørrelser for å unngå at appen støter på problemer.</translation>
 <translation id="5135404736266831032">Adminstrer adresser…</translation>
+<translation id="5136841603454277753">Skriv inn riktig kode</translation>
 <translation id="5138014172396933048">Virtuelt kort er ikke tilgjengelig akkurat nå – kontakt banken</translation>
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="5145883236150621069">Feilkode i responsen for enhetsinnstillinger</translation>

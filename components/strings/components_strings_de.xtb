@@ -976,6 +976,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Firewall und Antivirenkonfiguration prüfen<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Groß</translation>
 <translation id="4209166701302774460">Der Server <ph name="ORIGIN" />, zu dem Sie gehen, verlangt, dass auf alle an ihn gerichteten Anfragen eine Ursprungsrichtlinie angewendet wird. Er hat jedoch keine Richtlinie übergeben, was den Browser daran hindert, Ihre Anfrage für <ph name="SITE" /> auszuführen. Ursprungsrichtlinien können von Websitebetreibern verwendet werden, um die Sicherheit und andere Eigenschaften einer Website zu konfigurieren.</translation>
+<translation id="4210602799576081649">Bestätigungscode abgelaufen, fordern Sie einen neuen an</translation>
 <translation id="421066178035138955">Virtual-Reality-Geräte und ‑Daten verwenden</translation>
 <translation id="4214357935346142455">Profil der Anmeldeseite</translation>
 <translation id="4215751373031079683">7x9 (Umschlag)</translation>
@@ -1287,6 +1288,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5126510351761255129">Karte bestätigen</translation>
 <translation id="512670116361803001">Die Größe von <ph name="APP_NAME" /> kann eventuell nicht richtig angepasst werden. Verwenden Sie voreingestellte Fenstergrößen, damit die App ordnungsgemäß funktioniert.</translation>
 <translation id="5135404736266831032">Adressen verwalten…</translation>
+<translation id="5136841603454277753">Richtigen Code eingeben</translation>
 <translation id="5138014172396933048">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte kontaktieren Sie Ihre Bank</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
 <translation id="5145883236150621069">Fehlercode in der Richtlinienantwort</translation>

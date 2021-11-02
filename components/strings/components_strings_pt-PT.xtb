@@ -987,6 +987,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
     conseguiu devolver uma política, o que impede o navegador de satisfazer
     o seu pedido para <ph name="SITE" />. As políticas de origem podem ser utilizadas
     pelos operadores de sites para configurar a segurança e outras propriedades de um site.</translation>
+<translation id="4210602799576081649">Código de validação expirado, solicite um novo código</translation>
 <translation id="421066178035138955">Utilizar dados e dispositivos de realidade virtual</translation>
 <translation id="4214357935346142455">perfil do ecrã de início de sessão</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1298,6 +1299,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5126510351761255129">Valide o cartão</translation>
 <translation id="512670116361803001">A app <ph name="APP_NAME" /> pode não ser redimensionada corretamente. Utilize os tamanhos da janela predefinidos para impedir que a app tenha problemas.</translation>
 <translation id="5135404736266831032">Gerir endereços…</translation>
+<translation id="5136841603454277753">Introduza o código correto</translation>
 <translation id="5138014172396933048">O cartão virtual não está disponível neste momento. Contacte o seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>

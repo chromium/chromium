@@ -978,6 +978,7 @@
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />방화벽 및 바이러스 백신 소프트웨어 설정 확인<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">크게</translation>
 <translation id="4209166701302774460">대상 서버인 <ph name="ORIGIN" />에서 서버로 전송되는 모든 요청에 출처 정책을 적용하도록 요청했습니다. 하지만 현재 정책을 전달하는 데 실패하여 브라우저에서 <ph name="SITE" />에 관한 요청을 처리할 수 없습니다. 사이트 운영자는 출처 정책을 사용해 사이트의 보안 및 기타 속성을 구성할 수 있습니다.</translation>
+<translation id="4210602799576081649">인증 코드가 만료되었습니다. 새 코드를 요청하세요.</translation>
 <translation id="421066178035138955">가상 현실 기기 및 데이터 사용</translation>
 <translation id="4214357935346142455">로그인 화면 프로필</translation>
 <translation id="4215751373031079683">7x9(봉투)</translation>
@@ -1289,6 +1290,7 @@
 <translation id="5126510351761255129">카드 인증</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" />의 크기가 제대로 조절되지 않을 수도 있습니다. 앱에서 문제가 발생하지 않도록 미리 설정된 창 크기를 사용하세요.</translation>
 <translation id="5135404736266831032">주소 관리...</translation>
+<translation id="5136841603454277753">올바른 코드를 입력하세요.</translation>
 <translation id="5138014172396933048">현재 가상 카드를 사용할 수 없습니다. 은행에 문의해 주세요.</translation>
 <translation id="5138227688689900538">간략히</translation>
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>

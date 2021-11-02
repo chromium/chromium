@@ -2065,6 +2065,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="310671807099593501">El lloc web està utilitzant el Bluetooth</translation>
 <translation id="3108931485517391283">No es pot rebre</translation>
 <translation id="3109724472072898302">Reduït</translation>
+<translation id="311214366526552035">Baixa igualment</translation>
 <translation id="311394601889664316">No permetis que els llocs web editin fitxers o carpetes al dispositiu</translation>
 <translation id="3115147772012638511">Esperant la memòria cau...</translation>
 <translation id="3115580024857770654">Replega-ho tot</translation>
@@ -2344,6 +2345,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3429160811076349561">Les funcions de prova estan desactivades</translation>
 <translation id="3429271624041785769">Idiomes del contingut web</translation>
 <translation id="3429275422858276529">Afegeix aquesta pàgina a les adreces d'interès per trobar-la fàcilment més endavant</translation>
+<translation id="343115368966109153">Vols baixar <ph name="FILE_NAME" />? Qualsevol persona que faci servir aquest dispositiu podrà veure-ho.</translation>
 <translation id="3432227430032737297">Suprimeix totes les que es mostren</translation>
 <translation id="3432762828853624962">Treballadors compartits</translation>
 <translation id="3433621910545056227">El sistema no ha pogut establir el bloqueig dels atributs del temps d'instal·lació del dispositiu.</translation>
@@ -2685,6 +2687,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3777806571986431400">Extensió activada</translation>
 <translation id="3778152852029592020">La baixada s'ha cancel·lat.</translation>
 <translation id="3778208826288864398">La clau de seguretat està bloquejada perquè s'ha introduït un PIN incorrecte massa vegades. Cal que la restableixis.</translation>
+<translation id="3778369586810509692">Aquest fitxer s'emmagatzemarà al dispositiu i tothom el podrà veure.</translation>
 <translation id="3778740492972734840">Eines per a &amp;desenvolupadors</translation>
 <translation id="3778868487658107119">Fes-li preguntes o demana-li que faci coses. És el teu Google personal, sempre a punt per ajudar-te.</translation>
 <translation id="3781742599892759500">Accés al micròfon de Linux</translation>
@@ -4699,6 +4702,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="597235323114979258">Mostra més destinacions</translation>
 <translation id="5972666587303800813">Servei no operatiu</translation>
 <translation id="5972708806901999743">Mou a la part superior</translation>
+<translation id="5972801171078377748">No m'ho tornis a mostrar</translation>
 <translation id="5972826969634861500">Inicia <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290"><ph name="CLIENT_NAME" /> ha començat a depurar aquest navegador</translation>
 <translation id="5973605538625120605">Canvia el PIN</translation>

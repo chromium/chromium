@@ -978,6 +978,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Verificar as configurações do antivírus e firewall<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4209166701302774460">O servidor que você acessará, <ph name="ORIGIN" />, solicitou que uma política de origem seja aplicada a todas as solicitações feitas a ele. No entanto, agora ele deixou de carregar uma política, o que impede que o navegador faça a solicitação para <ph name="SITE" />. Políticas de origem podem ser usadas por operadores para configurar a segurança e outras propriedades de um site.</translation>
+<translation id="4210602799576081649">Código de verificação expirado. Peça um novo</translation>
 <translation id="421066178035138955">Usar dispositivos e dados de realidade virtual</translation>
 <translation id="4214357935346142455">perfil da tela de login</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1289,6 +1290,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5126510351761255129">Verificar seu cartão</translation>
 <translation id="512670116361803001">O <ph name="APP_NAME" /> pode não ser redimensionado corretamente. Use os tamanhos de janela predefinidos para evitar problemas.</translation>
 <translation id="5135404736266831032">Gerenciar endereços…</translation>
+<translation id="5136841603454277753">Insira o código correto</translation>
 <translation id="5138014172396933048">O cartão virtual não está disponível no momento. Entre em contato com seu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>

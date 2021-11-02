@@ -974,6 +974,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Skontrolovať konfiguráciu brány firewall a antivírusového softvéru<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Veľké</translation>
 <translation id="4209166701302774460">Server <ph name="ORIGIN" />, na ktorý prechádzate, požiadal, aby sa na všetky naň odoslané požiadavky vzťahovalo pravidlo pre zdroj. Neposkytol však pravidlo, a preto prehliadač nemôže splniť vašu požiadavku pre web <ph name="SITE" />. Pomocou pravidiel pre zdroj môžu operátori webu nakonfigurovať zabezpečenie a ďalšie vlastnosti webu.</translation>
+<translation id="4210602799576081649">Overovací kód vypršal, požiadajte o nový</translation>
 <translation id="421066178035138955">Používať zariadenia a údaje virtuálnej reality</translation>
 <translation id="4214357935346142455">profil prihlasovacej obrazovky</translation>
 <translation id="4215751373031079683">7x9 (obálka)</translation>
@@ -1285,6 +1286,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5126510351761255129">Overenie karty</translation>
 <translation id="512670116361803001">Veľkosť aplikácie <ph name="APP_NAME" /> sa nemusí náležite zmeniť. Ak chcete predísť problémom v aplikácii, použite predvolené veľkosti okna.</translation>
 <translation id="5135404736266831032">Spravovať adresy…</translation>
+<translation id="5136841603454277753">Zadajte správny kód</translation>
 <translation id="5138014172396933048">Virtuálna karta nie je momentálne k dispozícii, kontaktujte svoju banku</translation>
 <translation id="5138227688689900538">Zobraziť menej</translation>
 <translation id="5145883236150621069">V odpovedi na pravidlo sa nachádza kód chyby</translation>

@@ -48,6 +48,7 @@
 <translation id="2121284319307530122">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="2123055963409958220">Auta parantamaan Chromea ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
+<translation id="2189289170880510015">Muuta Chromen tärkeimpiä yksityisyysvalintoja</translation>
 <translation id="2246246234298806438">Google Chrome ei voi näyttää tulostusesikatselua, koska PDF-katseluohjelma puuttuu.</translation>
 <translation id="2290014774651636340">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Google Chromen toiminnoista poistetaan käytöstä.</translation>
 <translation id="2290095356545025170">Haluatko varmasti poistaa Google Chromen?</translation>
@@ -110,6 +111,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="3622797965165704966">Nyt voit helpommin käyttää Chromea Google-tililläsi ja jaetuilla tietokoneilla.</translation>
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
+<translation id="3678552270983184277">Oletusasetukset sopivat suurimmalle osalle, mutta voit muuttaa niitä vastaamaan Chromen käyttöäsi</translation>
 <translation id="3718181793972440140">Yksi kohde poistetaan pysyvästi  tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Laajennus <ph name="EXTENSION_NAME" /> on vaihtanut Chromen aloitussivun.</translation>
 <translation id="3779473566290487688">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava OS X 10.11 tai uudempi. Tietokoneen käyttöjärjestelmä on OS X 10.10.</translation>

@@ -51,6 +51,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2121284319307530122">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Google Chrome en nous signalant les <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
+<translation id="2189289170880510015">Personnaliser certains des choix de confidentialité les plus importants de Chrome</translation>
 <translation id="2246246234298806438">Google Chrome ne peut pas afficher l'aperçu avant impression lorsque le visualiseur de documents PDF intégré n'est pas installé.</translation>
 <translation id="2290014774651636340">Les clés d'API Google sont manquantes. Certaines fonctionnalités de Google Chrome seront désactivées.</translation>
 <translation id="2290095356545025170">Voulez-vous vraiment désinstaller Google Chrome?</translation>
@@ -113,6 +114,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3596080736082218006">{COUNT,plural, =0{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour}=1{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Votre fenêtre de navigation privée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chrome pour appliquer une mise à jour. Vos # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="3622797965165704966">Il est maintenant plus facile d'utiliser Google Chrome avec votre compte Google et sur des ordinateurs partagés.</translation>
 <translation id="3673813398384385993">Chrome a constaté que « <ph name="EXTENSION_NAME" /> » contient un logiciel malveillant</translation>
+<translation id="3678552270983184277">Les paramètres par défaut fonctionnent pour la plupart des utilisateurs, vous pouvez toutefois les personnaliser pour qu'ils correspondent aux façons dont vous aimez utiliser Chrome</translation>
 <translation id="3718181793972440140">Cette action entraînera la suppression d'un élément sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche au démarrage de Chrome.</translation>
 <translation id="3779473566290487688">Vous devez disposer de macOS X 10.11 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Or, c'est la version macOS X 10.10 qui est installée sur cet ordinateur.</translation>

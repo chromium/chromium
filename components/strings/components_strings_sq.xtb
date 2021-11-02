@@ -984,6 +984,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4209166701302774460">Serveri ku po shkon, <ph name="ORIGIN" />, ka kërkuar që të zbatohet një politikë e origjinës për të gjitha kërkesat drejtuar atij Por tani nuk ka arritur
     të dorëzojë një politikë, gjë që parandalon që shfletuesi të përmbushë kërkesën tënde për <ph name="SITE" />. Politikat e origjinës mund të përdoren nga operatorët
     e sajtit për të konfiguruar karakteristikat e sigurisë dhe karakteristika të tjera për një sajt.</translation>
+<translation id="4210602799576081649">Kodi i verifikimit skadoi; kërko një kod të ri</translation>
 <translation id="421066178035138955">Përdor pajisjet dhe të dhënat e "Realitetit virtual"</translation>
 <translation id="4214357935346142455">profili i ekranit të identifikimit</translation>
 <translation id="4215751373031079683">7x9 (Zarf)</translation>
@@ -1295,6 +1296,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5126510351761255129">Verifiko kartën tënde</translation>
 <translation id="512670116361803001">Përmasat e <ph name="APP_NAME" /> mund të mos ndryshohen si duhet. Përdor madhësitë e paravendosura të dritares për të parandaluar problemet e aplikacionit.</translation>
 <translation id="5135404736266831032">Menaxho adresat...</translation>
+<translation id="5136841603454277753">Fut kodin e saktë</translation>
 <translation id="5138014172396933048">Karta virtuale nuk ofrohet për momentin, kontakto me bankën tënde</translation>
 <translation id="5138227688689900538">Shfaq më pak</translation>
 <translation id="5145883236150621069">Një kod gabimi i pranishëm në përgjigjen e politikës</translation>

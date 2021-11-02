@@ -977,6 +977,7 @@
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />檢查防火牆和防毒軟件設定<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4209166701302774460">您的目標伺服器「<ph name="ORIGIN" />」要求為收到的所有要求套用來源政策。不過，由於該伺服器目前並未提供政策，因此瀏覽器無法完成您向 <ph name="SITE" /> 提出的要求。網站網絡供應商可使用來源政策設定網站的安全性及其他屬性。</translation>
+<translation id="4210602799576081649">驗證碼已過期，請要求新驗證碼</translation>
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
 <translation id="4214357935346142455">登入畫面個人檔案</translation>
 <translation id="4215751373031079683">7x9 (信封)</translation>
@@ -1288,6 +1289,7 @@
 <translation id="5126510351761255129">驗證信用卡</translation>
 <translation id="512670116361803001">「<ph name="APP_NAME" />」可能無法正常調整大小。請使用預設視窗大小，以免應用程式發生問題。</translation>
 <translation id="5135404736266831032">管理地址…</translation>
+<translation id="5136841603454277753">請輸入正確的驗證碼</translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡，請聯絡您的銀行</translation>
 <translation id="5138227688689900538">顯示較少</translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>

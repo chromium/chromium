@@ -977,6 +977,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Periksa konfigurasi antivirus dan firewall<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4209166701302774460">Server yang akan Anda akses, <ph name="ORIGIN" />, telah meminta agar kebijakan asal diterapkan ke semua permintaan yang ditujukan kepadanya. Namun, server tersebut kini telah gagal menerapkan kebijakan, yang membuat browser tidak dapat memenuhi permintaan Anda untuk <ph name="SITE" />. Kebijakan asal dapat digunakan oleh operator situs guna mengonfigurasi keamanan dan properti lainnya untuk sebuah situs.</translation>
+<translation id="4210602799576081649">Kode verifikasi sudah tidak berlaku, minta kode baru</translation>
 <translation id="421066178035138955">Gunakan perangkat dan data virtual reality</translation>
 <translation id="4214357935346142455">profil layar login</translation>
 <translation id="4215751373031079683">7x9 (Envelope)</translation>
@@ -1288,6 +1289,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5126510351761255129">Verifikasi kartu</translation>
 <translation id="512670116361803001">Perubahan ukuran <ph name="APP_NAME" /> mungkin tidak sesuai. Gunakan ukuran jendela preset untuk mencegah aplikasi mengalami masalah.</translation>
 <translation id="5135404736266831032">Kelola alamat...</translation>
+<translation id="5136841603454277753">Masukkan kode yang benar</translation>
 <translation id="5138014172396933048">Kartu virtual saat ini tidak tersedia, hubungi bank Anda</translation>
 <translation id="5138227688689900538">Tampilkan lebih sedikit</translation>
 <translation id="5145883236150621069">Ada kode kesalahan dalam tanggapan kebijakan</translation>

@@ -108,6 +108,7 @@
 <translation id="129863573139666797"><ph name="BEGIN_LINK" />Essayez d'effacer vos témoins<ph name="END_LINK" /></translation>
 <translation id="1301324364792935241">Vérifiez les paramètres de DNS sécurisés</translation>
 <translation id="1307966114820526988">Fonctionnalités obsolètes</translation>
+<translation id="1308113895091915999">Offre proposée</translation>
 <translation id="1312803275555673949">Par quelles preuves est-ce appuyé?</translation>
 <translation id="131405271941274527"><ph name="URL" /> souhaite vous envoyer et recevoir de l'information lorsque vous touchez votre téléphone sur un appareil CCP</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
@@ -977,6 +978,7 @@
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />De vérifier les configurations du pare-feu et de l'antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grand</translation>
 <translation id="4209166701302774460">Le serveur auquel vous accédez, <ph name="ORIGIN" />, a exigé qu'une politique de contrôle d'origine soit appliquée à toutes les demandes qu'il reçoit. Cependant, la politique n'a pas pu être émise, ce qui empêche le navigateur de répondre à votre demande pour <ph name="SITE" />. Les exploitants de sites peuvent utiliser des politiques d'origine pour configurer la sécurité et d'autres propriétés d'un site.</translation>
+<translation id="4210602799576081649">Le code de vérification a expiré, demandez un nouveau code</translation>
 <translation id="421066178035138955">Utiliser les appareils et les données de réalité virtuelle</translation>
 <translation id="4214357935346142455">profil de l'écran de connexion</translation>
 <translation id="4215751373031079683">Enveloppe 7 po x 9 po</translation>
@@ -1288,6 +1290,7 @@
 <translation id="5126510351761255129">Vérifier votre carte</translation>
 <translation id="512670116361803001">L'application <ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Utilisez des tailles de fenêtre préréglées pour éviter que l'application rencontre des problèmes.</translation>
 <translation id="5135404736266831032">Gérer les adresses</translation>
+<translation id="5136841603454277753">Entrez le bon code</translation>
 <translation id="5138014172396933048">Votre carte virtuelle n'est pas accessible pour le moment, veuillez communiquer avec votre banque</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la politique</translation>

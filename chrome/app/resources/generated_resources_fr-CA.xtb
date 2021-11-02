@@ -2068,6 +2068,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="310671807099593501">Le site utilise le Bluetooth</translation>
 <translation id="3108931485517391283">Impossible de recevoir le fichier</translation>
 <translation id="3109724472072898302">Réduit</translation>
+<translation id="311214366526552035">Télécharger quand même</translation>
 <translation id="311394601889664316">Ne pas autoriser les sites à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="3115147772012638511">En attente de l'affichage du cache…</translation>
 <translation id="3115580024857770654">Tout réduire</translation>
@@ -2347,6 +2348,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues pour le contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver plus facilement plus tard</translation>
+<translation id="343115368966109153">Téléchargez le fichier <ph name="FILE_NAME" />? Tous les utilisateurs de cet appareil pourront le consulter.</translation>
 <translation id="3432227430032737297">Supprimer tous les éléments affichés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Oups… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
@@ -2688,6 +2690,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3777806571986431400">Extension activée</translation>
 <translation id="3778152852029592020">Téléchargement annulé.</translation>
 <translation id="3778208826288864398">La clé de sécurité est verrouillée, car un NIP incorrect a été entré trop de fois. Vous devez réinitialiser la clé de sécurité.</translation>
+<translation id="3778369586810509692">Ce fichier sera stocké sur l'appareil et tous les utilisateurs pourront le consulter.</translation>
 <translation id="3778740492972734840">Outils de &amp;développement</translation>
 <translation id="3778868487658107119">Posez-lui des questions. Dites-lui ce qu'il doit faire. C'est votre Google personnel, toujours prêt à vous aider.</translation>
 <translation id="3781742599892759500">Accès au microphone pour Linux</translation>
@@ -4701,6 +4704,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="597235323114979258">Voir d'autres destinations</translation>
 <translation id="5972666587303800813">Service non opérationnel</translation>
 <translation id="5972708806901999743">Déplacer en haut de la liste</translation>
+<translation id="5972801171078377748">Ne plus afficher</translation>
 <translation id="5972826969634861500">Lancer <ph name="PRODUCT_NAME" /></translation>
 <translation id="5973041996755340290">« <ph name="CLIENT_NAME" /> » a commencé à déboguer ce navigateur</translation>
 <translation id="5973605538625120605">Changer le NIP</translation>
