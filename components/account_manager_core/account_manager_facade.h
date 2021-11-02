@@ -124,12 +124,14 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Adds or updates an account programmatically without user interaction.
   // Should only be used in tests.
   virtual void UpsertAccountForTesting(const Account& account,
                                        const std::string& token_value) = 0;
-#endif
+
+  // Removes an account programmatically without user interaction. Should only
+  // be used in tests.
+  virtual void RemoveAccountForTesting(const AccountKey& account) = 0;
 };
 
 }  // namespace account_manager

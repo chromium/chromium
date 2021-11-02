@@ -276,8 +276,8 @@ class AccountManagerFacadeImplTest : public testing::Test {
     base::RunLoop run_loop;
     auto result = std::make_unique<AccountManagerFacadeImpl>(
         account_manager().CreateRemote(),
-        /* remote_version= */ std::numeric_limits<uint32_t>::max(),
-        run_loop.QuitClosure());
+        /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+        /*account_manager_for_tests=*/nullptr, run_loop.QuitClosure());
     run_loop.Run();
     return result;
   }
@@ -362,7 +362,8 @@ TEST_F(AccountManagerFacadeImplTest,
   // sequence to be finished. To avoid this, create it directly here.
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       account_manager().CreateRemote(),
-      /* remote_version= */ std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
 
   MockOnceCallback<void(const std::vector<Account>&)> callback;
   base::RunLoop run_loop;
@@ -376,7 +377,8 @@ TEST_F(AccountManagerFacadeImplTest,
        GetAccountsReturnsEmptyListOfAccountsWhenRemoteIsNull) {
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       mojo::Remote<crosapi::mojom::AccountManager>(),
-      /* remote_version= */ std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
 
   MockOnceCallback<void(const std::vector<Account>&)> callback;
   base::RunLoop run_loop;
@@ -496,7 +498,8 @@ TEST_F(AccountManagerFacadeImplTest,
        AccessTokenFetcherReturnsAnErrorForUninitializedRemote) {
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       mojo::Remote<crosapi::mojom::AccountManager>(),
-      /*remote_version=*/std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   MockOAuthConsumer consumer;
@@ -515,7 +518,8 @@ TEST_F(AccountManagerFacadeImplTest,
        AccessTokenFetcherCanBeCreatedBeforeAccountManagerFacadeInitialization) {
   auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
       account_manager().CreateRemote(),
-      /*remote_version=*/std::numeric_limits<uint32_t>::max());
+      /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+      /*account_manager_for_tests=*/nullptr);
   const Account account = CreateTestGaiaAccount(kTestAccountEmail);
 
   auto mock_access_token_fetcher = std::make_unique<MockAccessTokenFetcher>();

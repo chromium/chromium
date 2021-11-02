@@ -104,6 +104,8 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
       account_fetcher_service_(std::move(parameters.account_fetcher_service)),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       signin_client_(parameters.signin_client),
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
       account_manager_facade_(parameters.account_manager_facade),
 #endif
       identity_mutator_(std::move(parameters.primary_account_mutator),
@@ -142,10 +144,6 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
   java_identity_manager_ = Java_IdentityManager_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       token_service_->GetDelegate()->GetJavaObject());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash_account_manager_ = parameters.ash_account_manager;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -534,13 +532,7 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
   return gaia_cookie_manager_service_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-account_manager::AccountManager* IdentityManager::GetAshAccountManager() const {
-  return ash_account_manager_;
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 account_manager::AccountManagerFacade*
 IdentityManager::GetAccountManagerFacade() const {
   return account_manager_facade_;

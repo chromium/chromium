@@ -30,7 +30,6 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #endif
 
 void VerifyProfileEntry(const base::Value& value,

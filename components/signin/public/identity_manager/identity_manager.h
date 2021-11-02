@@ -34,14 +34,11 @@
 #include "base/time/time.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace account_manager {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class AccountManager;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 class AccountManagerFacade;
+}
 #endif
-}  // namespace account_manager
 
 namespace gaia {
 class GaiaSource;
@@ -371,11 +368,10 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    account_manager::AccountManager* ash_account_manager = nullptr;
-#endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     SigninClient* signin_client = nullptr;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     account_manager::AccountManagerFacade* account_manager_facade = nullptr;
 #endif
 
@@ -554,13 +550,7 @@ class IdentityManager : public KeyedService,
       const std::string& locale,
       const std::string& picture_url);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO: Remove this and use GetAccountManagerFacade() on Ash as well.
-  friend account_manager::AccountManager* GetAccountManager(
-      IdentityManager* identity_manager);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   friend account_manager::AccountManagerFacade* GetAccountManagerFacade(
       IdentityManager* identity_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -636,10 +626,7 @@ class IdentityManager : public KeyedService,
   AccountTrackerService* GetAccountTrackerService() const;
   AccountFetcherService* GetAccountFetcherService() const;
   GaiaCookieManagerService* GetGaiaCookieManagerService() const;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  account_manager::AccountManager* GetAshAccountManager() const;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::AccountManagerFacade* GetAccountManagerFacade() const;
 #endif
 
@@ -698,6 +685,8 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<AccountFetcherService> account_fetcher_service_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   SigninClient* const signin_client_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::AccountManagerFacade* const account_manager_facade_;
 #endif
 
@@ -731,10 +720,6 @@ class IdentityManager : public KeyedService,
   // used to record account information fetch duration.
   base::flat_map<CoreAccountId, base::TimeTicks>
       account_info_fetch_start_times_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  account_manager::AccountManager* ash_account_manager_ = nullptr;
 #endif
 };
 

@@ -104,3 +104,8 @@ void ProfileAccountManager::UpsertAccountForTesting(
   mapper_->UpsertAccountForTesting(  // IN-TEST
       profile_path_, account, token_value);
 }
+
+void ProfileAccountManager::RemoveAccountForTesting(
+    const account_manager::AccountKey& account) {
+  mapper_->RemoveAccountForTesting(profile_path_, account);  // IN-TEST
+}

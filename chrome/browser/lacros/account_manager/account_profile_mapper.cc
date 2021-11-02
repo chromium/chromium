@@ -235,6 +235,18 @@ void AccountProfileMapper::UpsertAccountForTesting(
                      weak_factory_.GetWeakPtr(), helper, base::DoNothing()));
 }
 
+void AccountProfileMapper::RemoveAccountForTesting(
+    const base::FilePath& profile_path,
+    const account_manager::AccountKey& account_key) {
+  if (!initialized_) {
+    initialization_callbacks_.push_back(
+        base::BindOnce(&AccountProfileMapper::RemoveAccountForTesting,
+                       weak_factory_.GetWeakPtr(), profile_path, account_key));
+    return;
+  }
+  account_manager_facade_->RemoveAccountForTesting(account_key);  // IN-TEST
+}
+
 void AccountProfileMapper::AddAccountInternal(
     const base::FilePath& profile_path,
     const absl::variant<

@@ -67,15 +67,18 @@ class AccountManagerFacadeFactoryLacros {
       account_manager_facade_ =
           std::make_unique<account_manager::AccountManagerFacadeImpl>(
               std::move(remote),
-              /*remote_version=*/std::numeric_limits<uint32_t>::max());
+              /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+              /*account_manager_for_tests=*/ash_account_manager_.get());
       return;
     }
 
     account_manager_facade_ =
         std::make_unique<account_manager::AccountManagerFacadeImpl>(
             GetAccountManagerRemote(),
-            /*remote_version=*/chromeos::LacrosService::Get()
-                ->GetInterfaceVersion(crosapi::mojom::AccountManager::Uuid_));
+            /*remote_version=*/
+            chromeos::LacrosService::Get()->GetInterfaceVersion(
+                crosapi::mojom::AccountManager::Uuid_),
+            /*account_manager_for_tests=*/nullptr);
   }
 
   // Reset the pointers.

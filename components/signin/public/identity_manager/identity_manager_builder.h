@@ -39,12 +39,6 @@ namespace network {
 class NetworkConnectionTracker;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace ash {
-class AccountManager;
-}
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace account_manager {
 class AccountManagerFacade;
@@ -70,10 +64,6 @@ struct IdentityManagerBuildParams {
 #if !defined(OS_ANDROID)
   bool delete_signin_cookies_on_exit = false;
   scoped_refptr<TokenWebData> token_web_data;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  account_manager::AccountManager* account_manager = nullptr;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

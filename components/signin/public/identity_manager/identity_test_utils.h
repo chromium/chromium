@@ -17,13 +17,10 @@ namespace network {
 class TestURLLoaderFactory;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace account_manager {
-class AccountManager;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 class AccountManagerFacade;
-#endif
-}  // namespace account_manager
+}
 #endif  // defined(OS_CHROMEOS)
 
 class GoogleServiceAuthError;
@@ -209,12 +206,7 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
                                           const std::string& locale,
                                           const std::string& picture_url);
 
-#if defined(OS_CHROMEOS)
-account_manager::AccountManager* GetAccountManager(
-    IdentityManager* identity_manager);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     IdentityManager* identity_manager);
 #endif
