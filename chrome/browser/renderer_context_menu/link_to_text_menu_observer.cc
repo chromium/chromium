@@ -9,7 +9,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -221,6 +224,11 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
   LogDesktopLinkGenerationCopiedLinkType(
       shared_highlighting::LinkGenerationCopiedLinkType::
           kCopiedFromNewGeneration);
+
+  // Record usage for Shared Highlighting promo.
+  feature_engagement::TrackerFactory::GetForBrowserContext(
+      proxy_->GetWebContents()->GetBrowserContext())
+      ->NotifyEvent("iph_desktop_shared_highlighting_used");
 }
 
 void LinkToTextMenuObserver::Timeout() {

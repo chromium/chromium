@@ -122,6 +122,11 @@ views::View* GetWebUITabStripAnchorView(BrowserView* browser_view) {
 }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
+// kIPHDesktopSharedHighlightingFeature:
+views::View* GetToolbarView(BrowserView* browser_view) {
+  return browser_view->toolbar();
+}
+
 }  // namespace
 
 FeaturePromoRegistry::FeaturePromoRegistry() {
@@ -341,6 +346,16 @@ void FeaturePromoRegistry::RegisterKnownFeatures() {
                     base::BindRepeating(GetWebUITabStripAnchorView));
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+
+  {
+    // kIPHDesktopSharedHighlightingFeature:
+    FeaturePromoBubbleParams params;
+    params.body_string_specifier = IDS_SHARED_HIGHLIGHTING_PROMO;
+    params.arrow = FeaturePromoBubbleParams::Arrow::NONE;
+
+    RegisterFeature(feature_engagement::kIPHDesktopSharedHighlightingFeature,
+                    params, base::BindRepeating(GetToolbarView));
+  }
 }
 
 FeaturePromoRegistry::FeaturePromoData::FeaturePromoData() = default;

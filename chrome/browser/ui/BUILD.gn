@@ -1224,6 +1224,8 @@ static_library("ui") {
       "serial/serial_chooser.h",
       "serial/serial_chooser_controller.cc",
       "serial/serial_chooser_controller.h",
+      "shared_highlighting/shared_highlighting_promo.cc",
+      "shared_highlighting/shared_highlighting_promo.h",
       "signin/profile_colors_util.cc",
       "signin/profile_colors_util.h",
       "singleton_tabs.cc",

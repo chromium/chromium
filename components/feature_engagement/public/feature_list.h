@@ -213,6 +213,8 @@ DEFINE_VARIATION_PARAM(kIPHDesktopPwaInstallFeature, "IPH_DesktopPwaInstall");
 DEFINE_VARIATION_PARAM(kIPHProfileSwitchFeature, "IPH_ProfileSwitch");
 DEFINE_VARIATION_PARAM(kIPHUpdatedConnectionSecurityIndicatorsFeature,
                        "IPH_UpdatedConnectionSecurityIndicators");
+DEFINE_VARIATION_PARAM(kIPHDesktopSharedHighlightingFeature,
+                       "IPH_DesktopSharedHighlighting");
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
@@ -327,6 +329,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopPwaInstallFeature),
         VARIATION_ENTRY(kIPHProfileSwitchFeature),
         VARIATION_ENTRY(kIPHUpdatedConnectionSecurityIndicatorsFeature),
+        VARIATION_ENTRY(kIPHDesktopSharedHighlightingFeature),
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 };

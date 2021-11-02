@@ -171,7 +171,9 @@
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_helper.h"
+#include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -461,6 +463,13 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       base::FeatureList::IsEnabled(
           accuracy_tips::features::kAccuracyTipsSurveyFeature)) {
     HatsHelper::CreateForWebContents(web_contents);
+  }
+#endif
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+  if (Browser* browser = chrome::FindBrowserWithProfile(profile)) {
+    SharedHighlightingPromo::CreateForWebContents(web_contents, browser);
   }
 #endif
 
