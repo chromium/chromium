@@ -349,3 +349,11 @@ fuzzer_test("onc_validator_fuzzer") {
     "//base",
   ]
 }
+
+fuzzer_test("onc_normalizer_fuzzer") {
+  sources = [ "onc/onc_normalizer_fuzzer.cc" ]
+  deps = [
+    ":network",
+    "//base",
+  ]
+}
