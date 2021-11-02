@@ -23506,6 +23506,14 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="File error"/>
 </enum>
 
+<enum name="DriveZeroStateProviderThrottleInterval">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="5 minutes"/>
+  <int value="2" label="10 minutes"/>
+  <int value="3" label="15 minutes"/>
+  <int value="4" label="30 minutes"/>
+</enum>
+
 <enum name="DspHotwordDetectionStatus">
   <int value="0" label="HARDWARE_ACCEPTED"/>
   <int value="1" label="SOFTWARE_REJECTED"/>

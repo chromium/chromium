@@ -19,6 +19,9 @@
 #include "chrome/browser/ui/app_list/search/files/item_suggest_cache.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -28,7 +31,9 @@ namespace app_list {
 class SearchController;
 
 class ZeroStateDriveProvider : public SearchProvider,
-                               public drive::DriveIntegrationServiceObserver {
+                               public drive::DriveIntegrationServiceObserver,
+                               public session_manager::SessionManagerObserver,
+                               public chromeos::PowerManagerClient::Observer {
  public:
   ZeroStateDriveProvider(
       Profile* profile,
@@ -41,6 +46,13 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   // drive::DriveIntegrationServiceObserver:
   void OnFileSystemMounted() override;
+
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void ScreenIdleStateChanged(
+      const power_manager::ScreenIdleState& proto) override;
 
   // SearchProvider:
   void AppListShown() override;
@@ -58,8 +70,19 @@ class ZeroStateDriveProvider : public SearchProvider,
   std::unique_ptr<FileResult> MakeChipResult(const base::FilePath& filepath,
                                              const float relevance);
 
+  // We are intending to change the triggers of queries to ItemSuggest, but
+  // first want to know the QPS impact of the change. This method records
+  // metrics to track how many queries we will send under the proposed new
+  // logic. It does not actually make any queries. The new logic is as follows:
+  // - Query on login and wake from sleep.
+  // - Query on every launcher open.
+  // - Query at most every 5, 10 or 15 minutes. These are tracked separately in
+  //   the metrics.
+  void MaybeLogHypotheticalQuery();
+
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
+  session_manager::SessionManager* const session_manager_;
 
   ItemSuggestCache item_suggest_cache_;
 
@@ -69,6 +92,15 @@ class ZeroStateDriveProvider : public SearchProvider,
   absl::optional<ItemSuggestCache::Results> cache_results_;
 
   base::TimeTicks query_start_time_;
+
+  // The time we last logged a hypothetical query, keyed by the minimum time
+  // between queries in minutes (5, 10 or 15 minutes). See
+  // MaybeLogHypotheticalQuery for details.
+  std::map<int, base::TimeTicks> last_hypothetical_query_;
+
+  // Whether or not the screen is off due to idling. Used for logging a
+  // hypothetical query on wake.
+  bool screen_off_ = true;
 
   // Whether the suggested files feature is enabled. True if both the experiment
   // is enabled, and the suggested content toggle is enabled.
@@ -80,6 +112,16 @@ class ZeroStateDriveProvider : public SearchProvider,
   // Whether we have sent at least one request to ItemSuggest to warm up the
   // results cache.
   bool have_warmed_up_cache_ = false;
+
+  base::ScopedObservation<drive::DriveIntegrationService,
+                          drive::DriveIntegrationServiceObserver>
+      drive_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
