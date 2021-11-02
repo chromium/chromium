@@ -51,7 +51,7 @@ void LinkWebBundle::Trace(Visitor* visitor) const {
   SubresourceWebBundle::Trace(visitor);
 }
 
-void LinkWebBundle::NotifyLoaded() {
+void LinkWebBundle::NotifyLoadingFinished() {
   if (owner_)
     owner_->ScheduleEvent();
 }
@@ -127,7 +127,7 @@ void LinkWebBundle::Process() {
         active_bundles->Remove(*this);
         ReleaseBundleLoader();
       }
-      NotifyLoaded();
+      NotifyLoadingFinished();
       OnWebBundleError("A nested bundle is not supported: " +
                        owner_->Href().ElidedString());
       return;

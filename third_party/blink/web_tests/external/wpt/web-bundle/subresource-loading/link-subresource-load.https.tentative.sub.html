@@ -12,4 +12,16 @@
   <link id="link-web-bundle" rel="webbundle" href="../resources/wbn/subresource.wbn" resources="https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/root.js
                    https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/submodule.js" />
   <script src="resources/subresource-load-test.sub.js"></script>
+  <script>
+    promise_test(async () => {
+      const wbn_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/subresource.wbn?test-resources-update';
+      const resource_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/submodule.js';
+      const element = await addWebBundleElementAndWaitForLoad(wbn_url, /*resources=*/[]);
+      changeWebBundleResourcesInPlace(element, [resource_url]);
+      const resp = await fetch(resource_url, { cache: 'no-store' });
+      assert_true(resp.ok);
+      assert_equals(performance.getEntriesByName(wbn_url).length, 1);
+      document.body.removeChild(element);
+    }, 'Updating resource attribute should not reload the bundle');
+  </script>
 </body>
