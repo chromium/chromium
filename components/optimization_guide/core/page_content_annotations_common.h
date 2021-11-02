@@ -55,6 +55,10 @@ enum class AnnotationType {
   kPageEntities,
 };
 
+std::string ExecutionStatusToString(ExecutionStatus status);
+
+std::string AnnotationTypeToString(AnnotationType type);
+
 // A weighted string value.
 class WeightedString {
  public:
@@ -65,7 +69,12 @@ class WeightedString {
   std::string value() const { return value_; }
   double weight() const { return weight_; }
 
+  std::string ToString() const;
+
   bool operator==(const WeightedString& other) const;
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const WeightedString& ws);
 
  private:
   std::string value_;
@@ -112,7 +121,12 @@ class BatchAnnotationResult {
   }
   absl::optional<double> visibility_score() const { return visibility_score_; }
 
+  std::string ToString() const;
+
   bool operator==(const BatchAnnotationResult& other) const;
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const BatchAnnotationResult& result);
 
  private:
   BatchAnnotationResult();
