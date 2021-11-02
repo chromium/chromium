@@ -2609,9 +2609,6 @@ source_set("browser") {
       "media/cdm_storage_impl.cc",
       "media/cdm_storage_impl.h",
     ]
-
-    # Depends on ppapi_constants.h
-    deps += [ "//ppapi/shared_impl" ]
   }
 
   if (enable_library_cdms || is_win) {

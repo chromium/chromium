@@ -563,7 +563,6 @@ static_library("test_support") {
       "//ppapi/host",
       "//ppapi/proxy",
       "//ppapi/proxy:test_support",
-      "//ppapi/shared_impl",
       "//ppapi/shared_impl:test_support",
     ]
   }
