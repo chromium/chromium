@@ -5,7 +5,7 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_ITEM_VIEW_H_
 
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/window_mini_view.h"
 #include "base/macros.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,9 +24,8 @@ namespace ash {
 class OverviewItem;
 
 // OverviewItemView covers the overview window and listens for events.
-class ASH_EXPORT OverviewItemView
-    : public WindowMiniView,
-      public OverviewHighlightController::OverviewHighlightableView {
+class ASH_EXPORT OverviewItemView : public WindowMiniView,
+                                    public OverviewHighlightableView {
  public:
   METADATA_HEADER(OverviewItemView);
 
@@ -74,7 +73,7 @@ class ASH_EXPORT OverviewItemView
   gfx::Rect GetHeaderBounds() const override;
   gfx::Size GetPreviewViewSize() const override;
 
-  // OverviewHighlightController::OverviewHighlightableView:
+  // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;

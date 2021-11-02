@@ -9,7 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk.h"
-#include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -27,12 +27,11 @@ class DesksBarView;
 // virtual desk in the desk bar view when overview mode is active. This view
 // shows a preview of the contents of the associated desk, its title, and
 // supports desk activation and removal.
-class ASH_EXPORT DeskMiniView
-    : public views::View,
-      public Desk::Observer,
-      public OverviewHighlightController::OverviewHighlightableView,
-      public views::TextfieldController,
-      public views::ViewObserver {
+class ASH_EXPORT DeskMiniView : public views::View,
+                                public Desk::Observer,
+                                public OverviewHighlightableView,
+                                public views::TextfieldController,
+                                public views::ViewObserver {
  public:
   // Returns the width of the desk preview based on its |preview_height| and the
   // aspect ratio of the root window taken from |root_window_size|.
@@ -103,7 +102,7 @@ class ASH_EXPORT DeskMiniView
   void OnDeskDestroyed(const Desk* desk) override;
   void OnDeskNameChanged(const std::u16string& new_name) override;
 
-  // OverviewHighlightController::OverviewHighlightableView:
+  // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
   void MaybeCloseHighlightedView() override;

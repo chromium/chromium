@@ -362,7 +362,7 @@ class DesksOverviewHighlightControllerTest
     ASSERT_EQ(2u, desk_controller->desks().size());
   }
 
-  OverviewHighlightController::OverviewHighlightableView* GetHighlightedView() {
+  OverviewHighlightableView* GetHighlightedView() {
     return OverviewHighlightController::TestApi(GetHighlightController())
         .GetHighlightView();
   }

@@ -1744,6 +1744,8 @@ component("ash") {
     "wm/overview/overview_grid_event_handler.h",
     "wm/overview/overview_highlight_controller.cc",
     "wm/overview/overview_highlight_controller.h",
+    "wm/overview/overview_highlightable_view.cc",
+    "wm/overview/overview_highlightable_view.h",
     "wm/overview/overview_item.cc",
     "wm/overview/overview_item.h",
     "wm/overview/overview_item_view.cc",

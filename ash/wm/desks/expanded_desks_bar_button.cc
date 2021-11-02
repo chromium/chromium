@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
