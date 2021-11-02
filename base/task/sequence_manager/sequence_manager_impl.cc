@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
@@ -520,10 +521,11 @@ const char* RunTaskTraceNameForPriority(TaskQueue::QueuePriority priority) {
 
 }  // namespace
 
-Task* SequenceManagerImpl::SelectNextTask(SelectTaskOption option) {
-  Task* task = SelectNextTaskImpl(option);
-  if (!task)
-    return nullptr;
+absl::optional<SequenceManagerImpl::SelectedTask>
+SequenceManagerImpl::SelectNextTask(SelectTaskOption option) {
+  absl::optional<SelectedTask> selected_task = SelectNextTaskImpl(option);
+  if (!selected_task)
+    return selected_task;
 
   ExecutingTask& executing_task =
       *main_thread_only().task_execution_stack.rbegin();
@@ -535,7 +537,7 @@ Task* SequenceManagerImpl::SelectNextTask(SelectTaskOption option) {
                      "task_type", executing_task.task_type);
   TRACE_EVENT_BEGIN0("sequence_manager", executing_task.task_queue_name);
 
-  return task;
+  return selected_task;
 }
 
 #if DCHECK_IS_ON() && !defined(OS_NACL)
@@ -592,7 +594,8 @@ void SequenceManagerImpl::LogTaskDebugInfo(
 }
 #endif  // DCHECK_IS_ON() && !defined(OS_NACL)
 
-Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
+absl::optional<SequenceManagerImpl::SelectedTask>
+SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
   CHECK(Validate());
 
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
@@ -620,7 +623,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
                                             /* force_verbose */ false));
 
     if (!work_queue)
-      return nullptr;
+      return absl::nullopt;
 
     // If the head task was canceled, remove it and run the selector again.
     if (UNLIKELY(work_queue->RemoveAllCanceledTasksFromFront()))
@@ -645,7 +648,7 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
             work_queue->task_queue()->GetQueuePriority()))) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("sequence_manager"),
                    "SequenceManager.YieldToNative");
-      return nullptr;
+      return absl::nullopt;
     }
 
 #if DCHECK_IS_ON() && !defined(OS_NACL)
@@ -660,7 +663,9 @@ Task* SequenceManagerImpl::SelectNextTaskImpl(SelectTaskOption option) {
         *main_thread_only().task_execution_stack.rbegin();
     NotifyWillProcessTask(&executing_task, &lazy_now);
 
-    return &executing_task.pending_task;
+    return SelectedTask(
+        executing_task.pending_task,
+        executing_task.task_queue->task_execution_trace_logger());
   }
 }
 

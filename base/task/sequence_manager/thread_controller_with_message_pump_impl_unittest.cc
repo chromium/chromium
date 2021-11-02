@@ -111,18 +111,19 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
   explicit FakeSequencedTaskSource(TickClock* clock) : clock_(clock) {}
   ~FakeSequencedTaskSource() override = default;
 
-  Task* SelectNextTask(SelectTaskOption option) override {
+  absl::optional<SelectedTask> SelectNextTask(
+      SelectTaskOption option) override {
     if (tasks_.empty())
-      return nullptr;
+      return absl::nullopt;
     if (tasks_.front().delayed_run_time > clock_->NowTicks())
-      return nullptr;
+      return absl::nullopt;
     if (option == SequencedTaskSource::SelectTaskOption::kSkipDelayedTask &&
         !tasks_.front().delayed_run_time.is_null()) {
-      return nullptr;
+      return absl::nullopt;
     }
     running_stack_.push_back(std::move(tasks_.front()));
     tasks_.pop();
-    return &running_stack_.back();
+    return SelectedTask(running_stack_.back(), TaskExecutionTraceLogger());
   }
 
   void DidRunTask() override { running_stack_.pop_back(); }

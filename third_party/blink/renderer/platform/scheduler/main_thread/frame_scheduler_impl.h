@@ -205,6 +205,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   const base::UnguessableToken& GetAgentClusterId() const;
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedProto<
+                      perfetto::protos::pbzero::RendererMainThreadTaskExecution>
+                          proto) const;
 
  protected:
   FrameSchedulerImpl(MainThreadSchedulerImpl* main_thread_scheduler,

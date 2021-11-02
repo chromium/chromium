@@ -5,9 +5,16 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_SEQUENCED_TASK_SOURCE_H_
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCED_TASK_SOURCE_H_
 
+#include "base/base_export.h"
+#include "base/callback_helpers.h"
 #include "base/pending_task.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace perfetto {
+class EventContext;
+}
 
 namespace base {
 namespace sequence_manager {
@@ -18,13 +25,29 @@ class SequencedTaskSource {
  public:
   enum class SelectTaskOption { kDefault, kSkipDelayedTask };
 
+  using TaskExecutionTraceLogger =
+      RepeatingCallback<void(perfetto::EventContext&, const Task&)>;
+
+  struct BASE_EXPORT SelectedTask {
+    SelectedTask(const SelectedTask&);
+    SelectedTask(Task& task,
+                 TaskExecutionTraceLogger task_execution_trace_logger);
+    ~SelectedTask();
+
+    Task& task;
+    // Callback to fill trace event arguments associated with the task
+    // execution. Can be null
+    TaskExecutionTraceLogger task_execution_trace_logger =
+        TaskExecutionTraceLogger();
+  };
+
   virtual ~SequencedTaskSource() = default;
 
-  // Returns the next task to run from this source or nullptr if
+  // Returns the next task to run from this source or nullopt if
   // there're no more tasks ready to run. If a task is returned,
   // DidRunTask() must be invoked before the next call to SelectNextTask().
   // |option| allows control on which kind of tasks can be selected.
-  virtual Task* SelectNextTask(
+  virtual absl::optional<SelectedTask> SelectNextTask(
       SelectTaskOption option = SelectTaskOption::kDefault) = 0;
 
   // Notifies this source that the task previously obtained

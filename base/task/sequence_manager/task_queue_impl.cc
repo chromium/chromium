@@ -1242,6 +1242,12 @@ void TaskQueueImpl::SetOnTaskPostedHandler(OnTaskPostedHandler handler) {
   any_thread_.on_task_posted_handler = std::move(handler);
 }
 
+void TaskQueueImpl::SetTaskExecutionTraceLogger(
+    TaskExecutionTraceLogger logger) {
+  DCHECK(should_notify_observers_ || logger.is_null());
+  main_thread_only().task_execution_trace_logger = std::move(logger);
+}
+
 bool TaskQueueImpl::IsUnregistered() const {
   base::internal::CheckedAutoLock lock(any_thread_lock_);
   return any_thread_.unregistered;
