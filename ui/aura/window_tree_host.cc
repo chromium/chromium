@@ -345,6 +345,10 @@ void WindowTreeHost::Hide() {
   OnAcceleratedWidgetMadeVisible(false);
 }
 
+gfx::Rect WindowTreeHost::GetBoundsInAcceleratedWidgetPixelCoordinates() {
+  return gfx::Rect(GetBoundsInPixels().size());
+}
+
 std::unique_ptr<ScopedKeyboardHook> WindowTreeHost::CaptureSystemKeyEvents(
     absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
   // TODO(joedow): Remove the simple hook class/logic once this flag is removed.
@@ -365,8 +369,9 @@ bool WindowTreeHost::IsNativeWindowOcclusionEnabled() {
 }
 
 void WindowTreeHost::SetNativeWindowOcclusionState(
-    Window::OcclusionState state) {
-  if (occlusion_state_ == state)
+    Window::OcclusionState state,
+    const SkRegion& occluded_region) {
+  if (occlusion_state_ == state && occluded_region_ == occluded_region)
     return;
 
   occlusion_state_ = state;
@@ -381,7 +386,7 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
   }
 
   for (WindowTreeHostObserver& observer : observers_)
-    observer.OnOcclusionStateChanged(this, state);
+    observer.OnOcclusionStateChanged(this, state, occluded_region);
 }
 
 std::unique_ptr<ScopedEnableUnadjustedMouseEvents>
@@ -423,11 +428,7 @@ void WindowTreeHost::UnlockMouse(Window* window) {
 // WindowTreeHost, protected:
 
 WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
-    : window_(window.release()),  // See header for details on ownership.
-      occlusion_state_(Window::OcclusionState::UNKNOWN),
-      last_cursor_(ui::mojom::CursorType::kNull),
-      input_method_(nullptr),
-      owned_input_method_(false) {
+    : window_(window.release()) {  // See header for details on ownership.
   if (!window_)
     window_ = new Window(nullptr);
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
