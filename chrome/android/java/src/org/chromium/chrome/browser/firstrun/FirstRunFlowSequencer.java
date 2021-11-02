@@ -217,10 +217,11 @@ public abstract class FirstRunFlowSequencer  {
 
     /**
      * Marks a given flow as completed.
-     * @param signInAccountName The account name for the pending sign-in request. (Or null)
-     * @param showSignInSettings Whether the user selected to see the settings once signed in.
+     * @param syncConsentAccountName The account name for the pending sign-in request. (Or null)
+     * @param showAdvancedSyncSettings Whether the user selected to see the settings once signed in.
      */
-    public static void markFlowAsCompleted(String signInAccountName, boolean showSignInSettings) {
+    public static void markFlowAsCompleted(
+            String syncConsentAccountName, boolean showAdvancedSyncSettings) {
         // When the user accepts ToS in the Setup Wizard, we do not show the ToS page to the user
         // because the user has already accepted one outside FRE.
         if (!FirstRunUtils.isFirstRunEulaAccepted()) {
@@ -228,7 +229,8 @@ public abstract class FirstRunFlowSequencer  {
         }
 
         // Mark the FRE flow as complete and set the sign-in flow preferences if necessary.
-        FirstRunSignInProcessor.finalizeFirstRunFlowState(signInAccountName, showSignInSettings);
+        FirstRunSignInProcessor.finalizeFirstRunFlowState(
+                syncConsentAccountName, showAdvancedSyncSettings);
     }
 
     /**

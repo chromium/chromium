@@ -45,22 +45,21 @@ public class SyncConsentFirstRunFragment
     }
 
     @Override
-    protected void onSigninRefused() {
+    protected void onSyncRefused() {
         if (ChildAccountStatus.isChild(mChildAccountStatus)) {
             // Somehow the child account disappeared while we were in the FRE.
             // The user would have to go through the FRE again.
             getPageDelegate().abortFirstRunExperience();
         } else {
             SignInPromo.temporarilySuppressPromos();
-            getPageDelegate().refuseSignIn();
+            getPageDelegate().refuseSync();
             getPageDelegate().advanceToNextPage();
         }
     }
 
     @Override
-    protected void onSigninAccepted(
-            String accountName, boolean settingsClicked, Runnable callback) {
-        getPageDelegate().acceptSignIn(accountName, settingsClicked);
+    protected void onSyncAccepted(String accountName, boolean settingsClicked, Runnable callback) {
+        getPageDelegate().acceptSync(accountName, settingsClicked);
         getPageDelegate().advanceToNextPage();
         callback.run();
     }
