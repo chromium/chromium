@@ -461,28 +461,52 @@ void PageInfoBubbleView::SetPermissionInfo(
 
   views::GridLayout* layout = permissions_view_->SetLayoutManager(
       std::make_unique<views::GridLayout>());
-  const bool is_list_empty =
-      permission_info_list.empty() && chosen_object_info_list.empty();
-  LayoutPermissionsLikeUiRow(layout, is_list_empty, kPermissionColumnSetId);
-
-  // |ChosenObjectView| will layout itself, so just add the missing padding
-  // here.
-  constexpr int kChosenObjectSectionId = 1;
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  if (permission_info_list.empty() && chosen_object_info_list.empty()) {
+    // If nothing to show, just add padding above the separator and exit.
+    layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                          layout_provider->GetDistanceMetric(
+                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+    return;
+  }
+
   const int list_item_padding =
       layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
+  layout->AddPaddingRow(views::GridLayout::kFixedSize, list_item_padding);
+
   const int side_margin =
       layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-  views::ColumnSet* chosen_object_set =
-      layout->AddColumnSet(kChosenObjectSectionId);
-  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                      side_margin);
-  chosen_object_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                               1.0,
-                               views::GridLayout::ColumnSize::kUsePreferred,
-                               views::GridLayout::kFixedSize, 0);
-  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                                      side_margin);
+  // A permissions row will have an icon, title, and combobox, with a padding
+  // column on either side to match the dialog insets. Note the combobox can be
+  // variable widths depending on the text inside.
+  // *----------------------------------------------*
+  // |++| Icon | Permission Title     | Combobox |++|
+  // *----------------------------------------------*
+  views::ColumnSet* permissions_set =
+      layout->AddColumnSet(kPermissionColumnSetId);
+  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
+  permissions_set->AddColumn(
+      views::GridLayout::CENTER, views::GridLayout::CENTER,
+      views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
+      kIconColumnWidth, 0);
+  permissions_set->AddPaddingColumn(
+      views::GridLayout::kFixedSize,
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+  permissions_set->AddColumn(views::GridLayout::LEADING,
+                             views::GridLayout::CENTER, 1.0,
+                             views::GridLayout::ColumnSize::kUsePreferred,
+                             views::GridLayout::kFixedSize, 0);
+  permissions_set->AddPaddingColumn(
+      views::GridLayout::kFixedSize,
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
+  permissions_set->AddColumn(views::GridLayout::TRAILING,
+                             views::GridLayout::FILL,
+                             views::GridLayout::kFixedSize,
+                             views::GridLayout::ColumnSize::kUsePreferred,
+                             views::GridLayout::kFixedSize, 0);
+  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
 
   int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
@@ -511,6 +535,20 @@ void PageInfoBubbleView::SetPermissionInfo(
   }
   for (const auto& selector : selector_rows_)
     selector->SetMinComboboxWidth(combobox_width);
+
+  // |ChosenObjectView| will layout itself, so just add the missing padding
+  // here.
+  constexpr int kChosenObjectSectionId = 1;
+  views::ColumnSet* chosen_object_set =
+      layout->AddColumnSet(kChosenObjectSectionId);
+  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
+                                      side_margin);
+  chosen_object_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
+                               1.0,
+                               views::GridLayout::ColumnSize::kUsePreferred,
+                               views::GridLayout::kFixedSize, 0);
+  chosen_object_set->AddPaddingColumn(views::GridLayout::kFixedSize,
+                                      side_margin);
 
   for (auto& object : chosen_object_info_list) {
     // Since chosen objects are presented after permissions in the same list,
@@ -715,56 +753,6 @@ PageInfoBubbleView::GetSecurityDescriptionType() const {
 void PageInfoBubbleView::SetSecurityDescriptionType(
     const PageInfoUI::SecurityDescriptionType& type) {
   security_description_type_ = type;
-}
-
-void PageInfoBubbleView::LayoutPermissionsLikeUiRow(views::GridLayout* layout,
-                                                    bool is_list_empty,
-                                                    int column_id) {
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  if (is_list_empty) {
-    // If nothing to show, just add padding above the separator and exit.
-    layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                          layout_provider->GetDistanceMetric(
-                              views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
-    return;
-  }
-
-  const int list_item_padding =
-      layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, list_item_padding);
-
-  const int side_margin =
-      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).left();
-  // A permissions row will have an icon, title, and combobox, with a padding
-  // column on either side to match the dialog insets. Note the combobox can be
-  // variable widths depending on the text inside.
-  // *----------------------------------------------*
-  // |++| Icon | Permission Title     | Combobox |++|
-  // *----------------------------------------------*
-  views::ColumnSet* permissions_set = layout->AddColumnSet(column_id);
-  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
-  permissions_set->AddColumn(
-      views::GridLayout::CENTER, views::GridLayout::CENTER,
-      views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-      kIconColumnWidth, 0);
-  permissions_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-  permissions_set->AddColumn(views::GridLayout::LEADING,
-                             views::GridLayout::CENTER, 1.0,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             views::GridLayout::kFixedSize, 0);
-  permissions_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
-  permissions_set->AddColumn(views::GridLayout::TRAILING,
-                             views::GridLayout::FILL,
-                             views::GridLayout::kFixedSize,
-                             views::GridLayout::ColumnSize::kUsePreferred,
-                             views::GridLayout::kFixedSize, 0);
-  permissions_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
 }
 
 void PageInfoBubbleView::DidChangeVisibleSecurityState() {
