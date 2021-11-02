@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {AndroidInfoBrowserProxy, AndroidSmsInfo} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
@@ -11,16 +12,19 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 export const TEST_ANDROID_SMS_ORIGIN = 'http://foo.com';
 
-/** @implements {AndroidInfoBrowserProxy} */
-export class TestAndroidInfoBrowserProxy extends TestBrowserProxy {
+export class TestAndroidInfoBrowserProxy extends TestBrowserProxy implements
+    AndroidInfoBrowserProxy {
+  androidSmsInfo:
+      AndroidSmsInfo = {origin: TEST_ANDROID_SMS_ORIGIN, enabled: true};
+
   constructor() {
     super([
       'getAndroidSmsInfo',
     ]);
-    this.androidSmsInfo = {origin: TEST_ANDROID_SMS_ORIGIN, enabled: true};
   }
 
-  /** @override */
+  requestAndroidAppsInfo() {}
+
   getAndroidSmsInfo() {
     this.methodCalled('getAndroidSmsInfo');
     return Promise.resolve(this.androidSmsInfo);

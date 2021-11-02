@@ -3,16 +3,27 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {PageStatus} from 'chrome://settings/settings.js';
-
+import { PageStatus, StatusAction, StoredAccount, SyncBrowserProxy,SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {SyncBrowserProxy} */
-export class TestSyncBrowserProxy extends TestBrowserProxy {
+export class TestSyncBrowserProxy extends TestBrowserProxy implements
+    SyncBrowserProxy {
+  private impressionCount_: number = 0;
+
+  // Settable fake data.
+  private encryptionPassphraseSuccess: boolean = false;
+  private decryptionPassphraseSuccess: boolean = false;
+  private storedAccounts: StoredAccount[] = [];
+  syncStatus: SyncStatus = {
+    signedIn: true,
+    signedInUsername: 'fakeUsername',
+    statusAction: StatusAction.NO_ACTION
+  };
+
   constructor() {
-    const methodNames = [
+    super([
       'didNavigateAwayFromSyncPage',
       'didNavigateToSyncPage',
       'getPromoImpressionCount',
@@ -22,139 +33,108 @@ export class TestSyncBrowserProxy extends TestBrowserProxy {
       'setSyncDatatypes',
       'setEncryptionPassphrase',
       'setDecryptionPassphrase',
-      'signOut',
-      'pauseSync',
       'sendSyncPrefsChanged',
       'sendOfferTrustedVaultOptInChanged',
-      'startSignIn',
       'startSyncingWithEmail',
-    ];
 
-    if (isChromeOS) {
-      methodNames.push('turnOnSync', 'turnOffSync');
-    }
+      // <if expr="not chromeos">
+      'pauseSync',
+      'signOut',
+      'startSignIn',
+      // </if>
 
-    super(methodNames);
-
-    /** @private {number} */
-    this.impressionCount_ = 0;
-
-    // Settable fake data.
-    /** @type {boolean} */
-    this.encryptionPassphraseSuccess = false;
-    /** @type {boolean} */
-    this.decryptionPassphraseSuccess = false;
-    /** @type {!Array<!StoredAccount>} */
-    this.storedAccounts = [];
-    /** @type {!SyncStatus} */
-    this.syncStatus = /** @type {!SyncStatus} */ (
-        {signedIn: true, signedInUsername: 'fakeUsername'});
+      // <if expr="chromeos">
+      'turnOnSync',
+      'turnOffSync',
+      // </if>
+    ]);
   }
 
-
-  /** @override */
   getSyncStatus() {
     this.methodCalled('getSyncStatus');
     return Promise.resolve(this.syncStatus);
   }
 
-  /** @override */
   getStoredAccounts() {
     this.methodCalled('getStoredAccounts');
     return Promise.resolve(this.storedAccounts);
   }
 
-  /** @override */
-  signOut(deleteProfile) {
+  // <if expr="not chromeos">
+  signOut(deleteProfile: boolean) {
     this.methodCalled('signOut', deleteProfile);
   }
 
-  /** @override */
   pauseSync() {
     this.methodCalled('pauseSync');
   }
 
-  /** @override */
   startSignIn() {
     this.methodCalled('startSignIn');
   }
+  // </if>
 
-  /** @override */
-  startSyncingWithEmail(email, isDefaultPromoAccount) {
+  startSyncingWithEmail(email: string, isDefaultPromoAccount: boolean) {
     this.methodCalled('startSyncingWithEmail', [email, isDefaultPromoAccount]);
   }
 
-  setImpressionCount(count) {
+  setImpressionCount(count: number) {
     this.impressionCount_ = count;
   }
 
-  /** @override */
   getPromoImpressionCount() {
     this.methodCalled('getPromoImpressionCount');
     return this.impressionCount_;
   }
 
-  /** @override */
   incrementPromoImpressionCount() {
     this.methodCalled('incrementPromoImpressionCount');
   }
 
-  /** @override */
   didNavigateToSyncPage() {
     this.methodCalled('didNavigateToSyncPage');
   }
 
-  /** @override */
-  didNavigateAwayFromSyncPage(abort) {
-    this.methodCalled('didNavigateAwayFromSyncPage', abort);
+  didNavigateAwayFromSyncPage(didAbort: boolean) {
+    this.methodCalled('didNavigateAwayFromSyncPage', didAbort);
   }
 
-  /** @override */
-  setSyncDatatypes(syncPrefs) {
+  setSyncDatatypes(syncPrefs: SyncPrefs) {
     this.methodCalled('setSyncDatatypes', syncPrefs);
     return Promise.resolve(PageStatus.CONFIGURE);
   }
 
-  /** @override */
-  setEncryptionPassphrase(passphrase) {
+  setEncryptionPassphrase(passphrase: string) {
     this.methodCalled('setEncryptionPassphrase', passphrase);
     return Promise.resolve(this.encryptionPassphraseSuccess);
   }
 
-  /** @override */
-  setDecryptionPassphrase(passphrase) {
+  setDecryptionPassphrase(passphrase: string) {
     this.methodCalled('setDecryptionPassphrase', passphrase);
     return Promise.resolve(this.decryptionPassphraseSuccess);
   }
 
-  /** @override */
   sendSyncPrefsChanged() {
     this.methodCalled('sendSyncPrefsChanged');
   }
 
-  /** @override */
   sendOfferTrustedVaultOptInChanged() {
     this.methodCalled('sendOfferTrustedVaultOptInChanged');
   }
 
-  /** @override */
-  attemptUserExit() {}
-
-  /** @override */
   openActivityControlsUrl() {}
 
-  /** @override */
   startKeyRetrieval() {}
-}
 
-if (isChromeOS) {
-  /** @override */
-  TestSyncBrowserProxy.prototype.turnOnSync = function() {
+  // <if expr="chromeos">
+  attemptUserExit() {}
+
+  turnOnSync() {
     this.methodCalled('turnOnSync');
-  };
+  }
 
-  /** @override */
-  TestSyncBrowserProxy.prototype.turnOffSync = function() {
+  turnOffSync() {
     this.methodCalled('turnOffSync');
-  };
+  }
+  // </if>
 }

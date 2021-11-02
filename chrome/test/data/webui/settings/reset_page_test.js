@@ -88,9 +88,11 @@ suite('DialogTests', function() {
     const dialog = resetPage.$$('settings-reset-profile-dialog');
     assertTrue(!!dialog);
 
-    const checkbox = dialog.$$('[slot=footer] cr-checkbox');
+    const checkbox =
+        dialog.shadowRoot.querySelector('[slot=footer] cr-checkbox');
     assertTrue(checkbox.checked);
-    const showReportedSettingsLink = dialog.$$('[slot=footer] a');
+    const showReportedSettingsLink =
+        dialog.shadowRoot.querySelector('[slot=footer] a');
     assertTrue(!!showReportedSettingsLink);
     showReportedSettingsLink.click();
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
+import {CookieDetails, LocalDataBrowserProxy, LocalDataItem} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
@@ -10,10 +11,13 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  * A test version of LocalDataBrowserProxy. Provides helper methods
  * for allowing tests to know when a method was called, as well as
  * specifying mock responses.
- *
- * @implements {LocalDataBrowserProxy}
  */
-export class TestLocalDataBrowserProxy extends TestBrowserProxy {
+export class TestLocalDataBrowserProxy extends TestBrowserProxy implements
+    LocalDataBrowserProxy {
+  private cookieDetails_: CookieDetails[] = [];
+  private cookieList_: LocalDataItem[] = [];
+  private filteredCookieList_: LocalDataItem[] = [];
+
   constructor() {
     super([
       'getDisplayList',
@@ -27,91 +31,65 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy {
       'removeCookie',
       'removeAllThirdPartyCookies',
     ]);
-
-    /** @private {!Array<!CookieDetails>} */
-    this.cookieDetails_ = [];
-
-    /** @private {Array<!LocalDataItem>} */
-    this.cookieList_ = [];
-
-    /** @private {!Array<!LocalDataItem>} */
-    this.filteredCookieList_ = [];
   }
 
-  /**
-   * Test-only helper.
-   * @param {!Array<!CookieDetails>} cookieDetails
-   */
-  setCookieDetails(cookieDetails) {
+  setCookieDetails(cookieDetails: CookieDetails[]) {
     this.cookieDetails_ = cookieDetails;
   }
 
-  /**
-   * Test-only helper.
-   * @param {!Array<!LocalDataItem>} cookieList
-   */
-  setCookieList(cookieList) {
+  setCookieList(cookieList: LocalDataItem[]) {
     this.cookieList_ = cookieList;
     this.filteredCookieList_ = cookieList;
   }
 
-  /** @override */
-  getDisplayList(filter) {
+  getDisplayList(filter: string) {
     this.methodCalled('getDisplayList', filter);
     if (filter === undefined) {
       filter = '';
     }
     /** @type {!Array<!LocalDataItem>} */
-    const output = [];
+    const output: LocalDataItem[] = [];
     for (let i = 0; i < this.cookieList_.length; ++i) {
-      if (this.cookieList_[i].site.indexOf(filter) >= 0) {
-        output.push(this.filteredCookieList_[i]);
+      if (this.cookieList_[i]!.site.indexOf(filter) >= 0) {
+        output.push(this.filteredCookieList_[i]!);
       }
     }
     return Promise.resolve(output);
   }
 
-  /** @override */
   removeAll() {
     this.methodCalled('removeAll');
-    return Promise.resolve({id: null, children: []});
+    return Promise.resolve();
   }
 
-  /** @override */
   removeShownItems() {
     this.methodCalled('removeShownItems');
   }
 
-  /** @override */
-  removeSite(path) {
-    this.methodCalled('removeSite', path);
+  removeSite(site: string) {
+    this.methodCalled('removeSite', site);
   }
 
-  /** @override */
-  getCookieDetails(site) {
+  getCookieDetails(site: string) {
     this.methodCalled('getCookieDetails', site);
     return Promise.resolve(this.cookieDetails_);
   }
 
-  /** @override */
-  getNumCookiesString(numCookies) {
+  getNumCookiesString(numCookies: number) {
     this.methodCalled('getNumCookiesString', numCookies);
     return Promise.resolve(
         `${numCookies} ` + (numCookies === 1 ? 'cookie' : 'cookies'));
   }
 
-  /** @override */
   reloadCookies() {
     this.methodCalled('reloadCookies');
-    return Promise.resolve({id: null, children: []});
+    return Promise.resolve();
   }
 
-  /** @override */
-  removeItem(path) {
+  removeItem(path: string) {
     this.methodCalled('removeItem', path);
   }
 
-  /** @override */
   removeAllThirdPartyCookies() {
     this.methodCalled('removeAllThirdPartyCookies');
     return Promise.resolve();

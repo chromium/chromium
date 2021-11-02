@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {HatsBrowserProxy, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {HatsBrowserProxy} */
-export class TestHatsBrowserProxy extends TestBrowserProxy {
+export class TestHatsBrowserProxy extends TestBrowserProxy implements
+    HatsBrowserProxy {
   constructor() {
     super([
       'trustSafetyInteractionOccurred',
     ]);
   }
 
-  /** @override*/
-  trustSafetyInteractionOccurred(interaction) {
+  trustSafetyInteractionOccurred(interaction: TrustSafetyInteraction) {
     this.methodCalled('trustSafetyInteractionOccurred', interaction);
   }
 }

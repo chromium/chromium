@@ -3,14 +3,20 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
-
+import {MetricsReporting, PrivacyPageBrowserProxy, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {PrivacyPageBrowserProxy} */
-export class TestPrivacyPageBrowserProxy extends TestBrowserProxy {
+export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
+    PrivacyPageBrowserProxy {
+  metricsReporting: MetricsReporting;
+  secureDnsSetting: SecureDnsSetting;
+  private resolverList_: ResolverOption[];
+  private parsedEntry_: string[] = [];
+  private probeResults_: {[template: string]: boolean} = {};
+
   constructor() {
     super([
       'getMetricsReporting',
@@ -24,78 +30,50 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy {
       'recordUserDropdownInteraction',
     ]);
 
-    /** @type {!MetricsReporting} */
     this.metricsReporting = {
       enabled: true,
       managed: true,
     };
 
-    /**
-     * @type {!SecureDnsSetting}
-     * @private
-     */
     this.secureDnsSetting = {
       mode: SecureDnsMode.AUTOMATIC,
       templates: [],
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     };
 
-    /**
-     * @type {!Array<!ResolverOption>}
-     * @private
-     */
     this.resolverList_ = [{name: 'Custom', value: 'custom', policy: ''}];
-
-    /**
-     * @type {!Array<string>}
-     * @private
-     */
-    this.parsedEntry_ = [];
-
-    /**
-     * @type {!Object<string, boolean>}
-     * @private
-     */
-    this.probeResults_;
   }
 
-  /** @override */
   getMetricsReporting() {
     this.methodCalled('getMetricsReporting');
     return Promise.resolve(this.metricsReporting);
   }
 
-  /** @override */
-  setMetricsReportingEnabled(enabled) {
+  setMetricsReportingEnabled(enabled: boolean) {
     this.methodCalled('setMetricsReportingEnabled', enabled);
   }
 
-  /** @override */
   showManageSSLCertificates() {
     this.methodCalled('showManageSSLCertificates');
   }
 
-  /** @override */
-  setBlockAutoplayEnabled(enabled) {
+  setBlockAutoplayEnabled(enabled: boolean) {
     this.methodCalled('setBlockAutoplayEnabled', enabled);
   }
 
   /**
    * Sets the resolver list that will be returned when getSecureDnsResolverList
    * is called.
-   * @param {!Array<!ResolverOption>} resolverList
    */
-  setResolverList(resolverList) {
+  setResolverList(resolverList: ResolverOption[]) {
     this.resolverList_ = resolverList;
   }
 
-  /** @override */
   getSecureDnsResolverList() {
     this.methodCalled('getSecureDnsResolverList');
     return Promise.resolve(this.resolverList_);
   }
 
-  /** @override */
   getSecureDnsSetting() {
     this.methodCalled('getSecureDnsSetting');
     return Promise.resolve(this.secureDnsSetting);
@@ -103,36 +81,31 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy {
 
   /**
    * Sets the return value for the next parseCustomDnsEntry call.
-   * @param {!Array<string>} parsedEntry
    */
-  setParsedEntry(parsedEntry) {
+  setParsedEntry(parsedEntry: string[]) {
     this.parsedEntry_ = parsedEntry;
   }
 
-  /** @override */
-  parseCustomDnsEntry(entry) {
+  parseCustomDnsEntry(entry: string) {
     this.methodCalled('parseCustomDnsEntry', entry);
     return Promise.resolve(this.parsedEntry_);
   }
 
   /**
    * Sets the return values for probes to each template
-   * @param {!Object<string, boolean>} results
    */
-  setProbeResults(results) {
+  setProbeResults(results: {[template: string]: boolean}) {
     this.probeResults_ = results;
   }
 
-  /** @override */
-  probeCustomDnsTemplate(template) {
+  probeCustomDnsTemplate(template: string) {
     this.methodCalled('probeCustomDnsTemplate', template);
     // Prohibit unexpected probes.
     assertFalse(this.probeResults_[template] === undefined);
-    return Promise.resolve(this.probeResults_[template]);
+    return Promise.resolve(this.probeResults_[template]!);
   }
 
-  /** @override */
-  recordUserDropdownInteraction(oldSelection, newSelection) {
+  recordUserDropdownInteraction(oldSelection: string, newSelection: string) {
     this.methodCalled(
         'recordUserDropdownInteraction', [oldSelection, newSelection]);
   }

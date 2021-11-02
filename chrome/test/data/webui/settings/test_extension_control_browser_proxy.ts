@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ExtensionControlBrowserProxy} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ExtensionControlBrowserProxy} */
-export class TestExtensionControlBrowserProxy extends TestBrowserProxy {
+export class TestExtensionControlBrowserProxy extends TestBrowserProxy
+    implements ExtensionControlBrowserProxy {
   constructor() {
     super([
       'disableExtension',
@@ -13,13 +14,11 @@ export class TestExtensionControlBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  disableExtension(extensionId) {
+  disableExtension(extensionId: string) {
     this.methodCalled('disableExtension', extensionId);
   }
 
-  /** @override */
-  manageExtension(extensionId) {
+  manageExtension(extensionId: string) {
     this.methodCalled('manageExtension', extensionId);
   }
 }

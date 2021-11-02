@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {MetricsBrowserProxy, PrivacyElementInteractions, SafeBrowsingInteractions, SafetyCheckInteractions} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {MetricsBrowserProxy} */
-export class TestMetricsBrowserProxy extends TestBrowserProxy {
+export class TestMetricsBrowserProxy extends TestBrowserProxy implements
+    MetricsBrowserProxy {
   constructor() {
     super([
       'recordAction',
@@ -15,23 +16,20 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  recordAction(action) {
+  recordAction(action: string) {
     this.methodCalled('recordAction', action);
   }
 
-  /** @override */
-  recordSafetyCheckInteractionHistogram(interaction) {
+  recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
     this.methodCalled('recordSafetyCheckInteractionHistogram', interaction);
   }
 
-  /** @override */
-  recordSettingsPageHistogram(interaction) {
+  recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {
     this.methodCalled('recordSettingsPageHistogram', interaction);
   }
 
-  /** @override */
-  recordSafeBrowsingInteractionHistogram(interaction) {
+  recordSafeBrowsingInteractionHistogram(interaction:
+                                             SafeBrowsingInteractions) {
     this.methodCalled('recordSafeBrowsingInteractionHistogram', interaction);
   }
 }

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ResetBrowserProxy} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ResetBrowserProxy} */
-export class TestResetBrowserProxy extends TestBrowserProxy {
+export class TestResetBrowserProxy extends TestBrowserProxy implements
+    ResetBrowserProxy {
   constructor() {
     super([
       'performResetProfileSettings',
@@ -17,33 +18,27 @@ export class TestResetBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
-  performResetProfileSettings(sendSettings, requestOrigin) {
+  performResetProfileSettings(_sendSettings: boolean, requestOrigin: string) {
     this.methodCalled('performResetProfileSettings', requestOrigin);
     return Promise.resolve();
   }
 
-  /** @override */
   onHideResetProfileDialog() {
     this.methodCalled('onHideResetProfileDialog');
   }
 
-  /** @override */
   onHideResetProfileBanner() {
     this.methodCalled('onHideResetProfileBanner');
   }
 
-  /** @override */
   onShowResetProfileDialog() {
     this.methodCalled('onShowResetProfileDialog');
   }
 
-  /** @override */
   showReportedSettings() {
     this.methodCalled('showReportedSettings');
   }
 
-  /** @override */
   getTriggeredResetToolName() {
     this.methodCalled('getTriggeredResetToolName');
     return Promise.resolve('WonderfulAV');

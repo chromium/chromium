@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ChromeCleanupProxy} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {ChromeCleanupProxy} */
-export class TestChromeCleanupProxy extends TestBrowserProxy {
+export class TestChromeCleanupProxy extends TestBrowserProxy implements
+    ChromeCleanupProxy {
   constructor() {
     super([
       'registerChromeCleanerObserver',
@@ -19,44 +20,36 @@ export class TestChromeCleanupProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
   registerChromeCleanerObserver() {
     this.methodCalled('registerChromeCleanerObserver');
   }
 
-  /** @override */
   restartComputer() {
     this.methodCalled('restartComputer');
   }
 
-  /** @override */
-  startCleanup(logsUploadEnabled) {
+  startCleanup(logsUploadEnabled: boolean) {
     this.methodCalled('startCleanup', logsUploadEnabled);
   }
 
-  /** @override */
-  startScanning(logsUploadEnabled) {
+  startScanning(logsUploadEnabled: boolean) {
     this.methodCalled('startScanning', logsUploadEnabled);
   }
 
-  /** @override */
-  notifyShowDetails(enabled) {
+  notifyShowDetails(enabled: boolean) {
     this.methodCalled('notifyShowDetails', enabled);
   }
 
-  /** @override */
   notifyLearnMoreClicked() {
     this.methodCalled('notifyLearnMoreClicked');
   }
 
-  /** @override */
-  getMoreItemsPluralString(numHiddenItems) {
+  getMoreItemsPluralString(numHiddenItems: number) {
     this.methodCalled('getMoreItemsPluralString', numHiddenItems);
     return Promise.resolve('');
   }
 
-  /** @override */
-  getItemsToRemovePluralString(numItems) {
+  getItemsToRemovePluralString(numItems: number) {
     this.methodCalled('getItemsToRemovePluralString', numItems);
     return Promise.resolve('');
   }

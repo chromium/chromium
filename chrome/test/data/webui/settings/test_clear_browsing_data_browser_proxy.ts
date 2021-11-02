@@ -4,13 +4,16 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-
+import {ClearBrowsingDataBrowserProxy, ClearBrowsingDataResult, InstalledApp} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
 
-/** @implements {ClearBrowsingDataBrowserProxy} */
-export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy {
+export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy
+    implements ClearBrowsingDataBrowserProxy {
+  private clearBrowsingDataPromise_: Promise<ClearBrowsingDataResult>|null;
+  private installedApps_: InstalledApp[];
+
   constructor() {
     super(['initialize', 'clearBrowsingData', 'getInstalledApps']);
 
@@ -18,24 +21,22 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy {
      * The promise to return from |clearBrowsingData|.
      * Allows testing code to test what happens after the call is made, and
      * before the browser responds.
-     * @private {?Promise}
      */
     this.clearBrowsingDataPromise_ = null;
 
     /**
      * Response for |getInstalledApps|.
-     * @private {!Array<!InstalledApp>}
      */
     this.installedApps_ = [];
   }
 
-  /** @param {!Promise} promise */
-  setClearBrowsingDataPromise(promise) {
+  setClearBrowsingDataPromise(promise: Promise<ClearBrowsingDataResult>) {
     this.clearBrowsingDataPromise_ = promise;
   }
 
-  /** @override */
-  clearBrowsingData(dataTypes, timePeriod, installedApps) {
+  clearBrowsingData(
+      dataTypes: Array<string>, timePeriod: number,
+      installedApps: Array<InstalledApp>) {
     this.methodCalled(
         'clearBrowsingData', [dataTypes, timePeriod, installedApps]);
     webUIListenerCallback('browsing-data-removing', true);
@@ -44,18 +45,15 @@ export class TestClearBrowsingDataBrowserProxy extends TestBrowserProxy {
         Promise.resolve({showHistoryNotice: false, showPasswordsNotice: false});
   }
 
-  /** @param {!Array<!InstalledApp>} apps */
-  setInstalledApps(apps) {
+  setInstalledApps(apps: InstalledApp[]) {
     this.installedApps_ = apps;
   }
 
-  /** @override */
-  getInstalledApps(timePeriod) {
-    this.methodCalled('getInstalledApps');
+  getInstalledApps(timePeriod: number) {
+    this.methodCalled('getInstalledApps', timePeriod);
     return Promise.resolve(this.installedApps_);
   }
 
-  /** @override */
   initialize() {
     this.methodCalled('initialize');
     return Promise.resolve();
