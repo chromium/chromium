@@ -127,10 +127,6 @@ void SynchronousCompositorProxy::DemandDrawHw(
   invalidate_needs_draw_ = false;
   hardware_draw_reply_ = std::move(callback);
 
-  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
-  animation_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kAnimationTimeout);
-
   if (layer_tree_frame_sink_) {
     layer_tree_frame_sink_->DemandDrawHw(
         params->viewport_size, params->viewport_rect_for_tile_priority,
@@ -181,10 +177,6 @@ void SynchronousCompositorProxy::DemandDrawSw(
     mojom::blink::SyncCompositorDemandDrawSwParamsPtr params,
     DemandDrawSwCallback callback) {
   invalidate_needs_draw_ = false;
-
-  animation_power_mode_voter_->VoteFor(power_scheduler::PowerMode::kAnimation);
-  animation_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kSoftwareDrawTimeout);
 
   software_draw_reply_ = std::move(callback);
   if (layer_tree_frame_sink_) {
