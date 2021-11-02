@@ -102,7 +102,7 @@ void FrameOverlay::UpdatePrePaint() {
       // Keep the layer the last child of parent to make it topmost.
       parent_layer->Children().back() != layer_)
     parent_layer->AddChild(layer_);
-  layer_->SetLayerState(DefaultPropertyTreeState(), IntPoint());
+  layer_->SetLayerState(DefaultPropertyTreeState(), gfx::Vector2d());
   layer_->SetSize(ToGfxSize(Size()));
 }
 
@@ -117,14 +117,14 @@ IntRect FrameOverlay::ComputeInterestRect(const GraphicsLayer* graphics_layer,
                                           const IntRect&) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(!RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  return IntRect(IntPoint(), Size());
+  return IntRect(gfx::Point(), Size());
 }
 
 IntRect FrameOverlay::PaintableRegion(
     const GraphicsLayer* graphics_layer) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-  return IntRect(IntPoint(), Size());
+  return IntRect(gfx::Point(), Size());
 }
 
 void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,

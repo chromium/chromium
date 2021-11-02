@@ -255,7 +255,7 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
 
 WebMouseEvent CreateMouseEvent(WebInputEvent::Type type,
                                WebMouseEvent::Button button,
-                               const IntPoint& point,
+                               const gfx::Point& point,
                                int modifiers) {
   WebMouseEvent result(type, modifiers,
                        WebInputEvent::GetStaticTimeStampForTests());

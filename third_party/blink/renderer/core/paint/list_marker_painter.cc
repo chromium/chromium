@@ -196,8 +196,8 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     marker.MoveBy(-box_origin);
     marker = marker.TransposedRect();
     marker.MoveBy(
-        IntPoint(RoundToInt(box.X()),
-                 RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
+        gfx::Point(RoundToInt(box.X()),
+                   RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
     state_saver.Save();
     context.Translate(marker.X(), marker.MaxY());
     context.Rotate(Deg2rad(90.0f));

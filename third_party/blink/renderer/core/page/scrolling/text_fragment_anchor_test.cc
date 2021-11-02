@@ -81,7 +81,7 @@ class TextFragmentAnchorTest : public SimTest {
   }
 
   IntRect ViewportRect() {
-    return IntRect(IntPoint(), LayoutViewport()->VisibleContentRect().size());
+    return IntRect(gfx::Point(), LayoutViewport()->VisibleContentRect().size());
   }
 
   IntRect BoundingRectInFrame(Node& node) {
@@ -2491,7 +2491,7 @@ TEST_F(TextFragmentAnchorTest, ShouldOpenContextMenuOnTap) {
                 IGNORE_EXCEPTION_FOR_TESTING);
   ASSERT_EQ("This is a test page", range->GetText());
 
-  IntPoint tap_point = range->BoundingBox().CenterPoint();
+  gfx::Point tap_point = range->BoundingBox().CenterPoint();
   SimulateTap(tap_point.x(), tap_point.y());
 
   if (RuntimeEnabledFeatures::TextFragmentTapOpensContextMenuEnabled()) {
@@ -2593,7 +2593,7 @@ TEST_F(TextFragmentAnchorTest,
   ASSERT_EQ("This is a test page", range->GetText());
 
   mock_notifier.Reset();
-  IntPoint tap_point = range->BoundingBox().CenterPoint();
+  gfx::Point tap_point = range->BoundingBox().CenterPoint();
   SimulateTap(tap_point.x(), tap_point.y());
 
   base::RunLoop().RunUntilIdle();
@@ -2680,7 +2680,7 @@ TEST_F(TextFragmentAnchorTest, TapOpeningContextMenuWithDirtyLifecycleNoCrash) {
 
   Range* range = CreateRange(EphemeralRange(start, end));
 
-  IntPoint tap_point = range->BoundingBox().CenterPoint();
+  gfx::Point tap_point = range->BoundingBox().CenterPoint();
   SimulateTap(tap_point.x(), tap_point.y());
 
   // Expect that we won't see the context menu because we preventDefaulted the

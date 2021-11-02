@@ -12,9 +12,9 @@
 
 namespace blink {
 
-// Blink's notion of cc::LayerSelectionBound. Note that the points are IntPoints
-// to match the painted selection rect, which is always pixel aligned.
-// There is also no layer_id as that is determined at composition time.
+// Blink's notion of cc::LayerSelectionBound. Note that the points are
+// gfx::Points to match the painted selection rect, which is always pixel
+// aligned. There is also no layer_id as that is determined at composition time.
 struct PLATFORM_EXPORT PaintedSelectionBound {
   gfx::SelectionBound::Type type;
   gfx::Point edge_start;

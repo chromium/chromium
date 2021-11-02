@@ -1297,7 +1297,7 @@ void InspectorOverlayAgent::Reset(
 
   IntRect viewport_in_screen =
       GetFrame()->GetPage()->GetChromeClient().ViewportToScreen(
-          IntRect(IntPoint(), viewport_size), GetFrame()->View());
+          IntRect(gfx::Point(), viewport_size), GetFrame()->View());
   reset_data->setObject("viewportSize",
                         BuildObjectForSize(viewport_in_screen.size()));
   reset_data->setObject("viewportSizeForMediaQueries",

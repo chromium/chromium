@@ -95,7 +95,7 @@ bool ICOImageDecoder::SetFailed() {
   return ImageDecoder::SetFailed();
 }
 
-bool ICOImageDecoder::HotSpot(IntPoint& hot_spot) const {
+bool ICOImageDecoder::HotSpot(gfx::Point& hot_spot) const {
   // When unspecified, the default frame is always frame 0. This is consistent
   // with BitmapImage, where CurrentFrame() starts at 0 and only increases when
   // animation is requested.
@@ -103,7 +103,7 @@ bool ICOImageDecoder::HotSpot(IntPoint& hot_spot) const {
 }
 
 bool ICOImageDecoder::HotSpotAtIndex(wtf_size_t index,
-                                     IntPoint& hot_spot) const {
+                                     gfx::Point& hot_spot) const {
   if (index >= dir_entries_.size() || file_type_ != CURSOR)
     return false;
 
@@ -308,10 +308,10 @@ ICOImageDecoder::IconDirectoryEntry ICOImageDecoder::ReadDirectoryEntry() {
   entry.size_ = IntSize(width, height);
   if (file_type_ == CURSOR) {
     entry.bit_count_ = 0;
-    entry.hot_spot_ = IntPoint(ReadUint16(4), ReadUint16(6));
+    entry.hot_spot_ = gfx::Point(ReadUint16(4), ReadUint16(6));
   } else {
     entry.bit_count_ = ReadUint16(6);
-    entry.hot_spot_ = IntPoint();
+    entry.hot_spot_ = gfx::Point();
   }
   entry.byte_size_ = ReadUint32(8);
   entry.image_offset_ = ReadUint32(12);

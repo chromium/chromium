@@ -993,7 +993,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
   return context.children_overflow;
 }
 
-IntPoint NGPhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
+gfx::Vector2d NGPhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
   DCHECK(GetLayoutObject());
   return To<LayoutBox>(*GetLayoutObject()).PixelSnappedScrolledContentOffset();
 }

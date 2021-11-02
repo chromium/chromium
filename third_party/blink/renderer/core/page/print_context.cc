@@ -243,7 +243,7 @@ void PrintContext::OutputLinkedDestinations(GraphicsContext& context,
     LayoutObject* layout_object = entry.value->GetLayoutObject();
     if (!layout_object || !layout_object->GetFrameView())
       continue;
-    IntPoint anchor_point = layout_object->AbsoluteBoundingBoxRect().origin();
+    gfx::Point anchor_point = layout_object->AbsoluteBoundingBoxRect().origin();
     if (page_rect.Contains(anchor_point))
       context.SetURLDestinationLocation(entry.key, anchor_point);
   }

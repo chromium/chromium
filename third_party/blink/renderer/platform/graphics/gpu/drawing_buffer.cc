@@ -1043,7 +1043,7 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
                                           GLint dst_level,
                                           bool premultiply_alpha,
                                           bool flip_y,
-                                          const IntPoint& dst_texture_offset,
+                                          const gfx::Point& dst_texture_offset,
                                           const IntRect& src_sub_rectangle,
                                           SourceDrawingBuffer src_buffer) {
   if (!Extensions3DUtil::CanUseCopyTextureCHROMIUM(dst_texture_target))
@@ -1078,7 +1078,7 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     gpu::Mailbox dst_mailbox,
     GLenum dst_texture_target,
     bool flip_y,
-    const IntPoint& dst_texture_offset,
+    const gfx::Point& dst_texture_offset,
     const IntRect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
   GLboolean unpack_premultiply_alpha_needed = GL_FALSE;

@@ -540,7 +540,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       bool is_for_nested_main_frame,
       bool hidden) override;
 
-  HitTestResult HitTestResultForVisualViewportPos(const IntPoint&);
+  HitTestResult HitTestResultForVisualViewportPos(const gfx::Point&);
 
   WebPlugin* FocusedPluginIfInputMethodSupported();
   ScrollableArea* LayoutViewport() const;

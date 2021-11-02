@@ -212,7 +212,7 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   EXPECT_EQ(PhysicalOffset(0, 0),
             content_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(
-      IntPoint(1000, 1000),
+      gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_FALSE(content_layer->SelfNeedsRepaint());
   EXPECT_FALSE(scroll_layer->SelfNeedsRepaint());
@@ -249,7 +249,7 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
   EXPECT_EQ(PhysicalOffset(0, 0),
             content_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(
-      IntPoint(1000, 1000),
+      gfx::Vector2d(1000, 1000),
       content_layer->ContainingLayer()->PixelSnappedScrolledContentOffset());
 
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
@@ -1626,7 +1626,7 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
     EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(0, 0),
               span->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(IntPoint(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               span->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(150, 150),
               floating->LocationWithoutPositionOffset());
@@ -1640,12 +1640,12 @@ TEST_P(PaintLayerTest, FloatLayerUnderInlineLayerScrolled) {
     EXPECT_EQ(PhysicalOffset(0, 0), span->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(100, 100),
               span->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(IntPoint(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               span->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(0, 0), floating->LocationWithoutPositionOffset());
     EXPECT_EQ(PhysicalOffset(50, 50),
               floating->GetLayoutObject().OffsetForInFlowPosition());
-    EXPECT_EQ(IntPoint(0, 400),
+    EXPECT_EQ(gfx::Vector2d(0, 400),
               floating->ContainingLayer()->PixelSnappedScrolledContentOffset());
     EXPECT_EQ(PhysicalOffset(-50, -50),
               floating->VisualOffsetFromAncestor(span));
@@ -1954,7 +1954,7 @@ TEST_P(PaintLayerTest, ColumnSpanLayerUnderExtraLayerScrolled) {
   EXPECT_EQ(PhysicalOffset(50, 50),
             spanner->GetLayoutObject().OffsetForInFlowPosition());
 
-  EXPECT_EQ(IntPoint(200, 0),
+  EXPECT_EQ(gfx::Vector2d(200, 0),
             spanner->ContainingLayer()->PixelSnappedScrolledContentOffset());
   EXPECT_EQ(PhysicalOffset(0, 0), extra_layer->LocationWithoutPositionOffset());
   EXPECT_EQ(PhysicalOffset(100, 100),
@@ -2161,7 +2161,7 @@ TEST_P(PaintLayerTest, HitTestWithIgnoreClipping) {
 
   HitTestRequest request(HitTestRequest::kIgnoreClipping);
   // (10, 900) is outside the viewport clip of 800x600.
-  HitTestLocation location((IntPoint(10, 900)));
+  HitTestLocation location((gfx::Point(10, 900)));
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
   EXPECT_EQ(GetDocument().getElementById("hit"), result.InnerNode());
@@ -2508,7 +2508,7 @@ TEST_P(PaintLayerTest, HitTestOverlayResizer) {
     UpdateAllLifecyclePhasesForTest();
 
     HitTestRequest request(HitTestRequest::kIgnoreClipping);
-    HitTestLocation location((IntPoint(198, 198)));
+    HitTestLocation location((gfx::Point(198, 198)));
     HitTestResult result(request, location);
     GetDocument().GetLayoutView()->HitTest(location, result);
     if (i == 0)
@@ -2752,14 +2752,14 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
   UpdateAllLifecyclePhasesForTest();
 
   const HitTestRequest hit_request(HitTestRequest::kActive);
-  const HitTestLocation location(IntPoint(400, 300));
+  const HitTestLocation location(gfx::Point(400, 300));
   HitTestResult result;
   GetLayoutView().HitTestNoLifecycleUpdate(location, result);
   EXPECT_EQ(result.InnerNode(), GetDocument().documentElement());
   EXPECT_EQ(result.GetScrollbar(), nullptr);
 
   if (GetDocument().GetPage()->GetScrollbarTheme().AllowsHitTest()) {
-    const HitTestLocation location_scrollbar(IntPoint(790, 300));
+    const HitTestLocation location_scrollbar(gfx::Point(790, 300));
     HitTestResult result_scrollbar;
     EXPECT_EQ(result_scrollbar.InnerNode(), &GetDocument());
     EXPECT_NE(result_scrollbar.GetScrollbar(), nullptr);

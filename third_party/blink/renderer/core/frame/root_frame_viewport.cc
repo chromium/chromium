@@ -180,7 +180,7 @@ ScrollOffset RootFrameViewport::ScrollOffsetFromScrollAnimators() const {
 IntRect RootFrameViewport::VisibleContentRect(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   return IntRect(
-      IntPoint(ScrollOffsetInt()),
+      ToGfxPoint(ScrollOffsetInt()),
       GetVisualViewport().VisibleContentRect(scrollbar_inclusion).size());
 }
 

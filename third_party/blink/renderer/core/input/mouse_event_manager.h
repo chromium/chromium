@@ -186,7 +186,7 @@ class CORE_EXPORT MouseEventManager final
   // is different from the given element.
   bool SlideFocusOnShadowHostIfNecessary(const Element&);
 
-  bool DragThresholdExceeded(const IntPoint&) const;
+  bool DragThresholdExceeded(const gfx::Point&) const;
   bool HandleDrag(const MouseEventWithHitTestResults&, DragInitiator);
   bool TryStartDrag(const MouseEventWithHitTestResults&);
   void ClearDragDataTransfer();
@@ -236,7 +236,7 @@ class CORE_EXPORT MouseEventManager final
   // remains unchanged.
   Member<Element> mouse_down_element_;
 
-  IntPoint mouse_down_pos_;  // In our view's coords.
+  gfx::Point mouse_down_pos_;  // In our view's coords.
   base::TimeTicks mouse_down_timestamp_;
   WebMouseEvent mouse_down_;
 

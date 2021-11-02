@@ -61,7 +61,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   // avoid accessing deleted memory, especially when calling this from
   // inside BMPImageReader!
   bool SetFailed() override;
-  bool HotSpot(IntPoint&) const override;
+  bool HotSpot(gfx::Point&) const override;
 
  private:
   enum ImageType {
@@ -79,7 +79,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
     DISALLOW_NEW();
     IntSize size_;
     uint16_t bit_count_;
-    IntPoint hot_spot_;
+    gfx::Point hot_spot_;
     uint32_t image_offset_;
     uint32_t byte_size_;
   };
@@ -141,7 +141,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
 
   // Stores the hot-spot for |index| in |hot_spot| and returns true,
   // or returns false if there is none.
-  bool HotSpotAtIndex(wtf_size_t index, IntPoint& hot_spot) const;
+  bool HotSpotAtIndex(wtf_size_t index, gfx::Point& hot_spot) const;
 
   // Reads and returns a directory entry from the current offset into
   // |data|.

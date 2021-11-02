@@ -620,7 +620,7 @@ void InternalPopupMenu::Update(bool force_update) {
     return;
   needs_update_ = false;
 
-  if (!IntRect(IntPoint(), OwnerElement().GetDocument().View()->Size())
+  if (!IntRect(gfx::Point(), OwnerElement().GetDocument().View()->Size())
            .Intersects(OwnerElement().PixelSnappedBoundingBox())) {
     Hide();
     return;

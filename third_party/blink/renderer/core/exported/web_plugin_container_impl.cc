@@ -192,8 +192,8 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
     layer_->SetBounds(ToGfxSize(Size()));
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
-    auto offset = ToGfxPoint(RoundedIntPoint(
-        GetLayoutEmbeddedContent()->ReplacedContentRect().offset));
+    auto offset = ToRoundedPoint(
+        GetLayoutEmbeddedContent()->ReplacedContentRect().offset);
     // When compositing is after paint, composited plugins should have their
     // layers inserted rather than invoking WebPlugin::paint.
     RecordForeignLayer(context, *element_->GetLayoutObject(),
@@ -211,7 +211,7 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
 
   // The plugin is positioned in the root frame's coordinates, so it needs to
   // be painted in them too.
-  FloatPoint origin(ParentFrameView()->ConvertToRootFrame(IntPoint()));
+  FloatPoint origin(ParentFrameView()->ConvertToRootFrame(gfx::Point()));
   origin.Offset(-paint_offset);
   context.Translate(-origin.x(), -origin.y());
 
@@ -671,19 +671,18 @@ void WebPluginContainerImpl::SetWantsWheelEvents(bool wants_wheel_events) {
 
 gfx::Point WebPluginContainerImpl::RootFrameToLocalPoint(
     const gfx::Point& point_in_root_frame) {
-  IntPoint point_in_content =
-      ParentFrameView()->ConvertFromRootFrame(IntPoint(point_in_root_frame));
-  return ToGfxPoint(
-      RoundedIntPoint(element_->GetLayoutObject()->AbsoluteToLocalPoint(
-          PhysicalOffset(point_in_content))));
+  gfx::Point point_in_content =
+      ParentFrameView()->ConvertFromRootFrame(point_in_root_frame);
+  return ToRoundedPoint(element_->GetLayoutObject()->AbsoluteToLocalPoint(
+      PhysicalOffset(point_in_content)));
 }
 
 gfx::Point WebPluginContainerImpl::LocalToRootFramePoint(
     const gfx::Point& point_in_local) {
-  IntPoint absolute_point =
-      RoundedIntPoint(element_->GetLayoutObject()->LocalToAbsolutePoint(
+  gfx::Point absolute_point =
+      ToRoundedPoint(element_->GetLayoutObject()->LocalToAbsolutePoint(
           PhysicalOffset(point_in_local)));
-  return ToGfxPoint(ParentFrameView()->ConvertToRootFrame(absolute_point));
+  return ParentFrameView()->ConvertToRootFrame(absolute_point);
 }
 
 bool WebPluginContainerImpl::WasTargetForLastMouseEvent() {
@@ -867,7 +866,7 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
   WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
-  IntPoint location(Location());
+  gfx::Point location(Location());
   gfx::PointF drag_location(event.AbsoluteLocation().X() - location.x(),
                             event.AbsoluteLocation().Y() - location.y());
 

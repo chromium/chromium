@@ -61,7 +61,7 @@ InspectorHighlightContrastInfo FetchContrast(Node* node) {
 }
 
 Node* HoveredNodeForPoint(LocalFrame* frame,
-                          const IntPoint& point_in_root_frame,
+                          const gfx::Point& point_in_root_frame,
                           bool ignore_pointer_events_none) {
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kMove | HitTestRequest::kReadOnly |
@@ -770,8 +770,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
     return;
   }
 
-  IntPoint p1(*x, *y);
-  IntPoint p2(*x + *width, *y + *height);
+  gfx::Point p1(*x, *y);
+  gfx::Point p2(*x + *width, *y + *height);
 
   float scale = 1.0f;
 
@@ -781,14 +781,14 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
                                 ->GetChromeClient()
                                 .InputEventsScaleForEmulation();
     // Convert from overlay terms into the absolute.
-    p1.Scale(1 / emulation_scale, 1 / emulation_scale);
-    p2.Scale(1 / emulation_scale, 1 / emulation_scale);
+    p1 = gfx::ScaleToRoundedPoint(p1, 1 / emulation_scale);
+    p2 = gfx::ScaleToRoundedPoint(p2, 1 / emulation_scale);
 
     // Scroll offset in the viewport is in the device pixels, convert before
     // calling ViewportToRootFrame.
     float dip_to_dp = overlay_->WindowToViewportScale();
-    p1.Scale(dip_to_dp, dip_to_dp);
-    p2.Scale(dip_to_dp, dip_to_dp);
+    p1 = gfx::ScaleToRoundedPoint(p1, dip_to_dp);
+    p2 = gfx::ScaleToRoundedPoint(p2, dip_to_dp);
 
     const VisualViewport& visual_viewport =
         frame->GetPage()->GetVisualViewport();
@@ -798,8 +798,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
     scale = frame->GetPage()->PageScaleFactor();
     if (const RootFrameViewport* root_frame_viewport =
             frame->View()->GetRootFrameViewport()) {
-      IntSize scroll_offset = FlooredIntSize(
-          root_frame_viewport->LayoutViewport().GetScrollOffset());
+      gfx::Vector2d scroll_offset = ToGfxVector2d(FlooredIntSize(
+          root_frame_viewport->LayoutViewport().GetScrollOffset()));
       // Accunt for the layout scroll (different from viewport scroll offset).
       p1 += scroll_offset;
       p2 += scroll_offset;
@@ -808,8 +808,8 @@ void ScreenshotTool::Dispatch(const ScriptValue& message,
 
   // Go back to dip for the protocol.
   float dp_to_dip = 1.f / overlay_->WindowToViewportScale();
-  p1.Scale(dp_to_dip, dp_to_dip);
-  p2.Scale(dp_to_dip, dp_to_dip);
+  p1 = gfx::ScaleToRoundedPoint(p1, dp_to_dip);
+  p2 = gfx::ScaleToRoundedPoint(p2, dp_to_dip);
 
   // Points are in device independent pixels (dip) now.
   IntRect rect =

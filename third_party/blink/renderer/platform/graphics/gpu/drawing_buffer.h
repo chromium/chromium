@@ -261,7 +261,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                              GLint dst_level,
                              bool premultiply_alpha,
                              bool flip_y,
-                             const IntPoint& dst_texture_offset,
+                             const gfx::Point& dst_texture_offset,
                              const IntRect& src_sub_rectangle,
                              SourceDrawingBuffer);
 
@@ -269,7 +269,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                              gpu::Mailbox dst_mailbox,
                              GLenum dst_texture_target,
                              bool flip_y,
-                             const IntPoint& dst_texture_offset,
+                             const gfx::Point& dst_texture_offset,
                              const IntRect& src_sub_rectangle,
                              SourceDrawingBuffer src_buffer);
 

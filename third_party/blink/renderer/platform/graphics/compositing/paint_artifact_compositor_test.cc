@@ -4580,7 +4580,7 @@ TEST_P(PaintArtifactCompositorTest, PreCompositedLayerNonCompositedScrolling) {
       t0(), 10, 20, gfx::Rect(0, 0, 100, 100), gfx::Size(200, 200),
       CompositingReason::kRootScroller);
   PropertyTreeState layer_state(*parent_scroll_translation, c0(), e0());
-  graphics_layer->SetLayerState(layer_state, IntPoint());
+  graphics_layer->SetLayerState(layer_state, gfx::Vector2d());
   auto scroll_translation = CreateScrollTranslation(
       *parent_scroll_translation, 10, 20, gfx::Rect(0, 0, 150, 150),
       gfx::Size(200, 200), CompositingReason::kNone);

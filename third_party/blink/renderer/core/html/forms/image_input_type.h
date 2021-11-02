@@ -34,7 +34,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_IMAGE_INPUT_TYPE_H_
 
 #include "third_party/blink/renderer/core/html/forms/base_button_input_type.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -74,7 +74,7 @@ class ImageInputType final : public BaseButtonInputType {
   bool HasFallbackContent() const override { return use_fallback_content_; }
 
   // Valid only during HTMLFormElement::prepareForSubmission().
-  IntPoint click_location_;
+  gfx::Point click_location_;
 
   bool use_fallback_content_;
 };

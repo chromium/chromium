@@ -135,7 +135,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // Don't let EnclosingRect turn an empty rect into a non-empty one.
       if (intersection_rect.IsEmpty()) {
         viewport_intersection =
-            IntRect(FlooredIntPoint(intersection_rect.offset), IntSize());
+            IntRect(ToFlooredPoint(intersection_rect.offset), IntSize());
       } else {
         viewport_intersection = EnclosingIntRect(intersection_rect);
       }
@@ -145,7 +145,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
       // the size of the viewport intersection to the bounds of the iframe's
       // content rect.
       viewport_intersection.Intersect(IntRect(
-          IntPoint(), RoundedIntSize(owner_layout_object->ContentSize())));
+          gfx::Point(), RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
     PhysicalRect mainframe_intersection_rect;
@@ -156,12 +156,12 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
 
       if (mainframe_intersection_rect.IsEmpty()) {
         mainframe_intersection = IntRect(
-            FlooredIntPoint(mainframe_intersection_rect.offset), IntSize());
+            ToFlooredPoint(mainframe_intersection_rect.offset), IntSize());
       } else {
         mainframe_intersection = EnclosingIntRect(mainframe_intersection_rect);
       }
       mainframe_intersection.Intersect(IntRect(
-          IntPoint(), RoundedIntSize(owner_layout_object->ContentSize())));
+          gfx::Point(), RoundedIntSize(owner_layout_object->ContentSize())));
     }
 
     TransformState child_frame_to_root_frame(
@@ -191,7 +191,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
       ToGfxRect(viewport_intersection), ToGfxRect(mainframe_intersection),
       gfx::Rect(), occlusion_state, ToGfxSize(frame.GetMainFrameViewportSize()),
-      ToGfxPoint(frame.GetMainFrameScrollOffset()), main_frame_gfx_transform));
+      frame.GetMainFrameScrollOffset(), main_frame_gfx_transform));
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 
@@ -202,7 +202,7 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
             .BoundingBox()));
     // Return <0, 0, 0, 0> if there is no area.
     if (projected_rect.IsEmpty())
-      projected_rect.set_origin(IntPoint(0, 0));
+      projected_rect.set_origin(gfx::Point(0, 0));
     GetFrame().Client()->OnMainFrameIntersectionChanged(projected_rect);
   }
 

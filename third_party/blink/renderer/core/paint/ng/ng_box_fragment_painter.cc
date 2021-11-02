@@ -513,7 +513,7 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
   if (box_fragment_.IsScrollContainer()) {
     DCHECK(!text_combine);
     ScrollableAreaPainter(*PhysicalFragment().Layer()->GetScrollableArea())
-        .PaintOverflowControls(info, RoundedIntPoint(paint_offset));
+        .PaintOverflowControls(info, ToRoundedVector2d(paint_offset));
   }
 }
 

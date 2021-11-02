@@ -7,12 +7,15 @@
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
+namespace gfx {
+class Vector2d;
+}
+
 namespace blink {
 
 class CullRect;
 class DisplayItemClient;
 class GraphicsContext;
-class IntPoint;
 class IntRect;
 class Scrollbar;
 struct PaintInfo;
@@ -29,16 +32,17 @@ class ScrollableAreaPainter {
   ScrollableAreaPainter(const ScrollableAreaPainter&) = delete;
   ScrollableAreaPainter& operator=(const ScrollableAreaPainter&) = delete;
 
-  void PaintOverflowControls(const PaintInfo&, const IntPoint& paint_offset);
+  void PaintOverflowControls(const PaintInfo&,
+                             const gfx::Vector2d& paint_offset);
   void PaintScrollbar(GraphicsContext&,
                       Scrollbar&,
-                      const IntPoint& paint_offset,
+                      const gfx::Vector2d& paint_offset,
                       const CullRect&);
   void PaintResizer(GraphicsContext&,
-                    const IntPoint& paint_offset,
+                    const gfx::Vector2d& paint_offset,
                     const CullRect&);
   void PaintScrollCorner(GraphicsContext&,
-                         const IntPoint& paint_offset,
+                         const gfx::Vector2d& paint_offset,
                          const CullRect&);
 
   // Records a scroll hit test data to force main thread handling of events

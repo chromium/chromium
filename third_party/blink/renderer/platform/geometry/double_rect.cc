@@ -21,8 +21,8 @@ DoubleRect::DoubleRect(const LayoutRect& r)
     : location_(r.Location()), size_(r.Size()) {}
 
 IntRect EnclosingIntRect(const DoubleRect& rect) {
-  IntPoint location = FlooredIntPoint(rect.MinXMinYCorner());
-  IntPoint max_point = CeiledIntPoint(rect.MaxXMaxYCorner());
+  gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
+  gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());
 
   return IntRect(location,
                  IntSize(base::ClampSub(max_point.x(), location.x()),
@@ -30,16 +30,16 @@ IntRect EnclosingIntRect(const DoubleRect& rect) {
 }
 
 IntRect EnclosedIntRect(const DoubleRect& rect) {
-  IntPoint location = CeiledIntPoint(rect.MinXMinYCorner());
-  IntPoint max_point = FlooredIntPoint(rect.MaxXMaxYCorner());
-  IntSize size = max_point - location;
+  gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
+  gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
+  IntSize size(max_point - location);
   size.ClampNegativeToZero();
 
   return IntRect(location, size);
 }
 
 IntRect RoundedIntRect(const DoubleRect& rect) {
-  return IntRect(RoundedIntPoint(rect.Location()), RoundedIntSize(rect.Size()));
+  return IntRect(ToRoundedPoint(rect.Location()), RoundedIntSize(rect.Size()));
 }
 
 void DoubleRect::Scale(float sx, float sy) {

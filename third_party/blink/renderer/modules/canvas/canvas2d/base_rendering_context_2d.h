@@ -618,8 +618,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void SetOriginTaintedByContent();
 
   void PutByteArray(const SkPixmap& source,
-                    const IntRect& source_rect,
-                    const IntPoint& dest_point);
+                    const gfx::Rect& source_rect,
+                    const gfx::Vector2d& dest_offset);
   virtual bool IsCanvas2DBufferValid() const {
     NOTREACHED();
     return false;

@@ -569,7 +569,7 @@ void ImageDecoder::CorrectAlphaWhenFrameBufferSawNoAlpha(wtf_size_t index) {
 
   // When this frame spans the entire image rect we can SetHasAlpha to false,
   // since there are logically no transparent pixels outside of the frame rect.
-  if (buffer.OriginalFrameRect().Contains(IntRect(IntPoint(), Size()))) {
+  if (buffer.OriginalFrameRect().Contains(IntRect(gfx::Point(), Size()))) {
     buffer.SetHasAlpha(false);
     buffer.SetRequiredPreviousFrameIndex(kNotFound);
   } else if (buffer.RequiredPreviousFrameIndex() != kNotFound) {
@@ -651,7 +651,7 @@ bool ImageDecoder::InitFrameBuffer(wtf_size_t frame_index) {
       // We want to clear the previous frame to transparent, without
       // affecting pixels in the image outside of the frame.
       const IntRect& prev_rect = prev_buffer->OriginalFrameRect();
-      DCHECK(!prev_rect.Contains(IntRect(IntPoint(), Size())));
+      DCHECK(!prev_rect.Contains(IntRect(gfx::Point(), Size())));
       buffer->ZeroFillFrameRect(prev_rect);
     }
   }
@@ -719,7 +719,7 @@ wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
   const ImageFrame* curr_buffer = &frame_buffer_cache_[frame_index];
   if ((frame_rect_is_opaque ||
        curr_buffer->GetAlphaBlendSource() == ImageFrame::kBlendAtopBgcolor) &&
-      curr_buffer->OriginalFrameRect().Contains(IntRect(IntPoint(), Size())))
+      curr_buffer->OriginalFrameRect().Contains(IntRect(gfx::Point(), Size())))
     return kNotFound;
 
   // The starting state for this frame depends on the previous frame's
@@ -753,7 +753,7 @@ wtf_size_t ImageDecoder::FindRequiredPreviousFrame(wtf_size_t frame_index,
       // this frame is a blank frame, so it can again be decoded alone.
       // Otherwise, the previous frame contributes to this frame.
       return (prev_buffer->OriginalFrameRect().Contains(
-                  IntRect(IntPoint(), Size())) ||
+                  IntRect(gfx::Point(), Size())) ||
               (prev_buffer->RequiredPreviousFrameIndex() == kNotFound))
                  ? kNotFound
                  : prev_frame;

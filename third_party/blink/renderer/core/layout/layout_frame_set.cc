@@ -536,13 +536,13 @@ void LayoutFrameSet::SetIsResizing(bool is_resizing) {
   }
 }
 
-bool LayoutFrameSet::CanResizeRow(const IntPoint& p) const {
+bool LayoutFrameSet::CanResizeRow(const gfx::Point& p) const {
   NOT_DESTROYED();
   int r = HitTestSplit(rows_, p.y());
   return r != kNoSplit && !rows_.prevent_resize_[r];
 }
 
-bool LayoutFrameSet::CanResizeColumn(const IntPoint& p) const {
+bool LayoutFrameSet::CanResizeColumn(const gfx::Point& p) const {
   NOT_DESTROYED();
   int c = HitTestSplit(cols_, p.x());
   return c != kNoSplit && !cols_.prevent_resize_[c];
@@ -597,7 +597,7 @@ bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
 CursorDirective LayoutFrameSet::GetCursor(const PhysicalOffset& point,
                                           ui::Cursor& cursor) const {
   NOT_DESTROYED();
-  IntPoint rounded_point = RoundedIntPoint(point);
+  gfx::Point rounded_point = ToRoundedPoint(point);
   if (CanResizeRow(rounded_point)) {
     cursor = RowResizeCursor();
     return kSetCursor;

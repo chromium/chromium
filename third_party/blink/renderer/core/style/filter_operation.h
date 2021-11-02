@@ -355,7 +355,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
   ConvolveMatrixFilterOperation(const IntSize& kernel_size,
                                 float divisor,
                                 float bias,
-                                const IntPoint& target_offset,
+                                const gfx::Point& target_offset,
                                 FEConvolveMatrix::EdgeModeType edge_mode,
                                 bool preserve_alpha,
                                 const Vector<float>& kernel_matrix)
@@ -371,7 +371,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
   const IntSize& KernelSize() const { return kernel_size_; }
   float Divisor() const { return divisor_; }
   float Bias() const { return bias_; }
-  const IntPoint& TargetOffset() const { return target_offset_; }
+  const gfx::Point& TargetOffset() const { return target_offset_; }
   FEConvolveMatrix::EdgeModeType EdgeMode() const { return edge_mode_; }
   bool PreserveAlpha() const { return preserve_alpha_; }
   const Vector<float>& KernelMatrix() const { return kernel_matrix_; }
@@ -393,7 +393,7 @@ class CORE_EXPORT ConvolveMatrixFilterOperation : public FilterOperation {
   IntSize kernel_size_;
   float divisor_;
   float bias_;
-  IntPoint target_offset_;
+  gfx::Point target_offset_;
   FEConvolveMatrix::EdgeModeType edge_mode_;
   bool preserve_alpha_;
   Vector<float> kernel_matrix_;

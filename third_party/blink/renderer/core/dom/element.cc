@@ -2064,7 +2064,7 @@ IntRect Element::VisibleBoundsInVisualViewport() const {
     visible_rect =
         GetDocument().GetPage()->GetVisualViewport().RootFrameToViewport(
             visible_rect);
-    visible_rect.Intersect(IntRect(IntPoint(), viewport_size));
+    visible_rect.Intersect(IntRect(gfx::Point(), viewport_size));
   }
   return visible_rect;
 }

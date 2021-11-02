@@ -85,7 +85,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
       layer->SetHitTestable(true);
       RecordForeignLayer(context, layout_video_,
                          DisplayItem::kForeignLayerVideo, layer,
-                         ToGfxPoint(snapped_replaced_rect.origin()));
+                         snapped_replaced_rect.origin());
       return;
     }
   }

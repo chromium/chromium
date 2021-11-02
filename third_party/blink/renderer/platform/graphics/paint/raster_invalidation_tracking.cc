@@ -211,7 +211,7 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
       SkColor old_pixel = old_bitmap.getColor(bitmap_x, bitmap_y);
       SkColor new_pixel = new_bitmap.getColor(bitmap_x, bitmap_y);
       if (PixelsDiffer(old_pixel, new_pixel) &&
-          !invalidation_region.Contains(IntPoint(layer_x, layer_y))) {
+          !invalidation_region.Contains(gfx::Point(layer_x, layer_y))) {
         if (mismatching_pixels < kMaxMismatchesToReport) {
           RasterUnderInvalidation under_invalidation = {layer_x, layer_y,
                                                         old_pixel, new_pixel};

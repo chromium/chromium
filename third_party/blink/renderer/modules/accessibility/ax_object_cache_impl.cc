@@ -3816,7 +3816,7 @@ String AXObjectCacheImpl::ComputedNameForNode(Node* node) {
   return obj->ComputedName();
 }
 
-void AXObjectCacheImpl::OnTouchAccessibilityHover(const IntPoint& location) {
+void AXObjectCacheImpl::OnTouchAccessibilityHover(const gfx::Point& location) {
   DocumentLifecycle::DisallowTransitionScope disallow(document_->Lifecycle());
   AXObject* hit = Root()->AccessibilityHitTest(location);
   if (hit) {

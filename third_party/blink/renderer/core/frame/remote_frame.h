@@ -207,7 +207,7 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   // Called only when this frame has a local frame owner.
   IntSize GetMainFrameViewportSize() const override;
-  IntPoint GetMainFrameScrollOffset() const override;
+  gfx::Point GetMainFrameScrollOffset() const override;
 
   void SetOpener(Frame* opener) override;
 

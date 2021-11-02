@@ -1237,7 +1237,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
               layout_embedded_content->GetEmbeddedContentView()) {
         if (context.tree_builder_context) {
           auto& current = context.tree_builder_context->fragments[0].current;
-          current.paint_offset = PhysicalOffset(RoundedIntPoint(
+          current.paint_offset = PhysicalOffset(ToRoundedPoint(
               current.paint_offset +
               layout_embedded_content->ReplacedContentRect().offset -
               PhysicalOffset(embedded_view->FrameRect().origin())));

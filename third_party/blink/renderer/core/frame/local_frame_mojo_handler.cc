@@ -653,7 +653,7 @@ void LocalFrameMojoHandler::GetResourceSnapshotForWebBundle(
 void LocalFrameMojoHandler::CopyImageAt(const gfx::Point& window_point) {
   gfx::Point viewport_position =
       frame_->GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  frame_->CopyImageAtViewportPoint(IntPoint(viewport_position));
+  frame_->CopyImageAtViewportPoint(viewport_position);
 }
 
 void LocalFrameMojoHandler::SaveImageAt(const gfx::Point& window_point) {
@@ -703,9 +703,7 @@ void LocalFrameMojoHandler::MediaPlayerActionAt(
     blink::mojom::blink::MediaPlayerActionPtr action) {
   gfx::Point viewport_position =
       frame_->GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  IntPoint location(viewport_position);
-
-  frame_->MediaPlayerActionAtViewportPoint(location, action->type,
+  frame_->MediaPlayerActionAtViewportPoint(viewport_position, action->type,
                                            action->enable);
 }
 
@@ -1141,7 +1139,7 @@ void LocalFrameMojoHandler::PluginActionAt(
     mojom::blink::PluginActionType action) {
   // TODO(bokan): Location is probably in viewport coordinates
   HitTestResult result =
-      HitTestResultForRootFramePos(frame_, PhysicalOffset(IntPoint(location)));
+      HitTestResultForRootFramePos(frame_, PhysicalOffset(location));
   Node* node = result.InnerNode();
   if (!IsA<HTMLObjectElement>(*node) && !IsA<HTMLEmbedElement>(*node))
     return;

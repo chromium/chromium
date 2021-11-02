@@ -140,8 +140,8 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
     DCHECK(pending_layer.GetGraphicsLayer());
     DCHECK(!pending_layer.GetGraphicsLayer()->ShouldCreateLayersAfterPaint());
     layer = &pending_layer.GetGraphicsLayer()->CcLayer();
-    layer_offset = gfx::Vector2dF(ToGfxVector2d(
-        pending_layer.GetGraphicsLayer()->GetOffsetFromTransformNode()));
+    layer_offset = gfx::Vector2dF(
+        pending_layer.GetGraphicsLayer()->GetOffsetFromTransformNode());
   } else {
     DCHECK_EQ(pending_layer.GetCompositingType(), PendingLayer::kForeignLayer);
     // UpdateTouchActionRects() depends on the layer's offset, but when the

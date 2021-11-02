@@ -30,12 +30,12 @@
 #include <iosfwd>
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/skia/include/core/SkPoint.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -56,7 +56,7 @@ class PLATFORM_EXPORT FloatPoint {
  public:
   constexpr FloatPoint() : x_(0), y_(0) {}
   constexpr FloatPoint(float x, float y) : x_(x), y_(y) {}
-  constexpr explicit FloatPoint(const IntPoint& p) : x_(p.x()), y_(p.y()) {}
+  constexpr explicit FloatPoint(const gfx::Point& p) : x_(p.x()), y_(p.y()) {}
   explicit FloatPoint(const SkPoint& p) : x_(p.x()), y_(p.y()) {}
   constexpr explicit FloatPoint(const FloatSize& s)
       : x_(s.width()), y_(s.height()) {}
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT FloatPoint {
     x_ += a.width();
     y_ += a.height();
   }
-  void MoveBy(const IntPoint& a) {
+  void MoveBy(const gfx::Point& a) {
     x_ += a.x();
     y_ += a.y();
   }
@@ -171,7 +171,7 @@ constexpr FloatPoint operator+(const FloatPoint& a, const IntSize& b) {
   return FloatPoint(a.x() + b.width(), a.y() + b.height());
 }
 
-constexpr FloatPoint operator+(const IntPoint& a, const FloatSize& b) {
+constexpr FloatPoint operator+(const gfx::Point& a, const FloatSize& b) {
   return FloatPoint(a.x() + b.width(), a.y() + b.height());
 }
 
@@ -179,7 +179,7 @@ constexpr FloatPoint operator+(const FloatPoint& a, const FloatPoint& b) {
   return FloatPoint(a.x() + b.x(), a.y() + b.y());
 }
 
-constexpr FloatPoint operator+(const FloatPoint& a, const IntPoint& b) {
+constexpr FloatPoint operator+(const FloatPoint& a, const gfx::Point& b) {
   return FloatPoint(a.x() + b.x(), a.y() + b.y());
 }
 
@@ -187,7 +187,7 @@ constexpr FloatSize operator-(const FloatPoint& a, const FloatPoint& b) {
   return FloatSize(a.x() - b.x(), a.y() - b.y());
 }
 
-constexpr FloatSize operator-(const FloatPoint& a, const IntPoint& b) {
+constexpr FloatSize operator-(const FloatPoint& a, const gfx::Point& b) {
   return FloatSize(a.x() - b.x(), a.y() - b.y());
 }
 
@@ -212,24 +212,24 @@ inline float operator*(const FloatPoint& a, const FloatPoint& b) {
   return a.Dot(b);
 }
 
-inline IntPoint RoundedIntPoint(const FloatPoint& p) {
-  return IntPoint(ClampTo<int>(roundf(p.x())), ClampTo<int>(roundf(p.y())));
+inline gfx::Point RoundedIntPoint(const FloatPoint& p) {
+  return gfx::Point(ClampTo<int>(roundf(p.x())), ClampTo<int>(roundf(p.y())));
 }
 
 inline IntSize RoundedIntSize(const FloatPoint& p) {
   return IntSize(ClampTo<int>(roundf(p.x())), ClampTo<int>(roundf(p.y())));
 }
 
-inline IntPoint FlooredIntPoint(const FloatPoint& p) {
-  return IntPoint(ClampTo<int>(floorf(p.x())), ClampTo<int>(floorf(p.y())));
+inline gfx::Point FlooredIntPoint(const FloatPoint& p) {
+  return gfx::Point(ClampTo<int>(floorf(p.x())), ClampTo<int>(floorf(p.y())));
 }
 
-inline IntPoint FlooredIntPoint(const gfx::PointF& p) {
-  return IntPoint(ClampTo<int>(floorf(p.x())), ClampTo<int>(floorf(p.y())));
+inline gfx::Point FlooredIntPoint(const gfx::PointF& p) {
+  return gfx::Point(ClampTo<int>(floorf(p.x())), ClampTo<int>(floorf(p.y())));
 }
 
-inline IntPoint CeiledIntPoint(const FloatPoint& p) {
-  return IntPoint(ClampTo<int>(ceilf(p.x())), ClampTo<int>(ceilf(p.y())));
+inline gfx::Point CeiledIntPoint(const FloatPoint& p) {
+  return gfx::Point(ClampTo<int>(ceilf(p.x())), ClampTo<int>(ceilf(p.y())));
 }
 
 inline IntSize FlooredIntSize(const FloatPoint& p) {

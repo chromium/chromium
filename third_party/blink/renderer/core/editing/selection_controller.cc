@@ -1023,7 +1023,7 @@ bool SelectionController::HandleMousePressEvent(
 
 void SelectionController::HandleMouseDraggedEvent(
     const MouseEventWithHitTestResults& event,
-    const IntPoint& mouse_down_pos,
+    const gfx::Point& mouse_down_pos,
     const PhysicalOffset& drag_start_pos,
     const PhysicalOffset& last_known_mouse_position) {
   TRACE_EVENT0("blink", "SelectionController::handleMouseDraggedEvent");

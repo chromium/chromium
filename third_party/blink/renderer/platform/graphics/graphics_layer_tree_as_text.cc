@@ -41,9 +41,8 @@ std::unique_ptr<JSONObject> GraphicsLayerAsJSON(const GraphicsLayer* layer,
   if (layer->HasLayerState() && (flags & (kLayerTreeIncludesDebugInfo |
                                           kLayerTreeIncludesPaintRecords))) {
     json->SetString("layerState", layer->GetPropertyTreeState().ToString());
-    json->SetValue(
-        "layerOffset",
-        PointAsJSONArray(ToGfxPoint(layer->GetOffsetFromTransformNode())));
+    json->SetValue("layerOffset",
+                   VectorAsJSONArray(layer->GetOffsetFromTransformNode()));
   }
 
   layer->AppendAdditionalInfoAsJSON(flags, layer->CcLayer(), *json.get());

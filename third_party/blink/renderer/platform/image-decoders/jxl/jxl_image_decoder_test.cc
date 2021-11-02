@@ -6,8 +6,8 @@
 
 #include <memory>
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -135,7 +135,7 @@ void TestSize(const char* jxl_file, IntSize expected_size) {
 
 struct FramePoint {
   size_t frame;
-  IntPoint point;
+  gfx::Point point;
 };
 
 void TestPixel(const char* jxl_file,

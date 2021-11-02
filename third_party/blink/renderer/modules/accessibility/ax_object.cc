@@ -1590,19 +1590,19 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
                               IsUserScrollable());
   // Provide x,y scroll info if scrollable in any way (programmatically or via
   // user).
-  gfx::Point scroll_offset = ToGfxPoint(GetScrollOffset());
+  gfx::Point scroll_offset = GetScrollOffset();
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollX,
                              scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollY,
                              scroll_offset.y());
 
-  gfx::Point min_scroll_offset = ToGfxPoint(MinimumScrollOffset());
+  gfx::Point min_scroll_offset = MinimumScrollOffset();
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMin,
                              min_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMin,
                              min_scroll_offset.y());
 
-  gfx::Point max_scroll_offset = ToGfxPoint(MaximumScrollOffset());
+  gfx::Point max_scroll_offset = MaximumScrollOffset();
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMax,
                              max_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,
@@ -4287,7 +4287,7 @@ bool AXObject::ContainerLiveRegionBusy() const {
              AOMBooleanProperty::kBusy);
 }
 
-AXObject* AXObject::ElementAccessibilityHitTest(const IntPoint& point) const {
+AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {
   // Check if there are any mock elements that need to be handled.
   for (const auto& child : ChildrenIncludingIgnored()) {
     if (child->IsMockObject() &&
@@ -4980,40 +4980,37 @@ bool AXObject::IsUserScrollable() const {
          To<LayoutBox>(GetLayoutObject())->CanBeScrolledAndHasScrollableArea();
 }
 
-IntPoint AXObject::GetScrollOffset() const {
+gfx::Point AXObject::GetScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
-    return IntPoint();
+    return gfx::Point();
 
-  return IntPoint(area->ScrollOffsetInt().width(),
-                  area->ScrollOffsetInt().height());
+  return ToGfxPoint(area->ScrollOffsetInt());
 }
 
-IntPoint AXObject::MinimumScrollOffset() const {
+gfx::Point AXObject::MinimumScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
-    return IntPoint();
+    return gfx::Point();
 
-  return IntPoint(area->MinimumScrollOffsetInt().width(),
-                  area->MinimumScrollOffsetInt().height());
+  return ToGfxPoint(area->MinimumScrollOffsetInt());
 }
 
-IntPoint AXObject::MaximumScrollOffset() const {
+gfx::Point AXObject::MaximumScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
-    return IntPoint();
+    return gfx::Point();
 
-  return IntPoint(area->MaximumScrollOffsetInt().width(),
-                  area->MaximumScrollOffsetInt().height());
+  return ToGfxPoint(area->MaximumScrollOffsetInt());
 }
 
-void AXObject::SetScrollOffset(const IntPoint& offset) const {
+void AXObject::SetScrollOffset(const gfx::Point& offset) const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
     return;
 
   // TODO(bokan): This should potentially be a UserScroll.
-  area->SetScrollOffset(ScrollOffset(offset.x(), offset.y()),
+  area->SetScrollOffset(ScrollOffset(offset.OffsetFromOrigin()),
                         mojom::blink::ScrollType::kProgrammatic);
 }
 
@@ -5408,12 +5405,11 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kIncrement:
       return RequestIncrementAction();
     case ax::mojom::blink::Action::kScrollToPoint:
-      return RequestScrollToGlobalPointAction(
-          IntPoint(action_data.target_point));
+      return RequestScrollToGlobalPointAction(action_data.target_point);
     case ax::mojom::blink::Action::kSetAccessibilityFocus:
       return InternalSetAccessibilityFocusAction();
     case ax::mojom::blink::Action::kSetScrollOffset:
-      SetScrollOffset(IntPoint(action_data.target_point));
+      SetScrollOffset(action_data.target_point);
       return true;
     case ax::mojom::blink::Action::kSetSequentialFocusNavigationStartingPoint:
       return RequestSetSequentialFocusNavigationStartingPointAction();
@@ -5534,7 +5530,7 @@ bool AXObject::RequestIncrementAction() {
   return OnNativeIncrementAction();
 }
 
-bool AXObject::RequestScrollToGlobalPointAction(const IntPoint& point) {
+bool AXObject::RequestScrollToGlobalPointAction(const gfx::Point& point) {
   return OnNativeScrollToGlobalPointAction(point);
 }
 
@@ -5637,7 +5633,7 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
 }
 
 bool AXObject::OnNativeScrollToGlobalPointAction(
-    const IntPoint& global_point) const {
+    const gfx::Point& global_point) const {
   LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
   if (!layout_object)
     return false;

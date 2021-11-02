@@ -741,9 +741,10 @@ component("platform") {
     "geometry/cg/float_point_cg.cc",
     "geometry/cg/float_rect_cg.cc",
     "geometry/cg/float_size_cg.cc",
-    "geometry/cg/int_point_cg.cc",
     "geometry/cg/int_rect_cg.cc",
     "geometry/cg/int_size_cg.cc",
+    "geometry/cg_conversions.cc",
+    "geometry/cg_conversions.h",
     "geometry/double_point.cc",
     "geometry/double_point.h",
     "geometry/double_rect.cc",
@@ -769,8 +770,6 @@ component("platform") {
     "geometry/float_size.cc",
     "geometry/float_size.h",
     "geometry/geometry_as_json.h",
-    "geometry/int_point.cc",
-    "geometry/int_point.h",
     "geometry/int_rect.cc",
     "geometry/int_rect.h",
     "geometry/int_rect_outsets.h",
@@ -1767,9 +1766,10 @@ component("platform") {
       "geometry/cg/float_point_cg.cc",
       "geometry/cg/float_rect_cg.cc",
       "geometry/cg/float_size_cg.cc",
-      "geometry/cg/int_point_cg.cc",
       "geometry/cg/int_rect_cg.cc",
       "geometry/cg/int_size_cg.cc",
+      "geometry/cg_conversions.cc",
+      "geometry/cg_conversions.h",
     ]
   }
 

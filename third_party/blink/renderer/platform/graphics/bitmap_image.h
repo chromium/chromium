@@ -65,7 +65,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool CurrentFrameHasSingleSecurityOrigin() const override;
 
   IntSize SizeWithConfig(SizeConfig) const override;
-  bool GetHotSpot(IntPoint&) const override;
+  bool GetHotSpot(gfx::Point&) const override;
   String FilenameExtension() const override;
 
   SizeAvailability SetData(scoped_refptr<SharedBuffer> data,

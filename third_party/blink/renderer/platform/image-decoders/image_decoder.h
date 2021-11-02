@@ -400,7 +400,7 @@ class PLATFORM_EXPORT ImageDecoder {
 
   // If the image has a cursor hot-spot, stores it in the argument
   // and returns true. Otherwise returns false.
-  virtual bool HotSpot(IntPoint&) const { return false; }
+  virtual bool HotSpot(gfx::Point&) const { return false; }
 
   virtual void SetMemoryAllocator(SkBitmap::Allocator* allocator) {
     // This currently doesn't work for images with multiple frames.

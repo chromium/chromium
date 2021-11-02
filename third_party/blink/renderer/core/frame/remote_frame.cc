@@ -845,7 +845,7 @@ IntSize RemoteFrame::GetMainFrameViewportSize() const {
   return owner->GetDocument().GetFrame()->GetMainFrameViewportSize();
 }
 
-IntPoint RemoteFrame::GetMainFrameScrollOffset() const {
+gfx::Point RemoteFrame::GetMainFrameScrollOffset() const {
   HTMLFrameOwnerElement* owner = DeprecatedLocalOwner();
   DCHECK(owner);
   DCHECK(owner->GetDocument().GetFrame());

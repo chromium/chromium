@@ -94,7 +94,7 @@ class CORE_EXPORT WheelEvent final : public MouseEvent {
   void Trace(Visitor*) const override;
 
  private:
-  IntPoint wheel_delta_;
+  gfx::Point wheel_delta_;
   double delta_x_;
   double delta_y_;
   double delta_z_;

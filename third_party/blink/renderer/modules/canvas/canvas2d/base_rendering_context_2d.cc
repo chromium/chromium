@@ -1827,7 +1827,8 @@ void BaseRenderingContext2D::DrawImageInternal(
     HTMLVideoElement* video = static_cast<HTMLVideoElement*>(image_source);
     video->PaintCurrentFrame(
         c,
-        IntRect(IntPoint(), IntSize(video->videoWidth(), video->videoHeight())),
+        IntRect(gfx::Point(),
+                IntSize(video->videoWidth(), video->videoHeight())),
         &image_flags);
   } else if (image_source->IsVideoFrame()) {
     VideoFrame* frame = static_cast<VideoFrame*>(image_source);
@@ -2394,15 +2395,15 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
     }
   }
 
-  IntRect dest_rect(dirty_x, dirty_y, dirty_width, dirty_height);
-  dest_rect.Intersect(IntRect(0, 0, data->width(), data->height()));
-  IntSize dest_offset(static_cast<int>(dx), static_cast<int>(dy));
+  gfx::Rect dest_rect(dirty_x, dirty_y, dirty_width, dirty_height);
+  dest_rect.Intersect(gfx::Rect(0, 0, data->width(), data->height()));
+  gfx::Vector2d dest_offset(static_cast<int>(dx), static_cast<int>(dy));
   dest_rect.Offset(dest_offset);
-  dest_rect.Intersect(IntRect(0, 0, Width(), Height()));
+  dest_rect.Intersect(gfx::Rect(0, 0, Width(), Height()));
   if (dest_rect.IsEmpty())
     return;
 
-  IntRect source_rect(dest_rect);
+  gfx::Rect source_rect = dest_rect;
   source_rect.Offset(-dest_offset);
 
   // Color / format convert ImageData to context 2D settings if needed. Color /
@@ -2439,27 +2440,27 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
                                converted_row_bytes)) {
       PutByteArray(
           SkPixmap(converted_info, converted_pixels.get(), converted_row_bytes),
-          source_rect, IntPoint(dest_offset));
+          source_rect, dest_offset);
     }
   } else {
-    PutByteArray(data_pixmap, source_rect, IntPoint(dest_offset));
+    PutByteArray(data_pixmap, source_rect, dest_offset);
   }
 
-  GetPaintCanvasForDraw(dest_rect,
+  GetPaintCanvasForDraw(IntRect(dest_rect),
                         CanvasPerformanceMonitor::DrawType::kImageData);
 }
 
 void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
-                                          const IntRect& source_rect,
-                                          const IntPoint& dest_point) {
+                                          const gfx::Rect& source_rect,
+                                          const gfx::Vector2d& dest_offset) {
   if (!IsCanvas2DBufferValid())
     return;
 
-  DCHECK(IntRect(0, 0, source.width(), source.height()).Contains(source_rect));
-  int dest_x = dest_point.x() + source_rect.x();
+  DCHECK(gfx::Rect(source.width(), source.height()).Contains(source_rect));
+  int dest_x = dest_offset.x() + source_rect.x();
   DCHECK_GE(dest_x, 0);
   DCHECK_LT(dest_x, Width());
-  int dest_y = dest_point.y() + source_rect.y();
+  int dest_y = dest_offset.y() + source_rect.y();
   DCHECK_GE(dest_y, 0);
   DCHECK_LT(dest_y, Height());
 

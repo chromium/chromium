@@ -8,9 +8,9 @@
 #include <iosfwd>
 #include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -20,7 +20,7 @@ class PLATFORM_EXPORT DoublePoint {
  public:
   constexpr DoublePoint() : x_(0), y_(0) {}
   constexpr DoublePoint(double x, double y) : x_(x), y_(y) {}
-  constexpr DoublePoint(const IntPoint& p) : x_(p.x()), y_(p.y()) {}
+  constexpr DoublePoint(const gfx::Point& p) : x_(p.x()), y_(p.y()) {}
   constexpr DoublePoint(const FloatPoint& p) : x_(p.x()), y_(p.y()) {}
   // We also have conversion operator to DoublePoint defined in LayoutPoint.
 
@@ -109,16 +109,16 @@ constexpr DoublePoint operator-(const DoublePoint& a, const DoubleSize& b) {
   return DoublePoint(a.X() - b.Width(), a.Y() - b.Height());
 }
 
-inline IntPoint RoundedIntPoint(const DoublePoint& p) {
-  return IntPoint(ClampTo<int>(round(p.X())), ClampTo<int>(round(p.Y())));
+inline gfx::Point ToRoundedPoint(const DoublePoint& p) {
+  return gfx::Point(ClampTo<int>(round(p.X())), ClampTo<int>(round(p.Y())));
 }
 
-inline IntPoint CeiledIntPoint(const DoublePoint& p) {
-  return IntPoint(ClampTo<int>(ceil(p.X())), ClampTo<int>(ceil(p.Y())));
+inline gfx::Point ToCeiledPoint(const DoublePoint& p) {
+  return gfx::Point(ClampTo<int>(ceil(p.X())), ClampTo<int>(ceil(p.Y())));
 }
 
-inline IntPoint FlooredIntPoint(const DoublePoint& p) {
-  return IntPoint(ClampTo<int>(floor(p.X())), ClampTo<int>(floor(p.Y())));
+inline gfx::Point ToFlooredPoint(const DoublePoint& p) {
+  return gfx::Point(ClampTo<int>(floor(p.X())), ClampTo<int>(floor(p.Y())));
 }
 
 constexpr DoubleSize ToDoubleSize(const DoublePoint& a) {

@@ -242,8 +242,8 @@ constexpr bool operator!=(const FloatRect& a, const FloatRect& b) {
 
 // Returns a IntRect containing the given FloatRect.
 inline IntRect EnclosingIntRect(const FloatRect& rect) {
-  IntPoint location = FlooredIntPoint(rect.origin());
-  IntPoint max_point = CeiledIntPoint(rect.bottom_right());
+  gfx::Point location = FlooredIntPoint(rect.origin());
+  gfx::Point max_point = CeiledIntPoint(rect.bottom_right());
   return IntRect(location,
                  IntSize(base::ClampSub(max_point.x(), location.x()),
                          base::ClampSub(max_point.y(), location.y())));

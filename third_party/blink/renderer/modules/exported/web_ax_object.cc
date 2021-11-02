@@ -512,9 +512,9 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kHitTest);
-  IntPoint contents_point =
+  gfx::Point contents_point =
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
-          IntPoint(point));
+          point);
 
   Document* document = private_->GetDocument();
   if (!document || !document->View())
@@ -1136,28 +1136,28 @@ gfx::Point WebAXObject::GetScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return ToGfxPoint(private_->GetScrollOffset());
+  return private_->GetScrollOffset();
 }
 
 gfx::Point WebAXObject::MinimumScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return ToGfxPoint(private_->MinimumScrollOffset());
+  return private_->MinimumScrollOffset();
 }
 
 gfx::Point WebAXObject::MaximumScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return ToGfxPoint(private_->MaximumScrollOffset());
+  return private_->MaximumScrollOffset();
 }
 
 void WebAXObject::SetScrollOffset(const gfx::Point& offset) const {
   if (IsDetached())
     return;
 
-  private_->SetScrollOffset(IntPoint(offset));
+  private_->SetScrollOffset(offset);
 }
 
 void WebAXObject::Dropeffects(

@@ -47,7 +47,7 @@ class CORE_EXPORT HitTestLocation {
   // http://www.chromium.org/developers/design-documents/blink-coordinate-spaces
   HitTestLocation();
   explicit HitTestLocation(const PhysicalOffset&);
-  explicit HitTestLocation(const IntPoint&);
+  explicit HitTestLocation(const gfx::Point&);
   explicit HitTestLocation(const FloatPoint&);
   explicit HitTestLocation(const DoublePoint&);
   explicit HitTestLocation(const FloatPoint&, const FloatQuad&);
@@ -66,7 +66,7 @@ class CORE_EXPORT HitTestLocation {
   HitTestLocation& operator=(const HitTestLocation&);
 
   const PhysicalOffset& Point() const { return point_; }
-  IntPoint RoundedPoint() const { return RoundedIntPoint(point_); }
+  gfx::Point RoundedPoint() const { return ToRoundedPoint(point_); }
 
   int FragmentIndex() const { return fragment_index_; }
 

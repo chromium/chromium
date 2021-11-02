@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 #include <string>
 
@@ -294,9 +295,9 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
   WebView()->MainFrameImpl()->SetScrollOffset(gfx::Vector2dF(0, 50));
 
   VisualViewport& visual_viewport = GetFrame()->GetPage()->GetVisualViewport();
-  EXPECT_EQ(IntRect(IntPoint(0, 0), size - scrollbar_size),
+  EXPECT_EQ(IntRect(gfx::Point(0, 0), size - scrollbar_size),
             visual_viewport.VisibleContentRect(kExcludeScrollbars));
-  EXPECT_EQ(IntRect(IntPoint(0, 0), size),
+  EXPECT_EQ(IntRect(gfx::Point(0, 0), size),
             visual_viewport.VisibleContentRect(kIncludeScrollbars));
 
   WebView()->SetPageScaleFactor(2.0);
@@ -305,9 +306,9 @@ TEST_P(VisualViewportTest, TestVisibleContentRect) {
   size.Scale(0.5);
   scrollbar_size.Scale(0.5);
   visual_viewport.SetLocation(FloatPoint(10, 10));
-  EXPECT_EQ(IntRect(IntPoint(10, 10), size - scrollbar_size),
+  EXPECT_EQ(IntRect(gfx::Point(10, 10), size - scrollbar_size),
             visual_viewport.VisibleContentRect(kExcludeScrollbars));
-  EXPECT_EQ(IntRect(IntPoint(10, 10), size),
+  EXPECT_EQ(IntRect(gfx::Point(10, 10), size),
             visual_viewport.VisibleContentRect(kIncludeScrollbars));
 }
 
@@ -341,7 +342,7 @@ TEST_P(VisualViewportTest, TestResizeAtFullyScrolledPreservesViewportLocation) {
   ASSERT_EQ(ScrollOffset(200, 1400),
             frame_view.LayoutViewport()->GetScrollOffset());
 
-  IntPoint expected_location =
+  gfx::Point expected_location =
       frame_view.GetScrollableArea()->VisibleContentRect().origin();
 
   // Shrink the WebView, this should cause both viewports to shrink and
@@ -919,9 +920,10 @@ TEST_P(VisualViewportTest, TestTextSelectionHandles) {
   gfx::Rect focus;
   WebView()->MainFrameViewWidget()->CalculateSelectionBounds(anchor, focus);
 
-  IntPoint expected(IntRect(original_anchor).origin());
-  expected.MoveBy(-FlooredIntPoint(visual_viewport.VisibleRect().origin()));
-  expected.Scale(visual_viewport.Scale(), visual_viewport.Scale());
+  gfx::Point expected = original_anchor.origin();
+  expected -= gfx::ToFlooredVector2d(
+      ToGfxVector2dF(visual_viewport.VisibleRect().origin()));
+  expected = gfx::ScaleToRoundedPoint(expected, visual_viewport.Scale());
 
   EXPECT_EQ(expected, IntRect(anchor).origin());
   EXPECT_EQ(expected, IntRect(focus).origin());

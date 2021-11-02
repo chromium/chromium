@@ -48,7 +48,7 @@ void FramePainter::Paint(GraphicsContext& context,
 
   CullRect document_cull_rect(gfx::IntersectRects(
       cull_rect.Rect(), ToGfxRect(GetFrameView().FrameRect())));
-  document_cull_rect.Move(ToGfxVector2d(-GetFrameView().Location()));
+  document_cull_rect.Move(-GetFrameView().Location().OffsetFromOrigin());
 
   if (document_cull_rect.Rect().IsEmpty())
     return;

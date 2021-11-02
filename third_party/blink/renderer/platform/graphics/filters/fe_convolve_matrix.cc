@@ -37,7 +37,7 @@ FEConvolveMatrix::FEConvolveMatrix(Filter* filter,
                                    const IntSize& kernel_size,
                                    float divisor,
                                    float bias,
-                                   const IntPoint& target_offset,
+                                   const gfx::Vector2d& target_offset,
                                    FEConvolveMatrix::EdgeModeType edge_mode,
                                    bool preserve_alpha,
                                    const Vector<float>& kernel_matrix)
@@ -54,7 +54,7 @@ FloatRect FEConvolveMatrix::MapEffect(const FloatRect& rect) const {
   if (!ParametersValid())
     return rect;
   FloatRect result = rect;
-  result.MoveBy(FloatPoint(-target_offset_));
+  result.Offset(FloatSize(-target_offset_));
   result.Expand(FloatSize(kernel_size_));
   return result;
 }
@@ -73,7 +73,7 @@ bool FEConvolveMatrix::SetBias(float bias) {
   return true;
 }
 
-bool FEConvolveMatrix::SetTargetOffset(const IntPoint& target_offset) {
+bool FEConvolveMatrix::SetTargetOffset(const gfx::Vector2d& target_offset) {
   if (target_offset_ == target_offset)
     return false;
   target_offset_ = target_offset;
@@ -176,7 +176,7 @@ WTF::TextStream& FEConvolveMatrix::ExternalRepresentation(WTF::TextStream& ts,
      << "kernelMatrix=\"" << kernel_matrix_ << "\" "
      << "divisor=\"" << divisor_ << "\" "
      << "bias=\"" << bias_ << "\" "
-     << "target=\"" << target_offset_ << "\" "
+     << "target=\"" << target_offset_.ToString() << "\" "
      << "edgeMode=\"" << edge_mode_ << "\" "
      << "preserveAlpha=\"" << preserve_alpha_ << "\"]\n";
   InputEffect(0)->ExternalRepresentation(ts, indent + 1);

@@ -239,7 +239,7 @@ LocalFrameView::LocalFrameView(LocalFrame& frame)
 }
 
 LocalFrameView::LocalFrameView(LocalFrame& frame, const IntSize& initial_size)
-    : LocalFrameView(frame, IntRect(IntPoint(), initial_size)) {
+    : LocalFrameView(frame, IntRect(gfx::Point(), initial_size)) {
   SetLayoutSizeInternal(initial_size);
   Show();
 }
@@ -3481,14 +3481,14 @@ void LocalFrameView::ForceLayoutForPagination(
 }
 
 IntRect LocalFrameView::RootFrameToDocument(const IntRect& rect_in_root_frame) {
-  IntPoint offset = RootFrameToDocument(rect_in_root_frame.origin());
+  gfx::Point offset = RootFrameToDocument(rect_in_root_frame.origin());
   IntRect local_rect = rect_in_root_frame;
   local_rect.set_origin(offset);
   return local_rect;
 }
 
-IntPoint LocalFrameView::RootFrameToDocument(
-    const IntPoint& point_in_root_frame) {
+gfx::Point LocalFrameView::RootFrameToDocument(
+    const gfx::Point& point_in_root_frame) {
   return FlooredIntPoint(RootFrameToDocument(FloatPoint(point_in_root_frame)));
 }
 
@@ -3517,9 +3517,9 @@ DoublePoint LocalFrameView::DocumentToFrame(
   return point_in_document - layout_viewport->GetScrollOffset();
 }
 
-IntPoint LocalFrameView::DocumentToFrame(
-    const IntPoint& point_in_document) const {
-  return FlooredIntPoint(DocumentToFrame(DoublePoint(point_in_document)));
+gfx::Point LocalFrameView::DocumentToFrame(
+    const gfx::Point& point_in_document) const {
+  return ToFlooredPoint(DocumentToFrame(DoublePoint(point_in_document)));
 }
 
 FloatPoint LocalFrameView::DocumentToFrame(
@@ -3543,8 +3543,9 @@ PhysicalRect LocalFrameView::DocumentToFrame(
                       rect_in_document.size);
 }
 
-IntPoint LocalFrameView::FrameToDocument(const IntPoint& point_in_frame) const {
-  return FlooredIntPoint(FrameToDocument(PhysicalOffset(point_in_frame)));
+gfx::Point LocalFrameView::FrameToDocument(
+    const gfx::Point& point_in_frame) const {
+  return ToFlooredPoint(FrameToDocument(PhysicalOffset(point_in_frame)));
 }
 
 PhysicalOffset LocalFrameView::FrameToDocument(
@@ -3590,7 +3591,7 @@ IntRect LocalFrameView::ConvertFromContainingEmbeddedContentView(
     const IntRect& parent_rect) const {
   if (ParentFrameView()) {
     IntRect local_rect = parent_rect;
-    local_rect.MoveBy(-Location());
+    local_rect.Offset(-ToIntSize(Location()));
     return local_rect;
   }
   return parent_rect;
@@ -3666,9 +3667,9 @@ DoublePoint LocalFrameView::ConvertFromContainingEmbeddedContentView(
   return parent_point;
 }
 
-IntPoint LocalFrameView::ConvertToContainingEmbeddedContentView(
-    const IntPoint& local_point) const {
-  return RoundedIntPoint(
+gfx::Point LocalFrameView::ConvertToContainingEmbeddedContentView(
+    const gfx::Point& local_point) const {
+  return ToRoundedPoint(
       ConvertToContainingEmbeddedContentView(PhysicalOffset(local_point)));
 }
 
@@ -3974,9 +3975,9 @@ IntRect LocalFrameView::ViewportToFrame(const IntRect& rect_in_viewport) const {
   return ConvertFromRootFrame(rect_in_root_frame);
 }
 
-IntPoint LocalFrameView::ViewportToFrame(
-    const IntPoint& point_in_viewport) const {
-  return RoundedIntPoint(ViewportToFrame(PhysicalOffset(point_in_viewport)));
+gfx::Point LocalFrameView::ViewportToFrame(
+    const gfx::Point& point_in_viewport) const {
+  return ToRoundedPoint(ViewportToFrame(PhysicalOffset(point_in_viewport)));
 }
 
 IntRect LocalFrameView::FrameToViewport(const IntRect& rect_in_frame) const {
@@ -3985,8 +3986,9 @@ IntRect LocalFrameView::FrameToViewport(const IntRect& rect_in_frame) const {
       rect_in_root_frame);
 }
 
-IntPoint LocalFrameView::FrameToViewport(const IntPoint& point_in_frame) const {
-  IntPoint point_in_root_frame = ConvertToRootFrame(point_in_frame);
+gfx::Point LocalFrameView::FrameToViewport(
+    const gfx::Point& point_in_frame) const {
+  gfx::Point point_in_root_frame = ConvertToRootFrame(point_in_frame);
   return frame_->GetPage()->GetVisualViewport().RootFrameToViewport(
       point_in_root_frame);
 }
@@ -3997,9 +3999,9 @@ IntRect LocalFrameView::FrameToScreen(const IntRect& rect) const {
   return IntRect();
 }
 
-IntPoint LocalFrameView::SoonToBeRemovedUnscaledViewportToContents(
-    const IntPoint& point_in_viewport) const {
-  IntPoint point_in_root_frame = FlooredIntPoint(
+gfx::Point LocalFrameView::SoonToBeRemovedUnscaledViewportToContents(
+    const gfx::Point& point_in_viewport) const {
+  gfx::Point point_in_root_frame = FlooredIntPoint(
       frame_->GetPage()->GetVisualViewport().ViewportCSSPixelsToRootFrame(
           FloatPoint(point_in_viewport)));
   return ConvertFromRootFrame(point_in_root_frame);
@@ -4200,8 +4202,9 @@ IntRect LocalFrameView::ConvertToRootFrame(const IntRect& local_rect) const {
   return local_rect;
 }
 
-IntPoint LocalFrameView::ConvertToRootFrame(const IntPoint& local_point) const {
-  return RoundedIntPoint(ConvertToRootFrame(PhysicalOffset(local_point)));
+gfx::Point LocalFrameView::ConvertToRootFrame(
+    const gfx::Point& local_point) const {
+  return ToRoundedPoint(ConvertToRootFrame(PhysicalOffset(local_point)));
 }
 
 PhysicalOffset LocalFrameView::ConvertToRootFrame(
@@ -4244,9 +4247,9 @@ IntRect LocalFrameView::ConvertFromRootFrame(
   return rect_in_root_frame;
 }
 
-IntPoint LocalFrameView::ConvertFromRootFrame(
-    const IntPoint& point_in_root_frame) const {
-  return RoundedIntPoint(
+gfx::Point LocalFrameView::ConvertFromRootFrame(
+    const gfx::Point& point_in_root_frame) const {
+  return ToRoundedPoint(
       ConvertFromRootFrame(PhysicalOffset(point_in_root_frame)));
 }
 

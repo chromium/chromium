@@ -147,7 +147,7 @@ void PNGImageDecoder::InitializeNewFrame(wtf_size_t index) {
   if (decode_to_half_float_)
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
 
-  DCHECK(IntRect(IntPoint(), Size()).Contains(frame_info.frame_rect));
+  DCHECK(IntRect(gfx::Point(), Size()).Contains(frame_info.frame_rect));
   buffer.SetOriginalFrameRect(frame_info.frame_rect);
 
   buffer.SetDuration(base::Milliseconds(frame_info.duration));
@@ -548,7 +548,7 @@ void PNGImageDecoder::RowAvailable(unsigned char* row_buffer,
   }
 
   const IntRect& frame_rect = buffer.OriginalFrameRect();
-  DCHECK(IntRect(IntPoint(), Size()).Contains(frame_rect));
+  DCHECK(IntRect(gfx::Point(), Size()).Contains(frame_rect));
 
   /* libpng comments (here to explain what follows).
    *

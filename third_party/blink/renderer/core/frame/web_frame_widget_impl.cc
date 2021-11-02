@@ -160,7 +160,8 @@ const float kIdealPaddingRatio = 0.3f;
 // location and size.
 FloatRect NormalizeRect(const IntRect& to_normalize, const IntRect& base_rect) {
   FloatRect result(to_normalize);
-  result.set_origin(FloatPoint(to_normalize.origin() + (-base_rect.origin())));
+  result.set_origin(
+      FloatPoint(to_normalize.origin() - base_rect.OffsetFromOrigin()));
   result.Scale(1.0 / base_rect.width(), 1.0 / base_rect.height());
   return result;
 }
@@ -231,7 +232,7 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
   if (!object->IsBox())
     return viz::FrameSinkId();
 
-  IntPoint local_point = RoundedIntPoint(result.LocalPoint());
+  gfx::Point local_point = ToRoundedPoint(result.LocalPoint());
   if (!To<LayoutBox>(object)->ComputedCSSContentBoxRect().Contains(local_point))
     return viz::FrameSinkId();
 
@@ -334,7 +335,7 @@ gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
     const gfx::Point& point_in_root_frame,
     bool ignore_clipping) const {
   HitTestLocation location(local_root_->GetFrameView()->ConvertFromRootFrame(
-      PhysicalOffset(IntPoint(point_in_root_frame))));
+      PhysicalOffset(point_in_root_frame)));
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kReadOnly | HitTestRequest::kActive |
       (ignore_clipping ? HitTestRequest::kIgnoreClipping : 0);
@@ -861,7 +862,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
           web_view->MinimumPageScaleFactor() !=
               web_view->MaximumPageScaleFactor()) {
         gfx::Point pos_in_local_frame_root =
-            ToGfxPoint(FlooredIntPoint(scaled_event.PositionInRootFrame()));
+            FlooredIntPoint(scaled_event.PositionInRootFrame());
         auto block_bounds = ComputeBlockBound(pos_in_local_frame_root, false);
 
         if (ForMainFrame()) {
@@ -4302,8 +4303,9 @@ WebFrameWidgetImpl::GetScrollParamsForFocusedEditableElement(
   if (!maximal_rect_fits_in_frame) {
     IntRect frame_rect(maximal_rect.origin(), frame_view.Size());
     maximal_rect.Intersect(frame_rect);
-    IntPoint point_forced_to_be_visible = absolute_caret_bounds.bottom_right() +
-                                          IntSize(kCaretPadding, kCaretPadding);
+    gfx::Point point_forced_to_be_visible =
+        absolute_caret_bounds.bottom_right() +
+        gfx::Vector2d(kCaretPadding, kCaretPadding);
     if (!maximal_rect.Contains(point_forced_to_be_visible)) {
       // Move the rect towards the point until the point is barely contained.
       maximal_rect.Offset(point_forced_to_be_visible -

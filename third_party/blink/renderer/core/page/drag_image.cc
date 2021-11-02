@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -214,7 +214,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
 
   const float kDragLabelRadius = 5;
 
-  IntRect rect(IntPoint(), image_size);
+  IntRect rect(gfx::Point(), image_size);
   PaintFlags background_paint;
   background_paint.setColor(SkColorSetRGB(140, 140, 140));
   background_paint.setAntiAlias(true);
@@ -247,7 +247,7 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   bool has_strong_directionality;
   TextRun text_run =
       TextRunWithDirectionality(label, &has_strong_directionality);
-  IntPoint text_pos(
+  gfx::Point text_pos(
       kDragLabelBorderX,
       kDragLabelBorderY + label_font.GetFontDescription().ComputedPixelSize());
   if (has_strong_directionality &&

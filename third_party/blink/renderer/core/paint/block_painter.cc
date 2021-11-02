@@ -127,7 +127,8 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
   local_paint_info.phase = original_phase;
   if (auto* scrollable_area = layout_block_.GetScrollableArea()) {
     ScrollableAreaPainter(*scrollable_area)
-        .PaintOverflowControls(local_paint_info, RoundedIntPoint(paint_offset));
+        .PaintOverflowControls(local_paint_info,
+                               ToRoundedPoint(paint_offset).OffsetFromOrigin());
   }
 }
 

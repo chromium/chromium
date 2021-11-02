@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
 
@@ -240,12 +241,13 @@ class FragmentPaintPropertyTreeBuilder {
  private:
   ALWAYS_INLINE bool CanPropagateSubpixelAccumulation() const;
   ALWAYS_INLINE void UpdatePaintOffset();
-  ALWAYS_INLINE void UpdateForPaintOffsetTranslation(absl::optional<IntPoint>&);
+  ALWAYS_INLINE void UpdateForPaintOffsetTranslation(
+      absl::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void UpdatePaintOffsetTranslation(
-      const absl::optional<IntPoint>&);
+      const absl::optional<gfx::Vector2d>&);
   ALWAYS_INLINE void SetNeedsPaintPropertyUpdateIfNeeded();
   ALWAYS_INLINE void UpdateForObjectLocationAndSize(
-      absl::optional<IntPoint>& paint_offset_translation);
+      absl::optional<gfx::Vector2d>& paint_offset_translation);
   ALWAYS_INLINE void UpdateClipPathCache();
   ALWAYS_INLINE void UpdateStickyTranslation();
   ALWAYS_INLINE void UpdateTransform();
@@ -537,7 +539,7 @@ bool FragmentPaintPropertyTreeBuilder::CanPropagateSubpixelAccumulation()
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
-    absl::optional<IntPoint>& paint_offset_translation) {
+    absl::optional<gfx::Vector2d>& paint_offset_translation) {
   if (!NeedsPaintOffsetTranslation(
           object_, full_context_.direct_compositing_reasons))
     return;
@@ -548,7 +550,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
   // (i.e. subpixel accumulation) for the transformed content to paint with.
   // In pre-CompositeAfterPaint, if the object has layer, this corresponds to
   // PaintLayer::SubpixelAccumulation().
-  paint_offset_translation = RoundedIntPoint(context_.current.paint_offset);
+  paint_offset_translation = ToRoundedVector2d(context_.current.paint_offset);
   // Don't propagate subpixel accumulation through paint isolation. In
   // pre-CompositeAfterPaint we still need to keep consistence with the legacy
   // compositing code.
@@ -598,7 +600,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
       // Make the translation relatively to the top/left corner of the box. In
       // vertical-rl writing mode, the first fragment is not the leftmost one.
       PhysicalOffset topleft = context_.current.paint_offset - new_paint_offset;
-      paint_offset_translation = RoundedIntPoint(topleft);
+      paint_offset_translation = ToRoundedVector2d(topleft);
       subpixel_accumulation =
           topleft - PhysicalOffset(*paint_offset_translation);
     } else {
@@ -606,11 +608,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
       // the first fragment.
       const FragmentData& first_fragment = object_.FirstFragment();
       const auto* properties = first_fragment.PaintProperties();
-      paint_offset_translation = RoundedIntPoint(
-          FloatPoint(properties->PaintOffsetTranslation()->Translation2D()));
+      paint_offset_translation = gfx::ToRoundedVector2d(
+          properties->PaintOffsetTranslation()->Translation2D());
       subpixel_accumulation =
           first_fragment.PaintOffset() -
-          PhysicalOffset(RoundedIntPoint(first_fragment.PaintOffset()));
+          PhysicalOffset(ToRoundedPoint(first_fragment.PaintOffset()));
     }
   } else {
     subpixel_accumulation = context_.current.paint_offset -
@@ -646,7 +648,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
     // The composited subpixel movement optimization applies only if the
     // composited layer has and had PaintOffsetTranslation, so that both the
     // the old and new paint offsets are just subpixel accumulations.
-    DCHECK_EQ(IntPoint(), RoundedIntPoint(fragment_data_.PaintOffset()));
+    DCHECK_EQ(gfx::Point(), ToRoundedPoint(fragment_data_.PaintOffset()));
     context_.current.directly_composited_container_paint_offset_subpixel_delta =
         context_.current.paint_offset - fragment_data_.PaintOffset();
   } else {
@@ -657,12 +659,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForPaintOffsetTranslation(
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
-    const absl::optional<IntPoint>& paint_offset_translation) {
+    const absl::optional<gfx::Vector2d>& paint_offset_translation) {
   DCHECK(properties_);
 
   if (paint_offset_translation) {
     TransformPaintPropertyNode::State state{
-        gfx::Vector2dF(ToGfxVector2d(*paint_offset_translation))};
+        gfx::Vector2dF(*paint_offset_translation)};
     state.flags.flattens_inherited_transform =
         context_.should_flatten_inherited_transform;
     state.rendering_context_id = context_.rendering_context_id;
@@ -1823,7 +1825,8 @@ bool FragmentPaintPropertyTreeBuilder::NeedsOverflowControlsClip() const {
   if (const auto* scrollbar = scrollable_area->VerticalScrollbar())
     scroll_controls_bounds.Union(scrollbar->FrameRect());
   IntRect pixel_snapped_border_box_rect(
-      IntPoint(), box.PixelSnappedBorderBoxSize(context_.current.paint_offset));
+      gfx::Point(),
+      box.PixelSnappedBorderBoxSize(context_.current.paint_offset));
   return !pixel_snapped_border_box_rect.Contains(scroll_controls_bounds);
 }
 
@@ -2748,7 +2751,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocationAndSize(
-    absl::optional<IntPoint>& paint_offset_translation) {
+    absl::optional<gfx::Vector2d>& paint_offset_translation) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
   UpdateForPaintOffsetTranslation(paint_offset_translation);
@@ -2849,7 +2852,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 
   // This is not in FindObjectPropertiesNeedingUpdateScope because paint offset
   // can change without NeedsPaintPropertyUpdate.
-  absl::optional<IntPoint> paint_offset_translation;
+  absl::optional<gfx::Vector2d> paint_offset_translation;
   UpdateForObjectLocationAndSize(paint_offset_translation);
   if (&fragment_data_ == &object_.FirstFragment())
     SetNeedsPaintPropertyUpdateIfNeeded();

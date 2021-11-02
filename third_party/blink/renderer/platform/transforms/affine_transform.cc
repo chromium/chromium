@@ -261,14 +261,6 @@ void AffineTransform::Map(double x, double y, double& x2, double& y2) const {
   y2 = (transform_[1] * x + transform_[3] * y + transform_[5]);
 }
 
-IntPoint AffineTransform::MapPoint(const IntPoint& point) const {
-  double x2, y2;
-  Map(point.x(), point.y(), x2, y2);
-
-  // Round the point.
-  return IntPoint(static_cast<int>(lround(x2)), static_cast<int>(lround(y2)));
-}
-
 gfx::Point AffineTransform::MapPoint(const gfx::Point& point) const {
   double x2, y2;
   Map(point.x(), point.y(), x2, y2);

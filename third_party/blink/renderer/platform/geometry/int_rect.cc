@@ -134,7 +134,7 @@ static inline int DistanceToInterval(int pos, int start, int end) {
   return 0;
 }
 
-IntSize IntRect::DifferenceToPoint(const IntPoint& point) const {
+IntSize IntRect::DifferenceToPoint(const gfx::Point& point) const {
   int xdistance = DistanceToInterval(point.x(), x(), right());
   int ydistance = DistanceToInterval(point.y(), y(), bottom());
   return IntSize(xdistance, ydistance);
@@ -166,7 +166,7 @@ std::ostream& operator<<(std::ostream& ostream, const IntRect& rect) {
 }
 
 String IntRect::ToString() const {
-  return String::Format("%s %s", origin().ToString().Ascii().c_str(),
+  return String::Format("%s %s", origin().ToString().c_str(),
                         size().ToString().Ascii().c_str());
 }
 

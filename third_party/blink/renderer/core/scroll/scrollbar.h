@@ -69,7 +69,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   int Width() const { return frame_rect_.width(); }
   int Height() const { return frame_rect_.height(); }
   IntSize Size() const { return frame_rect_.size(); }
-  IntPoint Location() const { return frame_rect_.origin(); }
+  gfx::Point Location() const { return frame_rect_.origin(); }
 
   void SetFrameRect(const IntRect&);
   const IntRect& FrameRect() const { return frame_rect_; }
@@ -79,7 +79,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   Vector<IntRect> GetTickmarks() const;
   bool IsScrollableAreaActive() const;
 
-  IntPoint ConvertFromRootFrame(const IntPoint&) const;
+  gfx::Point ConvertFromRootFrame(const gfx::Point&) const;
 
   virtual bool IsCustomScrollbar() const { return false; }
   ScrollbarOrientation Orientation() const { return orientation_; }
@@ -116,7 +116,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   void SetProportion(int visible_size, int total_size);
   void SetPressedPos(int p) { pressed_pos_ = p; }
 
-  void Paint(GraphicsContext&, const IntPoint& paint_offset) const;
+  void Paint(GraphicsContext&, const gfx::Vector2d& paint_offset) const;
 
   virtual bool IsSolidColor() const;
 
@@ -151,7 +151,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   ScrollbarTheme& GetTheme() const { return theme_; }
 
   IntRect ConvertToContainingEmbeddedContentView(const IntRect&) const;
-  IntPoint ConvertFromContainingEmbeddedContentView(const IntPoint&) const;
+  gfx::Point ConvertFromContainingEmbeddedContentView(const gfx::Point&) const;
 
   void MoveThumb(int pos, bool dragging_document = false);
 

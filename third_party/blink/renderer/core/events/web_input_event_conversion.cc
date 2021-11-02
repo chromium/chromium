@@ -60,7 +60,7 @@ float FrameScale(const LocalFrameView* frame_view) {
 }
 
 gfx::Vector2dF FrameTranslation(const LocalFrameView* frame_view) {
-  IntPoint visual_viewport;
+  gfx::Point visual_viewport;
   FloatSize overscroll_offset;
   if (frame_view) {
     LocalFrameView* root_view = frame_view->GetFrame().LocalFrameRoot().View();

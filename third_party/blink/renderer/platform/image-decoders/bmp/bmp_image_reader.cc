@@ -774,7 +774,7 @@ bool BMPImageReader::InitFrame() {
   buffer_->SetHasAlpha(false);
 
   // For BMPs, the frame always fills the entire image.
-  buffer_->SetOriginalFrameRect(IntRect(IntPoint(), parent_->Size()));
+  buffer_->SetOriginalFrameRect(IntRect(gfx::Point(), parent_->Size()));
 
   if (!is_top_down_)
     coord_.set_y(parent_->Size().height() - 1);
@@ -782,7 +782,7 @@ bool BMPImageReader::InitFrame() {
 }
 
 bool BMPImageReader::DecodePixelData(bool non_rle) {
-  const IntPoint coord(coord_);
+  const gfx::Point coord(coord_);
   const ProcessingResult result =
       non_rle ? ProcessNonRLEData(false, 0) : ProcessRLEData();
   if (coord_ != coord)

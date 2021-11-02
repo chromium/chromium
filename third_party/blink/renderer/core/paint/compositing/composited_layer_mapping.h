@@ -304,10 +304,10 @@ class CORE_EXPORT CompositedLayerMapping final
   // Helper methods to updateGraphicsLayerGeometry:
   void ComputeGraphicsLayerParentLocation(
       const PaintLayer* compositing_container,
-      IntPoint& graphics_layer_parent_location);
+      gfx::Point& graphics_layer_parent_location);
   void UpdateSquashingLayerGeometry(
       const PaintLayer* compositing_container,
-      const IntPoint& snapped_offset_from_composited_ancestor,
+      const gfx::Point& snapped_offset_from_composited_ancestor,
       HeapVector<Member<GraphicsLayerPaintInfo>>& layers,
       HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
   void UpdateMainGraphicsLayerGeometry(const IntRect& local_compositing_bounds);
@@ -355,7 +355,7 @@ class CORE_EXPORT CompositedLayerMapping final
   void ComputeBoundsOfOwningLayer(
       const PaintLayer* composited_ancestor,
       IntRect& local_compositing_bounds,
-      IntPoint& snapped_offset_from_composited_ancestor);
+      gfx::Point& snapped_offset_from_composited_ancestor);
 
   GraphicsLayerPaintingPhase PaintingPhaseForPrimaryLayer() const;
 

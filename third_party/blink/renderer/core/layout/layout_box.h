@@ -477,7 +477,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // blocks writing mode.
   IntRect PixelSnappedBorderBoxRect() const {
     NOT_DESTROYED();
-    return IntRect(IntPoint(),
+    return IntRect(gfx::Point(),
                    PixelSnappedBorderBoxSize(PhysicalOffset(Location())));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
@@ -1800,7 +1800,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // See README.md for an explanation of scroll origin.
   IntSize OriginAdjustmentForScrollbars() const;
-  IntPoint ScrollOrigin() const;
+  gfx::Point ScrollOrigin() const;
   PhysicalOffset ScrolledContentOffset() const;
 
   // Scroll offset as snapped to physical pixels. This value should be used in
@@ -1808,7 +1808,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // where the content is displayed, rather than what the ideal offset is. For
   // most other cases ScrolledContentOffset is probably more appropriate. This
   // is the offset that's actually drawn to the screen.
-  IntPoint PixelSnappedScrolledContentOffset() const;
+  // TODO(crbug.com/962299): Pixel-snapping before PrePaint (when we know the
+  // paint offset) is incorrect.
+  gfx::Vector2d PixelSnappedScrolledContentOffset() const;
 
   // Maps from scrolling contents space to box space and apply overflow
   // clip if needed. Returns true if no clipping applied or the flattened quad

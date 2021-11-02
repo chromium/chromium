@@ -83,7 +83,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   base::TimeDelta FrameDurationAtIndex(wtf_size_t index) const;
   ImageOrientation OrientationAtIndex(wtf_size_t index) const;
   IntSize DensityCorrectedSizeAtIndex(wtf_size_t index) const;
-  bool HotSpot(IntPoint&) const;
+  bool HotSpot(gfx::Point&) const;
   SkAlphaType AlphaType() const;
 
   // A less expensive method for getting the number of bytes thus far received
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   bool has_hot_spot_;
   bool image_is_high_bit_depth_;
   sk_sp<SkColorSpace> color_space_for_sk_images_;
-  IntPoint hot_spot_;
+  gfx::Point hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;
   absl::optional<bool> incremental_decode_needed_;
 

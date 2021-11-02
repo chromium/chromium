@@ -3167,7 +3167,8 @@ String AXNodeObject::TextAlternative(
     LayoutRect bounds = GetBoundsInFrameCoordinates();
     IntSize document_size =
         GetNode()->GetDocument().GetLayoutView()->GetLayoutSize();
-    bool is_visible = bounds.Intersects(LayoutRect(IntPoint(), document_size));
+    bool is_visible =
+        bounds.Intersects(LayoutRect(gfx::Point(), document_size));
     if (!is_visible)
       return String();
   }

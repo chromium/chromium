@@ -170,7 +170,7 @@ void Scrollbar::SetProportion(int visible_size, int total_size) {
 }
 
 void Scrollbar::Paint(GraphicsContext& context,
-                      const IntPoint& paint_offset) const {
+                      const gfx::Vector2d& paint_offset) const {
   GetTheme().Paint(*this, context, paint_offset);
 }
 
@@ -346,7 +346,7 @@ bool Scrollbar::GestureEvent(const WebGestureEvent& evt,
   DCHECK(should_update_capture);
   switch (evt.GetType()) {
     case WebInputEvent::Type::kGestureTapDown: {
-      IntPoint position = FlooredIntPoint(evt.PositionInRootFrame());
+      gfx::Point position = FlooredIntPoint(evt.PositionInRootFrame());
       SetPressedPart(GetTheme().HitTestRootFramePosition(*this, position),
                      evt.GetType());
       pressed_pos_ = Orientation() == kHorizontalScrollbar
@@ -448,7 +448,7 @@ bool Scrollbar::HandleTapGesture() {
 }
 
 void Scrollbar::MouseMoved(const WebMouseEvent& evt) {
-  IntPoint position = FlooredIntPoint(evt.PositionInRootFrame());
+  gfx::Point position = FlooredIntPoint(evt.PositionInRootFrame());
   ScrollbarPart part = GetTheme().HitTestRootFramePosition(*this, position);
 
   // If the WebMouseEvent was already handled on the compositor thread, simply
@@ -542,7 +542,7 @@ void Scrollbar::MouseDown(const WebMouseEvent& evt) {
   if (evt.button == WebPointerProperties::Button::kRight)
     return;
 
-  IntPoint position = FlooredIntPoint(evt.PositionInRootFrame());
+  gfx::Point position = FlooredIntPoint(evt.PositionInRootFrame());
   SetPressedPart(GetTheme().HitTestRootFramePosition(*this, position),
                  evt.GetType());
 
@@ -724,10 +724,10 @@ bool Scrollbar::IsWindowActive() const {
   return scrollable_area_ && scrollable_area_->IsActive();
 }
 
-IntPoint Scrollbar::ConvertFromRootFrame(
-    const IntPoint& point_in_root_frame) const {
+gfx::Point Scrollbar::ConvertFromRootFrame(
+    const gfx::Point& point_in_root_frame) const {
   if (scrollable_area_) {
-    IntPoint parent_point;
+    gfx::Point parent_point;
     if (scrollable_area_->IsRootFrameLayoutViewport()) {
       // When operating on the root frame viewport's scrollbar, use the visual
       // viewport relative position, instead of root frame-relative position.
@@ -759,8 +759,8 @@ IntRect Scrollbar::ConvertToContainingEmbeddedContentView(
   return local_rect;
 }
 
-IntPoint Scrollbar::ConvertFromContainingEmbeddedContentView(
-    const IntPoint& parent_point) const {
+gfx::Point Scrollbar::ConvertFromContainingEmbeddedContentView(
+    const gfx::Point& parent_point) const {
   if (scrollable_area_) {
     return scrollable_area_
         ->ConvertFromContainingEmbeddedContentViewToScrollbar(*this,

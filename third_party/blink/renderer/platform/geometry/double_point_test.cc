@@ -8,10 +8,10 @@
 
 namespace blink {
 
-TEST(DoublePointTest, RoundedIntPoint) {
+TEST(DoublePointTest, ToRoundedPoint) {
   // Value not exactly representable as a float.
   DoublePoint p1(16777217.0, -16777217.0);
-  IntPoint rounded_p1 = RoundedIntPoint(p1);
+  gfx::Point rounded_p1 = ToRoundedPoint(p1);
   EXPECT_EQ(16777217, rounded_p1.x());
   EXPECT_EQ(-16777217, rounded_p1.y());
 }

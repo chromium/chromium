@@ -25,10 +25,10 @@ void NGMathMLPainter::PaintBar(const PaintInfo& info, const IntRect& bar) {
   info.context.SetStrokeStyle(kSolidStroke);
   info.context.SetStrokeColor(
       box_fragment_.Style().VisitedDependentColor(GetCSSPropertyColor()));
-  IntPoint line_end_point = {bar.width(), 0};
+  gfx::Point line_end_point = {bar.width(), 0};
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       box_fragment_.Style(), DarkModeFilter::ElementRole::kText));
-  info.context.DrawLine(bar.origin(), bar.origin() + line_end_point,
+  info.context.DrawLine(bar.origin(), line_end_point + bar.OffsetFromOrigin(),
                         auto_dark_mode);
 }
 

@@ -112,7 +112,7 @@ TEST_F(AXLayoutObjectTest, AccessibilityHitTest) {
   const AXObject* ax_root = GetAXRootObject();
   ASSERT_NE(nullptr, ax_root);
   // (8, 5) initially hits the editable DIV inside <input>.
-  const IntPoint position(8, 5);
+  const gfx::Point position(8, 5);
   AXObject* hit_test_result = ax_root->AccessibilityHitTest(position);
   EXPECT_NE(nullptr, hit_test_result);
   EXPECT_EQ(hit_test_result->RoleValue(),

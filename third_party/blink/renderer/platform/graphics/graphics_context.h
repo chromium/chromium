@@ -238,8 +238,8 @@ class PLATFORM_EXPORT GraphicsContext {
   // DrawLine() only operates on horizontal or vertical lines and uses the
   // current stroke settings. For dotted or dashed stroke, the line need to be
   // top-to-down or left-to-right to get correct interval of dots/dashes.
-  void DrawLine(const IntPoint&,
-                const IntPoint&,
+  void DrawLine(const gfx::Point&,
+                const gfx::Point&,
                 const AutoDarkMode& auto_dark_mode,
                 bool is_text_line = false,
                 const PaintFlags* flags = nullptr);
@@ -315,7 +315,7 @@ class PLATFORM_EXPORT GraphicsContext {
                       RespectImageOrientationEnum = kRespectImageOrientation);
 
   // These methods write to the canvas.
-  // Also drawLine(const IntPoint& point1, const IntPoint& point2) and
+  // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and
   // fillRoundedRect().
   void DrawOval(const SkRect&,
                 const PaintFlags&,
@@ -481,7 +481,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void SetURLFragmentForRect(const String& name, const IntRect&);
 
   // Sets location of a URL destination (a.k.a. anchor) in the page.
-  void SetURLDestinationLocation(const String& name, const IntPoint&);
+  void SetURLDestinationLocation(const String& name, const gfx::Point&);
 
   static void AdjustLineToPixelBoundaries(FloatPoint& p1,
                                           FloatPoint& p2,

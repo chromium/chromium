@@ -324,14 +324,15 @@ class CORE_EXPORT PaintLayerScrollableArea final
   IntRect ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
       const IntRect&) const override;
-  IntPoint ConvertFromScrollbarToContainingEmbeddedContentView(
+  gfx::Point ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
-      const IntPoint&) const override;
-  IntPoint ConvertFromContainingEmbeddedContentViewToScrollbar(
+      const gfx::Point&) const override;
+  gfx::Point ConvertFromContainingEmbeddedContentViewToScrollbar(
       const Scrollbar&,
-      const IntPoint&) const override;
-  IntPoint ConvertFromRootFrame(const IntPoint&) const override;
-  IntPoint ConvertFromRootFrameToVisualViewport(const IntPoint&) const override;
+      const gfx::Point&) const override;
+  gfx::Point ConvertFromRootFrame(const gfx::Point&) const override;
+  gfx::Point ConvertFromRootFrameToVisualViewport(
+      const gfx::Point&) const override;
   int ScrollSize(ScrollbarOrientation) const override;
   FloatPoint ScrollPosition() const override {
     return FloatPoint(ScrollOrigin()) + GetScrollOffset();
@@ -361,7 +362,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   IntSize PixelSnappedContentsSize(const PhysicalOffset& paint_offset) const;
 
   void ContentsResized() override;
-  IntPoint LastKnownMousePosition() const override;
+  gfx::Point LastKnownMousePosition() const override;
   bool ScrollAnimatorEnabled() const override;
   bool ShouldSuspendScrollAnimations() const override;
   bool ScrollbarsCanBeActive() const override;
@@ -382,7 +383,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   void VisibleSizeChanged();
 
   // See renderer/core/layout/README.md for an explanation of scroll origin.
-  IntPoint ScrollOrigin() const { return scroll_origin_; }
+  gfx::Point ScrollOrigin() const { return scroll_origin_; }
   bool ScrollOriginChanged() const { return scroll_origin_changed_; }
 
   void ScrollToAbsolutePosition(const FloatPoint& position,
@@ -430,8 +431,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   LayoutCustomScrollbarPart* ScrollCorner() const { return scroll_corner_; }
 
-  void Resize(const IntPoint& pos, const LayoutSize& old_offset);
-  IntSize OffsetFromResizeCorner(const IntPoint& absolute_point) const;
+  void Resize(const gfx::Point& pos, const LayoutSize& old_offset);
+  IntSize OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
 
   bool InResizeMode() const { return in_resize_mode_; }
   void SetInResizeMode(bool in_resize_mode) {
@@ -450,9 +451,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   // isPointInResizeControl() is used for testing if a pointer/touch position is
   // in the resize control area.
-  bool IsPointInResizeControl(const IntPoint& absolute_point,
+  bool IsPointInResizeControl(const gfx::Point& absolute_point,
                               ResizerHitTestType) const;
-  bool HitTestOverflowControls(HitTestResult&, const IntPoint& local_point);
+  bool HitTestOverflowControls(HitTestResult&, const gfx::Point& local_point);
 
   bool HitTestResizerInFragments(const PaintLayerFragments&,
                                  const HitTestLocation&) const;
@@ -790,7 +791,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // vertical-lr / rtl            NO                      YES
   // vertical-rl / ltr            YES                     NO
   // vertical-rl / rtl            YES                     YES
-  IntPoint scroll_origin_;
+  gfx::Point scroll_origin_;
 
   // The width/height of our scrolled area.
   // This is OverflowModel's layout overflow translated to physical

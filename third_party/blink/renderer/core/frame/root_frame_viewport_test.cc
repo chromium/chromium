@@ -65,7 +65,7 @@ class ScrollableAreaStub : public GarbageCollected<ScrollableAreaStub>,
 
   IntRect VisibleContentRect(
       IncludeScrollbarsInRect = kExcludeScrollbars) const override {
-    return IntRect(IntPoint(FlooredIntSize(scroll_offset_)), viewport_size_);
+    return IntRect(ToGfxPoint(FlooredIntSize(scroll_offset_)), viewport_size_);
   }
 
   IntSize ContentsSize() const override { return contents_size_; }
@@ -174,7 +174,7 @@ class VisualViewportStub : public ScrollableAreaStub {
   IntRect VisibleContentRect(IncludeScrollbarsInRect) const override {
     FloatSize size(viewport_size_);
     size.Scale(1 / scale_);
-    return IntRect(IntPoint(FlooredIntSize(GetScrollOffset())),
+    return IntRect(ToGfxPoint(FlooredIntSize(GetScrollOffset())),
                    ExpandedIntSize(size));
   }
 
@@ -477,14 +477,14 @@ TEST_F(RootFrameViewportTest, VisibleContentRect) {
       ScrollOffset(100, 75), mojom::blink::ScrollType::kProgrammatic,
       mojom::blink::ScrollBehavior::kInstant, ScrollableArea::ScrollCallback());
 
-  EXPECT_EQ(IntPoint(100, 75),
+  EXPECT_EQ(gfx::Point(100, 75),
             root_frame_viewport->VisibleContentRect().origin());
   EXPECT_EQ(ScrollOffset(500, 401),
             DoubleSize(root_frame_viewport->VisibleContentRect().size()));
 
   visual_viewport->SetScale(2);
 
-  EXPECT_EQ(IntPoint(100, 75),
+  EXPECT_EQ(gfx::Point(100, 75),
             root_frame_viewport->VisibleContentRect().origin());
   EXPECT_EQ(ScrollOffset(250, 201),
             DoubleSize(root_frame_viewport->VisibleContentRect().size()));

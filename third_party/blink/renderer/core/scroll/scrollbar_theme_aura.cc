@@ -361,7 +361,7 @@ bool ScrollbarThemeAura::ShouldSnapBackToDragOrigin(
   int snap_outside_of_min = -expansion_amount;
   int snap_outside_of_max = expansion_amount + thickness;
 
-  IntPoint mouse_position = scrollbar.ConvertFromRootFrame(
+  gfx::Point mouse_position = scrollbar.ConvertFromRootFrame(
       FlooredIntPoint(event.PositionInRootFrame()));
   int mouse_offset_in_scrollbar =
       is_horizontal ? mouse_position.y() : mouse_position.x();

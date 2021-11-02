@@ -421,7 +421,7 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
   GetFrame().GetPage()->GetDragController().StartDrag(
-      &GetFrame(), drag_state, mouse_event, IntPoint(5, 10));
+      &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
   IntSize expected_image_size = IntSize(50, 40);
   expected_image_size.Scale(page_scale_factor);
@@ -429,10 +429,9 @@ TEST_F(DragControllerTest, DragImageOffsetWithPageScaleFactor) {
             IntSize(GetChromeClient().last_drag_image_size));
   // The drag image has a margin of 2px which should offset the selection
   // image by 2px from the dragged location of (5, 10).
-  IntPoint expected_offset = IntPoint(5, 10 - 2);
-  expected_offset.Scale(page_scale_factor, page_scale_factor);
-  EXPECT_EQ(expected_offset,
-            IntPoint(GetChromeClient().last_drag_image_offset));
+  gfx::Point expected_offset(5 * page_scale_factor,
+                             (10 - 2) * page_scale_factor);
+  EXPECT_EQ(expected_offset, GetChromeClient().last_drag_image_offset);
 }
 
 TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
@@ -467,7 +466,7 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
       DataTransfer::kDragAndDrop, DataTransferAccessPolicy::kWritable,
       DataObject::Create());
   GetFrame().GetPage()->GetDragController().StartDrag(
-      &GetFrame(), drag_state, mouse_event, IntPoint(5, 10));
+      &GetFrame(), drag_state, mouse_event, gfx::Point(5, 10));
 
   IntSize link_image_size = IntSize(GetChromeClient().last_drag_image_size);
   // The drag link image should be a textual representation of the drag url in a
@@ -478,7 +477,7 @@ TEST_F(DragControllerTest, DragLinkWithPageScaleFactor) {
   // image is not offset by margin because the link image is not based on the
   // link's painting but instead is a generated image of the link's url. Because
   // link_image_size is already scaled, no additional scaling is expected.
-  IntPoint expected_offset = IntPoint(link_image_size.width() / 2, 2);
+  gfx::Point expected_offset = gfx::Point(link_image_size.width() / 2, 2);
   // The offset is mapped using integers which can introduce rounding errors
   // (see TODO in DragController::DoSystemDrag) so we accept values near our
   // expectation until more precise offset mapping is available.

@@ -1549,7 +1549,7 @@ Response InspectorPageAgent::getLayoutMetrics(
   // pixels. Details: https://crbug.com/1181313
   IntRect css_content_size =
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
-          IntRect(IntPoint(0, 0), content_size), main_frame->View());
+          IntRect(gfx::Point(0, 0), content_size), main_frame->View());
   *out_css_content_size = protocol::DOM::Rect::create()
                               .setX(css_content_size.x())
                               .setY(css_content_size.y())

@@ -2694,17 +2694,17 @@ bool WebViewTest::TapElement(WebInputEvent::Type type, Element* element) {
   DCHECK(web_view_helper_.GetWebView());
   element->scrollIntoViewIfNeeded();
 
-  gfx::PointF center(ToGfxPoint(
+  gfx::Point center =
       web_view_helper_.GetWebView()
           ->MainFrameImpl()
           ->GetFrameView()
           ->FrameToScreen(element->GetLayoutObject()->AbsoluteBoundingBoxRect())
-          .CenterPoint()));
+          .CenterPoint();
 
   WebGestureEvent event(type, WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
                         WebGestureDevice::kTouchscreen);
-  event.SetPositionInWidget(center);
+  event.SetPositionInWidget(gfx::PointF(center));
 
   web_view_helper_.GetWebView()->MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
@@ -6100,7 +6100,7 @@ TEST_F(WebViewTest, LongPressAndThenLongTapLinkInIframeShouldShowContextMenu) {
   Document* child_document =
       To<HTMLIFrameElement>(child_frame)->contentDocument();
   Element* anchor = child_document->getElementById("anchorTag");
-  IntPoint center =
+  gfx::Point center =
       To<WebLocalFrameImpl>(
           web_view->MainFrame()->FirstChild()->ToWebLocalFrame())
           ->GetFrameView()

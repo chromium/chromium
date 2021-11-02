@@ -30,11 +30,11 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink-forward.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -70,18 +70,18 @@ class CORE_EXPORT DragController final
   };
   Node* DraggableNode(const LocalFrame*,
                       Node*,
-                      const IntPoint&,
+                      const gfx::Point&,
                       SelectionDragPolicy,
                       DragSourceAction&) const;
   void DragEnded();
 
   bool PopulateDragDataTransfer(LocalFrame* src,
                                 const DragState&,
-                                const IntPoint& drag_origin);
+                                const gfx::Point& drag_origin);
   bool StartDrag(LocalFrame* src,
                  const DragState&,
                  const WebMouseEvent& drag_event,
-                 const IntPoint& drag_origin);
+                 const gfx::Point& drag_origin);
 
   DragState& GetDragState();
 
@@ -120,8 +120,8 @@ class CORE_EXPORT DragController final
   // drag_location and drag_origin should be in the coordinate space of the
   // LocalFrame's contents.
   void DoSystemDrag(DragImage*,
-                    const IntPoint& drag_location,
-                    const IntPoint& drag_origin,
+                    const gfx::Point& drag_location,
+                    const gfx::Point& drag_origin,
                     DataTransfer*,
                     LocalFrame*,
                     bool for_link);

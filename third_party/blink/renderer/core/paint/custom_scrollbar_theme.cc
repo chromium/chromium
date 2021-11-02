@@ -43,7 +43,7 @@ CustomScrollbarTheme* CustomScrollbarTheme::GetCustomScrollbarTheme() {
 }
 
 ScrollbarPart CustomScrollbarTheme::HitTest(const Scrollbar& scrollbar,
-                                            const IntPoint& test_position) {
+                                            const gfx::Point& test_position) {
   auto result = ScrollbarTheme::HitTest(scrollbar, test_position);
   if (result == kScrollbarBGPart) {
     // The ScrollbarTheme knows nothing about the double buttons.
@@ -149,11 +149,11 @@ void CustomScrollbarTheme::PaintScrollCorner(
 
 void CustomScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
                                                 const Scrollbar& scrollbar,
-                                                const IntPoint& offset) {
+                                                const gfx::Vector2d& offset) {
   // Custom scrollbars are always painted in their original coordinate space,
   // i.e. the space of Scrollbar::FrameRect() and ScrollbarTheme::XXXRect()
   // which is |context|'s current space.
-  DCHECK_EQ(offset, IntPoint());
+  DCHECK_EQ(offset, gfx::Vector2d());
 
   PaintPart(context, scrollbar, scrollbar.FrameRect(), kScrollbarBGPart);
 

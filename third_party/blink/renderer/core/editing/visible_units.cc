@@ -437,7 +437,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
 }
 
 PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
-    const IntPoint& contents_point,
+    const gfx::Point& contents_point,
     LocalFrame* frame) {
   HitTestRequest request = HitTestRequest::kMove | HitTestRequest::kReadOnly |
                            HitTestRequest::kActive |

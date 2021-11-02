@@ -2127,8 +2127,8 @@ PaintLayer* PaintLayer::HitTestLayer(PaintLayer* root_layer,
     DCHECK(!Preserves3D());
     DCHECK(!layout_object.HasClipPath());
     if (scrollable_area_) {
-      IntPoint point = scrollable_area_->ConvertFromRootFrameToVisualViewport(
-          RoundedIntPoint(recursion_data.location.Point()));
+      gfx::Point point = scrollable_area_->ConvertFromRootFrameToVisualViewport(
+          ToRoundedPoint(recursion_data.location.Point()));
 
       DCHECK(GetLayoutBox());
       if (GetLayoutBox()->HitTestOverflowControl(result, HitTestLocation(point),
@@ -3004,7 +3004,7 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     // and the document's layout overflow rect.
     IntRect result = IntRect();
     if (LocalFrameView* frame_view = GetLayoutObject().GetFrameView())
-      result = IntRect(IntPoint(), frame_view->Size());
+      result = IntRect(gfx::Point(), frame_view->Size());
     return PhysicalRect(result);
   }
 
@@ -3573,10 +3573,10 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   }
 }
 
-IntPoint PaintLayer::PixelSnappedScrolledContentOffset() const {
+gfx::Vector2d PaintLayer::PixelSnappedScrolledContentOffset() const {
   if (GetLayoutObject().IsScrollContainer())
     return GetLayoutBox()->PixelSnappedScrolledContentOffset();
-  return IntPoint();
+  return gfx::Vector2d();
 }
 
 PaintLayerClipper PaintLayer::Clipper(

@@ -137,7 +137,7 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
                             const EphemeralRange& range,
                             NSAttributedString* string) {
   IntRect string_rect = frame_view->FrameToViewport(FirstRectForRange(range));
-  IntPoint string_point = string_rect.bottom_left();
+  gfx::Point string_point = string_rect.bottom_left();
 
   // Adjust for the font's descender. AppKit wants the baseline point.
   if ([string length]) {
@@ -146,7 +146,7 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
     if (NSFont* font = attributes[NSFontAttributeName])
       string_point.Offset(0, ceil([font descender]));
   }
-  return ToGfxPoint(string_point);
+  return string_point;
 }
 
 }  // namespace

@@ -351,7 +351,7 @@ bool AXLayoutObject::IsOffScreen() const {
   IntRect content_rect =
       PixelSnappedIntRect(layout_object_->VisualRectInDocument());
   LocalFrameView* view = layout_object_->GetFrame()->View();
-  IntRect view_rect(IntPoint(), view->Size());
+  IntRect view_rect(gfx::Point(), view->Size());
   view_rect.Intersect(content_rect);
   return view_rect.IsEmpty();
 }
@@ -1160,7 +1160,7 @@ String AXLayoutObject::TextAlternative(
 // Hit testing.
 //
 
-AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
+AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   // Must be called for the document.
   if (!IsRoot() || !layout_object_)
     return nullptr;
@@ -1745,7 +1745,7 @@ void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
 
 AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
     HTMLAreaElement* area,
-    const IntPoint& point) const {
+    const gfx::Point& point) const {
   if (!area)
     return nullptr;
 
