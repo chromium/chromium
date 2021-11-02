@@ -64,6 +64,7 @@ class TestAppListClient : public AppListClient {
                                        bool visibility) override {}
   void OnAppListSortRequested(int profile_id, AppListSortOrder order) override {
   }
+  void OnAppListSortRevertRequested(int profile_id) override {}
   void OnSetPositionRequested(int profile_id,
                               std::string id,
                               const syncer::StringOrdinal& new_position,

@@ -136,6 +136,7 @@ class AppListModelUpdater {
       std::unique_ptr<ash::AppListItemMetadata> item) = 0;
   virtual void OnPageBreakItemDeleted(const std::string& id) = 0;
   virtual void OnSortRequested(ash::AppListSortOrder order) = 0;
+  virtual void OnSortRevertRequested() = 0;
 
   // Methods for handling app list item updates initiated from ash:
   virtual void HandleSetPosition(std::string id,

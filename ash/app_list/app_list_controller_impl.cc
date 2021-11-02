@@ -1485,6 +1485,11 @@ void AppListControllerImpl::SortAppList(AppListSortOrder order) {
     client_->OnAppListSortRequested(profile_id_, order);
 }
 
+void AppListControllerImpl::RevertAppListSort() {
+  if (client_)
+    client_->OnAppListSortRevertRequested(profile_id_);
+}
+
 ui::ImplicitAnimationObserver* AppListControllerImpl::GetAnimationObserver(
     AppListViewState target_state) {
   // |presenter_| observes the close animation only.

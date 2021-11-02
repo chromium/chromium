@@ -11,7 +11,7 @@ class AppListModelUpdater;
 
 namespace test {
 
-// A fake app list controller used by browser side tests to emulate the
+// A fake app list controller used by browser side unit tests to emulate the
 // interaction between browser and ash in tests.
 class TestAppListController : public ash::AppListController {
  public:

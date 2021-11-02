@@ -204,6 +204,7 @@ class ASH_EXPORT AppListControllerImpl
   void GetContextMenuModel(const std::string& id,
                            GetContextMenuModelCallback callback) override;
   void SortAppList(AppListSortOrder order) override;
+  void RevertAppListSort() override;
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,

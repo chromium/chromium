@@ -471,16 +471,33 @@ AppListReorderDelegate::AppListReorderDelegate(AppListSyncableService* service)
 AppListReorderDelegate::~AppListReorderDelegate() = default;
 
 std::vector<reorder::ReorderParam>
-AppListReorderDelegate::GenerateReorderParams(
-    ash::AppListSortOrder order) const {
-  const AppListSyncableService::SyncItemMap& sync_item_map =
-      app_list_syncable_service_->sync_items();
+AppListReorderDelegate::GenerateReorderParamsForSyncItems(
+    ash::AppListSortOrder order,
+    const AppListSyncableService::SyncItemMap& sync_item_map) const {
   DCHECK_GT(sync_item_map.size(), 1);
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
       std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
           reorder::GenerateStringWrappersFromSyncItems(sync_item_map);
+      return GenerateReorderParamsImpl(order, &wrappers);
+    }
+    case ash::AppListSortOrder::kCustom:
+      NOTREACHED();
+      return std::vector<reorder::ReorderParam>();
+  }
+}
+
+std::vector<reorder::ReorderParam>
+AppListReorderDelegate::GenerateReorderParamsForAppListItems(
+    ash::AppListSortOrder order,
+    const std::vector<const ChromeAppListItem*>& app_list_items) {
+  DCHECK_GT(app_list_items.size(), 1);
+  switch (order) {
+    case ash::AppListSortOrder::kNameAlphabetical:
+    case ash::AppListSortOrder::kNameReverseAlphabetical: {
+      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
+          reorder::GenerateStringWrappersFromAppListItems(app_list_items);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kCustom:

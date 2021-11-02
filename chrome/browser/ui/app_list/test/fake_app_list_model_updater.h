@@ -65,6 +65,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
       const ChromeAppListItem& new_item) override;
   size_t BadgedItemCount() override;
   void OnSortRequested(ash::AppListSortOrder order) override {}
+  void OnSortRevertRequested() override {}
   void HandleSetPosition(std::string id,
                          const syncer::StringOrdinal& new_position,
                          ash::RequestPositionUpdateReason reason) override {}

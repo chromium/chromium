@@ -586,6 +586,15 @@ void AppListClientImpl::OnAppListSortRequested(int profile_id,
   requested_model_updater->OnSortRequested(order);
 }
 
+void AppListClientImpl::OnAppListSortRevertRequested(int profile_id) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->OnSortRevertRequested();
+}
+
 void AppListClientImpl::OnSetPositionRequested(
     int profile_id,
     std::string id,

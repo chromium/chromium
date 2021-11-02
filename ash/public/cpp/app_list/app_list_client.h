@@ -141,6 +141,10 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void OnAppListSortRequested(int profile_id,
                                       AppListSortOrder order) = 0;
 
+  // Invoked when the ash side requests to revert the app list temporary sort
+  // order (i.e. the order that has not been committed yet).
+  virtual void OnAppListSortRevertRequested(int profile_id) = 0;
+
   // Methods called from Ash to update app list items:
   virtual void OnSetPositionRequested(int profile_id,
                                       std::string id,

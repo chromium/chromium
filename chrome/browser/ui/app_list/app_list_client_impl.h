@@ -118,6 +118,7 @@ class AppListClientImpl
   void LoadIcon(int profile_id, const std::string& app_id) override;
   void OnAppListSortRequested(int profile_id,
                               ash::AppListSortOrder order) override;
+  void OnAppListSortRevertRequested(int profile_id) override;
   void OnSetPositionRequested(int profile_id,
                               std::string id,
                               const syncer::StringOrdinal& new_position,
