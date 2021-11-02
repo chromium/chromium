@@ -12,4 +12,8 @@ void RemovedResultsRanker::Rank(ResultsMap& results,
   // TODO(crbug.com/1263751): Implement.
 }
 
+void RemovedResultsRanker::Remove(ChromeSearchResult* result) {
+  // TODO(crbug.com/1263751): Implement.
+}
+
 }  // namespace app_list

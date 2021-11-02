@@ -47,6 +47,9 @@ class Ranker {
 
   // Called each time a user launches a result.
   virtual void Train(const LaunchData& launch) {}
+
+  // Called each time a user removes a result from the search results list.
+  virtual void Remove(ChromeSearchResult* result) {}
 };
 
 }  // namespace app_list

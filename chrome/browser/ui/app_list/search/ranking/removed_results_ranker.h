@@ -25,6 +25,8 @@ class RemovedResultsRanker : public Ranker {
   void Rank(ResultsMap& results,
             CategoriesMap& categories,
             ProviderType provider) override;
+
+  void Remove(ChromeSearchResult* result) override;
 };
 
 }  // namespace app_list

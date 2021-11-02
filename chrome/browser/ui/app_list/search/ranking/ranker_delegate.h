@@ -36,6 +36,7 @@ class RankerDelegate : public Ranker {
             CategoriesMap& categories,
             ProviderType provider) override;
   void Train(const LaunchData& launch) override;
+  void Remove(ChromeSearchResult* result) override;
 
  private:
   std::vector<std::unique_ptr<Ranker>> rankers_;

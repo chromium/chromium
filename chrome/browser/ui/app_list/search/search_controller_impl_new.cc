@@ -119,7 +119,17 @@ void SearchControllerImplNew::InvokeResultAction(
     ash::SearchResultActionType action) {
   if (!result)
     return;
-  result->InvokeAction(action);
+
+  if (result->result_type() == ash::AppListSearchResultType::kOmnibox) {
+    // Special case: Omnibox results.
+    // These are handled by the Omnibox autocomplete controller. The Omnibox is
+    // unique amongst our search providers in that it has a backend which
+    // supports result removal.
+    result->InvokeAction(action);
+  } else if (action == ash::SearchResultActionType::kRemove) {
+    // All other result removals are handled by the ranking system.
+    ranker_->Remove(result);
+  }
 }
 
 size_t SearchControllerImplNew::AddGroup(size_t max_results) {
