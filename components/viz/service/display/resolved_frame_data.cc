@@ -126,6 +126,10 @@ ResourceIdSet ResolvedFrameData::UpdateForActiveFrame(
           SetInvalid();
           return {};
         }
+
+        fixed.prewalk_quads.push_back(quad);
+      } else if (quad->material == DrawQuad::Material::kSurfaceContent) {
+        fixed.prewalk_quads.push_back(quad);
       }
 
       draw_quads.emplace_back(*quad);
