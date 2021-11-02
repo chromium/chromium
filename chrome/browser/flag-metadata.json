@@ -5171,14 +5171,9 @@
     "expiry_milestone": 99
   },
   {
-    "name": "tabgrid-context-menu-ios",
-    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "tabs-bulkactions-ios",
     "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 98
   },
   {
     "name": "terminal-ssh",
