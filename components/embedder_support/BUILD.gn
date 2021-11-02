@@ -29,6 +29,8 @@ static_library("browser_util") {
     "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/permissions",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
   ]

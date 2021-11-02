@@ -1537,6 +1537,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCORSNonWildcardRequestHeadersSupport,
     prefs::kCorsNonWildcardRequestHeadersSupport,
     base::Value::Type::BOOLEAN },
+  { key::kUserAgentClientHintsGREASEUpdateEnabled,
+    policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

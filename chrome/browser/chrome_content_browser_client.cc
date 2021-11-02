@@ -5799,7 +5799,8 @@ std::string ChromeContentBrowserClient::GetReducedUserAgent() {
 }
 
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata();
+  return embedder_support::GetUserAgentMetadata(
+      g_browser_process->local_state());
 }
 
 absl::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {

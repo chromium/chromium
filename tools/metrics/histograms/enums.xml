@@ -26839,6 +26839,7 @@ Called by update_document_policy_enum.py.-->
   <int value="921" label="CORSNonWildcardRequestHeadersSupport"/>
   <int value="922" label="RemoteAccessHostClipboardSizeBytes"/>
   <int value="923" label="RemoteAccessHostAllowRemoteSupportConnections"/>
+  <int value="924" label="UserAgentClientHintsGREASEUpdateEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

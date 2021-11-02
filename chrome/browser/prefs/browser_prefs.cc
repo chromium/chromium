@@ -958,6 +958,8 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       policy::policy_prefs::kTargetBlankImpliesNoOpener, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kWebSQLInThirdPartyContextEnabled, false);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled, true);
 #if defined(OS_ANDROID)
   registry->RegisterBooleanPref(policy::policy_prefs::kBackForwardCacheEnabled,
                                 true);
