@@ -5430,13 +5430,6 @@ const char kUIDebugToolsDescription[] =
     "Enables additional keyboard shortcuts to help debugging.";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kAuraWindowSubtreeCaptureName[] = "ChromeOS Window Subtree Capture";
-const char kAuraWindowSubtreeCaptureDescription[] =
-    "Enables capture of ChromeOS Aura windows using subtree capture. When "
-    "disabled, the legacy slow capturer will be used.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 const char kWebrtcPipeWireCapturerName[] = "WebRTC PipeWire support";
 const char kWebrtcPipeWireCapturerDescription[] =

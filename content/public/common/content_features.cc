@@ -1148,16 +1148,6 @@ const base::FeatureParam<bool>
         kSendWebUIJavaScriptErrorReportsSendToProductionVariation, true};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Controls whether the new subtree capture path is used for window capturing on
-// ChromeOS Ash, instead of the legacy SlowWindowCapturerChromeOS
-// implementation.
-// TODO(crbug.com/1210549): remove once we have determined the new path is
-// stable.
-const base::Feature kAuraWindowSubtreeCapture{"AuraWindowSubtreeCapture",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 // Controls whether the PipeWire support for screen capturing is enabled on the
 // Wayland display server.

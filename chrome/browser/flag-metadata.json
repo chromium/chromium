@@ -1438,11 +1438,6 @@
     "expiry_milestone": 81
   },
   {
-    "name": "enable-aura-window-subtree-capture",
-    "owners": [ "jophba" ],
-    "expiry_milestone": 102
-  },
-  {
     "name": "enable-autofill-account-wallet-storage",
     "owners": [ "treib", "jsaul@google.com", "butter-team@google.com" ],
     "expiry_milestone": 97

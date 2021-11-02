@@ -2790,12 +2790,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kReaderModeDiscoverabilityVariations,
                                     "ReaderMode")},
 #endif  // !defined(OS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-aura-window-subtree-capture",
-     flag_descriptions::kAuraWindowSubtreeCaptureName,
-     flag_descriptions::kAuraWindowSubtreeCaptureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAuraWindowSubtreeCapture)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(WEBRTC_USE_PIPEWIRE)
     {"enable-webrtc-pipewire-capturer",
      flag_descriptions::kWebrtcPipeWireCapturerName,

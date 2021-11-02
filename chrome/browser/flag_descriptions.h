@@ -3171,11 +3171,6 @@ extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kAuraWindowSubtreeCaptureName[];
-extern const char kAuraWindowSubtreeCaptureDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 extern const char kWebrtcPipeWireCapturerName[];
 extern const char kWebrtcPipeWireCapturerDescription[];

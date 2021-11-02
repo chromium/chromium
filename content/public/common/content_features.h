@@ -303,10 +303,6 @@ CONTENT_EXPORT extern const base::FeatureParam<bool>
     kWebUIJavaScriptErrorReportsSendToProductionParam;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-CONTENT_EXPORT extern const base::Feature kAuraWindowSubtreeCapture;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 CONTENT_EXPORT extern const base::Feature kWebRtcPipeWireCapturer;
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
