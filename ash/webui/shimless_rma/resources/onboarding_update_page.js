@@ -13,7 +13,7 @@ import './icons.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
+import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
@@ -49,6 +49,12 @@ export class OnboardingUpdatePageElement extends PolymerElement {
     return {
       /** @protected */
       currentVersionText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected */
+      updateNoticeMessage_: {
         type: String,
         value: '',
       },
@@ -102,6 +108,18 @@ export class OnboardingUpdatePageElement extends PolymerElement {
 
     this.shimlessRmaService_.observeOsUpdateProgress(
         this.osUpdateObserverReceiver_.$.bindNewPipeAndPassRemote());
+
+    this.isCompliant_ = false;
+    /** @protected {?HardwareVerificationStatusObserverReceiver} */
+    this.hwVerificationObserverReceiver_ =
+        new HardwareVerificationStatusObserverReceiver(
+            /**
+             * @type {!HardwareVerificationStatusObserverInterface}
+             */
+            (this));
+
+    this.shimlessRmaService_.observeHardwareVerificationStatus(
+        this.hwVerificationObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   /** @override */
@@ -121,9 +139,9 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   getCurrentVersionText_() {
     this.shimlessRmaService_.getCurrentOsVersion().then((res) => {
       this.currentVersion_ = res.version;
+      // TODO(gavindodd): i18n string
       this.currentVersionText_ = `Current version ${this.currentVersion_}`;
     });
-    // TODO(joonbug): i18n string
   }
 
   /** @private */
@@ -132,14 +150,15 @@ export class OnboardingUpdatePageElement extends PolymerElement {
       if (res && res.updateAvailable) {
         this.updateAvailable_ = true;
         this.updateVersion_ = res.version;
-        // TODO(joonbug): i18n string
+        // TODO(gavindodd): i18n string
         this.currentVersionText_ =
             `Current version ${this.currentVersion_} is out of date`;
       } else {
-        // TODO(joonbug): i18n string
+        // TODO(gavindodd): i18n string
         this.currentVersionText_ =
             `Current version ${this.currentVersion_} is up to date`;
       }
+      this.setUpdateNoticeMessage_();
     });
   }
 
@@ -165,9 +184,39 @@ export class OnboardingUpdatePageElement extends PolymerElement {
 
   /**
    * @protected
+   * @return {string}
    */
+  getUpdateNoticeIcon_() {
+    // TODO(gavindodd): Replace wifi with check icon.
+    return this.updateAvailable_ ? 'shimless-icon:info' : 'shimless-icon:wifi';
+  }
+
+  /** @protected */
   updateCheckButtonHidden_() {
     return !this.networkAvailable || this.updateAvailable_;
+  }
+
+  /** @private */
+  setUpdateNoticeMessage_() {
+    // TODO(gavindodd): i18n string
+    if (!this.isCompliant_) {
+      this.updateNoticeMessage_ = 'An unrecognized component has been found. ' +
+          'Unrecognized devices will not be configured correctly and may be ' +
+          'unusable. Updating to the latest version of Chrome OS may resolve ' +
+          'this issue.';
+    } else if (this.updateAvailable_) {
+      // TODO(gavindodd): Do we need a check that the current major version is
+      // within n of the installed version to switch between this message and
+      // 'Chrome OS needs an additional update to get fully up to date.'?
+      this.updateNoticeMessage_ = 'If Chrome OS is out of date, Shimless RMA ' +
+          'process may have been updated since this version was installed.';
+    } else {
+      // Note: In current implementation this should not be reached, but it is
+      // still a perfectly valid state.
+      // If there was ever an update that did not require a reboot this would
+      // be reached.
+      this.updateNoticeMessage_ = '';
+    }
   }
 
   /** @return {!Promise<StateResult>} */
@@ -198,6 +247,17 @@ export class OnboardingUpdatePageElement extends PolymerElement {
     // TODO(gavindodd): i18n string
     this.updateProgressMessage_ = 'OS update progress received ' +
         operationName[operation] + ' ' + Math.round(progress * 100) + '%';
+  }
+
+  /**
+   * Implements
+   * HardwareVerificationStatusObserver.onHardwareVerificationResult()
+   * @param {boolean} isCompliant
+   * @param {string} errorMessage
+   */
+  onHardwareVerificationResult(isCompliant, errorMessage) {
+    this.isCompliant_ = isCompliant;
+    this.setUpdateNoticeMessage_();
   }
 }
 
