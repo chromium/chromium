@@ -3711,11 +3711,21 @@ RenderWidgetHostImpl* WebContentsImpl::GetKeyboardLockWidget() {
   return keyboard_lock_widget_;
 }
 
-void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
+bool WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
     blink::mojom::FrameVisibility visibility) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::OnRenderFrameProxyVisibilityChanged",
                         "visibility", static_cast<int>(visibility));
+
+  // Check that we are responsible for the RenderFrameProxyHost by checking that
+  // its FrameTreeNode matches our `frame_tree_` root. Otherwise this is not a
+  // visibility change that affects all frames in an inner WebContents.
+  if (render_frame_proxy_host->frame_tree_node() != frame_tree_.root())
+    return false;
+
+  DCHECK(GetOuterWebContents());
+
   switch (visibility) {
     case blink::mojom::FrameVisibility::kRenderedInViewport:
       WasShown();
@@ -3727,6 +3737,7 @@ void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
       WasOccluded();
       break;
   }
+  return true;
 }
 
 FrameTree* WebContentsImpl::CreateNewWindow(

@@ -200,7 +200,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   RenderWidgetHostViewBase* GetRenderWidgetHostView() const;
 
   // Returns whether this manager is a main frame and belongs to a FrameTreeNode
-  // that belongs to an inner WebContents.
+  // that belongs to an inner WebContents or inner FrameTree.
   bool IsMainFrameForInnerDelegate();
 
   // If this is a RenderFrameHostManager for a main frame, this method returns
