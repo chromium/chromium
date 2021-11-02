@@ -361,7 +361,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
       UIAlertAction* action =
           [UIAlertAction actionWithTitle:title
                                    style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction* action) {
+                                 handler:^(UIAlertAction* theAction) {
                                    [dataManager deleteProfile:profile];
                                  }];
       [alertController addAction:action];
@@ -431,7 +431,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
       UIAlertAction* action =
           [UIAlertAction actionWithTitle:title
                                    style:UIAlertActionStyleDefault
-                                 handler:^(UIAlertAction* action) {
+                                 handler:^(UIAlertAction* theAction) {
                                    [dataManager deletePassword:password];
                                  }];
       [alertController addAction:action];
@@ -863,7 +863,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
           [UIAction actionWithTitle:@"Cancel"
                               image:nil
                          identifier:nil
-                            handler:^(id _){
+                            handler:^(id ignore){
                             }]
         ];
         NSString* menuTitle =
