@@ -33,7 +33,7 @@ import("//build/rust/rust_source_set.gni")
 #   rs_crate_root
 #   rs_features
 #     Rust parameters. Same meaning as in 'rust_source_set' without the
-#     'rs_' prefix, i.e. rs_configs here means the same as 'configs' in
+#     'rs_' prefix, e.g. rs_configs here means the same as 'configs' in
 #     rust_source_set.
 #
 # In the event that Rust is not enabled in the build, this will produce a
