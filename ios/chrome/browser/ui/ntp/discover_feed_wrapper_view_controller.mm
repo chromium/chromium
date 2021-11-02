@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -30,6 +31,7 @@
           _contentCollectionView = static_cast<UICollectionView*>(view);
         }
       }
+      DCHECK(_contentCollectionView);
     }
   }
   return self;
@@ -40,7 +42,7 @@
 
   // Configure appropriate collection view based on feed visibility. If
   // |discoverFeed| exists, then the feed must be enabled and visible.
-  if (self.discoverFeed) {
+  if (self.discoverFeed && self.contentCollectionView) {
     [self configureDiscoverFeedAsWrapper];
   } else {
     [self configureEmptyCollectionAsWrapper];

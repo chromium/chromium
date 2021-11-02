@@ -315,6 +315,11 @@ extern const char kModernTabStripDescription[];
 extern const char kNewOverflowMenuName[];
 extern const char kNewOverflowMenuDescription[];
 
+// Title and description for temporary bug fix to broken NTP view hierarhy.
+// TODO(crbug.com/1262536): Remove this when fixed.
+extern const char kNTPViewHierarchyRepairName[];
+extern const char kNTPViewHierarchyRepairDescription[];
+
 // Title and description for the flag to use the previous sync screen in the new
 // FRE.
 extern const char kOldSyncStringFREName[];

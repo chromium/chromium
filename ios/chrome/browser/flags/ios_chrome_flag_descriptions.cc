@@ -362,6 +362,10 @@ const char kModernTabStripDescription[] =
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 
+const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
+const char kNTPViewHierarchyRepairDescription[] =
+    "Checks if NTP view hierarchy is broken and fixes it if necessary.";
+
 const char kOldSyncStringFREName[] = "Use previous sync screen strings";
 const char kOldSyncStringFREDescription[] =
     "When enabled, the strings of the previous sync screen are used in the "

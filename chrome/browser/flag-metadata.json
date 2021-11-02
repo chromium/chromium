@@ -3961,6 +3961,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "ntp-view-hierarchy-repair",
+    "owners": [ "adamta", "sczs" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "offline-indicator-v2",
     "owners": [ "sinansahin@google.com", "twellington", "offline-dev" ],
     "expiry_milestone": 90

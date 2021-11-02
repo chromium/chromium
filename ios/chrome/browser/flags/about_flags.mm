@@ -804,7 +804,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCommercePriceTrackingDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kCommercePriceTracking,
                                     kCommercePriceTrackingVariations,
-                                    "CommercePriceTracking")}};
+                                    "CommercePriceTracking")},
+    {"ntp-view-hierarchy-repair",
+     flag_descriptions::kNTPViewHierarchyRepairName,
+     flag_descriptions::kNTPViewHierarchyRepairDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNTPViewHierarchyRepair)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

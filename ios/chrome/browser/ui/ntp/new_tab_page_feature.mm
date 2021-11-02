@@ -32,10 +32,17 @@ const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
 const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
     "DiscoverFeedSRSPreloadTemplatesEnabled";
 
+const base::Feature kNTPViewHierarchyRepair{"NTPViewHierarchyRepair",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
 
 bool IsDiscoverFeedAppFlowsEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedAppFlows);
+}
+
+bool IsNTPViewHierarchyRepairEnabled() {
+  return base::FeatureList::IsEnabled(kNTPViewHierarchyRepair);
 }

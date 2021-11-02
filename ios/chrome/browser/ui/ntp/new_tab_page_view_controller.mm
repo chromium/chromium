@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
@@ -99,6 +100,10 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
   DCHECK(self.discoverFeedWrapperViewController);
   DCHECK(self.contentSuggestionsViewController);
+
+  // TODO(crbug.com/1262536): Remove this when bug is fixed.
+  [self.discoverFeedWrapperViewController loadViewIfNeeded];
+  [self.contentSuggestionsViewController loadViewIfNeeded];
 
   // Prevent the NTP from spilling behind the toolbar and tab strip.
   self.view.clipsToBounds = YES;
@@ -660,10 +665,16 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // Applies constraints to the NTP collection view, along with the constraints
 // for the content suggestions within it.
 - (void)applyCollectionViewConstraints {
-  UIView* containerView =
-      [self.ntpContentDelegate isFeedVisible]
-          ? self.discoverFeedWrapperViewController.discoverFeed.view
-          : self.view;
+  UIView* containerView;
+  if ([self.ntpContentDelegate isFeedVisible]) {
+    // TODO(crbug.com/1262536): Remove this when the bug is fixed.
+    if (IsNTPViewHierarchyRepairEnabled()) {
+      [self verifyNTPViewHierarchy];
+    }
+    containerView = self.discoverFeedWrapperViewController.discoverFeed.view;
+  } else {
+    containerView = self.view;
+  }
   UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
   contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -707,6 +718,35 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // omnibox, so they would both show.
 - (BOOL)collectionViewHasLoaded {
   return self.collectionView.contentSize.height > 0;
+}
+
+// TODO(crbug.com/1262536): Temporary fix to compensate for the view hierarchy
+// sometimes breaking. Use DCHECKs to investigate what exactly is broken and
+// find a fix.
+- (void)verifyNTPViewHierarchy {
+  // The view hierarchy with the feed enabled should be: self.view ->
+  // self.discoverFeedWrapperViewController.view ->
+  // self.discoverFeedWrapperViewController.discoverFeed.view ->
+  // self.collectionView -> self.contentSuggestionsViewController.view.
+  [self ensureView:self.contentSuggestionsViewController.view
+       isSubviewOf:self.collectionView];
+  [self ensureView:self.collectionView
+       isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed.view];
+  [self ensureView:self.discoverFeedWrapperViewController.discoverFeed.view
+       isSubviewOf:self.discoverFeedWrapperViewController.view];
+  [self ensureView:self.discoverFeedWrapperViewController.view
+       isSubviewOf:self.view];
+}
+
+// Ensures that |subView| is a descendent of |parentView|. If not, logs a DCHECK
+// and adds the subview.
+// TODO(crbug.com/1262536): Remove this once bug is fixed.
+- (void)ensureView:(UIView*)subView isSubviewOf:(UIView*)parentView {
+  if (![parentView.subviews containsObject:subView]) {
+    DCHECK([parentView.subviews containsObject:subView]);
+    [subView removeFromSuperview];
+    [parentView addSubview:subView];
+  }
 }
 
 #pragma mark - Setters
