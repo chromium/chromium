@@ -258,9 +258,15 @@ class CONTENT_EXPORT FrameTree {
   // frame tree, starting from |subtree_root|.
   NodeRange SubtreeNodes(FrameTreeNode* subtree_root);
 
+  // Returns a range to iterate over all FrameTreeNodes in this frame tree, as
+  // well as any FrameTreeNodes of inner frame trees. Note that this includes
+  // inner frame trees of inner WebContents as well.
+  NodeRange NodesIncludingInnerTreeNodes();
+
   // Returns a range to iterate over all FrameTreeNodes in a subtree, starting
   // from, but not including |parent|, as well as any FrameTreeNodes of inner
-  // frame trees.
+  // frame trees. Note that this includes inner frame trees of inner WebContents
+  // as well.
   static NodeRange SubtreeAndInnerTreeNodes(RenderFrameHostImpl* parent);
 
   // Adds a new child frame to the frame tree. |process_id| is required to

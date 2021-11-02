@@ -317,14 +317,13 @@ PrerenderHost* PrerenderHostRegistry::FindReservedHostById(
   return iter->second.get();
 }
 
-std::vector<RenderFrameHostImpl*>
-PrerenderHostRegistry::GetPrerenderedMainFrames() {
-  std::vector<RenderFrameHostImpl*> result;
+std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
+  std::vector<FrameTree*> result;
   for (auto& i : prerender_host_by_frame_tree_node_id_) {
-    result.push_back(i.second->GetPrerenderedMainFrameHost());
+    result.push_back(&i.second->GetPrerenderFrameTree());
   }
   for (auto& i : reserved_prerender_host_by_frame_tree_node_id_) {
-    result.push_back(i.second->GetPrerenderedMainFrameHost());
+    result.push_back(&i.second->GetPrerenderFrameTree());
   }
   return result;
 }

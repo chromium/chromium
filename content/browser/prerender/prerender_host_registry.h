@@ -133,9 +133,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // does not match any reserved host.
   PrerenderHost* FindReservedHostById(int frame_tree_node_id);
 
-  // Returns the main frames of FrameTrees owned by this registry's prerender
-  // hosts.
-  std::vector<RenderFrameHostImpl*> GetPrerenderedMainFrames();
+  // Returns the FrameTrees owned by this registry's prerender hosts.
+  std::vector<FrameTree*> GetPrerenderFrameTrees();
 
   // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
   // the URL doesn't match any non-reserved host.

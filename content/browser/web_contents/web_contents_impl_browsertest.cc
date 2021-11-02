@@ -4102,6 +4102,27 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                   CollectAllRenderFrameHosts(inner_contents->GetMainFrame())));
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       ForEachFrameTreeInnerContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  auto* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
+          web_contents->GetMainFrame()->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+
+  // Intentionally exclude inner frame trees based on multi-WebContents.
+  web_contents->ForEachFrameTree(
+      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
+        EXPECT_NE(frame_tree, inner_contents->GetFrameTree());
+      }));
+}
+
 namespace {
 
 class LoadingObserver : public WebContentsObserver {

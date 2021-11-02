@@ -1964,6 +1964,10 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
 
   // Potentially include our FrameTreeNode's speculative RenderFrameHost, but
   // only if |this| is current in its FrameTree.
+  // TODO(1264145): Avoid having a RenderFrameHost access its FrameTreeNode's
+  // speculative RenderFrameHost by moving
+  // ForEachRenderFrameHostIncludingSpeculative from RenderFrameHostImpl or
+  // possibly removing it entirely.
   if (include_speculative && frame_tree_node()->current_frame_host() == this) {
     RenderFrameHostImpl* speculative_frame_host =
         frame_tree_node()->render_manager()->speculative_frame_host();

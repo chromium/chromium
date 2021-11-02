@@ -1625,6 +1625,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
             rfh_sub_1_1->GetOutermostMainFrameOrEmbedder());
   EXPECT_EQ(prerendered_render_frame_host,
             rfh_sub_2->GetOutermostMainFrameOrEmbedder());
+
+  // WebContentsImpl::ForEachFrameTree should include prerenders.
+  bool visited_prerender_frame_tree = false;
+  web_contents_impl()->ForEachFrameTree(
+      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
+        if (frame_tree == prerendered_render_frame_host->frame_tree()) {
+          visited_prerender_frame_tree = true;
+        }
+      }));
+  EXPECT_TRUE(visited_prerender_frame_tree);
 }
 
 // Tests that a prerendering page cannot change the visible URL of the

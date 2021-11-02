@@ -65,30 +65,14 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
   EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                          "fencedframe.test", "/title1.html")));
   RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
-  RenderFrameHostImplWrapper inner_fenced_frame_rfh(
+  RenderFrameHostImplWrapper fenced_frame_rfh(
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
                                                    main_url));
-  FrameTreeNode* fenced_frame_root_node =
-      inner_fenced_frame_rfh->frame_tree_node();
-
-  // Test that the outer => inner delegate mechanism works correctly.
-  EXPECT_THAT(
-      CollectAllRenderFrameHosts(primary_rfh.get()),
-      testing::ElementsAre(primary_rfh.get(), inner_fenced_frame_rfh.get()));
-
-  // Test that the inner => outer delegate mechanism works correctly.
-  EXPECT_EQ(nullptr, inner_fenced_frame_rfh->GetParent());
-  EXPECT_EQ(inner_fenced_frame_rfh->GetParentOrOuterDocument(),
-            primary_rfh.get());
-  EXPECT_EQ(inner_fenced_frame_rfh->GetOutermostMainFrame(), primary_rfh.get());
-  EXPECT_EQ(inner_fenced_frame_rfh->GetParentOrOuterDocumentOrEmbedder(),
-            primary_rfh.get());
-  EXPECT_EQ(inner_fenced_frame_rfh->GetOutermostMainFrameOrEmbedder(),
-            primary_rfh.get());
+  FrameTreeNode* fenced_frame_root_node = fenced_frame_rfh->frame_tree_node();
 
   // Test `RenderFrameHostImpl::IsInPrimaryMainFrame`.
   EXPECT_TRUE(primary_rfh->IsInPrimaryMainFrame());
-  EXPECT_FALSE(inner_fenced_frame_rfh->IsInPrimaryMainFrame());
+  EXPECT_FALSE(fenced_frame_rfh->IsInPrimaryMainFrame());
 
   // Test `FrameTreeNode::IsFencedFrameRoot()`.
   EXPECT_FALSE(
@@ -104,10 +88,10 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromScriptAndDestroy) {
 
   EXPECT_TRUE(ExecJs(primary_rfh.get(),
                      "document.querySelector('fencedframe').remove();"));
-  inner_fenced_frame_rfh.WaitUntilRenderFrameDeleted();
+  fenced_frame_rfh.WaitUntilRenderFrameDeleted();
 
   EXPECT_TRUE(primary_rfh->GetFencedFrames().empty());
-  EXPECT_TRUE(inner_fenced_frame_rfh.IsDestroyed());
+  EXPECT_TRUE(fenced_frame_rfh.IsDestroyed());
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, CreateFromParser) {
@@ -140,22 +124,55 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, Navigation) {
       .Times(0);
 
   RenderFrameHostImpl* primary_rfh = primary_main_frame_host();
-  RenderFrameHost* inner_fenced_frame_rfh =
+  RenderFrameHost* fenced_frame_rfh =
       fenced_frame_test_helper().CreateFencedFrame(primary_rfh, main_url);
 
   const GURL fenced_frame_url = embedded_test_server()->GetURL(
       "fencedframe.test", "/fenced_frames/title1.html");
-  inner_fenced_frame_rfh =
-      fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
-          inner_fenced_frame_rfh, fenced_frame_url);
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, fenced_frame_url);
 
   // Test that a fenced frame navigation does not impact the primary main
   // frame...
   EXPECT_EQ(main_url, primary_rfh->GetLastCommittedURL());
   // ... but should target the correct frame.
-  EXPECT_EQ(fenced_frame_url, inner_fenced_frame_rfh->GetLastCommittedURL());
+  EXPECT_EQ(fenced_frame_url, fenced_frame_rfh->GetLastCommittedURL());
   EXPECT_EQ(url::Origin::Create(fenced_frame_url),
-            inner_fenced_frame_rfh->GetLastCommittedOrigin());
+            fenced_frame_rfh->GetLastCommittedOrigin());
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, FrameIteration) {
+  const GURL main_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "fencedframe.test", "/title1.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+  RenderFrameHostImplWrapper fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   main_url));
+
+  // Test that the outer => inner delegate mechanism works correctly.
+  EXPECT_THAT(CollectAllRenderFrameHosts(primary_rfh.get()),
+              testing::ElementsAre(primary_rfh.get(), fenced_frame_rfh.get()));
+
+  // Test that the inner => outer delegate mechanism works correctly.
+  EXPECT_EQ(nullptr, fenced_frame_rfh->GetParent());
+  EXPECT_EQ(fenced_frame_rfh->GetParentOrOuterDocument(), primary_rfh.get());
+  EXPECT_EQ(fenced_frame_rfh->GetOutermostMainFrame(), primary_rfh.get());
+  EXPECT_EQ(fenced_frame_rfh->GetParentOrOuterDocumentOrEmbedder(),
+            primary_rfh.get());
+  EXPECT_EQ(fenced_frame_rfh->GetOutermostMainFrameOrEmbedder(),
+            primary_rfh.get());
+
+  // WebContentsImpl::ForEachFrameTree should include fenced frames.
+  bool visited_fenced_frame_frame_tree = false;
+  web_contents()->ForEachFrameTree(
+      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
+        if (frame_tree == fenced_frame_rfh->frame_tree()) {
+          visited_fenced_frame_frame_tree = true;
+        }
+      }));
+  EXPECT_TRUE(visited_fenced_frame_frame_tree);
 }
 
 namespace {

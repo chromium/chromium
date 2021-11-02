@@ -124,6 +124,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // This must be called after StartPrerendering() and before Activate().
   RenderFrameHostImpl* GetPrerenderedMainFrameHost();
 
+  // Returns the frame tree for the prerendered page `this` is hosting.
+  FrameTree& GetPrerenderFrameTree();
+
   // Tells the reason of the destruction of this host. PrerenderHostRegistry
   // uses this before abandoning the host.
   void RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,

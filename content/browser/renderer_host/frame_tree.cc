@@ -345,6 +345,11 @@ FrameTree::NodeRange FrameTree::SubtreeNodes(FrameTreeNode* subtree_root) {
                    /* should_descend_into_inner_trees */ false);
 }
 
+FrameTree::NodeRange FrameTree::NodesIncludingInnerTreeNodes() {
+  return NodeRange({root_}, nullptr,
+                   /* should_descend_into_inner_trees */ true);
+}
+
 FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
     RenderFrameHostImpl* parent) {
   std::vector<FrameTreeNode*> starting_nodes;
