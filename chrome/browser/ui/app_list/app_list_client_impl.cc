@@ -190,13 +190,14 @@ void AppListClientImpl::OpenSearchResult(
   search_controller_->OpenResult(result, event_flags);
 }
 
-void AppListClientImpl::InvokeSearchResultAction(const std::string& result_id,
-                                                 int action_index) {
+void AppListClientImpl::InvokeSearchResultAction(
+    const std::string& result_id,
+    ash::SearchResultActionType action) {
   if (!search_controller_)
     return;
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
   if (result)
-    search_controller_->InvokeResultAction(result, action_index);
+    search_controller_->InvokeResultAction(result, action);
 }
 
 void AppListClientImpl::GetSearchResultContextMenuModel(

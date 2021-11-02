@@ -47,7 +47,7 @@ class OmniboxResult : public ChromeSearchResult, public BitmapFetcherDelegate {
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-  void InvokeAction(int action_index) override;
+  void InvokeAction(ash::SearchResultActionType action) override;
 
   // BitmapFetcherDelegate:
   void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override;

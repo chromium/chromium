@@ -1415,9 +1415,9 @@ void AppListControllerImpl::OpenSearchResult(
 
 void AppListControllerImpl::InvokeSearchResultAction(
     const std::string& result_id,
-    int action_index) {
+    SearchResultActionType action) {
   if (client_)
-    client_->InvokeSearchResultAction(result_id, action_index);
+    client_->InvokeSearchResultAction(result_id, action);
 }
 
 void AppListControllerImpl::GetSearchResultContextMenuModel(

@@ -114,11 +114,12 @@ void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
   }
 }
 
-void SearchControllerImplNew::InvokeResultAction(ChromeSearchResult* result,
-                                                 int action_index) {
+void SearchControllerImplNew::InvokeResultAction(
+    ChromeSearchResult* result,
+    ash::SearchResultActionType action) {
   if (!result)
     return;
-  result->InvokeAction(action_index);
+  result->InvokeAction(action);
 }
 
 size_t SearchControllerImplNew::AddGroup(size_t max_results) {

@@ -242,13 +242,14 @@ void OmniboxResult::Remove() {
   autocomplete_controller_->DeleteMatch(match_);
 }
 
-void OmniboxResult::InvokeAction(int action_index) {
+void OmniboxResult::InvokeAction(ash::SearchResultActionType action) {
   DCHECK(is_zero_suggestion_);
-  switch (ash::GetSearchResultActionType(action_index)) {
+  switch (action) {
     case ash::SearchResultActionType::kRemove:
       Remove();
       break;
-    default:
+    case ash::SearchResultActionType::kAppend:
+    case ash::SearchResultActionType::kSearchResultActionTypeMax:
       NOTREACHED();
   }
 }
