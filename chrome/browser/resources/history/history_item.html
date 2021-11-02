@@ -134,6 +134,10 @@
         clip: rect(auto 999px 500px -5px); /* Clip the top edge. */
       }
 
+      :host-context([enable-branding-update]):host([is-card-start]) #background-clip {
+        clip: auto;
+      }
+
       #background {
         background-color: var(--cr-card-background-color);
         bottom: 0;
