@@ -3,20 +3,21 @@ import("//third_party/protobuf/proto_library.gni")
 
 config("maldoca_flags") {
   cflags = [
-    "-Wno-sign-compare",
-    "-Wno-error=unreachable-code",
-    "-Wno-unused-private-field",
     "-Wno-c++98-compat-pedantic",
     "-Wno-comment",
+    "-Wno-error=unreachable-code",
     "-Wno-ignored-qualifiers",
+    "-Wno-shadow",
+    "-Wno-sign-compare",
     "-Wno-unused-const-variable",
-    "-Wno-unused-result"
+    "-Wno-unused-private-field",
+    "-Wno-unused-result",
   ]
-  defines = ["MALDOCA_CHROME=1"]
+  defines = [ "MALDOCA_CHROME=1" ]
 }
 
 config("maldoca_chromium_config") {
-  defines = ["MALDOCA_IN_CHROMIUM"]
+  defines = [ "MALDOCA_IN_CHROMIUM" ]
 }
 
 static_library("zlibwrapper") {
@@ -35,7 +36,7 @@ static_library("zlibwrapper") {
   deps = [
     ":maldoca-base",
     "//base",
-    "//third_party/zlib:zlib"
+    "//third_party/zlib:zlib",
   ]
 
   configs += [
@@ -46,13 +47,13 @@ static_library("zlibwrapper") {
 
 proto_library("feature_proto") {
   proto_in_dir = "//third_party/maldoca/src/third_party/tensorflow_protos"
-  sources = ["${proto_in_dir}/tensorflow/core/example/feature.proto"]
+  sources = [ "${proto_in_dir}/tensorflow/core/example/feature.proto" ]
 }
 
 proto_library("example_proto") {
   proto_in_dir = "//third_party/maldoca/src/third_party/tensorflow_protos"
-  sources = ["${proto_in_dir}/tensorflow/core/example/example.proto"]
-  link_deps = [":feature_proto"]
+  sources = [ "${proto_in_dir}/tensorflow/core/example/example.proto" ]
+  link_deps = [ ":feature_proto" ]
 }
 
 proto_library("maldoca-pdf_parser-protos") {
@@ -67,13 +68,13 @@ proto_library("maldoca-pdf_parser-protos") {
     "${proto_in_dir}/maldoca/pdf_parser/proto/pdfium_result.proto",
   ]
 
-  import_dirs = ["//third_party/tflite/src/"]
-  link_deps = [":example_proto"]
+  import_dirs = [ "//third_party/tflite/src/" ]
+  link_deps = [ ":example_proto" ]
 }
 
 proto_library("maldoca-antivirus-protos") {
   proto_in_dir = "src"
-  sources = ["${proto_in_dir}/maldoca/vba/antivirus/vba_feature.proto"]
+  sources = [ "${proto_in_dir}/maldoca/vba/antivirus/vba_feature.proto" ]
 }
 
 proto_library("maldoca-ole-protos") {
@@ -87,12 +88,11 @@ proto_library("maldoca-ole-protos") {
     "${proto_in_dir}/maldoca/ole/proto/ooxml_to_proto_settings.proto",
     "${proto_in_dir}/maldoca/ole/proto/vba_extraction.proto",
   ]
-
 }
 
 proto_library("maldoca-base-protos") {
   proto_in_dir = "src"
-  sources = ["${proto_in_dir}/maldoca/base/status_proto.proto"]
+  sources = [ "${proto_in_dir}/maldoca/base/status_proto.proto" ]
 }
 
 proto_library("maldoca-service-protos") {
@@ -103,9 +103,9 @@ proto_library("maldoca-service-protos") {
     "${proto_in_dir}/maldoca/service/proto/exported_features.proto",
     "${proto_in_dir}/maldoca/service/proto/maldoca_service.proto",
     "${proto_in_dir}/maldoca/service/proto/parsed_document.proto",
-    "${proto_in_dir}/maldoca/service/proto/processing_config.proto"
+    "${proto_in_dir}/maldoca/service/proto/processing_config.proto",
   ]
-  import_dirs = ["//third_party/tflite/src/"]
+  import_dirs = [ "//third_party/tflite/src/" ]
   link_deps = [
     ":example_proto",
     ":maldoca-antivirus-protos",
@@ -137,11 +137,11 @@ static_library("maldoca-base") {
     "src/maldoca/base/statusor.h",
     "src/maldoca/base/utf8/unicodetext.h",
   ]
-  include_dirs = ["//third_party/maldoca/src/"]
+  include_dirs = [ "//third_party/maldoca/src/" ]
 
   public_deps = [
-    "//base",
     ":maldoca-base-protos",
+    "//base",
   ]
 
   deps = [
@@ -177,12 +177,14 @@ source_set("maldoca-ole") {
     "src/maldoca/ole/ole_helper.h",
     "src/maldoca/ole/ole_to_proto.cc",
     "src/maldoca/ole/ole_to_proto.h",
+
     # Should only be used for debugging
     # "src/maldoca/ole/ole_to_proto_cli.cc",
     "src/maldoca/ole/ooxml_properties_extract.cc",
     "src/maldoca/ole/ooxml_properties_extract.h",
     "src/maldoca/ole/ooxml_to_proto.cc",
     "src/maldoca/ole/ooxml_to_proto.h",
+
     # Should only be used for debugging
     # "src/maldoca/ole/ooxml_to_proto_cli.cc",
     "src/maldoca/ole/oss_utils.cc",
@@ -199,6 +201,7 @@ source_set("maldoca-ole") {
     "src/maldoca/ole/vba.h",
     "src/maldoca/ole/vba_extract.cc",
     "src/maldoca/ole/vba_extract.h",
+
     # Should only be used for debugging
     # "src/maldoca/ole/vba_extractor.cc",
   ]
@@ -211,11 +214,11 @@ source_set("maldoca-ole") {
   ]
 
   public_deps = [
-    "//base",
     ":example_proto",
     ":maldoca-base",
     ":maldoca-ole-protos",
     ":maldoca-public-headers",
+    "//base",
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
@@ -261,7 +264,7 @@ source_set("maldoca-public-headers") {
 
   configs += [
     ":maldoca_chromium_config",
-    ":maldoca_flags"
+    ":maldoca_flags",
   ]
 }
 
@@ -280,7 +283,7 @@ static_library("maldoca") {
     "//third_party/boringssl",
     "//third_party/libxml",
     "//third_party/protobuf:protobuf_lite",
-    "//third_party/re2"
+    "//third_party/re2",
   ]
 
   public_deps = [
@@ -290,7 +293,7 @@ static_library("maldoca") {
     ":maldoca-service-protos",
   ]
 
-  include_dirs = ["//third_party/maldoca/src/"]
+  include_dirs = [ "//third_party/maldoca/src/" ]
 
   public_configs = [
     ":maldoca_chromium_config",
@@ -299,12 +302,16 @@ static_library("maldoca") {
 }
 
 fuzzer_test("process_doc_fuzzer") {
-  sources = ["//third_party/maldoca/src/maldoca/service/common/fuzz_process_doc.cc"]
-  include_dirs = ["//third_party/maldoca/src/"]
+  sources =
+      [ "//third_party/maldoca/src/maldoca/service/common/fuzz_process_doc.cc" ]
+  include_dirs = [ "//third_party/maldoca/src/" ]
   deps = [
     ":maldoca",
     "//third_party/abseil-cpp:absl",
   ]
 
-  additional_configs = [":maldoca_flags", ":maldoca_chromium_config"]
+  additional_configs = [
+    ":maldoca_flags",
+    ":maldoca_chromium_config",
+  ]
 }
