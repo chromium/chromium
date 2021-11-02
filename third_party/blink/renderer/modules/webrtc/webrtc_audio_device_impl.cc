@@ -307,47 +307,6 @@ bool WebRtcAudioDeviceImpl::Recording() const {
   return recording_;
 }
 
-int32_t WebRtcAudioDeviceImpl::SetMicrophoneVolume(uint32_t volume) {
-  DVLOG(1) << "WebRtcAudioDeviceImpl::SetMicrophoneVolume(" << volume << ")";
-  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
-  DCHECK(initialized_);
-
-  // Only one microphone is supported at the moment, which is represented by
-  // the default capturer.
-  base::AutoLock auto_lock(lock_);
-  if (capturers_.empty())
-    return -1;
-  capturers_.back()->SetVolume(volume);
-  return 0;
-}
-
-// TODO(henrika): sort out calling thread once we start using this API.
-int32_t WebRtcAudioDeviceImpl::MicrophoneVolume(uint32_t* volume) const {
-  DVLOG(1) << "WebRtcAudioDeviceImpl::MicrophoneVolume()";
-  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
-  // We only support one microphone now, which is accessed via the default
-  // capturer.
-  DCHECK(initialized_);
-  base::AutoLock auto_lock(lock_);
-  if (capturers_.empty())
-    return -1;
-  *volume = static_cast<uint32_t>(capturers_.back()->Volume());
-  return 0;
-}
-
-int32_t WebRtcAudioDeviceImpl::MaxMicrophoneVolume(uint32_t* max_volume) const {
-  DCHECK(initialized_);
-  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
-  *max_volume = kMaxVolumeLevel;
-  return 0;
-}
-
-int32_t WebRtcAudioDeviceImpl::MinMicrophoneVolume(uint32_t* min_volume) const {
-  DCHECK_CALLED_ON_VALID_THREAD(signaling_thread_checker_);
-  *min_volume = 0;
-  return 0;
-}
-
 int32_t WebRtcAudioDeviceImpl::PlayoutDelay(uint16_t* delay_ms) const {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   base::AutoLock auto_lock(lock_);
