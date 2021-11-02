@@ -77,7 +77,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/chrome_command_line_pref_store.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
-#include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -1638,9 +1637,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #if BUILDFLAG(ENABLE_NACL)
   nacl::NaClProcessHost::EarlyStartup();
 #endif  // BUILDFLAG(ENABLE_NACL)
-
-  // Make sure initial prefs are recorded
-  PrefMetricsService::Factory::GetForProfile(profile_);
 
   PreBrowserStart();
 
