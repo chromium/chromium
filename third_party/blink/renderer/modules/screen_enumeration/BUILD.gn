@@ -6,8 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("screen_enumeration") {
   sources = [
-    "screen_advanced.cc",
-    "screen_advanced.h",
+    "screen_detailed.cc",
+    "screen_detailed.h",
     "screen_details.cc",
     "screen_details.h",
     "window_screens.cc",

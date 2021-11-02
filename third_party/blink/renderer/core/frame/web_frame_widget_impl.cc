@@ -3914,7 +3914,7 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // Update Screens interface data before firing any events. The API is designed
   // to offer synchronous access to the most up-to-date cached screen
   // information when a change event is fired.  It is not required but it
-  // is convenient to have all ScreenAdvanced objects be up to date when any
+  // is convenient to have all ScreenDetailed objects be up to date when any
   // window.screen events are fired as well.
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(),

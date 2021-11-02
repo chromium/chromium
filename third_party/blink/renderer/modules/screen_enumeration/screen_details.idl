@@ -10,10 +10,10 @@
   RuntimeEnabled=WindowPlacement
 ] interface ScreenDetails : EventTarget {
   // The set of available screens with additional per-screen info.
-  readonly attribute FrozenArray<ScreenAdvanced> screens;
+  readonly attribute FrozenArray<ScreenDetailed> screens;
 
   // Current screen reference; corresponds with window.screen.
-  readonly attribute ScreenAdvanced currentScreen;
+  readonly attribute ScreenDetailed currentScreen;
 
   // Change event fired when the set of screens changes.
   // NOTE: Does not fire on changes to attributes of individual Screens.

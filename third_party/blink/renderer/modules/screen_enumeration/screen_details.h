@@ -15,7 +15,7 @@
 namespace blink {
 
 class LocalDOMWindow;
-class ScreenAdvanced;
+class ScreenDetailed;
 
 // Interface exposing multi-screen information.
 // https://github.com/webscreens/window-placement
@@ -28,8 +28,8 @@ class MODULES_EXPORT ScreenDetails final
   explicit ScreenDetails(LocalDOMWindow* window);
 
   // Web-exposed interface:
-  const HeapVector<Member<ScreenAdvanced>>& screens() const;
-  ScreenAdvanced* currentScreen() const;
+  const HeapVector<Member<ScreenDetailed>>& screens() const;
+  ScreenDetailed* currentScreen() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(screenschange, kScreenschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(currentscreenchange, kCurrentscreenchange)
 
@@ -51,7 +51,7 @@ class MODULES_EXPORT ScreenDetails final
   // The ScreenInfos sent by the previous UpdateScreenInfos call.
   display::ScreenInfos prev_screen_infos_;
   int64_t current_display_id_ = display::ScreenInfo::kInvalidDisplayId;
-  HeapVector<Member<ScreenAdvanced>> screens_;
+  HeapVector<Member<ScreenDetailed>> screens_;
 };
 
 }  // namespace blink

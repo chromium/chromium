@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screen_advanced.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_detailed.h"
 #include "ui/display/screen_info.h"
 
 namespace blink {
@@ -22,11 +22,11 @@ ScreenDetails::ScreenDetails(LocalDOMWindow* window)
   UpdateScreenInfos(window, screen_infos);
 }
 
-const HeapVector<Member<ScreenAdvanced>>& ScreenDetails::screens() const {
+const HeapVector<Member<ScreenDetailed>>& ScreenDetails::screens() const {
   return screens_;
 }
 
-ScreenAdvanced* ScreenDetails::currentScreen() const {
+ScreenDetailed* ScreenDetails::currentScreen() const {
   if (!DomWindow())
     return nullptr;
 
@@ -34,7 +34,7 @@ ScreenAdvanced* ScreenDetails::currentScreen() const {
     return nullptr;
 
   auto* it = base::ranges::find(screens_, current_display_id_,
-                                &ScreenAdvanced::DisplayId);
+                                &ScreenDetailed::DisplayId);
   DCHECK(it != screens_.end());
   return *it;
 }
@@ -85,9 +85,9 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
   // screens_.
   for (const auto& info : new_infos.screen_infos) {
     if (!base::Contains(screens_, info.display_id,
-                        &ScreenAdvanced::DisplayId)) {
+                        &ScreenDetailed::DisplayId)) {
       screens_.push_back(
-          MakeGarbageCollected<ScreenAdvanced>(window, info.display_id));
+          MakeGarbageCollected<ScreenDetailed>(window, info.display_id));
       added_or_removed = true;
     }
   }
@@ -99,7 +99,7 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
   // (2) At this point, all data structures are up to date.
   // screens_ has the current set of screens.
   // current_screen_ has new values pushed to it.
-  // (prior to this function) individual ScreenAdvanced objects have new values.
+  // (prior to this function) individual ScreenDetailed objects have new values.
 
   // (3) Send a change event if the current screen has changed.
   if (prev_screen_infos_.screen_infos.empty() ||
@@ -133,7 +133,7 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
                                      &display::ScreenInfo::display_id);
     if (old_it != prev_screen_infos_.screen_infos.end() && *old_it != *new_it) {
       // TODO(enne): http://crbug.com/1202981 only send this event when
-      // properties on ScreenAdvanced (vs anything in ScreenInfo) change.
+      // properties on ScreenDetailed (vs anything in ScreenInfo) change.
       screen->DispatchEvent(*Event::Create(event_type_names::kChange));
 
       // Note: screen may no longer be valid and screens_ may have been
@@ -143,7 +143,7 @@ void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
 
   // (6) Store screen infos for change comparison next time.
   //
-  // Aside: Because ScreenAdvanced is a "live" thin wrapper over the ScreenInfo
+  // Aside: Because ScreenDetailed is a "live" thin wrapper over the ScreenInfo
   // object owned by WidgetBase, WidgetBase's copy needs to be updated
   // in UpdateSurfaceAndScreenInfo prior to this UpdateScreenInfos call so that
   // when the events are fired, the live data is not stale.  Therefore, this

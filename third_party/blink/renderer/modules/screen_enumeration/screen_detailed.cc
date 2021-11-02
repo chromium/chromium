@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/screen_enumeration/screen_advanced.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_detailed.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -28,105 +28,105 @@ const display::ScreenInfo& GetScreenInfo(LocalFrame& frame,
 
 }  // namespace
 
-ScreenAdvanced::ScreenAdvanced(LocalDOMWindow* window, int64_t display_id)
+ScreenDetailed::ScreenDetailed(LocalDOMWindow* window, int64_t display_id)
     : Screen(window), display_id_(display_id) {}
 
-int ScreenAdvanced::height() const {
+int ScreenDetailed::height() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).rect.height();
 }
 
-int ScreenAdvanced::width() const {
+int ScreenDetailed::width() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).rect.width();
 }
 
-unsigned ScreenAdvanced::colorDepth() const {
+unsigned ScreenDetailed::colorDepth() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).depth;
 }
 
-unsigned ScreenAdvanced::pixelDepth() const {
+unsigned ScreenDetailed::pixelDepth() const {
   return colorDepth();
 }
 
-int ScreenAdvanced::availLeft() const {
+int ScreenDetailed::availLeft() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).available_rect.x();
 }
 
-int ScreenAdvanced::availTop() const {
+int ScreenDetailed::availTop() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).available_rect.y();
 }
 
-int ScreenAdvanced::availHeight() const {
+int ScreenDetailed::availHeight() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).available_rect.height();
 }
 
-int ScreenAdvanced::availWidth() const {
+int ScreenDetailed::availWidth() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).available_rect.width();
 }
 
-bool ScreenAdvanced::isExtended() const {
+bool ScreenDetailed::isExtended() const {
   if (!DomWindow())
     return false;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).is_extended;
 }
 
-int ScreenAdvanced::left() const {
+int ScreenDetailed::left() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).rect.x();
 }
 
-int ScreenAdvanced::top() const {
+int ScreenDetailed::top() const {
   if (!DomWindow())
     return 0;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).rect.y();
 }
 
-bool ScreenAdvanced::isPrimary() const {
+bool ScreenDetailed::isPrimary() const {
   if (!DomWindow())
     return false;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).is_primary;
 }
 
-bool ScreenAdvanced::isInternal() const {
+bool ScreenDetailed::isInternal() const {
   if (!DomWindow())
     return false;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).is_internal;
 }
 
-float ScreenAdvanced::devicePixelRatio() const {
+float ScreenDetailed::devicePixelRatio() const {
   if (!DomWindow())
     return 0.f;
   LocalFrame* frame = DomWindow()->GetFrame();
   return GetScreenInfo(*frame, display_id_).device_scale_factor;
 }
 
-const String& ScreenAdvanced::id() const {
+const String& ScreenDetailed::id() const {
   // TODO(http://crbug.com/994889): Implement temporary, generated per-origin
   // unique device IDs that reset when cookies are deleted. See related:
   // web_bluetooth_device_id.h, unguessable_token.h, and uuid.h
@@ -134,17 +134,17 @@ const String& ScreenAdvanced::id() const {
   return g_empty_string;
 }
 
-Vector<String> ScreenAdvanced::pointerTypes() const {
+Vector<String> ScreenDetailed::pointerTypes() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return Vector<String>();
 }
 
-const String& ScreenAdvanced::label() const {
+const String& ScreenDetailed::label() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return g_empty_string;
 }
 
-int64_t ScreenAdvanced::DisplayId() const {
+int64_t ScreenDetailed::DisplayId() const {
   return display_id_;
 }
 

@@ -8,7 +8,7 @@
   Exposed=Screens,
   SecureContext,
   RuntimeEnabled=WindowPlacement
-] interface ScreenAdvanced : Screen {
+] interface ScreenDetailed : Screen {
   // Distance from a multi-screen origin (e.g. primary screen top left) to the
   // left edge of the screen area.
   [HighEntropy=Direct, Measure] readonly attribute long left;
