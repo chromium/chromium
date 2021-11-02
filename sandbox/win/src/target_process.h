@@ -31,18 +31,12 @@ class StartupInformationHelper;
 // class are owned by the Policy used to create them.
 class TargetProcess {
  public:
-  TargetProcess() = delete;
-
   // The constructor takes ownership of |initial_token| and |lockdown_token|
   TargetProcess(base::win::ScopedHandle initial_token,
                 base::win::ScopedHandle lockdown_token,
                 HANDLE job,
                 ThreadPool* thread_pool,
                 const std::vector<Sid>& impersonation_capabilities);
-
-  TargetProcess(const TargetProcess&) = delete;
-  TargetProcess& operator=(const TargetProcess&) = delete;
-
   ~TargetProcess();
 
   // Creates the new target process. The process is created suspended.
@@ -122,6 +116,8 @@ class TargetProcess {
   friend std::unique_ptr<TargetProcess> MakeTestTargetProcess(
       HANDLE process,
       HMODULE base_address);
+
+  DISALLOW_IMPLICIT_CONSTRUCTORS(TargetProcess);
 };
 
 // Creates a mock TargetProcess used for testing interceptions.

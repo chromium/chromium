@@ -64,13 +64,12 @@ class ModuleHandleTraits : public win::HandleTraits {
  public:
   using Handle = HMODULE;
 
-  ModuleHandleTraits() = delete;
-  ModuleHandleTraits(const ModuleHandleTraits&) = delete;
-  ModuleHandleTraits& operator=(const ModuleHandleTraits&) = delete;
-
   static bool CloseHandle(HMODULE handle) { return ::FreeLibrary(handle) != 0; }
   static bool IsHandleValid(HMODULE handle) { return handle != nullptr; }
   static HMODULE NullHandle() { return nullptr; }
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(ModuleHandleTraits);
 };
 
 // HMODULE is not really a handle, and has reference count semantics, so the

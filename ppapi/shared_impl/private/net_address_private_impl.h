@@ -21,10 +21,6 @@ namespace ppapi {
 
 class PPAPI_SHARED_EXPORT NetAddressPrivateImpl {
  public:
-  NetAddressPrivateImpl() = delete;
-  NetAddressPrivateImpl(const NetAddressPrivateImpl&) = delete;
-  NetAddressPrivateImpl& operator=(const NetAddressPrivateImpl&) = delete;
-
   static bool ValidateNetAddress(const PP_NetAddress_Private& addr);
 
   static bool SockaddrToNetAddress(const sockaddr* sa,
@@ -64,6 +60,9 @@ class PPAPI_SHARED_EXPORT NetAddressPrivateImpl {
       PP_NetAddress_IPv6* ipv6_addr);
 
   static const PP_NetAddress_Private kInvalidNetAddress;
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(NetAddressPrivateImpl);
 };
 
 }  // namespace ppapi

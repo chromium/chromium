@@ -23,10 +23,6 @@ class SANDBOX_EXPORT NamespaceUtils {
   // generic_id_t can be used for either uid_t or gid_t.
   typedef uid_t generic_id_t;
 
-  NamespaceUtils() = delete;
-  NamespaceUtils(const NamespaceUtils&) = delete;
-  NamespaceUtils& operator=(const NamespaceUtils&) = delete;
-
   // Write a uid or gid mapping from |id| to |id| in |map_file|. This function
   // is async-signal-safe.
   static bool WriteToIdMapFile(const char* map_file,
@@ -49,6 +45,9 @@ class SANDBOX_EXPORT NamespaceUtils {
   // having CAP_SETGID. Callers can determine whether is this needed with
   // KernelSupportsDenySetgroups. This function is async-signal-safe.
   static bool DenySetgroups() WARN_UNUSED_RESULT;
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(NamespaceUtils);
 };
 
 }  // namespace sandbox

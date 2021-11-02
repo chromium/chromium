@@ -27,9 +27,8 @@ class SANDBOX_EXPORT ErrorCode {
 #endif
   };
 
-  ErrorCode() = delete;
-  ErrorCode(const ErrorCode&) = delete;
-  ErrorCode& operator=(const ErrorCode&) = delete;
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(ErrorCode);
 };
 
 }  // namespace bpf_dsl

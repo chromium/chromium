@@ -973,7 +973,7 @@ _BANNED_CPP_FUNCTIONS = (
       ),
     ),
     (
-      r'/DISALLOW_(COPY|ASSIGN|COPY_AND_ASSIGN)\(',
+      r'/DISALLOW_(COPY|ASSIGN|COPY_AND_ASSIGN|IMPLICIT_CONSTRUCTORS)\(',
       (
         'DISALLOW_xxx macros are deprecated. See base/macros.h for details.',
       ),

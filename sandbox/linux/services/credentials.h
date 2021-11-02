@@ -33,10 +33,6 @@ class SANDBOX_EXPORT Credentials {
     SYS_ADMIN,
   };
 
-  Credentials() = delete;
-  Credentials(const Credentials&) = delete;
-  Credentials& operator=(const Credentials&) = delete;
-
   // Checks that the set of RES-uids and the set of RES-gids have
   // one element each and returns that element in |resuid| and |resgid|
   // respectively. It's OK to pass NULL as one or both of the ids.
@@ -110,6 +106,9 @@ class SANDBOX_EXPORT Credentials {
 
   // Forks and drops capabilities in the child.
   static pid_t ForkAndDropCapabilitiesInChild();
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(Credentials);
 };
 
 }  // namespace sandbox.

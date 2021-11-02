@@ -13,10 +13,6 @@
 // the timeouts for different environments (like TSan).
 class TestTimeouts {
  public:
-  TestTimeouts() = delete;
-  TestTimeouts(const TestTimeouts&) = delete;
-  TestTimeouts& operator=(const TestTimeouts&) = delete;
-
   // Initializes the timeouts. Non thread-safe. Should be called exactly once
   // by the test suite.
   static void Initialize();
@@ -60,6 +56,8 @@ class TestTimeouts {
   static base::TimeDelta action_timeout_;
   static base::TimeDelta action_max_timeout_;
   static base::TimeDelta test_launcher_timeout_;
+
+  DISALLOW_IMPLICIT_CONSTRUCTORS(TestTimeouts);
 };
 
 #endif  // BASE_TEST_TEST_TIMEOUTS_H_

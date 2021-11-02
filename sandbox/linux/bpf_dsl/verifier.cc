@@ -19,20 +19,17 @@ namespace bpf_dsl {
 namespace {
 
 struct State {
-  State() = delete;
-
   State(const std::vector<struct sock_filter>& p,
         const struct arch_seccomp_data& d)
       : program(p), data(d), ip(0), accumulator(0), acc_is_valid(false) {}
-
-  State(const State&) = delete;
-  State& operator=(const State&) = delete;
-
   const std::vector<struct sock_filter>& program;
   const struct arch_seccomp_data& data;
   unsigned int ip;
   uint32_t accumulator;
   bool acc_is_valid;
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(State);
 };
 
 void Ld(State* state, const struct sock_filter& insn, const char** err) {

@@ -18,10 +18,6 @@ namespace sandbox {
 
 class SANDBOX_EXPORT SyscallSets {
  public:
-  SyscallSets() = delete;
-  SyscallSets(const SyscallSets&) = delete;
-  SyscallSets& operator=(const SyscallSets&) = delete;
-
   static bool IsKill(int sysno);
   static bool IsAllowedGettime(int sysno);
   static bool IsCurrentDirectory(int sysno);
@@ -115,6 +111,8 @@ class SANDBOX_EXPORT SyscallSets {
   static bool IsMipsPrivate(int sysno);
   static bool IsMipsMisc(int sysno);
 #endif  // defined(__mips__)
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(SyscallSets);
 };
 
 }  // namespace sandbox.

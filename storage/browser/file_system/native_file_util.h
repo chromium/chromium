@@ -35,10 +35,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) NativeFileUtil {
  public:
   enum CopyOrMoveMode { COPY_NOSYNC, COPY_SYNC, MOVE };
 
-  NativeFileUtil() = delete;
-  NativeFileUtil(const NativeFileUtil&) = delete;
-  NativeFileUtil& operator=(const NativeFileUtil&) = delete;
-
   static CopyOrMoveMode CopyOrMoveModeForDestination(
       const FileSystemURL& dest_url,
       bool copy);
@@ -66,6 +62,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) NativeFileUtil {
       CopyOrMoveMode mode);
   static base::File::Error DeleteFile(const base::FilePath& path);
   static base::File::Error DeleteDirectory(const base::FilePath& path);
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(NativeFileUtil);
 };
 
 }  // namespace storage

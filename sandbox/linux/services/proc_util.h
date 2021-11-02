@@ -13,10 +13,6 @@ namespace sandbox {
 
 class SANDBOX_EXPORT ProcUtil {
  public:
-  ProcUtil() = delete;
-  ProcUtil(const ProcUtil&) = delete;
-  ProcUtil& operator=(const ProcUtil&) = delete;
-
   // Returns the number of file descriptors in the current process's FD
   // table, excluding |proc_fd|, which should be a file descriptor for
   // /proc/.
@@ -36,6 +32,9 @@ class SANDBOX_EXPORT ProcUtil {
 
   // Open /proc/ or crash if not possible.
   static base::ScopedFD OpenProc();
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(ProcUtil);
 };
 
 }  // namespace sandbox

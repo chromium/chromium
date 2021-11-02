@@ -19,12 +19,10 @@ namespace syscall_broker {
 class SANDBOX_EXPORT BrokerChannel {
  public:
   typedef base::ScopedFD EndPoint;
-
-  BrokerChannel() = delete;
-  BrokerChannel(const BrokerChannel&) = delete;
-  BrokerChannel& operator=(const BrokerChannel&) = delete;
-
   static void CreatePair(EndPoint* reader, EndPoint* writer);
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(BrokerChannel);
 };
 
 }  // namespace syscall_broker

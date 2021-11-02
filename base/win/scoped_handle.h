@@ -118,10 +118,6 @@ class HandleTraits {
  public:
   using Handle = HANDLE;
 
-  HandleTraits() = delete;
-  HandleTraits(const HandleTraits&) = delete;
-  HandleTraits& operator=(const HandleTraits&) = delete;
-
   // Closes the handle.
   static bool BASE_EXPORT CloseHandle(HANDLE handle);
 
@@ -132,16 +128,15 @@ class HandleTraits {
 
   // Returns NULL handle value.
   static HANDLE NullHandle() { return nullptr; }
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(HandleTraits);
 };
 
 // Do-nothing verifier.
 class DummyVerifierTraits {
  public:
   using Handle = HANDLE;
-
-  DummyVerifierTraits() = delete;
-  DummyVerifierTraits(const DummyVerifierTraits&) = delete;
-  DummyVerifierTraits& operator=(const DummyVerifierTraits&) = delete;
 
   static void StartTracking(HANDLE handle,
                             const void* owner,
@@ -151,16 +146,15 @@ class DummyVerifierTraits {
                            const void* owner,
                            const void* pc1,
                            const void* pc2) {}
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(DummyVerifierTraits);
 };
 
 // Performs actual run-time tracking.
 class BASE_EXPORT VerifierTraits {
  public:
   using Handle = HANDLE;
-
-  VerifierTraits() = delete;
-  VerifierTraits(const VerifierTraits&) = delete;
-  VerifierTraits& operator=(const VerifierTraits&) = delete;
 
   static void StartTracking(HANDLE handle,
                             const void* owner,
@@ -170,6 +164,9 @@ class BASE_EXPORT VerifierTraits {
                            const void* owner,
                            const void* pc1,
                            const void* pc2);
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(VerifierTraits);
 };
 
 using UncheckedScopedHandle =

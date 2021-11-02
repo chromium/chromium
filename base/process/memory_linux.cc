@@ -61,11 +61,10 @@ void EnableTerminationOnOutOfMemory() {
 // without the class.
 class AdjustOOMScoreHelper {
  public:
-  AdjustOOMScoreHelper() = delete;
-  AdjustOOMScoreHelper(const AdjustOOMScoreHelper&) = delete;
-  AdjustOOMScoreHelper& operator=(const AdjustOOMScoreHelper&) = delete;
-
   static bool AdjustOOMScore(ProcessId process, int score);
+
+ private:
+  DISALLOW_IMPLICIT_CONSTRUCTORS(AdjustOOMScoreHelper);
 };
 
 // static.

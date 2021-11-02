@@ -79,14 +79,9 @@ class PolicyRule;
 // Provides the means to collect rules into a policy store (memory)
 class LowLevelPolicy {
  public:
-  LowLevelPolicy() = delete;
-
   // policy_store: must contain allocated memory and the internal
   // size fields set to correct values.
   explicit LowLevelPolicy(PolicyGlobal* policy_store);
-
-  LowLevelPolicy(const LowLevelPolicy&) = delete;
-  LowLevelPolicy& operator=(const LowLevelPolicy&) = delete;
 
   // Destroys all the policy rules.
   ~LowLevelPolicy();
@@ -108,6 +103,7 @@ class LowLevelPolicy {
   };
   std::list<RuleNode> rules_;
   PolicyGlobal* policy_store_;
+  DISALLOW_IMPLICIT_CONSTRUCTORS(LowLevelPolicy);
 };
 
 // There are 'if' rules and 'if not' comparisons

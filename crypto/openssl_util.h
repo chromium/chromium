@@ -72,8 +72,6 @@ CRYPTO_EXPORT void ClearOpenSSLERRStack(const base::Location& location);
 // the OpenSSL error stack on function exit.
 class OpenSSLErrStackTracer {
  public:
-  OpenSSLErrStackTracer() = delete;
-
   // Pass FROM_HERE as |location|, to help track the source of OpenSSL error
   // messages. Note any diagnostic emitted will be tagged with the location of
   // the constructor call as it's not possible to trace a destructor's callsite.
@@ -81,16 +79,14 @@ class OpenSSLErrStackTracer {
       : location_(location) {
     EnsureOpenSSLInit();
   }
-
-  OpenSSLErrStackTracer(const OpenSSLErrStackTracer&) = delete;
-  OpenSSLErrStackTracer& operator=(const OpenSSLErrStackTracer&) = delete;
-
   ~OpenSSLErrStackTracer() {
     ClearOpenSSLERRStack(location_);
   }
 
  private:
   const base::Location location_;
+
+  DISALLOW_IMPLICIT_CONSTRUCTORS(OpenSSLErrStackTracer);
 };
 
 }  // namespace crypto
