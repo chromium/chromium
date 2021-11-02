@@ -34,6 +34,7 @@
 #include "weblayer/browser/safe_browsing/url_checker_delegate_impl.h"
 #include "weblayer/browser/safe_browsing/weblayer_safe_browsing_blocking_page_factory.h"
 #include "weblayer/browser/safe_browsing/weblayer_ui_manager_delegate.h"
+#include "weblayer/common/features.h"
 
 namespace weblayer {
 
@@ -140,9 +141,13 @@ SafeBrowsingService::CreateURLLoaderThrottle(
 }
 
 std::unique_ptr<content::NavigationThrottle>
-SafeBrowsingService::CreateSafeBrowsingNavigationThrottle(
+SafeBrowsingService::MaybeCreateSafeBrowsingNavigationThrottleFor(
     content::NavigationHandle* handle) {
-  return std::make_unique<safe_browsing::SafeBrowsingNavigationThrottle>(
+  if (!base::FeatureList::IsEnabled(features::kWebLayerSafeBrowsing)) {
+    return nullptr;
+  }
+
+  return safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
       handle, GetSafeBrowsingUIManager().get());
 }
 

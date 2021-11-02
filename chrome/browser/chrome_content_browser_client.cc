@@ -4263,9 +4263,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       g_browser_process->safe_browsing_service()
           ? g_browser_process->safe_browsing_service()->ui_manager().get()
           : nullptr;
-  throttles.push_back(
-      std::make_unique<safe_browsing::SafeBrowsingNavigationThrottle>(
-          handle, ui_manager));
+  MaybeAddThrottle(
+      safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+          handle, ui_manager),
+      &throttles);
 
   if (base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     throttles.push_back(

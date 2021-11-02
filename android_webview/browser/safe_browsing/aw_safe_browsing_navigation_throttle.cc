@@ -17,6 +17,19 @@
 
 namespace android_webview {
 
+// static
+std::unique_ptr<AwSafeBrowsingNavigationThrottle>
+AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+    content::NavigationHandle* handle) {
+  // Only outer-most main frames show the interstitial through the navigation
+  // throttle. In other cases, the interstitial is shown via
+  // BaseUIManager::DisplayBlockingPage.
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
+    return nullptr;
+
+  return base::WrapUnique(new AwSafeBrowsingNavigationThrottle(handle));
+}
+
 AwSafeBrowsingNavigationThrottle::AwSafeBrowsingNavigationThrottle(
     content::NavigationHandle* handle)
     : content::NavigationThrottle(handle) {}
@@ -27,6 +40,10 @@ const char* AwSafeBrowsingNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 AwSafeBrowsingNavigationThrottle::WillFailRequest() {
+  // Subframes and nested frame trees will show an interstitial directly from
+  // BaseUIManager::DisplayBlockingPage.
+  DCHECK(navigation_handle()->IsInPrimaryMainFrame() ||
+         navigation_handle()->IsInPrerenderedMainFrame());
   AwSafeBrowsingUIManager* manager =
       AwBrowserProcess::GetInstance()->GetSafeBrowsingUIManager();
   if (manager) {
@@ -36,7 +53,7 @@ AwSafeBrowsingNavigationThrottle::WillFailRequest() {
       std::unique_ptr<AwWebResourceRequest> request =
           std::make_unique<AwWebResourceRequest>(
               handle->GetURL().spec(), handle->IsPost() ? "POST" : "GET",
-              handle->IsInMainFrame(), handle->HasUserGesture(),
+              /*is_in_main_frame=*/true, handle->HasUserGesture(),
               handle->GetRequestHeaders());
       request->is_renderer_initiated = handle->IsRendererInitiated();
       AwSafeBrowsingBlockingPage* blocking_page =

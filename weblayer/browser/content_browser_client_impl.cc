@@ -842,21 +842,20 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
   }
 
 #if defined(OS_ANDROID)
-  if (handle->IsInMainFrame()) {
-    if (base::FeatureList::IsEnabled(features::kWebLayerSafeBrowsing) &&
-        IsSafebrowsingSupported()) {
-      throttles.push_back(
-          GetSafeBrowsingService()->CreateSafeBrowsingNavigationThrottle(
-              handle));
-    }
-
-    std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
-        navigation_interception::InterceptNavigationDelegate::
-            MaybeCreateThrottleFor(
-                handle, navigation_interception::SynchronyMode::kAsync);
-    if (intercept_navigation_throttle)
-      throttles.push_back(std::move(intercept_navigation_throttle));
+  if (IsSafebrowsingSupported()) {
+    std::unique_ptr<content::NavigationThrottle> safe_browsing_throttle =
+        GetSafeBrowsingService()->MaybeCreateSafeBrowsingNavigationThrottleFor(
+            handle);
+    if (safe_browsing_throttle)
+      throttles.push_back(std::move(safe_browsing_throttle));
   }
+
+  std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
+      navigation_interception::InterceptNavigationDelegate::
+          MaybeCreateThrottleFor(
+              handle, navigation_interception::SynchronyMode::kAsync);
+  if (intercept_navigation_throttle)
+    throttles.push_back(std::move(intercept_navigation_throttle));
 #endif
   return throttles;
 }
