@@ -135,7 +135,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     auto result = wrapper_map_.insert(
         object, TraceWrapperV8Reference<v8::Object>(isolate, wrapper));
     if (LIKELY(result.is_new_entry)) {
-      wrapper_type_info->ConfigureWrapper(&result.stored_value->value.Get());
+      wrapper_type_info->ConfigureWrapper(&result.stored_value->value);
     } else {
       DCHECK(!result.stored_value->value.IsEmpty());
       wrapper = result.stored_value->value.Get(isolate);
@@ -149,7 +149,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
     DCHECK(!is_main_world_);
     const auto& it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
-      if (it->value.Get() == handle) {
+      if (it->value == handle) {
         it->value.Reset();
         wrapper_map_.erase(it);
         return true;
@@ -164,7 +164,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
       return object->SetReturnValue(return_value);
     auto it = wrapper_map_.find(object);
     if (it != wrapper_map_.end()) {
-      return_value.Set(it->value.Get());
+      return_value.Set(it->value);
       return true;
     }
     return false;

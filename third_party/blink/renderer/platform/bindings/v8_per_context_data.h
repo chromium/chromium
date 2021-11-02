@@ -77,7 +77,7 @@ class PLATFORM_EXPORT V8PerContextData final
   v8::Local<v8::Object> CreateWrapperFromCache(const WrapperTypeInfo* type) {
     auto it = wrapper_boilerplates_.find(type);
     return it != wrapper_boilerplates_.end()
-               ? it->value.Get()->Clone()
+               ? it->value->Clone()
                : CreateWrapperFromCacheSlowCase(type);
   }
 
