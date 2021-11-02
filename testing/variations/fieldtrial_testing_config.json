@@ -8741,6 +8741,25 @@
             ]
         }
     ],
+    "WebProtectSaveAs": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowSavePackageScanning"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3ConservativeTailFreqResponse": [
         {
             "platforms": [
