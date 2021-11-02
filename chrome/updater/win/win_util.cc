@@ -40,6 +40,14 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+
+ProcessFilterName::ProcessFilterName(const std::wstring& process_name)
+    : process_name_(process_name) {}
+
+bool ProcessFilterName::Includes(const base::ProcessEntry& entry) const {
+  return base::EqualsCaseInsensitiveASCII(entry.exe_file(), process_name_);
+}
+
 namespace {
 
 // The number of iterations to poll if a process is stopped correctly.
@@ -47,16 +55,6 @@ const unsigned int kMaxProcessQueryIterations = 50;
 
 // The sleep time in ms between each poll.
 const unsigned int kProcessQueryWaitTimeMs = 100;
-
-class ProcessFilterExplorer : public base::ProcessFilter {
- public:
-  ~ProcessFilterExplorer() override = default;
-
-  // Overrides for base::ProcessFilter.
-  bool Includes(const base::ProcessEntry& entry) const override {
-    return base::EqualsCaseInsensitiveASCII(entry.exe_file(), L"EXPLORER.EXE");
-  }
-};
 
 HRESULT IsUserRunningSplitToken(bool& is_split_token) {
   HANDLE token = NULL;
@@ -130,7 +128,7 @@ HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
 }
 
 bool IsExplorerRunningAtMediumOrLower() {
-  ProcessFilterExplorer filter;
+  ProcessFilterName filter(L"EXPLORER.EXE");
   base::ProcessIterator iter(&filter);
   while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
     MANDATORY_LEVEL level = MandatoryLevelUntrusted;

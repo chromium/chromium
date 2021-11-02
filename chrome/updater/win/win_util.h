@@ -11,6 +11,7 @@
 
 #include <string>
 
+#include "base/process/process_iterator.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -21,6 +22,21 @@ class FilePath;
 }
 
 namespace updater {
+
+class ProcessFilterName : public base::ProcessFilter {
+ public:
+  explicit ProcessFilterName(const std::wstring& process_name);
+  ~ProcessFilterName() override = default;
+
+  // Overrides for base::ProcessFilter.
+  bool Includes(const base::ProcessEntry& entry) const override;
+
+ private:
+  // Case-insensive name of the program image to look for, not including the
+  // path. The name is not localized, therefore the function must be used
+  // to look up only processes whose names are known to be ASCII.
+  std::wstring process_name_;
+};
 
 // Returns the last error as an HRESULT or E_FAIL if last error is NO_ERROR.
 // This is not a drop in replacement for the HRESULT_FROM_WIN32 macro.
