@@ -12,6 +12,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "headless/public/headless_browser.h"
+#include "services/network/network_service.h"
 #include "third_party/blink/public/mojom/badging/badging.mojom.h"
 
 namespace headless {
@@ -90,6 +91,9 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
 #endif
+
+  void OnNetworkServiceCreated(
+      ::network::mojom::NetworkService* network_service) override;
 
  private:
   class StubBadgeService;
