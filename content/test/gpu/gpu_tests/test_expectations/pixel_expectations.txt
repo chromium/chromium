@@ -111,7 +111,7 @@
 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_Video* [ Skip ]
 
 # Fuchsia issues
-crbug.com/1157136 [ fuchsia skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLDefault [ Skip ]
+crbug.com/1157136 [ fuchsia skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
@@ -128,14 +128,14 @@ crbug.com/1157136 [ fuchsia skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLDef
 # Tests running in no GPU process mode are skipped on platforms where GPU
 # process is required.
 [ android ] Pixel_Canvas2DRedBox_NoGpuProcess [ Skip ]
-[ chromeos ] Pixel_Canvas2DRedBox_NoGpuProcess [ Skip ]
 [ android ] Pixel_CSS3DBlueBox_NoGpuProcess [ Skip ]
+[ chromeos ] Pixel_Canvas2DRedBox_NoGpuProcess [ Skip ]
 [ chromeos ] Pixel_CSS3DBlueBox_NoGpuProcess [ Skip ]
 
 # Fails on Android WebView due to requiring embedding viz clients. crbug.com/805739
 # Produces black images on Nexus 5Xs in Android Webview (android-nexus-5x) crbug.com/984352
 # Fails on Pixel 2 (android-pixel-2) crbug.com/966069
-crbug.com/805739 [ android ] Pixel_CanvasLowLatency2D [ Skip ]
+crbug.com/805739 [ android ] Pixel_CanvasLowLatency2D [ Failure ]
 
 # Skip test that kills GPU process since Android Webview only supports
 # in-process GPU.
@@ -146,25 +146,25 @@ crbug.com/805739 [ android ] Pixel_CanvasLowLatency2D [ Skip ]
 crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 
 # Failing on Nexus 5; haven't investigated why yet.
-crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Skip ]
-crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Skip ]
+crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Failure ]
+crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
 
 crbug.com/1213674 [ mac amd passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
 # TODO(kbr): temporary suppression for new test.
-crbug.com/575305 [ linux ] Pixel_WebGLSadCanvas [ Skip ]
-crbug.com/575305 [ win ] Pixel_WebGLSadCanvas [ Skip ]
-crbug.com/872423 [ mac ] Pixel_WebGLSadCanvas [ Skip ]
-crbug.com/575305 [ android ] Pixel_WebGLSadCanvas [ Skip ]
-crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Skip ]
+crbug.com/575305 [ linux ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/575305 [ win ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/872423 [ mac ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/575305 [ android ] Pixel_WebGLSadCanvas [ Failure ]
+crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Failure ]
 
 # float16 is not yet supported for accelerated canvases
-crbug.com/948141 Pixel_CanvasDisplaySRGBAccelerated2D [ Skip ]
+crbug.com/948141 Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
 # Fails on Nexus 5
-crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Skip ]
-crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
+crbug.com/1029389 [ android android-nexus-5 ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Flakes on Nexus 5X.
 crbug.com/883500 [ android android-chromium android-nexus-5x ] Pixel_BackgroundImage [ RetryOnFailure ]
@@ -173,8 +173,8 @@ crbug.com/1121476 [ android android-chromium android-nexus-5x ] Pixel_Canvas2DTa
 crbug.com/1220766 [ android android-chromium android-nexus-5x ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 # Frequently fails on Nexus 5X
-crbug.com/1157136 [ android android-chromium android-nexus-5x skia-renderer-disabled ] Pixel_OffscreenCanvasWebGLDefault [ Skip ]
-crbug.com/1157136 [ android android-chromium android-nexus-5x skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ Skip ]
+crbug.com/1157136 [ android android-chromium android-nexus-5x skia-renderer-disabled ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
+crbug.com/1157136 [ android android-chromium android-nexus-5x skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 
 # We do not have software H.264 decoding on Android, so it can't survive a
 # context loss which results in hardware decoder loss.
@@ -201,29 +201,29 @@ crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryO
 
 # Flaking on Nexus 5X even outside WebView now. See commented-out
 # suppression above. Temporarily skipping it to stabilize the CQ.
-crbug.com/1061298 [ android android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Skip ]
+crbug.com/1061298 [ android android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
-crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Skip ]
-crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Skip ]
-crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Skip ]
-crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Skip ]
+crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
+crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
+crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
+crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Producing blank images on Macmini and Macbook Pro
-crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Skip ]
+crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Skia Renderer, producing incorrect color in one quadrant
-crbug.com/1008450 [ android skia-renderer-vulkan ] Pixel_Video_BackdropFilter [ Skip ]
-crbug.com/1008450 [ android skia-renderer-gl ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
-crbug.com/1008450 [ android skia-renderer-vulkan ] Pixel_Video_MP4_Rounded_Corner [ Skip ]
+crbug.com/1008450 [ android skia-renderer-vulkan ] Pixel_Video_BackdropFilter [ Failure ]
+crbug.com/1008450 [ android skia-renderer-gl ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
+crbug.com/1008450 [ android skia-renderer-vulkan ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 
 # Flaky test on SkiaRenderer vulkan android bot.
 crbug.com/1252081 [ android skia-renderer-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 
 # Produces blank images on Intel HD 630 w/ Mesa 19.0.2
-crbug.com/976861 [ linux intel-0x5912 skia-renderer-disabled ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
-crbug.com/976861 [ linux intel-0x5912 skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
-crbug.com/976861 [ linux intel-0x5912 skia-renderer-vulkan ] Pixel_OffscreenCanvasTransferToImageBitmap [ Skip ]
+crbug.com/976861 [ linux intel-0x5912 skia-renderer-disabled ] Pixel_OffscreenCanvasTransferToImageBitmap [ Failure ]
+crbug.com/976861 [ linux intel-0x5912 skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ Failure ]
+crbug.com/976861 [ linux intel-0x5912 skia-renderer-vulkan ] Pixel_OffscreenCanvasTransferToImageBitmap [ Failure ]
 
 # Producing incorrect image on Win10 Intel HD 630 and UHD 630 w/ 26.20.100.6912
 # or later drivers.
@@ -248,7 +248,7 @@ crbug.com/1048892 [ mac nvidia ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ 
 # HDR rendering with PQ color space appears to be broken on Windows RS2.
 # TODO(sunnyps): Revert this temporary suppression after ensuring pixel tests
 # always run on Windows RS3 or above.
-crbug.com/1066979 [ win ] Pixel_Canvas2DRedBoxHdr10 [ Skip ]
+crbug.com/1066979 [ win ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
 
 # SkiaRenderer Dawn doesn't support accelerated canvas, webgl, video, or
 # direct composition.
@@ -382,24 +382,24 @@ crbug.com/1200898 [ linux skia-renderer-dawn ] Pixel_BackgroundImage [ RetryOnFa
 crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
 
 # Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
-crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Flaky hang.
-crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Skip ]
+crbug.com/1218288 [ fuchsia-board-astro ] Pixel_PrecisionRoundedCorner [ Failure ]
 crbug.com/1136875 [ fuchsia-board-qemu-x64 ] Pixel_PrecisionRoundedCorner [ RetryOnFailure ]
 
 # Still fails on Nexus 5 after all other Pixel_CanvasLowLatency* pass.
-crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Skip ]
+crbug.com/1097752 [ android android-nexus-5 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 # Produces blank images on gpu-fyi-try-chromeos-kevin, gpu-fyi-try-chromeos-amd64-generic.
-crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Skip ]
+crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Failure ]
 
 # Failing on ChromeOS FYI Release (amd64-generic), ChromeOS FYI Release (kevin).
 crbug.com/1240440 [ chromeos ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
 crbug.com/1240440 [ chromeos ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
 
-# Cannot use file in Chromium checkout for fake video capture device on Android
-# or ChromeOS.
+# Cannot use file in Chromium checkout for fake video capture device on Android,
+# ChromeOS, or Fuchsia.
 crbug.com/1129879 [ android ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 crbug.com/1129879 [ chromeos ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
 crbug.com/1129879 [ fuchsia ] Pixel_Video_Media_Stream_Incompatible_Stride [ Skip ]
@@ -408,7 +408,7 @@ crbug.com/1129879 [ fuchsia ] Pixel_Video_Media_Stream_Incompatible_Stride [ Ski
 crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable Very low flake rate (1 in 1k+ builds)
 
 # Failures on Mac FYI arm64 Release (Apple DTK)
-crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Skip ]
+crbug.com/1175753 [ mac release apple-apple-m1 ] Pixel_Video_BackdropFilter [ Failure ]
 
 # Long-standing flake on Kevin devices due to disappearing mailbox.
 crbug.com/1200504 [ chromeos chromeos-board-kevin ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
