@@ -236,7 +236,7 @@ def CreateArgumentParser():
                       required=True)
   parser.add_argument('--output-directory', type=str, help='Output directory',
                       required=True)
-  parser.add_argument('--arch', type=str, help='Architecture', default='arm')
+  parser.add_argument('--arch', help='Unused')
   parser.add_argument('--start-server', action='store_true', default=False,
                       help='Run an HTTP server in the output directory')
   parser.add_argument('--port', type=int, default=8000,
@@ -249,7 +249,6 @@ def main():
   args = parser.parse_args()
   logging.basicConfig(level=logging.INFO)
 
-  symbol_extractor.SetArchitecture(args.arch)
   logging.info('Parsing object files in %s', args.build_directory)
   object_files_symbols = _GetSymbolNameToFilename(args.build_directory)
   native_lib_filename = os.path.join(
