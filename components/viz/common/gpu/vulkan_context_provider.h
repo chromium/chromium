@@ -15,6 +15,9 @@
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include <vulkan/vulkan_core.h>
+#else
+// Workaround compiling issue when vulkan is disabled.
+typedef void* VkSemaphore;
 #endif
 
 struct GrContextOptions;
