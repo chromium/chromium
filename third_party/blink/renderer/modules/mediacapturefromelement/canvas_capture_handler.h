@@ -25,6 +25,10 @@
 
 class SkImage;
 
+namespace base {
+class ScopedClosureRunner;
+}  // namespace base
+
 namespace gfx {
 class Size;
 }  // namespace gfx
@@ -33,9 +37,6 @@ namespace blink {
 
 class LocalFrame;
 class MediaStreamComponent;
-class StaticBitmapImage;
-class StaticBitmapImageToVideoFrameCopier;
-class WebGraphicsContext3DProviderWrapper;
 
 // CanvasCaptureHandler acts as the link between Blink side HTMLCanvasElement
 // and Chrome side VideoCapturerSource. It is responsible for handling
@@ -61,9 +62,12 @@ class MODULES_EXPORT CanvasCaptureHandler {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
-  void SendNewFrame(scoped_refptr<StaticBitmapImage> image,
-                    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-                        context_provider);
+  // Return a callback to provide a new frame. See the method
+  // CanvasCaptureHandler::GetNewFrameCallback for more details.
+  using NewFrameCallback =
+      base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
+  NewFrameCallback GetNewFrameCallback();
+  bool CanDiscardAlpha() const { return can_discard_alpha_; }
   bool NeedsNewFrame() const;
 
   // Functions called by VideoCapturerSource implementation.
@@ -89,6 +93,11 @@ class MODULES_EXPORT CanvasCaptureHandler {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
+  void OnNewFrameCallback(base::ScopedClosureRunner pending_call_tracker,
+                          base::TimeTicks this_frame_ticks,
+                          const gfx::ColorSpace& color_space,
+                          scoped_refptr<media::VideoFrame> video_frame);
+
   void SendFrame(base::TimeTicks this_frame_ticks,
                  const gfx::ColorSpace& color_space,
                  scoped_refptr<media::VideoFrame> video_frame);
@@ -111,11 +120,13 @@ class MODULES_EXPORT CanvasCaptureHandler {
   absl::optional<base::TimeTicks> first_frame_ticks_;
   scoped_refptr<media::VideoFrame> last_frame_;
 
-  std::unique_ptr<StaticBitmapImageToVideoFrameCopier> converter_;
-
   // The following attributes ensure that CanvasCaptureHandler emits
   // frames with monotonically increasing timestamps.
   bool deferred_request_refresh_frame_ = false;
+
+  // The number of outsanding calls to SendNewFrame that have not made their
+  // callback.
+  uint32_t pending_send_new_frame_calls_ = 0;
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   std::unique_ptr<CanvasCaptureHandlerDelegate> delegate_;
