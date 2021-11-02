@@ -1671,6 +1671,8 @@ component("ash") {
     "wm/desks/templates/desks_templates_dialog_controller.h",
     "wm/desks/templates/desks_templates_grid_view.cc",
     "wm/desks/templates/desks_templates_grid_view.h",
+    "wm/desks/templates/desks_templates_icon_container.cc",
+    "wm/desks/templates/desks_templates_icon_container.h",
     "wm/desks/templates/desks_templates_icon_view.cc",
     "wm/desks/templates/desks_templates_icon_view.h",
     "wm/desks/templates/desks_templates_item_view.cc",
