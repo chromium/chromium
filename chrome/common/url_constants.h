@@ -310,8 +310,6 @@ extern const char kChromeOSGestureEducationHelpURL[];
 // Palette help link for Chrome.
 extern const char kChromePaletteHelpURL[];
 
-extern const char kCrosScheme[];
-
 extern const char kCupsPrintLearnMoreURL[];
 
 extern const char kCupsPrintPPDLearnMoreURL[];
