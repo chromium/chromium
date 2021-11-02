@@ -17,7 +17,6 @@ namespace media {
 
 namespace {
 int kCheckIntervalMs = 10;
-int kNotifyIntervalMs = 7;
 int kTimeoutMs = 50;
 }  // namespace
 
@@ -217,25 +216,6 @@ class AliveCheckerTest : public testing::Test {
   base::WaitableEvent detected_dead_event_;
 };
 
-// Start and Stop the checker, verify that we get no dead detection.
-// TODO(crbug.com/789804): Fix the test not to be flaky, e.g. by switching to
-// using a mocked clock, and re-enable it.
-TEST_F(AliveCheckerTest, DISABLED_StartStop) {
-  CreateAliveChecker(false, false);
-
-  StartAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  StopAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  // It can take up to the timeout + the check interval until detection. Add a
-  // margin to this.
-  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
-  EXPECT_FALSE(GetDetectedDead());
-}
-
 // Start the checker, don't send alive notifications, and run until it detects
 // dead. Verify that it only detects once. Repeat once.
 TEST_F(AliveCheckerTest, NoAliveNotificationsDetectTwice) {
@@ -263,49 +243,6 @@ TEST_F(AliveCheckerTest, NoAliveNotificationsDetectTwice) {
   EXPECT_TRUE(GetDetectedDead());
 }
 
-// Start the checker, notify that the client is alive several times, then stop
-// the checker. Verify that it doesn't detect dead.
-// TODO(crbug.com/789804): Fix the test not to be flaky, e.g. by switching to
-// using a mocked clock, and re-enable it.
-TEST_F(AliveCheckerTest, DISABLED_NotifyThenStop) {
-  CreateAliveChecker(false, false);
-
-  StartAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
-  EXPECT_FALSE(GetDetectedDead());
-
-  StopAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  // It can take up to the timeout + the check interval until detection. Add a
-  // margin to this.
-  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
-  EXPECT_FALSE(GetDetectedDead());
-}
-
-// Start the checker, notify that the client is alive several times, then
-// run until detection. Repeat once.
-// TODO(crbug.com/789804): Fix the test not to be flaky, e.g. by switching to
-// using a mocked clock, and re-enable it.
-TEST_F(AliveCheckerTest, DISABLED_NotifyThenDetectDead) {
-  CreateAliveChecker(false, false);
-
-  StartAliveChecker();
-  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
-  WaitUntilDetectedDead();
-  EXPECT_TRUE(GetDetectedDead());
-
-  StartAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
-  EXPECT_FALSE(GetDetectedDead());
-  WaitUntilDetectedDead();
-  EXPECT_TRUE(GetDetectedDead());
-}
-
 // Setup the checker to stop at first alive notification. Start it and notify
 // that the client is alive once. Verify that we get no dead detection.
 TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DoNotify) {
@@ -326,43 +263,6 @@ TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DoNotify) {
 TEST_F(AliveCheckerTest, StopAtFirstAliveNotification_DontNotify) {
   CreateAliveChecker(true, false);
   StartAliveChecker();
-  WaitUntilDetectedDead();
-  EXPECT_TRUE(GetDetectedDead());
-}
-
-// Setup the checker to pause checking when suspended. Start the checker, don't
-// send alive notifications, and run until it detects dead. Start it again and
-// notify that the client is alive several times. Suspend and verify that it
-// doesn't detect dead. Resume and run until detected dead.
-// TODO(crbug.com/789804): Fix the test not to be flaky, e.g. by switching to
-// using a mocked clock, and re-enable it.
-TEST_F(AliveCheckerTest, DISABLED_SuspendResume_StartBeforeSuspend) {
-  CreateAliveChecker(false, true);
-  ASSERT_TRUE(mock_power_observer_helper_);
-
-  StartAliveChecker();
-  WaitUntilDetectedDead();
-  EXPECT_TRUE(GetDetectedDead());
-
-  StartAliveChecker();
-  EXPECT_FALSE(GetDetectedDead());
-
-  NotifyAliveMultipleTimes(10, base::Milliseconds(kNotifyIntervalMs));
-
-  alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Suspend,
-                                base::Unretained(mock_power_observer_helper_)));
-
-  // It can take up to the timeout + the check interval until detection. Add a
-  // margin to this.
-  EXPECT_FALSE(WaitUntilDetectedDeadWithTimeout(
-      base::Milliseconds(kTimeoutMs + kCheckIntervalMs + 10)));
-  EXPECT_FALSE(GetDetectedDead());
-
-  alive_checker_thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&MockPowerObserverHelper::Resume,
-                                base::Unretained(mock_power_observer_helper_)));
-
   WaitUntilDetectedDead();
   EXPECT_TRUE(GetDetectedDead());
 }
