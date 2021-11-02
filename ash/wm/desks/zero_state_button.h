@@ -118,6 +118,7 @@ class ASH_EXPORT ZeroStateIconButton : public DeskButtonBase {
   METADATA_HEADER(ZeroStateIconButton);
 
   ZeroStateIconButton(const gfx::VectorIcon* button_icon,
+                      const std::u16string& text,
                       base::RepeatingClosure callback);
   ZeroStateIconButton(const ZeroStateIconButton&) = delete;
   ZeroStateIconButton& operator=(const ZeroStateIconButton&) = delete;
