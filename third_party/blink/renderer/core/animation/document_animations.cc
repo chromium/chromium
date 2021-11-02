@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 
+#include <algorithm>
+
 #include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
