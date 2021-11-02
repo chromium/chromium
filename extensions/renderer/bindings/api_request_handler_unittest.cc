@@ -530,7 +530,7 @@ TEST_F(APIRequestHandlerTest, SettingLastError) {
   }
 }
 
-TEST_F(APIRequestHandlerTest, AddPendingRequest) {
+TEST_F(APIRequestHandlerTest, AddPendingRequestCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -550,7 +550,10 @@ TEST_F(APIRequestHandlerTest, AddPendingRequest) {
   v8::Local<v8::Function> function = FunctionFromString(context, kEchoArgs);
   ASSERT_FALSE(function.IsEmpty());
 
-  int request_id = request_handler.AddPendingRequest(context, function);
+  auto details = request_handler.AddPendingRequest(
+      context, binding::AsyncResponseType::kCallback, function);
+  int request_id = details.request_id;
+  EXPECT_TRUE(details.promise.IsEmpty());
   EXPECT_THAT(request_handler.GetPendingRequestIdsForTesting(),
               testing::UnorderedElementsAre(request_id));
   // Even though we add a pending request, we shouldn't have dispatched anything
@@ -566,6 +569,50 @@ TEST_F(APIRequestHandlerTest, AddPendingRequest) {
 
   EXPECT_EQ(ReplaceSingleQuotes(kArguments),
             GetStringPropertyFromObject(context->Global(), context, "result"));
+
+  EXPECT_TRUE(request_handler.GetPendingRequestIdsForTesting().empty());
+  EXPECT_FALSE(dispatched_request);
+}
+
+TEST_F(APIRequestHandlerTest, AddPendingRequestPromise) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  bool dispatched_request = false;
+  auto handle_request = [](bool* dispatched_request,
+                           std::unique_ptr<APIRequestHandler::Request> request,
+                           v8::Local<v8::Context> context) {
+    *dispatched_request = true;
+  };
+
+  APIRequestHandler request_handler(
+      base::BindRepeating(handle_request, &dispatched_request),
+      APILastError(APILastError::GetParent(), binding::AddConsoleError()),
+      nullptr, interaction_provider());
+
+  EXPECT_TRUE(request_handler.GetPendingRequestIdsForTesting().empty());
+
+  auto details = request_handler.AddPendingRequest(
+      context, binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+  int request_id = details.request_id;
+  v8::Local<v8::Promise> promise = details.promise;
+  EXPECT_THAT(request_handler.GetPendingRequestIdsForTesting(),
+              testing::UnorderedElementsAre(request_id));
+  ASSERT_FALSE(promise.IsEmpty());
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+  // Even though we add a pending request, we shouldn't have dispatched anything
+  // because AddPendingRequest() is intended for renderer-side implementations.
+  EXPECT_FALSE(dispatched_request);
+
+  std::unique_ptr<base::ListValue> response_arguments =
+      ListValueFromString("[{'foo': 'bar'}]");
+  ASSERT_TRUE(response_arguments);
+  request_handler.CompleteRequest(request_id, *response_arguments,
+                                  std::string());
+
+  ASSERT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ(R"({"foo":"bar"})", V8ToString(promise->Result(), context));
 
   EXPECT_TRUE(request_handler.GetPendingRequestIdsForTesting().empty());
   EXPECT_FALSE(dispatched_request);
@@ -592,8 +639,10 @@ TEST_F(APIRequestHandlerTest, ThrowExceptionInCallback) {
   v8::TryCatch outer_try_catch(isolate());
   v8::Local<v8::Function> callback_throwing_error =
       FunctionFromString(context, "(function() { throw new Error('hello'); })");
-  int request_id =
-      request_handler.AddPendingRequest(context, callback_throwing_error);
+  auto details = request_handler.AddPendingRequest(
+      context, binding::AsyncResponseType::kCallback, callback_throwing_error);
+  int request_id = details.request_id;
+  EXPECT_TRUE(details.promise.IsEmpty());
 
   {
     TestJSRunner::AllowErrors allow_errors;
