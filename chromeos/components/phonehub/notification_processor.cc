@@ -193,7 +193,7 @@ void NotificationProcessor::AddNotifications(
   }
 
   if (decode_image_requests.empty()) {
-    PA_LOG(INFO) << "Cannon find any image to decode for the notifications";
+    PA_LOG(INFO) << "Cannot find any image to decode for the notifications";
     return;
   }
 
