@@ -61,6 +61,9 @@ class CONTENT_EXPORT StartupTaskRunner {
   void WrappedTask();
 
   base::OnceCallback<void(int)> startup_complete_callback_;
+  // Stores the time that the last post of a WrappedTask occurred. Used for
+  // gathering metrics.
+  base::TimeTicks last_wrapped_task_post_time_;
   scoped_refptr<base::SingleThreadTaskRunner> proxy_;
 };
 
