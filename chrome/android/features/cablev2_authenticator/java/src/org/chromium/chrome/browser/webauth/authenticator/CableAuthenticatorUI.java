@@ -71,6 +71,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
             "org.chromium.chrome.modules.cablev2_authenticator.Registration";
     private static final String SECRET_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.Secret";
+    private static final String METRICS_EXTRA =
+            "org.chromium.chrome.modules.cablev2_authenticator.MetricsEnabled";
     private static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
     private static final String QR_EXTRA = "org.chromium.chrome.browser.webauth.authenticator.QR";
@@ -180,11 +182,12 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
         final long networkContext = arguments.getLong(NETWORK_CONTEXT_EXTRA);
         final long registration = arguments.getLong(REGISTRATION_EXTRA);
         final byte[] secret = arguments.getByteArray(SECRET_EXTRA);
+        final boolean metricsEnabled = arguments.getBoolean(METRICS_EXTRA);
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                secret, mMode == Mode.FCM, accessory, serverLink, fcmEvent, qrURI);
+                secret, mMode == Mode.FCM, accessory, serverLink, fcmEvent, qrURI, metricsEnabled);
 
         switch (mMode) {
             case USB:
