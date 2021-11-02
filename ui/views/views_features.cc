@@ -25,7 +25,7 @@ const base::Feature kEnableViewPaintOptimization{
 
 // When enabled, widgets inherit the theme from their parent widget.
 const base::Feature kInheritNativeThemeFromParentWidget{
-    "InheritNativeThemeFromParentWidget", base::FEATURE_DISABLED_BY_DEFAULT};
+    "InheritNativeThemeFromParentWidget", base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace views
