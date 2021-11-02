@@ -19,7 +19,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -133,9 +132,6 @@ std::vector<std::pair<std::string, int>> CountAndSortIconIdentifiers(
 
 DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
     : uuid_(desk_template->uuid()) {
-  // TODO(richui): Remove all the borders. It is only used for visualizing
-  // bounds while it is a placeholder.
-
   auto delete_button_callback = base::BindRepeating(
       &DesksTemplatesItemView::OnDeleteButtonPressed, base::Unretained(this));
   auto launch_template_callback = base::BindRepeating(

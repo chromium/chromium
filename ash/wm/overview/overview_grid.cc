@@ -452,8 +452,8 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
-  if (desks_templates_grid_widget_)
-    CloseDesksTemplatesGrid(/*exit_overview=*/true);
+  if (IsShowingDesksTemplatesGrid())
+    HideDesksTemplatesGrid(/*exit_overview=*/true);
 
   bool has_non_cover_animating = false;
   int animate_count = 0;
@@ -913,15 +913,18 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
 
-void OverviewGrid::CloseDesksTemplatesGrid(bool exit_overview) {
-  desks_templates_grid_widget_->CloseNow();
-
+void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
   // Un-hide the overview mode items.
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->RevertHideForDesksTemplatesGrid();
 
-  if (!exit_overview)
-    desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+  if (exit_overview) {
+    desks_templates_grid_widget_->CloseNow();
+    return;
+  }
+
+  desks_templates_grid_widget_->Hide();
+  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {

@@ -489,7 +489,7 @@ TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
 }
 
-// Tests that when thetemplates grid is shown and the active desk is closed,
+// Tests that when the templates grid is shown and the active desk is closed,
 // overview items stay hidden.
 TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
@@ -1031,7 +1031,8 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   ASSERT_TRUE(GetOverviewSession()
                   ->GetGridWithRootWindow(root_window)
-                  ->desks_templates_grid_widget());
+                  ->desks_templates_grid_widget()
+                  ->IsVisible());
 
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
@@ -1039,7 +1040,8 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_FALSE(GetOverviewSession()
                    ->GetGridWithRootWindow(root_window)
-                   ->desks_templates_grid_widget());
+                   ->desks_templates_grid_widget()
+                   ->IsVisible());
 }
 
 }  // namespace ash
