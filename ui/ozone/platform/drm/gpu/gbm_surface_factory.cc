@@ -203,8 +203,8 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
       return supported_buffer_formats;
     }
 
-    for (int i = 0; i <= static_cast<int>(gfx::BufferFormat::LAST); ++i) {
-      const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(i);
+    for (int j = 0; j <= static_cast<int>(gfx::BufferFormat::LAST); ++j) {
+      const gfx::BufferFormat buffer_format = static_cast<gfx::BufferFormat>(j);
       if (base::Contains(supported_buffer_formats, buffer_format))
         continue;
       if (gbm_device_is_format_supported(

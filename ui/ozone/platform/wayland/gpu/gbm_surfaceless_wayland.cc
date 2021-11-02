@@ -336,13 +336,13 @@ void GbmSurfacelessWayland::OnSubmission(BufferId buffer_id,
     submitted_frames_.erase(submitted_frames_.begin());
     submitted_frame->overlays.clear();
 
-    gfx::GpuFenceHandle release_fence;
+    gfx::GpuFenceHandle release_fence_handle;
     if (submitted_frame->merged_release_fence_fd.is_valid())
-      release_fence.owned_fd =
+      release_fence_handle.owned_fd =
           std::move(submitted_frame->merged_release_fence_fd);
     std::move(submitted_frame->completion_callback)
         .Run(gfx::SwapCompletionResult(submitted_frame->swap_result,
-                                       std::move(release_fence)));
+                                       std::move(release_fence_handle)));
 
     pending_presentation_frames_.push_back(std::move(submitted_frame));
   }

@@ -780,11 +780,11 @@ bool GetScrollOffsetsFromXEvent(const x11::Event& xev,
 
   if (DeviceDataManagerX11::GetInstance()->GetScrollClassEventDetail(xev) !=
       SCROLL_TYPE_NO_SCROLL) {
-    double x_scroll_offset, y_scroll_offset;
+    double x_scroll_offset_dbl, y_scroll_offset_dbl;
     DeviceDataManagerX11::GetInstance()->GetScrollClassOffsets(
-        xev, &x_scroll_offset, &y_scroll_offset);
-    *x_offset = x_scroll_offset * kWheelScrollAmount;
-    *y_offset = y_scroll_offset * kWheelScrollAmount;
+        xev, &x_scroll_offset_dbl, &y_scroll_offset_dbl);
+    *x_offset = x_scroll_offset_dbl * kWheelScrollAmount;
+    *y_offset = y_scroll_offset_dbl * kWheelScrollAmount;
 
     if (DeviceDataManagerX11::GetInstance()->IsTouchpadXInputEvent(xev)) {
       *x_offset_ordinal = *x_offset;

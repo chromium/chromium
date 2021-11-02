@@ -270,19 +270,20 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   current_frame_resources_.swap(pending_frame_resources_);
   pending_frame_resources_.clear();
 
-  gfx::SurfaceControl::Transaction::OnCompleteCb callback = base::BindOnce(
+  gfx::SurfaceControl::Transaction::OnCompleteCb complete_cb = base::BindOnce(
       &GLSurfaceEGLSurfaceControl::OnTransactionAckOnGpuThread,
       weak_factory_.GetWeakPtr(), std::move(completion_callback),
       std::move(present_callback), std::move(resources_to_release),
       std::move(primary_plane_fences_));
   primary_plane_fences_.reset();
-  pending_transaction_->SetOnCompleteCb(std::move(callback), gpu_task_runner_);
+  pending_transaction_->SetOnCompleteCb(std::move(complete_cb),
+                                        gpu_task_runner_);
 
   if (using_on_commit_callback_) {
-    gfx::SurfaceControl::Transaction::OnCommitCb callback = base::BindOnce(
+    gfx::SurfaceControl::Transaction::OnCommitCb commit_cb = base::BindOnce(
         &GLSurfaceEGLSurfaceControl::OnTransactionCommittedOnGpuThread,
         weak_factory_.GetWeakPtr());
-    pending_transaction_->SetOnCommitCb(std::move(callback), gpu_task_runner_);
+    pending_transaction_->SetOnCommitCb(std::move(commit_cb), gpu_task_runner_);
   }
 
   pending_surfaces_count_ = 0u;

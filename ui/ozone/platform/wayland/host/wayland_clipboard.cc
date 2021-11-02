@@ -255,19 +255,21 @@ wl::Clipboard* WaylandClipboard::GetClipboard(ClipboardBuffer buffer) {
     return copypaste_clipboard_.get();
 
   if (buffer == ClipboardBuffer::kSelection) {
-    if (auto* manager = connection_->zwp_primary_selection_device_manager()) {
+    auto* zwp_manager = connection_->zwp_primary_selection_device_manager();
+    if (zwp_manager) {
       if (!primary_selection_clipboard_) {
         primary_selection_clipboard_ = std::make_unique<
             wl::ClipboardImpl<ZwpPrimarySelectionDeviceManager>>(
-            manager, ClipboardBuffer::kSelection);
+            zwp_manager, ClipboardBuffer::kSelection);
       }
       return primary_selection_clipboard_.get();
-    } else if (auto* manager =
-                   connection_->gtk_primary_selection_device_manager()) {
+    }
+    auto* gtk_manager = connection_->gtk_primary_selection_device_manager();
+    if (gtk_manager) {
       if (!primary_selection_clipboard_) {
         primary_selection_clipboard_ = std::make_unique<
             wl::ClipboardImpl<GtkPrimarySelectionDeviceManager>>(
-            manager, ClipboardBuffer::kSelection);
+            gtk_manager, ClipboardBuffer::kSelection);
       }
       return primary_selection_clipboard_.get();
     }
