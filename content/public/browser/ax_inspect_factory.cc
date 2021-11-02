@@ -62,6 +62,8 @@ AXInspectFactory::Type::operator std::string() const {
       return "android";
     case kBlink:
       return "blink";
+    case kFuchsia:
+      return "fuchsia";
     case kMac:
       return "mac";
     case kLinux:

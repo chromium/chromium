@@ -30,6 +30,7 @@ BrowserAccessibilityManagerFuchsia::~BrowserAccessibilityManagerFuchsia() =
 
 void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
     BrowserAccessibility* node) {
+  BrowserAccessibilityManager::FireFocusEvent(node);
   // TODO(fxb.dev/82826): Send updates to fuchsia for the newly and previously
   // focused nodes.
 }
