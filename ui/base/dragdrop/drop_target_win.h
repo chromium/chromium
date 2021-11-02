@@ -16,9 +16,9 @@ struct IDropTargetHelper;
 
 namespace ui {
 
-// A DropTarget implementation that takes care of the nitty gritty
-// of dnd. While this class is concrete, subclasses will most likely
-// want to override various OnXXX methods.
+// A DropTarget implementation that takes care of the details of dnd. While
+// this class is concrete, subclasses will most likely want to override various
+// OnXXX methods.
 //
 // Because DropTarget is ref counted you shouldn't delete it directly,
 // rather wrap it in a scoped_refptr. Be sure and invoke RevokeDragDrop(m_hWnd)
