@@ -8050,7 +8050,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerUnloadBrowserTest,
 // Verify that when an OOPIF with an unload handler navigates cross-process,
 // its unload handler is able to send a postMessage to the parent frame.
 // See https://crbug.com/857274.
-#if defined(OS_MAC) || (defined(OS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(https://crbug.com/989704): Fix flake on Linux TSAN and ASAN.
+#if defined(OS_MAC) || (defined(OS_WIN) && defined(ADDRESS_SANITIZER)) || \
+    (defined(OS_LINUX) &&                                                 \
+     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
 #define MAYBE_PostMessageToParentWhenSubframeNavigates \
   DISABLED_PostMessageToParentWhenSubframeNavigates
 #else
