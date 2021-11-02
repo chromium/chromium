@@ -48,7 +48,8 @@ void FullCardRequest::GetFullCard(
   DCHECK(ui_delegate);
   GetFullCardImpl(card, reason, result_delegate, ui_delegate,
                   /*fido_assertion_info=*/absl::nullopt,
-                  std::move(last_committed_url_origin));
+                  std::move(last_committed_url_origin),
+                  /*context_token=*/absl::nullopt);
 }
 
 void FullCardRequest::GetFullCardViaFIDO(
@@ -56,11 +57,12 @@ void FullCardRequest::GetFullCardViaFIDO(
     AutofillClient::UnmaskCardReason reason,
     base::WeakPtr<ResultDelegate> result_delegate,
     base::Value fido_assertion_info,
-    absl::optional<GURL> last_committed_url_origin) {
+    absl::optional<GURL> last_committed_url_origin,
+    absl::optional<std::string> context_token) {
   DCHECK(fido_assertion_info.is_dict());
-  GetFullCardImpl(card, reason, result_delegate, nullptr,
-                  std::move(fido_assertion_info),
-                  std::move(last_committed_url_origin));
+  GetFullCardImpl(
+      card, reason, result_delegate, nullptr, std::move(fido_assertion_info),
+      std::move(last_committed_url_origin), std::move(context_token));
 }
 
 void FullCardRequest::GetFullCardImpl(
@@ -69,7 +71,8 @@ void FullCardRequest::GetFullCardImpl(
     base::WeakPtr<ResultDelegate> result_delegate,
     base::WeakPtr<UIDelegate> ui_delegate,
     absl::optional<base::Value> fido_assertion_info,
-    absl::optional<GURL> last_committed_url_origin) {
+    absl::optional<GURL> last_committed_url_origin,
+    absl::optional<std::string> context_token) {
   // Retrieval of card information should happen via CVC auth or FIDO, but not
   // both. Use |ui_delegate|'s existence as evidence of doing CVC auth and
   // |fido_assertion_info| as evidence of doing FIDO auth.
@@ -105,6 +108,8 @@ void FullCardRequest::GetFullCardImpl(
   request_->card = card;
   request_->reason = reason;
   request_->last_committed_url_origin = last_committed_url_origin;
+  if (context_token.has_value())
+    request_->context_token = context_token.value();
   should_unmask_card_ = card.record_type() == CreditCard::MASKED_SERVER_CARD ||
                         card.record_type() == CreditCard::VIRTUAL_CARD ||
                         (card.record_type() == CreditCard::FULL_SERVER_CARD &&

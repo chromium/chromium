@@ -75,9 +75,11 @@ CreditCardFIDOAuthenticator::~CreditCardFIDOAuthenticator() {
 void CreditCardFIDOAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
-    base::Value request_options) {
+    base::Value request_options,
+    absl::optional<std::string> context_token) {
   card_ = card;
   requester_ = requester;
+  context_token_ = context_token;
 
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
@@ -439,7 +441,7 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
     full_card_request_->GetFullCardViaFIDO(
         *card_, AutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), std::move(response),
-        last_committed_url_origin);
+        last_committed_url_origin, context_token_);
   } else {
     DCHECK(current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW ||
            current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW);

@@ -110,9 +110,13 @@ class CreditCardFIDOAuthenticator
   ~CreditCardFIDOAuthenticator() override;
 
   // Invokes Authentication flow. Responds to |accessor_| with full pan.
-  virtual void Authenticate(const CreditCard* card,
-                            base::WeakPtr<Requester> requester,
-                            base::Value request_options);
+  // |context_token| is used to share context between different requests. It
+  // will be populated only for virtual card unmasking.
+  virtual void Authenticate(
+      const CreditCard* card,
+      base::WeakPtr<Requester> requester,
+      base::Value request_options,
+      absl::optional<std::string> context_token = absl::nullopt);
 
   // Invokes Registration flow. Sends credentials created from
   // |creation_options| along with the |card_authorization_token| to Payments in
@@ -294,6 +298,10 @@ class CreditCardFIDOAuthenticator
 
   // Signaled when callback for IsUserVerifiable() is invoked.
   base::WaitableEvent user_is_verifiable_callback_received_;
+
+  // The context token used for sharing context between different server
+  // requests. Will be populated only for virtual card unmasking.
+  absl::optional<std::string> context_token_;
 
   base::WeakPtrFactory<CreditCardFIDOAuthenticator> weak_ptr_factory_{this};
 };
