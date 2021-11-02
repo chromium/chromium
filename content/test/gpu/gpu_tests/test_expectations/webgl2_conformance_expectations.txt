@@ -692,12 +692,6 @@ crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.h
 # Until Qualcomm devices on the waterfall and CQ are updated to Android S, skip this new test.
 crbug.com/1076188 [ android qualcomm ] conformance2/glsl3/fragment-shader-loop-crash.html [ Skip ]
 
-# Video tests are flaky. Sometimes the video is black.
-crbug.com/948894 [ android ] conformance/textures/video/* [ RetryOnFailure ]
-crbug.com/948894 [ android ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/948894 [ android ] conformance2/textures/video/* [ RetryOnFailure ]
-crbug.com/948894 [ android ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-
 crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
 # Video uploads to some texture formats new in WebGL 2.0 are
