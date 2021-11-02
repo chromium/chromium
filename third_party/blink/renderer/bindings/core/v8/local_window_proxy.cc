@@ -32,6 +32,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -70,6 +71,11 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+namespace {
+
+base::SingleSampleMetric* g_v8_context_count_logger = nullptr;
+
+}  // namespace
 
 // static
 int LocalWindowProxy::v8_context_count_ = 0;
@@ -223,6 +229,15 @@ void LocalWindowProxy::CreateContext() {
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
   ++v8_context_count_;
+  if (!g_v8_context_count_logger) {
+    g_v8_context_count_logger =
+        base::SingleSampleMetricsFactory::Get()
+            ->CreateCustomCountsMetric("Blink.V8.NumberContextsCreatedOfWindow",
+                                       1, 100, 50)
+            .release();
+  }
+  g_v8_context_count_logger->SetSample(v8_context_count_);
+
   v8::Local<v8::Context> context;
   {
     DEFINE_STATIC_LOCAL(

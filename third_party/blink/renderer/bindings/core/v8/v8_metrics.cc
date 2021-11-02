@@ -349,8 +349,4 @@ V8MetricsRecorder::GetUkmRecorderAndSourceId(
                                                 context->UkmSourceID());
 }
 
-int TotalNumberV8ContextsCreatedOfWindow() {
-  return LocalWindowProxy::TotalNumberV8ContextsCreated();
-}
-
 }  // namespace blink

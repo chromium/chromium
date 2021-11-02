@@ -1570,6 +1570,14 @@ _CONFIG = [
             'switches::kDumpRuntimeCallStats',
         ]
     },
+    {
+        'paths':
+        ['third_party/blink/renderer/bindings/core/v8/local_window_proxy.cc'],
+        'allowed': [
+            'base::SingleSampleMetric',
+            'base::SingleSampleMetricsFactory',
+        ],
+    },
 ]
 
 
