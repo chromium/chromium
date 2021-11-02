@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Werk</translation>
 <translation id="1122198203221319518">&amp;Extra</translation>
 <translation id="1122242684574577509">Verificatie mislukt. Klik om naar de loginpagina te gaan van het wifi-netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">De inloggegevens van je account zijn verouderd. Log uit en weer in.</translation>
 <translation id="1122960773616686544">Naam van bookmark</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
@@ -7492,6 +7493,7 @@ Je kunt beheren wat je ziet in je herinneringen via <ph name="BEGIN_LINK" />phot
 <translation id="8879284080359814990">Tonen al&amp;s tabblad</translation>
 <translation id="8879921471468674457">Inloggegevens onthouden</translation>
 <translation id="8880054210564666174">Kan contactenlijst niet downloaden. Check je netwerkverbinding of <ph name="LINK_BEGIN" />probeer het opnieuw<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Open Instellingen om <ph name="USB_DEVICE_NAME" /> te verbinden met Linux of Parallels Desktop</translation>
 <translation id="8881020143150461183">Probeer het opnieuw. Neem contact op met <ph name="CARRIER_NAME" /> voor technische support.</translation>
 <translation id="8883273463630735858">Touchpadversnelling aanzetten</translation>
 <translation id="8884570509232205463">Je apparaat wordt nu vergrendeld om <ph name="UNLOCK_TIME" />.</translation>

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Radera befintlig data.</translation>
 <translation id="1146678959555564648">Kliv in i VR</translation>
 <translation id="114825011539563458">De viktigaste säkerhets- och integritetskontrollerna på ett och samma ställe</translation>
+<translation id="1149401351239820326">Utgångsmånad</translation>
 <translation id="1154704303112745282">Sidan är inte tillgänglig offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Använt</translation>
 <translation id="1171770572613082465">Visa populära webbplatser genom att trycka på Populärt</translation>
@@ -817,7 +818,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5956665950594638604">Öppna hjälpcentret för Chrome på en ny flik</translation>
 <translation id="5957442310066583693">Tryck på hemknappen om du vill se dina mest besökta webbplatser</translation>
 <translation id="5958275228015807058">Du hittar filerna och sidorna i Nedladdningar</translation>
-<translation id="5962272973076519240">Verifiera din identitet för att låsa upp inkognito</translation>
 <translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
 <translation id="5964805880140440652">Aktivera synkronisering i inställningarna för Chrome om du vill dela den här sidan med annan enhet</translation>
 <translation id="5964869237734432770">Stoppa bildbeskrivning</translation>
@@ -1188,6 +1188,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="804335162455518893">Det gick inte att hitta SD-kortet</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitoflik}other{<ph name="TAB_COUNT_NORMAL" /> inkognitoflikar}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tillgängliga</translation>
+<translation id="8058655154417507695">Utgångsår</translation>
 <translation id="8058746566562539958">Öppna på ny flik i Chrome</translation>
 <translation id="8063895661287329888">Det gick inte att lägga till bokmärket.</translation>
 <translation id="806745655614357130">Håll min data separat</translation>

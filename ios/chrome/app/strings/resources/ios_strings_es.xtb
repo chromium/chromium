@@ -525,6 +525,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6127379762771434464">Elemento quitado</translation>
 <translation id="6136914049981179737">Hace segundos</translation>
 <translation id="6144589619057374135">Abrir ${url} en incógnito</translation>
+<translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="651505212789431520">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde los Ajustes.</translation>
 <translation id="6524918542306337007">El modo de incógnito no está disponible</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Ampliar</translation>
 <translation id="6585618849026997638">Si añades un marcador a una página que consideres importante, podrás volver a ella más tarde.</translation>
 <translation id="6603393121510733479">Tu organización ha desactivado la navegación privada.
@@ -623,6 +625,7 @@ Mientras estás en modo de incógnito, los sitios no pueden usar tus cookies par
 <translation id="6851516051005285358">Solicitar sitio para ordenadores</translation>
 <translation id="6858855187367714033">Escaneado</translation>
 <translation id="6859944681507688231">Para escanear un código QR o una tarjeta de crédito, habilita la cámara en la configuración.</translation>
+<translation id="6867369562105931222">contraseña</translation>
 <translation id="6869389390665537774">Puedes ver las páginas que has visitado o borrarlas de tu historial</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6888009575607455378">¿Seguro que quieres descartar los cambios?</translation>

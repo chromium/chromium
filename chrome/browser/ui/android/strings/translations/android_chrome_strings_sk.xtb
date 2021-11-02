@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Odstrániť existujúce dáta.</translation>
 <translation id="1146678959555564648">Zadať VR</translation>
 <translation id="114825011539563458">Najdôležitejšie ovládanie ochrany súkromia a zabezpečenia na jednom mieste</translation>
+<translation id="1149401351239820326">Mesiac vypršania platnosti</translation>
 <translation id="1154704303112745282">Stránka nie je k dispozícii offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Použité</translation>
 <translation id="1171770572613082465">Klepnutím na tlačidlo Hlavné weby zobrazíte obľúbené webové stránky</translation>
@@ -816,7 +817,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5956665950594638604">Otvorenie Centra pomoci prehliadača Chrome na novej karte</translation>
 <translation id="5957442310066583693">Ak si chcete zobraziť najobľúbenejšie weby, klepnite na tlačidlo plochy</translation>
 <translation id="5958275228015807058">Nájdite stiahnuté súbory a stránky</translation>
-<translation id="5962272973076519240">Ak chcete odblokovať režim inkognito, overte, že ste to vy</translation>
 <translation id="5962718611393537961">Klepnutím zbaliť</translation>
 <translation id="5964805880140440652">Ak chcete zdieľať túto stránku s iným zariadením, zapnite synchronizáciu v nastaveniach Chromu</translation>
 <translation id="5964869237734432770">Zastaviť popisy obrázkov</translation>
@@ -1187,6 +1187,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="804335162455518893">SD karta sa nenašla</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta inkognito}few{<ph name="TAB_COUNT_NORMAL" /> karty inkognito}many{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}other{<ph name="TAB_COUNT_NORMAL" /> kariet inkognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB k dispozícii</translation>
+<translation id="8058655154417507695">Rok ukončenia platnosti</translation>
 <translation id="8058746566562539958">Otvoriť v Chrome na novej karte</translation>
 <translation id="8063895661287329888">Záložku sa nepodarilo pridať.</translation>
 <translation id="806745655614357130">Ponechať moje dáta oddelené</translation>

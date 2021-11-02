@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">លុបទិន្នន័យដែលមានស្រាប់។</translation>
 <translation id="1146678959555564648">បញ្ចូល VR</translation>
 <translation id="114825011539563458">ការគ្រប់គ្រងសុវត្ថិភាព និងឯកជនភាពសំខាន់បំផុតនៅកន្លែងតែមួយ</translation>
+<translation id="1149401351239820326">ខែផុតកំណត់</translation>
 <translation id="1154704303112745282">មិនអាចប្រើទំព័រពេលគ្មានអ៊ីនធឺណិតបានទេ៖ <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">បាន​ប្រើប្រាស់</translation>
 <translation id="1171770572613082465">មើល​គេហទំព័រ​ពេញនិយម ដោយ​ចុច​ប៊ូតុង "គេហទំព័រ​ពេញនិយម"</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">បើកមជ្ឈមណ្ឌលជំនួយ Chrome នៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="5957442310066583693">ដើម្បី​មើលឃើញ​គេហទំព័រ​ពេញនិយម​របស់អ្នក សូមចុច​ប៊ូតុង​ដើម</translation>
 <translation id="5958275228015807058">ស្វែងរក​ឯកសារ​ និងទំព័ររបស់អ្នកនៅក្នុង ទាញយក</translation>
-<translation id="5962272973076519240">ផ្ទៀងផ្ទាត់ថាជាអ្នក ដើម្បីដោះសោមុខងារឯកជន</translation>
 <translation id="5962718611393537961">ចុច​ដើម្បី​លាក់</translation>
 <translation id="5964805880140440652">ដើម្បី​ចែករំលែកទំព័រនេះជាមួយឧបករណ៍ផ្សេង សូមបើកសមកាលកម្មនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="5964869237734432770">ឈប់យក​ការពណ៌នា​អំពីរូបភាព</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">រកមិន​ឃើញកាត SD ទេ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{ផ្ទាំងឯកជន <ph name="TAB_COUNT_ONE" />}other{ផ្ទាំងឯកជន <ph name="TAB_COUNT_NORMAL" />}}</translation>
 <translation id="8051695050440594747">ទំនេរ <ph name="MEGABYTES" /> MB</translation>
+<translation id="8058655154417507695">ឆ្នាំផុតកំណត់</translation>
 <translation id="8058746566562539958">បើក​នៅក្នុង​ផ្ទាំង​ថ្មី​របស់ Chrome</translation>
 <translation id="8063895661287329888">បានបរាជ័យក្នុងការបន្ថែមចំណាំ</translation>
 <translation id="806745655614357130">រក្សាទិន្នន័យរបស់ខ្ញុំដាច់ដោយឡែកពីគ្នា</translation>

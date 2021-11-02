@@ -526,6 +526,7 @@
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
 <translation id="6136914049981179737">সেকেন্ড আগে</translation>
 <translation id="6144589619057374135">'ছদ্মবেশী মোডে' ${url} খুলুন</translation>
+<translation id="6159839020698489198">ঐচ্ছিক</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
@@ -583,6 +584,7 @@
 প্রতিটি সাইটের জন্য অনন্য পাসওয়ার্ড ব্যবহার করার চেষ্টা করুন।</translation>
 <translation id="651505212789431520">সিঙ্ক বাতিল করতে চান? যেকোনও সময় সেটিংস থেকে আপনি সিঙ্ক চালু করতে পারবেন।</translation>
 <translation id="6524918542306337007">'ছদ্মবেশী মোড' উপলভ্য নেই</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">বড় করে দেখুন</translation>
 <translation id="6585618849026997638">গুরুত্বপূর্ণ পৃষ্ঠার বুকমার্ক যোগ করে সহজেই সেখানে ফিরে যেতে পারবেন</translation>
 <translation id="6603393121510733479">আপনার সংস্থা ব্যক্তিগত ব্রাউজিংয়ের সুবিধা বন্ধ করে দিয়েছে।
@@ -624,6 +626,7 @@
 <translation id="6851516051005285358">ডেস্কটপ সাইটের জন্য অনুরোধ করুন</translation>
 <translation id="6858855187367714033">স্ক্যান করা হয়েছে</translation>
 <translation id="6859944681507688231">কোনও QR কোড বা ক্রেডিট কার্ড স্ক্যান করতে সেটিংস থেকে ক্যামেরা চালু করুন।</translation>
+<translation id="6867369562105931222">পাসওয়ার্ড</translation>
 <translation id="6869389390665537774">আপনি যেসব পৃষ্ঠাতে গেছেন, সেগুলি এখানে দেখতে পারেন বা আপনার দেখার ইতিহাস থেকে সেগুলি সরিয়ে দিতে পারেন</translation>
 <translation id="6873263987691478642">স্প্লিট ভিউ</translation>
 <translation id="6888009575607455378">আপনি কি সত্যিই আপনার করা পরিবর্তন বাতিল করতে চান?</translation>

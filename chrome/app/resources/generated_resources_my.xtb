@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">အလုပ်</translation>
 <translation id="1122198203221319518">&amp;ကိရိယာများ</translation>
 <translation id="1122242684574577509">အထောက်အထားစစ်ဆေးခြင်း မအောင်မြင်ပါ။ သင်အသုံးပြုနေသော ဝိုင်ဖိုင်ကွန်ယက်(<ph name="NETWORK_ID" />) အတွက် လက်မှတ်ထိုးဝင်ရန်စာမျက်နှာသို့ သွားရန် နှိပ်ပါ။</translation>
+<translation id="1122913801042512795">သင့်အကောင့် လက်မှတ်ထိုးဝင်ခြင်း အသေးစိတ်သည် ဟောင်းသွားပြီ။ ထွက်ပြီး ပြန်လက်မှတ်ထိုးဝင်ပေးပါ။</translation>
 <translation id="1122960773616686544">အမည်ကို စာညှပ်ထည့်ရန်</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (မူရင်း) ဟု ယူဆရပါသည်</translation>
@@ -7506,6 +7507,7 @@
 <translation id="8879284080359814990">&amp;တဘ် အဖြစ် ပြရန်</translation>
 <translation id="8879921471468674457">လက်မှတ်ထိုးဝင်ခြင်း အချက်အလက်ကို မှတ်ထားရန်</translation>
 <translation id="8880054210564666174">အဆက်အသွယ်စာရင်းကို ဒေါင်းလုဒ်လုပ်၍မရပါ။ သင့်ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ (သို့) <ph name="LINK_BEGIN" />ထပ်စမ်းကြည့်ပါ<ph name="LINK_END" />။</translation>
+<translation id="8880344290593529089">Linux သို့မဟုတ် Parallels Desktop သို့ <ph name="USB_DEVICE_NAME" /> ကိုချိတ်ဆက်ရန် ‘ဆက်တင်များ’ ဖွင့်ပါ</translation>
 <translation id="8881020143150461183">ထပ်စမ်းကြည့်ပါ။ နည်းပညာအကူအညီအတွက် <ph name="CARRIER_NAME" /> ကို ဆက်သွယ်ပါ။</translation>
 <translation id="8883273463630735858">တာ့ချ်ပက်အရှိန်မြှင့်စနစ်ကို ဖွင့်ရန်</translation>
 <translation id="8884570509232205463">သင့်စက်ပစ္စည်းကို <ph name="UNLOCK_TIME" /> တွင် လော့ခ်ချလိုက်ပါပြီ။</translation>

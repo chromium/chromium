@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Eyða fyrirliggjandi gögnum.</translation>
 <translation id="1146678959555564648">Hefja sýndarveruleika</translation>
 <translation id="114825011539563458">Mikilvægustu persónuverndar- og öryggisstýringarnar á einum stað</translation>
+<translation id="1149401351239820326">Fyrningarmánuður</translation>
 <translation id="1154704303112745282">Síða ekki í boði án nettengingar: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Notað</translation>
 <translation id="1171770572613082465">Sjáðu vinsæl vefsvæði með því að ýta á hnappinn „Vinsælast“</translation>
@@ -816,7 +817,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5956665950594638604">Opna hjálparmiðstöð Chrome í nýjum flipa</translation>
 <translation id="5957442310066583693">Ýttu á heimahnappinn til að sjá vefsvæðin sem þú heimsækir oftast</translation>
 <translation id="5958275228015807058">Þú finnur skrár og síður í Niðurhali</translation>
-<translation id="5962272973076519240">Staðfestu að þetta sért þú til að taka huliðsstillingu úr lás</translation>
 <translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5964805880140440652">Til að deila þessari síðu í öðru tæki skaltu kveikja á samstillingu í stillingum Chrome</translation>
 <translation id="5964869237734432770">Slökkva á myndlýsingum</translation>
@@ -1187,6 +1187,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="804335162455518893">SD-kort fannst ekki</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> huliðsflipi}one{<ph name="TAB_COUNT_NORMAL" /> huliðsflipi}other{<ph name="TAB_COUNT_NORMAL" /> huliðsflipar}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tiltæk</translation>
+<translation id="8058655154417507695">Gildir til ársins</translation>
 <translation id="8058746566562539958">Opna í nýjum flipa Chrome</translation>
 <translation id="8063895661287329888">Ekki tókst að bæta bókamerki við.</translation>
 <translation id="806745655614357130">Halda gögnunum mínum aðskildum</translation>

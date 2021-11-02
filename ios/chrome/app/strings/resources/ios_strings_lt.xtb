@@ -525,6 +525,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6127379762771434464">Elementas pašalintas</translation>
 <translation id="6136914049981179737">Prieš sek.</translation>
 <translation id="6144589619057374135">Atidaryti ${url} inkognito režimu</translation>
+<translation id="6159839020698489198">nebūtinas</translation>
 <translation id="6177442314419606057">Paieška naršyklėje „Chrome“</translation>
 <translation id="6184086493125982861">Rodyti skirtukus</translation>
 <translation id="6187302354554850004">Pask. k. sinchr.: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 Kiekvienoje svetainėje stenkitės naudoti unikalius slaptažodžius.</translation>
 <translation id="651505212789431520">Atšaukti sinchronizavimą? Galite bet kada įjungti sinchronizavimą skiltyje „Nustatymai“.</translation>
 <translation id="6524918542306337007">Inkognito režimas nepasiekiamas</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Artinti</translation>
 <translation id="6585618849026997638">Galite grįžti į jums svarbų puslapį pridėję žymę</translation>
 <translation id="6603393121510733479">Organizacija išjungė privatų naršymą.
@@ -623,6 +625,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6851516051005285358">Užklausa dėl kompiuteriui skirtos svetainės versijos</translation>
 <translation id="6858855187367714033">Nuskaityta</translation>
 <translation id="6859944681507688231">Jei norite nuskaityti QR kodą ar kredito kortelę, nustatymuose įgalinkite fotoaparatą.</translation>
+<translation id="6867369562105931222">slaptažodis</translation>
 <translation id="6869389390665537774">Galite peržiūrėti puslapius, kuriuose lankėtės, arba išvalyti juos iš istorijos</translation>
 <translation id="6873263987691478642">Padalytas rodinys</translation>
 <translation id="6888009575607455378">Ar tikrai norite atmesti pakeitimus?</translation>

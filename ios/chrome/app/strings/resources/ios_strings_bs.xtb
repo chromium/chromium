@@ -525,6 +525,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6136914049981179737">Prije nekoliko sekundi</translation>
 <translation id="6144589619057374135">Otvorite ${url} u anonimnom načinu rada</translation>
+<translation id="6159839020698489198">nije obavezno</translation>
 <translation id="6177442314419606057">Pretražite u Chromeu</translation>
 <translation id="6184086493125982861">Prikaz kartica</translation>
 <translation id="6187302354554850004">Posljednji put sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 Pokušajte koristiti jedinstvenu lozinku za svaku web lokaciju.</translation>
 <translation id="651505212789431520">Otkazati sinhronizaciju? Sinhronizaciju možete uključiti bilo kada u Postavkama.</translation>
 <translation id="6524918542306337007">Anonimni način rada je nedostupan</translation>
+<translation id="6537746030088321027">primjeri.hr</translation>
 <translation id="6561262006871132942">Uvećaj</translation>
 <translation id="6585618849026997638">Dodavanjem oznake možete se vratiti na stranicu koja vam je važna</translation>
 <translation id="6603393121510733479">Vaša organizacija je isključila privatno pregledavanje.
@@ -623,6 +625,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6851516051005285358">Zatraži web lokaciju za radnu površinu</translation>
 <translation id="6858855187367714033">Skenirano</translation>
 <translation id="6859944681507688231">Omogućite kameru u postavkama da skenirate QR kôd ili kreditnu karticu.</translation>
+<translation id="6867369562105931222">lozinka</translation>
 <translation id="6869389390665537774">Možete vidjeti stranice koje ste posjetili ili ih obrisati iz historije</translation>
 <translation id="6873263987691478642">Podijeljeni prikaz</translation>
 <translation id="6888009575607455378">Jeste li sigurni da želite odbaciti promjene?</translation>

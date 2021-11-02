@@ -472,6 +472,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5711039611392265845">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització i serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="5724941645893276623">Per navegar pel web de manera privada, obre una pestanya nova</translation>
 <translation id="5728700505257787410">S'ha produït un problema en iniciar la sessió al vostre compte.</translation>
+<translation id="5731784586962650619">Contrasenyes en altres aplicacions</translation>
 <translation id="5737974891429562743">Actualitza les dades d'inici de sessió del compte per iniciar la sincronització.</translation>
 <translation id="5738887413654608789">Això et permet detectar pàgines web rellevants del teu entorn.</translation>
 <translation id="5758631781033351321">Trobaràs la llista de lectura aquí</translation>
@@ -524,6 +525,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
 <translation id="6136914049981179737">Fa segons</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
+<translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Fes cerques a Chrome</translation>
 <translation id="6184086493125982861">Mostra les pestanyes</translation>
 <translation id="6187302354554850004">Última sincronització: <ph name="LAST_USED_TIME" /></translation>
@@ -581,6 +583,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="651505212789431520">Vols cancel·lar la sincronització? Pots activar la sincronització en qualsevol moment des de la configuració.</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
+<translation id="6537746030088321027">exemple.cat</translation>
 <translation id="6561262006871132942">Amplia</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
 <translation id="6603393121510733479">La teva organització ha desactivat la navegació privada.
@@ -622,6 +625,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="6851516051005285358">Sol·licita el lloc web per a ordinadors</translation>
 <translation id="6858855187367714033">S'ha escanejat</translation>
 <translation id="6859944681507688231">Per escanejar un codi QR o una targeta de crèdit, activa la càmera des de Configuració.</translation>
+<translation id="6867369562105931222">contrasenya</translation>
 <translation id="6869389390665537774">Pots veure les pàgines que has visitat o esborrar-les de l'historial</translation>
 <translation id="6873263987691478642">Visualització dividida</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>

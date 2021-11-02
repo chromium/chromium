@@ -714,7 +714,7 @@
 <translation id="1719312230114180055">ملاحظة: قد يكون استخدام ميزة بصمة الإصبع أقل أمانًا من استخدام كلمة مرور أو رقم تعريف شخصي قوي.</translation>
 <translation id="1720318856472900922">‏مصادقة TLS (بروتوكول أمان طبقة النقل) للخادم WWW</translation>
 <translation id="1720941539803966190">إغلاق البرنامج التعليمي</translation>
-<translation id="172123215662733643">البحث عن الصور باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
+<translation id="172123215662733643">ابحث في الصور عبر "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="1721312023322545264">أنت بحاجة لإذن من <ph name="NAME" /> لزيارة هذا الموقع</translation>
 <translation id="1722460139690167654">تتم <ph name="BEGIN_LINK" />إدارة <ph name="DEVICE_TYPE" /><ph name="END_LINK" /> من خلال <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">نافذة &amp;جديدة</translation>
@@ -1574,7 +1574,7 @@
 <translation id="2602501489742255173">مرِّر سريعًا للأعلى للبدء.</translation>
 <translation id="2603115962224169880">إزالة البرامج الضارة من جهاز الكمبيوتر</translation>
 <translation id="2603355571917519942">‏ميزة Voice Match جاهزة للاستخدام</translation>
-<translation id="2604138917550693049">‏البحث عن صورة باستخدام "عدسة Google"</translation>
+<translation id="2604138917550693049">‏ابحث في الصور عبر "عدسة Google"</translation>
 <translation id="2604255671529671813">خطأ في اتصال الشبكة</translation>
 <translation id="2605668923777146443">يُرجى الانتقال إلى <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" /> للاطِّلاع على الخيارات المتاحة لميزة "الربط بالهاتف".</translation>
 <translation id="2606246518223360146">ربط البيانات</translation>
@@ -3874,7 +3874,7 @@
 <translation id="5051836348807686060">لا تتوفر ميزة التدقيق الإملائي للغات التي اخترتها.</translation>
 <translation id="5052499409147950210">تعديل موقع إلكتروني</translation>
 <translation id="505347685865235222">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">‏البحث عن صورة باستخدام "عدسة Google"</translation>
+<translation id="5053962746715621840">‏ابحث في الصور عبر "عدسة Google"</translation>
 <translation id="5056950756634735043">جارٍ الاتصال بالحاوية</translation>
 <translation id="5057110919553308744">عند النقر على "الإضافة"</translation>
 <translation id="505776528429481161">يمكنك الاتصال بالأجهزة القريبة وإعدادها بسهولة.</translation>
@@ -5877,7 +5877,7 @@
 <translation id="7230222852462421043">استعادة النافذة</translation>
 <translation id="7230787553283372882">تخصيص حجم النَّص</translation>
 <translation id="7232750842195536390">تعذّرت إعادة التسمية</translation>
-<translation id="723343421145275488">البحث عن الصور باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
+<translation id="723343421145275488">ابحث في الصور عبر "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="7234010996000898150">‏جارٍ إلغاء عملية الاسترداد من Linux</translation>
 <translation id="7235716375204803342">جارٍ جلب الأنشطة...</translation>
 <translation id="7235737137505019098">لا تتوفر مساحة كافية في مفتاح الأمان لأي حسابات إضافية.</translation>

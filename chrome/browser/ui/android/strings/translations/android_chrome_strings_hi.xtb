@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">मौजूदा डेटा मिटाएं.</translation>
 <translation id="1146678959555564648">VR डालें</translation>
 <translation id="114825011539563458">निजता और सुरक्षा की सबसे अहम सेटिंग, एक जगह पर</translation>
+<translation id="1149401351239820326">समाप्ति माह</translation>
 <translation id="1154704303112745282">यह पेज ऑफ़लाइन उपलब्ध नहीं है: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">इस्तेमाल किया गया</translation>
 <translation id="1171770572613082465">"मुख्य साइटें" बटन पर टैप करके लोकप्रिय साइटें देखें</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">Chrome सहायता केंद्र को नए टैब में खोलें</translation>
 <translation id="5957442310066583693">अपने हिसाब से खास साइटें देखने के लिए, होम बटन पर टैप करें</translation>
 <translation id="5958275228015807058">डाउनलोड में जाकर अपनी फ़ाइलें और पेज पाएं</translation>
-<translation id="5962272973076519240">अपने गुप्त सेशन को अनलॉक करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="5962718611393537961">छोटा करने के लिए टैप करें</translation>
 <translation id="5964805880140440652">इस पेज को किसी और डिवाइस पर शेयर करने के लिए, Chrome सेटिंग में सिंक की सुविधा चालू करें</translation>
 <translation id="5964869237734432770">इमेज की जानकारी पाना बंद करें</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">SD कार्ड नहीं मिला</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> गुप्त टैब}one{<ph name="TAB_COUNT_NORMAL" /> गुप्त टैब}other{<ph name="TAB_COUNT_NORMAL" /> गुप्त टैब}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एमबी उपलब्ध</translation>
+<translation id="8058655154417507695">समाप्ति वर्ष</translation>
 <translation id="8058746566562539958">नए Chrome टैब में खोलें</translation>
 <translation id="8063895661287329888">बुकमार्क जोड़ने में विफल रहा.</translation>
 <translation id="806745655614357130">मेरा डेटा अलग रखें</translation>

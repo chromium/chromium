@@ -525,6 +525,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6127379762771434464">Item removido</translation>
 <translation id="6136914049981179737">Há segundos</translation>
 <translation id="6144589619057374135">Abrir ${url} na Navegação anónima</translation>
+<translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Pesquisar no Chrome</translation>
 <translation id="6184086493125982861">Mostrar Separadores</translation>
 <translation id="6187302354554850004">Última sincronização: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="651505212789431520">Pretende cancelar a sincronização? Pode ativar a sincronização em qualquer altura nas Definições.</translation>
 <translation id="6524918542306337007">O Modo de navegação anónima está indisponível</translation>
+<translation id="6537746030088321027">exemplo.pt</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
@@ -623,6 +625,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6851516051005285358">Pedir site para computador</translation>
 <translation id="6858855187367714033">Lido</translation>
 <translation id="6859944681507688231">Para ler um código QR ou um cartão de crédito, ative a câmara nas definições.</translation>
+<translation id="6867369562105931222">palavra-passe</translation>
 <translation id="6869389390665537774">Pode ver as páginas que visitou ou limpá-las do seu histórico.</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6888009575607455378">Tem a certeza de que pretende rejeitar as alterações?</translation>

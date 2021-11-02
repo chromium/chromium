@@ -525,6 +525,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6127379762771434464">Vienums ir noņemts</translation>
 <translation id="6136914049981179737">Pirms sek.</translation>
 <translation id="6144589619057374135">Atvērt vietni ${url} inkognito režīmā</translation>
+<translation id="6159839020698489198">neobligāts</translation>
 <translation id="6177442314419606057">Meklēšana pārlūkā Chrome</translation>
 <translation id="6184086493125982861">Rādīt cilnes</translation>
 <translation id="6187302354554850004">Pēdējoreiz sinhr.: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 Ieteicams izmantot unikālu paroli katrai vietnei.</translation>
 <translation id="651505212789431520">Vai atcelt sinhronizēšanu? Jebkurā brīdī iestatījumos varat ieslēgt sinhronizēšanu.</translation>
 <translation id="6524918542306337007">Inkognito režīms nav pieejams</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Tuvināt</translation>
 <translation id="6585618849026997638">Varat pievienot grāmatzīmi, lai varētu atgriezties vajadzīgajā lapā</translation>
 <translation id="6603393121510733479">Jūsu organizācija izslēdza privātu pārlūkošanu.
@@ -623,6 +625,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6851516051005285358">Pieprasīt datora vietni</translation>
 <translation id="6858855187367714033">Skenēšana pabeigta</translation>
 <translation id="6859944681507688231">Lai skenētu QR kodu vai kredītkarti, iestatījumos iespējojiet kameras atļauju.</translation>
+<translation id="6867369562105931222">parole</translation>
 <translation id="6869389390665537774">Varat skatīt apmeklētās lapas vai noņemt tās no vēstures.</translation>
 <translation id="6873263987691478642">Dalītais skats</translation>
 <translation id="6888009575607455378">Vai tiešām vēlaties atmest veiktās izmaiņas?</translation>

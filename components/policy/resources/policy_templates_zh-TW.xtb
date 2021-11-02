@@ -623,7 +623,6 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="1736269219679256369">允許忽略 SSL 警告網頁，繼續前往原本指定的頁面</translation>
 <translation id="174765717426930019">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
-<translation id="1750315445671978749">封鎖所有下載作業</translation>
 <translation id="1751429117283165017">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予寫入權限，以寫入主機作業系統中檔案系統的檔案或目錄。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -3496,7 +3495,6 @@
       如果不設定這項政策，系統不會套用任何限制；不論使用哪種 <ph name="PRODUCT_NAME" /> 版本，使用者皆可登入。
 
       此處的「版本」可以指確切版本 (例如「61.0.3163.120」)，也可以指版本前置字元 (例如「61.0」)。  </translation>
-<translation id="5247006254130721952">封鎖危險下載作業</translation>
 <translation id="5247973380763021389">禁止使用者雲端政策覆寫裝置雲端政策。</translation>
 <translation id="5249453807420671499">使用者可以新增 Kerberos 帳戶</translation>
 <translation id="5252210248395576403">這項政策可讓快速解答功能存取所選內容，並將相關資訊傳送給伺服器，進而取得翻譯結果。
@@ -3758,7 +3756,6 @@
 <translation id="5521875416764302911">禁止使用者登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
-<translation id="5530347722229944744">封鎖有安全疑慮的下載作業</translation>
 <translation id="5534079385061985566">啟用完整還原功能。</translation>
 <translation id="5535256585099022933">設定重新啟動的時間間隔</translation>
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
@@ -4127,7 +4124,6 @@
 <translation id="6019606564278029236">允許遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="6022948604095165524">起始動作</translation>
 <translation id="602318745029752898">允許使用隨選朗讀中的加強型網路文字轉語音功能</translation>
-<translation id="6025267044008029374">封鎖惡意的下載內容 (建議)</translation>
 <translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
@@ -4594,21 +4590,6 @@
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
 <translation id="663685822663765995">限制列印色彩模式</translation>
-<translation id="6640989746632867803">如果設定這項政策，使用者無法略過下載作業安全性判斷。
-
-       這項政策可設定的值：
-
-      * 設為「封鎖危險下載作業」：除了會引發安全性警告的下載作業以外，其他下載作業都可正常執行。
-
-      * 設為「封鎖有安全疑慮的下載作業」：除了有安全疑慮而會引發安全性警告的下載作業以外，其他下載作業都可正常執行。
-
-      * 設為「封鎖所有下載作業」：所有下載作業都會遭到封鎖。
-
-      * 設為「封鎖惡意下載作業」：除了系統判定為極有可能是惡意軟體的檔案以外，其他下載作業都可正常執行。與危險下載作業不同的是，這項評估不會將檔案類型納入考量，但會將主機納入考量。
-
-      * 設為「無特殊限制」：系統會根據安全性的分析結果，檢查下載作業是否符合一般安全限制。
-
-      注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的下載作業，以及透過列印選項儲存為 PDF 檔的下載作業。如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="6641981670621198190">停止支援 3D 圖形 API</translation>
 <translation id="6642682198621199507">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
 
@@ -5752,7 +5733,6 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於螢幕的關閉延遲時間 (如有設定) 和閒置延遲時間。</translation>
 <translation id="7974114691960514888">系統不再支援這項政策。連線至遠端用戶時，啟用 STUN 使用量和轉送伺服器。如果啟用這項設定，那麼即使遠端主機電腦被防火牆隔開，這台電腦也能發現遠端主機電腦並建立連結。如果停用這項設定，並且外傳 UDP 連結遭到防火牆篩選，則這台電腦只會與當地網路內的主機電腦建立連線。</translation>
 <translation id="7976157349247117979">「<ph name="PRODUCT_NAME" />」目的地名稱</translation>
-<translation id="7980227303582973781">無特殊限制</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 

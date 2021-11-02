@@ -624,7 +624,6 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="1736269219679256369">Fortfahren von SSL-Hinweisseite erlauben</translation>
 <translation id="174765717426930019">Allen mit dem Ziel <ph name="BLANK_PAGE_NAME" /> geöffneten Pop-ups erlauben, mit der Seite zu interagieren, die das Pop-up geöffnet hat, es sei denn, die öffnende Seite hat dieser Art von Interaktion ausdrücklich nicht zugestimmt </translation>
-<translation id="1750315445671978749">Alle Downloads blockieren</translation>
 <translation id="1751429117283165017">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Schreibzugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
@@ -3518,7 +3517,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn diese Richtlinie nicht konfiguriert ist, gelten keine Einschränkungen und der Nutzer kann sich unabhängig von der <ph name="PRODUCT_NAME" />-Version anmelden.
 
       Mit "Version" ist entweder eine exakte Versionsangabe wie "61.0.3163.120" oder ein Versionspräfix wie "61.0" gemeint.  </translation>
-<translation id="5247006254130721952">Gefährliche Downloads blockieren</translation>
 <translation id="5247973380763021389">Verhindert, dass Cloud-Richtlinien auf Nutzerebene Cloud-Richtlinien auf Maschinenebene überschreiben.</translation>
 <translation id="5249453807420671499">Nutzer können Kerberos-Konten hinzufügen</translation>
 <translation id="5252210248395576403">Mit dieser Richtlinie erhält die Funktion „Schnellinfo“ die Berechtigung, auf ausgewählte Inhalte zuzugreifen und die Informationen an den Server zu senden, um Übersetzungsergebnisse zu erhalten.
@@ -3782,7 +3780,6 @@ Wenn die in der Richtlinie <ph name="DEVICE_MINIMUM_VERSION_POLICY_NAME" /> ange
 <translation id="5521875416764302911">Verhindern, dass sich Nutzer in <ph name="PRODUCT_NAME" /> anmelden</translation>
 <translation id="5526184558582921522">Anfragen an den Quirks Server und potenzielle Downloads von Hardware-spezifischen Konfigurationsdateien zulassen</translation>
 <translation id="5526701598901867718">Alle (nicht sicher)</translation>
-<translation id="5530347722229944744">Potenziell gefährliche Downloads blockieren</translation>
 <translation id="5534079385061985566">Funktion zur vollständigen Wiederherstellung aktivieren.</translation>
 <translation id="5535256585099022933">Zeitintervall für den Neustart festlegen</translation>
 <translation id="5535973522252703021">Zulassungsliste für Kerberos-Bevollmächtigungs-Server</translation>
@@ -4164,7 +4161,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6019606564278029236">Zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit geöffneten Fenstern interagieren können</translation>
 <translation id="6022948604095165524">Aktion beim Start</translation>
 <translation id="602318745029752898">Stimmen für die Sprachausgabe bei Enhanced Network in der Funktion „Vorlesen“ zulassen</translation>
-<translation id="6025267044008029374">Schädliche Downloads blockieren (empfohlen)</translation>
 <translation id="6026722971789064331">Verwendung der File System API zum Schreiben steuern</translation>
 <translation id="602728333950205286">Google Instant-URL der Standardsuchmaschine</translation>
 <translation id="603410445099326293">Parameter für URL der Vorschlagsuche, die POST verwendet</translation>
@@ -4650,21 +4646,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
-<translation id="6640989746632867803">Wenn diese Richtlinie konfiguriert ist, können Nutzer keine Sicherheitsentscheidungen für Downloads umgehen.
-
-       Die Richtlinie kann folgendermaßen konfiguriert werden:
-
-      * Wenn die Option "Gefährliche Downloads blockieren" ausgewählt ist, sind alle Downloads zulässig, die keine Sicherheitswarnung enthalten.
-
-      * Wenn die Option "Potenziell gefährliche Downloads blockieren" ausgewählt ist, sind alle Downloads zulässig, die keine Sicherheitswarnung vor potenziell gefährlichen Downloads enthalten.
-
-      * Wenn die Option "Alle Downloads blockieren" ausgewählt ist, werden alle Downloads blockiert.
-
-      * Wenn die Option "Schädliche Downloads blockieren" ausgewählt ist, sind alle Downloads zulässig, die nicht als Malware erkannt werden. Im Gegensatz zu gefährlichen Downloads wird hierbei nicht der Dateityp berücksichtigt, sondern der Host.
-
-      * Wenn die Option "Keine besonderen Einschränkungen" ausgewählt ist, unterliegen Downloads den üblichen, auf Ergebnissen von Sicherheitsanalysen beruhenden Sicherheitseinschränkungen.
-
-      Hinweis: Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption "Link herunterladen". Die Einschränkungen gelten aber weder für das Herunterladen der gerade angezeigten Seite noch für die Speicherung als PDF-Datei in den Druckoptionen. Weitere Informationen zu Safe Browsing finden Sie unter https://developers.google.com/safe-browsing.</translation>
 <translation id="6641981670621198190">Unterstützung für 3D-Grafik-APIs deaktivieren</translation>
 <translation id="6642682198621199507">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit Websites erstellen, die automatisch die Berechtigung für den Zugriff auf alle verfügbaren seriellen Ports erhalten.
 
@@ -5812,7 +5793,6 @@ Diese Richtlinie kann nur über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME"
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert der Verzögerung für die Bildschirmabschaltung (falls angegeben) und der Inaktivitätsverzögerung sein.</translation>
 <translation id="7974114691960514888">Diese Richtlinie wird nicht mehr unterstützt. Sie aktiviert beim Verbinden zu einem Remote-Client den Einsatz von STUN und Relay-Servern. Wenn diese Einstellung aktiviert wird, kann dieser Computer Remote-Hostcomputer finden und eine Verbindung herstellen, selbst wenn sie sich hinter einer Firewall befinden. Sollte die Einstellung deaktiviert sein und ausgehende UDP-Verbindungen von der Firewall gefiltert werden, dann kann dieser Computer nur Verbindungen zu Hostcomputern innerhalb des lokalen Netzwerks aufbauen.</translation>
 <translation id="7976157349247117979">Name des <ph name="PRODUCT_NAME" />-Ziels</translation>
-<translation id="7980227303582973781">Keine besonderen Einschränkungen</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 

@@ -525,6 +525,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6136914049981179737">Nyss</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
+<translation id="6159839020698489198">valfritt</translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6184086493125982861">Visa flikar</translation>
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
 <translation id="651505212789431520">Vill du avbryta synkroniseringen? Du kan när som helst aktivera synkronisering i inställningarna.</translation>
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
@@ -623,6 +625,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6851516051005285358">Använd skrivbordsversion</translation>
 <translation id="6858855187367714033">Skannat</translation>
 <translation id="6859944681507688231">Aktivera kameran i inställningarna om du vill skanna en QR-kod eller ett kreditkort.</translation>
+<translation id="6867369562105931222">lösenord</translation>
 <translation id="6869389390665537774">Du kan se sidor som du har besökt eller ta bort dem från historiken</translation>
 <translation id="6873263987691478642">Delad vy</translation>
 <translation id="6888009575607455378">Vill du ignorera ändringarna?</translation>

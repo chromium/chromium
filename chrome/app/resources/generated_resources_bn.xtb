@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">অফিস</translation>
 <translation id="1122198203221319518">&amp;সরঞ্জামসমূহ</translation>
 <translation id="1122242684574577509">যাচাইকরণ করা যায়নি৷ আপনি যে ওয়াই-ফাই নেটওয়ার্ক ব্যবহার করছেন তার লগ-ইন পেজ দেখতে ক্লিক করুন <ph name="NETWORK_ID" />৷</translation>
+<translation id="1122913801042512795">আপনার অ্যাকাউন্টে সাইন-ইন করার তারিখ ভুল রয়েছে। সাইন-আউট করে আবার সাইন-ইন করুন।</translation>
 <translation id="1122960773616686544">বুকমার্কের নাম</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1125550662859510761">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
@@ -7512,6 +7513,7 @@
 <translation id="8879284080359814990">ট্যাব রূপে &amp;দেখান</translation>
 <translation id="8879921471468674457">সাইন-ইন সংক্রান্ত তথ্য মনে রাখুন</translation>
 <translation id="8880054210564666174">পরিচিতি তালিকা ডাউনলোড করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করুন বা <ph name="LINK_BEGIN" />আবার চেষ্টা করুন<ph name="LINK_END" />।</translation>
+<translation id="8880344290593529089">Linux বা Parallels Desktop-এ <ph name="USB_DEVICE_NAME" /> যোগ করতে সেটিংস খুলুন</translation>
 <translation id="8881020143150461183">আবার চেষ্টা করুন। প্রযুক্তিগত সহায়তা পেতে <ph name="CARRIER_NAME" />-এর সাথে যোগাযোগ করুন।</translation>
 <translation id="8883273463630735858">টাচপ্যাড অ্যাক্সিলারেশন বিকল্পটি চালু করুন</translation>
 <translation id="8884570509232205463">তোমার ডিভাইস এখন <ph name="UNLOCK_TIME" />-এ লক হয়ে যায়।</translation>

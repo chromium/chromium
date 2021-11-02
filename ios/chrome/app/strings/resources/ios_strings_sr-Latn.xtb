@@ -525,6 +525,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6127379762771434464">Uklonili ste stavku</translation>
 <translation id="6136914049981179737">Malopre</translation>
 <translation id="6144589619057374135">Otvori ${url} u režimu bez arhiviranja</translation>
+<translation id="6159839020698489198">opcionalno</translation>
 <translation id="6177442314419606057">Pretražite u Chrome-u</translation>
 <translation id="6184086493125982861">Prikaži kartice</translation>
 <translation id="6187302354554850004">Poslednja sinhron.: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 Potrudite se da koristite jedinstvenu lozinku za svaki sajt.</translation>
 <translation id="651505212789431520">Želite li da otkažete sinhronizaciju? Možete da uključite sinhronizaciju u Podešavanjima u bilo kom trenutku.</translation>
 <translation id="6524918542306337007">Režim bez arhiviranja nije dostupan</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Uvećajte</translation>
 <translation id="6585618849026997638">Ako dodate obeleživač, možete da se vratite na stranicu koja vam je važna</translation>
 <translation id="6603393121510733479">Organizacija je isključila privatno pregledanje.
@@ -623,6 +625,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6851516051005285358">Zahtevaj sajt za računar</translation>
 <translation id="6858855187367714033">Skenirano</translation>
 <translation id="6859944681507688231">Da biste skenirali QR kôd ili kreditnu karticu, omogućite kameru u podešavanjima.</translation>
+<translation id="6867369562105931222">lozinka</translation>
 <translation id="6869389390665537774">Možete da vidite stranice koje ste posetili ili da ih obrišete iz istorije</translation>
 <translation id="6873263987691478642">Podeljeni prikaz</translation>
 <translation id="6888009575607455378">Želite li stvarno da odbacite promene?</translation>

@@ -525,6 +525,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6127379762771434464">Položka bola odstránená</translation>
 <translation id="6136914049981179737">Pred chvíľou</translation>
 <translation id="6144589619057374135">Otvoriť adresu ${url} v režime inkognito</translation>
+<translation id="6159839020698489198">nepovinné</translation>
 <translation id="6177442314419606057">Hľadať v Chrome</translation>
 <translation id="6184086493125982861">Zobraziť karty</translation>
 <translation id="6187302354554850004">Synchronizované <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="651505212789431520">Chcete zrušiť synchronizáciu? Môžete ju kedykoľvek zapnúť v Nastaveniach.</translation>
 <translation id="6524918542306337007">Režim inkognito nie je k dispozícii</translation>
+<translation id="6537746030088321027">priklad.sk</translation>
 <translation id="6561262006871132942">Priblížiť</translation>
 <translation id="6585618849026997638">Na stránku, ktorá je pre vás dôležitá, sa môžete vrátiť pridaním záložky</translation>
 <translation id="6603393121510733479">Vaša organizácia vypla anonymné prehliadanie.
@@ -623,6 +625,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6851516051005285358">Vyžiadať stránky pre počítač</translation>
 <translation id="6858855187367714033">Naskenované</translation>
 <translation id="6859944681507688231">Ak chcete nasnímať kód QR alebo kreditnú kartu, povoľte v nastaveniach fotoaparát.</translation>
+<translation id="6867369562105931222">heslo</translation>
 <translation id="6869389390665537774">Môžete si zobraziť stránky, ktoré ste navštívili, alebo ich vymazať z histórie</translation>
 <translation id="6873263987691478642">Rozdelené zobrazenie</translation>
 <translation id="6888009575607455378">Naozaj chcete zmeny zahodiť?</translation>

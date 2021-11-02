@@ -525,6 +525,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">À l'instant.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode navigation privée</translation>
+<translation id="6159839020698489198">facultatif</translation>
 <translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Zoom avant</translation>
 <translation id="6585618849026997638">Ajoutez les pages qui vous intéressent à vos favoris pour pouvoir y revenir facilement</translation>
 <translation id="6603393121510733479">Votre organisation a désactivé la navigation privée.
@@ -623,6 +625,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6851516051005285358">Voir la version pour ordinateur</translation>
 <translation id="6858855187367714033">Scanné</translation>
 <translation id="6859944681507688231">Pour scanner un code QR ou une carte de crédit, activez l'appareil photo dans Réglages.</translation>
+<translation id="6867369562105931222">mot de passe</translation>
 <translation id="6869389390665537774">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="6873263987691478642">Vue fractionnée</translation>
 <translation id="6888009575607455378">Voulez-vous vraiment supprimer les modifications ?</translation>

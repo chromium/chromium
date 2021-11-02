@@ -525,6 +525,7 @@
 <translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6136914049981179737">שניות</translation>
 <translation id="6144589619057374135">‏פתיחת ${urls} במצב אנונימי</translation>
+<translation id="6159839020698489198">אופציונלי</translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@
 כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
 <translation id="651505212789431520">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך 'הגדרות'.</translation>
 <translation id="6524918542306337007">מצב אנונימי אינו זמין</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">הגדלת התצוגה</translation>
 <translation id="6585618849026997638">כדי לחזור אל דף שחשוב לך אפשר להוסיף אותו לסימניות</translation>
 <translation id="6603393121510733479">הארגון שלך כיבה את אפשרות הגלישה הפרטית.
@@ -623,6 +625,7 @@
 <translation id="6851516051005285358">בקשת אתר למחשב</translation>
 <translation id="6858855187367714033">נסרק</translation>
 <translation id="6859944681507688231">‏כדי לסרוק קוד QR או כרטיס אשראי, יש להפעיל את המצלמה דרך ההגדרות.</translation>
+<translation id="6867369562105931222">סיסמה</translation>
 <translation id="6869389390665537774">בדף ההיסטוריה אפשר לראות את הדפים שאליהם נכנסת או למחוק אותם</translation>
 <translation id="6873263987691478642">‏מצב Split View</translation>
 <translation id="6888009575607455378">השינויים יימחקו. להמשיך?</translation>

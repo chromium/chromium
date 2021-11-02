@@ -525,6 +525,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6136914049981179737">For noen sekunder siden</translation>
 <translation id="6144589619057374135">Åpne ${url} i inkognitomodus</translation>
+<translation id="6159839020698489198">valgfritt</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 Prøv å bruke unike passord for hvert nettsted.</translation>
 <translation id="651505212789431520">Vil du avbryte synkroniseringen? Du kan når som helst slå på synkronisering i Innstillinger.</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
+<translation id="6537746030088321027">eteksempel.no</translation>
 <translation id="6561262006871132942">Zoom inn</translation>
 <translation id="6585618849026997638">Du kan komme tilbake til sider som er viktige for deg, ved å legge til bokmerker</translation>
 <translation id="6603393121510733479">Organisasjonen din har slått av privat surfing.
@@ -623,6 +625,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6851516051005285358">Be om datamaskinversjonen av nettstedet</translation>
 <translation id="6858855187367714033">Skannet</translation>
 <translation id="6859944681507688231">For å skanne QR-koder eller kredittkort, slå på kameraet i innstillingene.</translation>
+<translation id="6867369562105931222">passord</translation>
 <translation id="6869389390665537774">Du kan se sidene du har besøkt, eller fjerne dem fra loggen</translation>
 <translation id="6873263987691478642">Delt visning</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>

@@ -712,7 +712,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1719312230114180055">Uwaga: odcisk palca może być mniej bezpieczny niż silne hasło czy kod PIN.</translation>
 <translation id="1720318856472900922">Uwierzytelnianie serwera WWW TLS</translation>
 <translation id="1720941539803966190">Zamknij samouczek</translation>
-<translation id="172123215662733643">Przeszukaj obrazy narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Szukaj grafiki za pomocą narzędzia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Aby wejść na tę stronę, musisz uzyskać pozwolenie od użytkownika <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Twoim <ph name="BEGIN_LINK" />urządzeniem <ph name="DEVICE_TYPE" /> zarządza<ph name="END_LINK" /> domena <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nowe okno</translation>
@@ -3868,7 +3868,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5051836348807686060">Sprawdzanie pisowni w wybranych językach nie jest obsługiwane</translation>
 <translation id="5052499409147950210">Edytowanie strony internetowej</translation>
 <translation id="505347685865235222">Grupa bez nazwy – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Szukanie grafiki za pomocą Obiektywu Google</translation>
+<translation id="5053962746715621840">Szukaj grafiki za pomocą Obiektywu Google</translation>
 <translation id="5056950756634735043">Łączę się z kontenerem</translation>
 <translation id="5057110919553308744">Gdy klikniesz rozszerzenie</translation>
 <translation id="505776528429481161">Łatwe łączenie się z urządzeniami w pobliżu i ich konfigurowanie</translation>
@@ -5870,7 +5870,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7230222852462421043">&amp;Przywróć okno</translation>
 <translation id="7230787553283372882">Dostosuj rozmiar tekstu</translation>
 <translation id="7232750842195536390">Nie udało się zmienić nazwy</translation>
-<translation id="723343421145275488">Przeszukaj obrazy narzędziem <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Szukaj grafiki za pomocą narzędzia <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Anuluję przywracanie Linuksa</translation>
 <translation id="7235716375204803342">Pobieram aktywność…</translation>
 <translation id="7235737137505019098">Na Twoim kluczu bezpieczeństwa nie ma wystarczającej ilości miejsca na kolejne konta.</translation>

@@ -625,7 +625,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="1736269219679256369">Autoriser la poursuite de la navigation depuis une page d'avertissement SSL</translation>
 <translation id="174765717426930019">Autoriser tous les pop-ups avec une cible "<ph name="BLANK_PAGE_NAME" />" à interagir avec la page sur laquelle ils ont été ouverts, sauf si celle-ci interdit explicitement ce type d'interaction </translation>
-<translation id="1750315445671978749">Bloquer tous les téléchargements</translation>
 <translation id="1751429117283165017">Permet de dresser la liste des formats d'URL pour lesquels les sites ne sont pas autorisés à demander aux utilisateurs un accès en écriture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte.
 
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> s'applique pour tous les sites, à condition qu'elle soit définie. Si ce n'est pas le cas, les paramètres spécifiés par les utilisateurs s'appliquent.
@@ -3541,7 +3540,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle n'est pas configurée, aucune restriction n'est appliquée, et l'utilisateur peut se connecter quelle que soit la version de <ph name="PRODUCT_NAME" />.
 
       Dans le cas présent, le terme "version" peut désigner une version exacte telle que "61.0.3163.120" ou le préfixe d'une version tel que "61.0".  </translation>
-<translation id="5247006254130721952">Bloquer les téléchargements dangereux</translation>
 <translation id="5247973380763021389">Empêcher les règles cloud utilisateur d'ignorer les règles cloud machine.</translation>
 <translation id="5249453807420671499">Les utilisateurs peuvent ajouter des comptes Kerberos</translation>
 <translation id="5252210248395576403">Cette règle autorise Réponses rapides à accéder au contenu sélectionné et à envoyer au serveur les infos pour obtenir les résultats de la traduction.
@@ -3808,7 +3806,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="5521875416764302911">Empêcher les utilisateurs de se connecter à <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">Autoriser les requêtes au serveur Quirks et le téléchargement potentiel de fichiers de configuration spécifiques au matériel</translation>
 <translation id="5526701598901867718">Tous les types de chiffrement (option non sécurisée)</translation>
-<translation id="5530347722229944744">Bloquer les téléchargements potentiellement dangereux</translation>
 <translation id="5534079385061985566">Activer la fonctionnalité de restauration complète.</translation>
 <translation id="5535256585099022933">Définir l'intervalle du redémarrage</translation>
 <translation id="5535973522252703021">Liste blanche des serveurs de délégation Kerberos</translation>
@@ -4200,7 +4197,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6019606564278029236">Activer les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="6022948604095165524">Action au démarrage</translation>
 <translation id="602318745029752898">Autoriser la synthèse vocale améliorée via le réseau pour Sélectionner pour prononcer</translation>
-<translation id="6025267044008029374">Bloquer les téléchargements malveillants (recommandé)</translation>
 <translation id="6026722971789064331">Contrôler l'utilisation de l'API File System pour l'accès en écriture</translation>
 <translation id="602728333950205286">URL de recherche instantanée du moteur de recherche par défaut</translation>
 <translation id="603410445099326293">Paramètres pour l'URL de suggestion utilisant POST</translation>
@@ -4691,21 +4687,6 @@ Si vous sélectionnez les options suivantes :
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="663685822663765995">Limiter l'impression en mode couleur</translation>
-<translation id="6640989746632867803">Si cette règle est activée, les utilisateurs ne peuvent pas contourner les décisions de sécurité concernant les téléchargements.
-
-       Configurations possibles :
-
-      * Bloquer les téléchargements dangereux. Tous les téléchargements sont autorisés, sauf ceux déclenchant un avertissement de sécurité.
-
-      * Bloquer les téléchargements potentiellement dangereux. Tous les téléchargements sont autorisés, sauf ceux déclenchant un avertissement de sécurité (du type "téléchargement potentiellement dangereux").
-
-      * Bloquer tous les téléchargements. Aucun téléchargement n'est autorisé.
-
-      * Bloquer les téléchargements malveillants. Tous les téléchargements sont autorisés, sauf ceux identifiés avec un haut degré de fiabilité comme des logiciels malveillants. Contrairement aux téléchargements dangereux, le type de fichier n'est pas pris en compte. L'hôte, en revanche, l'est.
-
-      * Aucune restriction particulière. Les restrictions de sécurité habituelles basées sur les résultats de l'analyse de sécurité s'appliquent aux téléchargements.
-
-      Remarque : Ces restrictions s'appliquent aux téléchargements déclenchés à partir du contenu d'une page Web et de l'option de menu contextuel "Télécharger le lien". Elles ne s'appliquent pas au téléchargement de la page actuellement affichée ni à l'enregistrement au format PDF depuis les options d'impression. Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="6641981670621198190">Désactiver la prise en charge des API 3D graphics</translation>
 <translation id="6642682198621199507">Cette règle permet d'établir la liste des sites automatiquement autorisés à accéder à tous les ports série disponibles.
 
@@ -5864,7 +5845,6 @@ Si ce paramètre est activé, cette machine peut découvrir et se connecter à d
 
 Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtrées par le pare-feu, cette machine peut uniquement se connecter aux machines hôte au sein du réseau local.</translation>
 <translation id="7976157349247117979">Nom de la destination <ph name="PRODUCT_NAME" /></translation>
-<translation id="7980227303582973781">Aucune restriction particulière</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
