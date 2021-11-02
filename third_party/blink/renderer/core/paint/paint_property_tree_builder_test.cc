@@ -6342,7 +6342,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
             fragment.PaintProperties()->OverflowClip());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, SkipEmptyClipFragments) {
+TEST_P(PaintPropertyTreeBuilderTest, EmptyClipFragments) {
   SetBodyInnerHTML(R"HTML(
     <!doctype HTML>
     <style>h4 { column-span: all; }</style>
@@ -6360,20 +6360,30 @@ TEST_P(PaintPropertyTreeBuilderTest, SkipEmptyClipFragments) {
                                 ->SlowFirstChild();
   EXPECT_TRUE(IsA<LayoutMultiColumnFlowThread>(flow_thread));
 
-  // FragmentainerIterator would return 3 things:
-  // 1. A fragment that contains "lorem" and is interrupted by the first h4,
-  //    since it's column-span: all.
-  // 2. A fragment that starts at the inner div of height 0 and is immediately
-  //    interrupted by a nested h4.
-  // 3. A fragment that contains "ipsum".
-  //
-  // The second fragment would have an empty clip and the same logical top as
-  // the third fragment. This test ensures that this fragment is not present in
-  // the LayoutMultiColumnFlowThread's fragments.
-  EXPECT_EQ(2u, NumFragments(flow_thread));
-  EXPECT_NE(
-      flow_thread->FirstFragment().LogicalTopInFlowThread(),
-      flow_thread->FirstFragment().NextFragment()->LogicalTopInFlowThread());
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    // There's no special-code for LayoutNGBlockFragmentation to skip an empty
+    // fragmentainer after a spanner, but that should be okay, since we can
+    // still use FragmentID() to uniquely identify them.
+    ASSERT_EQ(3u, NumFragments(flow_thread));
+    ASSERT_EQ(0u, FragmentAt(flow_thread, 0).FragmentID());
+    ASSERT_EQ(1u, FragmentAt(flow_thread, 1).FragmentID());
+    ASSERT_EQ(2u, FragmentAt(flow_thread, 2).FragmentID());
+  } else {
+    // FragmentainerIterator would return 3 things:
+    // 1. A fragment that contains "lorem" and is interrupted by the first h4,
+    //    since it's column-span: all.
+    // 2. A fragment that starts at the inner div of height 0 and is immediately
+    //    interrupted by a nested h4.
+    // 3. A fragment that contains "ipsum".
+    //
+    // The second fragment would have an empty clip and the same logical top as
+    // the third fragment. This test ensures that this fragment is not present
+    // in the LayoutMultiColumnFlowThread's fragments.
+    EXPECT_EQ(2u, NumFragments(flow_thread));
+    EXPECT_NE(
+        flow_thread->FirstFragment().LogicalTopInFlowThread(),
+        flow_thread->FirstFragment().NextFragment()->LogicalTopInFlowThread());
+  }
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyConstraintChain) {
