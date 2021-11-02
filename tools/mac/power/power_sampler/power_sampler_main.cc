@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,7 +16,9 @@
 #include "base/timer/timer.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
+#include "tools/mac/power/power_sampler/json_exporter.h"
 #include "tools/mac/power/power_sampler/main_display_sampler.h"
+#include "tools/mac/power/power_sampler/sample_counter.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
 #include "tools/mac/power/power_sampler/user_idle_level_sampler.h"
@@ -34,10 +38,14 @@ void InitLogging() {
 
 const char kSwitchHelp[] = "h";
 const char kSwitchSampleInterval[] = "sample-interval";
+const char kSwitchSampleCount[] = "sample-count";
+const char kSwitchJsonOutputFile[] = "json-output-file";
 
 // Prints main usage text.
 void PrintUsage(std::ostream& err) {
-  err << "Usage: powermetrics [-sample-interval=sample_interval]" << std::endl;
+  err << "Usage: powermetrics [--sample-interval=sample_interval] "
+         "[--sample-count=sample_count] [--json-output-file=path]"
+      << std::endl;
 }
 
 }  // namespace
@@ -73,6 +81,29 @@ int main(int argc, char** argv) {
     }
     sampling_interval = base::Seconds(interval_seconds);
   }
+  int64_t sample_count = -1;
+  if (command_line.HasSwitch(kSwitchSampleCount)) {
+    std::string sample_count_switch =
+        command_line.GetSwitchValueASCII(kSwitchSampleCount);
+    if (!base::StringToInt64(sample_count_switch, &sample_count)) {
+      PrintUsage(std::cerr);
+      return kStatusInvalidParam;
+    }
+    if (sample_count < 1) {
+      LOG(ERROR) << "|sample_count| should be greater than 0.";
+      return kStatusInvalidParam;
+    }
+  }
+
+  base::FilePath json_output_file_path;
+  if (command_line.HasSwitch(kSwitchJsonOutputFile)) {
+    json_output_file_path =
+        command_line.GetSwitchValuePath(kSwitchJsonOutputFile);
+    if (json_output_file_path.empty()) {
+      PrintUsage(std::cerr);
+      return kStatusInvalidParam;
+    }
+  }
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::DEFAULT);
   power_sampler::SamplingController controller;
@@ -91,8 +122,18 @@ int main(int argc, char** argv) {
     controller.AddSampler(std::move(sampler));
 
   base::TimeTicks start_time = base::TimeTicks::Now();
-  controller.AddMonitor(power_sampler::CsvExporter::Create(
-      start_time, base::File(STDOUT_FILENO)));
+  if (!json_output_file_path.empty()) {
+    controller.AddMonitor(power_sampler::JsonExporter::Create(
+        std::move(json_output_file_path), start_time));
+  } else {
+    controller.AddMonitor(power_sampler::CsvExporter::Create(
+        start_time, base::File(STDOUT_FILENO)));
+  }
+
+  if (sample_count > 0) {
+    controller.AddMonitor(
+        std::make_unique<power_sampler::SampleCounter>(sample_count));
+  }
 
   controller.StartSession();
 
@@ -113,8 +154,6 @@ int main(int argc, char** argv) {
   run_loop.Run();
 
   controller.EndSession();
-
-  // TODO(etiennep): Optionally export to a file.
 
   return kStatusSuccess;
 }

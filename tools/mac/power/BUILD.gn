@@ -34,6 +34,8 @@ static_library("power_sampler_lib") {
     "power_sampler/main_display_sampler.h",
     "power_sampler/monitor.cc",
     "power_sampler/monitor.h",
+    "power_sampler/sample_counter.cc",
+    "power_sampler/sample_counter.h",
     "power_sampler/sampler.cc",
     "power_sampler/sampler.h",
     "power_sampler/sampling_controller.cc",
