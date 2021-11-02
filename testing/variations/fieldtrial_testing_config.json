@@ -9163,7 +9163,7 @@
             ]
         }
     ],
-    "WebViewSurfaceControl": [
+    "WebViewThreadSafeMedia": [
         {
             "platforms": [
                 "android_webview"
@@ -9172,8 +9172,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "WebViewSurfaceControl",
-                        "WebViewZeroCopyVideo"
+                        "WebViewThreadSafeMedia"
                     ]
                 }
             ]
