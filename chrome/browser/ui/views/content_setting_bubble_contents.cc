@@ -407,8 +407,16 @@ ContentSettingBubbleContents::~ContentSettingBubbleContents() {
 }
 
 void ContentSettingBubbleContents::WindowClosing() {
-  if (content_setting_bubble_model_)
+  if (content_setting_bubble_model_) {
+    if (GetWidget()->closed_reason() ==
+            views::Widget::ClosedReason::kEscKeyPressed ||
+        GetWidget()->closed_reason() ==
+            views::Widget::ClosedReason::kCloseButtonClicked) {
+      content_setting_bubble_model_->OnBubbleDismissedByUser();
+    }
+
     content_setting_bubble_model_->CommitChanges();
+  }
 }
 
 void ContentSettingBubbleContents::OnListItemAdded(

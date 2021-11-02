@@ -272,6 +272,15 @@ std::u16string PermissionPromptBubbleView::GetWindowTitle() const {
   return l10n_util::GetStringFUTF16(message_id, GetDisplayName());
 }
 
+void PermissionPromptBubbleView::OnWidgetDestroying(views::Widget* widget) {
+  if (on_bubble_dismissed_by_user_callback_ &&
+      (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+       widget->closed_reason() ==
+           views::Widget::ClosedReason::kCloseButtonClicked)) {
+    std::move(on_bubble_dismissed_by_user_callback_).Run();
+  }
+}
+
 std::u16string PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
   // Generate one of:
   //   $origin wants to: $permission

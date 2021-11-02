@@ -43,6 +43,40 @@ bool IsFullScreenMode(content::WebContents* web_contents, Browser* browser) {
   return !location_bar || !location_bar->IsDrawn();
 }
 
+bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipGestureSensitive)) {
+    std::vector<permissions::PermissionRequest*> requests =
+        delegate->Requests();
+    const bool has_gesture =
+        std::any_of(requests.begin(), requests.end(),
+                    [](permissions::PermissionRequest* request) {
+                      return request->GetGestureType() ==
+                             permissions::PermissionRequestGestureType::GESTURE;
+                    });
+    if (has_gesture)
+      return true;
+  }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionChipRequestTypeSensitive)) {
+    // Notifications and geolocation are targeted here because they are usually
+    // not necessary for the website to function correctly, so they can safely
+    // be given less prominence.
+    std::vector<permissions::PermissionRequest*> requests =
+        delegate->Requests();
+    const bool is_geolocation_or_notifications = std::any_of(
+        requests.begin(), requests.end(),
+        [](permissions::PermissionRequest* request) {
+          permissions::RequestType request_type = request->request_type();
+          return request_type == permissions::RequestType::kNotifications ||
+                 request_type == permissions::RequestType::kGeolocation;
+        });
+    if (!is_geolocation_or_notifications)
+      return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
@@ -152,7 +186,7 @@ void PermissionPromptImpl::UpdateAnchor() {
       DCHECK(!prompt_bubble_);
 
       if (!lbv->chip()) {
-        chip_ = lbv->DisplayChip(delegate_);
+        chip_ = lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
       }
       // If there is fresh pending request shown as chip UI and location bar
       // isn't visible anymore, show bubble UI instead.
@@ -289,7 +323,7 @@ void PermissionPromptImpl::ShowChip() {
                        delegate_->ReasonForUsingQuietUi()));
     prompt_style_ = PermissionPromptStyle::kQuietChip;
   } else {
-    chip_ = lbv->DisplayChip(delegate_);
+    chip_ = lbv->DisplayChip(delegate_, ShouldBubbleStartOpen(delegate_));
     prompt_style_ = PermissionPromptStyle::kChip;
   }
 }
@@ -299,9 +333,10 @@ bool PermissionPromptImpl::ShouldCurrentRequestUseChip() {
     return false;
 
   std::vector<permissions::PermissionRequest*> requests = delegate_->Requests();
-  return std::all_of(requests.begin(), requests.end(), [](auto* request) {
-    return request->GetRequestChipText().has_value();
-  });
+  return std::all_of(requests.begin(), requests.end(),
+                     [](permissions::PermissionRequest* request) {
+                       return request->GetRequestChipText().has_value();
+                     });
 }
 
 bool PermissionPromptImpl::ShouldCurrentRequestUseQuietChip() {
@@ -311,11 +346,13 @@ bool PermissionPromptImpl::ShouldCurrentRequestUseQuietChip() {
   }
 
   std::vector<permissions::PermissionRequest*> requests = delegate_->Requests();
-  return std::all_of(requests.begin(), requests.end(), [](auto* request) {
-    return request->request_type() ==
-               permissions::RequestType::kNotifications ||
-           request->request_type() == permissions::RequestType::kGeolocation;
-  });
+  return std::all_of(requests.begin(), requests.end(),
+                     [](permissions::PermissionRequest* request) {
+                       return request->request_type() ==
+                                  permissions::RequestType::kNotifications ||
+                              request->request_type() ==
+                                  permissions::RequestType::kGeolocation;
+                     });
 }
 
 void PermissionPromptImpl::FinalizeChip() {

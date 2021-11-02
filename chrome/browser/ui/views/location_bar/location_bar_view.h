@@ -182,8 +182,13 @@ class LocationBarView : public LocationBar,
   PermissionChip* chip() { return chip_; }
 
   // Creates and displays an instance of PermissionRequestChip.
-  PermissionChip* DisplayChip(
-      permissions::PermissionPrompt::Delegate* delegate);
+  // If `should_bubble_start_open` is true, a permission prompt bubble will be
+  // displayed automatically after PermissionRequestChip is created.
+  // `should_bubble_start_open` is evaluated based on
+  // `PermissionChipGestureSensitive` and `PermissionChipRequestTypeSensitive`
+  // experiments.
+  PermissionChip* DisplayChip(permissions::PermissionPrompt::Delegate* delegate,
+                              bool should_bubble_start_open);
 
   // Creates and displays an instance of PermissionQuietChip.
   PermissionChip* DisplayQuietChip(

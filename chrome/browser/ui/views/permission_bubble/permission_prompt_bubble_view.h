@@ -18,6 +18,10 @@ enum class RequestType;
 enum class PermissionAction;
 }
 
+namespace view {
+class Widget;
+}
+
 class Browser;
 
 // Bubble that prompts the user to grant or deny a permission request from a
@@ -43,12 +47,16 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   void UpdateAnchorPosition();
 
   void SetPromptStyle(PermissionPromptStyle prompt_style);
+  void SetOnBubbleDismissedByUserCallback(base::OnceClosure callback) {
+    on_bubble_dismissed_by_user_callback_ = std::move(callback);
+  }
 
   // views::BubbleDialogDelegateView:
   void AddedToWidget() override;
   bool ShouldShowCloseButton() const override;
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void AcceptPermission();
   void AcceptPermissionThisTime();
@@ -86,6 +94,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   base::TimeTicks permission_requested_time_;
 
   PermissionPromptStyle prompt_style_;
+
+  base::OnceClosure on_bubble_dismissed_by_user_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSION_BUBBLE_PERMISSION_PROMPT_BUBBLE_VIEW_H_

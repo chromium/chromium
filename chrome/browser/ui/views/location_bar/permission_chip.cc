@@ -65,7 +65,8 @@ PermissionChip::PermissionChip(
   chip_button_ = AddChildView(std::make_unique<OmniboxChipButton>(
       base::BindRepeating(&PermissionChip::ChipButtonPressed,
                           base::Unretained(this)),
-      initializer.icon, initializer.message, initializer.is_prominent));
+      initializer.icon_on, initializer.icon_off, initializer.message,
+      initializer.is_prominent));
   chip_button_->SetTheme(initializer.theme);
   chip_button_->SetButtonController(std::make_unique<BubbleButtonController>(
       chip_button_, this,
@@ -116,8 +117,8 @@ void PermissionChip::Collapse(bool allow_restart) {
   }
 }
 
-void PermissionChip::ShowBlockedBadge() {
-  chip_button_->SetShowBlockedBadge(true);
+void PermissionChip::ShowBlockedIcon() {
+  chip_button_->SetShowBlockedIcon(true);
 }
 
 void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
@@ -155,6 +156,8 @@ views::Widget* PermissionChip::GetPromptBubbleWidget() {
              : nullptr;
 }
 
+void PermissionChip::OnPromptBubbleDismissed() {}
+
 void PermissionChip::Show(bool always_open_bubble) {
   // TODO(olesiamarukhno): Add tests for animation logic.
   chip_button_->ResetAnimation();
@@ -174,9 +177,8 @@ void PermissionChip::ExpandAnimationEnded() {
 }
 
 void PermissionChip::ChipButtonPressed() {
-  if (!IsBubbleShowing()) {
+  if (!IsBubbleShowing())
     OpenBubble();
-  }
   RestartTimersOnInteraction();
 }
 
@@ -202,17 +204,17 @@ void PermissionChip::StartDismissTimer() {
             permissions::features::kPermissionChipAutoDismiss)) {
       auto delay = base::Milliseconds(
           permissions::features::kPermissionChipAutoDismissDelay.Get());
-      dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Dismiss);
+      dismiss_timer_.Start(FROM_HERE, delay, this, &PermissionChip::Finalize);
     }
   } else {
     // Abusive origins do not support expand animation, hence the dismiss timer
     // should be longer.
     dismiss_timer_.Start(FROM_HERE, base::Seconds(18), this,
-                         &PermissionChip::Dismiss);
+                         &PermissionChip::Finalize);
   }
 }
 
-void PermissionChip::Dismiss() {
+void PermissionChip::Finalize() {
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
 

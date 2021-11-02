@@ -119,6 +119,19 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kLocationOffIcon;
     case RequestType::kNotifications:
       return vector_icons::kNotificationsOffIcon;
+    case RequestType::kArSession:
+    case RequestType::kVrSession:
+      return vector_icons::kVrHeadsetOffIcon;
+    case RequestType::kCameraStream:
+      return vector_icons::kVideocamOffIcon;
+    case RequestType::kClipboard:
+      return vector_icons::kContentPasteOffIcon;
+    case RequestType::kIdleDetection:
+      return vector_icons::kDevicesOffIcon;
+    case RequestType::kMicStream:
+      return vector_icons::kMicOffIcon;
+    case RequestType::kMidiSysex:
+      return vector_icons::kMidiOffIcon;
     default:
       NOTREACHED();
   }
