@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_status.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_probe_result.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetched_mainframe_response_container.h"
@@ -217,6 +218,10 @@ class PrefetchProxyTabHelper
   bool IsWaitingForAfterSRPCookiesCopy() const;
   void SetOnAfterSRPCookieCopyCompleteCallback(base::OnceClosure callback);
 
+  // Returns whether or not the cookies for the given URL have changed since the
+  // initial eligibiilty check.
+  bool HaveCookiesChanged(const GURL& url) const;
+
   void AddObserverForTesting(Observer* observer);
   void RemoveObserverForTesting(Observer* observer);
 
@@ -354,6 +359,10 @@ class PrefetchProxyTabHelper
     mojo::Remote<network::mojom::NetworkContext> isolated_network_context_;
     mojo::Remote<network::mojom::CookieManager> isolated_cookie_manager_;
     scoped_refptr<network::SharedURLLoaderFactory> isolated_url_loader_factory_;
+
+    // A map of URLs to Listeners for any changes to the cookies for that URL.
+    std::map<GURL, std::unique_ptr<PrefetchProxyCookieListener>>
+        cookie_listeners_;
   };
 
   // Returns true if the current profile is not incognito and meets any
@@ -474,6 +483,12 @@ class PrefetchProxyTabHelper
 
   // Creates the isolated network context and url loader factory for this page.
   void CreateIsolatedURLLoaderFactory();
+
+  // Prepare to serve prefetched resources for the given |url| when a navigation
+  // to that url is started. This initiates the copying of cookies from the
+  // isolated network context to the default context, and notifies the
+  // |PrefetchProxySubresourceManager| associated with |url|.
+  void PrepareToServe(const GURL& url);
 
   Profile* profile_;
 

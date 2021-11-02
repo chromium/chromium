@@ -68373,6 +68373,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="31" label="Stale prefetch with NSP"/>
   <int value="32" label="Stale prefetch, NSP attempt denied"/>
   <int value="33" label="Stale prefetch, NSP not started"/>
+  <int value="34" label="Prefetch Not Used, Cookies Changed">
+    The url was prefetched but not used, because cookies were added to the URL
+    at some point after the initial eligibility check.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirect">
