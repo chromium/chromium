@@ -26,6 +26,13 @@
 
 namespace logging {
 
+namespace {
+
+// The syslog logging is on by default, but tests or fuzzers can disable it.
+bool g_logging_enabled = true;
+
+}  // namespace
+
 #if defined(OS_WIN)
 
 namespace {
@@ -88,6 +95,9 @@ EventLogMessage::EventLogMessage(const char* file,
 }
 
 EventLogMessage::~EventLogMessage() {
+  if (!g_logging_enabled)
+    return;
+
 #if defined(OS_WIN)
   // If g_event_source_name is nullptr (which it is per default) SYSLOG will
   // degrade gracefully to regular LOG. If you see this happening most probably
@@ -159,6 +169,10 @@ EventLogMessage::~EventLogMessage() {
   syslog(priority, "%s", log_message_.str().c_str());
   closelog();
 #endif  // defined(OS_WIN)
+}
+
+void SetSyslogLoggingForTesting(bool logging_enabled) {
+  g_logging_enabled = logging_enabled;
 }
 
 }  // namespace logging
