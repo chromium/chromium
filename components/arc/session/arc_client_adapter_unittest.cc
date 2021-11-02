@@ -12,8 +12,8 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {

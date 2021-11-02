@@ -6,8 +6,8 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 
 namespace arc {
 

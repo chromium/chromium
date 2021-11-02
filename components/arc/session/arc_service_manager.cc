@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 
 #include "base/check_op.h"
 #include "components/arc/session/arc_bridge_service.h"
