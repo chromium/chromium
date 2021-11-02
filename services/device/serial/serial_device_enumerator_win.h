@@ -34,7 +34,9 @@ class SerialDeviceEnumeratorWin : public SerialDeviceEnumerator {
   class UiThreadHelper;
 
   void DoInitialEnumeration();
-  void EnumeratePort(HDEVINFO dev_info, SP_DEVINFO_DATA* dev_info_data);
+  void EnumeratePort(HDEVINFO dev_info,
+                     SP_DEVINFO_DATA* dev_info_data,
+                     bool check_port_name);
 
   std::map<base::FilePath, base::UnguessableToken> paths_;
 
