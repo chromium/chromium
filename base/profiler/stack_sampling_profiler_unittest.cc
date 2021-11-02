@@ -478,7 +478,7 @@ class TestAuxUnwinder : public Unwinder {
                          uintptr_t stack_top,
                          std::vector<Frame>* stack) const override {
     stack->push_back(frame_to_report_);
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
   }
 
  private:

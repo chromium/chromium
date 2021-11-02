@@ -174,7 +174,7 @@ UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
   // circumstances. If we're subject to that case, just record the first frame
   // and bail. See MayTriggerUnwInitLocalCrash for details.
   if (stack->back().module && MayTriggerUnwInitLocalCrash(stack->back().module))
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
 
   unw_cursor_t unwind_cursor;
   unw_init_local(&unwind_cursor, &unwind_context);
@@ -216,9 +216,9 @@ UnwindResult NativeUnwinderMac::TryUnwind(RegisterContext* thread_context,
   }
 
   NOTREACHED();
-  return UnwindResult::COMPLETED;
+  return UnwindResult::kCompleted;
 #else   // !defined(ARCH_CPU_ARM64)
-  return UnwindResult::ABORTED;
+  return UnwindResult::kAborted;
 #endif  // !defined(ARCH_CPU_ARM64)
 }
 
@@ -243,14 +243,14 @@ absl::optional<UnwindResult> NativeUnwinderMac::CheckPreconditions(
     // libunwind adds the expected stack size, it will look for the return
     // address in the wrong place. This check ensures we don't continue trying
     // to unwind using the resulting bad IP value.
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
   }
 
   if (!current_frame->module->IsNative()) {
     // This is a non-native module associated with the auxiliary unwinder
     // (e.g. corresponding to a frame in V8 generated code). Report as
     // UNRECOGNIZED_FRAME to allow that unwinder to unwind the frame.
-    return UnwindResult::UNRECOGNIZED_FRAME;
+    return UnwindResult::kUnrecognizedFrame;
   }
 
   // Don't continue if we're in sigtramp. Unwinding this from another thread
@@ -259,13 +259,13 @@ absl::optional<UnwindResult> NativeUnwinderMac::CheckPreconditions(
   // occurred.
   if (current_frame->instruction_pointer >= sigtramp_start_ &&
       current_frame->instruction_pointer < sigtramp_end_) {
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
   }
 
   // Don't continue if rbp appears to be invalid (due to a previous bad
   // unwind).
   if (!HasValidRbp(unwind_cursor, stack_top))
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
 
   return absl::nullopt;
 }
@@ -327,7 +327,7 @@ absl::optional<UnwindResult> NativeUnwinderMac::CheckPostconditions(
       (step_result == 0 && stack_pointer_was_moved_and_is_valid);
 
   if (step_result < 0)
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
 
   // libunwind returns 0 if it can't continue because no unwind info was found
   // for the current instruction pointer. This could be due to unwinding past
@@ -339,12 +339,12 @@ absl::optional<UnwindResult> NativeUnwinderMac::CheckPostconditions(
   // distinguish these cases, so return UNRECOGNIZED_FRAME to at least
   // signify that we couldn't unwind further.
   if (step_result == 0)
-    return UnwindResult::UNRECOGNIZED_FRAME;
+    return UnwindResult::kUnrecognizedFrame;
 
   // If we succeeded but didn't advance the stack pointer, or got an invalid
   // new stack pointer, abort.
   if (!stack_pointer_was_moved_and_is_valid)
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
 
   return absl::nullopt;
 }

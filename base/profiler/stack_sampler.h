@@ -39,8 +39,8 @@ class BASE_EXPORT StackSampler {
   // Creates a stack sampler that records samples for thread with
   // |thread_token|. Unwinders in |unwinders| must be stored in increasing
   // priority to guide unwind attempts. Only the unwinder with the lowest
-  // priority is allowed to return with UnwindResult::COMPLETED. Returns null if
-  // this platform does not support stack sampling.
+  // priority is allowed to return with UnwindResult::kCompleted. Returns null
+  // if this platform does not support stack sampling.
   static std::unique_ptr<StackSampler> Create(
       SamplingProfilerThreadToken thread_token,
       ModuleCache* module_cache,

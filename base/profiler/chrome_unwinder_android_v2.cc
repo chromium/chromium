@@ -98,7 +98,7 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
             instruction_byte_offset_from_text_section_start);
 
     if (!function_offset_table_index) {
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
 
     const uint32_t current_unwind_instruction_index =
@@ -120,13 +120,13 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
       instruction_result = ExecuteUnwindInstruction(
           current_unwind_instruction, pc_was_updated, thread_context);
       if (RegisterContextStackPointer(thread_context) >= stack_top) {
-        return UnwindResult::ABORTED;
+        return UnwindResult::kAborted;
       }
     } while (instruction_result ==
              UnwindInstructionResult::kInstructionPending);
 
     if (instruction_result == UnwindInstructionResult::kAborted) {
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
 
     DCHECK_EQ(instruction_result, UnwindInstructionResult::kCompleted);
@@ -134,7 +134,7 @@ UnwindResult ChromeUnwinderAndroidV2::TryUnwind(
                         module_cache()->GetModuleForAddress(
                             RegisterContextInstructionPointer(thread_context)));
   } while (CanUnwindFrom(stack->back()));
-  return UnwindResult::UNRECOGNIZED_FRAME;
+  return UnwindResult::kUnrecognizedFrame;
 }
 
 UnwindInstructionResult ExecuteUnwindInstruction(

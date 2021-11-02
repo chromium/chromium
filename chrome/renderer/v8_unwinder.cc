@@ -264,7 +264,7 @@ base::UnwindResult V8Unwinder::TryUnwind(
   if (!v8::Unwinder::TryUnwindV8Frames(
           js_entry_stubs_, code_ranges_.size(), code_ranges_.buffer(),
           &register_state, reinterpret_cast<const void*>(stack_top))) {
-    return base::UnwindResult::ABORTED;
+    return base::UnwindResult::kAborted;
   }
 
   const uintptr_t prev_stack_pointer =
@@ -287,7 +287,7 @@ base::UnwindResult V8Unwinder::TryUnwind(
       module_cache()->GetModuleForAddress(
           base::RegisterContextInstructionPointer(thread_context)));
 
-  return base::UnwindResult::UNRECOGNIZED_FRAME;
+  return base::UnwindResult::kUnrecognizedFrame;
 }
 
 size_t V8Unwinder::CopyCodePages(size_t capacity, v8::MemoryRange* code_pages) {
