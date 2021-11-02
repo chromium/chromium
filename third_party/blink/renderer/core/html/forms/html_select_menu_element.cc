@@ -605,10 +605,6 @@ void HTMLSelectMenuElement::OptionPartInserted(
       event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
   new_option_part->addEventListener(
       event_type_names::kKeydown, option_part_listener_, /*use_capture=*/false);
-  // TODO(crbug.com/1121840) We don't want to actually change the attribute,
-  // and if tabindex is already set we shouldn't override it.  So we need to
-  // come up with something else here.
-  new_option_part->setTabIndex(-1);
 
   // TODO(crbug.com/1191131) The option part list should match the flat tree
   // order.
@@ -634,9 +630,6 @@ void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
       event_type_names::kClick, option_part_listener_, /*use_capture=*/false);
   option_part->removeEventListener(
       event_type_names::kKeydown, option_part_listener_, /*use_capture=*/false);
-  // TODO(crbug.com/1121840) Whenever we figure out how to set
-  // focusability properly (without using tabIndex), we should undo up
-  // those changes here for elements that are no longer option parts.
   option_parts_.erase(option_part);
 
   if (selected_option_ == option_part) {
