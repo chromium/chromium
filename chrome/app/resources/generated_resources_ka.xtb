@@ -1538,7 +1538,7 @@
 <translation id="2602501489742255173">დასაწყებად გადაფურცლეთ ზემოთ</translation>
 <translation id="2603115962224169880">კომპიუტერის გასუფთავება</translation>
 <translation id="2603355571917519942">Voice Match მზადაა</translation>
-<translation id="2604138917550693049">სურათის ძიება Google Lens-ით</translation>
+<translation id="2604138917550693049">მოიძიეთ სურათი Google Lens-ით</translation>
 <translation id="2604255671529671813">ქსელთან კავშირის შეცდომა</translation>
 <translation id="2605668923777146443">Better Together-თან დაკავშირებული ვარიანტების სანახავად გადადით <ph name="LINK_BEGIN" />პარამეტრებზე<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">მონაცემების მიბმა</translation>
@@ -3804,7 +3804,7 @@
 <translation id="5051836348807686060">მართლწერის შემოწმება მხარდაუჭერელია თქვენ მიერ არჩეული ენებისთვის</translation>
 <translation id="5052499409147950210">საიტის რედაქტირება</translation>
 <translation id="505347685865235222">უსახელო ჯგუფი — <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">სურათის ძიება Google Lens-ით</translation>
+<translation id="5053962746715621840">მოიძიეთ სურათი Google Lens-ით</translation>
 <translation id="5056950756634735043">მიმდინარეობს კონტეინერთან დაკავშირება</translation>
 <translation id="5057110919553308744">გაფართოებაზე დაწკაპუნებისას</translation>
 <translation id="5057403786441168405">მართეთ თქვენი სისტემაში შესული ანგარიშები. მინიჭებული ნებართვების მიხედვით, Chrome-სა და Google Play-ში არსებულმა ვებსაიტებმა, აპებმა თუ გაფართოებებმა შეიძლება გამოიყენოს აღნიშნული ანგარიშები სერვისებით სარგებლობის პროცესის თქვენზე მოსარგებად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
