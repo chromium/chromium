@@ -34,7 +34,7 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
   void ShowDialog();
 
   // Show the confirmation icon and text.
-  void ShowConfirmation();
+  void ShowConfirmation(std::u16string confirmation_message);
 
  private:
   AutofillProgressDialogController* controller_;
