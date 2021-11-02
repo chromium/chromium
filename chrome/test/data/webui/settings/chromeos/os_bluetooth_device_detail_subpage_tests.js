@@ -67,7 +67,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
-  test('Show change settings row', async function() {
+  test('Show change settings row, and navigate to subpages', async function() {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -92,7 +92,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getChangeMouseSettings());
     assertFalse(!!getChangeKeyboardSettings());
 
-    const params = new URLSearchParams();
+    let params = new URLSearchParams();
     params.append('id', '12//345&6789');
     settings.Router.getInstance().navigateTo(
         settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
@@ -104,6 +104,33 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailChangeDeviceSettingsMouse'),
         getChangeMouseSettings().label);
+
+    getChangeMouseSettings().click();
+    await flushAsync();
+
+    assertEquals(
+        settings.Router.getInstance().getCurrentRoute(),
+        settings.routes.POINTERS);
+
+    device1.deviceProperties.deviceType = mojom.DeviceType.kKeyboard;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
+
+    params = new URLSearchParams();
+    params.append('id', '12//345&6789');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+    await flushAsync();
+    assertFalse(!!getChangeMouseSettings());
+    assertTrue(!!getChangeKeyboardSettings());
+
+    getChangeKeyboardSettings().click();
+    await flushAsync();
+
+    assertEquals(
+        settings.Router.getInstance().getCurrentRoute(),
+        settings.routes.KEYBOARD);
   });
 
   test('Device becomes unavailable while viewing page.', async function() {
