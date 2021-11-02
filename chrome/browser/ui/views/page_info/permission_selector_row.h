@@ -27,7 +27,6 @@ class PageInfoBubbleViewTestApi;
 }
 
 namespace views {
-class GridLayout;
 class Label;
 class View;
 class Combobox;
@@ -43,7 +42,7 @@ class PermissionSelectorRow {
   // The |PermissionSelectorRow|'s constituent views are added to |layout|.
   PermissionSelectorRow(ChromePageInfoUiDelegate* delegate,
                         const PageInfo::PermissionInfo& permission,
-                        views::GridLayout* layout);
+                        views::View* parent);
 
   PermissionSelectorRow(const PermissionSelectorRow&) = delete;
   PermissionSelectorRow& operator=(const PermissionSelectorRow&) = delete;

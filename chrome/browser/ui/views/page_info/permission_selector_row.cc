@@ -27,7 +27,6 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -161,12 +160,13 @@ void PermissionCombobox::PermissionChanged() {
 PermissionSelectorRow::PermissionSelectorRow(
     ChromePageInfoUiDelegate* delegate,
     const PageInfo::PermissionInfo& permission,
-    views::GridLayout* layout) {
+    views::View* parent) {
   // Create the permission icon and label.
-  icon_ = layout->AddView(std::make_unique<PermissionIcon>(permission));
-  label_ = layout->AddView(std::make_unique<views::Label>(
+  icon_ = parent->AddChildView(std::make_unique<PermissionIcon>(permission));
+  label_ = parent->AddChildView(std::make_unique<views::Label>(
       PageInfoUI::PermissionTypeToUIString(permission.type),
       views::style::CONTEXT_DIALOG_BODY_TEXT));
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Create the permission combobox.
   menu_model_ = std::make_unique<PermissionMenuModel>(
@@ -177,8 +177,9 @@ PermissionSelectorRow::PermissionSelectorRow(
       permission.source == content_settings::SETTING_SOURCE_USER;
   combobox_model_adapter_ =
       std::make_unique<internal::ComboboxModelAdapter>(menu_model_.get());
-  combobox_ = layout->AddView(std::make_unique<internal::PermissionCombobox>(
-      combobox_model_adapter_.get(), button_enabled, true));
+  combobox_ =
+      parent->AddChildView(std::make_unique<internal::PermissionCombobox>(
+          combobox_model_adapter_.get(), button_enabled, true));
   combobox_->SetEnabled(button_enabled);
   combobox_->SetTooltipTextAndAccessibleName(l10n_util::GetStringFUTF16(
       IDS_PAGE_INFO_SELECTOR_TOOLTIP,
