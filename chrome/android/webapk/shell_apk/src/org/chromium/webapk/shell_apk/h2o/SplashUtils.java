@@ -43,14 +43,8 @@ public class SplashUtils {
         Bitmap icon = WebApkUtils.decodeBitmapFromDrawable(resources, R.drawable.splash_icon);
         int backgroundColor = WebApkUtils.getColor(resources, R.color.background_color_non_empty);
 
-        boolean isIconAdaptive = false;
-        try {
-            isIconAdaptive = resources.getBoolean(R.bool.is_splash_icon_maskable);
-        } catch (Resources.NotFoundException e) {
-        }
-
         FrameLayout layout = new FrameLayout(context);
-        SplashLayout.createLayout(context, layout, icon, isIconAdaptive,
+        SplashLayout.createLayout(context, layout, icon, WebApkUtils.isSplashIconAdaptive(context),
                 false /* isIconGenerated */, resources.getString(R.string.name),
                 WebApkUtils.shouldUseLightForegroundOnBackground(backgroundColor));
         layout.setBackgroundColor(backgroundColor);
