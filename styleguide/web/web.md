@@ -15,9 +15,9 @@ This guide follows and builds on:
 * [Google JavaScript Style Guide](https://google.github.io/styleguide/jsguide.html)
 * [Google Polymer Style Guide](http://go/polymer-style)
 
-*** aside
-Note: Concerns for browser compatibility are usually not relevant for
-Chromium-only code.
+*** side note
+ Concerns for browser compatibility are usually not relevant for
+Blitz-only code.
 ***
 
 ## Separation of presentation and content
