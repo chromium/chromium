@@ -4371,6 +4371,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "personalization-hub",
+    "owners": ["jasontt", "assistive-eng@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
     "expiry_milestone": 105

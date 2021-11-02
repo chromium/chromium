@@ -889,6 +889,11 @@ const base::Feature kPerDeskShelf{"PerDeskShelf",
 const base::Feature kPerformantSplitViewResizing{
     "PerformantSplitViewResizing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Provides a UI for users to customize their wallpapers, screensaver and
+// avatars.
+const base::Feature kPersonalizationHub{"PersonalizationHub",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1630,6 +1635,10 @@ bool IsPhoneHubCameraRollEnabled() {
 
 bool IsPerformantSplitViewResizingEnabled() {
   return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
+}
+
+bool IsPersonalizationHubEnabled() {
+  return base::FeatureList::IsEnabled(kPersonalizationHub);
 }
 
 bool IsPhoneHubEnabled() {

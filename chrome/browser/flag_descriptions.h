@@ -1162,6 +1162,9 @@ extern const char kPermissionQuietChipDescription[];
 extern const char kPersistentQuotaIsTemporaryQuotaName[];
 extern const char kPersistentQuotaIsTemporaryQuotaDescription[];
 
+extern const char kPersonalizationHubName[];
+extern const char kPersonalizationHubDescription[];
+
 extern const char kPlaybackSpeedButtonName[];
 extern const char kPlaybackSpeedButtonDescription[];
 

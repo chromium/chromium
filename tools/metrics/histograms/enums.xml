@@ -49368,6 +49368,7 @@ from previous Chrome versions.
   <int value="-1234385389" label="TextFragmentColorChange:enabled"/>
   <int value="-1232629319" label="ResamplingScrollEvents:disabled"/>
   <int value="-1231507397" label="NtpZeroSuggest:enabled"/>
+  <int value="-1230678816" label="PersonalizationHub:disabled"/>
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
   <int value="-1229114522"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:disabled"/>
@@ -53179,6 +53180,7 @@ from previous Chrome versions.
   <int value="1690248203" label="HelpAppV2:enabled"/>
   <int value="1690837904" label="save-previous-document-resources"/>
   <int value="1691568199" label="AndroidSpellCheckerNonLowEnd:disabled"/>
+  <int value="1691853573" label="PersonalizationHub:enabled"/>
   <int value="1692463816" label="EnableIdleInhibit:disabled"/>
   <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>
   <int value="1693094211" label="FilesNG:disabled"/>

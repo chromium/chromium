@@ -2633,6 +2633,7 @@ constexpr FeatureEntry::FeatureVariation
          base::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
 constexpr char kWallpaperWebUIInternalName[] = "wallpaper-webui";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
@@ -7095,6 +7096,10 @@ const FeatureEntry kFeatureEntries[] = {
          features::kClearCrossSiteCrossBrowsingContextGroupWindowName)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kPersonalizationHubInternalName,
+     flag_descriptions::kPersonalizationHubName,
+     flag_descriptions::kPersonalizationHubDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPersonalizationHub)},
     {kWallpaperWebUIInternalName, flag_descriptions::kWallpaperWebUIName,
      flag_descriptions::kWallpaperWebUIDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWallpaperWebUI)},
@@ -7837,6 +7842,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Only show full screen preview flag if wallpaper flag is enabled.
   if (!strcmp(kWallpaperFullScreenPreviewInternalName, entry.internal_name))
     return !ash::features::IsWallpaperWebUIEnabled();
+
+  // personalization-hub is only available for Unknown/Canary/Dev channels.
+  if (!strcmp(kPersonalizationHubInternalName, entry.internal_name) &&
+      channel != version_info::Channel::DEV &&
+      channel != version_info::Channel::CANARY &&
+      channel != version_info::Channel::UNKNOWN) {
+    return true;
+  }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
