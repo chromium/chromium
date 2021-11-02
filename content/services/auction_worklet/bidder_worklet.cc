@@ -372,6 +372,7 @@ void BidderWorklet::V8State::GenerateBid() {
   if (!CreateAdVector(v8_helper_.get(), context, *interest_group.ads, ads) ||
       !v8_helper_->InsertValue("ads", std::move(ads), interest_group_object)) {
     PostErrorBidCallbackToUserThread();
+    return;
   }
 
   if (interest_group.ad_components) {
@@ -381,6 +382,7 @@ void BidderWorklet::V8State::GenerateBid() {
         !v8_helper_->InsertValue("adComponents", std::move(ad_components),
                                  interest_group_object)) {
       PostErrorBidCallbackToUserThread();
+      return;
     }
   }
 
