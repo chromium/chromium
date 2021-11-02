@@ -166,6 +166,10 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
         MakeGarbageCollected<Range>(GetDocument(), base, extent),
         DisplayLockContext::ForcedPhase::kLayout);
+  } else {
+    force_locks = DisplayLockUtilities::ScopedForcedUpdate(
+        base.ComputeContainerNode(),
+        DisplayLockContext::ForcedPhase::kLayout);
   }
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   return ComputeVisibleSelectionInDOMTree();
