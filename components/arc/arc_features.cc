@@ -103,6 +103,10 @@ const base::Feature kPictureInPictureFeature{"ArcPictureInPicture",
 const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls ARC touch mode mouse compatibility feature.
+const base::Feature kTouchModeMouse{"ArcTouchModeMouse",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls ARCVM real time vcpu feature on a device with 2 logical cores
 // online.
 // When you change the default, you also need to change the chromeExtraAgas

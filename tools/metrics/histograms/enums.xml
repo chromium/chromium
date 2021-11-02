@@ -49166,6 +49166,7 @@ from previous Chrome versions.
   <int value="-1371239786" label="EnablePasswordsAccountStorage:enabled"/>
   <int value="-1370532920" label="AppServiceAsh:enabled"/>
   <int value="-1369613781" label="FileHandlingIcons:disabled"/>
+  <int value="-1369089674" label="ArcTouchModeMouse:enabled"/>
   <int value="-1368913664" label="TabSearch:disabled"/>
   <int value="-1368499577" label="OnTheFlyMhtmlHashComputation:enabled"/>
   <int value="-1367447724"
@@ -51371,6 +51372,7 @@ from previous Chrome versions.
   <int value="328722396" label="NTPCondensedLayout:disabled"/>
   <int value="330138076" label="enable-clear-browsing-data-counters"/>
   <int value="330439654" label="SyncPseudoUSSExtensions:enabled"/>
+  <int value="330627288" label="ArcTouchModeMouse:disabled"/>
   <int value="330653520" label="ChromeShareHighlightsAndroid:enabled"/>
   <int value="331094131" label="WindowControlMenu:disabled"/>
   <int value="331770879" label="CrostiniAppSearch:disabled"/>
