@@ -80,10 +80,6 @@
 #include "content/shell/android/shell_descriptors.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/public/browser/context_factory.h"
-#endif
-
 #if defined(OS_ANDROID)
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #endif
