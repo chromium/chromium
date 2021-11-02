@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -49,7 +48,7 @@ class WebAuthFocusTest : public InProcessBrowserTest,
 
   bool permission_requested() { return permission_requested_; }
 
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  AuthenticatorRequestDialogModel* dialog_model_;
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {

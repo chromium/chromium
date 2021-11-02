@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
@@ -77,8 +76,8 @@ class DomDistillerServiceTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<MockDistillerFactory> distiller_factory_;
-  raw_ptr<MockDistillerPageFactory> distiller_page_factory_;
+  MockDistillerFactory* distiller_factory_;
+  MockDistillerPageFactory* distiller_page_factory_;
   std::unique_ptr<DomDistillerService> service_;
 };
 

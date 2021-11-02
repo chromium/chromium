@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -185,8 +184,7 @@ class BlinkUrlLoaderTest : public testing::Test {
   std::unique_ptr<BlinkUrlLoader> loader_;
 
   // Becomes invalid if `loader_` is closed or destructed.
-  raw_ptr<MockWebAssociatedURLLoader> mock_url_loader_ =
-      fake_client_.mock_url_loader();
+  MockWebAssociatedURLLoader* mock_url_loader_ = fake_client_.mock_url_loader();
 
   blink::WebURLRequest saved_request_;
 };

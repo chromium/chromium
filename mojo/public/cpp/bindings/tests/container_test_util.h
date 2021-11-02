@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace mojo {
 
@@ -27,7 +26,7 @@ class CopyableType {
  private:
   bool copied_;
   static size_t num_instances_;
-  raw_ptr<CopyableType> ptr_;
+  CopyableType* ptr_;
 };
 
 class MoveOnlyType {
@@ -50,7 +49,7 @@ class MoveOnlyType {
  private:
   bool moved_;
   static size_t num_instances_;
-  raw_ptr<MoveOnlyType> ptr_;
+  MoveOnlyType* ptr_;
 };
 
 }  // namespace mojo

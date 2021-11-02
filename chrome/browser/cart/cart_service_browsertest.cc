@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
@@ -128,8 +127,8 @@ class CartServiceBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<CartService> service_;
-  raw_ptr<Profile> profile_;
+  CartService* service_;
+  Profile* profile_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_client.h"
@@ -139,7 +138,7 @@ class ChromotingSession : public ClientInputInjector {
                                   Args&&... args);
 
   // Used to obtain task runner references.
-  const raw_ptr<ChromotingClientRuntime> runtime_;
+  ChromotingClientRuntime* const runtime_;
 
   // Created when the session is connected, then used, and destroyed on the
   // network thread when the instance is destroyed.

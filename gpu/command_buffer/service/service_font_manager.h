@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SERVICE_FONT_MANAGER_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -52,7 +51,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
 
   base::Lock lock_;
 
-  raw_ptr<Client> client_;
+  Client* client_;
   const base::PlatformThreadId client_thread_id_;
   std::unique_ptr<SkStrikeClient> strike_client_;
   base::flat_map<SkDiscardableHandleId, ServiceDiscardableHandle>

@@ -52,7 +52,7 @@ ActivityLogDatabasePolicy::ActivityLogDatabasePolicy(
 
 void ActivityLogDatabasePolicy::Init() {
   LOG(WARNING) << "Scheduling init";
-  ScheduleAndForget(db_.get(), &ActivityDatabase::Init, database_path_);
+  ScheduleAndForget(db_, &ActivityDatabase::Init, database_path_);
 }
 
 void ActivityLogDatabasePolicy::Flush() {

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -55,7 +54,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     }
 
    private:
-    const raw_ptr<DisplayResourceProviderGL> resource_provider_;
+    DisplayResourceProviderGL* const resource_provider_;
     const ResourceId resource_id_;
 
     GLuint texture_id_ = 0;
@@ -113,7 +112,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
     bool HasReadLockFence() const;
 
    private:
-    const raw_ptr<DisplayResourceProviderGL> resource_provider_;
+    DisplayResourceProviderGL* const resource_provider_;
     const ResourceId resource_id_;
     GLuint texture_id_ = 0;
   };
@@ -137,7 +136,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
 
     void Synchronize();
 
-    raw_ptr<gpu::gles2::GLES2Interface> gl_;
+    gpu::gles2::GLES2Interface* gl_;
     bool has_synchronized_;
   };
 
@@ -156,7 +155,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderGL
   GLenum BindForSampling(ResourceId resource_id, GLenum unit, GLenum filter);
   void WaitSyncTokenInternal(ChildResource* resource);
 
-  const raw_ptr<ContextProvider> compositor_context_provider_;
+  ContextProvider* const compositor_context_provider_;
   const bool enable_shared_images_;
 };
 

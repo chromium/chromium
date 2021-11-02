@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -253,7 +252,7 @@ class RemoteSyncRunner : public SyncProcessRunner,
     std::move(callback).Run(status);
   }
 
-  raw_ptr<RemoteFileSyncService> remote_service_;
+  RemoteFileSyncService* remote_service_;
   RemoteServiceState last_state_;
   base::WeakPtrFactory<RemoteSyncRunner> factory_{this};
 };

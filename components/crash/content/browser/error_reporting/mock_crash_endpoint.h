@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "net/http/http_status_code.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -73,7 +72,7 @@ class MockCrashEndpoint {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 
-  raw_ptr<net::test_server::EmbeddedTestServer> test_server_;
+  net::test_server::EmbeddedTestServer* test_server_;
   std::unique_ptr<Client> client_;
   absl::optional<Report> last_report_;
   std::vector<Report> all_reports_;

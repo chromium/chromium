@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FAKE_UPLOAD_CLIENT_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
 namespace reporting {
@@ -34,7 +33,7 @@ class FakeUploadClient : public UploadClient {
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
       absl::optional<base::Value> response);
 
-  const raw_ptr<policy::CloudPolicyClient> cloud_policy_client_;
+  policy::CloudPolicyClient* const cloud_policy_client_;
 };
 
 }  // namespace reporting

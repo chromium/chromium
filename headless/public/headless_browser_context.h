@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
@@ -125,7 +124,7 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
     DISALLOW_COPY_AND_ASSIGN(MojoBindings);
   };
 
-  raw_ptr<HeadlessBrowserImpl> browser_;
+  HeadlessBrowserImpl* browser_;
   std::unique_ptr<HeadlessBrowserContextOptions> options_;
 
   std::list<MojoBindings> mojo_bindings_;

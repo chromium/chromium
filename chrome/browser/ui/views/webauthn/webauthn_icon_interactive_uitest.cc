@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -51,7 +50,7 @@ class WebAuthUITest : public InProcessBrowserTest {
     return https_server_.GetURL(hostname, relative_url);
   }
 
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  AuthenticatorRequestDialogModel* dialog_model_;
 
  private:
   void SetUpCommandLine(base::CommandLine* command_line) override {

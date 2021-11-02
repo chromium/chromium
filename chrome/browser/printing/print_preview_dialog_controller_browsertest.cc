@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -151,9 +150,8 @@ class PrintPreviewDialogControllerBrowserTest
 
   std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
       cloned_tab_observer_;
-  raw_ptr<printing::TestPrintViewManagerForRequestPreview>
-      test_print_view_manager_;
-  raw_ptr<WebContents> initiator_ = nullptr;
+  printing::TestPrintViewManagerForRequestPreview* test_print_view_manager_;
+  WebContents* initiator_ = nullptr;
 };
 
 // Test to verify that when a initiator navigates, we can create a new preview

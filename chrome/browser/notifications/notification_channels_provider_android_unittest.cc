@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
@@ -139,7 +138,7 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
     // Can't use std::make_unique because the provider's constructor is private.
     channels_provider_ =
         base::WrapUnique(new NotificationChannelsProviderAndroid(
-            base::WrapUnique(fake_bridge_.get())));
+            base::WrapUnique(fake_bridge_)));
   }
 
   ContentSettingsPattern GetTestPattern() {
@@ -153,7 +152,7 @@ class NotificationChannelsProviderAndroidTest : public testing::Test {
   std::unique_ptr<NotificationChannelsProviderAndroid> channels_provider_;
 
   // No leak because ownership is passed to channels_provider_ in constructor.
-  raw_ptr<FakeNotificationChannelsBridge> fake_bridge_;
+  FakeNotificationChannelsBridge* fake_bridge_;
 };
 
 TEST_F(NotificationChannelsProviderAndroidTest,

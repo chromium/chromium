@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/install_gate.h"
 
 class Profile;
@@ -26,7 +25,7 @@ class UpdateInstallGate : public InstallGate {
 
  private:
   // Not owned.
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
 };
 
 }  // namespace extensions

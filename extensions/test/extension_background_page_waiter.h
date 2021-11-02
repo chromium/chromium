@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 #define EXTENSIONS_TEST_EXTENSION_BACKGROUND_PAGE_WAITER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension.h"
 
 namespace content {
@@ -56,7 +55,7 @@ class ExtensionBackgroundPageWaiter {
   void WaitForBackgroundClosed();
 
  private:
-  const raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   scoped_refptr<const Extension> extension_;
 };
 

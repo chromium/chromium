@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -33,7 +32,7 @@ class MovePasswordToAccountStoreHelper : public FormFetcher::Consumer {
   void OnFetchCompleted() override;
 
   PasswordForm form_;
-  const raw_ptr<PasswordManagerClient> client_;
+  PasswordManagerClient* const client_;
   const metrics_util::MoveToAccountStoreTrigger trigger_;
   base::OnceClosure done_callback_;
   std::unique_ptr<FormFetcher> form_fetcher_;

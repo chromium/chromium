@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_default.h"
@@ -300,7 +299,7 @@ class FixtureWithMockMessagePump : public Fixture {
   }
 
  private:
-  raw_ptr<MockTimeMessagePump> pump_ = nullptr;
+  MockTimeMessagePump* pump_ = nullptr;
   SimpleTestTickClock mock_clock_;
   CallCountingTickClock call_counting_clock_;
   std::unique_ptr<SequenceManagerForTest> sequence_manager_;
@@ -2286,7 +2285,7 @@ namespace {
 
 class MockTaskQueueThrottler : public TaskQueue::Throttler {
  public:
-  raw_ptr<TaskQueue> task_queue;
+  TaskQueue* task_queue;
 
   explicit MockTaskQueueThrottler(TaskQueue* task_queue)
       : task_queue(task_queue) {}
@@ -2568,7 +2567,7 @@ class CancelableTask {
     FAIL();
   }
 
-  raw_ptr<const TickClock> clock_;
+  const TickClock* clock_;
   WeakPtrFactory<CancelableTask> weak_factory_{this};
 };
 
@@ -2811,7 +2810,7 @@ class QuadraticTask {
   int count_;
   scoped_refptr<TaskRunner> task_runner_;
   TimeDelta delay_;
-  raw_ptr<Fixture> fixture_;
+  Fixture* fixture_;
   RepeatingCallback<bool()> should_exit_;
 };
 
@@ -2844,7 +2843,7 @@ class LinearTask {
   int count_;
   scoped_refptr<TaskRunner> task_runner_;
   TimeDelta delay_;
-  raw_ptr<Fixture> fixture_;
+  Fixture* fixture_;
   RepeatingCallback<bool()> should_exit_;
 };
 
@@ -4430,8 +4429,8 @@ class PostTaskWhenDeleted {
   std::string name_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   int depth_;
-  raw_ptr<std::set<std::string>> tasks_alive_;
-  raw_ptr<std::vector<std::string>> tasks_deleted_;
+  std::set<std::string>* tasks_alive_;
+  std::vector<std::string>* tasks_deleted_;
 };
 
 void CallbackWithDestructor(std::unique_ptr<PostTaskWhenDeleted> object) {}
@@ -4496,8 +4495,8 @@ class DestructionObserverProbe : public RefCounted<DestructionObserverProbe> {
     *task_destroyed_ = true;
   }
 
-  raw_ptr<bool> task_destroyed_;
-  raw_ptr<bool> destruction_observer_called_;
+  bool* task_destroyed_;
+  bool* destruction_observer_called_;
 };
 
 class SMDestructionObserver : public CurrentThread::DestructionObserver {
@@ -4515,8 +4514,8 @@ class SMDestructionObserver : public CurrentThread::DestructionObserver {
   }
 
  private:
-  raw_ptr<bool> task_destroyed_;
-  raw_ptr<bool> destruction_observer_called_;
+  bool* task_destroyed_;
+  bool* destruction_observer_called_;
   bool task_destroyed_before_message_loop_;
 };
 

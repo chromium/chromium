@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -82,7 +81,7 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
   bool IsTransitionReentrant(bool new_fullscreen);
 
   WindowState state_;
-  raw_ptr<Browser> browser_;
+  Browser* browser_;
 };
 
 FullscreenControllerTestWindow::FullscreenControllerTestWindow()
@@ -227,7 +226,7 @@ class FullscreenControllerStateUnitTest : public BrowserWithTestWindowTest,
   // FullscreenControllerStateTest:
   bool ShouldSkipStateAndEventPair(State state, Event event) override;
   Browser* GetBrowser() override;
-  raw_ptr<FullscreenControllerTestWindow> window_ = nullptr;
+  FullscreenControllerTestWindow* window_ = nullptr;
 };
 
 FullscreenControllerStateUnitTest::FullscreenControllerStateUnitTest() =

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -137,7 +136,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   base::CancelableTaskTracker tracker_;
-  raw_ptr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
 #if defined(OS_ANDROID)
   TestFeedApi test_feed_api_;
 #endif

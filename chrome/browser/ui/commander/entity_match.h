@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/commander/command_source.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -31,7 +30,7 @@ struct WindowMatch {
 
   std::unique_ptr<CommandItem> ToCommandItem() const;
 
-  raw_ptr<Browser> browser;
+  Browser* browser;
   std::u16string title;
   std::vector<gfx::Range> matched_ranges;
   double score;

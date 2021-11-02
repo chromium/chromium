@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,7 +84,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   bool quit_ = false;
 
   // The MessageLoop::Delegate for this pump.
-  raw_ptr<Delegate> delegate_ = nullptr;
+  Delegate* delegate_ = nullptr;
 
   // The time at which we are currently scheduled to wake up and perform a
   // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
@@ -103,10 +102,10 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   int delayed_fd_;
 
   // The Android Looper for this thread.
-  raw_ptr<ALooper> looper_ = nullptr;
+  ALooper* looper_ = nullptr;
 
   // The JNIEnv* for this thread, used to check for pending exceptions.
-  raw_ptr<JNIEnv> env_;
+  JNIEnv* env_;
 };
 
 }  // namespace base

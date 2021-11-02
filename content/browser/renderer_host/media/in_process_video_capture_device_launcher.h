@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
@@ -105,7 +104,7 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::vector<media::VideoCaptureDeviceInfo> devices_info);
 
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
-  const raw_ptr<media::VideoCaptureSystem> video_capture_system_;
+  media::VideoCaptureSystem* const video_capture_system_;
   State state_;
   std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
 };

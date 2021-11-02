@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 
 class ChromePasswordManagerClient;
@@ -30,7 +29,7 @@ class ChromeWebAuthnCredentialsDelegate
   std::vector<autofill::Suggestion> GetWebAuthnSuggestions() const override;
 
  protected:
-  const raw_ptr<ChromePasswordManagerClient> client_;
+  ChromePasswordManagerClient* const client_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_

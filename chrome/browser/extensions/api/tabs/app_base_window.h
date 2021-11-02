@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/base_window.h"
 
 namespace extensions {
@@ -53,7 +52,7 @@ class AppBaseWindow : public ui::BaseWindow {
 
   NativeAppWindow* GetBaseWindow() const;
 
-  raw_ptr<AppWindow> app_window_;
+  AppWindow* app_window_;
 };
 
 }  // namespace extensions

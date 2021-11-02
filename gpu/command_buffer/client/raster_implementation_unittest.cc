@@ -18,7 +18,6 @@
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
@@ -177,7 +176,7 @@ class RasterImplementationTest : public testing::Test {
     std::unique_ptr<RasterCmdHelper> helper_;
     std::unique_ptr<MockTransferBuffer> transfer_buffer_;
     std::unique_ptr<RasterImplementation> gl_;
-    raw_ptr<CommandBufferEntry> commands_;
+    CommandBufferEntry* commands_;
     int token_;
     Capabilities capabilities_;
   };
@@ -305,11 +304,11 @@ class RasterImplementationTest : public testing::Test {
 
   TestContext test_context_;
 
-  raw_ptr<MockClientGpuControl> gpu_control_;
-  raw_ptr<RasterCmdHelper> helper_;
-  raw_ptr<MockTransferBuffer> transfer_buffer_;
-  raw_ptr<RasterImplementation> gl_;
-  raw_ptr<CommandBufferEntry> commands_;
+  MockClientGpuControl* gpu_control_;
+  RasterCmdHelper* helper_;
+  MockTransferBuffer* transfer_buffer_;
+  RasterImplementation* gl_;
+  CommandBufferEntry* commands_;
 };
 
 void RasterImplementationTest::SetUp() {

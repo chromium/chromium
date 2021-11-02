@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "components/cbor/cbor_export.h"
 #include "components/cbor/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -88,11 +87,11 @@ class CBOR_EXPORT Reader {
 
     // Used to report the number of bytes of input consumed. This suppresses the
     // |EXTRANEOUS_DATA| error case. May be nullptr.
-    raw_ptr<size_t> num_bytes_consumed = nullptr;
+    size_t* num_bytes_consumed = nullptr;
 
     // Used to report the specific error in the case that parsing fails. May be
     // nullptr;
-    raw_ptr<DecoderError> error_code_out = nullptr;
+    DecoderError* error_code_out = nullptr;
 
     // Controls the maximum depth of CBOR nesting that will be permitted. This
     // exists to control stack consumption during parsing.

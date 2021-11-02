@@ -77,9 +77,8 @@ void HistoryStatisticsReporter::MaybeReportStatistics() {
   } else {
     // Register for HistoryServiceLoading in case HistoryService is not yet
     // ready.
-    DCHECK(!history_service_observation_.IsObservingSource(
-        history_service_.get()));
-    history_service_observation_.Observe(history_service_.get());
+    DCHECK(!history_service_observation_.IsObservingSource(history_service_));
+    history_service_observation_.Observe(history_service_);
   }
 }
 

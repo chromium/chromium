@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -210,7 +209,7 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
-  raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
+  HeadlessWebContentsImpl* headless_web_contents_;  // Not owned.
   DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 

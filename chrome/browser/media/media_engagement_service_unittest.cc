@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -80,7 +79,7 @@ class MediaEngagementChangeWaiter : public content_settings::Observer {
  private:
   void Proceed() { run_loop_.Quit(); }
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   base::RunLoop run_loop_;
 };
 

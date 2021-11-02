@@ -7,7 +7,6 @@
 
 #include "android_webview/browser/gfx/root_frame_sink.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 
@@ -79,10 +78,10 @@ class RootFrameSinkProxy : public viz::BeginFrameObserverBase {
 
   const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> viz_task_runner_;
-  const raw_ptr<RootFrameSinkProxyClient> client_;
+  RootFrameSinkProxyClient* const client_;
   std::unique_ptr<RootFrameSinkClient> root_frame_sink_client_;
   scoped_refptr<RootFrameSink> without_gpu_;
-  const raw_ptr<viz::BeginFrameSource> begin_frame_source_;
+  viz::BeginFrameSource* const begin_frame_source_;
   bool had_input_event_ = false;
   bool observing_bfs_ = false;
 

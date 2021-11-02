@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -46,8 +45,8 @@ class InternalsUI : public ui::MojoWebUIController {
   void AddLensInternals(content::WebUI* web_ui);
 #endif  // defined(OS_ANDROID)
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebUIDataSource> source_;
+  Profile* profile_;
+  content::WebUIDataSource* source_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTERNALS_INTERNALS_UI_H_

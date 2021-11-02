@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/time/time.h"
@@ -527,7 +526,7 @@ class NET_EXPORT NetworkChangeNotifier {
 
    private:
     // The original NetworkChangeNotifier to be restored on destruction.
-    raw_ptr<NetworkChangeNotifier> network_change_notifier_;
+    NetworkChangeNotifier* network_change_notifier_;
   };
 
  protected:
@@ -652,7 +651,7 @@ class NET_EXPORT NetworkChangeNotifier {
                                                   NetworkHandle network);
   void NotifyObserversOfConnectionCostChangeImpl(ConnectionCost cost);
 
-  raw_ptr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
+  SystemDnsConfigChangeNotifier* system_dns_config_notifier_;
   std::unique_ptr<SystemDnsConfigObserver> system_dns_config_observer_;
 
   // Computes NetworkChange signal from IPAddress and ConnectionType signals.

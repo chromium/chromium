@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -87,7 +86,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void OnBubbleClose();
 
-  const raw_ptr<const Browser> browser_;
+  const Browser* const browser_;
   const tab_groups::TabGroupId group_;
 
   class TitleFieldController : public views::TextfieldController {
@@ -103,7 +102,7 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
                         const ui::KeyEvent& key_event) override;
 
    private:
-    const raw_ptr<TabGroupEditorBubbleView> parent_;
+    TabGroupEditorBubbleView* const parent_;
   };
 
   TitleFieldController title_field_controller_;
@@ -127,13 +126,13 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
     bool stop_context_menu_propagation_;
   };
 
-  raw_ptr<TitleField> title_field_;
+  TitleField* title_field_;
 
   Colors colors_;
-  raw_ptr<ColorPickerView> color_selector_;
+  ColorPickerView* color_selector_;
 
-  raw_ptr<views::ToggleButton> save_group_toggle_ = nullptr;
-  raw_ptr<views::LabelButton> move_menu_item_ = nullptr;
+  views::ToggleButton* save_group_toggle_ = nullptr;
+  views::LabelButton* move_menu_item_ = nullptr;
 
   // If true will use the |anchor_rect_| provided in the constructor, otherwise
   // fall back to using the anchor view bounds.

@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/video_frame.h"
@@ -50,7 +49,7 @@ class VideoEncodeAcceleratorClient
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
-  raw_ptr<VideoEncodeAccelerator::Client> client_;
+  VideoEncodeAccelerator::Client* client_;
   mojo::Receiver<mojom::VideoEncodeAcceleratorClient> receiver_;
 };
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -54,7 +53,7 @@ class WebContentsCollection {
 
   // Observer which will receive callbacks from any of the `WebContentsObserver`
   // in `web_contents_observers_`.
-  const raw_ptr<Observer> observer_;
+  Observer* const observer_;
 
   // Map of observers for the WebContents part of this collection.
   base::flat_map<content::WebContents*,

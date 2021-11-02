@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_INVESTIGATOR_DEPENDENCY_PROVIDER_H_
 #define CHROME_BROWSER_SIGNIN_INVESTIGATOR_DEPENDENCY_PROVIDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/signin_investigator.h"
@@ -27,7 +26,7 @@ class InvestigatorDependencyProvider
 
  private:
   // Non-owning pointer.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_INVESTIGATOR_DEPENDENCY_PROVIDER_H_

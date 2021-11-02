@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_ACTIONS_HISTORY_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_ACTIONS_HISTORY_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -83,7 +82,7 @@ class PermissionActionsHistory : public KeyedService {
                                         const std::string& key,
                                         EntryFilter entry_filter);
 
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(PermissionActionsHistory);
 };

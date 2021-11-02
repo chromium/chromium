@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -133,7 +132,7 @@ class NotificationDisplayQueueTest : public testing::Test {
  private:
   NotificationDisplayServiceMock service_;
   NotificationDisplayQueue queue_{&service_};
-  raw_ptr<FakeNotificationBlocker> notification_blocker_ = nullptr;
+  FakeNotificationBlocker* notification_blocker_ = nullptr;
 };
 
 TEST_F(NotificationDisplayQueueTest, ShouldEnqueueWithoutBlockers) {

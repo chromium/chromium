@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/test/views_test_base.h"
@@ -51,7 +50,7 @@ class TestSlideOutControllerDelegate : public SlideOutControllerDelegate {
   int slide_out_count_ = 0;
 
  private:
-  const raw_ptr<View> target_;
+  View* const target_;
 };
 
 class SlideOutControllerTest : public ViewsTestBase {

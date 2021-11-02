@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/bind_to_current_loop.h"
@@ -95,8 +94,8 @@ class ScopedConverterInputProvider : public AudioConverter::InputCallback {
   }
 
  private:
-  const raw_ptr<AudioConverter> converter_;
-  const raw_ptr<const AudioBus> audio_bus_;
+  AudioConverter* const converter_;
+  const AudioBus* const audio_bus_;
 };
 
 }  // namespace

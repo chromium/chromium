@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -66,7 +65,7 @@ class AuthenticatorSheetModelBase
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
 
  private:
-  raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
+  AuthenticatorRequestDialogModel* dialog_model_;
 };
 
 // The sheet shown for selecting the transport over which the security key

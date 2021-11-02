@@ -107,8 +107,6 @@
  *     my_provider.Unregister();
  */
 
-#include "base/memory/raw_ptr.h"
-
 class TlmProvider {
  public:
   // Initialize a provider in the unregistered state.
@@ -283,7 +281,7 @@ class TlmProvider {
   uint64_t keyword_all_ = 0;
   uint64_t reg_handle_ = 0;
   PENABLECALLBACK enable_callback_ = nullptr;
-  raw_ptr<void> enable_callback_context_ = nullptr;
+  void* enable_callback_context_ = nullptr;
   char provider_metadata_[kMaxProviderMetadataSize] = {};
 };
 

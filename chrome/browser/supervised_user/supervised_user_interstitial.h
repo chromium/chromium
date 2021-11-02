@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "url/gurl.h"
 
@@ -72,9 +71,9 @@ class SupervisedUserInterstitial {
   void OnInterstitialDone();
 
   // Owns SupervisedUserNavigationObserver which owns us.
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // The last committed url for this frame.
   GURL url_;

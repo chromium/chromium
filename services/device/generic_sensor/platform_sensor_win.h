@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_WIN_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_PLATFORM_SENSOR_WIN_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win.h"
@@ -55,7 +54,7 @@ class PlatformSensorWin final : public PlatformSensor,
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> sensor_thread_runner_;
-  const raw_ptr<PlatformSensorReaderWinBase> sensor_reader_;
+  PlatformSensorReaderWinBase* const sensor_reader_;
   base::WeakPtrFactory<PlatformSensorWin> weak_factory_{this};
 };
 

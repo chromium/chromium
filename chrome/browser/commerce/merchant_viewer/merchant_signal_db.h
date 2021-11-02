@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_COMMERCE_MERCHANT_VIEWER_MERCHANT_SIGNAL_DB_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/commerce/merchant_viewer/merchant_signal_db_content.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,8 +55,7 @@ class MerchantSignalDB {
                  const base::android::JavaParamRef<jobject>& jcallback);
 
  private:
-  raw_ptr<ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>>
-      proto_db_;
+  ProfileProtoDB<merchant_signal_db::MerchantSignalContentProto>* proto_db_;
   base::WeakPtrFactory<MerchantSignalDB> weak_ptr_factory_{this};
 };
 

@@ -28,7 +28,7 @@ PermissionAuditingService::PermissionAuditingService(
 
 PermissionAuditingService::~PermissionAuditingService() {
   if (db_) {
-    backend_task_runner_->DeleteSoon(FROM_HERE, db_.get());
+    backend_task_runner_->DeleteSoon(FROM_HERE, db_);
     db_ = nullptr;
   }
 }
@@ -39,7 +39,7 @@ void PermissionAuditingService::Init(const base::FilePath& database_path) {
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&PermissionAuditingDatabase::Init),
-                     base::Unretained(db_.get()), database_path));
+                     base::Unretained(db_), database_path));
 }
 
 void PermissionAuditingService::StartPeriodicCullingOfExpiredSessions() {
@@ -56,7 +56,7 @@ void PermissionAuditingService::StorePermissionUsage(
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&PermissionAuditingDatabase::StorePermissionUsage),
-          base::Unretained(db_.get()), session));
+          base::Unretained(db_), session));
 }
 
 void PermissionAuditingService::GetPermissionUsageHistory(
@@ -68,7 +68,7 @@ void PermissionAuditingService::GetPermissionUsageHistory(
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PermissionAuditingDatabase::GetPermissionUsageHistory,
-                     base::Unretained(db_.get()), type, origin, start_time),
+                     base::Unretained(db_), type, origin, start_time),
       std::move(result_callback));
 }
 
@@ -80,7 +80,7 @@ void PermissionAuditingService::GetLastPermissionUsageTime(
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&PermissionAuditingDatabase::GetLastPermissionUsageTime,
-                     base::Unretained(db_.get()), type, origin),
+                     base::Unretained(db_), type, origin),
       std::move(result_callback));
 }
 
@@ -93,7 +93,7 @@ void PermissionAuditingService::UpdateEndTime(ContentSettingsType type,
       FROM_HERE,
       base::BindOnce(
           base::IgnoreResult(&PermissionAuditingDatabase::UpdateEndTime),
-          base::Unretained(db_.get()), type, origin, start_time, new_end_time));
+          base::Unretained(db_), type, origin, start_time, new_end_time));
 }
 
 void PermissionAuditingService::DeleteSessionsBetween(base::Time start,
@@ -103,7 +103,7 @@ void PermissionAuditingService::DeleteSessionsBetween(base::Time start,
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(
                          &PermissionAuditingDatabase::DeleteSessionsBetween),
-                     base::Unretained(db_.get()), start, end));
+                     base::Unretained(db_), start, end));
 }
 
 void PermissionAuditingService::ExpireOldSessions() {
@@ -112,7 +112,7 @@ void PermissionAuditingService::ExpireOldSessions() {
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(
                          &PermissionAuditingDatabase::DeleteSessionsBetween),
-                     base::Unretained(db_.get()), base::Time(),
+                     base::Unretained(db_), base::Time(),
                      base::Time::Now() - kUsageSessionMaxAge));
 }
 

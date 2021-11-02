@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "net/url_request/url_request_job_factory.h"
 
 class GURL;
@@ -49,8 +48,8 @@ class URLRequestInterceptingJobFactory : public net::URLRequestJobFactory {
   bool IsSafeRedirectTarget(const GURL& location) const override;
 
  private:
-  const raw_ptr<net::URLRequestJobFactory> job_factory_;
-  const raw_ptr<net::URLRequestInterceptor> interceptor_;
+  net::URLRequestJobFactory* const job_factory_;
+  net::URLRequestInterceptor* const interceptor_;
 };
 
 }  // namespace cronet

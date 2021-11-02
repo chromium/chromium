@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -55,7 +54,7 @@ class LoginUIServiceTest : public testing::Test {
 
   TestingProfileManager profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  raw_ptr<TestingProfile> profile_;
+  TestingProfile* profile_;
 };
 
 class TestLoginUI : public LoginUIService::LoginUI {
@@ -121,7 +120,7 @@ class LoginUIServiceExtensionLoginPromptTest
   }
 
   std::unique_ptr<LoginUIService> service_;
-  raw_ptr<TabStripModel> model_;
+  TabStripModel* model_;
 };
 
 TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -62,7 +61,7 @@ class LargeIconWorker : public base::RefCountedThreadSafe<LargeIconWorker> {
   favicon_base::LargeIconCallback raw_bitmap_callback_;
   favicon_base::LargeIconImageCallback image_callback_;
   scoped_refptr<base::TaskRunner> background_task_runner_;
-  raw_ptr<base::CancelableTaskTracker> tracker_;
+  base::CancelableTaskTracker* tracker_;
 
   favicon_base::FaviconRawBitmapResult raw_bitmap_result_;
   SkBitmap bitmap_result_;

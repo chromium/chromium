@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
@@ -136,9 +135,9 @@ class LanguageSettingsPrivateDelegate
   WeakDictionaries hunspell_dictionaries_;
 
   // The custom dictionary that is used for spellchecking.
-  raw_ptr<SpellcheckCustomDictionary> custom_dictionary_;
+  SpellcheckCustomDictionary* custom_dictionary_;
 
-  raw_ptr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
 
   // True if there are observers listening for spellcheck events.
   bool listening_spellcheck_;

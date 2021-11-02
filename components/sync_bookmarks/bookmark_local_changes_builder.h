@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_LOCAL_CHANGES_BUILDER_H_
 #define COMPONENTS_SYNC_BOOKMARKS_BOOKMARK_LOCAL_CHANGES_BUILDER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 
 namespace bookmarks {
@@ -31,8 +30,8 @@ class BookmarkLocalChangesBuilder {
   syncer::CommitRequestDataList BuildCommitRequests(size_t max_entries) const;
 
  private:
-  const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  SyncedBookmarkTracker* const bookmark_tracker_;
+  bookmarks::BookmarkModel* const bookmark_model_;
 };
 
 }  // namespace sync_bookmarks

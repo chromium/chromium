@@ -10,7 +10,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/tick_clock.h"
@@ -345,10 +344,10 @@ class CastMessageHandler : public CastSocket::Observer {
   // Set of virtual connections opened to receivers.
   base::flat_set<VirtualConnection> virtual_connections_;
 
-  const raw_ptr<CastSocketService> socket_service_;
+  CastSocketService* const socket_service_;
 
   // Non-owned pointer to TickClock used for request timeouts.
-  const raw_ptr<const base::TickClock> clock_;
+  const base::TickClock* const clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMessageHandler> weak_ptr_factory_{this};

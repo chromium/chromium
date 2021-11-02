@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "ui/gfx/animation/animation_delegate.h"
@@ -103,7 +102,7 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   bool IsHideTimeoutRunning() const;
 
   // The Manager associated with this bubble.
-  const raw_ptr<ExclusiveAccessManager> manager_;
+  ExclusiveAccessManager* const manager_;
 
   // The host the bubble is for, can be empty.
   GURL url_;

@@ -32,7 +32,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_decoder_config.h"
@@ -179,13 +178,13 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // Create new bitstream converter, destroying active converter if present.
   void InitBitstreamConverter();
 
-  raw_ptr<FFmpegDemuxer> demuxer_;
+  FFmpegDemuxer* demuxer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<AVStream> stream_;
+  AVStream* stream_;
   base::TimeDelta start_time_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
   std::unique_ptr<VideoDecoderConfig> video_config_;
-  raw_ptr<MediaLog> media_log_;
+  MediaLog* media_log_;
   Type type_;
   Liveness liveness_;
   base::TimeDelta duration_;
@@ -349,7 +348,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // Executes |pending_seek_cb_| with |status| and closes out the async trace.
   void RunPendingSeekCB(PipelineStatus status);
 
-  raw_ptr<DemuxerHost> host_ = nullptr;
+  DemuxerHost* host_ = nullptr;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -386,9 +385,9 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   // Provides asynchronous IO to this demuxer. Consumed by |url_protocol_| to
   // integrate with libavformat.
-  raw_ptr<DataSource> data_source_;
+  DataSource* data_source_;
 
-  raw_ptr<MediaLog> media_log_;
+  MediaLog* media_log_;
 
   // Derived bitrate after initialization has completed.
   int bitrate_ = 0;

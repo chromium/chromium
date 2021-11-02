@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -108,11 +107,11 @@ class BookmarkModelDropObserver : public bookmarks::BaseBookmarkModelObserver {
     bookmark_model_ = nullptr;
   }
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   const bookmarks::BookmarkNodeData drop_data_;
-  raw_ptr<const bookmarks::BookmarkNode> drop_parent_;
+  const bookmarks::BookmarkNode* drop_parent_;
   const size_t index_to_drop_at_;
-  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  bookmarks::BookmarkModel* bookmark_model_;
 };
 
 }  // namespace

@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
@@ -110,7 +109,7 @@ class BaseWatcher : public MessagePumpLibevent::FdWatcher {
   void OnFileCanWriteWithoutBlocking(int /* fd */) override { NOTREACHED(); }
 
  protected:
-  raw_ptr<MessagePumpLibevent::FdWatchController> controller_;
+  MessagePumpLibevent::FdWatchController* controller_;
 };
 
 class DeleteWatcher : public BaseWatcher {

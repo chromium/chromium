@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -47,8 +46,7 @@ class ServiceWorkerDiskCache::CreateBackendCallbackShim
 
   ~CreateBackendCallbackShim() = default;
 
-  raw_ptr<ServiceWorkerDiskCache>
-      service_worker_disk_cache_;  // Unowned pointer.
+  ServiceWorkerDiskCache* service_worker_disk_cache_;  // Unowned pointer.
 };
 
 ServiceWorkerDiskCacheEntry::ServiceWorkerDiskCacheEntry(

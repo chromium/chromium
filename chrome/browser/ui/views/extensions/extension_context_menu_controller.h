@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/views/context_menu_controller.h"
 
 class ToolbarActionViewController;
@@ -55,10 +54,10 @@ class ExtensionContextMenuController : public views::ContextMenuController {
 
   // The root MenuItemView for the context menu, or null if no menu is being
   // shown. This is used for testing.
-  raw_ptr<views::MenuItemView> menu_ = nullptr;
+  views::MenuItemView* menu_ = nullptr;
 
   // This controller contains the data for the extension's context menu.
-  const raw_ptr<ToolbarActionViewController> controller_;
+  ToolbarActionViewController* const controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_CONTEXT_MENU_CONTROLLER_H_

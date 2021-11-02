@@ -12,7 +12,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/android/vr/android_vsync_helper.h"
 #include "chrome/browser/android/vr/gvr_graphics_delegate.h"
@@ -187,10 +186,10 @@ class GvrSchedulerDelegate : public BaseSchedulerDelegate,
 
   void AddWebVrRenderTimeEstimate(base::TimeTicks fence_complete_time);
 
-  raw_ptr<GlBrowserInterface> browser_;
-  raw_ptr<gvr::GvrApi> gvr_api_;
+  GlBrowserInterface* browser_;
+  gvr::GvrApi* gvr_api_;
 
-  raw_ptr<SchedulerBrowserRendererInterface> browser_renderer_ = nullptr;
+  SchedulerBrowserRendererInterface* browser_renderer_ = nullptr;
 
   device::WebXrPresentationState webxr_;
   bool showing_vr_dialog_ = false;
@@ -217,7 +216,7 @@ class GvrSchedulerDelegate : public BaseSchedulerDelegate,
 
   int webvr_unstuff_ratelimit_frames_ = 0;
 
-  raw_ptr<GvrGraphicsDelegate> graphics_;
+  GvrGraphicsDelegate* graphics_;
 
   // Attributes tracking WebVR rAF/VSync animation loop state. Blink schedules
   // a callback using the GetFrameData mojo call which is stored in

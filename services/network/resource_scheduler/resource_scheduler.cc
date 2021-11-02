@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -359,7 +358,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     ScheduledResourceRequestImpl* get() const { return pointer_; }
 
    private:
-    const raw_ptr<ScheduledResourceRequestImpl> pointer_;
+    ScheduledResourceRequestImpl* const pointer_;
   };
 
   static const void* const kUserDataKey;
@@ -368,12 +367,12 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   void WillStartRequest(bool* defer) override { deferred_ = *defer = !ready_; }
 
   const ClientId client_id_;
-  raw_ptr<net::URLRequest> request_;
+  net::URLRequest* request_;
   bool ready_;
   bool deferred_;
   bool is_async_;
   RequestAttributes attributes_;
-  raw_ptr<ResourceScheduler> scheduler_;
+  ResourceScheduler* scheduler_;
   RequestPriorityParams priority_;
   uint32_t fifo_ordering_;
 
@@ -1512,7 +1511,7 @@ class ResourceScheduler::Client
 
   // Network quality estimator for network aware resource scheudling. This may
   // be null.
-  raw_ptr<net::NetworkQualityEstimator> network_quality_estimator_;
+  net::NetworkQualityEstimator* network_quality_estimator_;
 
   // Resource scheduling params computed for the current network quality.
   // These are recomputed every time an |OnNavigate| event is triggered.
@@ -1521,10 +1520,10 @@ class ResourceScheduler::Client
 
   // A pointer to the resource scheduler which contains the resource scheduling
   // configuration.
-  raw_ptr<ResourceScheduler> resource_scheduler_;
+  ResourceScheduler* resource_scheduler_;
 
   // Guaranteed to be non-null.
-  raw_ptr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   // Time when the last non-delayble request started in this client.
   absl::optional<base::TimeTicks> last_non_delayable_request_start_;

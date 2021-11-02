@@ -6,7 +6,6 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
@@ -69,7 +68,7 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
   }
 
  private:
-  raw_ptr<::testing::NiceMock<MockRemoteFileSyncService>> mock_remote_service_;
+  ::testing::NiceMock<MockRemoteFileSyncService>* mock_remote_service_;
   int64_t real_default_quota_;
 };
 

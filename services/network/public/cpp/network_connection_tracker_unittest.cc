@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
@@ -96,7 +95,7 @@ class TestNetworkConnectionObserver
   }
 
   size_t num_notifications_;
-  raw_ptr<NetworkConnectionTracker> tracker_;
+  NetworkConnectionTracker* tracker_;
   // May be null.
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType expected_connection_type_;
@@ -176,7 +175,7 @@ class ConnectionTypeGetter {
   }
 
   base::RunLoop run_loop_;
-  raw_ptr<NetworkConnectionTracker> tracker_;
+  NetworkConnectionTracker* tracker_;
   network::mojom::ConnectionType connection_type_;
   THREAD_CHECKER(thread_checker_);
 };

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FEED_CORE_V2_LAUNCH_RELIABILITY_LOGGER_H_
 #define COMPONENTS_FEED_CORE_V2_LAUNCH_RELIABILITY_LOGGER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -58,7 +57,7 @@ class LaunchReliabilityLogger {
       feedwire::DiscoverLaunchResult result);
 
  private:
-  raw_ptr<StreamSurfaceSet> surfaces_;
+  StreamSurfaceSet* surfaces_;
   NetworkRequestId::Generator request_id_gen_;
 };
 

@@ -434,7 +434,7 @@ void PolicyWatcher::WatchForRegistryChanges() {
   // it only fires once.
   auto watch_result = policy_key_.StartWatching(
       base::BindOnce(&policy::PolicyService::RefreshPolicies,
-                     base::Unretained(policy_service_.get()),
+                     base::Unretained(policy_service_),
                      base::BindOnce(&PolicyWatcher::WatchForRegistryChanges,
                                     base::Unretained(this))));
   if (!watch_result) {

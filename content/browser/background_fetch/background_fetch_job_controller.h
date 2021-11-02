@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_delegate_proxy.h"
@@ -163,11 +162,11 @@ class CONTENT_EXPORT BackgroundFetchJobController
 
   // Manager for interacting with the DB. It is owned by the
   // BackgroundFetchContext.
-  raw_ptr<BackgroundFetchDataManager> data_manager_;
+  BackgroundFetchDataManager* data_manager_;
 
   // Proxy for interacting with the BackgroundFetchDelegate across thread
   // boundaries. It is owned by the BackgroundFetchContext.
-  raw_ptr<BackgroundFetchDelegateProxy> delegate_proxy_;
+  BackgroundFetchDelegateProxy* delegate_proxy_;
 
   // A map from the download GUID to the active request.
   std::map<std::string, scoped_refptr<BackgroundFetchRequestInfo>>

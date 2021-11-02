@@ -5,7 +5,6 @@
 #ifndef CC_PAINT_PAINT_OP_WRITER_H_
 #define CC_PAINT_PAINT_OP_WRITER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_filter.h"
@@ -181,7 +180,7 @@ class CC_PAINT_EXPORT PaintOpWriter {
       bool* paint_image_needs_mips,
       gpu::Mailbox* mailbox_out);
 
-  raw_ptr<char> memory_ = nullptr;
+  char* memory_ = nullptr;
   size_t size_ = 0u;
   size_t remaining_bytes_ = 0u;
   const PaintOp::SerializeOptions& options_;

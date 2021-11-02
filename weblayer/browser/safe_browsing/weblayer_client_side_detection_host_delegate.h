@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 #define WEBLAYER_BROWSER_SAFE_BROWSING_WEBLAYER_CLIENT_SIDE_DETECTION_HOST_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
@@ -38,7 +37,7 @@ class WebLayerClientSideDetectionHostDelegate
                         GURL current_url) override;
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 };
 
 }  // namespace weblayer

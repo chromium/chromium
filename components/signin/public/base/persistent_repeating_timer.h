@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -42,7 +41,7 @@ class PersistentRepeatingTimer {
   // Called when |timer_| fires.
   void OnTimerFired();
 
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
   std::string last_fired_pref_name_;
   base::TimeDelta delay_;
   base::RepeatingClosure user_task_;

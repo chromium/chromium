@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -163,8 +162,8 @@ class ClientMixin : public ClientInterface {
 
  private:
   MojoHostResolverImpl host_resolver_;
-  const raw_ptr<net::ProxyResolverErrorObserver> error_observer_;
-  const raw_ptr<net::NetLog> net_log_;
+  net::ProxyResolverErrorObserver* const error_observer_;
+  net::NetLog* const net_log_;
   const net::NetLogWithSource net_log_with_source_;
 };
 
@@ -212,11 +211,11 @@ class ProxyResolverMojo : public net::ProxyResolver {
   mojo::Remote<proxy_resolver::mojom::ProxyResolver>
       mojo_proxy_resolver_remote_;
 
-  raw_ptr<net::HostResolver> host_resolver_;
+  net::HostResolver* host_resolver_;
 
   std::unique_ptr<net::ProxyResolverErrorObserver> error_observer_;
 
-  raw_ptr<net::NetLog> net_log_;
+  net::NetLog* net_log_;
 };
 
 class ProxyResolverMojo::Job
@@ -249,7 +248,7 @@ class ProxyResolverMojo::Job
   void CompleteRequest(int result);
 
   const GURL url_;
-  raw_ptr<net::ProxyInfo> results_;
+  net::ProxyInfo* results_;
   net::CompletionOnceCallback callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -405,8 +404,8 @@ class ProxyResolverFactoryMojo::Job
     std::move(callback_).Run(error);
   }
 
-  const raw_ptr<ProxyResolverFactoryMojo> factory_;
-  raw_ptr<std::unique_ptr<net::ProxyResolver>> resolver_;
+  ProxyResolverFactoryMojo* const factory_;
+  std::unique_ptr<net::ProxyResolver>* resolver_;
   net::CompletionOnceCallback callback_;
   mojo::PendingRemote<proxy_resolver::mojom::ProxyResolver> resolver_remote_;
   mojo::Receiver<proxy_resolver::mojom::ProxyResolverFactoryRequestClient>

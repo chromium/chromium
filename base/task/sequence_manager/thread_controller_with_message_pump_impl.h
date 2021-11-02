@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/run_loop.h"
@@ -106,8 +105,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     MainThreadOnly();
     ~MainThreadOnly();
 
-    raw_ptr<SequencedTaskSource> task_source = nullptr;            // Not owned.
-    raw_ptr<RunLoop::NestingObserver> nesting_observer = nullptr;  // Not owned.
+    SequencedTaskSource* task_source = nullptr;            // Not owned.
+    RunLoop::NestingObserver* nesting_observer = nullptr;  // Not owned.
     std::unique_ptr<ThreadTaskRunnerHandle> thread_task_runner_handle;
 
     // Indicates that we should yield DoWork between each task to let a possibly
@@ -189,12 +188,12 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
   TaskAnnotator task_annotator_;
 
-  raw_ptr<const TickClock> time_source_;  // Not owned.
+  const TickClock* time_source_;  // Not owned.
 
   // Non-null provider of id state for identifying distinct work items executed
   // by the message loop (task, event, etc.). Cached on the class to avoid TLS
   // lookups on task execution.
-  raw_ptr<WorkIdProvider> work_id_provider_ = nullptr;
+  WorkIdProvider* work_id_provider_ = nullptr;
 
   // Required to register the current thread as a sequence.
   base::internal::SequenceLocalStorageMap sequence_local_storage_map_;

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PREFS_PREF_METRICS_SERVICE_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -53,8 +52,8 @@ class PrefMetricsService : public KeyedService {
   // Record prefs state on browser context creation.
   void RecordLaunchPrefs();
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> prefs_;
+  Profile* profile_;
+  PrefService* prefs_;
 
   base::WeakPtrFactory<PrefMetricsService> weak_factory_{this};
 };

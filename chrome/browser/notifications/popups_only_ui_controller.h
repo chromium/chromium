@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
 
@@ -41,7 +40,7 @@ class PopupsOnlyUiController : public message_center::MessageCenterObserver {
   bool popups_visible() const { return popups_visible_; }
 
  private:
-  const raw_ptr<message_center::MessageCenter> message_center_;
+  message_center::MessageCenter* const message_center_;
   std::unique_ptr<message_center::DesktopMessagePopupCollection>
       popup_collection_;
 

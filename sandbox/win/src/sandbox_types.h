@@ -5,7 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 
@@ -175,8 +174,8 @@ class TargetServices;
 
 // Contains the pointer to a target or broker service.
 struct SandboxInterfaceInfo {
-  raw_ptr<BrokerServices> broker_services;
-  raw_ptr<TargetServices> target_services;
+  BrokerServices* broker_services;
+  TargetServices* target_services;
 };
 
 #define SANDBOX_INTERCEPT extern "C"

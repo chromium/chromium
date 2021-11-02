@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
@@ -111,7 +110,7 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
 
   // |prefs_| is not an owning pointer. It is used to record he last time (in
   // seconds) when the cleaning was performed.
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 
   // Map from (signon-realm excluding the protocol, Password::Scheme, username)
   // tuples of HTTPS forms to a list of passwords for that pair.
@@ -119,7 +118,7 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
 
   // Used to signal completion of the clean-up. It is null until
   // StartCleaning is called.
-  raw_ptr<Observer> observer_ = nullptr;
+  Observer* observer_ = nullptr;
 
   // The number of HTTP credentials processed after HSTS query results are
   // received.

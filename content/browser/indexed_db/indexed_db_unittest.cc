@@ -9,7 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -61,8 +60,8 @@ class LevelDBLock {
   }
 
  private:
-  raw_ptr<leveldb::Env> env_ = nullptr;
-  raw_ptr<leveldb::FileLock> lock_ = nullptr;
+  leveldb::Env* env_ = nullptr;
+  leveldb::FileLock* lock_ = nullptr;
 };
 
 std::unique_ptr<LevelDBLock> LockForTesting(const base::FilePath& file_name) {

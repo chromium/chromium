@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ui/base/page_transition_types.h"
@@ -166,7 +165,7 @@ class BreadcrumbManagerTabHelper : public infobars::InfoBarManager::Observer {
   // identify events associated with the underlying tab.
   int unique_id_ = -1;
 
-  raw_ptr<infobars::InfoBarManager> infobar_manager_ = nullptr;
+  infobars::InfoBarManager* infobar_manager_ = nullptr;
   // A counter which is incremented for each |OnInfoBarReplaced| call. This
   // value is reset when any other infobars::InfoBarManager::Observer callback
   // is received.

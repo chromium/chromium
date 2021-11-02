@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
@@ -58,7 +57,7 @@ struct InputCancelListEntry {
   InputCancelListEntry(InputCancelListEntry&& other);
   ~InputCancelListEntry();
 
-  raw_ptr<base::DictionaryValue> input_state;
+  base::DictionaryValue* input_state;
   std::unique_ptr<MouseEvent> mouse_event;
   std::unique_ptr<TouchEvent> touch_event;
   std::unique_ptr<KeyEvent> key_event;

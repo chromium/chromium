@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_private_api.h"
@@ -117,7 +116,7 @@ class OperationManager : public BrowserContextKeyedAPI,
   friend class BrowserContextKeyedAPIFactory<OperationManager>;
   typedef std::map<ExtensionId, scoped_refptr<Operation> > OperationMap;
 
-  raw_ptr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
   OperationMap operations_;
 
   // Listen to extension unloaded notification.

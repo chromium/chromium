@@ -11,7 +11,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_activity.h"
 #include "google_apis/gcm/engine/connection_factory.h"
@@ -154,7 +153,7 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
                      const std::string& details);
 
   bool is_recording_;
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
 
   base::circular_deque<CheckinActivity> checkin_activities_;
   base::circular_deque<ConnectionActivity> connection_activities_;

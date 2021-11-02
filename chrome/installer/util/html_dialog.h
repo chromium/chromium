@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
 // been installed or when there is a suspicion chrome is not working. In
@@ -97,7 +96,7 @@ class EulaHTMLDialog {
     void OnBeforeDisplay(void* window) override;
   };
 
-  raw_ptr<HTMLDialog> dialog_;
+  HTMLDialog* dialog_;
 };
 
 }  // namespace installer

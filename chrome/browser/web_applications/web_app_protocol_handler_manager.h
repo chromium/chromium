@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_PROTOCOL_HANDLER_MANAGER_H_
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
@@ -73,8 +72,8 @@ class WebAppProtocolHandlerManager {
                                     ResultCallback callback);
 
  private:
-  raw_ptr<WebAppRegistrar> app_registrar_;
-  const raw_ptr<Profile> profile_;
+  WebAppRegistrar* app_registrar_;
+  Profile* const profile_;
 };
 
 }  // namespace web_app

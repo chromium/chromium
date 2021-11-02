@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,7 +47,7 @@ class TestScreen : public display::ScreenBase {
   }
 
  private:
-  raw_ptr<display::Screen> previous_screen_;
+  display::Screen* previous_screen_;
 };
 
 }  // namespace

@@ -5,7 +5,6 @@
 #include "chrome/browser/commerce/merchant_viewer/merchant_viewer_data_manager.h"
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -81,7 +80,7 @@ class MerchantViewerDataManagerTest : public testing::Test {
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  raw_ptr<MerchantViewerDataManager> service_;
+  MerchantViewerDataManager* service_;
 };
 
 const char kMockMerchantA[] = "foo.com";

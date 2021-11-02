@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -45,7 +44,7 @@ class InterfaceRegistrationHelper {
   }
 
  private:
-  raw_ptr<std::vector<BinderInitializer>> binder_initializers_;
+  std::vector<BinderInitializer>* binder_initializers_;
 };
 
 // Maintains a mapping from WebUIController::Type to a list of interfaces

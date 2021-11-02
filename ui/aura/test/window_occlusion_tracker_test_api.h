@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 
 namespace aura {
 
@@ -40,7 +39,7 @@ class WindowOcclusionTrackerTestApi {
   bool IsPaused() const;
 
  private:
-  const raw_ptr<WindowOcclusionTracker> tracker_;
+  WindowOcclusionTracker* const tracker_;
 };
 
 }  // namespace test

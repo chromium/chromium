@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "ui/views/test/views_test_base.h"
@@ -62,7 +61,7 @@ class MediaItemUIListViewTest : public views::ViewsTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<MediaItemUIListView> list_view_ = nullptr;
+  MediaItemUIListView* list_view_ = nullptr;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;
 };
 

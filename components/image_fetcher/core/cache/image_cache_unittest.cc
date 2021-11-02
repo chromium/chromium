@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -182,13 +181,13 @@ class CachedImageFetcherImageCacheTest : public testing::Test {
 
  private:
   scoped_refptr<ImageCache> image_cache_;
-  raw_ptr<ImageMetadataStoreLevelDB> metadata_store_;
-  raw_ptr<ImageDataStoreDisk> data_store_;
+  ImageMetadataStoreLevelDB* metadata_store_;
+  ImageDataStoreDisk* data_store_;
   base::SimpleTestClock clock_;
 
   TestingPrefServiceSimple test_prefs_;
   base::ScopedTempDir temp_dir_;
-  raw_ptr<FakeDB<CachedImageMetadataProto>> db_;
+  FakeDB<CachedImageMetadataProto>* db_;
   std::map<std::string, CachedImageMetadataProto> db_store_;
 
   base::test::TaskEnvironment task_environment_;

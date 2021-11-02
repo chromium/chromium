@@ -7,7 +7,6 @@
 #include <list>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -39,7 +38,7 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
     }
 
    private:
-    raw_ptr<gpu::SyncToken> sync_token_out_ = nullptr;
+    gpu::SyncToken* sync_token_out_ = nullptr;
   };
 
   PooledSharedImageVideoProviderTest() = default;
@@ -85,7 +84,7 @@ class PooledSharedImageVideoProviderTest : public testing::Test {
   // Provider under test.
   std::unique_ptr<PooledSharedImageVideoProvider> provider_;
 
-  raw_ptr<MockSharedImageVideoProvider> mock_provider_raw_ = nullptr;
+  MockSharedImageVideoProvider* mock_provider_raw_ = nullptr;
   gpu::SyncToken sync_token_;
 
   scoped_refptr<gpu::TextureOwner> texture_owner_;

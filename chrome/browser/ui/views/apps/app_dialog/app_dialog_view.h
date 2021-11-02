@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
@@ -31,7 +30,7 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   void SetLabelText(const std::u16string& text);
 
  private:
-  raw_ptr<views::Label> label_ = nullptr;
+  views::Label* label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_

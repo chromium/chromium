@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -44,7 +43,7 @@ class ExternalProtocolDialogTestApi {
   }
 
  private:
-  raw_ptr<ExternalProtocolDialog> dialog_;
+  ExternalProtocolDialog* dialog_;
 };
 
 }  // namespace test
@@ -159,7 +158,7 @@ class ExternalProtocolDialogBrowserTest
   base::HistogramTester histogram_tester_;
 
  protected:
-  raw_ptr<ExternalProtocolDialog> dialog_ = nullptr;
+  ExternalProtocolDialog* dialog_ = nullptr;
   std::string blocked_scheme_;
   url::Origin blocked_origin_;
   BlockState blocked_state_ = BlockState::UNKNOWN;

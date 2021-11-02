@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
@@ -198,7 +197,7 @@ class TabsEventRouter : public TabStripModelObserver,
     GURL url_;
 
     // Event router that the WebContents's noficiations are forwarded to.
-    raw_ptr<TabsEventRouter> router_;
+    TabsEventRouter* router_;
   };
 
   // Gets the TabEntry for the given |contents|. Returns TabEntry* if found,
@@ -209,7 +208,7 @@ class TabsEventRouter : public TabStripModelObserver,
   TabEntryMap tab_entries_;
 
   // The main profile that owns this event router.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   base::ScopedMultiSourceObservation<favicon::FaviconDriver,
                                      favicon::FaviconDriverObserver>

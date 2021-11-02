@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_BOOKMARK_HANDLER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -32,7 +31,7 @@ class BookmarkHandler : public content::WebUIMessageHandler {
 
  private:
   // Weak reference.
-  raw_ptr<PrefService> prefs_;
+  PrefService* prefs_;
 };
 
 }  // namespace welcome

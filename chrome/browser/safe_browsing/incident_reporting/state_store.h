@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 class Profile;
@@ -78,7 +77,7 @@ class StateStore {
     void ReplacePrefDict(std::unique_ptr<base::DictionaryValue> pref_dict);
 
     // The store corresponding to this transaction.
-    raw_ptr<StateStore> store_;
+    StateStore* store_;
 
     // A ScopedUserPrefUpdate through which changes to the incidents_sent
     // preference are made.
@@ -102,7 +101,7 @@ class StateStore {
   void CleanLegacyValues(Transaction* transaction);
 
   // The profile to which this state corresponds.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // A read-only view on the profile's incidents_sent preference.
   const base::DictionaryValue* incidents_sent_;

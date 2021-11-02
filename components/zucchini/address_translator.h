@@ -10,7 +10,6 @@
 #include <tuple>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/zucchini/algorithm.h"
 #include "components/zucchini/image_utils.h"
 
@@ -121,7 +120,7 @@ class AddressTranslator {
 
    private:
     const AddressTranslator& translator_;
-    mutable raw_ptr<const AddressTranslator::Unit> cached_unit_ = nullptr;
+    mutable const AddressTranslator::Unit* cached_unit_ = nullptr;
   };
 
   // An adaptor for AddressTranslator::RvaToOffset() that caches the last Unit
@@ -140,7 +139,7 @@ class AddressTranslator {
 
    private:
     const AddressTranslator& translator_;
-    mutable raw_ptr<const AddressTranslator::Unit> cached_unit_ = nullptr;
+    mutable const AddressTranslator::Unit* cached_unit_ = nullptr;
   };
 
   enum Status {

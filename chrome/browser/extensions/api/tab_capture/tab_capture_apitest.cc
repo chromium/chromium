@@ -8,7 +8,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -306,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
     }
 
    private:
-    const raw_ptr<Browser> browser_;
+    Browser* const browser_;
     base::OnceClosure on_tab_changed_;
   };
 

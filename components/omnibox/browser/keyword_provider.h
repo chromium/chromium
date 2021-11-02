@@ -17,7 +17,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/keyword_extensions_delegate.h"
@@ -164,13 +163,13 @@ class KeywordProvider : public AutocompleteProvider {
       const TemplateURLService* template_url_service,
       const std::u16string& keyword);
 
-  raw_ptr<AutocompleteProviderListener> listener_;
+  AutocompleteProviderListener* listener_;
 
   // Input when searching against the keyword provider.
   AutocompleteInput keyword_input_;
 
   // Model for the keywords.
-  raw_ptr<TemplateURLService> model_;
+  TemplateURLService* model_;
 
   // Delegate to handle the extensions-only logic for KeywordProvider.
   // NULL when extensions are not enabled. May be NULL for tests.

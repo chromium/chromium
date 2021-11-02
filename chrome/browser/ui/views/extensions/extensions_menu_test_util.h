@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 
 class Browser;
@@ -69,8 +68,8 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper {
 
   std::unique_ptr<Wrapper> wrapper_;
 
-  const raw_ptr<Browser> browser_;
-  raw_ptr<ExtensionsToolbarContainer> extensions_container_ = nullptr;
+  Browser* const browser_;
+  ExtensionsToolbarContainer* extensions_container_ = nullptr;
 
   // Helps make sure that |menu_view_| set to null when destroyed by the widget
   // or via manual means.

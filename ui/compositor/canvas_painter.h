@@ -6,7 +6,6 @@
 #define UI_COMPOSITOR_CANVAS_PAINTER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/paint_context.h"
@@ -43,7 +42,7 @@ class COMPOSITOR_EXPORT CanvasPainter {
  private:
   friend class CanvasPainterTest;
 
-  const raw_ptr<SkBitmap> output_;
+  SkBitmap* const output_;
   const gfx::Size pixel_output_size_;
   const float raster_scale_;
   const SkColor clear_color_;

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
@@ -372,7 +371,7 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
   }
 
  private:
-  raw_ptr<CaptionBubbleLabel> owner_;
+  CaptionBubbleLabel* owner_;
 };
 #endif
 

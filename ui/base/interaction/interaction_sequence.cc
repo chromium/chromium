@@ -490,7 +490,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
       // has ended, conditions like "must remain visible" no longer apply.
       current_step_->subscription = ElementTracker::Subscription();
       RunIfValid(std::move(current_step_->end_callback),
-                 current_step_->element.get());
+                 current_step_->element);
       if (!delete_guard || AbortedDuringCallback())
         return;
     }
@@ -531,7 +531,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     // field of the current step from here forward, because we've installed a
     // callback above that will null it out if it becomes invalid.
     RunIfValid(std::move(current_step_->start_callback), this,
-               current_step_->element.get());
+               current_step_->element);
     if (!delete_guard || AbortedDuringCallback())
       return;
   }
@@ -550,7 +550,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
     CompletedCallback completed_callback =
         std::move(configuration_->completed_callback);
     std::unique_ptr<Step> last_step = std::move(current_step_);
-    RunIfValid(std::move(last_step->end_callback), last_step->element.get());
+    RunIfValid(std::move(last_step->end_callback), last_step->element);
     RunIfValid(std::move(completed_callback));
     RunIfValid(std::move(quit_closure));
     return;
@@ -587,7 +587,7 @@ void InteractionSequence::StageNextStep() {
     // We're going to abort, but we have to finish the current step first.
     if (current_step_) {
       RunIfValid(std::move(current_step_->end_callback),
-                 current_step_->element.get());
+                 current_step_->element);
     }
     // Fast forward to the next step before aborting so we get the correct
     // information on the failed step in the abort callback.

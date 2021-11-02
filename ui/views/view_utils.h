@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/debug/stack_trace.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/views/debug/debugger_utils.h"
@@ -41,7 +40,7 @@ class ViewDebugWrapperImpl : public debug::ViewDebugWrapper {
   void ForAllProperties(PropCallback callback) override;
 
  private:
-  const raw_ptr<const View> view_;
+  const View* const view_;
   std::vector<std::unique_ptr<ViewDebugWrapperImpl>> children_;
 };
 

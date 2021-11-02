@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/unicodestring.h"
-#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -496,7 +495,7 @@ class FileSystemURLLoaderFactoryTest
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   scoped_refptr<FileSystemContext> file_system_context_;
   // Owned by |file_system_context_| and only usable on |blocking_task_runner_|.
-  raw_ptr<storage::FileSystemFileUtil> file_util_;
+  storage::FileSystemFileUtil* file_util_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

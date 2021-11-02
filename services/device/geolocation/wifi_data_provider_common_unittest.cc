@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -81,7 +80,7 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
   }
 
   std::unique_ptr<MockWlanApi> wlan_api_;
-  raw_ptr<MockPollingPolicy> polling_policy_ = nullptr;
+  MockPollingPolicy* polling_policy_ = nullptr;
 
  private:
   ~WifiDataProviderCommonWithMock() override = default;
@@ -136,8 +135,8 @@ class GeolocationWifiDataProviderCommonTest : public testing::Test {
   WifiDataProviderManager::WifiDataUpdateCallback wifi_data_callback_;
   scoped_refptr<WifiDataProviderCommonWithMock> provider_;
 
-  raw_ptr<MockWlanApi> wlan_api_ = nullptr;
-  raw_ptr<MockPollingPolicy> polling_policy_ = nullptr;
+  MockWlanApi* wlan_api_ = nullptr;
+  MockPollingPolicy* polling_policy_ = nullptr;
 };
 
 TEST_F(GeolocationWifiDataProviderCommonTest, CreateDestroy) {

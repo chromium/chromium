@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PROCESS_INTERNALS_PROCESS_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_PROCESS_INTERNALS_PROCESS_INTERNALS_HANDLER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +38,7 @@ class ProcessInternalsHandlerImpl : public ::mojom::ProcessInternalsHandler {
   void GetAllWebContentsInfo(GetAllWebContentsInfoCallback callback) override;
 
  private:
-  raw_ptr<BrowserContext> browser_context_;
+  BrowserContext* browser_context_;
   mojo::Receiver<::mojom::ProcessInternalsHandler> receiver_;
 };
 

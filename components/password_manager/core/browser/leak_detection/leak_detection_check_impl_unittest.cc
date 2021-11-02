@@ -4,7 +4,6 @@
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -107,7 +106,7 @@ class LeakDetectionCheckImplTest : public testing::TestWithParam<bool> {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   StrictMock<MockLeakDetectionDelegateInterface> delegate_;
-  raw_ptr<MockLeakDetectionRequestFactory> request_factory_;
+  MockLeakDetectionRequestFactory* request_factory_;
   base::HistogramTester histogram_tester_;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   std::unique_ptr<LeakDetectionCheckImpl> leak_check_;

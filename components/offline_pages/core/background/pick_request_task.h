@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/background/device_conditions.h"
 #include "components/offline_pages/core/background/request_queue_results.h"
@@ -98,8 +97,8 @@ class PickRequestTask : public Task {
                           const SavePageRequest& right);
 
   // Member variables, all pointers are not owned here.
-  raw_ptr<RequestQueueStore> store_;
-  raw_ptr<OfflinerPolicy> policy_;
+  RequestQueueStore* store_;
+  OfflinerPolicy* policy_;
   RequestPickedCallback picked_callback_;
   RequestNotPickedCallback not_picked_callback_;
   RequestCountCallback request_count_callback_;
@@ -107,7 +106,7 @@ class PickRequestTask : public Task {
   const std::set<int64_t>& disabled_requests_;
   // TODO(harringtond): This object is owned by the caller, and mutating it
   // directly here seems dangerous.
-  raw_ptr<base::circular_deque<int64_t>> prioritized_requests_;
+  base::circular_deque<int64_t>* prioritized_requests_;
   // Allows us to pass a weak pointer to callbacks.
   base::WeakPtrFactory<PickRequestTask> weak_ptr_factory_{this};
 };

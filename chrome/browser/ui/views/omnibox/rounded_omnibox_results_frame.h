@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_
 
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/view.h"
@@ -46,9 +45,9 @@ class RoundedOmniboxResultsFrame : public views::View {
 #endif  // !USE_AURA
 
  private:
-  raw_ptr<views::View> top_background_ = nullptr;
-  raw_ptr<views::View> contents_host_ = nullptr;
-  raw_ptr<views::View> contents_;
+  views::View* top_background_ = nullptr;
+  views::View* contents_host_ = nullptr;
+  views::View* contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

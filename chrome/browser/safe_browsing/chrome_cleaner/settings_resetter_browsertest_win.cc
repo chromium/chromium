@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -119,7 +118,7 @@ class SettingsResetterTestDelegate
   }
 
  private:
-  raw_ptr<int> num_resets_;
+  int* num_resets_;
 };
 
 // Indicates the possible values to be written to the registry for cleanup

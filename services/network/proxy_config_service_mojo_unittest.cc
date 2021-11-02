@@ -5,7 +5,6 @@
 #include "services/network/proxy_config_service_mojo.h"
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -63,7 +62,7 @@ class TestProxyConfigServiceObserver
  private:
   net::ProxyConfigWithAnnotation observed_config_;
 
-  const raw_ptr<net::ProxyConfigService> service_;
+  net::ProxyConfigService* const service_;
   int config_changes_ = 0;
 };
 

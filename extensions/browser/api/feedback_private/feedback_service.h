@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_FEEDBACK_SERVICE_H_
 
 #include "base/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
@@ -95,8 +94,8 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   void OnAllLogsFetched(const FeedbackParams& params,
                         scoped_refptr<feedback::FeedbackData> feedback_data);
 
-  raw_ptr<content::BrowserContext> browser_context_;
-  raw_ptr<FeedbackPrivateDelegate> delegate_;
+  content::BrowserContext* browser_context_;
+  FeedbackPrivateDelegate* delegate_;
 };
 
 }  // namespace extensions

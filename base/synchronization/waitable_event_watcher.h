@@ -7,7 +7,6 @@
 
 #include "base/base_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 
@@ -118,7 +117,7 @@ class BASE_EXPORT WaitableEventWatcher
   win::ObjectWatcher watcher_;
 
   EventCallback callback_;
-  raw_ptr<WaitableEvent> event_ = nullptr;
+  WaitableEvent* event_ = nullptr;
 #elif defined(OS_APPLE)
   // Invokes the callback and resets the source. Must be called on the task
   // runner on which StartWatching() was called.
@@ -146,7 +145,7 @@ class BASE_EXPORT WaitableEventWatcher
   scoped_refptr<Flag> cancel_flag_;
 
   // Enqueued in the wait list of the watched WaitableEvent.
-  raw_ptr<AsyncWaiter> waiter_ = nullptr;
+  AsyncWaiter* waiter_ = nullptr;
 
   // Kernel of the watched WaitableEvent.
   scoped_refptr<WaitableEvent::WaitableEventKernel> kernel_;

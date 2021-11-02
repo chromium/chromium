@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -192,10 +191,10 @@ class AnnouncementNotificationServiceImpl
     return entry && entry->GetSigninState() != SigninState::kNotSignedIn;
   }
 
-  raw_ptr<Profile> profile_;
-  raw_ptr<PrefService> pref_service_;
+  Profile* profile_;
+  PrefService* pref_service_;
   std::unique_ptr<Delegate> delegate_;
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Whether to skip first Chrome launch. Parsed from Finch.
   bool skip_first_run_;

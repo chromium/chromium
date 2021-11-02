@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -41,7 +40,7 @@ class SpellingOptionsSubMenuObserver : public RenderViewContextMenuObserver {
 
  private:
   // The interface for adding a submenu to the parent.
-  raw_ptr<RenderViewContextMenuProxy> proxy_;
+  RenderViewContextMenuProxy* proxy_;
 
   // The submenu of the 'spell-checker options'. This class adds items to this
   // submenu and adds it to the parent menu.

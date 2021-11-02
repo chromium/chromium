@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -283,12 +282,12 @@ class PageNodeImpl
   const std::string browser_context_id_;
 
   // The opener of this page, if there is one.
-  raw_ptr<FrameNodeImpl> opener_frame_node_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  FrameNodeImpl* opener_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   // The embedder of this page, if there is one.
-  raw_ptr<FrameNodeImpl> embedder_frame_node_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  FrameNodeImpl* embedder_frame_node_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   // The way in which this page was embedded, if it was embedded.
   EmbeddingType embedding_type_ GUARDED_BY_CONTEXT(sequence_checker_) =

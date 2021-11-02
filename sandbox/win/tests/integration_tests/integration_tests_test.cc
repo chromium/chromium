@@ -11,7 +11,6 @@
 // Must be after windows.h.
 #include <versionhelpers.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
 #include "base/unguessable_token.h"
@@ -53,7 +52,7 @@ class TestDiagnosticsReceiver final : public PolicyDiagnosticsReceiver {
   ~TestDiagnosticsReceiver() override {}
   explicit TestDiagnosticsReceiver(PolicyDiagnosticsWaiter* waiter)
       : waiter_(waiter) {}
-  raw_ptr<PolicyDiagnosticsWaiter> waiter_;
+  PolicyDiagnosticsWaiter* waiter_;
   void ReceiveDiagnostics(std::unique_ptr<PolicyList> policies) override {
     waiter_->policies = std::move(policies);
     ::SetEvent(waiter_->event.Get());

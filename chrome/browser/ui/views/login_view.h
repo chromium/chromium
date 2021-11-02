@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -51,12 +50,12 @@ class LoginView : public views::View,
 
  private:
   // Non-owning refs to the input text fields.
-  raw_ptr<views::Textfield> username_field_;
-  raw_ptr<views::Textfield> password_field_;
+  views::Textfield* username_field_;
+  views::Textfield* password_field_;
 
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.
-  raw_ptr<password_manager::HttpAuthManager> http_auth_manager_;
+  password_manager::HttpAuthManager* http_auth_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOGIN_VIEW_H_

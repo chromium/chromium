@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -122,7 +121,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
 
   bool connected_ = false;
   const P2PSocketType type_;
-  raw_ptr<ProxyResolvingClientSocketFactory> proxy_resolving_socket_factory_;
+  ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory_;
 };
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {

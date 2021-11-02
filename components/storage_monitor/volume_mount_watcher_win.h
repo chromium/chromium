@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/storage_monitor/storage_info.h"
@@ -117,7 +116,7 @@ class VolumeMountWatcherWin {
 
   // The notifications object to use to signal newly attached volumes. Only
   // removable devices will be notified.
-  raw_ptr<StorageMonitor::Receiver> notifications_;
+  StorageMonitor::Receiver* notifications_;
 
   base::WeakPtrFactory<VolumeMountWatcherWin> weak_factory_{this};
 };

@@ -19,7 +19,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -162,8 +161,8 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
   }
 
  private:
-  raw_ptr<storage::mojom::BlobStorageContext> blob_storage_context_;
-  raw_ptr<storage::mojom::FileSystemAccessContext> file_system_access_context_;
+  storage::mojom::BlobStorageContext* blob_storage_context_;
+  storage::mojom::FileSystemAccessContext* file_system_access_context_;
 };
 
 struct BlobWrite {
@@ -458,10 +457,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestIDBFactory> idb_factory_;
-  raw_ptr<DisjointRangeLockManager> lock_manager_;
+  DisjointRangeLockManager* lock_manager_;
 
   IndexedDBStorageKeyStateHandle storage_key_state_handle_;
-  raw_ptr<TestableIndexedDBBackingStore> backing_store_ = nullptr;
+  TestableIndexedDBBackingStore* backing_store_ = nullptr;
   IndexedDBDataLossInfo data_loss_info_;
 
   // Sample keys and values that are consistent.

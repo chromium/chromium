@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
@@ -48,7 +47,7 @@ class DownloadUpdatedObserver : public download::DownloadItem::Observer {
   void OnDownloadUpdated(download::DownloadItem* item) override;
   void OnDownloadDestroyed(download::DownloadItem* item) override;
 
-  raw_ptr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   EventFilter filter_;
   bool waiting_;
   bool event_seen_;
@@ -133,7 +132,7 @@ class DownloadTestObserver : public DownloadManager::Observer,
   void DenyDangerousDownload(uint32_t download_id);
 
   // The observed download manager.
-  raw_ptr<DownloadManager> download_manager_;
+  DownloadManager* download_manager_;
 
   // The set of download::DownloadItem's that have transitioned to their
   // finished state since construction of this object.  When the size of this
@@ -276,7 +275,7 @@ class DownloadTestFlushObserver : public DownloadManager::Observer,
   // action.  If requested, also observes all downloads while iterating.
   void CheckDownloadsInProgress(bool observe_downloads);
 
-  raw_ptr<DownloadManager> download_manager_;
+  DownloadManager* download_manager_;
   DownloadSet downloads_observed_;
   bool waiting_for_zero_inprogress_;
   base::RunLoop run_loop_;
@@ -354,8 +353,8 @@ class SavePackageFinishedObserver : public download::DownloadItem::Observer,
   void ManagerGoingDown(DownloadManager* manager) override;
 
  private:
-  raw_ptr<DownloadManager> download_manager_;
-  raw_ptr<download::DownloadItem> download_;
+  DownloadManager* download_manager_;
+  download::DownloadItem* download_;
   base::OnceClosure callback_;
   std::set<download::DownloadItem::DownloadState> final_states_;
 };

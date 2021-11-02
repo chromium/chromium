@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/raw_ptr.h"
 
 namespace base {
 
@@ -252,7 +251,7 @@ class ScopedGeneric {
 
    private:
     T value_ = Traits::InvalidValue();
-    raw_ptr<ScopedGeneric<T, Traits>> scoped_generic_;
+    ScopedGeneric* scoped_generic_;
     bool used_ = false;
   };
 

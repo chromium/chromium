@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -117,7 +116,7 @@ class WorkerNodeImpl
   const WorkerType worker_type_;
 
   // The process in which this worker lives.
-  const raw_ptr<ProcessNodeImpl> process_node_;
+  ProcessNodeImpl* const process_node_;
 
   // A unique identifier shared with all representations of this worker across
   // content and blink. This token should only ever be sent between the browser

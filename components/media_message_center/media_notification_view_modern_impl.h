@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_MODERN_IMPL_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_MODERN_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
 
 #include "base/component_export.h"
@@ -133,7 +132,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   void SetVolume(float volume);
 
   // Container that receives events.
-  const raw_ptr<MediaNotificationContainer> container_;
+  MediaNotificationContainer* const container_;
 
   // Keeps track of media metadata and controls the session when buttons are
   // clicked.
@@ -148,22 +147,22 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   // Contains the title, artist and album separated by hyphens.
   std::u16string accessible_name_;
 
-  raw_ptr<MediaNotificationBackground> background_;
+  MediaNotificationBackground* background_;
 
   media_session::MediaPosition position_;
 
   // Container views directly attached to this view.
-  raw_ptr<views::View> artwork_container_ = nullptr;
-  raw_ptr<MediaArtworkView> artwork_ = nullptr;
-  raw_ptr<views::Label> title_label_ = nullptr;
-  raw_ptr<views::Label> subtitle_label_ = nullptr;
-  raw_ptr<MediaButton> picture_in_picture_button_ = nullptr;
-  raw_ptr<views::View> notification_controls_spacer_ = nullptr;
-  raw_ptr<views::View> media_controls_container_ = nullptr;
-  raw_ptr<MediaButton> play_pause_button_ = nullptr;
-  raw_ptr<MediaControlsProgressView> progress_ = nullptr;
-  raw_ptr<views::ToggleImageButton> mute_button_ = nullptr;
-  raw_ptr<MediaNotificationVolumeSliderView> volume_slider_ = nullptr;
+  views::View* artwork_container_ = nullptr;
+  MediaArtworkView* artwork_ = nullptr;
+  views::Label* title_label_ = nullptr;
+  views::Label* subtitle_label_ = nullptr;
+  MediaButton* picture_in_picture_button_ = nullptr;
+  views::View* notification_controls_spacer_ = nullptr;
+  views::View* media_controls_container_ = nullptr;
+  MediaButton* play_pause_button_ = nullptr;
+  MediaControlsProgressView* progress_ = nullptr;
+  views::ToggleImageButton* mute_button_ = nullptr;
+  MediaNotificationVolumeSliderView* volume_slider_ = nullptr;
 };
 
 }  // namespace media_message_center

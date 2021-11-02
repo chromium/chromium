@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
@@ -66,7 +65,7 @@ class LocalFileChangeTracker::TrackerDB {
                    const leveldb::Status& status);
 
   const base::FilePath base_path_;
-  raw_ptr<leveldb::Env> env_override_;
+  leveldb::Env* env_override_;
   std::unique_ptr<leveldb::DB> db_;
   SyncStatusCode db_status_;
 };

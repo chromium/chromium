@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 
 #include "base/barrier_closure.h"
@@ -182,7 +181,7 @@ class WidgetSizeChangeWaiter final : public views::WidgetObserver {
   int bounds_change_count() const { return bounds_change_count_; }
 
  private:
-  const raw_ptr<views::Widget> widget_;
+  views::Widget* const widget_;
   const gfx::Size expected_size_;
   int bounds_change_count_ = 0;
   base::RunLoop run_loop_;
@@ -305,8 +304,7 @@ class PictureInPictureWindowControllerBrowserTest
   }
 
  private:
-  raw_ptr<content::PictureInPictureWindowController> pip_window_controller_ =
-      nullptr;
+  content::PictureInPictureWindowController* pip_window_controller_ = nullptr;
   MockPictureInPictureWindowController mock_controller_;
 };
 
@@ -2024,7 +2022,7 @@ class WebAppPictureInPictureWindowControllerBrowserTest
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
 };
 
 // Hide pwa page and check that Picture-in-Picture is entered automatically.

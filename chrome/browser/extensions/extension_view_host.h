@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -123,13 +122,13 @@ class ExtensionViewHost
   bool IsEscapeInPopup(const content::NativeWebKeyboardEvent& event) const;
 
   // The browser associated with the ExtensionView, if any.
-  raw_ptr<Browser> browser_;
+  Browser* browser_;
 
   // View that shows the rendered content in the UI.
-  raw_ptr<ExtensionView> view_ = nullptr;
+  ExtensionView* view_ = nullptr;
 
   // The relevant WebContents associated with this ExtensionViewHost, if any.
-  raw_ptr<content::WebContents> associated_web_contents_ = nullptr;
+  content::WebContents* associated_web_contents_ = nullptr;
 
   // Observer to detect when the associated web contents is destroyed.
   class AssociatedWebContentsObserver;

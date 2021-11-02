@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "services/device/usb/usb_device_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -143,7 +142,7 @@ class MockUsbDeviceHandle : public UsbDeviceHandle {
   ~MockUsbDeviceHandle() override;
 
  private:
-  raw_ptr<UsbDevice> device_;
+  UsbDevice* device_;
 };
 
 }  // namespace device

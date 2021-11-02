@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -99,8 +98,8 @@ class SurfaceUpdater : public StreamModel::Observer,
   void RemoveDatastoreEntry(const std::string& key);
 
   // Owned by |FeedStream|.
-  raw_ptr<MetricsReporter> metrics_reporter_;
-  raw_ptr<StreamSurfaceSet> surfaces_;
+  MetricsReporter* metrics_reporter_;
+  StreamSurfaceSet* surfaces_;
 
   // Members that affect what is sent to surfaces. A value change of these may
   // require sending an update to surfaces.
@@ -120,7 +119,7 @@ class SurfaceUpdater : public StreamModel::Observer,
   std::map<std::string, std::string> xsurface_datastore_entries_;
 
   // Owned by |FeedStream|. Null when the model is not loaded.
-  raw_ptr<StreamModel> model_ = nullptr;
+  StreamModel* model_ = nullptr;
 
   LaunchReliabilityLogger launch_reliability_logger_;
   bool load_stream_started_ = false;

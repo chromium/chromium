@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -85,7 +84,7 @@ class LevelDbMetadataChangeList : public MetadataChangeList {
     return metadata_prefix_ + id;
   }
 
-  const raw_ptr<leveldb::WriteBatch> leveldb_write_batch_;
+  leveldb::WriteBatch* const leveldb_write_batch_;
 
   // Key for this type's metadata records.
   const std::string metadata_prefix_;

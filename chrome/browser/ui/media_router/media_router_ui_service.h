@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -52,7 +51,7 @@ class MediaRouterUIService : public KeyedService {
   void ConfigureService();
   void DisableService();
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<MediaRouterActionController> action_controller_;
   std::unique_ptr<PrefChangeRegistrar> profile_pref_registrar_;
 

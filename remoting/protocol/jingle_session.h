@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -139,9 +138,9 @@ class JingleSession : public Session {
 
   base::ThreadChecker thread_checker_;
 
-  raw_ptr<JingleSessionManager> session_manager_;
+  JingleSessionManager* session_manager_;
   SignalingAddress peer_address_;
-  raw_ptr<Session::EventHandler> event_handler_;
+  Session::EventHandler* event_handler_;
 
   std::string session_id_;
   State state_;
@@ -151,7 +150,7 @@ class JingleSession : public Session {
 
   std::unique_ptr<Authenticator> authenticator_;
 
-  raw_ptr<Transport> transport_ = nullptr;
+  Transport* transport_ = nullptr;
 
   // Pending Iq requests. Used for all messages except transport-info.
   std::vector<std::unique_ptr<IqRequest>> pending_requests_;

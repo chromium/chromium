@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_ENTRY_PICKER_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -56,7 +55,7 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
                           void* params) override;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  raw_ptr<EntryPickerClient> client_;
+  EntryPickerClient* client_;
 };
 
 }  // namespace api

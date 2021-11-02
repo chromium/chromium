@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -33,7 +32,7 @@ class FindBarIcon : public PageActionIconView {
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
-  raw_ptr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_

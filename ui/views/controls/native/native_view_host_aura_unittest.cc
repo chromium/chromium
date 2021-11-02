@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -470,7 +469,7 @@ class TestFocusChangeListener : public FocusChangeListener {
     did_change_focus_count_++;
   }
 
-  raw_ptr<FocusManager> focus_manager_;
+  FocusManager* focus_manager_;
   int did_change_focus_count_ = 0;
 };
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLOW_HOVER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_GLOW_HOVER_CONTROLLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -66,7 +65,7 @@ class GlowHoverController : public views::AnimationDelegateViews {
 
  private:
   // View we're drawing to.
-  raw_ptr<views::View> view_;
+  views::View* view_;
 
   // Opacity of the glow ramps up over time.
   gfx::SlideAnimation animation_;

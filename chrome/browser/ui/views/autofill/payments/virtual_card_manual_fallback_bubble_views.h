@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_VIEWS_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -64,7 +63,7 @@ class VirtualCardManualFallbackBubbleViews
   // Update the tooltips and the accessible names of the buttons.
   void UpdateButtonTooltipsAndAccessibleNames();
 
-  raw_ptr<VirtualCardManualFallbackBubbleController> controller_;
+  VirtualCardManualFallbackBubbleController* controller_;
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;

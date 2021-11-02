@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -82,7 +81,7 @@ void HungPagesTableModel::InitForWebContents(
   }
 
   process_observation_.Observe(render_widget_host_->GetProcess());
-  widget_observation_.Observe(render_widget_host_.get());
+  widget_observation_.Observe(render_widget_host_);
 
   // The world is different.
   if (observer_)
@@ -146,7 +145,7 @@ void HungPagesTableModel::RenderProcessExited(
 
 void HungPagesTableModel::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  DCHECK(widget_observation_.IsObservingSource(render_widget_host_.get()));
+  DCHECK(widget_observation_.IsObservingSource(render_widget_host_));
   widget_observation_.Reset();
   render_widget_host_ = nullptr;
 
@@ -217,7 +216,7 @@ constexpr int kDialogHolderUserDataKey = 0;
 struct DialogHolder : public base::SupportsUserData::Data {
   explicit DialogHolder(HungRendererDialogView* dialog) : dialog(dialog) {}
 
-  const raw_ptr<HungRendererDialogView> dialog = nullptr;
+  HungRendererDialogView* const dialog = nullptr;
 };
 
 static bool g_bypass_active_browser_requirement = false;

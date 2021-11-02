@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
@@ -53,7 +52,7 @@ class TestLocationIconDelegate : public IconLabelBubbleView::Delegate,
   }
 
  private:
-  raw_ptr<LocationBarModel> location_bar_model_;
+  LocationBarModel* location_bar_model_;
   bool is_editing_or_empty_ = false;
 };
 
@@ -109,7 +108,7 @@ class LocationIconViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<TestLocationBarModel> location_bar_model_;
   std::unique_ptr<TestLocationIconDelegate> delegate_;
-  raw_ptr<LocationIconView> view_;
+  LocationIconView* view_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<TestingProfile> profile_;
 };

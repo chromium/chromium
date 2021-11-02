@@ -7,7 +7,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 
 namespace js_injection {
 class WebMessageReplyProxy;
@@ -30,7 +29,7 @@ class JsReplyProxy {
                    const base::android::JavaParamRef<jstring>& message);
 
  private:
-  raw_ptr<js_injection::WebMessageReplyProxy> reply_proxy_;
+  js_injection::WebMessageReplyProxy* reply_proxy_;
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 

@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -190,7 +189,7 @@ class DroppedFrameCounterTestBase : public LayerTreeTest {
   // The |wait_| event is used when the test wants to deliberately force the
   // main-thread to block while processing begin-main-frames.
   base::Lock wait_lock_;
-  raw_ptr<base::WaitableEvent> wait_ = nullptr;
+  base::WaitableEvent* wait_ = nullptr;
 
   // These fields are populated in the compositor thread when the desired number
   // of frames have been processed. These fields are subsequently compared
@@ -380,8 +379,7 @@ class DroppedFrameCounterTest : public testing::Test {
   TotalFrameCounter total_frame_counter_;
   uint64_t sequence_number_ = 1;
   uint64_t source_id_ = 1;
-  raw_ptr<const base::TickClock> tick_clock_ =
-      base::DefaultTickClock::GetInstance();
+  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
   base::TimeTicks frame_time_ = tick_clock_->NowTicks();
   base::TimeDelta interval_ = base::Microseconds(16667);  // 16.667 ms
 

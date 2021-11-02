@@ -7,8 +7,6 @@
 
 #include <stdarg.h>
 
-#include "base/memory/raw_ptr.h"
-
 enum LogLevel {
   ERR,
   WARNING,
@@ -83,7 +81,7 @@ class vector {
   T& operator[](size_t pos) { return data_[pos]; }
 
  private:
-  raw_ptr<T> data_;
+  T* data_;
   size_t capacity_;
 };
 

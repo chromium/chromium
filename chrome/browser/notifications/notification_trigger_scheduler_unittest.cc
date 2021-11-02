@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_trigger_scheduler.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
@@ -49,15 +48,15 @@ class NotificationTriggerSchedulerTest : public testing::Test {
         : profile_(profile_manager->CreateTestingProfile(profile_name)),
           service_(PlatformNotificationServiceFactory::GetForProfile(profile_)),
           scheduler_(new MockNotificationTriggerScheduler()) {
-      service_->trigger_scheduler_ = base::WrapUnique(scheduler_.get());
+      service_->trigger_scheduler_ = base::WrapUnique(scheduler_);
     }
 
     // Owned by TestingProfileManager.
-    raw_ptr<Profile> profile_;
+    Profile* profile_;
     // Owned by PlatformNotificationServiceFactory.
-    raw_ptr<PlatformNotificationServiceImpl> service_;
+    PlatformNotificationServiceImpl* service_;
     // Owned by |service_|.
-    raw_ptr<MockNotificationTriggerScheduler> scheduler_;
+    MockNotificationTriggerScheduler* scheduler_;
   };
 
   content::BrowserTaskEnvironment task_environment_;

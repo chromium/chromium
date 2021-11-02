@@ -12,7 +12,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 
@@ -107,7 +106,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
   RenderFrameHostImpl* render_frame_host() const { return render_frame_host_; }
 
  private:
-  const raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  RenderFrameHostImpl* const render_frame_host_;
   JavaObjectWeakGlobalRef obj_;
 };
 

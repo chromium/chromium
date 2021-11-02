@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/commit.h"
 #include "components/sync/engine/model_type_registry.h"
@@ -74,7 +73,7 @@ class CommitProcessor {
   const ModelTypeSet commit_types_;
 
   // A map of 'commit contributors', one for each enabled type.
-  raw_ptr<CommitContributorMap> commit_contributor_map_;
+  CommitContributorMap* commit_contributor_map_;
   GatheringPhase phase_;
 };
 

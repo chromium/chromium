@@ -9,7 +9,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -109,9 +108,9 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   bool UpdateHasPendingSurfaces();
 
   std::unique_ptr<BeginFrameObserver> begin_frame_observer_;
-  raw_ptr<BeginFrameSource> begin_frame_source_;
-  raw_ptr<base::SingleThreadTaskRunner> task_runner_;
-  raw_ptr<gfx::RenderingPipeline> gpu_pipeline_;
+  BeginFrameSource* begin_frame_source_;
+  base::SingleThreadTaskRunner* task_runner_;
+  gfx::RenderingPipeline* gpu_pipeline_;
   absl::optional<gfx::RenderingPipeline::ScopedPipelineActive>
       gpu_pipeline_active_;
 

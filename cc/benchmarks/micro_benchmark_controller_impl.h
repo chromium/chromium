@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 
 namespace cc {
@@ -30,7 +29,7 @@ class CC_EXPORT MicroBenchmarkControllerImpl {
  private:
   void CleanUpFinishedBenchmarks();
 
-  raw_ptr<LayerTreeHostImpl> host_;
+  LayerTreeHostImpl* host_;
   std::vector<std::unique_ptr<MicroBenchmarkImpl>> benchmarks_;
 };
 

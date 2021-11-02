@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -141,7 +140,7 @@ class SaveFileManager::SimpleURLLoaderHelper
     NOTREACHED();
   }
 
-  raw_ptr<SaveFileManager> save_file_manager_;
+  SaveFileManager* save_file_manager_;
   SaveItemId save_item_id_;
   SavePackageId save_package_id_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

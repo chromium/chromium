@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "remoting/codec/audio_decoder.h"
 
 struct OpusDecoder;
@@ -37,7 +36,7 @@ class AudioDecoderOpus : public AudioDecoder {
 
   int sampling_rate_;
   int channels_;
-  raw_ptr<OpusDecoder> decoder_;
+  OpusDecoder* decoder_;
 };
 
 }  // namespace remoting

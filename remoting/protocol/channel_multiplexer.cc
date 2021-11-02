@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -91,12 +90,12 @@ class ChannelMultiplexer::MuxChannel {
   int DoRead(const scoped_refptr<net::IOBuffer>& buffer, int buffer_len);
 
  private:
-  raw_ptr<ChannelMultiplexer> multiplexer_;
+  ChannelMultiplexer* multiplexer_;
   std::string name_;
   int send_id_;
   bool id_sent_;
   int receive_id_;
-  raw_ptr<MuxSocket> socket_;
+  MuxSocket* socket_;
   std::list<std::unique_ptr<PendingPacket>> pending_packets_;
 };
 
@@ -124,7 +123,7 @@ class ChannelMultiplexer::MuxSocket : public P2PStreamSocket {
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
  private:
-  raw_ptr<MuxChannel> channel_;
+  MuxChannel* channel_;
 
   int base_channel_error_ = net::OK;
 

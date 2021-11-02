@@ -8,7 +8,6 @@
 #include <set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -204,7 +203,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // remoting if necessary.
   void OnPrefChanged();
 
-  const raw_ptr<media_router::MediaRouter> media_router_;
+  media_router::MediaRouter* const media_router_;
 
   const SessionID tab_id_;
 
@@ -223,7 +222,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
 
   // When non-null, an active remoting session is taking place, with this
   // pointing to the RemotingBridge being used to communicate with the source.
-  raw_ptr<RemotingBridge> active_bridge_;
+  RemotingBridge* active_bridge_;
 
   mojo::Receiver<media::mojom::RemotingSource> receiver_{this};
   mojo::Remote<media::mojom::Remoter> remoter_;
@@ -236,7 +235,7 @@ class CastRemotingConnector final : public base::SupportsUserData::Data,
   // permission, and is reset when the dialog closes.
   CancelPermissionRequestCallback permission_request_cancel_callback_;
 
-  const raw_ptr<PrefService> pref_service_;
+  PrefService* const pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 
   // Produces weak pointers that are only valid for the current remoting

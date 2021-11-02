@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "components/sync/test/mock_invalidation.h"
 
 namespace syncer {
@@ -43,7 +42,7 @@ class TrackableMockInvalidation : public MockInvalidation {
   // The MockInvalidationTracker that initialized this object, and which keeps
   // track of its acknowledgement status.  It is expected to outlive the
   // invalidations.  The data required for unit test assertions lives there.
-  raw_ptr<MockInvalidationTracker> tracker_;
+  MockInvalidationTracker* tracker_;
 
   // An identifier that uniquely identifies this invalidation to its
   // |tracker_|.

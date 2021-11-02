@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -291,7 +290,7 @@ class InfoBarDelegate {
 
  private:
   // The InfoBar associated with us.
-  raw_ptr<InfoBar> infobar_ = nullptr;
+  InfoBar* infobar_ = nullptr;
 
   // The ID of the active navigation entry at the time we became owned.
   int nav_entry_id_ = 0;

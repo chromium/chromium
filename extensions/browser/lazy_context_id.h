@@ -7,7 +7,6 @@
 
 #include <tuple>
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
@@ -74,7 +73,7 @@ class LazyContextId {
 
  private:
   Type type_;
-  raw_ptr<content::BrowserContext> context_;
+  content::BrowserContext* context_;
   ExtensionId extension_id_;
   GURL service_worker_scope_;
 };

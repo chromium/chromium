@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
@@ -179,8 +178,8 @@ class POLICY_EXPORT Schema {
 
    private:
     scoped_refptr<const InternalStorage> storage_;
-    raw_ptr<const internal::PropertyNode> it_;
-    raw_ptr<const internal::PropertyNode> end_;
+    const internal::PropertyNode* it_;
+    const internal::PropertyNode* end_;
   };
 
   // These methods should be called only if type() == Type::DICTIONARY,

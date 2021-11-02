@@ -24,7 +24,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -123,8 +122,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     int max_bytes_;
     bool hard_reset_;
 #if defined(OS_ANDROID)
-    raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
-        nullptr;
+    base::android::ApplicationStatusListener* app_status_listener_ = nullptr;
 #endif
   };
 
@@ -369,7 +367,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
     bool TransactionInReaders(Transaction* transaction) const;
 
-    raw_ptr<disk_cache::Entry> disk_entry = nullptr;
+    disk_cache::Entry* disk_entry = nullptr;
 
     // Indicates if the disk_entry was opened or not (i.e.: created).
     // It is set to true when a transaction is added to an entry so that other,
@@ -382,7 +380,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     // Transaction currently in the headers phase, either validating the
     // response or getting new headers. This can exist simultaneously with
     // writers or readers while validating existing headers.
-    raw_ptr<Transaction> headers_transaction = nullptr;
+    Transaction* headers_transaction = nullptr;
 
     // Transactions that have completed their headers phase and are waiting
     // to read the response body or write the response body.
@@ -656,7 +654,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Variables ----------------------------------------------------------------
 
-  raw_ptr<NetLog> net_log_;
+  NetLog* net_log_;
 
   // Used when lazily constructing the disk_cache_.
   std::unique_ptr<BackendFactory> backend_factory_;
@@ -681,7 +679,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   PendingOpsMap pending_ops_;
 
   // A clock that can be swapped out for testing.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   THREAD_CHECKER(thread_checker_);
 

@@ -14,7 +14,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
@@ -76,7 +75,7 @@ class AutofillProfileValidator : public autofill::LoadRulesListener {
     AutofillProfile profile_;
 
     // Not owned. Outlives this object.
-    raw_ptr<AddressValidator> validator_;
+    AddressValidator* validator_;
 
     AutofillProfileValidatorCallback on_validated_;
 

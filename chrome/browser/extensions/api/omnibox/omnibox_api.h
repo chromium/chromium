@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
@@ -129,9 +128,9 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   }
   static const bool kServiceRedirectedInIncognito = true;
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
-  raw_ptr<TemplateURLService> url_service_;
+  TemplateURLService* url_service_;
 
   // List of extensions waiting for the TemplateURLService to Load to
   // have keywords registered.

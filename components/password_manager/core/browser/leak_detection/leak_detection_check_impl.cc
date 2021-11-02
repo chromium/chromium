@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -88,9 +87,9 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
   // Bitmask of steps done.
   int steps_ = 0;
   // Owns |this|.
-  raw_ptr<LeakDetectionCheckImpl> leak_check_;
+  LeakDetectionCheckImpl* leak_check_;
   // Identity manager for the profile.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   // URL loader factory required for the network request to the identity
   // endpoint.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

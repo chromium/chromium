@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -45,7 +44,7 @@ class ServiceWorkerActivationObserver
                              const blink::StorageKey& key,
                              ServiceWorkerVersion::Status) override;
 
-  raw_ptr<ServiceWorkerContextWrapper> context_;
+  ServiceWorkerContextWrapper* context_;
   base::ScopedObservation<ServiceWorkerContextWrapper,
                           ServiceWorkerContextCoreObserver>
       scoped_observation_{this};

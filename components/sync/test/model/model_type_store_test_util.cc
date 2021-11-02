@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/sync/test/model/model_type_store_test_util.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
@@ -61,7 +60,7 @@ class ForwardingModelTypeStore : public ModelTypeStore {
   }
 
  private:
-  raw_ptr<ModelTypeStore> other_;
+  ModelTypeStore* other_;
 };
 
 }  // namespace

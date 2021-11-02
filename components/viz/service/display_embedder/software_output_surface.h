@@ -9,7 +9,6 @@
 #include <queue>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -67,7 +66,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   void UpdateVSyncParameters(base::TimeTicks timebase,
                              base::TimeDelta interval);
 
-  raw_ptr<OutputSurfaceClient> client_ = nullptr;
+  OutputSurfaceClient* client_ = nullptr;
 
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
   base::TimeTicks refresh_timebase_;

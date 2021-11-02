@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -80,7 +79,7 @@ class DiceInterceptedSessionStartupHelper
   // still open.
   void MoveTab();
 
-  const raw_ptr<Profile> profile_;
+  Profile* const profile_;
   base::WeakPtr<content::WebContents> web_contents_;
   bool use_multilogin_;
   CoreAccountId account_id_;

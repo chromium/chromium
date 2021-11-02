@@ -12,7 +12,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "content/public/browser/browser_thread.h"
@@ -61,7 +60,7 @@ class BluetoothSocketAsyncApiFunction : public ExtensionFunction {
   std::unordered_set<int>* GetSocketIds();
 
  private:
-  raw_ptr<ApiResourceManager<BluetoothApiSocket>> manager_;
+  ApiResourceManager<BluetoothApiSocket>* manager_;
 };
 
 class BluetoothSocketCreateFunction : public BluetoothSocketAsyncApiFunction {
@@ -144,7 +143,7 @@ class BluetoothSocketListenFunction : public BluetoothSocketAsyncApiFunction {
   virtual void OnCreateService(scoped_refptr<device::BluetoothSocket> socket);
   virtual void OnCreateServiceError(const std::string& message);
 
-  raw_ptr<BluetoothSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
+  BluetoothSocketEventDispatcher* socket_event_dispatcher_ = nullptr;
 };
 
 class BluetoothSocketListenUsingRfcommFunction
@@ -227,7 +226,7 @@ class BluetoothSocketAbstractConnectFunction :
   virtual void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
   std::unique_ptr<bluetooth_socket::Connect::Params> params_;
-  raw_ptr<BluetoothSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
+  BluetoothSocketEventDispatcher* socket_event_dispatcher_ = nullptr;
 };
 
 class BluetoothSocketConnectFunction :

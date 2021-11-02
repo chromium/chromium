@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -210,10 +209,10 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   std::map<SchedulerClientType, bool> need_update_db_;
 
   // The clock to provide the current timestamp.
-  raw_ptr<base::Clock> clock_;
+  base::Clock* clock_;
 
   // Delegate object.
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
 
   base::WeakPtrFactory<ImpressionHistoryTrackerImpl> weak_ptr_factory_{this};
 };

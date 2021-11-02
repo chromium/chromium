@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "gin/converter.h"
 #include "gin/function_template.h"
@@ -130,7 +129,7 @@ class GIN_EXPORT ObjectTemplateBuilder {
       v8::AccessorNameGetterCallback callback,
       v8::Local<v8::Value> data);
 
-  raw_ptr<v8::Isolate> isolate_;
+  v8::Isolate* isolate_;
 
   // If provided, |type_name_| will be used to give a user-friendly error
   // message if a member function is invoked on the wrong type of object.

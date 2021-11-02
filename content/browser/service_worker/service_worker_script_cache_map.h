@@ -14,7 +14,6 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/common/content_export.h"
@@ -96,7 +95,7 @@ class CONTENT_EXPORT ServiceWorkerScriptCacheMap {
 
   void RunCallback(uint64_t callback_id, int result);
 
-  raw_ptr<ServiceWorkerVersion> owner_;
+  ServiceWorkerVersion* owner_;
   base::WeakPtr<ServiceWorkerContextCore> context_;
   ResourceMap resource_map_;
   int main_script_net_error_ = net::OK;

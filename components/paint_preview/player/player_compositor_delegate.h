@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "components/paint_preview/browser/hit_tester.h"
@@ -178,7 +177,7 @@ class PlayerCompositorDelegate {
       mojom::PaintPreviewCompositor::BitmapStatus status,
       const SkBitmap& bitmap);
 
-  raw_ptr<PaintPreviewBaseService> paint_preview_service_{nullptr};
+  PaintPreviewBaseService* paint_preview_service_{nullptr};
   DirectoryKey key_;
   bool compress_on_close_{true};
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_;

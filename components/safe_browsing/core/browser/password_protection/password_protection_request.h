@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -260,7 +259,7 @@ class PasswordProtectionRequest
 
   // The PasswordProtectionServiceBase instance owns |this|.
   // Can only be accessed on UI thread.
-  raw_ptr<PasswordProtectionServiceBase> password_protection_service_;
+  PasswordProtectionServiceBase* password_protection_service_;
 
   // The outcome of the password protection request.
   RequestOutcome request_outcome_;

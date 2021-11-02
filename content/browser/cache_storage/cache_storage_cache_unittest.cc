@@ -16,7 +16,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -255,7 +254,7 @@ class FailableCacheEntry : public disk_cache::Entry {
   }
 
  private:
-  const raw_ptr<disk_cache::Entry> entry_;
+  disk_cache::Entry* const entry_;
 };
 
 class FailableBackend : public disk_cache::Backend {

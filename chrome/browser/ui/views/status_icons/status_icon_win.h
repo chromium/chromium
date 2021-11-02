@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
@@ -68,7 +67,7 @@ class StatusIconWin : public StatusIcon {
   void InitIconData(NOTIFYICONDATA* icon_data);
 
   // The tray that owns us.  Weak.
-  raw_ptr<StatusTrayWin> tray_;
+  StatusTrayWin* tray_;
 
   // The unique ID corresponding to this icon.
   UINT icon_id_;
@@ -86,7 +85,7 @@ class StatusIconWin : public StatusIcon {
   base::win::ScopedHICON balloon_icon_;
 
   // Not owned.
-  raw_ptr<ui::MenuModel> menu_model_ = nullptr;
+  ui::MenuModel* menu_model_ = nullptr;
 
   // Context menu associated with this icon (if any).
   std::unique_ptr<views::MenuRunner> menu_runner_;

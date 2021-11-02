@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
@@ -76,10 +75,10 @@ class MediaHistoryKeyedService::StoreHolder {
   }
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
   scoped_refptr<MediaHistoryStore> local_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> db_task_runner_;
-  raw_ptr<MediaHistoryKeyedService> remote_ = nullptr;
+  MediaHistoryKeyedService* remote_ = nullptr;
 };
 
 MediaHistoryKeyedService::MediaHistoryKeyedService(Profile* profile)

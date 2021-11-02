@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
@@ -93,7 +92,7 @@ class SyncManager {
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
 
     // Must outlive SyncManager.
-    raw_ptr<ExtensionsActivity> extensions_activity;
+    ExtensionsActivity* extensions_activity;
 
     // Unqiuely identifies this client to the invalidation notification server.
     std::string invalidator_client_id;
@@ -101,13 +100,13 @@ class SyncManager {
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
 
     // Must outlive SyncManager.
-    raw_ptr<SyncEncryptionHandler> encryption_handler;
+    SyncEncryptionHandler* encryption_handler;
 
     // Carries shutdown requests across threads and will be used to cut short
     // any network I/O and tell the syncer to exit early.
     //
     // Must outlive SyncManager.
-    raw_ptr<CancelationSignal> cancelation_signal;
+    CancelationSignal* cancelation_signal;
 
     // Define the polling interval. Must not be zero.
     base::TimeDelta poll_interval;

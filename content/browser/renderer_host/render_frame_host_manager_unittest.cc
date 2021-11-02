@@ -18,7 +18,6 @@
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -741,7 +740,7 @@ class RenderViewHostDestroyer : public WebContentsObserver {
   }
 
  private:
-  raw_ptr<RenderViewHost> render_view_host_;
+  RenderViewHost* render_view_host_;
   std::unique_ptr<WebContents> web_contents_;
 };
 

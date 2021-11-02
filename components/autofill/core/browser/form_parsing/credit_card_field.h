@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
@@ -79,7 +78,7 @@ class CreditCardField : public FormField {
   // It can be either a date or both the month and the year.
   bool HasExpiration() const;
 
-  raw_ptr<LogManager> log_manager_;  // Optional.
+  LogManager* log_manager_;  // Optional.
 
   AutofillField* cardholder_;  // Optional.
 
@@ -92,7 +91,7 @@ class CreditCardField : public FormField {
   // middle names or suffixes.)
   AutofillField* cardholder_last_;
 
-  raw_ptr<AutofillField> type_;          // Optional.
+  AutofillField* type_;                  // Optional.
   std::vector<AutofillField*> numbers_;  // Required.
 
   // The 3-digit card verification number; we don't currently fill this.

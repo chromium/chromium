@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_TASK_TEST_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_TASK_TEST_TASK_H_
 
-#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/task/task.h"
 
 namespace offline_pages {
@@ -50,7 +49,7 @@ class TestTask : public Task {
   TaskState state() const { return state_; }
 
  private:
-  raw_ptr<ConsumedResource> resource_;
+  ConsumedResource* resource_;
   TaskState state_;
   bool leave_early_;
 };

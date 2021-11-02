@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/sync/base/model_type.h"
@@ -81,7 +80,7 @@ class BackendMigrator {
   void OnConfigureDoneImpl(const DataTypeManager::ConfigureResult& result);
 
   const std::string name_;
-  raw_ptr<DataTypeManager> manager_;
+  DataTypeManager* manager_;
 
   const base::RepeatingClosure reconfigure_callback_;
   const base::RepeatingClosure migration_done_callback_;

@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -53,7 +52,7 @@ class UrgentPageDiscardingPolicy : public GraphOwned,
   // to this notification.
   bool handling_memory_pressure_notification_ = false;
 
-  raw_ptr<Graph> graph_ = nullptr;
+  Graph* graph_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

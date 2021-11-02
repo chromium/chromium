@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 
 // SyncStartupTracker provides a centralized way for observers to detect when
@@ -59,10 +58,10 @@ class SyncStartupTracker : public syncer::SyncServiceObserver {
   void CheckServiceState();
 
   // The SyncService we should track.
-  raw_ptr<syncer::SyncService> sync_service_;
+  syncer::SyncService* sync_service_;
 
   // Weak pointer to the observer to notify.
-  raw_ptr<Observer> observer_;
+  Observer* observer_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_SYNC_STARTUP_TRACKER_H_

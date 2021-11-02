@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -299,7 +298,7 @@ class CronetURLRequestContext {
 
   // |network_tasks_| is owned by |this|. It is created off the network thread,
   // but invoked and destroyed on network thread.
-  raw_ptr<NetworkTasks> network_tasks_;
+  NetworkTasks* network_tasks_;
 
   // Network thread is destroyed from client thread.
   std::unique_ptr<base::Thread> network_thread_;

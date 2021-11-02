@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -61,7 +60,7 @@ class AppPublisher {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   AppServiceProxyLacros* proxy_ = nullptr;
 #else
-  raw_ptr<AppServiceProxy> proxy_ = nullptr;
+  AppServiceProxy* proxy_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

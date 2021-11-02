@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -104,7 +103,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
 #endif
 
  private:
-  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  HostContentSettingsMap* host_content_settings_map_;
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 };
 

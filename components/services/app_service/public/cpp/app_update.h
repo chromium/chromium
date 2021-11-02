@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -179,11 +178,11 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   const ::AccountId& AccountId() const;
 
  private:
-  raw_ptr<const apps::mojom::App> mojom_state_ = nullptr;
-  raw_ptr<const apps::mojom::App> mojom_delta_ = nullptr;
+  const apps::mojom::App* mojom_state_ = nullptr;
+  const apps::mojom::App* mojom_delta_ = nullptr;
 
-  raw_ptr<const apps::App> state_ = nullptr;
-  raw_ptr<const apps::App> delta_ = nullptr;
+  const apps::App* state_ = nullptr;
+  const apps::App* delta_ = nullptr;
 
   const ::AccountId& account_id_;
 };

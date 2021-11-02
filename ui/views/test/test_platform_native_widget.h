@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -66,7 +65,7 @@ class TestPlatformNativeWidget : public PlatformNativeWidget {
  private:
   bool mouse_capture_;
   const bool mock_capture_;
-  raw_ptr<bool> destroyed_;
+  bool* destroyed_;
 };
 
 }  // namespace test

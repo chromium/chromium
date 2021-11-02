@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -71,7 +70,7 @@ class VIZ_SERVICE_EXPORT DrawPolygon {
   // we need.
   // This DrawQuad is owned by the caller and its lifetime must be preserved
   // as long as this DrawPolygon is alive.
-  raw_ptr<const DrawQuad> original_ref_;
+  const DrawQuad* original_ref_;
   bool is_split_;
 };
 

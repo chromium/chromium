@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
@@ -78,8 +77,8 @@ class ProfilePickerForceSigninDialogDelegate
   gfx::Size CalculatePreferredSize() const override;
   views::View* GetInitiallyFocusedView() override;
 
-  raw_ptr<ProfilePickerForceSigninDialogHost> host_;  // Not owned.
-  raw_ptr<views::WebView> web_view_;  // Owned by the view hierarchy.
+  ProfilePickerForceSigninDialogHost* host_;  // Not owned.
+  views::WebView* web_view_;                  // Owned by the view hierarchy.
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FORCE_SIGNIN_DIALOG_DELEGATE_H_

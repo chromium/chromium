@@ -6,7 +6,6 @@
 #define UI_EVENTS_TEST_EVENTS_TEST_UTILS_H_
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_target.h"
@@ -36,7 +35,7 @@ class EventTestApi {
  private:
   EventTestApi();
 
-  raw_ptr<Event> event_;
+  Event* event_;
 };
 
 class LocatedEventTestApi : public EventTestApi {
@@ -58,7 +57,7 @@ class LocatedEventTestApi : public EventTestApi {
  private:
   LocatedEventTestApi();
 
-  raw_ptr<LocatedEvent> located_event_;
+  LocatedEvent* located_event_;
 };
 
 class KeyEventTestApi : public EventTestApi {
@@ -79,7 +78,7 @@ class KeyEventTestApi : public EventTestApi {
  private:
   KeyEventTestApi();
 
-  raw_ptr<KeyEvent> key_event_;
+  KeyEvent* key_event_;
 };
 
 class EventTargetTestApi {
@@ -98,7 +97,7 @@ class EventTargetTestApi {
  private:
   EventTargetTestApi();
 
-  raw_ptr<EventTarget> target_;
+  EventTarget* target_;
 };
 
 class EventSourceTestApi {
@@ -113,7 +112,7 @@ class EventSourceTestApi {
  private:
   EventSourceTestApi();
 
-  raw_ptr<EventSource> event_source_;
+  EventSource* event_source_;
 };
 
 }  // namespace ui

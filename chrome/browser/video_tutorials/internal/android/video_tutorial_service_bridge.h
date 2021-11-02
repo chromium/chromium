@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VIDEO_TUTORIALS_INTERNAL_ANDROID_VIDEO_TUTORIAL_SERVICE_BRIDGE_H_
 
 #include "base/android/jni_android.h"
-#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/video_tutorials/video_tutorial_service.h"
 
@@ -63,7 +62,7 @@ class VideoTutorialServiceBridge : public base::SupportsUserData::Data {
   ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
-  raw_ptr<VideoTutorialService> video_tutorial_service_;
+  VideoTutorialService* video_tutorial_service_;
 };
 
 }  // namespace video_tutorials

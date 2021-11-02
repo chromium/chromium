@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
@@ -133,7 +132,7 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   }
 
  private:
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
   const std::string path_;
   PrefChangeRegistrar pref_change_registrar_;
 };  // class PrefServiceAdapter
@@ -194,7 +193,7 @@ class NetworkQualitiesPrefDelegateImpl
     lossy_prefs_writing_task_posted_ = false;
   }
 
-  raw_ptr<PrefService> pref_service_;
+  PrefService* pref_service_;
 
   // True if the task that schedules the writing of the lossy prefs has been
   // posted.

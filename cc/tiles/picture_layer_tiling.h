@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "cc/base/region.h"
 #include "cc/base/tiling_data.h"
 #include "cc/cc_export.h"
@@ -484,7 +483,7 @@ class CC_EXPORT PictureLayerTiling {
 
   // Given properties.
   const gfx::AxisTransform2d raster_transform_;
-  const raw_ptr<PictureLayerTilingClient> client_;
+  PictureLayerTilingClient* const client_;
   const WhichTree tree_;
   scoped_refptr<RasterSource> raster_source_;
   const float min_preraster_distance_;

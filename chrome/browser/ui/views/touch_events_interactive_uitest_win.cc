@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -195,9 +194,9 @@ class TouchEventsViewTest : public ViewEventTestBase {
   }
 
  protected:
-  raw_ptr<views::View> touch_view_ = nullptr;
-  raw_ptr<TestingGestureRecognizer> gesture_recognizer_ = nullptr;
-  raw_ptr<ui::GestureRecognizer> initial_gr_ = nullptr;
+  views::View* touch_view_ = nullptr;
+  TestingGestureRecognizer* gesture_recognizer_ = nullptr;
+  ui::GestureRecognizer* initial_gr_ = nullptr;
 };
 
 #if defined(OS_WIN)  // Fails on latest versions of Windows.

@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
@@ -182,7 +181,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
           callback);
 
   // Not owned by this class.
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 
   // Used to communicate with the password store.
   std::unique_ptr<PasswordManagerPresenter> password_manager_presenter_;
@@ -229,7 +228,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
 
   // The WebContents used when invoking this API. Used to fetch the
   // NativeWindow for the window where the API was called.
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
 };

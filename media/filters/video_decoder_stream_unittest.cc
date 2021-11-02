@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -546,7 +545,7 @@ class VideoDecoderStreamTest
   std::vector<int> platform_decoder_indices_;
 
   // The current decoder used by |video_decoder_stream_|.
-  raw_ptr<FakeVideoDecoder> decoder_ = nullptr;
+  FakeVideoDecoder* decoder_ = nullptr;
 
   bool is_initialized_;
   int num_decoded_frames_;

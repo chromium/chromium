@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -60,9 +59,9 @@ class ExtensionTestingProfile : public TestingProfile {
   void SetInstallSignature(extensions::InstallSignature signature);
 
  private:
-  raw_ptr<TestingProfile> profile_;
-  raw_ptr<extensions::ExtensionService> extension_service_;
-  raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
+  TestingProfile* profile_;
+  extensions::ExtensionService* extension_service_;
+  extensions::ExtensionPrefs* extension_prefs_;
 };
 
 ExtensionTestingProfile::ExtensionTestingProfile(TestingProfile* profile)

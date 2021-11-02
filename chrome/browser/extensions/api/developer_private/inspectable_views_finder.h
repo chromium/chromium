@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/developer_private.h"
 
 class Profile;
@@ -68,7 +67,7 @@ class InspectableViewsFinder {
   void GetAppWindowViewsForExtension(const Extension& extension,
                                      ViewList* result);
 
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace extensions

@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -34,7 +33,7 @@ class CookieReminter : public KeyedService,
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
   std::vector<CoreAccountInfo> accounts_requiring_cookie_remint_;
 };
 

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
@@ -106,7 +105,7 @@ class SandboxFileSystemTestHelper {
 
   const blink::StorageKey storage_key_;
   const FileSystemType type_;
-  raw_ptr<FileSystemFileUtil> file_util_;
+  FileSystemFileUtil* file_util_;
 };
 
 }  // namespace storage

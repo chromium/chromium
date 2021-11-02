@@ -13,7 +13,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "jingle/notifier/listener/notification_defines.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
@@ -51,7 +50,7 @@ class PushNotificationsSubscribeTask : public jingle_xmpp::XmppTask {
       const jingle_xmpp::Jid& jid, const std::string& task_id);
 
   SubscriptionList subscriptions_;
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
 
   FRIEND_TEST_ALL_PREFIXES(PushNotificationsSubscribeTaskTest,
                            MakeSubscriptionMessage);

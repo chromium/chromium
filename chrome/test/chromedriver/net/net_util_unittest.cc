@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/strings/stringprintf.h"
@@ -133,7 +132,7 @@ class FetchUrlTest : public testing::Test,
   std::unique_ptr<net::HttpServer> server_;
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
+  network::mojom::URLLoaderFactory* url_loader_factory_;
   std::string server_url_;
   base::test::TaskEnvironment task_environment_;
 };

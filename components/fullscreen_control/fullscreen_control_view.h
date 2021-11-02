@@ -6,7 +6,6 @@
 #define COMPONENTS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
@@ -30,7 +29,7 @@ class FullscreenControlView : public views::View {
   }
 
  private:
-  raw_ptr<views::Button> exit_fullscreen_button_;
+  views::Button* exit_fullscreen_button_;
 };
 
 #endif  // COMPONENTS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_

@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
@@ -121,7 +120,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   int keyboard_mic_streams_count_;
 #endif
 
-  const raw_ptr<media::AudioSystem> audio_system_;
+  media::AudioSystem* const audio_system_;
 };
 
 }  // namespace content

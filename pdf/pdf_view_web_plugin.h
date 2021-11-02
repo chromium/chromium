@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -388,7 +387,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // The metafile in which to save the printed output. Assigned a value only
   // between `PrintBegin()` and `PrintEnd()` calls.
-  raw_ptr<printing::MetafileSkia> printing_metafile_ = nullptr;
+  printing::MetafileSkia* printing_metafile_ = nullptr;
 
   // The indices of pages to print.
   std::vector<int> pages_to_print_;

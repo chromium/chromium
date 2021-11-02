@@ -9,7 +9,6 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -136,7 +135,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
     explicit ViewData(View* v, ui::ElementContext initial_context)
         : view(v), context(initial_context) {}
     bool visible() const { return static_cast<bool>(element); }
-    const raw_ptr<View> view;
+    View* const view;
     ui::ElementContext context;
     std::unique_ptr<TrackedElementViews> element;
   };
@@ -189,7 +188,7 @@ class ElementTrackerViews::ElementDataViews : public ViewObserver,
            "while a view is visible.";
   }
 
-  const raw_ptr<ElementTrackerViews> tracker_;
+  ElementTrackerViews* const tracker_;
   const ui::ElementIdentifier id_;
   ViewDataList view_data_;
   std::map<View*, ViewDataList::iterator> view_data_lookup_;

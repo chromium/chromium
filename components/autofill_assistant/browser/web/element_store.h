@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_WEB_ELEMENT_STORE_H_
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
@@ -56,7 +55,7 @@ class ElementStore {
  private:
   friend class FakeElementStore;
 
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   base::flat_map<std::string, DomObjectFrameStack> object_map_;
 };

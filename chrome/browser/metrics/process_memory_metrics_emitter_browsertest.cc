@@ -8,7 +8,6 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -135,10 +134,10 @@ class ProcessMemoryMetricsEmitterFake : public ProcessMemoryMetricsEmitter {
 
   ukm::UkmRecorder* GetUkmRecorder() override { return recorder_; }
 
-  raw_ptr<base::RunLoop> run_loop_;
+  base::RunLoop* run_loop_;
   bool finished_memory_dump_ = false;
   bool finished_process_info_ = false;
-  raw_ptr<ukm::TestUkmRecorder> recorder_;
+  ukm::TestUkmRecorder* recorder_;
 };
 
 void CheckMemoryMetric(const std::string& name,

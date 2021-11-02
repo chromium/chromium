@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -52,7 +51,7 @@ class DevModeBubbleDelegate
   bool SupportsPolicyIndicator() override;
 
  private:
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 }  // namespace extensions

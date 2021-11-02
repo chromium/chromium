@@ -17,7 +17,6 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -184,12 +183,12 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
     }
 
     std::string Debug() {
-      return base::StringPrintf("Event(%p, %s, %f)", profile_.get(),
+      return base::StringPrintf("Event(%p, %s, %f)", profile_,
                                 event_name_.c_str(), caught_.ToJsTime());
     }
 
    private:
-    raw_ptr<Profile> profile_;
+    Profile* profile_;
     std::string event_name_;
     std::string json_args_;
     base::Value args_;
@@ -257,7 +256,7 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   base::Time last_wait_;
   std::unique_ptr<Event> waiting_for_;
   base::circular_deque<std::unique_ptr<Event>> events_;
-  raw_ptr<Profile> profile_;
+  Profile* profile_;
 };
 
 // Object waiting for a download open event.
@@ -296,7 +295,7 @@ class DownloadOpenObserver : public download::DownloadItem::Observer {
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>
       open_observation_{this};
-  raw_ptr<download::DownloadItem> item_;
+  download::DownloadItem* item_;
   base::OnceClosure completion_closure_;
 };
 
@@ -683,16 +682,16 @@ class DownloadExtensionTest : public ExtensionApiTest {
       // Recreate the tab each time for insulation.
       content::WebContents* tab = chrome::AddSelectedTabWithURL(
           current_browser(), url, ui::PAGE_TRANSITION_LINK);
-      function->set_extension(extension_.get());
+      function->set_extension(extension_);
       function->SetRenderFrameHost(tab->GetMainFrame());
       function->set_source_process_id(
           tab->GetMainFrame()->GetProcess()->GetID());
     }
   }
 
-  raw_ptr<const Extension> extension_;
-  raw_ptr<Browser> incognito_browser_;
-  raw_ptr<Browser> current_browser_;
+  const Extension* extension_;
+  Browser* incognito_browser_;
+  Browser* current_browser_;
   std::unique_ptr<DownloadsEventsListener> events_listener_;
 
   std::unique_ptr<net::test_server::ControllableHttpResponse> first_download_;
@@ -765,7 +764,7 @@ class ScopedCancellingItem {
   }
   DownloadItem* get() { return item_; }
  private:
-  raw_ptr<DownloadItem> item_;
+  DownloadItem* item_;
 };
 
 // Cancels all the underlying DownloadItems when the ScopedItemVectorCanceller
@@ -793,7 +792,7 @@ class ScopedItemVectorCanceller {
   }
 
  private:
-  raw_ptr<DownloadManager::DownloadVector> items_;
+  DownloadManager::DownloadVector* items_;
 };
 
 // Writes an HTML5 file so that it can be downloaded.
@@ -1823,8 +1822,8 @@ class CustomResponse : public net::test_server::HttpResponse {
   }
 
  private:
-  raw_ptr<base::OnceClosure> callback_;
-  raw_ptr<base::TaskRunner*> task_runner_;
+  base::OnceClosure* callback_;
+  base::TaskRunner** task_runner_;
   bool first_request_;
 };
 

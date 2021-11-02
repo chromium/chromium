@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -130,7 +129,7 @@ class FakeDeviceManagementService : public DeviceManagementService {
   std::unique_ptr<Job> CreateJob(
       std::unique_ptr<JobConfiguration> config) override;
 
-  raw_ptr<MockJobCreationHandler> creation_handler_;
+  MockJobCreationHandler* creation_handler_;
 };
 
 // A fake implementation of DMServerJobConfiguration that can be used in tests

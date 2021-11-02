@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -146,9 +145,9 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::MockNavigationHandle> test_handle_;
-  raw_ptr<NiceMock<MockOptimizationGuideKeyedService>>
+  NiceMock<MockOptimizationGuideKeyedService>*
       mock_optimization_guide_keyed_service_ = nullptr;
-  raw_ptr<MockOptimizationGuideKeyedService>
+  MockOptimizationGuideKeyedService*
       mock_otr_optimization_guide_keyed_service_ = nullptr;
 };
 

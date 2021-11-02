@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/archive_validator.h"
@@ -281,7 +280,7 @@ class OfflinePageRequestHandler {
                                         const std::string& actual_digest);
 
   GURL url_;
-  raw_ptr<Delegate> delegate_;
+  Delegate* delegate_;
 
   OfflinePageHeader offline_header_;
   NetworkState network_state_;

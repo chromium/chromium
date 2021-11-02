@@ -287,7 +287,7 @@ HasSearchEngineChecker::HasSearchEngineChecker(int profile_index,
                                                const std::string& keyword)
     : service_(GetServiceForBrowserContext(profile_index)),
       keyword_(base::UTF8ToUTF16(keyword)) {
-  observations_.AddObservation(service_.get());
+  observations_.AddObservation(service_);
 }
 
 HasSearchEngineChecker::~HasSearchEngineChecker() = default;

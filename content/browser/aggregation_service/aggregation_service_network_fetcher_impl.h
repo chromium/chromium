@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/aggregation_service/aggregation_service_key_fetcher.h"
@@ -96,7 +95,7 @@ class CONTENT_EXPORT AggregationServiceNetworkFetcherImpl
   const base::Clock& clock_;
 
   // Might be `nullptr` for testing, otherwise must outlive `this`.
-  raw_ptr<StoragePartition> storage_partition_;
+  StoragePartition* storage_partition_;
 
   // Lazily accessed URLLoaderFactory used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

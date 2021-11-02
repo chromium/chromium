@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/cancelable_task_tracker.h"
 
@@ -54,9 +53,9 @@ class DataProvider {
  private:
   void RecreateLog();
 
-  raw_ptr<history::HistoryService> history_service_;
+  history::HistoryService* history_service_;
   scoped_refptr<bookmarks::ModelLoader> bookmark_model_loader_;
-  raw_ptr<DeltaFileService> delta_file_service_;
+  DeltaFileService* delta_file_service_;
   base::CancelableTaskTracker history_task_tracker_;
 };
 

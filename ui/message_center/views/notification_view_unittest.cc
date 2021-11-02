@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -281,7 +280,7 @@ class NotificationViewTest : public views::ViewObserver,
     ink_drop_stopped_ = true;
   }
 
-  raw_ptr<NotificationView> notification_view_ = nullptr;
+  NotificationView* notification_view_ = nullptr;
   bool delete_on_notification_removed_ = false;
   bool ink_drop_stopped_ = false;
 };

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_devtools_bindings.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 
@@ -55,7 +54,7 @@ class WebTestDevToolsBindings::SecondaryObserver : public WebContentsObserver {
   }
 
  private:
-  raw_ptr<WebTestDevToolsBindings> bindings_;
+  WebTestDevToolsBindings* bindings_;
 };
 
 // static.

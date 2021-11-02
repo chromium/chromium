@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -67,7 +66,7 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
   void Start() override;
 
  private:
-  raw_ptr<FakeWebHistoryService> service_;
+  FakeWebHistoryService* service_;
   GURL url_;
   bool emulate_success_;
   int emulate_response_code_;
