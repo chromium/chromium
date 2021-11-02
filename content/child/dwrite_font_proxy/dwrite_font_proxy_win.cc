@@ -17,6 +17,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "content/child/dwrite_font_proxy/dwrite_localized_strings_win.h"
 #include "content/public/child/child_thread.h"
@@ -119,6 +121,51 @@ DWriteFontCollectionProxy::DWriteFontCollectionProxy() = default;
 
 DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
+// TODO(crbug.com/1256946): Confirm this is useful and remove it otherwise.
+void DWriteFontCollectionProxy::InitializePrewarmer() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // |PrewarmFamilyOnWorker| invokes |GetFontProxy| while holding a
+  // |family_lock_|. If |GetFontProxy| is invoked from a sequence for which no
+  // |mojo::Remote<blink::mojom::DWriteFontProxy>| exists in sequence-local
+  // storage, it posts to the main thread to bind a new one. To avoid a
+  // potential deadlock on a |family_lock_| during that operation,
+  // pre-initialize the |mojo::Remote<blink::mojom::DWriteFontProxy>| for
+  // |prewarm_task_runner_| here.
+  //
+  // Also, to avoid creating too many
+  // |mojo::Remote<blink::mojom::DWriteFontProxy>|, a single SequencedTaskRunner
+  // is used for all font prewarming operations.
+  DCHECK(!prewarm_task_runner_);
+  prewarm_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+
+  // Let |prewarm_task_runner_| bind its |font_proxy_|. This needs to be done in
+  // the sequence, because |font_proxy_| is stored in
+  // |SequenceLocalStorageSlot|.
+  mojo::PendingRemote<blink::mojom::DWriteFontProxy> font_proxy;
+  BindHostReceiverOnMainThread(font_proxy.InitWithNewPipeAndPassReceiver());
+  prewarm_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DWriteFontCollectionProxy::BindFontProxy,
+          // |DWriteFontCollectionProxy| is kept in global, never destructed.
+          base::Unretained(this), std::move(font_proxy)));
+}
+
+void DWriteFontCollectionProxy::InitializePrewarmerForTesting(
+    mojo::PendingRemote<blink::mojom::DWriteFontProxy> remote) {
+  // See |InitializePrewarmer|.
+  prewarm_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE, base::MayBlock()});
+  prewarm_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DWriteFontCollectionProxy::BindFontProxy,
+          // |DWriteFontCollectionProxy| is kept in global, never destructed.
+          base::Unretained(this), std::move(remote)));
+}
+
 inline DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetFamilyLockRequired(
     UINT32 family_index) {
   if (family_index < families_.size())
@@ -201,6 +248,28 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndexLockRequired(
   if (hresult_out)
     *hresult_out = E_FAIL;
   return absl::nullopt;
+}
+
+void DWriteFontCollectionProxy::PrewarmFamily(
+    const blink::WebString& family_name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!prewarm_task_runner_)
+    InitializePrewarmer();
+
+  BOOL exists;
+  UINT32 family_index;
+  HRESULT hr = FindFamilyName(family_name.Utf16(), &family_index, &exists);
+  if (FAILED(hr) || !exists)
+    return;
+
+  DWriteFontFamilyProxy* family = GetFamily(family_index);
+  DCHECK(family);
+  DCHECK(prewarm_task_runner_);
+  prewarm_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DWriteFontFamilyProxy::PrewarmFamilyOnWorker,
+                                // |family| is kept in global, never destructed.
+                                base::Unretained(family)));
 }
 
 HRESULT DWriteFontCollectionProxy::GetFontFamily(
@@ -287,9 +356,18 @@ HRESULT DWriteFontCollectionProxy::CreateEnumeratorFromKey(
 
   std::vector<base::FilePath> file_names;
   std::vector<base::File> file_handles;
-  if (!GetFontProxy().GetFontFiles(*family_index, &file_names, &file_handles)) {
-    LogFontProxyError(GET_FONT_FILES_SEND_FAILED);
-    return E_FAIL;
+  {
+    // The Mojo call cannot be asynchronous because CreateEnumeratorFromKey is
+    // invoked synchronously by DWrite. |ScopedAllowBaseSyncPrimitives| is
+    // needed to allow the synchronous Mojo call from the ThreadPool
+    // (CreateEnumeratorFromKey can be invoked from the main thread or the
+    // ThreadPool).
+    base::ScopedAllowBaseSyncPrimitives allow_sync;
+    if (!GetFontProxy().GetFontFiles(*family_index, &file_names,
+                                     &file_handles)) {
+      LogFontProxyError(GET_FONT_FILES_SEND_FAILED);
+      return E_FAIL;
+    }
   }
 
   std::vector<HANDLE> handles;
@@ -357,6 +435,8 @@ HRESULT DWriteFontCollectionProxy::RuntimeClassInitialize(
   if (proxy)
     font_proxy_.GetOrCreateValue().Bind(std::move(proxy));
   main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  // |prewarm_task_runner_| needs to be initialized later because ThreadPool is
+  // not setup yet when |this| is instantiated. See |InitializePrewarmer|.
 
   HRESULT hr = factory->RegisterFontCollectionLoader(this);
   DCHECK(SUCCEEDED(hr));
@@ -463,6 +543,14 @@ blink::mojom::DWriteFontProxy& DWriteFontCollectionProxy::GetFontProxy() {
     }
   }
   return *font_proxy;
+}
+
+void DWriteFontCollectionProxy::BindFontProxy(
+    mojo::PendingRemote<blink::mojom::DWriteFontProxy> remote) {
+  mojo::Remote<blink::mojom::DWriteFontProxy>& font_proxy =
+      font_proxy_.GetOrCreateValue();
+  DCHECK(!font_proxy);
+  font_proxy.Bind(std::move(remote));
 }
 
 DWriteFontFamilyProxy::DWriteFontFamilyProxy() = default;
@@ -602,6 +690,20 @@ IDWriteFontFamily* DWriteFontFamilyProxy::LoadFamily() {
 
   if (family_)
     return family_.Get();
+  return LoadFamilyCoreLockRequired();
+}
+
+void DWriteFontFamilyProxy::PrewarmFamilyOnWorker() {
+  // Load the family only if other threads haven't loaded this family.
+  base::AutoLock family_lock(family_lock_);
+  if (!family_)
+    LoadFamilyCoreLockRequired();
+}
+
+// Note this function may run in the main thread, or in a worker thread.
+IDWriteFontFamily* DWriteFontFamilyProxy::LoadFamilyCoreLockRequired() {
+  DCHECK(!family_);
+  family_lock_.AssertAcquired();
 
   // TODO(dcheng): Is this crash key still used? There does not appear to be
   // anything obvious below that would trigger a crash report.
