@@ -221,6 +221,13 @@ using WebViewKeyToIDMap = std::map<WebViewKey, int>;
 static base::LazyInstance<WebViewKeyToIDMap>::DestructorAtExit
     web_view_key_to_id_map = LAZY_INSTANCE_INITIALIZER;
 
+bool IsInWebViewMainFrame(content::NavigationHandle* navigation_handle) {
+  // TODO(1261928): Due to the use of inner WebContents, a WebView's main frame
+  // is considered primary. This will no longer be the case once we migrate
+  // guest views to MPArch.
+  return navigation_handle->IsInPrimaryMainFrame();
+}
+
 }  // namespace
 
 WebViewGuest::NewWindowInfo::NewWindowInfo(const GURL& url,
@@ -875,8 +882,8 @@ void WebViewGuest::DidFinishNavigation(
       int error_code = navigation_handle->GetNetErrorCode();
       if (error_code == net::OK)
         error_code = net::ERR_BLOCKED_BY_CLIENT;
-      LoadAbort(navigation_handle->IsInMainFrame(), navigation_handle->GetURL(),
-                error_code);
+      LoadAbort(IsInWebViewMainFrame(navigation_handle),
+                navigation_handle->GetURL(), error_code);
     }
     // Originally, on failed navigations the webview we would fire a loadabort
     // (for the failed navigation) and a loadcommit (for the error page).
@@ -884,10 +891,7 @@ void WebViewGuest::DidFinishNavigation(
       return;
   }
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (navigation_handle->IsInPrimaryMainFrame() && pending_zoom_factor_) {
+  if (IsInWebViewMainFrame(navigation_handle) && pending_zoom_factor_) {
     // Handle a pending zoom if one exists.
     SetZoom(pending_zoom_factor_);
     pending_zoom_factor_ = 0.0;
@@ -897,7 +901,8 @@ void WebViewGuest::DidFinishNavigation(
   args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
   args->SetString(webview::kInternalVisibleUrl,
                   web_contents()->GetVisibleURL().spec());
-  args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
+  args->SetBoolean(guest_view::kIsTopLevel,
+                   IsInWebViewMainFrame(navigation_handle));
   args->SetString(webview::kInternalBaseURLForDataURL,
                   web_contents()
                       ->GetController()
@@ -934,10 +939,7 @@ void WebViewGuest::DocumentOnLoadCompletedInMainFrame(
 void WebViewGuest::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   WebViewGuest* opener = GetOpener();
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (opener && navigation_handle->IsInPrimaryMainFrame()) {
+  if (opener && IsInWebViewMainFrame(navigation_handle)) {
     auto it = opener->pending_new_windows_.find(this);
     if (it != opener->pending_new_windows_.end()) {
       NewWindowInfo& info = it->second;
@@ -951,7 +953,8 @@ void WebViewGuest::DidStartNavigation(
 
   auto args = std::make_unique<base::DictionaryValue>();
   args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
-  args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
+  args->SetBoolean(guest_view::kIsTopLevel,
+                   IsInWebViewMainFrame(navigation_handle));
   DispatchEventToView(std::make_unique<GuestViewEvent>(webview::kEventLoadStart,
                                                        std::move(args)));
 }
@@ -959,7 +962,8 @@ void WebViewGuest::DidStartNavigation(
 void WebViewGuest::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetBoolean(guest_view::kIsTopLevel, navigation_handle->IsInMainFrame());
+  args->SetBoolean(guest_view::kIsTopLevel,
+                   IsInWebViewMainFrame(navigation_handle));
   args->SetString(webview::kNewURL, navigation_handle->GetURL().spec());
   auto redirect_chain = navigation_handle->GetRedirectChain();
   DCHECK_GE(redirect_chain.size(), 2u);
