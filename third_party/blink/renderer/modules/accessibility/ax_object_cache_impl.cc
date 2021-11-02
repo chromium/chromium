@@ -132,10 +132,10 @@ Node* GetClosestNodeForLayoutObject(const LayoutObject* layout_object) {
 
 // Return true if display locked or inside slot recalc, false otherwise.
 // Also returns false if not a safe time to perform the check.
-bool IsDisplayLocked(const Node* node) {
+bool IsDisplayLocked(const Node* node, bool inclusive = false) {
   if (!node)
     return false;
-  // The LockedAncestorPreventingPaint() function will attempt to do
+  // The IsDisplayLockedPreventingPaint() function may attempt to do
   // a flat tree traversal of ancestors. If we're in a flat tree traversal
   // forbidden scope, return false. Additionally, flat tree traversal
   // might call AssignedSlot, so if we're in a slot assignment recalc
@@ -146,7 +146,18 @@ bool IsDisplayLocked(const Node* node) {
           .HasPendingSlotAssignmentRecalc()) {
     return false;  // Cannot safely perform this check now.
   }
-  return DisplayLockUtilities::LockedAncestorPreventingPaint(*node);
+  return DisplayLockUtilities::IsDisplayLockedPreventingPaint(node, inclusive);
+}
+
+bool IsDisplayLocked(const LayoutObject* object) {
+  bool inclusive = false;
+  while (object) {
+    if (const auto* node = object->GetNode())
+      return IsDisplayLocked(node, inclusive);
+    inclusive = true;
+    object = object->Parent();
+  }
+  return false;
 }
 
 bool IsActive(Document& document) {
@@ -449,7 +460,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
     // Layout has more info available to determine if whitespace is relevant.
     // If display-locked, layout object may be missing or stale:
     // Assume that all display-locked text nodes are relevant.
-    if (DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(*node))
+    if (IsDisplayLocked(node))
       return true;
 
     // If rendered, decision is from IsLayoutObjectRelevantForAccessibility().
@@ -506,8 +517,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   // When there is a layout object, the element is known to be visible, so
   // consider it relevant and return early. Checking the layout object is only
   // useful when display locking (content-visibility) is not used.
-  if (node->GetLayoutObject() &&
-      !DisplayLockUtilities::LockedInclusiveAncestorPreventingLayout(*node)) {
+  if (node->GetLayoutObject() && !IsDisplayLocked(node, true)) {
     return true;
   }
 
@@ -516,8 +526,7 @@ bool IsNodeRelevantForAccessibility(const Node* node,
   if (IsA<HTMLTitleElement>(node))
     return false;
 
-  // The node is either hidden or display locked:
-  // Do not consider <head>/<style>/<script> relevant in these cases.
+  // Do not consider <head>/<style>/<script> relevant.
   if (IsA<HTMLHeadElement>(node))
     return false;
   if (IsA<HTMLStyleElement>(node))
@@ -1162,7 +1171,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   // a locked subtree, which are created based on its node.
   LayoutObject* layout_object = node->GetLayoutObject();
   if (layout_object && IsLayoutObjectRelevantForAccessibility(*layout_object) &&
-      !IsDisplayLocked(node)) {
+      !IsDisplayLocked(layout_object)) {
     return CreateAndInit(layout_object, parent_if_known, use_axid);
   }
 
@@ -1301,7 +1310,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(LayoutObject* layout_object,
   // old information. Note that Blink will recreate the AX objects as
   // AXLayoutObjects when a locked element is activated, aka it becomes visible.
   // Visit https://wicg.github.io/display-locking/#accessibility for more info.
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*layout_object)) {
+  if (IsDisplayLocked(layout_object)) {
     if (!node) {
       // Nodeless objects such as anonymous blocks do not get accessible objects
       // in a locked subtree. Anonymous blocks are added to help layout when

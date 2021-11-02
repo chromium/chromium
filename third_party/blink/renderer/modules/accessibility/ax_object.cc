@@ -1139,6 +1139,10 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
                          ui::AXMode accessibility_mode) {
+  // Reduce redundant ancestor chain walking for display lock computations.
+  auto memoization_scope =
+      DisplayLockUtilities::CreateLockCheckMemoizationScope();
+
   node_data->role = ComputeFinalRoleForSerialization();
   node_data->id = AXObjectID();
 
@@ -3459,7 +3463,7 @@ bool AXObject::ComputeIsHiddenViaStyle() const {
     return false;
 
   // content-visibility:hidden or content-visibility: auto.
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*node)) {
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
     // Ensure contents of head, style and script are never exposed.
     // Note: an AXObject is created for <title> to gather the document's name.
     DCHECK(!Traversal<SVGStyleElement>::FirstAncestorOrSelf(*node)) << node;
@@ -3513,7 +3517,7 @@ bool AXObject::IsHiddenForTextAlternativeCalculation() const {
     return false;
 
   // Display-locked elements are available for text/name resolution.
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*node))
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node))
     return false;
 
   Document* document = GetDocument();

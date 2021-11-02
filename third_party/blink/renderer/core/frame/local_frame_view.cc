@@ -2820,6 +2820,11 @@ bool LocalFrameView::RunAccessibilityLifecyclePhase(
     DocumentLifecycle::LifecycleState target_state) {
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::RunAccessibilityLifecyclePhase");
+
+  // Reduce redundant ancestor chain walking for display lock computations.
+  auto display_lock_memoization_scope =
+      DisplayLockUtilities::CreateLockCheckMemoizationScope();
+
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     if (AXObjectCache* cache = frame_view.ExistingAXObjectCache()) {
       frame_view.Lifecycle().AdvanceTo(DocumentLifecycle::kInAccessibility);

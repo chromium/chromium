@@ -2207,7 +2207,7 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     return false;
   if (NeedsFullLayoutTreeUpdate())
     return true;
-  if (GetDisplayLockDocumentState().LockedDisplayLockCount() == 0 &&
+  if (DisplayLockUtilities::IsUnlockedQuickCheck(node) &&
       !NeedsLayoutTreeUpdate())
     return false;
 

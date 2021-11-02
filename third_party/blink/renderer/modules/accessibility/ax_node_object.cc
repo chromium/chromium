@@ -710,7 +710,7 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   // Use AXLayoutObject::ComputeAccessibilityIsIgnored().
   DCHECK(!GetLayoutObject());
 
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*GetNode())) {
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode())) {
     if (IsAriaHidden() ||
         DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
             *GetNode(), DisplayLockActivationReason::kAccessibility)) {
@@ -1543,7 +1543,10 @@ bool AXNodeObject::IsOffScreen() const {
   if (IsDetached())
     return false;
   DCHECK(GetNode());
-  return DisplayLockUtilities::LockedAncestorPreventingPaint(*GetNode());
+  // Differs fromAXLayoutObject::IsOffScreen() in that there is no bounding box.
+  // However, we know that if it is display-locked that is an indicator that it
+  // is currently offscreen, and will likely be onscreen once scrolled to.
+  return DisplayLockUtilities::IsDisplayLockedPreventingPaint(GetNode());
 }
 
 bool AXNodeObject::IsProgressIndicator() const {

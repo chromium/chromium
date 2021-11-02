@@ -21,6 +21,10 @@
 #include <set>
 
 namespace blink {
+
+DisplayLockUtilities::LockCheckMemoizationScope*
+    DisplayLockUtilities::memoizer_ = nullptr;
+
 namespace {
 
 // Returns the nearest non-inclusive ancestor of |node| that is display
@@ -499,6 +503,11 @@ bool DisplayLockUtilities::IsInUnlockedOrActivatableSubtree(
     return true;
   }
 
+  if (activation_reason == DisplayLockActivationReason::kAccessibility &&
+      memoizer_) {
+    return !IsLockedForAccessibility(node);
+  }
+
   for (auto* element = NearestLockedExclusiveAncestor(node); element;
        element = NearestLockedExclusiveAncestor(*element)) {
     if (!element->GetDisplayLockContext()->IsActivatable(activation_reason)) {
@@ -506,6 +515,66 @@ bool DisplayLockUtilities::IsInUnlockedOrActivatableSubtree(
     }
   }
   return true;
+}
+
+bool DisplayLockUtilities::IsLockedForAccessibility(const Node& node) {
+  // This is a private helper for accessibility, only called if we have a
+  // memoizer.
+  DCHECK(memoizer_);
+
+  // Consult the memoizer, if we know the result we can return early.
+  auto result = memoizer_->IsNodeLockedForAccessibility(&node);
+  if (result)
+    return *result;
+
+  // Walk up the ancestor chain checking for locked & non-activatable context.
+  // See IsDisplayLockedPreventingPaint for an explanation of memoization.
+  const Node* previous_ancestor = &node;
+  bool ancestor_is_locked = false;
+  for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
+    // Reset ancestor is locked, we may set it again just below.
+    ancestor_is_locked = false;
+
+    // If we have a context, check if it's locked and if it's also not
+    // activatable for accessibility then we found our answer: `node` is locked
+    // for accessibility.
+    if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
+      if (auto* context = ancestor_element->GetDisplayLockContext()) {
+        ancestor_is_locked = context->IsLocked();
+        if (ancestor_is_locked &&
+            !context->IsActivatable(
+                DisplayLockActivationReason::kAccessibility)) {
+          // Other than the node, we also know that previous_ancestor must be
+          // locked for accessibility. Record that.
+          memoizer_->NotifyLockedForAccessibility(previous_ancestor);
+          return true;
+        }
+      }
+    }
+
+    // Since we didn't find the answer above, before continuing the walk consult
+    // with the memoizer: it might know the answer.
+    result = memoizer_->IsNodeLockedForAccessibility(&ancestor);
+    if (result) {
+      // Note that if we know the result for current ancestor, then that same
+      // result applies for previous_ancestor. This is certainly true for
+      // positive -- LockedForAccessibility -- results, but it's also true for
+      // negative -- Unlocked -- results if the ancestor itself is not locked.
+      if (*result)
+        memoizer_->NotifyLockedForAccessibility(previous_ancestor);
+      else if (!ancestor_is_locked)
+        memoizer_->NotifyUnlocked(previous_ancestor);
+      return *result;
+    }
+
+    // Update the previous ancestor.
+    previous_ancestor = &ancestor;
+  }
+
+  // If we reached the end of the loop, then the last node we visited
+  // (presumably the root of the flat tree) is not locked.
+  memoizer_->NotifyUnlocked(previous_ancestor);
+  return false;
 }
 
 bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
@@ -726,6 +795,121 @@ bool DisplayLockUtilities::RevealHiddenUntilFoundAncestors(const Node& node) {
   //   |elements_to_reveal|.
 
   return elements_to_reveal.size();
+}
+
+bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
+    const Node* node,
+    bool inclusive_check) {
+  // If we have a memoizer, consult with it to see if we already know the
+  // result. Otherwise, fallback to get-element versions.
+  if (memoizer_) {
+    auto result = memoizer_->IsNodeLocked(node);
+    if (result)
+      return *result;
+  } else {
+    return inclusive_check
+               ? DisplayLockUtilities::LockedInclusiveAncestorPreventingPaint(
+                     *node)
+               : DisplayLockUtilities::LockedAncestorPreventingPaint(*node);
+  }
+
+  // Do some sanity checks that we cwan early out on.
+  if (!node->isConnected() ||
+      node->GetDocument()
+              .GetDisplayLockDocumentState()
+              .LockedDisplayLockCount() == 0 ||
+      node->IsShadowRoot()) {
+    return false;
+  }
+
+  // Handle the inclusive check -- that is, check the node itself. Note that
+  // it's important not to memoize that since the memoization consists of
+  // ancestor checks only.
+  if (inclusive_check) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (auto* context = element->GetDisplayLockContext()) {
+        if (!context->ShouldPaintChildren())
+          return true;
+      }
+    }
+  }
+
+  // Walk up the ancestor chain, and consult with both the memoizer and check
+  // directly if we're skipping paint. When we find a result (or finish the
+  // loop), then save the last visited ancestor (previous_ancestor) into the
+  // memoizer. This ensures that any future calls in the similar subtree would
+  // have to check one level less. In turn, this means that if we have many
+  // calls, it will eventually only check only a few levels. This also keeps the
+  // memoizer cache fairly small.
+  const Node* previous_ancestor = node;
+  for (Node& ancestor : FlatTreeTraversal::AncestorsOf(*node)) {
+    if (auto* ancestor_element = DynamicTo<Element>(ancestor)) {
+      if (auto* context = ancestor_element->GetDisplayLockContext()) {
+        // Note that technically we could do a similar approach to
+        // IsLockedForAccessibility by recording whether this context is locked
+        // but allow paint. However, that situation is not possible since all
+        // locked contexts always prevent paint.
+        DCHECK(!context->IsLocked() || !context->ShouldPaintChildren());
+        if (!context->ShouldPaintChildren()) {
+          memoizer_->NotifyLocked(previous_ancestor);
+          return true;
+        }
+      }
+    }
+
+    auto result = memoizer_->IsNodeLocked(&ancestor);
+    if (result) {
+      // Propagate the result to the previous_ancestor as well. Note that if
+      // `ancestor` is in an unlocked subtree then `previous_ancestor` must also
+      // be in such a subtree because the only way it isn't is if `ancestor` is
+      // itself locked, which is checked above.
+      if (*result)
+        memoizer_->NotifyLocked(previous_ancestor);
+      else
+        memoizer_->NotifyUnlocked(previous_ancestor);
+      return *result;
+    }
+
+    // Update previous ancestor!
+    previous_ancestor = &ancestor;
+  }
+
+  // If we reached the end of the loop, then last node that we visited is not
+  // locked.
+  memoizer_->NotifyUnlocked(previous_ancestor);
+  return false;
+}
+
+bool DisplayLockUtilities::IsDisplayLockedPreventingPaint(
+    const LayoutObject* object) {
+  // If we don't have a memoizer, fall back to the get-element version.
+  if (!memoizer_)
+    return DisplayLockUtilities::LockedAncestorPreventingPaint(*object);
+
+  bool inclusive_check = false;
+  // Find a node to check.
+  while (object) {
+    if (const auto* node = object->GetNode())
+      return IsDisplayLockedPreventingPaint(node, inclusive_check);
+    object = object->Parent();
+    // If we went to the parent, all future node calls are inclusive.
+    inclusive_check = true;
+  }
+  return false;
+}
+
+bool DisplayLockUtilities::IsUnlockedQuickCheck(const Node& node) {
+  if (node.GetDocument()
+          .GetDisplayLockDocumentState()
+          .LockedDisplayLockCount() == 0) {
+    return true;
+  }
+  if (memoizer_) {
+    auto result = memoizer_->IsNodeLocked(&node);
+    if (result)
+      return !*result;
+  }
+  return false;
 }
 
 }  // namespace blink
