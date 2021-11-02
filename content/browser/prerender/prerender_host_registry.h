@@ -51,8 +51,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Called once per CreateAndStartHost() call. Does not necessarily
-    // mean a host was created.
+    // Called once per CreateAndStartHost() call. Indicates the registry
+    // received a request to create a prerender but does not necessarily mean a
+    // host was created. If a host was created, it is guaranteed to be in the
+    // registry at the time this is called.
     virtual void OnTrigger(const GURL& url) {}
 
     // Called from the registry's destructor. The observer
