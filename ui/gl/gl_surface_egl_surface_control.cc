@@ -56,7 +56,6 @@ base::TimeTicks GetSignalTime(const base::ScopedFD& fence) {
 
 GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
     ANativeWindow* window,
-    bool use_real_color_space,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : root_surface_name_(BuildSurfaceName(kRootSurfaceName)),
       child_surface_name_(BuildSurfaceName(kChildSurfaceName)),
@@ -68,8 +67,7 @@ GLSurfaceEGLSurfaceControl::GLSurfaceEGLSurfaceControl(
           new gfx::SurfaceControl::Surface(window, root_surface_name_.c_str())),
       transaction_ack_timeout_manager_(task_runner),
       gpu_task_runner_(std::move(task_runner)),
-      using_on_commit_callback_(gfx::SurfaceControl::SupportsOnCommit()),
-      use_real_color_space_(use_real_color_space) {}
+      using_on_commit_callback_(gfx::SurfaceControl::SupportsOnCommit()) {}
 
 GLSurfaceEGLSurfaceControl::~GLSurfaceEGLSurfaceControl() {
   Destroy();
@@ -440,18 +438,11 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     pending_transaction_->SetOpaque(*surface_state.surface, opaque);
   }
 
-  auto image_color_space =
-      GetNearestSupportedColorSpace(overlay_plane_data.color_space);
+  const auto& image_color_space = overlay_plane_data.color_space;
   if (!gfx::SurfaceControl::SupportsColorSpace(image_color_space)) {
-    LOG(ERROR) << "Not supported color space used with overlay : "
-               << image_color_space.ToString();
+    LOG(DFATAL) << "Not supported color space used with overlay : "
+                << image_color_space.ToString();
   }
-
-  // Historically android media hardcoded SRGB color space.
-  // |use_real_color_space_| controls if we want to maintain that while allowing
-  // us to plumb real color space from media code.
-  if (!use_real_color_space_ && !is_primary_plane)
-    image_color_space = gfx::ColorSpace::CreateSRGB();
 
   if (uninitialized || surface_state.color_space != image_color_space) {
     surface_state.color_space = image_color_space;
