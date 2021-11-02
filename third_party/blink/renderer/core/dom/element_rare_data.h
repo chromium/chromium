@@ -54,98 +54,6 @@ class HTMLElement;
 class ResizeObservation;
 class ResizeObserver;
 
-// This class contains rare data which is so rare that it will never be used on
-// any element in many page loads. It is separated into a separate class to save
-// memory.
-// TODO(crbug.com/1262227): Add metrics to get an even better idea of which
-// fields should be in this class.
-class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
- public:
-  ScrollOffset SavedLayerScrollOffset() const {
-    return saved_layer_scroll_offset_;
-  }
-  void SetSavedLayerScrollOffset(ScrollOffset offset) {
-    saved_layer_scroll_offset_ = offset;
-  }
-
-  EditContext* GetEditContext() const { return edit_context_.Get(); }
-  void SetEditContext(EditContext* edit_context) {
-    edit_context_ = edit_context;
-  }
-
-  void SetPart(DOMTokenList* part) { part_ = part; }
-  DOMTokenList* GetPart() const { return part_.Get(); }
-
-  void SetPartNamesMap(const AtomicString part_names) {
-    if (!part_names_map_) {
-      part_names_map_.reset(new NamesMap());
-    }
-    part_names_map_->Set(part_names);
-  }
-  const NamesMap* PartNamesMap() const { return part_names_map_.get(); }
-
-  CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
-  InlineStylePropertyMap& EnsureInlineStylePropertyMap(Element* owner_element);
-
-  InlineStylePropertyMap* GetInlineStylePropertyMap() {
-    return cssom_map_wrapper_.Get();
-  }
-
-  ElementInternals& EnsureElementInternals(HTMLElement& target);
-  const ElementInternals* GetElementInternals() const {
-    return element_internals_;
-  }
-
-  AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
-  AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
-    if (!accessible_node_) {
-      accessible_node_ = MakeGarbageCollected<AccessibleNode>(owner_element);
-    }
-    return accessible_node_;
-  }
-
-  DisplayLockContext* EnsureDisplayLockContext(Element* element) {
-    if (!display_lock_context_) {
-      display_lock_context_ = MakeGarbageCollected<DisplayLockContext>(element);
-    }
-    return display_lock_context_.Get();
-  }
-  DisplayLockContext* GetDisplayLockContext() const {
-    return display_lock_context_;
-  }
-
-  ContainerQueryData& EnsureContainerQueryData() {
-    if (!container_query_data_)
-      container_query_data_ = MakeGarbageCollected<ContainerQueryData>();
-    return *container_query_data_;
-  }
-  ContainerQueryData* GetContainerQueryData() const {
-    return container_query_data_;
-  }
-
-  RegionCaptureCropId* GetRegionCaptureCropId() const {
-    return region_capture_crop_id_.get();
-  }
-  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> value) {
-    region_capture_crop_id_ = std::move(value);
-  }
-
-  void Trace(blink::Visitor*) const;
-
- private:
-  ScrollOffset saved_layer_scroll_offset_;
-  Member<EditContext> edit_context_;
-  Member<DOMTokenList> part_;
-  std::unique_ptr<NamesMap> part_names_map_;
-  Member<InlineCSSStyleDeclaration> cssom_wrapper_;
-  Member<InlineStylePropertyMap> cssom_map_wrapper_;
-  Member<ElementInternals> element_internals_;
-  Member<AccessibleNode> accessible_node_;
-  Member<DisplayLockContext> display_lock_context_;
-  Member<ContainerQueryData> container_query_data_;
-  std::unique_ptr<RegionCaptureCropId> region_capture_crop_id_;
-};
-
 class ElementRareData final : public NodeRareData {
  public:
   explicit ElementRareData(NodeRenderingData*);
@@ -167,9 +75,7 @@ class ElementRareData final : public NodeRareData {
   InlineStylePropertyMap& EnsureInlineStylePropertyMap(Element* owner_element);
 
   InlineStylePropertyMap* GetInlineStylePropertyMap() {
-    if (super_rare_data_)
-      return super_rare_data_->GetInlineStylePropertyMap();
-    return nullptr;
+    return cssom_map_wrapper_.Get();
   }
 
   ShadowRoot* GetShadowRoot() const { return shadow_root_.Get(); }
@@ -178,13 +84,9 @@ class ElementRareData final : public NodeRareData {
     shadow_root_ = &shadow_root;
   }
 
-  EditContext* GetEditContext() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetEditContext();
-    return nullptr;
-  }
+  EditContext* GetEditContext() const { return edit_context_.Get(); }
   void SetEditContext(EditContext* edit_context) {
-    EnsureSuperRareData().SetEditContext(edit_context);
+    edit_context_ = edit_context;
   }
 
   NamedNodeMap* AttributeMap() const { return attribute_map_.Get(); }
@@ -197,21 +99,18 @@ class ElementRareData final : public NodeRareData {
     class_list_ = class_list;
   }
 
-  void SetPart(DOMTokenList* part) { EnsureSuperRareData().SetPart(part); }
-  DOMTokenList* GetPart() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetPart();
-    return nullptr;
+  void SetPart(DOMTokenList* part) {
+    part_ = part;
   }
+  DOMTokenList* GetPart() const { return part_.Get(); }
 
-  const NamesMap* PartNamesMap() const {
-    if (super_rare_data_)
-      return super_rare_data_->PartNamesMap();
-    return nullptr;
-  }
   void SetPartNamesMap(const AtomicString part_names) {
-    EnsureSuperRareData().SetPartNamesMap(part_names);
+    if (!part_names_map_) {
+      part_names_map_.reset(new NamesMap());
+    }
+    part_names_map_->Set(part_names);
   }
+  const NamesMap* PartNamesMap() const { return part_names_map_.get(); }
 
   DatasetDOMStringMap* Dataset() const { return dataset_.Get(); }
   void SetDataset(DatasetDOMStringMap* dataset) {
@@ -219,12 +118,10 @@ class ElementRareData final : public NodeRareData {
   }
 
   ScrollOffset SavedLayerScrollOffset() const {
-    if (super_rare_data_)
-      return super_rare_data_->SavedLayerScrollOffset();
-    return ScrollOffset();
+    return saved_layer_scroll_offset_;
   }
   void SetSavedLayerScrollOffset(ScrollOffset offset) {
-    EnsureSuperRareData().SetSavedLayerScrollOffset(offset);
+    saved_layer_scroll_offset_ = offset;
   }
 
   ElementAnimations* GetElementAnimations() {
@@ -247,22 +144,16 @@ class ElementRareData final : public NodeRareData {
   const AtomicString& IsValue() const { return is_value_; }
   void SetDidAttachInternals() { did_attach_internals_ = true; }
   bool DidAttachInternals() const { return did_attach_internals_; }
-  ElementInternals& EnsureElementInternals(HTMLElement& target) {
-    return EnsureSuperRareData().EnsureElementInternals(target);
-  }
+  ElementInternals& EnsureElementInternals(HTMLElement& target);
   const ElementInternals* GetElementInternals() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetElementInternals();
-    return nullptr;
+    return element_internals_;
   }
 
   RegionCaptureCropId* GetRegionCaptureCropId() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetRegionCaptureCropId();
-    return nullptr;
+    return region_capture_crop_id_.get();
   }
   void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> value) {
-    EnsureSuperRareData().SetRegionCaptureCropId(std::move(value));
+    region_capture_crop_id_ = std::move(value);
   }
 
   void SetStyleShouldForceLegacyLayout(bool force) {
@@ -280,13 +171,12 @@ class ElementRareData final : public NodeRareData {
   bool HasUndoStack() const { return has_undo_stack_; }
   void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
 
-  AccessibleNode* GetAccessibleNode() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetAccessibleNode();
-    return nullptr;
-  }
+  AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
   AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
-    return EnsureSuperRareData().EnsureAccessibleNode(owner_element);
+    if (!accessible_node_) {
+      accessible_node_ = MakeGarbageCollected<AccessibleNode>(owner_element);
+    }
+    return accessible_node_;
   }
 
   AttrNodeList& EnsureAttrNodeList();
@@ -316,33 +206,32 @@ class ElementRareData final : public NodeRareData {
   ResizeObserverDataMap& EnsureResizeObserverData();
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element) {
-    return EnsureSuperRareData().EnsureDisplayLockContext(element);
+    if (!display_lock_context_) {
+      display_lock_context_ = MakeGarbageCollected<DisplayLockContext>(element);
+    }
+    return display_lock_context_.Get();
   }
   DisplayLockContext* GetDisplayLockContext() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetDisplayLockContext();
-    return nullptr;
+    return display_lock_context_;
   }
 
   ContainerQueryData& EnsureContainerQueryData() {
-    return EnsureSuperRareData().EnsureContainerQueryData();
+    if (!container_query_data_)
+      container_query_data_ = MakeGarbageCollected<ContainerQueryData>();
+    return *container_query_data_;
   }
   ContainerQueryData* GetContainerQueryData() const {
-    if (super_rare_data_)
-      return super_rare_data_->GetContainerQueryData();
-    return nullptr;
+    return container_query_data_;
   }
 
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
-    ContainerQueryData* container_query_data = GetContainerQueryData();
-    if (!container_query_data)
+    if (!container_query_data_)
       return nullptr;
-    return container_query_data->GetContainerQueryEvaluator();
+    return container_query_data_->GetContainerQueryEvaluator();
   }
   void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
-    ContainerQueryData* container_query_data = GetContainerQueryData();
-    if (container_query_data)
-      container_query_data->SetContainerQueryEvaluator(evaluator);
+    if (container_query_data_)
+      container_query_data_->SetContainerQueryEvaluator(evaluator);
     else if (evaluator)
       EnsureContainerQueryData().SetContainerQueryEvaluator(evaluator);
   }
@@ -353,21 +242,19 @@ class ElementRareData final : public NodeRareData {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  ElementSuperRareData& EnsureSuperRareData() {
-    if (!super_rare_data_)
-      super_rare_data_ = MakeGarbageCollected<ElementSuperRareData>();
-    return *super_rare_data_;
-  }
-
-  Member<ElementSuperRareData> super_rare_data_;
-
+  ScrollOffset saved_layer_scroll_offset_;
   AtomicString nonce_;
 
   Member<DatasetDOMStringMap> dataset_;
   Member<ShadowRoot> shadow_root_;
+  Member<EditContext> edit_context_;
   Member<DOMTokenList> class_list_;
+  Member<DOMTokenList> part_;
+  std::unique_ptr<NamesMap> part_names_map_;
   Member<NamedNodeMap> attribute_map_;
   Member<AttrNodeList> attr_node_list_;
+  Member<InlineCSSStyleDeclaration> cssom_wrapper_;
+  Member<InlineStylePropertyMap> cssom_map_wrapper_;
 
   Member<ElementAnimations> element_animations_;
   Member<ElementIntersectionObserverData> intersection_observer_data_;
@@ -375,8 +262,15 @@ class ElementRareData final : public NodeRareData {
 
   Member<CustomElementDefinition> custom_element_definition_;
   AtomicString is_value_;
+  Member<ElementInternals> element_internals_;
 
   Member<PseudoElementData> pseudo_element_data_;
+
+  Member<AccessibleNode> accessible_node_;
+
+  Member<DisplayLockContext> display_lock_context_;
+  Member<ContainerQueryData> container_query_data_;
+  std::unique_ptr<RegionCaptureCropId> region_capture_crop_id_;
 
   // NOTE: Booleans should be contiguous since the compiler will optimize them
   // into a single memory address.
