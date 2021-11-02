@@ -537,7 +537,8 @@ void RenderViewHostImpl::EnterBackForwardCache() {
   frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
-      is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
+      is_in_back_forward_cache_, /*page_restore_params=*/nullptr,
+      /*restoring_main_frame_from_back_forward_cache=*/false);
 }
 
 void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
@@ -547,7 +548,8 @@ void RenderViewHostImpl::PrepareToLeaveBackForwardCache(
 }
 
 void RenderViewHostImpl::LeaveBackForwardCache(
-    blink::mojom::PageRestoreParamsPtr page_restore_params) {
+    blink::mojom::PageRestoreParamsPtr page_restore_params,
+    bool restoring_main_frame_from_back_forward_cache) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::LeaveBackForwardCache",
               ChromeTrackEvent::kRenderViewHost, *this);
   // At this point, the frames |this| RenderViewHostImpl belongs to are
@@ -555,7 +557,8 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
-      is_in_back_forward_cache_, std::move(page_restore_params));
+      is_in_back_forward_cache_, std::move(page_restore_params),
+      restoring_main_frame_from_back_forward_cache);
 }
 
 void RenderViewHostImpl::ActivatePrerenderedPage(

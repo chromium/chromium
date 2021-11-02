@@ -3861,6 +3861,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
               static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer),
               2),
           base::Bucket(
+              static_cast<int>(blink::EventPageShowPersisted::kYesInBrowser),
+              1),
+          base::Bucket(
               static_cast<int>(blink::EventPageShowPersisted::kYesInRenderer),
               1),
           base::Bucket(

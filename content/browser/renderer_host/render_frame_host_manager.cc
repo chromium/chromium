@@ -3344,8 +3344,11 @@ void RenderFrameHostManager::CommitPending(
           blink::EventPageShowPersisted::
               kYesInBrowser_RenderFrameHostManager_CommitPending);
       for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
+        bool restoring_main_frame_from_back_forward_cache =
+            render_frame_host_->render_view_host() == rvh;
         rvh->LeaveBackForwardCache(
-            pending_stored_page->page_restore_params.Clone());
+            pending_stored_page->page_restore_params.Clone(),
+            restoring_main_frame_from_back_forward_cache);
       }
     } else {
       DCHECK_EQ(prev_state,
