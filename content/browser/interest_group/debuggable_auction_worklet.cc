@@ -35,21 +35,19 @@ void DebuggableAuctionWorklet::ConnectDevToolsAgent(
 DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
     const GURL& url,
-    auction_worklet::mojom::BidderWorklet* bidder_worklet,
-    bool& should_pause_on_start)
+    auction_worklet::mojom::BidderWorklet* bidder_worklet)
     : owning_frame_(owning_frame), url_(url), worklet_(bidder_worklet) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
-      this, should_pause_on_start);
+      this, should_pause_on_start_);
 }
 
 DebuggableAuctionWorklet::DebuggableAuctionWorklet(
     RenderFrameHostImpl* owning_frame,
     const GURL& url,
-    auction_worklet::mojom::SellerWorklet* seller_worklet,
-    bool& should_pause_on_start)
+    auction_worklet::mojom::SellerWorklet* seller_worklet)
     : owning_frame_(owning_frame), url_(url), worklet_(seller_worklet) {
   DebuggableAuctionWorkletTracker::GetInstance()->NotifyCreated(
-      this, should_pause_on_start);
+      this, should_pause_on_start_);
 }
 
 DebuggableAuctionWorklet::~DebuggableAuctionWorklet() {

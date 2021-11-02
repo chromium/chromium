@@ -247,14 +247,13 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
                           base::Unretained(delegate_)),
       frame_origin_, /*is_for_seller_=*/true, /*client_security_state=*/nullptr,
       seller_url);
-  bool should_pause_on_start = false;
   mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
       worklet_receiver = seller_worklet_.BindNewPipeAndPassReceiver();
   seller_worklet_debug_ = base::WrapUnique(new DebuggableAuctionWorklet(
-      delegate_->GetFrame(), seller_url, seller_worklet_.get(),
-      should_pause_on_start));
+      delegate_->GetFrame(), seller_url, seller_worklet_.get()));
   seller_worklet_process_handle_->GetService()->LoadSellerWorklet(
-      std::move(worklet_receiver), should_pause_on_start,
+      std::move(worklet_receiver),
+      seller_worklet_debug_->should_pause_on_start(),
       std::move(url_loader_factory), seller_url,
       base::BindOnce(&AuctionRunner::OnSellerWorkletLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -335,14 +334,13 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
 
   mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
       worklet_receiver = bid_state->bidder_worklet.BindNewPipeAndPassReceiver();
-  bool should_pause_on_start = false;
   bid_state->bidder_worklet_debug =
       base::WrapUnique(new DebuggableAuctionWorklet(
-          delegate_->GetFrame(), bidding_url, bid_state->bidder_worklet.get(),
-          should_pause_on_start));
+          delegate_->GetFrame(), bidding_url, bid_state->bidder_worklet.get()));
 
   bid_state->process_handle->GetService()->LoadBidderWorkletAndGenerateBid(
-      std::move(worklet_receiver), should_pause_on_start,
+      std::move(worklet_receiver),
+      bid_state->bidder_worklet_debug->should_pause_on_start(),
       std::move(url_loader_factory), bidder->Clone(),
       auction_config_->auction_signals, PerBuyerSignals(bid_state),
       browser_signals_->top_frame_origin, browser_signals_->seller,
