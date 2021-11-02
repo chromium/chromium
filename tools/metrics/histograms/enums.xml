@@ -57269,10 +57269,22 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Welcome shown"/>
   <int value="2" label="Data saver shown"/>
   <int value="3" label="Sync consent shown"/>
-  <int value="4" label="FRE completed w/ user signed in and sync"/>
-  <int value="5" label="FRE completed w/ user not signed in and sync"/>
+  <int value="4"
+      label="The user clicked on the continue button to continue with sync
+             consent"/>
+  <int value="5"
+      label="The user clicked on the |No thanks| button to continue without
+             sync consent"/>
   <int value="6" label="Search engine choice dialog shown"/>
   <int value="7" label="The user started adding account from welcome screen"/>
+  <int value="8"
+      label="The user signed in with default account from welcome screen"/>
+  <int value="9"
+      label="The user signed in with non-default account from welcome screen"/>
+  <int value="10"
+      label="The user clicked the dismiss button on welcome screen"/>
+  <int value="11"
+      label="The user clicked on the |settings| link on sync consent screen"/>
 </enum>
 
 <enum name="MobileFreSignInChoice">

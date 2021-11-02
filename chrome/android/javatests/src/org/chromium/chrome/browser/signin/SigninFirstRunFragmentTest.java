@@ -15,8 +15,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -290,6 +292,7 @@ public class SigninFirstRunFragmentTest {
 
         CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock, never()).recordFreProgressHistogram(anyInt());
     }
 
     @Test
@@ -352,6 +355,8 @@ public class SigninFirstRunFragmentTest {
         final CoreAccountInfo primaryAccount =
                 mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN);
         Assert.assertEquals(TEST_EMAIL1, primaryAccount.getEmail());
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT);
     }
 
     @Test
@@ -397,6 +402,8 @@ public class SigninFirstRunFragmentTest {
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
         });
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
     }
 
     @Test
@@ -411,6 +418,8 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        verify(mFirstRunPageDelegateMock)
+                .recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
     }
 
     @Test

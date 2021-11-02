@@ -484,9 +484,12 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void completeFirstRunExperience() {
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
+        if (mResultShowSignInSettings) {
+            recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
+        }
         recordFreProgressHistogram(TextUtils.isEmpty(mResultSignInAccountName)
-                        ? MobileFreProgress.COMPLETED_NOT_SYNC
-                        : MobileFreProgress.COMPLETED_SYNC);
+                        ? MobileFreProgress.SYNC_CONSENT_DISMISSED
+                        : MobileFreProgress.SYNC_CONSENT_ACCEPTED);
 
         FirstRunFlowSequencer.markFlowAsCompleted(
                 mResultSignInAccountName, mResultShowSignInSettings);
@@ -542,12 +545,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (sObserver != null) sObserver.onExitFirstRun(this);
     }
 
+    // TODO(crbug/1254313): Rename the "sign in" here to "sync consent"
     @Override
     public void refuseSignIn() {
         mResultSignInAccountName = null;
         mResultShowSignInSettings = false;
     }
 
+    // TODO(crbug/1254313): Rename the "sign in" here to "sync consent"
     @Override
     public void acceptSignIn(String accountName, boolean openSettings) {
         mResultSignInAccountName = accountName;

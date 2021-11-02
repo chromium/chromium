@@ -610,7 +610,7 @@ public class FirstRunIntegrationTest {
                 MobileFreProgress.WELCOME_SHOWN,
                 MobileFreProgress.DATA_SAVER_SHOWN,
                 MobileFreProgress.SYNC_CONSENT_SHOWN,
-                MobileFreProgress.COMPLETED_SYNC,
+                MobileFreProgress.SYNC_CONSENT_ACCEPTED,
                 MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
         }));
     }
@@ -631,7 +631,7 @@ public class FirstRunIntegrationTest {
         checkRecordedProgressSteps(BitSet.valueOf(new long[] {
                 MobileFreProgress.STARTED,
                 MobileFreProgress.WELCOME_SHOWN,
-                MobileFreProgress.COMPLETED_NOT_SYNC,
+                MobileFreProgress.SYNC_CONSENT_DISMISSED,
         }));
     }
 

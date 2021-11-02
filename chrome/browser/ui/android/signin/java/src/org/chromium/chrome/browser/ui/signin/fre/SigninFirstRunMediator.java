@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
@@ -18,7 +19,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDialogCoordinator;
-import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator.Listener;
+import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator.Delegate;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunProperties.FrePolicy;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -39,17 +40,18 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
     private final AccountManagerFacade mAccountManagerFacade;
-    private final Listener mListener;
+    private final Delegate mDelegate;
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private AccountPickerDialogCoordinator mDialogCoordinator;
-    private String mSelectedAccountName;
+    private @Nullable String mSelectedAccountName;
+    private @Nullable String mDefaultAccountName;
 
     SigninFirstRunMediator(
-            Context context, ModalDialogManager modalDialogManager, Listener listener) {
+            Context context, ModalDialogManager modalDialogManager, Delegate delegate) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mListener = listener;
+        mDelegate = delegate;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mModel = SigninFirstRunProperties.createModel(this::onSelectedAccountClicked,
                 this::onContinueAsClicked, this::onDismissClicked,
@@ -102,7 +104,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
     @Override
     public void addAccount() {
-        mListener.addAccount();
+        mDelegate.addAccount();
     }
 
     /**
@@ -118,23 +120,27 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      */
     private void onContinueAsClicked() {
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
-            mListener.acceptTermsOfService();
+            mDelegate.acceptTermsOfService();
             return;
         }
         if (mSelectedAccountName == null) {
-            mListener.addAccount();
+            mDelegate.addAccount();
             return;
         }
         if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
-            mListener.acceptTermsOfService();
+            mDelegate.acceptTermsOfService();
             return;
         }
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The continue button shouldn't be visible before the native is not initialized!";
+        mDelegate.recordFreProgressHistogram(
+                TextUtils.equals(mDefaultAccountName, mSelectedAccountName)
+                        ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
+                        : MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT);
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            mListener.acceptTermsOfService();
+            mDelegate.acceptTermsOfService();
             return;
         }
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
@@ -144,7 +150,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                 AccountUtils.createAccountFromName(mSelectedAccountName), new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        mListener.acceptTermsOfService();
+                        mDelegate.acceptTermsOfService();
                     }
 
                     @Override
@@ -160,15 +166,16 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private void onDismissClicked() {
         assert mModel.get(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED)
             : "The dismiss button shouldn't be visible before the native is not initialized!";
+        mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         if (IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.ABORT_SIGNIN, mListener::acceptTermsOfService,
+                    .signOut(SignoutReason.ABORT_SIGNIN, mDelegate::acceptTermsOfService,
                             /* forceWipeUserData= */ false);
         } else {
-            mListener.acceptTermsOfService();
+            mDelegate.acceptTermsOfService();
         }
     }
 
@@ -186,11 +193,15 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
     private void updateAccounts(List<Account> accounts) {
         if (accounts.isEmpty()) {
+            mDefaultAccountName = null;
             mSelectedAccountName = null;
             mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA, null);
-        } else if (mSelectedAccountName == null
-                || AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
-            setSelectedAccountName(accounts.get(0).name);
+        } else {
+            mDefaultAccountName = accounts.get(0).name;
+            if (mSelectedAccountName == null
+                    || AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null) {
+                setSelectedAccountName(mDefaultAccountName);
+            }
         }
 
         AccountUtils.checkChildAccountStatus(
