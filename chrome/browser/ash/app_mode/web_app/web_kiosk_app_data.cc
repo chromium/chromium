@@ -106,7 +106,7 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
     }
     // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
     // with the data when it is done.
-    ImageDecoder::Start(this, *response_body);
+    ImageDecoder::Start(this, std::move(*response_body));
   }
 
  private:

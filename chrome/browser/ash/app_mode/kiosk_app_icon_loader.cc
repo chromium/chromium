@@ -66,8 +66,7 @@ void LoadOnBlockingPool(
   // IconImageRequest will delete itself on completion of ImageDecoder callback.
   IconImageRequest* image_request =
       new IconImageRequest(callback_task_runner, std::move(result_callback));
-  ImageDecoder::Start(image_request,
-                      std::vector<uint8_t>(data.begin(), data.end()));
+  ImageDecoder::Start(image_request, std::move(data));
 }
 
 KioskAppIconLoader::KioskAppIconLoader(Delegate* delegate)

@@ -90,7 +90,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
 
     // Note: An image over 128MB (uncompressed) may fail, due to the limitation
     // of IPC message size.
-    ImageDecoder::Start(this, data);
+    ImageDecoder::Start(this, std::move(data));
   }
 
   void OnImageDecoded(const SkBitmap& decoded_image) override {

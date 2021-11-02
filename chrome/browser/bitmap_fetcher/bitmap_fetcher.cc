@@ -93,7 +93,7 @@ void BitmapFetcher::OnSimpleLoaderComplete(
   // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
   // with the data when it is done.
   start_time_ = now;
-  ImageDecoder::Start(this, *response_body);
+  ImageDecoder::Start(this, std::move(*response_body));
 }
 
 // Methods inherited from ImageDecoder::ImageRequest.

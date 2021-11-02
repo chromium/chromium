@@ -215,7 +215,7 @@ void ChangePictureHandler::HandlePhotoTaken(const base::ListValue* args) {
   user_photo_data_ = base::RefCountedBytes::TakeVector(&photo_data);
 
   ImageDecoder::Cancel(this);
-  ImageDecoder::Start(this, raw_data);
+  ImageDecoder::Start(this, std::move(raw_data));
 }
 
 void ChangePictureHandler::HandlePageInitialized(const base::ListValue* args) {

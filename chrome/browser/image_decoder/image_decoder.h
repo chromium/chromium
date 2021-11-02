@@ -93,9 +93,7 @@ class ImageDecoder {
   ImageDecoder& operator=(const ImageDecoder&) = delete;
 
   // Calls StartWithOptions() with default options.
-  //
-  // ImageDataType must be std::vector<uint8_t> or std::string. If possible, it
-  // should be passed by rvalue reference (e.g. std::move) to avoid a copy.
+  // ImageDataType can be std::vector<uint8_t> or std::string.
   template <typename ImageDataType>
   static void Start(ImageRequest* image_request, ImageDataType image_data);
 
@@ -106,9 +104,6 @@ class ImageDecoder {
   // one in larger size if there's no precise match). Passing gfx::Size() as
   // |desired_image_frame_size| is also supported and will result in chosing the
   // smallest available size.
-  //
-  // ImageDataType must be std::vector<uint8_t> or std::string. If possible, it
-  // should be passed by rvalue reference (e.g. std::move) to avoid a copy.
   template <typename ImageDataType>
   static void StartWithOptions(
       ImageRequest* image_request,

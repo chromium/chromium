@@ -229,7 +229,7 @@ void ProfileDownloader::OnURLLoaderComplete(
   if (response_body) {
     simple_loader_.reset();
     DVLOG(1) << "Decoding the image...";
-    ImageDecoder::Start(this, *response_body);
+    ImageDecoder::Start(this, std::move(*response_body));
   } else if (response_code == net::HTTP_NOT_FOUND) {
     simple_loader_.reset();
     VLOG(1) << "Got 404, using default picture...";

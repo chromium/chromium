@@ -90,7 +90,7 @@ class DownloadItemNotification : public ImageDecoder::ImageRequest,
   SkColor GetNotificationIconColor();
 
   // Set preview image of the notification. Must be called on IO thread.
-  void OnImageLoaded(const std::string& image_data);
+  void OnImageLoaded(std::string image_data);
   void OnImageCropped(const SkBitmap& image);
 
   // ImageDecoder::ImageRequest overrides:
