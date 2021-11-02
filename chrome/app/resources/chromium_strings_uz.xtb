@@ -56,6 +56,7 @@
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2910007522516064972">&amp;Chromium haqida</translation>
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
+<translation id="2977506796191543575">Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin</translation>
 <translation id="2983934633046890458">Chromium parollarni tahrirlashga urinmoqda.</translation>
 <translation id="3032706164202344641">Chromium parollaringizni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="3032787606318309379">Chromium‘ga o‘rnatilmoqda...</translation>
@@ -165,6 +166,7 @@
 <translation id="6212496753309875659">Bu kompyuterda allaqachon Chromium‘ning so‘nggi versiyasi o‘rnatilgan. Agar dastur ishlamayotgan bo‘lsa, uni o‘chirib qaytadan o‘rnatib ko‘ring.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium hozir qayta ishga tushadi}=1{Chromium 1 soniyadan keyin qayta ishga tushadi}other{Chromium # soniyadan keyin qayta ishga tushadi}}</translation>
 <translation id="6241367896540709610">Chromium bu fayllarni yuklab olishi uchun xotiraga saqlash ruxsati kerak</translation>
+<translation id="6245734527075554892">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi</translation>
 <translation id="6248213926982192922">Chromium‘ni standart brauzer etib tayinlash</translation>
 <translation id="6266342355635466082">Chromium yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="6268381023930128611">Chromium’dan chiqmoqchimisiz?</translation>

@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Жұмыс профилі</translation>
 <translation id="1122198203221319518">&amp;Құралдар</translation>
 <translation id="1122242684574577509">Аутентификация сәтсіз аяқталды. Пайдаланып жатқан Wi-Fi желісіне кіру бетіне өту үшін басыңыз (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Аккаунтыңыздың кіру мәліметтері ескірген. Жүйеден шығып, қайта кіріңіз.</translation>
 <translation id="1122960773616686544">Бетбелгі атауы</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (жергілікті) болып көрінеді</translation>
@@ -7490,6 +7491,7 @@
 <translation id="8879284080359814990">&amp;Қойынды ретінде көрсету</translation>
 <translation id="8879921471468674457">Аккаунтқа кіру ақпаратын есте сақтау</translation>
 <translation id="8880054210564666174">Контактілер тізімін жүктеп алу мүмкін емес. Желі байланысын тексеріп немесе <ph name="LINK_BEGIN" />қайталап көріңіз<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Параметрлерді ашып, <ph name="USB_DEVICE_NAME" /> құрылғысын Linux немесе Parallels Desktop жүйесіне қосыңыз.</translation>
 <translation id="8881020143150461183">Қайталап көріңіз. Техникалық қолдау керек болса, <ph name="CARRIER_NAME" /> операторына хабарласыңыз.</translation>
 <translation id="8883273463630735858">Сенсорлық тақта жылдамдатқышын іске қосу</translation>
 <translation id="8884570509232205463">Құрылғы <ph name="UNLOCK_TIME" /> кезінде құлыпталады.</translation>
