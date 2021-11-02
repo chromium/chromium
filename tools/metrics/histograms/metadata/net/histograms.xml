@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Net.CertVerifier.NameNormalizationPrivateRoots"
-    enum="NetCertificateNameNormalization" expires_after="2021-12-12">
+    enum="NetCertificateNameNormalization" expires_after="2022-05-11">
   <owner>mattm@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -3054,7 +3054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedDuringInitializeSession" enum="Boolean"
-    expires_after="2021-12-12">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3218,7 +3218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGoogle"
-    enum="QuicHttp3ErrorCodes" expires_after="2021-12-12">
+    enum="QuicHttp3ErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3443,7 +3443,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicSession.EncryptionEstablishedTime"
-    units="Milliseconds" expires_after="2021-12-12">
+    units="Milliseconds" expires_after="2022-05-11">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5388,7 +5388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SSLNegotiatedAlpnProtocol"
-    enum="SSLNegotiatedAlpnProtocol" expires_after="2021-12-12">
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
