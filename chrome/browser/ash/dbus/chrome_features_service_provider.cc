@@ -40,7 +40,7 @@ namespace {
 // A presubmit will enforce that no |base::Feature|s will be defined with this
 // prefix.
 // TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
-constexpr char kLatePlatformFeaturePrefix[] = "LatePlatform";
+constexpr char kCrOSLateBootFeaturePrefix[] = "CrOSLateBoot";
 
 void SendResponse(dbus::MethodCall* method_call,
                   dbus::ExportedObject::ResponseSender response_sender,
@@ -210,7 +210,7 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   // Separately, a presubmit will enforce that no `base::Feature` definition
   // has a name starting with this prefix.
   // TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
-  if (feature_name.find(kLatePlatformFeaturePrefix) == 0) {
+  if (feature_name.find(kCrOSLateBootFeaturePrefix) == 0) {
     trial = features->GetAssociatedFieldTrialByFeatureName(feature_name);
   }
   if (!trial) {
