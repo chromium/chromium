@@ -1496,8 +1496,7 @@ gfx::Rect SurfaceAggregator::PrewalkRenderPass(
           child_resolved_pass.render_pass();
 
       gfx::Rect rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
-          quad->shared_quad_state->quad_to_target_transform,
-          child_render_pass.output_rect);
+          quad->shared_quad_state->quad_to_target_transform, quad->rect);
 
       // |damage_rect|, |damage_from_parent| and |surface_root_rp_damage|
       // either are or can possible contain damage from under the quad, so if

@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -20,6 +21,10 @@ constexpr gfx::Rect kDefaultOutputRect(20, 20);
 constexpr gfx::Rect kDefaultDamageRect(0, 0);
 
 }  // namespace
+
+RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
+                                     const gfx::Size& output_size)
+    : RenderPassBuilder(id, gfx::Rect(output_size)) {}
 
 RenderPassBuilder::RenderPassBuilder(CompositorRenderPassId id,
                                      const gfx::Rect& output_rect)
@@ -48,6 +53,18 @@ RenderPassBuilder& RenderPassBuilder::SetCacheRenderPass(bool val) {
 RenderPassBuilder& RenderPassBuilder::SetHasDamageFromContributingContent(
     bool val) {
   pass_->has_damage_from_contributing_content = val;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddFilter(
+    const cc::FilterOperation& filter) {
+  pass_->filters.Append(filter);
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::AddBackdropFilter(
+    const cc::FilterOperation& filter) {
+  pass_->backdrop_filters.Append(filter);
   return *this;
 }
 
@@ -316,8 +333,22 @@ CompositorFrame CompositorFrameBuilder::MakeInitCompositorFrame() const {
   return frame;
 }
 
+CompositorRenderPassList CopyRenderPasses(
+    const CompositorRenderPassList& render_pass_list) {
+  CompositorRenderPassList copy_list;
+  for (auto& render_pass : render_pass_list)
+    copy_list.push_back(render_pass->DeepCopy());
+  return copy_list;
+}
+
 CompositorFrame MakeDefaultCompositorFrame() {
   return CompositorFrameBuilder().AddDefaultRenderPass().Build();
+}
+
+CompositorFrame MakeCompositorFrame(CompositorRenderPassList render_pass_list) {
+  return CompositorFrameBuilder()
+      .SetRenderPassList(std::move(render_pass_list))
+      .Build();
 }
 
 AggregatedFrame MakeDefaultAggregatedFrame(size_t num_render_passes) {
