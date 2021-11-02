@@ -652,6 +652,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   absl::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 
+  // TODO(crbug.com/1164477): The VisibleTimeRequestTrigger is now stored in
+  // WebContentsImpl. This obsolete version is only used when
+  // blink::features::kTabSwitchMetrics2 is disabled. Remove it once the
+  // feature is validated and becomes the default.
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 
   // True when StopFlingingIfNecessary() calls StopFling().

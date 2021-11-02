@@ -111,6 +111,7 @@ class RenderWidgetHostOwnerDelegate;
 class SyntheticGestureController;
 class TimeoutMonitor;
 class TouchEmulator;
+class VisibleTimeRequestTrigger;
 
 // This implements the RenderWidgetHost interface that is exposed to
 // embedders of content, and adds things only visible to content.
@@ -221,6 +222,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   AgentSchedulingGroupHost& agent_scheduling_group() {
     return agent_scheduling_group_;
   }
+
+  // Returns the object that tracks the start of content to visible events for
+  // the WebContents. May be nullptr if there is no RenderWidgetHostView.
+  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
 
   // RenderWidgetHost implementation.
   const viz::FrameSinkId& GetFrameSinkId() override;

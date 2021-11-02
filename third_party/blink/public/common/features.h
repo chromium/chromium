@@ -515,6 +515,11 @@ BLINK_COMMON_EXPORT extern const base::Feature kCSSCascadeLayers;
 BLINK_COMMON_EXPORT extern const base::Feature kSetTimeoutWithoutClamp;
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 
+// If enabled, ContentToVisibleTimeReporter logs
+// Browser.Tabs.TotalSwitchDuration2.* instead of
+// Browser.Tabs.TotalSwitchDuration.*.
+BLINK_COMMON_EXPORT extern const base::Feature kTabSwitchMetrics2;
+
 BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecationWillLogToDevToolsIssue;

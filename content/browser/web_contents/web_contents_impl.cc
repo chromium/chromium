@@ -9130,6 +9130,11 @@ void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
 }
 
 VisibleTimeRequestTrigger* WebContentsImpl::GetVisibleTimeRequestTrigger() {
+  if (visible_time_request_trigger_.is_tab_switch_metrics2_feature_enabled())
+    return &visible_time_request_trigger_;
+  // TODO(crbug.com/1164477): Remove this obsolete implementation and return a
+  // reference instead of a pointer once kTabSwitchMetrics2 is validated and
+  // becomes the default.
   if (auto* view =
           static_cast<RenderWidgetHostViewBase*>(GetRenderWidgetHostView())) {
     return view->GetVisibleTimeRequestTrigger();

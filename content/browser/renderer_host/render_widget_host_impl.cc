@@ -21,6 +21,7 @@
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/i18n/rtl.h"
@@ -80,6 +81,7 @@
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/cursors/webcursor.h"
@@ -601,6 +603,26 @@ int RenderWidgetHostImpl::GetRoutingID() {
 
 RenderWidgetHostViewBase* RenderWidgetHostImpl::GetView() {
   return view_.get();
+}
+
+VisibleTimeRequestTrigger*
+RenderWidgetHostImpl::GetVisibleTimeRequestTrigger() {
+  auto* trigger = delegate()->GetVisibleTimeRequestTrigger();
+
+  // Use the delegate's trigger only if the kTabSwitchMetrics2 feature is
+  // enabled. `trigger` can never be null if the feature is enabled.
+  if (trigger && trigger->is_tab_switch_metrics2_feature_enabled())
+    return trigger;
+
+  // Go through this widget's view. This is different from
+  // delegate()->GetVisibleTimeRequestTrigger() which goes through the current
+  // view for the WebContents - this widget may not be current.
+  // TODO(crbug.com/1164477): Remove this obsolete implementation and return a
+  // reference instead of a pointer once kTabSwitchMetrics2 is validated and
+  // becomes the default.
+  if (GetView())
+    return GetView()->GetVisibleTimeRequestTrigger();
+  return nullptr;
 }
 
 const viz::FrameSinkId& RenderWidgetHostImpl::GetFrameSinkId() {

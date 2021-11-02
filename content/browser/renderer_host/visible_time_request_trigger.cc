@@ -6,13 +6,17 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 
 namespace content {
 
-VisibleTimeRequestTrigger::VisibleTimeRequestTrigger() = default;
+VisibleTimeRequestTrigger::VisibleTimeRequestTrigger()
+    : is_tab_switch_metrics2_feature_enabled_(
+          base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {}
 
 VisibleTimeRequestTrigger::~VisibleTimeRequestTrigger() = default;
 

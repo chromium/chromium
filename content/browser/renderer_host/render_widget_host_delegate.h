@@ -42,6 +42,7 @@ class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
+class VisibleTimeRequestTrigger;
 enum class KeyboardEventProcessingResult;
 struct NativeWebKeyboardEvent;
 
@@ -250,6 +251,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns true if the provided RenderWidgetHostImpl matches the current
   // RenderWidgetHost on the primary main frame, and false otherwise.
   virtual bool IsWidgetForPrimaryMainFrame(RenderWidgetHostImpl*);
+
+  // Returns the object that tracks the start of content to visible events for
+  // the WebContents. May return nullptr if there is no RenderWidgetHostView.
+  virtual VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
 
   // Inner WebContents Helpers -------------------------------------------------
   //
