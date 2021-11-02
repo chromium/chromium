@@ -205,8 +205,8 @@ TEST(QRCodeGenerator, SegmentationValid) {
   for (int i = 0; i < 10000; i++) {
     const size_t len = base::RandInt(1, 64);
     std::vector<uint8_t> input(len);
-    for (size_t i = 0; i < len; i++) {
-      input[i] = base::RandInt(32, 126);
+    for (size_t j = 0; j < len; j++) {
+      input[j] = base::RandInt(32, 126);
     }
 
     const std::vector<QRCodeGenerator::Segment> segments =

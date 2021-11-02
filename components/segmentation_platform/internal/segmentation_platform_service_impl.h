@@ -81,7 +81,7 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
       PrefService* pref_service,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       base::Clock* clock,
-      std::vector<std::unique_ptr<Config>> config);
+      std::vector<std::unique_ptr<Config>> configs);
 
   ~SegmentationPlatformServiceImpl() override;
 

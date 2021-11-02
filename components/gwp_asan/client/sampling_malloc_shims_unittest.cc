@@ -213,8 +213,8 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     CHECK_NE(alloc, nullptr);
 
     if (GetMallocGpaForTesting().PointerIsMine(alloc)) {
-      for (size_t i = 0; i < base::GetPageSize(); i++)
-        CHECK_EQ(alloc[i], 0U);
+      for (size_t j = 0; j < base::GetPageSize(); j++)
+        CHECK_EQ(alloc[j], 0U);
       free(alloc);
       return kSuccess;
     }

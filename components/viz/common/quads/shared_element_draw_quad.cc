@@ -21,23 +21,23 @@ SharedElementDrawQuad& SharedElementDrawQuad::operator=(
 void SharedElementDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                    const gfx::Rect& rect,
                                    const gfx::Rect& visible_rect,
-                                   const SharedElementResourceId& resource_id) {
+                                   const SharedElementResourceId& id) {
   // Force blending since at this stage we don't have information about whether
   // the replaced content will be opaque.
   bool needs_blending = true;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSharedElement, rect,
                    visible_rect, needs_blending);
-  this->resource_id = resource_id;
+  resource_id = id;
 }
 
 void SharedElementDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                    const gfx::Rect& rect,
                                    const gfx::Rect& visible_rect,
                                    bool needs_blending,
-                                   const SharedElementResourceId& resource_id) {
+                                   const SharedElementResourceId& id) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSharedElement, rect,
                    visible_rect, needs_blending);
-  this->resource_id = resource_id;
+  resource_id = id;
 }
 
 const SharedElementDrawQuad* SharedElementDrawQuad::MaterialCast(

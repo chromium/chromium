@@ -829,7 +829,7 @@ void TestRenderPipelineStateNow(base::scoped_nsprotocol<id<MTLDevice>> device,
   [descriptor setFragmentFunction:fragment_fn];
   [descriptor colorAttachments][0].pixelFormat = MTLPixelFormatBGRA8Unorm;
   MTLNewRenderPipelineStateCompletionHandler completion_handler =
-      ^(id<MTLRenderPipelineState> render_pipeline_state, NSError* error) {
+      ^(id<MTLRenderPipelineState> render_pipeline_state, NSError* ns_error) {
         state->OnCompletionHandlerCalled(render_pipeline_state
                                              ? TestShaderResult::kSucceeded
                                              : TestShaderResult::kFailed);

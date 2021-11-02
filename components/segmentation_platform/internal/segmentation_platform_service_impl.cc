@@ -88,12 +88,12 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
-    std::vector<std::unique_ptr<Config>> config)
+    std::vector<std::unique_ptr<Config>> configs)
     : model_provider_(model_provider),
       task_runner_(task_runner),
       clock_(clock),
       platform_options_(PlatformOptions::CreateDefault()),
-      configs_(std::move(config)) {
+      configs_(std::move(configs)) {
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
