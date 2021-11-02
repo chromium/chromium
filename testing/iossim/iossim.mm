@@ -496,22 +496,22 @@ int main(int argc, char* const argv[]) {
   // There should be at least one arg left, specifying the app path. Any
   // additional args are passed as arguments to the app.
   if (optind < argc) {
-    NSString* unresolved_path = [[NSFileManager defaultManager]
+    NSString* unresolved_app_path = [[NSFileManager defaultManager]
         stringWithFileSystemRepresentation:argv[optind]
                                     length:strlen(argv[optind])];
-    app_path = ResolvePath(unresolved_path);
+    app_path = ResolvePath(unresolved_app_path);
     if (!app_path) {
-      LogError(@"Unable to resolve app_path %@", unresolved_path);
+      LogError(@"Unable to resolve app_path %@", unresolved_app_path);
       exit(kExitInvalidArguments);
     }
 
     if (++optind < argc) {
-      NSString* unresolved_path = [[NSFileManager defaultManager]
+      NSString* unresolved_xctest_path = [[NSFileManager defaultManager]
           stringWithFileSystemRepresentation:argv[optind]
                                       length:strlen(argv[optind])];
-      xctest_path = ResolvePath(unresolved_path);
+      xctest_path = ResolvePath(unresolved_xctest_path);
       if (!xctest_path) {
-        LogError(@"Unable to resolve xctest_path %@", unresolved_path);
+        LogError(@"Unable to resolve xctest_path %@", unresolved_xctest_path);
         exit(kExitInvalidArguments);
       }
     }
