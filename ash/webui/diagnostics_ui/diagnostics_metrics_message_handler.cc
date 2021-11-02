@@ -90,15 +90,23 @@ void DiagnosticsMetricsMessageHandler::SetWebUiForTesting(
   set_web_ui(web_ui);
 }
 
-// Message Handlers
+// Private:
+
+// Message Handlers:
 void DiagnosticsMetricsMessageHandler::HandleRecordNavigation(
     base::Value::ConstListView args) {
   DCHECK_EQ(2u, args.size());
   DCHECK_NE(args[0], args[1]);
+  const NavigationView from_view = ConvertToNavigationView(args[0]);
+  const NavigationView to_view = ConvertToNavigationView(args[1]);
+  const base::Time updated_start_time = base::Time::Now();
+
+  // Recordable navigation event occurred.
+  EmitScreenOpenDuration(from_view, updated_start_time - navigation_started_);
 
   // `current_view_` updated to recorded `to_view` and reset timer.
-  current_view_ = ConvertToNavigationView(args[1]);
-  navigation_started_ = base::Time::Now();
+  current_view_ = to_view;
+  navigation_started_ = updated_start_time;
 }
 }  // namespace metrics
 }  // namespace diagnostics

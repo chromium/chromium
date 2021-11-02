@@ -123,6 +123,65 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleRecordNavigationMessage) {
   EXPECT_EQ(base::Minutes(0),
             handler_->GetElapsedNavigationTimeDeltaForTesting());
 }
+
+TEST_F(DiagnosticsMetricsMessageHandlerTest,
+       HandleRecordNavigationMultipleEvents) {
+  NavigationView initial_view = NavigationView::kConnectivity;
+  InitializeHandler(initial_view);
+  AdvanceClock(kDefaultTimeDelta);
+
+  histograms.ExpectTotalCount(kSystemOpenDurationMetric, /** count= */ 0);
+  histograms.ExpectTotalCount(kConnectivityOpenDurationMetric, /** count= */ 0);
+  histograms.ExpectTotalCount(kInputOpenDurationMetric, /** count= */ 0);
+  EXPECT_EQ(NavigationView::kConnectivity,
+            handler_->GetCurrentViewForTesting());
+  EXPECT_EQ(kDefaultTimeDelta,
+            handler_->GetElapsedNavigationTimeDeltaForTesting());
+
+  // Subsequent record navigations will trigger metric recording.
+  SendRecordNavigation(NavigationView::kConnectivity, NavigationView::kInput);
+  AdvanceClock(kDefaultTimeDelta);
+
+  histograms.ExpectTimeBucketCount(kConnectivityOpenDurationMetric,
+                                   /** elapsed_time */ kDefaultTimeDelta,
+                                   /** count= */ 1);
+  EXPECT_EQ(NavigationView::kInput, handler_->GetCurrentViewForTesting());
+  EXPECT_EQ(kDefaultTimeDelta,
+            handler_->GetElapsedNavigationTimeDeltaForTesting());
+
+  SendRecordNavigation(NavigationView::kInput, NavigationView::kSystem);
+  AdvanceClock(kDefaultTimeDelta);
+
+  histograms.ExpectTimeBucketCount(kInputOpenDurationMetric,
+                                   /** elapsed_time */ kDefaultTimeDelta,
+                                   /** count= */ 1);
+  EXPECT_EQ(NavigationView::kSystem, handler_->GetCurrentViewForTesting());
+  EXPECT_EQ(kDefaultTimeDelta,
+            handler_->GetElapsedNavigationTimeDeltaForTesting());
+
+  // Navigating to a screen you viewed before also updates metrics.
+  SendRecordNavigation(NavigationView::kSystem, NavigationView::kConnectivity);
+  AdvanceClock(kDefaultTimeDelta);
+
+  histograms.ExpectTimeBucketCount(kSystemOpenDurationMetric,
+                                   /** elapsed_time */ kDefaultTimeDelta,
+                                   /** count= */ 1);
+  EXPECT_EQ(NavigationView::kConnectivity,
+            handler_->GetCurrentViewForTesting());
+  EXPECT_EQ(kDefaultTimeDelta,
+            handler_->GetElapsedNavigationTimeDeltaForTesting());
+
+  // Application shutdown should trigger metrics.
+  AdvanceClock(kDefaultTimeDelta);
+  handler_.reset();
+  histograms.ExpectTimeBucketCount(kConnectivityOpenDurationMetric,
+                                   /** elapsed_time */ kDefaultTimeDelta,
+                                   /** count= */ 1);
+
+  histograms.ExpectTotalCount(kSystemOpenDurationMetric, /** count= */ 1);
+  histograms.ExpectTotalCount(kConnectivityOpenDurationMetric, /** count= */ 2);
+  histograms.ExpectTotalCount(kInputOpenDurationMetric, /** count= */ 1);
+}
 }  // namespace metrics
 }  // namespace diagnostics
 }  // namespace ash
