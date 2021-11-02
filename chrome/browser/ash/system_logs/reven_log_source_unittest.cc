@@ -278,6 +278,25 @@ void SetTpmInfo(healthd::TelemetryInfoPtr& telemetry_info,
       healthd::TpmResult::NewTpmInfo(std::move(tpm_info));
 }
 
+void SetGraphicsInfo(healthd::TelemetryInfoPtr& telemetry_info,
+                     std::vector<std::string>& gl_extensions) {
+  auto gles_info = healthd::GLESInfo::New();
+  gles_info->version = "fake_version";
+  gles_info->shading_version = "fake_shading_version";
+  gles_info->vendor = "fake_vendor";
+  gles_info->renderer = "fake_renderer";
+  gles_info->extensions = gl_extensions;
+
+  healthd::GraphicsInfoPtr graphics_info = healthd::GraphicsInfo::New();
+  graphics_info->gles_info = std::move(gles_info);
+
+  auto egl_info = healthd::EGLInfo::New();
+  graphics_info->egl_info = std::move(egl_info);
+
+  telemetry_info->graphics_result =
+      healthd::GraphicsResult::NewGraphicsInfo(std::move(graphics_info));
+}
+
 }  // namespace
 
 class RevenLogSourceTest : public ::testing::Test {
@@ -662,6 +681,54 @@ TEST_F(RevenLogSourceTest,
        TpmInfoVersionUnknownWithoutDidVid_NotAllowed_NotOwned) {
   VerifyTpmInfo(0xaaaaaaaa, "\n  tpm_version: unknown", "", "\n  did_vid: \n",
                 false, false);
+}
+
+TEST_F(RevenLogSourceTest, GraphicsInfoNoExtensions) {
+  auto info = healthd::TelemetryInfo::New();
+  std::vector<std::string> extensions;
+  SetGraphicsInfo(info, extensions);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::string expected_output = R"(graphics_info:
+  gl_version: fake_version
+  gl_shading_version: fake_shading_version
+  gl_vendor: fake_vendor
+  gl_renderer: fake_renderer
+  gl_extensions: )";
+  VerifyOutputContains(Fetch(), expected_output);
+}
+
+TEST_F(RevenLogSourceTest, GraphicsInfoOneExtension) {
+  auto info = healthd::TelemetryInfo::New();
+  std::vector<std::string> extensions{"ext1"};
+  SetGraphicsInfo(info, extensions);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::string expected_output = R"(graphics_info:
+  gl_version: fake_version
+  gl_shading_version: fake_shading_version
+  gl_vendor: fake_vendor
+  gl_renderer: fake_renderer
+  gl_extensions: ext1)";
+  VerifyOutputContains(Fetch(), expected_output);
+}
+
+TEST_F(RevenLogSourceTest, GraphicsInfoTwoExtensions) {
+  auto info = healthd::TelemetryInfo::New();
+  std::vector<std::string> extensions{"ext1", "ext2"};
+  SetGraphicsInfo(info, extensions);
+  ash::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(info);
+
+  std::string expected_output = R"(graphics_info:
+  gl_version: fake_version
+  gl_shading_version: fake_shading_version
+  gl_vendor: fake_vendor
+  gl_renderer: fake_renderer
+  gl_extensions: ext1, ext2)";
+  VerifyOutputContains(Fetch(), expected_output);
 }
 
 }  // namespace system_logs
