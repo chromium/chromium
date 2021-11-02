@@ -625,6 +625,29 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_EQ(GURL("http://A.com"), referrer_chain[11].referrer_url());
 }
 
+TEST_F(SBNavigationObserverTest,
+       RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents) {
+  GURL url = GURL("http://A.com");
+  base::Time half_hour_ago =
+      base::Time::FromDoubleT(base::Time::Now().ToDoubleT() - 30.0 * 60.0);
+  // Append 10 navigation events with user gesture.
+  for (int i = 0; i < 10; i++) {
+    std::unique_ptr<NavigationEvent> navigation_event =
+        std::make_unique<NavigationEvent>();
+    navigation_event->source_url = url;
+    navigation_event->last_updated = half_hour_ago;
+    navigation_event->navigation_initiation =
+        ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+    navigation_event_list()->RecordNavigationEvent(std::move(navigation_event));
+  }
+
+  ReferrerChain referrer_chain;
+  // Get the first 5 events.
+  navigation_observer_manager_->AppendRecentNavigations(5, &referrer_chain);
+  // The length of the referrer chain should not exceed the limit.
+  EXPECT_EQ(5, referrer_chain.size());
+}
+
 TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
   CreateNonUserGestureReferrerChain();
 
