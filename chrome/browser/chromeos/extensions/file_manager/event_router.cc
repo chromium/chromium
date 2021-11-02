@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <memory>
 #include <set>
 #include <utility>
@@ -45,6 +46,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -82,6 +84,12 @@ namespace {
 
 // Frequency of sending onFileTransferUpdated.
 const int64_t kProgressEventFrequencyInMilliseconds = 1000;
+
+// Whether Files SWA has any open windows.
+bool DoFilesSwaWindowsExist(Profile* profile) {
+  return FindSystemWebAppBrowser(profile, web_app::SystemAppType::FILE_MANAGER,
+                                 Browser::TYPE_APP) != nullptr;
+}
 
 // Checks if the Recovery Tool is running. This is a temporary solution.
 // TODO(mtomasz): Replace with crbug.com/341902 solution.
@@ -209,8 +217,45 @@ CopyOrMoveProgressTypeToCopyOrMoveProgressStatusType(
   return file_manager_private::COPY_OR_MOVE_PROGRESS_STATUS_TYPE_NONE;
 }
 
+// Convert the IO Task State enum to the Private API enum.
+file_manager_private::IOTaskState GetIOTaskState(
+    file_manager::io_task::State state) {
+  switch (state) {
+    case file_manager::io_task::State::kQueued:
+      return file_manager_private::IO_TASK_STATE_QUEUED;
+    case file_manager::io_task::State::kInProgress:
+      return file_manager_private::IO_TASK_STATE_IN_PROGRESS;
+    case file_manager::io_task::State::kSuccess:
+      return file_manager_private::IO_TASK_STATE_SUCCESS;
+    case file_manager::io_task::State::kError:
+      return file_manager_private::IO_TASK_STATE_ERROR;
+    case file_manager::io_task::State::kCancelled:
+      return file_manager_private::IO_TASK_STATE_CANCELLED;
+    default:
+      NOTREACHED();
+      return file_manager_private::IO_TASK_STATE_ERROR;
+  }
+}
+
+// Convert the IO Task Type enum to the Private API enum.
+file_manager_private::IOTaskType GetIOTaskType(
+    file_manager::io_task::OperationType type) {
+  switch (type) {
+    case file_manager::io_task::OperationType::kCopy:
+      return file_manager_private::IO_TASK_TYPE_COPY;
+    case file_manager::io_task::OperationType::kMove:
+      return file_manager_private::IO_TASK_TYPE_MOVE;
+    case file_manager::io_task::OperationType::kDelete:
+      return file_manager_private::IO_TASK_TYPE_DELETE;
+    case file_manager::io_task::OperationType::kZip:
+      return file_manager_private::IO_TASK_TYPE_ZIP;
+    default:
+      NOTREACHED();
+      return file_manager_private::IO_TASK_TYPE_COPY;
+  }
+}
+
 std::string FileErrorToErrorName(base::File::Error error_code) {
-  namespace js = extensions::api::file_manager_private;
   switch (error_code) {
     case base::File::FILE_ERROR_NOT_FOUND:
       return "NotFoundError";
@@ -1171,6 +1216,56 @@ base::WeakPtr<EventRouter> EventRouter::GetWeakPtr() {
 }
 
 void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
+  // If any Files app window exists we send the progress to all of them.
+  if (DoFilesSwaWindowsExist(profile_)) {
+    file_manager_private::ProgressStatus event_status;
+    event_status.task_id = status.task_id;
+    event_status.type = GetIOTaskType(status.type);
+    event_status.state = GetIOTaskState(status.state);
+
+    // Speedometer can produce infinite result which can't be serialized to JSON
+    // when sending the status via private API.
+    if (std::isfinite(status.remaining_seconds)) {
+      event_status.remaining_seconds = status.remaining_seconds;
+    }
+
+    GURL destination_folder_gurl(status.destination_folder.ToGURL());
+    if (destination_folder_gurl.is_valid()) {
+      event_status.destination_name =
+          util::GetDisplayableFileName(destination_folder_gurl);
+    }
+
+    size_t processed = 0;
+    for (const auto& file_status : status.outputs) {
+      if (file_status.error)
+        processed++;
+    }
+    event_status.num_remaining_items = status.sources.size() - processed;
+
+    // Get the last error occurrence in the `sources`.
+    for (auto it = status.sources.rbegin(); it != status.sources.rend(); it++) {
+      if (it->error && it->error.value() != base::File::FILE_OK) {
+        event_status.error_name = FileErrorToErrorName(it->error.value());
+      }
+    }
+
+    if (status.sources.size() > 0) {
+      event_status.source_name =
+          util::GetDisplayableFileName(status.sources.front().url);
+    }
+    event_status.bytes_transferred = status.bytes_transferred;
+    event_status.total_bytes = status.total_bytes;
+
+    BroadcastEvent(
+        profile_,
+        extensions::events::FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS,
+        file_manager_private::OnIOTaskProgressStatus::kEventName,
+        file_manager_private::OnIOTaskProgressStatus::Create(event_status));
+    return;
+  }
+
+  // If no Files app window exists we send the progress to the system
+  // notification.
   notification_manager_->HandleIOTaskProgress(status);
 }
 

@@ -28126,6 +28126,7 @@ Called by update_extension_histograms.py.-->
   <int value="481" label="SPEECH_RECOGNITION_PRIVATE_ON_STOP"/>
   <int value="482" label="SPEECH_RECOGNITION_PRIVATE_ON_RESULT"/>
   <int value="483" label="SPEECH_RECOGNITION_PRIVATE_ON_ERROR"/>
+  <int value="484" label="FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">

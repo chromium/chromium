@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 
+#include <cmath>
 #include <memory>
 #include <string>
 #include <vector>
@@ -179,6 +180,7 @@ void CopyOrMoveIOTask::GotFileSize(size_t idx,
   if (idx < progress_.sources.size() - 1) {
     GetFileSize(idx + 1);
   } else {
+    speedometer_.SetTotalBytes(progress_.total_bytes);
     if (util::IsNonNativeFileSystemType(progress_.destination_folder.type())) {
       // Destination is a virtual filesystem, so skip checking free space.
       GenerateDestinationURL(0);
@@ -282,6 +284,15 @@ void CopyOrMoveIOTask::OnCopyOrMoveProgress(
     return;
 
   progress_.bytes_transferred += size - last_progress_size_;
+  speedometer_.Update(progress_.bytes_transferred);
+  const double remaining_seconds = speedometer_.GetRemainingSeconds();
+
+  // Speedometer can produce infinite result which can't be serialized to JSON
+  // when sending the status via private API.
+  if (std::isfinite(remaining_seconds)) {
+    progress_.remaining_seconds = remaining_seconds;
+  }
+
   last_progress_size_ = size;
   progress_callback_.Run(progress_);
 }

@@ -97,6 +97,9 @@ struct ProgressStatus {
 
   // The task id for this progress status.
   IOTaskId task_id = 0;
+
+  // The estimate time to finish the operation.
+  double remaining_seconds = 0;
 };
 
 // An IOTask represents an I/O operation over multiple files, and is responsible

@@ -360,6 +360,7 @@ js_unittest("file_operation_handler_unittest.m") {
     ":mock_progress_center",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:file_operation_common",
+    "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
   ]

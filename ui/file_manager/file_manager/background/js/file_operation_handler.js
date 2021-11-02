@@ -49,6 +49,97 @@ export class FileOperationHandler {
         'copy-progress', this.onCopyProgress_.bind(this));
     this.fileOperationManager_.addEventListener(
         'delete', this.onDeleteProgress_.bind(this));
+
+    chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
+        this.onIOTaskProgressStatus_.bind(this));
+  }
+
+  /**
+   * Process the IO Task ProgressStatus events.
+   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
+   * @private
+   */
+  async onIOTaskProgressStatus_(event) {
+    switch (event.type) {
+      case chrome.fileManagerPrivate.IOTaskType.COPY:
+      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+        return this.processIOTaskCopyOrMoveProgress_(event);
+    }
+  }
+
+  /**
+   * Process Copy/Move progress status.
+   * @param {!chrome.fileManagerPrivate.ProgressStatus} event
+   * @private
+   */
+  async processIOTaskCopyOrMoveProgress_(event) {
+    const taskId = String(event.taskId);
+    const progressCenter = this.progressCenter_;
+    /** @type {ProgressCenterItem} */
+    let item;
+
+    switch (event.state) {
+      case chrome.fileManagerPrivate.IOTaskState.QUEUED:
+        item = new ProgressCenterItem();
+        item.id = taskId;
+        item.type = getTypeFromIOTaskType_(event.type);
+        item.message = getMessageFromProgressEvent_(event);
+        item.itemCount = event.numRemainingItems;
+        item.sourceMessage = event.sourceName;
+        item.destinationMessage = event.destinationName;
+        item.progressMax = event.totalBytes;
+        item.progressValue = event.bytesTransferred;
+        item.cancelCallback = () => {
+          const taskId = String(event.taskId);
+          console.log(`TODO: Cancel IOTask, taskId: ${taskId}`);
+          // chrome.fileManagerPrivate.cancelIOTask(event.taskId);
+        };
+        item.remainingTime = event.remainingSeconds;
+        progressCenter.updateItem(item);
+        break;
+
+      case chrome.fileManagerPrivate.IOTaskState.IN_PROGRESS:
+        item = progressCenter.getItemById(taskId);
+        if (!item) {
+          console.error('Cannot find copying item.');
+          return;
+        }
+        item.message = getMessageFromProgressEvent_(event);
+        item.progressMax = event.totalBytes;
+        item.progressValue = event.bytesTransferred;
+        item.remainingTime = event.remainingSeconds;
+        progressCenter.updateItem(item);
+        break;
+
+      case chrome.fileManagerPrivate.IOTaskState.SUCCESS:
+      case chrome.fileManagerPrivate.IOTaskState.CANCELLED:
+      case chrome.fileManagerPrivate.IOTaskState.ERROR:
+        item = progressCenter.getItemById(taskId);
+        if (!item) {
+          // ERROR events can be dispatched before BEGIN events.
+          item = new ProgressCenterItem();
+          item.type = getTypeFromIOTaskType_(event.type);
+          item.id = taskId;
+          item.progressMax = 1;
+          item.sourceMessage = event.sourceName;
+          item.destinationMessage = event.destinationName;
+        }
+        if (event.state === chrome.fileManagerPrivate.IOTaskState.SUCCESS) {
+          item.message = '';
+          item.state = ProgressItemState.COMPLETED;
+          item.progressValue = item.progressMax;
+          item.remainingTime = event.remainingSeconds;
+        } else if (
+            event.state === chrome.fileManagerPrivate.IOTaskState.CANCELLED) {
+          item.message = '';
+          item.state = ProgressItemState.CANCELED;
+        } else {
+          item.message = getMessageFromProgressEvent_(event);
+          item.state = ProgressItemState.ERROR;
+        }
+        progressCenter.updateItem(item);
+        break;
+    }
   }
 
   /**
@@ -339,3 +430,90 @@ export class FileOperationHandler {
  * @private
  */
 FileOperationHandler.PENDING_TIME_MS_ = 500;
+
+/**
+ * Obtains ProgressItemType from OperationType of ProgressStatus.type.
+ * @param {!chrome.fileManagerPrivate.IOTaskType} type Operation type
+ *     ProgressStatus.
+ * @return {!ProgressItemType} corresponding to the
+ *     specified operation type.
+ * @private
+ */
+function getTypeFromIOTaskType_(type) {
+  switch (type) {
+    case chrome.fileManagerPrivate.IOTaskType.COPY:
+      return ProgressItemType.COPY;
+    case chrome.fileManagerPrivate.IOTaskType.MOVE:
+      return ProgressItemType.MOVE;
+    case chrome.fileManagerPrivate.IOTaskType.ZIP:
+      return ProgressItemType.ZIP;
+    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+      return ProgressItemType.DELETE;
+    default:
+      console.error('Unknown operation type: ' + type);
+      return ProgressItemType.TRANSFER;
+  }
+}
+
+/**
+ * Generate a progress message from the event.
+ * @param {!chrome.fileManagerPrivate.ProgressStatus} event Progress event.
+ * @return {string} message.
+ * @private
+ */
+function getMessageFromProgressEvent_(event) {
+  // Error in the operation.
+  if (event.state === chrome.fileManagerPrivate.IOTaskState.ERROR) {
+    const detail = util.getFileErrorString(event.errorName);
+    switch (event.type) {
+      case chrome.fileManagerPrivate.IOTaskType.COPY:
+        return strf('COPY_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+        return strf('MOVE_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.ZIP:
+        return strf('ZIP_FILESYSTEM_ERROR', detail);
+      case chrome.fileManagerPrivate.IOTaskType.DELETE:
+        return str('DELETE_ERROR');
+      // case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+      //  return str('RESTORE_FROM_TRASH_ERROR');
+      default:
+        return strf('TRANSFER_FILESYSTEM_ERROR', detail);
+    }
+  }
+
+  // Success and operation with only 1 entry.
+  if (event.numRemainingItems === 1) {
+    const name = event.sourceName;
+    switch (event.type) {
+      case chrome.fileManagerPrivate.IOTaskType.COPY:
+        return strf('COPY_FILE_NAME', name);
+      case chrome.fileManagerPrivate.IOTaskType.MOVE:
+        return strf('MOVE_FILE_NAME', name);
+      case chrome.fileManagerPrivate.IOTaskType.ZIP:
+        return strf('ZIP_FILE_NAME', name);
+      case chrome.fileManagerPrivate.IOTaskType.DELETE:
+        return strf('DELETE_FILE_NAME', name);
+      // case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+      //  return strf('RESTORE_FROM_TRASH_FILE_NAME', name);
+      default:
+        return strf('TRANSFER_FILE_NAME', name);
+    }
+  }
+
+  // Success and operation with multiple entries.
+  const remainNumber = event.numRemainingItems;
+  switch (event.type) {
+    case chrome.fileManagerPrivate.IOTaskType.COPY:
+      return strf('COPY_ITEMS_REMAINING', remainNumber);
+    case chrome.fileManagerPrivate.IOTaskType.MOVE:
+      return strf('MOVE_ITEMS_REMAINING', remainNumber);
+    case chrome.fileManagerPrivate.IOTaskType.ZIP:
+      return strf('ZIP_ITEMS_REMAINING', remainNumber);
+    case chrome.fileManagerPrivate.IOTaskType.DELETE:
+      return strf('DELETE_ITEMS_REMAINING', remainNumber);
+    // case chrome.fileManagerPrivate.IOTaskType.RESTORE:
+    //  return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', remainNumber);
+    default:
+      return strf('TRANSFER_ITEMS_REMAINING', remainNumber);
+  }
+}
