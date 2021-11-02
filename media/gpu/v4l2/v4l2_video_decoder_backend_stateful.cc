@@ -696,8 +696,8 @@ bool V4L2StatefulVideoDecoderBackend::IsSupportedProfile(
     VideoDecodeAccelerator::SupportedProfiles profiles =
         device->GetSupportedDecodeProfiles(base::size(kSupportedInputFourccs),
                                            kSupportedInputFourccs);
-    for (const auto& profile : profiles)
-      supported_profiles_.push_back(profile.profile);
+    for (const auto& entry : profiles)
+      supported_profiles_.push_back(entry.profile);
   }
   return std::find(supported_profiles_.begin(), supported_profiles_.end(),
                    profile) != supported_profiles_.end();

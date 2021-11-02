@@ -1050,8 +1050,8 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
   // Copy NALU data into the CMBlockBuffer, inserting length headers.
   size_t offset = 0;
   for (size_t i = 0; i < nalus.size(); i++) {
-    H264NALU& nalu = nalus[i];
-    uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu.size));
+    H264NALU& nalu_ref = nalus[i];
+    uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
     status =
         CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
     if (status) {
@@ -1060,13 +1060,14 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
       return;
     }
     offset += kNALUHeaderLength;
-    status = CMBlockBufferReplaceDataBytes(nalu.data, data, offset, nalu.size);
+    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data, offset,
+                                           nalu_ref.size);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
-    offset += nalu.size;
+    offset += nalu_ref.size;
   }
 
   // Package the data in a CMSampleBuffer.

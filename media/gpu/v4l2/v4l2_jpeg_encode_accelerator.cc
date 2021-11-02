@@ -1518,11 +1518,12 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
     }
 
     const auto& fds = frame->DmabufFds();
-    const auto& planes = frame->layout().planes();
+    const auto& layout_planes = frame->layout().planes();
     qbuf.m.planes[i].m.fd = (i < fds.size()) ? fds[i].get() : fds.back().get();
-    qbuf.m.planes[i].data_offset = planes[i].offset;
+    qbuf.m.planes[i].data_offset = layout_planes[i].offset;
     qbuf.m.planes[i].bytesused += qbuf.m.planes[i].data_offset;
-    qbuf.m.planes[i].length = planes[i].size + qbuf.m.planes[i].data_offset;
+    qbuf.m.planes[i].length =
+        layout_planes[i].size + qbuf.m.planes[i].data_offset;
   }
 
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QBUF, &qbuf);

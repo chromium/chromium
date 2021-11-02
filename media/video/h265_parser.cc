@@ -97,9 +97,9 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
 #define SKIP_BITS_OR_RETURN(num_bits)                                       \
   do {                                                                      \
     int bits_left = num_bits;                                               \
-    int data;                                                               \
+    int discard;                                                            \
     while (bits_left > 0) {                                                 \
-      if (!br_.ReadBits(bits_left > 16 ? 16 : bits_left, &data)) {          \
+      if (!br_.ReadBits(bits_left > 16 ? 16 : bits_left, &discard)) {       \
         DVLOG(1) << "Error in stream: unexpected EOS while trying to skip"; \
         return kInvalidStream;                                              \
       }                                                                     \

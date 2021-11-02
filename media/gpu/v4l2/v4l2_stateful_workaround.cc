@@ -179,8 +179,8 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
   auto supported_profiles = device->GetSupportedDecodeProfiles(
       base::size(supported_input_fourccs), supported_input_fourccs);
   SupportedProfileMap supported_profile_map;
-  for (const auto& profile : supported_profiles)
-    supported_profile_map[profile.profile] = profile;
+  for (const auto& entry : supported_profiles)
+    supported_profile_map[entry.profile] = entry;
 
   VLOGF(2) << "Create SupportResolutionChecker workaround";
   return base::WrapUnique(

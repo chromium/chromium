@@ -395,10 +395,6 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
   if (!is_low_power_intel)
     GTEST_SKIP() << "Not an Intel low power processor";
 
-  std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
-      VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
-          VaapiWrapper::kEncodeConstantBitrate);
-
   for (const auto& codec_mode :
        {VaapiWrapper::kEncodeConstantBitrate,
         VaapiWrapper::kEncodeConstantQuantizationParameter}) {

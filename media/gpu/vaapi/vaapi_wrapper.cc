@@ -2580,10 +2580,9 @@ bool VaapiWrapper::UploadVideoFrameToSurface(const VideoFrame& frame,
     }
   }
   if (needs_va_put_image) {
-    const VAStatus va_res =
-        vaPutImage(va_display_, va_surface_id, image.image_id, 0, 0,
-                   visible_size.width(), visible_size.height(), 0, 0,
-                   visible_size.width(), visible_size.height());
+    va_res = vaPutImage(va_display_, va_surface_id, image.image_id, 0, 0,
+                        visible_size.width(), visible_size.height(), 0, 0,
+                        visible_size.width(), visible_size.height());
     VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAPutImage, false);
   }
   return ret == 0;
