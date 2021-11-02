@@ -16,6 +16,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_state.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
@@ -942,14 +943,6 @@ void aura_shell_get_aura_surface(wl_client* client,
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (WaylandAuraShell* aura_shell =
-          GetUserDataAs<WaylandAuraShell>(resource)) {
-    surface->SetClientSubmitsSurfacesInPixelCoordinates(
-        aura_shell->client_submits_surfaces_in_pixel_coordinates());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
-
   wl_resource* aura_surface_resource = wl_resource_create(
       client, &zaura_surface_interface, wl_resource_get_version(resource), id);
 
@@ -976,10 +969,7 @@ void aura_shell_get_aura_output(wl_client* client,
 
 void aura_shell_surface_submission_in_pixel_coordinates(wl_client* client,
                                                         wl_resource* resource) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (WaylandAuraShell* aura_shell = GetUserDataAs<WaylandAuraShell>(resource))
-    aura_shell->set_client_submits_surfaces_in_pixel_coordinates(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 const struct zaura_shell_interface aura_shell_implementation = {

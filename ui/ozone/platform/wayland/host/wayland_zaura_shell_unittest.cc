@@ -17,24 +17,6 @@
 
 namespace ui {
 
-TEST(WaylandZAuraShellTest, SurfaceSubmissionInPixelCoordinates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      ui::kWaylandSurfaceSubmissionInPixelCoordinates);
-  base::test::SingleThreadTaskEnvironment task_environment(
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
-  wl::TestWaylandServerThread server;
-  ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
-  wl::MockZAuraShell zaura_shell_obj;
-  zaura_shell_obj.Initialize(server.display());
-  EXPECT_CALL(zaura_shell_obj,
-              SetClientSubmitsSurfacesInPixelCoordinates(true));
-
-  WaylandConnection connection;
-  ASSERT_TRUE(connection.Initialize());
-  server.Pause();
-}
-
 TEST(WaylandZAuraShellTest, BugFix) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);

@@ -101,8 +101,6 @@ class SurfaceDelegate {
   // Releases the pinned mode and allows the user to do other things again.
   virtual void Unpin() = 0;
 
-  virtual void SetClientSubmitsSurfacesInPixelCoordinates(bool enabled) = 0;
-
  protected:
   virtual ~SurfaceDelegate() {}
 };

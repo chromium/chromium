@@ -214,10 +214,6 @@ void SurfaceTreeHost::OnNewOutputAdded() {
   UpdateDisplayOnTree();
 }
 
-void SurfaceTreeHost::SetClientSubmitsSurfacesInPixelCoordinates(bool enabled) {
-  client_submits_surfaces_in_pixel_coordinates_ = enabled;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // display::DisplayObserver:
 void SurfaceTreeHost::OnDisplayMetricsChanged(const display::Display& display,
