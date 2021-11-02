@@ -3636,6 +3636,13 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
+const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
+const char kEnableAutoDisableAccessibilityDescription[] =
+    "When accessibility APIs are no longer being requested, automatically "
+    "disables accessibility. This might happen if an assistive technology is "
+    "turned off or if an extension which uses accessibility APIs no longer "
+    "needs them.";
+
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "

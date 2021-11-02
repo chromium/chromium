@@ -5358,6 +5358,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAccessibilityLiveCaptionName,
      flag_descriptions::kEnableAccessibilityLiveCaptionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kLiveCaption)},
+
+    {"enable-auto-disable-accessibility",
+     flag_descriptions::kEnableAutoDisableAccessibilityName,
+     flag_descriptions::kEnableAutoDisableAccessibilityDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAutoDisableAccessibility)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)
