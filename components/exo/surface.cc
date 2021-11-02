@@ -1247,42 +1247,19 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
     damage_rect += origin.OffsetFromOrigin();
     damage_rect.Intersect(output_rect);
 
-    // TODO(b/191414141) : Clamp is temporary to isolate damage issue.
-    float device_scale_factor_clamped = device_scale_factor;
-    constexpr float kMaxExpectedScale = 50.0f;
-    constexpr float kMinExpectedScale = 0.1f;
-    if (device_scale_factor_clamped > kMaxExpectedScale) {
-      LOG(ERROR) << "Scale error: device_scale_factor="
-                 << device_scale_factor_clamped << " was clamped to "
-                 << kMaxExpectedScale;
-      device_scale_factor_clamped = kMaxExpectedScale;
-    } else if (kMinExpectedScale > device_scale_factor_clamped) {
-      LOG(ERROR) << "Scale error: device_scale_factor="
-                 << device_scale_factor_clamped << " was clamped to "
-                 << kMinExpectedScale;
-      device_scale_factor_clamped = kMinExpectedScale;
-    }
-
-    if (device_scale_factor_clamped <= 1) {
+    if (device_scale_factor <= 1) {
       damage_rect = gfx::ToEnclosingRect(
-          gfx::ConvertRectToPixels(damage_rect, device_scale_factor_clamped));
+          gfx::ConvertRectToPixels(damage_rect, device_scale_factor));
     } else {
       // The damage will eventually be rescaled by 1/device_scale_factor. Since
       // that scale factor is <1, taking the enclosed rect here means that that
       // rescaled RectF is <1px smaller than |damage_rect| in each dimension,
       // which makes the enclosing rect equal to |damage_rect|.
       gfx::RectF scaled_damage(damage_rect);
-      scaled_damage.Scale(device_scale_factor_clamped);
+      scaled_damage.Scale(device_scale_factor);
       damage_rect = gfx::ToEnclosedRect(scaled_damage);
     }
   }
-
-  // TODO(b/191414141) : Check is temporary to isolate damage issue.
-  CHECK(damage_rect.size().GetCheckedArea().IsValid())
-      << " original=" << state_.damage.ToString()
-      << ", dsf=" << device_scale_factor
-      << ", result=" << damage_rect.ToString()
-      << ", output_rect=" << output_rect.ToString();
 
   state_.damage.Clear();
 
@@ -1478,6 +1455,14 @@ void Surface::UpdateContentSize() {
 
   if (content_size_ != content_size) {
     content_size_ = content_size;
+    // TODO(b/191414141) : Check is temporary to isolate damage issue.
+    if (!content_size_.GetCheckedArea().IsValid()) {
+      DCHECK(false) << " content_size_=" << content_size_.ToString();
+      constexpr int kMaxSizeScalar = 1 << 15;
+      // Forceably restrict |content_size_| to 32kx32k.
+      content_size_.SetToMin(gfx::Size(kMaxSizeScalar, kMaxSizeScalar));
+    }
+
     window_->SetBounds(gfx::Rect(window_->bounds().origin(), content_size_));
 
     for (SurfaceObserver& observer : observers_)
