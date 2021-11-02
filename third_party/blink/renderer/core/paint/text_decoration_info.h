@@ -107,6 +107,9 @@ class CORE_EXPORT TextDecorationInfo {
 
   FloatRect BoundsForDottedOrDashed(TextDecoration line) const;
   FloatRect BoundsForWavy(TextDecoration line) const;
+  float WavyDecorationSizing() const;
+  float ControlPointDistanceFromResolvedThickness() const;
+  float StepFromResolvedThickness() const;
 
   const ComputedStyle& style_;
   const absl::optional<AppliedTextDecoration> selection_text_decoration_;

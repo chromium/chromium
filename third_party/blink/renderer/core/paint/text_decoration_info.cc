@@ -87,25 +87,6 @@ static float ComputeDecorationThickness(
   return std::max(1.f, text_decoration_thickness_pixels);
 }
 
-static void AdjustStepToDecorationLength(float& step,
-                                         float& control_point_distance,
-                                         float length) {
-  DCHECK_GT(step, 0);
-
-  if (length <= 0)
-    return;
-
-  unsigned step_count = static_cast<unsigned>(length / step);
-
-  // Each Bezier curve starts at the same pixel that the previous one
-  // ended. We need to subtract (stepCount - 1) pixels when calculating the
-  // length covered to account for that.
-  float uncovered_length = length - (step_count * step - (step_count - 1));
-  float adjustment = uncovered_length / step_count;
-  step += adjustment;
-  control_point_distance += adjustment;
-}
-
 static enum StrokeStyle TextDecorationStyleToStrokeStyle(
     ETextDecorationStyle decoration_style) {
   enum StrokeStyle stroke_style = kSolidStroke;
@@ -326,8 +307,33 @@ FloatRect TextDecorationInfo::BoundsForDottedOrDashed(
 FloatRect TextDecorationInfo::BoundsForWavy(TextDecoration line) const {
   StrokeData stroke_data;
   stroke_data.SetThickness(ResolvedThickness());
-  return FloatRect(
-      PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data));
+  auto bounding_rect =
+      FloatRect(PrepareWavyStrokePath(line)->StrokeBoundingRect(stroke_data));
+
+  float step = StepFromResolvedThickness();
+  bounding_rect.set_x(bounding_rect.x() + 2 * step);
+  bounding_rect.set_width(width_);
+  return bounding_rect;
+}
+
+float TextDecorationInfo::WavyDecorationSizing() const {
+  // Minimum unit we use to compute control point distance and step to define
+  // the path of the Bezier curve.
+  return std::max<float>(2, ResolvedThickness());
+}
+
+float TextDecorationInfo::ControlPointDistanceFromResolvedThickness() const {
+  // Distance between decoration's axis and Bezier curve's control points. The
+  // height of the curve is based on this distance. Increases the curve's height
+  // as strokeThickness increases to make the curve look better.
+  return 3.5 * WavyDecorationSizing();
+}
+
+float TextDecorationInfo::StepFromResolvedThickness() const {
+  // Increment used to form the diamond shape between start point (p1), control
+  // points and end point (p2) along the axis of the decoration. Makes the curve
+  // wider as strokeThickness increases to make the curve look better.
+  return 2.5 * WavyDecorationSizing();
 }
 
 /*
@@ -368,29 +374,23 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
       DoubleOffset(line) *
       line_data_[TextDecorationToLineDataIndex(line)].wavy_offset_factor;
 
-  FloatPoint p1(start_point + FloatPoint(0, wave_offset));
-  FloatPoint p2(start_point + FloatPoint(width_, wave_offset));
+  float control_point_distance = ControlPointDistanceFromResolvedThickness();
+  float step = StepFromResolvedThickness();
+
+  // We paint the wave before and after the text line (to cover the whole length
+  // of the line) and then we clip it at
+  // AppliedDecorationPainter::StrokeWavyTextDecoration().
+  // Offset the start point, so the beizer curve starts before the current line,
+  // that way we can clip it exactly the same way in both ends.
+  FloatPoint p1(start_point + FloatPoint(-2 * step, wave_offset));
+  // Increase the width including the previous offset, plus an extra wave to be
+  // painted after the line.
+  FloatPoint p2(start_point + FloatPoint(width_ + 4 * step, wave_offset));
 
   GraphicsContext::AdjustLineToPixelBoundaries(p1, p2, ResolvedThickness());
 
   Path& path = line_data_[line_data_index].stroke_path.emplace();
   path.MoveTo(ToGfxPointF(p1));
-
-  // Distance between decoration's axis and Bezier curve's control points.
-  // The height of the curve is based on this distance. Use a minimum of 6
-  // pixels distance since
-  // the actual curve passes approximately at half of that distance, that is 3
-  // pixels.
-  // The minimum height of the curve is also approximately 3 pixels. Increases
-  // the curve's height
-  // as strockThickness increases to make the curve looks better.
-  float control_point_distance = 3 * std::max<float>(2, ResolvedThickness());
-
-  // Increment used to form the diamond shape between start point (p1),
-  // control points and end point (p2) along the axis of the decoration. Makes
-  // the curve wider as strockThickness increases to make the curve looks
-  // better.
-  float step = 2 * std::max<float>(2, ResolvedThickness());
 
   bool is_vertical_line = (p1.x() == p2.x());
 
@@ -409,7 +409,6 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
       y2 = p1.y();
     }
 
-    AdjustStepToDecorationLength(step, control_point_distance, y2 - y1);
     gfx::PointF control_point1(x_axis + control_point_distance, 0);
     gfx::PointF control_point2(x_axis - control_point_distance, 0);
 
@@ -435,7 +434,6 @@ absl::optional<Path> TextDecorationInfo::PrepareWavyStrokePath(
       x2 = p1.x();
     }
 
-    AdjustStepToDecorationLength(step, control_point_distance, x2 - x1);
     gfx::PointF control_point1(0, y_axis + control_point_distance);
     gfx::PointF control_point2(0, y_axis - control_point_distance);
 
