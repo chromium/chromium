@@ -67,7 +67,6 @@ NSString* const NSAccessibilityARIARowCountAttribute = @"AXARIARowCount";
 NSString* const NSAccessibilityARIARowIndexAttribute = @"AXARIARowIndex";
 NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
-NSString* const NSAccessibilityDetailsElementsAttribute = @"AXDetailsElements";
 NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
 NSString* const NSAccessibilityDOMIdentifierAttribute = @"AXDOMIdentifier";
 NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
@@ -806,7 +805,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
       {NSAccessibilityDescriptionAttribute, @"descriptionForAccessibility"},
-      {NSAccessibilityDetailsElementsAttribute, @"detailsElements"},
       {NSAccessibilityDisclosingAttribute, @"disclosing"},
       {NSAccessibilityDisclosedByRowAttribute, @"disclosedByRow"},
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
@@ -1154,25 +1152,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   }
 
   return @"";
-}
-
-- (NSArray*)detailsElements {
-  if (![self instanceActive])
-    return nil;
-
-  NSMutableArray* elements = [[[NSMutableArray alloc] init] autorelease];
-  const std::vector<int32_t>& detailsIds =
-      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds);
-  for (size_t i = 0; i < detailsIds.size(); ++i) {
-    if (BrowserAccessibility* element =
-            _owner->manager()->GetFromID(detailsIds[i])) {
-      id cocoa_element = ToBrowserAccessibilityCocoa(element);
-      if ([cocoa_element instanceActive])
-        [elements addObject:cocoa_element];
-    }
-  }
-
-  return [elements count] ? elements : nil;
 }
 
 - (NSNumber*)disclosing {
@@ -3574,11 +3553,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds)
               .size() > 0) {
     [ret addObject:NSAccessibilityTitleUIElementAttribute];
-  }
-
-  if (!_owner->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)
-           .empty()) {
-    [ret addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
   if ([self shouldExposeTitleUIElement])

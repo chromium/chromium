@@ -24,6 +24,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityARIARelevantAttribute =
     @"AXARIARelevant";
 AX_EXPORT constexpr NSString* const NSAccessibilityAutocompleteValueAttribute =
     @"AXAutocompleteValue";
+AX_EXPORT constexpr NSString* const NSAccessibilityDetailsElementsAttribute =
+    @"AXDetailsElements";
 AX_EXPORT constexpr NSString* const
     NSAccessibilityMathFractionNumeratorAttribute = @"AXMathFractionNumerator";
 AX_EXPORT constexpr NSString* const
