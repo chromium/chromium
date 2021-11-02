@@ -1267,7 +1267,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionAddDisabledRemotelyReason2"
     enum="ExtensionUpdateCheckDataKey" expires_after="2022-10-10">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when a new violation is retrieved from Omaha for an extension. The
@@ -1316,7 +1316,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionDisabledRemotely2"
     enum="ExtensionUpdateCheckDataKey" expires_after="2022-03-06">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when an extension that was previously enabled is disabled due to a
@@ -1351,7 +1351,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
     expires_after="2022-04-10">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when an extension that was previously only disabled remotely is

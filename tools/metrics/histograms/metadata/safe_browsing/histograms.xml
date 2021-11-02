@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.CredentialPhishedStatusChange"
     enum="CredentialPhishedStatus" expires_after="2022-04-10">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Recorded when the phished status of a saved credential changes. Records when
@@ -1021,7 +1021,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.ClientRedirect"
     units="units" expires_after="2022-07-23">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Logs the number of extra client redirect referrer chain entries that were
@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.NavigationObserver.DroppedReferrerChainEntries.RecentNavigation"
     units="units" expires_after="2022-07-23">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Logs the number of extra recent navigation (non-user gestured) referrer
@@ -1080,7 +1080,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SafeBrowsing.NavigationObserver.NavigationEventsRecordedLength"
     units="count" expires_after="2022-08-10">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Count of how many NavigationEvents are recorded prior to appending recent
@@ -1209,7 +1209,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.Pref.Enhanced" enum="BooleanEnabled"
     expires_after="2022-03-08">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the Safe Browsing enhanced protection service is currently enabled.

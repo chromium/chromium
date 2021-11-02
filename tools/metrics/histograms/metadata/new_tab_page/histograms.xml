@@ -1344,7 +1344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Promo.EnhancedProtectionPromo"
     enum="AndroidEnhancedProtectionPromoAction" expires_after="2022-03-13">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
     Records events related to the Safe Browsing Enhanced Protection promo card
@@ -1355,7 +1355,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilAction"
     units="units" expires_after="2022-03-20">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
     The number of times that the Safe Browsing Enhanced Protection promo was
@@ -1367,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilDismissal"
     units="units" expires_after="2022-03-27">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
     The number of times that the Safe Browsing Enhanced Protection promo was

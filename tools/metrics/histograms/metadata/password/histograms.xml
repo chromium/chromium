@@ -1587,7 +1587,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser"
     enum="IsSyncPasswordHashSaved" expires_after="2022-10-11">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     This metric is recorded shortly after Chrome Startup, only for Advanced
@@ -1938,7 +1938,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.NonSyncPasswordHashChange"
     enum="GaiaPasswordHashChange" expires_after="2022-10-04">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     This metric reports a type of a password hash change event where the
@@ -2400,7 +2400,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.RemoveCompromisedCredentials.RemoveReason"
     enum="RemoveCompromisedCredentialsReason" expires_after="2021-12-12">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Collects the cause of why remove SQL statement is called on the compromised
@@ -2621,7 +2621,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SyncPasswordHashChange"
     enum="GaiaPasswordHashChange" expires_after="2021-12-05">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     This metric reports a type of a sync password hash change event. Recorded
@@ -3004,7 +3004,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.PageInfoAction"
     enum="PasswordProtectionWarningAction" expires_after="2022-08-15">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records how a user interacts with page info bubble that displays the
@@ -3041,7 +3041,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-24">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Response or error codes for PasswordProtectionRequest. Logged after chrome
@@ -3051,7 +3051,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.PasswordReuseSyncAccountType"
     enum="PasswordProtectionSyncAccountType" expires_after="2022-08-27">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     When password protection service detects a reuse of Chrome sync password,
@@ -3120,7 +3120,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.SampleReportSent" units="Boolean"
     expires_after="2022-10-31">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Logs when an event where users reuse their password or focus on a password

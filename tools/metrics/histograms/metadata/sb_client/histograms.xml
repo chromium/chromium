@@ -565,7 +565,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.Classifier.Event"
     enum="SBPhishingClassifierEvent" expires_after="2022-04-24">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records events in the phishing classifier including reasons that prevents
@@ -792,7 +792,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration" units="ms"
     expires_after="2022-04-24">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the duration it takes for client side phishing detection to finish.
