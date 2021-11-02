@@ -210,8 +210,8 @@ void ExpectFrameColor(media::VideoFrame* yv12_frame,
 }
 
 // Fill each plane to its reported extents and verify accessors report non
-// zero values.  Additionally, for the first plane verify the rows and
-// row_bytes values are correct.
+// zero values.  Additionally, for the first plane verify the rows, row_bytes,
+// and columns values are correct.
 void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
   const unsigned char kFillByte = 0x80;
   const int kWidth = 61;
@@ -230,6 +230,7 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
     EXPECT_TRUE(frame->stride(plane));
     EXPECT_TRUE(frame->rows(plane));
     EXPECT_TRUE(frame->row_bytes(plane));
+    EXPECT_TRUE(frame->columns(plane));
 
     memset(frame->data(plane), kFillByte,
            frame->stride(plane) * frame->rows(plane));
