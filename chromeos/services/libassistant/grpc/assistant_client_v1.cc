@@ -25,6 +25,7 @@
 #include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_event.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/speaker_id_enrollment_interface.pb.h"
+#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
@@ -148,7 +149,13 @@ class AssistantClientV1::DeviceStateListener
   void OnStartFinished() override {
     ENSURE_CALLING_SEQUENCE(&DeviceStateListener::OnStartFinished);
 
-    assistant_client_->NotifyAllServicesReady();
+    // Now |AssistantManager| is fully started, add media manager listener.
+    assistant_client_->AddMediaManagerListener();
+
+    // We will be checking the heartbeat signal sent back for Libassistant for
+    // v2.
+    if (!chromeos::assistant::features::IsLibAssistantV2Enabled())
+      assistant_client_->NotifyAllServicesReady();
   }
 
  private:
@@ -273,10 +280,18 @@ AssistantClientV1::~AssistantClientV1() {
 }
 
 void AssistantClientV1::StartServices(
-    base::OnceClosure services_ready_callback) {
-  services_ready_callback_ = std::move(services_ready_callback);
+    ServicesStatusObserver* services_status_observer) {
+  DCHECK(services_status_observer);
+  services_status_observer_ = services_status_observer;
 
   assistant_manager()->Start();
+
+  // Instead we will be checking the heartbeat signal sent back from Libassisant
+  // in v2.
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    services_status_observer_->OnServicesStatusChanged(
+        ServicesStatus::ONLINE_BOOTING_UP);
+  }
 }
 
 void AssistantClientV1::SetChromeOSApiDelegate(
@@ -469,13 +484,8 @@ void AssistantClientV1::NotifyDeviceStateEvent(
 }
 
 void AssistantClientV1::NotifyAllServicesReady() {
-  DCHECK(services_ready_callback_);
-  // This callback will do nothing if V2 is enabled as in V2 we'll be relying on
-  // the heartbeat ready signal.
-  std::move(services_ready_callback_).Run();
-
-  // Now |AssistantManager| is fully started, add media manager listener.
-  AddMediaManagerListener();
+  services_status_observer_->OnServicesStatusChanged(
+      ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE);
 }
 
 void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(

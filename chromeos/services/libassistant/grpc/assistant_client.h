@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
+#include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace assistant {
@@ -88,10 +89,10 @@ class AssistantClient {
   AssistantClient& operator=(const AssistantClient&) = delete;
   virtual ~AssistantClient();
 
-  // Starts Libassistant services. |services_ready_callback| will be invoked
-  // upon the completion of Libassistant  initialization when all services are
-  // available and ready to use.
-  virtual void StartServices(base::OnceClosure services_ready_callback) = 0;
+  // Starts Libassistant services. |services_status_observer| will get notified
+  // on new status change.
+  virtual void StartServices(
+      ServicesStatusObserver* services_status_observer) = 0;
 
   virtual void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) = 0;

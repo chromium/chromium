@@ -22,7 +22,7 @@ FakeAssistantClient::FakeAssistantClient(
 FakeAssistantClient::~FakeAssistantClient() = default;
 
 void FakeAssistantClient::StartServices(
-    base::OnceClosure services_ready_callback) {}
+    ServicesStatusObserver* services_status_observer) {}
 
 void FakeAssistantClient::SetChromeOSApiDelegate(
     assistant_client::ChromeOSApiDelegate* delegate) {}
