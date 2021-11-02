@@ -359,7 +359,7 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded() {
     // 2. The compositor begins the frame.
     // 3. Javascript makes a context lost using WEBGL_lose_context extension.
     // 4. Here.
-    return DestroyedOrLost;
+    return kDestroyedOrLost;
   }
 
   // There used to be a DCHECK(!is_hidden_) here, but in some tab
@@ -367,20 +367,20 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded() {
   // backgrounded tabs.
 
   if (!contents_changed_)
-    return ContentsUnchanged;
+    return kContentsUnchanged;
 
   // If the context is lost, we don't know if we should be producing GPU or
   // software frames, until we get a new context, since the compositor will
   // be trying to get a new context and may change modes.
   if (gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR)
-    return DestroyedOrLost;
+    return kDestroyedOrLost;
 
   TRACE_EVENT0("blink,rail", "DrawingBuffer::prepareMailbox");
 
   // Resolve the multisampled buffer into the texture attached to fbo_.
   ResolveIfNeeded();
 
-  return ContentsResolvedIfNeeded;
+  return kContentsResolvedIfNeeded;
 }
 
 bool DrawingBuffer::PrepareTransferableResourceInternal(
@@ -389,7 +389,7 @@ bool DrawingBuffer::PrepareTransferableResourceInternal(
     viz::ReleaseCallback* out_release_callback,
     bool force_gpu_result) {
   if (CheckForDestructionAndChangeAndResolveIfNeeded() !=
-      ContentsResolvedIfNeeded)
+      kContentsResolvedIfNeeded)
     return false;
 
   if (!IsUsingGpuCompositing() && !force_gpu_result) {
@@ -405,7 +405,7 @@ scoped_refptr<StaticBitmapImage>
 DrawingBuffer::GetUnacceleratedStaticBitmapImage(bool flip_y) {
   ScopedStateRestorer scoped_state_restorer(this);
 
-  if (CheckForDestructionAndChangeAndResolveIfNeeded() == DestroyedOrLost)
+  if (CheckForDestructionAndChangeAndResolveIfNeeded() == kDestroyedOrLost)
     return nullptr;
 
   SkBitmap bitmap;
@@ -1265,7 +1265,7 @@ bool DrawingBuffer::ResizeDefaultFramebuffer(const IntSize& size) {
 
 void DrawingBuffer::ClearFramebuffers(GLbitfield clear_mask) {
   ScopedStateRestorer scoped_state_restorer(this);
-  ClearFramebuffersInternal(clear_mask, ClearAllFBOs);
+  ClearFramebuffersInternal(clear_mask, kClearAllFBOs);
 }
 
 void DrawingBuffer::ClearFramebuffersInternal(GLbitfield clear_mask,
@@ -1274,12 +1274,12 @@ void DrawingBuffer::ClearFramebuffersInternal(GLbitfield clear_mask,
   state_restorer_->SetFramebufferBindingDirty();
   // Clear the multisample FBO, but also clear the non-multisampled buffer if
   // requested.
-  if (multisample_fbo_ && clear_option == ClearAllFBOs) {
+  if (multisample_fbo_ && clear_option == kClearAllFBOs) {
     gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
     gl_->Clear(GL_COLOR_BUFFER_BIT);
   }
 
-  if (multisample_fbo_ || clear_option == ClearAllFBOs) {
+  if (multisample_fbo_ || clear_option == kClearAllFBOs) {
     gl_->BindFramebuffer(GL_FRAMEBUFFER,
                          multisample_fbo_ ? multisample_fbo_ : fbo_);
     gl_->Clear(clear_mask);
@@ -1357,7 +1357,7 @@ bool DrawingBuffer::ResizeFramebufferInternal(const IntSize& new_size) {
       return false;
   }
 
-  ClearNewlyAllocatedFramebuffers(ClearAllFBOs);
+  ClearNewlyAllocatedFramebuffers(kClearAllFBOs);
   return true;
 }
 
@@ -1475,7 +1475,7 @@ void DrawingBuffer::ResolveIfNeeded() {
         // than at the end of a frame in order to eliminate rendering glitches.
         // This should also simplify the code, allowing removal of the
         // ClearOption.
-        ClearNewlyAllocatedFramebuffers(ClearOnlyMultisampledFBO);
+        ClearNewlyAllocatedFramebuffers(kClearOnlyMultisampledFBO);
       }
     }
     current_active_gpu_ = active_gpu;

@@ -35,9 +35,9 @@ namespace blink {
 namespace {
 
 enum FailureMode {
-  NO_FAILURE,
-  BIND_CONTEXT_FAILURE,
-  GPU_CHANNEL_FAILURE,
+  kNoFailure,
+  kBindContextFailure,
+  kGpuChannelFailure,
 };
 
 class FakeLayerTreeViewDelegate : public StubLayerTreeViewDelegate {
@@ -183,11 +183,11 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
     failure_mode_ = failure_mode;
     expected_successes_ = expected_successes;
     switch (failure_mode_) {
-      case NO_FAILURE:
+      case kNoFailure:
         expected_requests_ = expected_successes;
         break;
-      case BIND_CONTEXT_FAILURE:
-      case GPU_CHANNEL_FAILURE:
+      case kBindContextFailure:
+      case kGpuChannelFailure:
         expected_requests_ = num_tries * std::max(1, expected_successes);
         break;
     }
@@ -200,7 +200,7 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
   base::RunLoop* run_loop_ = nullptr;
   int expected_successes_ = 0;
   int expected_requests_ = 0;
-  FailureMode failure_mode_ = NO_FAILURE;
+  FailureMode failure_mode_ = kNoFailure;
 };
 
 class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
@@ -230,16 +230,16 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
     // until the last attempt.
     int tries_before_success = kTries - (expected_successes ? 1 : 0);
     switch (failure_mode) {
-      case NO_FAILURE:
+      case kNoFailure:
         layer_tree_view_delegate_.set_num_failures_before_success(0);
         layer_tree_view_delegate_.set_num_requests_before_success(0);
         break;
-      case BIND_CONTEXT_FAILURE:
+      case kBindContextFailure:
         layer_tree_view_delegate_.set_num_failures_before_success(
             tries_before_success);
         layer_tree_view_delegate_.set_num_requests_before_success(0);
         break;
-      case GPU_CHANNEL_FAILURE:
+      case kGpuChannelFailure:
         layer_tree_view_delegate_.set_num_failures_before_success(0);
         layer_tree_view_delegate_.set_num_requests_before_success(
             tries_before_success);
@@ -265,35 +265,35 @@ class LayerTreeViewWithFrameSinkTrackingTest : public testing::Test {
 };
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedOnce) {
-  RunTest(1, NO_FAILURE);
+  RunTest(1, kNoFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedOnce_AfterNullChannel) {
-  RunTest(1, GPU_CHANNEL_FAILURE);
+  RunTest(1, kGpuChannelFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedOnce_AfterLostContext) {
-  RunTest(1, BIND_CONTEXT_FAILURE);
+  RunTest(1, kBindContextFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedTwice) {
-  RunTest(2, NO_FAILURE);
+  RunTest(2, kNoFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedTwice_AfterNullChannel) {
-  RunTest(2, GPU_CHANNEL_FAILURE);
+  RunTest(2, kGpuChannelFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, SucceedTwice_AfterLostContext) {
-  RunTest(2, BIND_CONTEXT_FAILURE);
+  RunTest(2, kBindContextFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, FailWithNullChannel) {
-  RunTest(0, GPU_CHANNEL_FAILURE);
+  RunTest(0, kGpuChannelFailure);
 }
 
 TEST_F(LayerTreeViewWithFrameSinkTrackingTest, FailWithLostContext) {
-  RunTest(0, BIND_CONTEXT_FAILURE);
+  RunTest(0, kBindContextFailure);
 }
 
 class VisibilityTestLayerTreeView : public LayerTreeView {

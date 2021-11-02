@@ -84,7 +84,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   switch (light_source_->GetType()) {
-    case LS_DISTANT: {
+    case kLsDistant: {
       DistantLightSource* distant_light_source =
           static_cast<DistantLightSource*>(light_source_.get());
       float azimuth_rad = Deg2rad(distant_light_source->Azimuth());
@@ -96,7 +96,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
           GetLightingType(), direction, light_color.Rgb(), surface_scale_,
           GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
-    case LS_POINT: {
+    case kLsPoint: {
       PointLightSource* point_light_source =
           static_cast<PointLightSource*>(light_source_.get());
       const FloatPoint3D position = point_light_source->GetPosition();
@@ -106,7 +106,7 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
           GetLightingType(), sk_position, light_color.Rgb(), surface_scale_,
           GetFilterConstant(), specular_exponent_, std::move(input), rect);
     }
-    case LS_SPOT: {
+    case kLsSpot: {
       SpotLightSource* spot_light_source =
           static_cast<SpotLightSource*>(light_source_.get());
       const SkPoint3 location =
