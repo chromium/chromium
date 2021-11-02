@@ -18,7 +18,8 @@ AutofillProgressDialogControllerImpl::AutofillProgressDialogControllerImpl(
 AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
   if (autofill_progress_dialog_view_) {
     autofill_progress_dialog_view_->Dismiss(
-        /*show_confirmation_before_closing=*/false);
+        /*show_confirmation_before_closing=*/false,
+        /*is_canceled_by_user=*/true);
     autofill_progress_dialog_view_ = nullptr;
   }
 }
@@ -42,7 +43,8 @@ void AutofillProgressDialogControllerImpl::DismissDialog(
   if (!autofill_progress_dialog_view_)
     return;
 
-  autofill_progress_dialog_view_->Dismiss(show_confirmation_before_closing);
+  autofill_progress_dialog_view_->Dismiss(show_confirmation_before_closing,
+                                          /*is_canceled_by_user=*/false);
   autofill_progress_dialog_view_ = nullptr;
 }
 

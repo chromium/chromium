@@ -16,7 +16,8 @@ class AutofillProgressDialogView {
   virtual ~AutofillProgressDialogView() = default;
 
   // Called by the controller to dismiss the dialog.
-  virtual void Dismiss(bool show_confirmation_before_closing) = 0;
+  virtual void Dismiss(bool show_confirmation_before_closing,
+                       bool is_canceled_by_user) = 0;
 
   // Factory function for creating and showing the view.
   static AutofillProgressDialogView* CreateAndShow(
