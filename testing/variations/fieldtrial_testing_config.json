@@ -3898,21 +3898,6 @@
             ]
         }
     ],
-    "GoogleLensSdkIntent": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ForcedOn_GoogleLensSdkIntent",
-                    "enable_features": [
-                        "GoogleLensSdkIntent"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleOnContent": [
         {
             "platforms": [
