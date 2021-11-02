@@ -35,6 +35,13 @@
 
 namespace cc {
 
+namespace {
+
+constexpr char kTraceCategory[] =
+    "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame");
+
+}  // namespace
+
 using ThreadType = FrameSequenceMetrics::ThreadType;
 
 // In the |TRACKER_TRACE_STREAM|, we mod the numbers such as frame sequence
@@ -83,7 +90,7 @@ FrameSequenceTracker::FrameSequenceTracker(
   // TODO(crbug.com/1158439): remove the trace event once the validation is
   // completed.
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
+      kTraceCategory, "TrackerValidation", TRACE_ID_LOCAL(this),
       base::TimeTicks::Now(), "name", GetFrameSequenceTrackerTypeName(type));
 }
 
@@ -100,7 +107,7 @@ FrameSequenceTracker::FrameSequenceTracker(
 
 FrameSequenceTracker::~FrameSequenceTracker() {
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP2(
-      "cc,benchmark", "TrackerValidation", TRACE_ID_LOCAL(this),
+      kTraceCategory, "TrackerValidation", TRACE_ID_LOCAL(this),
       base::TimeTicks::Now(), "aborted_main", aborted_main_frame_,
       "no_damage_main", no_damage_draw_main_frames_);
   CleanUp();
