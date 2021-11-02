@@ -111,7 +111,10 @@ void CompatModeButtonController::Update(
           IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE));
       break;
     case ash::ArcResizeLockType::NONE:
-      NOTREACHED();
+      // Maximizing an app with RESIZE_ENABLED_TOGGLABLE can lead to this case.
+      // Resize lock state shouldn't be updated as the pre-maximized state
+      // needs to be restored later.
+      break;
   }
 
   UpdateAshAccelerator(pref_delegate, window);
