@@ -512,8 +512,10 @@ TEST_F(NativeWindowOcclusionTrackerTest, DisplayOnOffHandling) {
 
 // Verifies that a window is not occluded if the only window occluding it is
 // being moved/dragged.
+//
+// TODO(crbug.com/1266124): Flaky on Windows.
 TEST_F(NativeWindowOcclusionTrackerTest,
-       MovingWindowNotConsideredInCalculations) {
+       DISABLED_MovingWindowNotConsideredInCalculations) {
   // Needed as this test triggers a native nested message loop.
   base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
       allow_nesting;
