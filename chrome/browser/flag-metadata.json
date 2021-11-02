@@ -5006,6 +5006,11 @@
     "expiry_milestone" : 100
   },
   {
+    "name": "single-ntp",
+    "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "single-touch-select",
     "owners": [ "donnd", "contextual-search-eng@google.com" ],
     "expiry_milestone": 99
