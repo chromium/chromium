@@ -23,6 +23,7 @@
 #include "content/public/common/process_type.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/page_transition_types.h"
@@ -161,6 +162,48 @@ const char kHistogramExperimentalLargestContentfulPaintMainFrameContentType[] =
     "PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint."
     "MainFrame."
     "ContentType";
+
+const char kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+    "MaxEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile.MaxEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.MaxEventDuration";
+const char kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+    "MaxEventDuration";
+const char kHistogramWorstUserInteractionLatencyMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration";
+const char kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+    "MaxEventDuration";
+
+const char
+    kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration[] =
+        "PageLoad.InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+        "TotalEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile.TotalEventDuration";
+const char
+    kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration
+        [] = "PageLoad.InteractiveTiming.SlowUserInteractionLatencyOverBudget."
+             "HighPercentile2.TotalEventDuration";
+const char kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration[] =
+    "PageLoad.InteractiveTiming.SumOfUserInteractionLatencyOverBudget."
+    "TotalEventDuration";
+const char kHistogramWorstUserInteractionLatencyTotalEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatency.TotalEventDuration";
+const char kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatencyOverBudget."
+    "TotalEventDuration";
+
 const char kHistogramFirstInputDelay[] =
     "PageLoad.InteractiveTiming.FirstInputDelay4";
 const char kHistogramFirstInputTimestamp[] =
@@ -1136,6 +1179,92 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
         internal::kHistogramLongestInputTimestamp,
         main_frame_timing.interactive_timing->longest_input_timestamp.value());
   }
+
+  RecordNormalizedResponsivenessMetrics();
+}
+
+void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+  auto& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+  auto& total_event_durations =
+      normalized_responsiveness_metrics.normalized_total_event_durations;
+
+  UmaHistogramCustomTimes(
+      internal::kHistogramWorstUserInteractionLatencyMaxEventDuration,
+      max_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::kHistogramWorstUserInteractionLatencyTotalEventDuration,
+      total_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies))
+    return;
+
+  // When the flag is disabled, we don't know the type of user interactions
+  // and can't calculate the worst over budget.
+  UmaHistogramCustomTimes(
+      internal::kHistogramWorstUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.worst_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramWorstUserInteractionLatencyOverBudgetTotalEventDuration,
+      total_event_durations.worst_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::kHistogramSumOfUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSumOfUserInteractionLatencyOverBudgetTotalEventDuration,
+      total_event_durations.sum_of_latency_over_budget, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramAverageUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramAverageUserInteractionLatencyOverBudgetTotalEventDuration,
+      total_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileMaxEventDuration,
+      max_event_durations.high_percentile_latency_over_budget,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentileTotalEventDuration,
+      total_event_durations.high_percentile_latency_over_budget,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2MaxEventDuration,
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              max_event_durations.worst_ten_latencies_over_budget),
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramSlowUserInteractionLatencyOverBudgetHighPercentile2TotalEventDuration,
+      page_load_metrics::ResponsivenessMetricsNormalization::
+          ApproximateHighPercentile(
+              normalized_responsiveness_metrics.num_user_interactions,
+              total_event_durations.worst_ten_latencies_over_budget),
+      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 void UmaPageLoadMetricsObserver::RecordForegroundDurationHistograms(

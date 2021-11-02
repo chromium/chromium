@@ -677,8 +677,38 @@ IN_PROC_BROWSER_TEST_F(
       "AverageUserInteractionLatencyOverBudgetAfterBackForwardCacheRestore."
       "TotalEventduration"};
 
-  for (auto& metric : ukm_list) {
-    ExpectMetricCountForUrl(url_a, metric.c_str(), 1);
-    ExpectMetricCountForUrl(url_b, metric.c_str(), 0);
+  for (auto& ukm : ukm_list) {
+    ExpectMetricCountForUrl(url_a, ukm.c_str(), 1);
+    ExpectMetricCountForUrl(url_b, ukm.c_str(), 0);
+  }
+
+  std::vector<std::string> uma_list = {
+      internal::
+          kAverageUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSumOfUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatency_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatencyOverBudget_MaxEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kAverageUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSlowUserInteractionLatencyOverBudgetHighPercentile2_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kSumOfUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatency_TotalEventDuration_AfterBackForwardCacheRestore,
+      internal::
+          kWorstUserInteractionLatencyOverBudget_TotalEventDuration_AfterBackForwardCacheRestore};
+
+  for (auto& uma : uma_list) {
+    histogram_tester().ExpectTotalCount(uma, 1);
   }
 }

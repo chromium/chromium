@@ -713,24 +713,19 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDuration(
               total_event_durations.high_percentile_latency_over_budget
                   .InMilliseconds());
-
-      auto worst_ten_max_event_durations =
-          max_event_durations.worst_ten_latencies_over_budget;
-      auto worst_ten_total_event_durations =
-          total_event_durations.worst_ten_latencies_over_budget;
       builder
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_MaxEventDuration(
               page_load_metrics::ResponsivenessMetricsNormalization::
                   ApproximateHighPercentile(
                       normalized_responsiveness_metrics.num_user_interactions,
-                      worst_ten_max_event_durations)
+                      max_event_durations.worst_ten_latencies_over_budget)
                       .InMilliseconds());
       builder
           .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile2_TotalEventDuration(
               page_load_metrics::ResponsivenessMetricsNormalization::
                   ApproximateHighPercentile(
                       normalized_responsiveness_metrics.num_user_interactions,
-                      worst_ten_total_event_durations)
+                      total_event_durations.worst_ten_latencies_over_budget)
                       .InMilliseconds());
     }
   }

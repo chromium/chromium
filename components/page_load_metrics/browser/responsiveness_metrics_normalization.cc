@@ -46,7 +46,7 @@ base::TimeDelta ResponsivenessMetricsNormalization::ApproximateHighPercentile(
     uint64_t num_interactions,
     std::priority_queue<base::TimeDelta,
                         std::vector<base::TimeDelta>,
-                        std::greater<>>& worst_ten_latencies_over_budget) {
+                        std::greater<>> worst_ten_latencies_over_budget) {
   DCHECK(num_interactions &&
          base::FeatureList::IsEnabled(
              blink::features::kSendAllUserInteractionLatencies));
