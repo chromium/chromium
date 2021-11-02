@@ -17,21 +17,19 @@
 
 import { StubTransport } from '../../../tests/stubTransport.spec';
 
-import * as chai from 'chai';
-import chaiAsPromised from 'chai-as-promised';
-chai.use(chaiAsPromised);
-
 import * as sinon from 'sinon';
 
 import { BrowsingContextProcessor } from './browsingContextProcessor';
 import { CdpConnection, CdpClient } from '../../../cdp';
 import { Context } from './context';
 import { BrowsingContext } from '../../bidiProtocolTypes';
+import { IBidiServer, BidiServer } from '../../utils/bidiServer';
 
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
   let browsingContextProcessor: BrowsingContextProcessor;
   let cdpConnection: CdpConnection;
+  let bidiServer: IBidiServer;
 
   const EVALUATOR_SCRIPT = 'EVALUATOR_SCRIPT';
   const NEW_CONTEXT_ID = 'NEW_CONTEXT_ID';
@@ -55,11 +53,12 @@ describe('BrowsingContextProcessor', function () {
   beforeEach(async function () {
     mockCdpServer = new StubTransport();
     cdpConnection = new CdpConnection(mockCdpServer);
+    bidiServer = sinon.createStubInstance(BidiServer);
+
     browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       'SELF_TARGET_ID',
-      sinon.fake(),
-      sinon.fake(),
+      bidiServer,
       EVALUATOR_SCRIPT
     );
 
@@ -80,7 +79,8 @@ describe('BrowsingContextProcessor', function () {
       sinon.assert.calledOnceWithExactly(
         Context.create as sinon.SinonSpy,
         NEW_CONTEXT_ID,
-        sinon.match.any,
+        sinon.match.any, // cdpClient.
+        sinon.match.any, // bidiServer.
         EVALUATOR_SCRIPT
       );
     });

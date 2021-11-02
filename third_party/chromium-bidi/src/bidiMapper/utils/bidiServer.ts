@@ -21,6 +21,7 @@ const logBidi = log('bidi');
 import { EventEmitter } from 'events';
 
 import { ITransport } from '../../utils/transport';
+import { BrowsingContext, Session, Script } from '../bidiProtocolTypes';
 
 export interface BidiCommandMessage {
   id: number;
@@ -28,19 +29,16 @@ export interface BidiCommandMessage {
   params: object;
 }
 
-export interface BidiResponseMessage {
+export type BidiResponseMessage = {
   id: number;
-  result?: object;
-}
+  result: Session.ResultType | BrowsingContext.ResultType | Script.ResultType;
+};
 
 export interface BidiErrorMessage {
   id?: number;
 }
 
-export interface BidiEventMessage {
-  method: string;
-  params?: object;
-}
+export type BidiEventMessage = BrowsingContext.EventType;
 
 export type BidiOutgoingMessage =
   | BidiResponseMessage

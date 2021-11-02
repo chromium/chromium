@@ -22,6 +22,7 @@ import {
   CommonDataTypes,
   Script,
 } from '../../bidiProtocolTypes';
+import { IBidiServer } from '../../utils/bidiServer';
 
 export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;
@@ -36,15 +37,22 @@ export class Context {
   private constructor(
     private _contextId: string,
     private _cdpClient: CdpClient,
+    private _bidiServer: IBidiServer,
     private EVALUATOR_SCRIPT: string
   ) {}
 
   public static async create(
     contextId: string,
     cdpClient: CdpClient,
+    bidiServer: IBidiServer,
     EVALUATOR_SCRIPT: string
   ) {
-    const context = new Context(contextId, cdpClient, EVALUATOR_SCRIPT);
+    const context = new Context(
+      contextId,
+      cdpClient,
+      bidiServer,
+      EVALUATOR_SCRIPT
+    );
     await context._initialize();
     return context;
   }
@@ -53,6 +61,8 @@ export class Context {
     // Enabling Runtime doamin needed to have an exception stacktrace in
     // `evaluateScript`.
     await this._cdpClient.Runtime.enable();
+    await this._cdpClient.Page.enable();
+    await this._cdpClient.Page.setLifecycleEventsEnabled({ enabled: true });
 
     // TODO sadym: `dummyContextObject` needed for the running context.
     // Use the proper `executionContextId` instead:
@@ -79,11 +89,15 @@ export class Context {
     return this._contextId;
   }
 
-  toBidi() {
+  toBidi(): BrowsingContext.BrowsingContextInfo {
     return {
       context: this._targetInfo!.targetId,
-      parent: this._targetInfo!.openerId ? this._targetInfo!.openerId : null,
+      parent: this._targetInfo!.openerId
+        ? this._targetInfo!.openerId
+        : undefined,
       url: this._targetInfo!.url,
+      // TODO sadym: implement.
+      children: [],
     };
   }
 
@@ -92,16 +106,42 @@ export class Context {
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
     // TODO sadym: implement.
-    if (wait !== 'none') {
+    if (wait !== 'none' && wait !== 'interactive') {
       throw new Error(`Not implenented wait '${wait}'`);
     }
 
     const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
 
-    return {
-      navigation: cdpNavigateResult.loaderId,
-      url: url,
-    };
+    // Wait: none.
+    if (wait === 'none')
+      return {
+        navigation: cdpNavigateResult.loaderId,
+        url: url,
+      };
+
+    //Wait: interactive.
+    const domContentEventFiredPromise =
+      new Promise<BrowsingContext.BrowsingContextNavigateResult>((resolve) => {
+        const handleDomContentEventFired = async (
+          params: Protocol.Page.DomContentEventFiredEvent
+        ) => {
+          this._cdpClient.Page.removeListener(
+            'domContentEventFired',
+            handleDomContentEventFired
+          );
+          resolve({
+            navigation: cdpNavigateResult.loaderId,
+            url: url,
+          });
+        };
+
+        this._cdpClient.Page.on(
+          'domContentEventFired',
+          handleDomContentEventFired
+        );
+      });
+
+    return domContentEventFiredPromise;
   }
 
   /**

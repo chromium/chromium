@@ -185,7 +185,7 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
         "method": "browsingContext.contextCreated",
         "params": {
             "context": newContextID,
-            "parent": None,
+            "children": [],
             "url": ""}}
 
     # Assert command done.
@@ -194,7 +194,7 @@ async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextC
         "id": 9,
         "result": {
             "context": newContextID,
-            "parent": None,
+            "children": [],
             "url": ""}}
 
     # Get all contexts and assert new context is created.
@@ -244,7 +244,7 @@ async def test_navigateWaitNone_navigated(websocket):
 
     # Send command.
     command = {
-        "id": 15,
+        "id": 13,
         "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
@@ -257,7 +257,39 @@ async def test_navigateWaitNone_navigated(websocket):
     recursiveCompare(
         resp,
         {
-            "id": 15,
+            "id": 13,
+            "result": {
+                "navigation": "F595626837D41F9A72482D53B0C22F25",
+                "url": "data:text/html,<h2>test</h2>"}},
+        ["navigation"])
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def _ignore_test_navigateWaitInteractive_navigated(websocket):
+    ignore = True
+
+@pytest.mark.asyncio
+# TODO sadym: find a way to test if the command ended only after the DOM
+# actually loaded.
+async def test_navigateWaitInteractive_navigated(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    command = {
+        "id": 14,
+        "method": "browsingContext.navigate",
+        "params": {
+            "url": "data:text/html,<h2>test</h2>",
+            "wait": "interactive",
+            "context": contextID}}
+    await send_JSON_command(websocket, command)
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    recursiveCompare(
+        resp,
+        {
+            "id": 14,
             "result": {
                 "navigation": "F595626837D41F9A72482D53B0C22F25",
                 "url": "data:text/html,<h2>test</h2>"}},

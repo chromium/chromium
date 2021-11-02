@@ -25,6 +25,9 @@ export namespace CommonDataTypes {
 }
 
 export namespace Script {
+  export type CommandType = ScriptEvaluateCommand | PROTO.ScriptInvokeCommand;
+  export type ResultType = ScriptEvaluateResult | PROTO.ScriptInvokeResult;
+
   export type RealmTarget = {
     // TODO sadym: implement.
   };
@@ -94,6 +97,19 @@ export namespace Script {
 
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
 export namespace BrowsingContext {
+  export type CommandType =
+    | BrowsingContextGetTreeCommand
+    | BrowsingContextNavigateCommand
+    | PROTO.BrowsingContextCreateCommand;
+  export type ResultType =
+    | BrowsingContextGetTreeResult
+    | BrowsingContextNavigateResult
+    | PROTO.BrowsingContextCreateResult;
+  export type EventType =
+    | BrowsingContextDomContentLoadedEvent
+    | BrowsingContextCreatedEvent
+    | BrowsingContextDestroyedEvent;
+
   export type BrowsingContext = string;
   export type Navigation = string;
 
@@ -138,6 +154,29 @@ export namespace BrowsingContext {
     url: string;
   };
 
+  // events
+  export type BrowsingContextDomContentLoadedEvent = {
+    method: 'browsingContext.domContentLoaded';
+    params: NavigationInfo;
+  };
+
+  export type NavigationInfo = {
+    context: BrowsingContext;
+    navigation: Navigation | null;
+    url: string;
+  };
+
+  export type BrowsingContextCreatedEvent = {
+    method: 'browsingContext.contextCreated';
+    params: BrowsingContextInfo;
+  };
+
+  export type BrowsingContextDestroyedEvent = {
+    method: 'browsingContext.contextDestroyed';
+    params: BrowsingContextInfo;
+  };
+
+  // proto
   export namespace PROTO {
     // `browsingContext.create`:
     // https://github.com/w3c/webdriver-bidi/pull/133
@@ -159,6 +198,9 @@ export namespace BrowsingContext {
 }
 
 export namespace Session {
+  export type CommandType = SessionStatusCommand;
+  export type ResultType = SessionStatusResult;
+
   export type SessionStatusCommand = {
     method: 'session.status';
     params: CommonDataTypes.EmptyParams;

@@ -20,6 +20,7 @@ import { CdpConnection, CdpClient } from '../../../cdp';
 import { Context } from './context';
 import { BrowsingContext, Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
+import { IBidiServer } from '../../utils/bidiServer';
 
 const logContext = log('context');
 
@@ -31,22 +32,30 @@ export class BrowsingContextProcessor {
   private _cdpConnection: CdpConnection;
   private _selfTargetId: string;
 
-  private _onContextCreated: (t: Context) => Promise<void>;
-  private _onContextDestroyed: (t: Context) => Promise<void>;
-
   constructor(
     cdpConnection: CdpConnection,
     selfTargetId: string,
-    onContextCreated: (t: Context) => Promise<void>,
-    onContextDestroyed: (t: Context) => Promise<void>,
+    private _bidiServer: IBidiServer,
     private EVALUATOR_SCRIPT: string
   ) {
     this._cdpConnection = cdpConnection;
     this._selfTargetId = selfTargetId;
-    this._onContextCreated = onContextCreated;
-    this._onContextDestroyed = onContextDestroyed;
 
     this._setCdpEventListeners(this._cdpConnection.browserClient());
+  }
+
+  private async _onContextCreated(context: Context): Promise<void> {
+    await this._bidiServer.sendMessage({
+      method: 'browsingContext.contextCreated',
+      params: context.toBidi(),
+    });
+  }
+
+  private async _onContextDestroyed(context: Context): Promise<void> {
+    await this._bidiServer.sendMessage({
+      method: 'browsingContext.contextDestroyed',
+      params: context.toBidi(),
+    });
   }
 
   private _setCdpEventListeners(browserCdpClient: CdpClient) {
@@ -75,6 +84,7 @@ export class BrowsingContextProcessor {
       contextPromise = Context.create(
         contextId,
         sessionCdpClient,
+        this._bidiServer,
         this.EVALUATOR_SCRIPT
       );
       this._contexts.set(contextId, contextPromise);
