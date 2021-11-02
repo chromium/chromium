@@ -577,9 +577,12 @@ void EmulationHandler::UpdateDeviceEmulationStateForHost(
   }
 }
 
-void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers) {
-  if (!user_agent_.empty())
+void EmulationHandler::ApplyOverrides(net::HttpRequestHeaders* headers,
+                                      bool* user_agent_overridden) {
+  if (!user_agent_.empty()) {
     headers->SetHeader(net::HttpRequestHeaders::kUserAgent, user_agent_);
+  }
+  *user_agent_overridden = !user_agent_.empty();
   if (!accept_language_.empty()) {
     headers->SetHeader(
         net::HttpRequestHeaders::kAcceptLanguage,
