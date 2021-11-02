@@ -472,6 +472,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5711039611392265845">Pribatutasunarekin, segurtasunarekin eta datu-bilketarekin lotutako ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Sinkronizazioa eta Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="5724941645893276623">Sarea modu pribatuan arakatzeko, gehitu beste fitxa bat</translation>
 <translation id="5728700505257787410">Arazo bat izan da kontuan saioa hastean.</translation>
+<translation id="5731784586962650619">Beste aplikazio batzuetako pasahitzak</translation>
 <translation id="5737974891429562743">Kontuan saioa hasteko xehetasunak zaharkituta daude. Egunera itzazu sinkronizatzen hasteko.</translation>
 <translation id="5738887413654608789">Honi esker, inguruan duzunaren arabera interesa dakizkizukeen web-orri aipagarriak aurkituko dituzu.</translation>
 <translation id="5758631781033351321">Irakurketa-zerrenda aurkituko duzu hemen</translation>
@@ -524,6 +525,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6127379762771434464">Kendu egin da elementua</translation>
 <translation id="6136914049981179737">Duela segundo gutxi</translation>
 <translation id="6144589619057374135">Ireki ${url} ezkutuko moduan</translation>
+<translation id="6159839020698489198">aukerakoa</translation>
 <translation id="6177442314419606057">Bilatu Chrome-n</translation>
 <translation id="6184086493125982861">Erakutsi fitxak</translation>
 <translation id="6187302354554850004">Azken sinkronizazioa: <ph name="LAST_USED_TIME" /></translation>
@@ -622,6 +624,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6851516051005285358">Eskatu ordenagailuetarako webgunea</translation>
 <translation id="6858855187367714033">Eskaneatuta</translation>
 <translation id="6859944681507688231">QR kodea edo kreditu-txartela eskaneatzeko, gaitu kamera ezarpenetan.</translation>
+<translation id="6867369562105931222">pasahitza</translation>
 <translation id="6869389390665537774">Bisitatu dituzun orriak ikus ditzakezu, edo historiatik garbitu</translation>
 <translation id="6873263987691478642">Ikuspegi zatitua</translation>
 <translation id="6888009575607455378">Ziur aldaketak baztertu nahi dituzula?</translation>

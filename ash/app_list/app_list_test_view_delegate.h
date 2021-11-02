@@ -74,7 +74,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                         int suggestion_index,
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
-                                int action_index) override {}
+                                SearchResultActionType action) override {}
   void GetSearchResultContextMenuModel(
       const std::string& result_id,
       GetContextMenuModelCallback callback) override;
@@ -88,6 +88,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void GetContextMenuModel(const std::string& id,
                            GetContextMenuModelCallback callback) override;
   void SortAppList(AppListSortOrder order) override {}
+  void RevertAppListSort() override {}
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       ash::AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,

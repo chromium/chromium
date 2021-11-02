@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1146678959555564648">Войти в режим VR</translation>
 <translation id="114825011539563458">Самые важные настройки конфиденциальности и безопасности на одной странице</translation>
+<translation id="1149401351239820326">Месяц окончания срока действия</translation>
 <translation id="1154704303112745282">Страница недоступна в офлайн-режиме: <ph name="VIOLATED_URL" />.</translation>
 <translation id="116280672541001035">Использовано</translation>
 <translation id="1171770572613082465">Чтобы перейти к списку популярных сайтов, нажмите кнопку "Топ сайтов"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Функции Google Chrome</translation>
 <translation id="1344653310988386453">Добавьте ссылку на выделенный текст.</translation>
 <translation id="1347468774581902829">Управление историей</translation>
-<translation id="1353372385686746892">Chrome отправляет в Google диагностические данные, которые помогут улучшить приложение. <ph name="BEGIN_LINK" />Изменить<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Выйти и отключить синхронизацию?</translation>
 <translation id="1373696734384179344">Недостаточно памяти для скачивания выбранного контента.</translation>
 <translation id="1376578503827013741">Подсчет…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">Открыть Справочный центр Chrome в новой вкладке</translation>
 <translation id="5957442310066583693">Нажмите эту кнопку, чтобы увидеть интересные вам сайты</translation>
 <translation id="5958275228015807058">Скачанные файлы и веб-страницы хранятся в одноименном разделе.</translation>
-<translation id="5962272973076519240">Чтобы разблокировать вкладки инкогнито, подтвердите свою личность</translation>
 <translation id="5962718611393537961">Нажмите, чтобы свернуть</translation>
 <translation id="5964805880140440652">Чтобы открыть доступ к этой странице другому устройству, откройте настройки Chrome и включите синхронизацию.</translation>
 <translation id="5964869237734432770">Не генерировать описания</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">SD-карта не найдена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка инкогнито}one{<ph name="TAB_COUNT_NORMAL" /> вкладка инкогнито}few{<ph name="TAB_COUNT_NORMAL" /> вкладки инкогнито}many{<ph name="TAB_COUNT_NORMAL" /> вкладок инкогнито}other{<ph name="TAB_COUNT_NORMAL" /> вкладки инкогнито}}</translation>
 <translation id="8051695050440594747">Доступно <ph name="MEGABYTES" /> МБ</translation>
+<translation id="8058655154417507695">Год окончания срока действия</translation>
 <translation id="8058746566562539958">Открыть в новой вкладке</translation>
 <translation id="8063895661287329888">Не удалось добавить закладку.</translation>
 <translation id="806745655614357130">Не объединять данные</translation>

@@ -13,21 +13,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Switch
-        android:id="@+id/on_demand_update"
-        android:text="On-Demand Update"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:ignore="UseSwitchCompatOrMaterialXml,HardcodedText"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"/>
-
     <TextView
         android:id="@+id/components_summary_textview"
         android:layout_width="match_parent"
@@ -37,6 +22,24 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+    <Switch
+        android:id="@+id/on_demand_update"
+        android:text="On-Demand Update"
+        android:checked="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="UseSwitchCompatOrMaterialXml,HardcodedText"/>
 
     <!-- horizontal divider -->
     <View

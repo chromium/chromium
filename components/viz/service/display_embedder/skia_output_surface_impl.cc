@@ -411,14 +411,13 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
       image_context->resource_format(),
       image_context->mailbox_holder().texture_target,
       image_context->ycbcr_info());
-  image_context->SetImage(
-      current_paint_->recorder()->makePromiseTexture(
-          backend_format, image_context->size().width(),
-          image_context->size().height(), GrMipMapped::kNo,
-          image_context->origin(), color_type, image_context->alpha_type(),
-          image_context->color_space(), Fulfill /* fulfillProc */,
-          nullptr /* releaseProc */, image_context /* context */),
-      backend_format);
+  auto image = SkImage::MakePromiseTexture(
+      gr_context_thread_safe_, backend_format,
+      {image_context->size().width(), image_context->size().height()},
+      GrMipMapped::kNo, image_context->origin(), color_type,
+      image_context->alpha_type(), image_context->color_space(), Fulfill,
+      /*textureReleaseProc=*/nullptr, image_context);
+  image_context->SetImage(std::move(image), backend_format);
 
   if (mailbox_holder.sync_token.HasData()) {
     resource_sync_tokens_.push_back(mailbox_holder.sync_token);
@@ -465,8 +464,9 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
 
   GrYUVABackendTextureInfo yuva_backend_info(
       yuva_info, formats, GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
-  auto image = current_paint_->recorder()->makeYUVAPromiseTexture(
-      yuva_backend_info, std::move(image_color_space), Fulfill,
+  auto image = SkImage::MakePromiseYUVATexture(
+      gr_context_thread_safe_, yuva_backend_info, std::move(image_color_space),
+      Fulfill,
       /*textureReleaseProc=*/nullptr, texture_contexts);
   DCHECK(image);
   return image;
@@ -722,15 +722,14 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
         ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
         format, GL_TEXTURE_2D, /*ycbcr_info=*/absl::nullopt);
-    image_context->SetImage(
-        current_paint_->recorder()->makePromiseTexture(
-            backend_format, image_context->size().width(),
-            image_context->size().height(),
-            mipmap ? GrMipMapped::kYes : GrMipMapped::kNo,
-            image_context->origin(), color_type, image_context->alpha_type(),
-            image_context->color_space(), Fulfill,
-            /*releaseTextureProc=*/nullptr, image_context.get()),
-        backend_format);
+    auto image = SkImage::MakePromiseTexture(
+        gr_context_thread_safe_, backend_format,
+        {image_context->size().width(), image_context->size().height()},
+        mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),
+        color_type, image_context->alpha_type(), image_context->color_space(),
+        Fulfill,
+        /*textureReleaseProc=*/nullptr, image_context.get());
+    image_context->SetImage(std::move(image), backend_format);
     if (!image_context->has_image()) {
       return nullptr;
     }
@@ -776,6 +775,15 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     std::unique_ptr<CopyOutputRequest> request,
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (request->has_blit_request()) {
+    for (const auto& mailbox_holder : request->blit_request().mailboxes) {
+      if (mailbox_holder.sync_token.HasData()) {
+        resource_sync_tokens_.push_back(mailbox_holder.sync_token);
+      }
+    }
+  }
+
   auto callback =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
                      base::Unretained(impl_on_gpu_.get()), id, geometry,

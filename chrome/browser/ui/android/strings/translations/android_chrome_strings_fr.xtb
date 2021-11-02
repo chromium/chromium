@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Supprimer les données existantes</translation>
 <translation id="1146678959555564648">Activer la réalité virtuelle</translation>
 <translation id="114825011539563458">Les paramètres de confidentialité et de sécurité essentiels au même endroit</translation>
+<translation id="1149401351239820326">Mois d'expiration</translation>
 <translation id="1154704303112745282">Page non disponible hors connexion : <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Utilisées</translation>
 <translation id="1171770572613082465">Appuyez sur le bouton "Sites populaires" pour afficher les sites Web les plus visités</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Raccourcis liés aux fonctionnalités de Google Chrome</translation>
 <translation id="1344653310988386453">Inclure le lien vers le texte en surbrillance</translation>
 <translation id="1347468774581902829">Gérer l'activité</translation>
-<translation id="1353372385686746892">Chrome envoie à Google des données de diagnostic qui sont ensuite utilisées pour améliorer l'application. <ph name="BEGIN_LINK" />Modifier<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchro. ?</translation>
 <translation id="1373696734384179344">Mémoire insuffisante pour télécharger le contenu sélectionné.</translation>
 <translation id="1376578503827013741">Calcul…</translation>
@@ -817,7 +817,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5956665950594638604">Ouvrir le centre d'aide dans un nouvel onglet</translation>
 <translation id="5957442310066583693">Appuyez sur le bouton d'accueil pour retrouver les sites que vous consultez le plus</translation>
 <translation id="5958275228015807058">Recherchez vos fichiers et vos pages dans la section "Téléchargements"</translation>
-<translation id="5962272973076519240">Validez votre identité pour déverrouiller la navigation privée</translation>
 <translation id="5962718611393537961">Appuyer pour réduire</translation>
 <translation id="5964805880140440652">Pour partager cette page avec un autre appareil, activez la synchronisation dans les paramètres Chrome</translation>
 <translation id="5964869237734432770">Arrêter descriptions images</translation>
@@ -1188,6 +1187,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="804335162455518893">Carte SD introuvable</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée}one{<ph name="TAB_COUNT_NORMAL" /> onglet de navigation privée}other{<ph name="TAB_COUNT_NORMAL" /> onglets de navigation privée}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> Mo disponibles</translation>
+<translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8058746566562539958">Ouvrir dans nouvel onglet Chrome</translation>
 <translation id="8063895661287329888">Échec de l'ajout du favori</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>

@@ -618,7 +618,6 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="1736269219679256369">允许关闭 SSL 警告页面并继续操作</translation>
 <translation id="174765717426930019">允许所有以 <ph name="BLANK_PAGE_NAME" /> 为目标打开的弹出式窗口与请求打开窗口的网页互动，除非这些网页已明确拒绝此类互动 </translation>
-<translation id="1750315445671978749">拦截所有下载内容</translation>
 <translation id="1751429117283165017">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站无法请求用户向其授予对主机操作系统的文件系统中的文件或目录的写入权限。
 
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
@@ -998,7 +997,6 @@
 <translation id="2204379573346866896">当前小时内已流逝的分钟数。</translation>
 <translation id="2204753382813641270">控制任务栏是否自动隐藏</translation>
 <translation id="2208976000652006649">在使用 POST 的搜索网址中所需的参数</translation>
-<translation id="2212603374276864511">允许用户使用预定义的桌面模板</translation>
 <translation id="2213059592185933570">允许创建漫游个人资料</translation>
 <translation id="2215238871726750562">如果此政策设为 True，系统会阻止浏览器窗口在会话开始时启动。
 
@@ -1831,6 +1829,7 @@
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
+<translation id="3101035417394748390">可通过剪贴板同步功能在客户端和主机之间传输的数据的大小上限（以字节为单位）</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
 <translation id="3101709781009526431">日期和时间</translation>
 <translation id="3110248563985502478">此政策已在 M88 中弃用，而且 Chrome 已不再支持 Flash。如果此政策已启用，过期插件可作为正常插件使用。如果此政策已停用，系统将不会使用过期插件。
@@ -2191,7 +2190,6 @@
 
       如需详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540935459049973317">应用级时间限制</translation>
-<translation id="354592434146464541">不允许用户使用预定义的桌面模板</translation>
 <translation id="3547954654003013442">代理设置</translation>
 <translation id="3550122827225052130">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
@@ -2271,6 +2269,7 @@
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，“接入交流电时启动”会处于关闭状态，而且用户无法开启该功能。</translation>
 <translation id="3660562134618097814">在用户登录期间转移 SAML IdP Cookie</translation>
 <translation id="3665437376055221832">仅当没有任何证书与自动选择政策匹配时才提示用户。</translation>
+<translation id="3674010627788940405">不支持 CORS 非通配符式请求标头。</translation>
 <translation id="3685979383016152590">通过设置此政策，您可以指定对批量打印机配置应用哪项访问政策，并控制用户可以使用 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 中的哪些打印机。
 
       * 如果您选择 <ph name="PRINTERS_BLOCKLIST" />（值为 0），系统会使用 <ph name="PRINTERS_BULK_BLOCKLIST" /> 来限制用户对指定打印机的访问权
@@ -2968,6 +2967,11 @@
 
       对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
+<translation id="4570859815763368584">已在 M68 中弃用。请改用 DefaultPopupsSetting。
+
+      如需查看完整说明，请访问 https://www.chromestatus.com/feature/5675755719622656。
+      如果您启用了此政策，网站将可以在导航的同时打开新窗口/新标签页。
+      如果您停用了或未设置此政策，网站将无法在导航的同时打开新窗口/新标签页。</translation>
 <translation id="4574215366111396039">Chrome 将阻止在沙盒化 iframe 内导航到外部协议。请参阅 https://chromestatus.com/features/5680742077038592。
 
       如果此政策设为 True，Chrome 将会阻止此类导航。
@@ -3313,6 +3317,7 @@
 <translation id="5025239932007658691">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 会不定时向 Google 服务器发送查询以检索准确的时间戳。
 
       如果此政策已停用，系统会阻止 <ph name="PRODUCT_NAME" /> 发送此类查询。</translation>
+<translation id="5039110755072335605">对 CORS 非通配符式请求标头的支持情况</translation>
 <translation id="504116558738617678">仅在相应设备不受管理或只有 1 个用户时显示磁盘空间不足警告</translation>
 <translation id="5049105847726444023">如果此政策已启用或未设置，用户便可通过切换工具栏中的图标显示其近期的 <ph name="GOOGLE_SEARCH_PRODUCT_NAME" />结果。
 
@@ -3493,7 +3498,6 @@
       如果此政策未设置，系统将不会应用任何限制，并且无论使用的是哪个 <ph name="PRODUCT_NAME" /> 版本，用户都能登录。
 
       此处的“Version”既可以是确切版本（如“61.0.3163.120”），也可以是版本前缀（如“61.0”）。  </translation>
-<translation id="5247006254130721952">拦截有危险的下载内容</translation>
 <translation id="5247973380763021389">禁止用户级云政策覆盖计算机级云政策。</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 帐号</translation>
 <translation id="5252210248395576403">此政策旨在授权快速解答功能访问所选内容并将相关信息发送给服务器，以获得翻译结果。
@@ -3756,7 +3760,6 @@
 <translation id="5521875416764302911">禁止用户登录 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">允许向 Quirks Server 发送查询并酌情下载硬件专用配置文件</translation>
 <translation id="5526701598901867718">所有（不安全）</translation>
-<translation id="5530347722229944744">拦截可能有危险的下载内容</translation>
 <translation id="5534079385061985566">启用“完全还原”功能。</translation>
 <translation id="5535256585099022933">设置重新启动时间间隔</translation>
 <translation id="5535973522252703021">Kerberos 授权服务器白名单</translation>
@@ -3980,7 +3983,6 @@
 <translation id="5814301096961727113">设置登录屏幕上语音反馈的默认状态</translation>
 <translation id="5815129011704381141">更新后自动重启</translation>
 <translation id="5815990343032461023">旧行为：自助服务终端 Chrome 应用将由扩展程序系统使用扩展程序清单中的更新网址进行更新，以及由缓存管理器使用政策提供的更新网址进行更新</translation>
-<translation id="5816106589769772877">如果此政策已启用，用户便能使用预配置的桌面布局模板。如果此政策已停用或未设置，则意味着这些模板不可用。</translation>
 <translation id="582857022372205358">启用短边双面打印</translation>
 <translation id="5830196507442186669">允许搭载 <ph name="PRODUCT_OS_NAME" />的设备使用 <ph name="BOREALIS_NAME" /></translation>
 <translation id="5832274826894536455">已弃用的政策</translation>
@@ -4138,7 +4140,6 @@
 <translation id="6019606564278029236">允许远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="6022948604095165524">启动时的操作</translation>
 <translation id="602318745029752898">允许在“随选朗读”功能中使用增强型网络文字转语音的语音</translation>
-<translation id="6025267044008029374">拦截恶意下载内容（推荐）</translation>
 <translation id="6026722971789064331">控制 File System API 在写入方面的使用</translation>
 <translation id="602728333950205286">默认搜索服务提供商的即搜即得网址</translation>
 <translation id="603410445099326293">在使用 POST 的建议网址中所需的参数</translation>
@@ -4605,21 +4606,6 @@
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
 <translation id="663685822663765995">限制打印颜色模式</translation>
-<translation id="6640989746632867803">如果您设置了此政策，用户便无法绕过下载安全决策。
-
-       如果此政策设为：
-
-      *“拦截有危险的下载内容”，系统将允许所有下载内容，但那些会触发安全警告的下载内容除外。
-
-      *“拦截可能有危险的下载内容”，系统将允许所有下载内容，但那些会因有安全隐患而触发安全警告的下载内容除外。
-
-      *“拦截所有下载内容”，系统将会拦截所有下载内容。
-
-      *“拦截恶意下载内容”，系统将允许所有下载内容，但那些已被非常肯定地评估为恶意软件的下载内容除外。与选择“拦截有危险的下载内容”不同，如果您选择“拦截恶意下载内容”，系统不会考虑文件类型，而是考虑主机。
-
-      *“无特殊限制”，系统将根据安全分析结果检查下载内容是否符合常规安全限制。
-
-      注意：这些限制适用于从网页内容以及“下载链接…”菜单选项触发的下载，但不适用于当前所示页面的下载，也不适用于通过打印选项另存为 PDF 文件。详细了解“安全浏览”功能 ( https://developers.google.com/safe-browsing )。</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
 <translation id="6642682198621199507">通过设置此政策，您可以罗列自动授权哪些网站访问所有可用的串行端口。
 
@@ -5767,7 +5753,6 @@
           指定的政策值应以毫秒为单位，且不得大于屏幕关闭延迟时间（若已设置）和闲置延迟时间。</translation>
 <translation id="7974114691960514888">此政策已不再受支持。在连接到远程客户端时，允许使用 STUN 和中继服务器。如果启用此设置，那么即使远程客户端受到防火墙隔离，也仍然可以检测到并连接到此计算机。如果停用此设置，并且防火墙过滤了外发 UDP 连接，那么此计算机将只能与本地网络内的客户端计算机建立连接。</translation>
 <translation id="7976157349247117979"><ph name="PRODUCT_NAME" /> 目标名称</translation>
-<translation id="7980227303582973781">无特殊限制</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
@@ -5889,6 +5874,15 @@
       如果此政策设为停用或未设置，用户登录时系统会使用常规个人资料。</translation>
 <translation id="8151299379693359769">允许根据远程认证结果进行额外的安全检查（可选，默认为 True）。</translation>
 <translation id="8151490482515839285">启用数据泄露预防报告</translation>
+<translation id="8151949408479239790">旨在配置对 CORS 非通配符式请求标头的支持情况。
+
+      <ph name="PRODUCT_NAME" /> 97 版引入了对 CORS 非通配符式请求标头的支持。如果脚本通过 fetch() 和已在所含授权标头中添加了脚本的 XMLHttpRequest 发出跨源网络请求，该标头必须在 CORS 预检响应中获得 Access-Control-Allow-Headers 标头的明确允许。这里的“明确”意味着通配符“*”不会涵盖授权标头。详见 <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />。
+
+      如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将会支持 CORS 非通配符式请求标头，并会具有上述行为。
+
+      如果此政策设为 False，Chrome 将会允许在 CORS 预检响应中的 Access-Control-Allow-Headers 标头内使用通配符“*”涵盖授权标头。
+
+      这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 103 版之后移除。</translation>
 <translation id="8158758865057576716">允许创建 <ph name="PRODUCT_NAME" /> 个人资料数据的漫游副本。</translation>
 <translation id="8158897487095710470">如果此政策设为 True，<ph name="PRODUCT_NAME" /> 中会显示书签栏。如果此政策设为 False，用户一律不会看到书签栏。
 
@@ -6006,6 +6000,17 @@
 
           如果未设置此政策，则“语音输入”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="8293414596801971604">用于匹配打印机显示名的正则表达式。</translation>
+<translation id="8293509904023267821">如果您设置了此政策，向/由相应主机发送的剪贴板数据将会被截断，以符合此政策设定的限值。
+
+          如果所设值为 0，剪贴板同步功能会被停用。
+
+          此政策既会影响远程访问情形，也会影响远程支持情形。
+
+          如果未设置，此政策将不会产生任何影响。
+
+          如果您为此政策指定的值不在下限值/上限值范围内，则可能会导致相应主机无法启动。
+
+          请注意，剪贴板数据大小的实际上限取决于不受此政策控制的 WebRTC 数据通道消息大小上限。</translation>
 <translation id="8294750666104911727">XX-UA-Compatible 设置为chrome=1的网页通常在“<ph name="PRODUCT_FRAME_NAME" />”中进行渲染，而不考虑“ChromeFrameRendererSettings”政策。
 
           如果启用了该设置，将不扫描网页的元标记。
@@ -6037,6 +6042,7 @@
 
       如果此政策已停用，对屏幕共享 API 的所有调用都会失败并会返回错误；但在以下情况下，系统将不会考虑此政策（相应网站将能够使用屏幕共享 API）：该网站与 <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 或 <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" /> 政策中的来源格式匹配。
       </translation>
+<translation id="8310392396850884147">支持 CORS 非通配符式请求标头。</translation>
 <translation id="8312129124898414409">可让您设置是否允许网站使用密钥生成功能。您可以允许或禁止所有网站使用密钥生成功能。
 
           如果此政策未设置，系统将使用“BlockKeygen”，并且用户可以更改此设置。</translation>

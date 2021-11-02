@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">სამსახური</translation>
 <translation id="1122198203221319518">&amp;ხელსაწყოები</translation>
 <translation id="1122242684574577509">ავტორიზაცია ვერ მოხერხდა. დააწკაპუნეთ თქვენ მიერ გამოყენებული Wi-Fi ქსელის (<ph name="NETWORK_ID" />) შესვლის გვერდზე გადასასვლელად.</translation>
+<translation id="1122913801042512795">თქვენი ანგარიშის სისტემაში შესვლის მონაცემები მოძველებულია. გამოდით სისტემიდან და ცადეთ ხელახლა.</translation>
 <translation id="1122960773616686544">სანიშნის სახელი</translation>
 <translation id="1124772482545689468">მომხმარებელი</translation>
 <translation id="1125550662859510761">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /> (საკუთარი)</translation>
@@ -7494,6 +7495,7 @@
 <translation id="8879284080359814990">&amp;ჩანართის სახით ჩვენება</translation>
 <translation id="8879921471468674457">სისტემაში შესვლის ინფორმაციის დამახსოვრება</translation>
 <translation id="8880054210564666174">კონტაქტების სია ვერ ჩამოიტვირთა. შეამოწმეთ კავშირი ქსელთან, ან <ph name="LINK_BEGIN" />ცადეთ ხელახლა<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Linux-ს ან Parallels Desktop-ს <ph name="USB_DEVICE_NAME" /> რომ დააკავშიროთ, გახსენით პარამეტრები</translation>
 <translation id="8881020143150461183">გთხოვთ, ცადოთ ხელახლა. ტექნიკური მხარდაჭერის მისაღებად დაუკავშირდით <ph name="CARRIER_NAME" />-ს.</translation>
 <translation id="8883273463630735858">სენსორული პანელის აჩქარების ჩართვა</translation>
 <translation id="8884570509232205463">თქვენი მოწყობილობა ახლა ჩაიკეტება <ph name="UNLOCK_TIME" />-ზე.</translation>

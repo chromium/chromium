@@ -33,19 +33,16 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
 
   ~MessageCenterScrollBar() override;
 
-  // views::ScrollBar:
-  bool OverlapsContent() const override;
-
  private:
-  // View:
+  // View overrides:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   const char* GetClassName() const override;
 
-  // ui::EventHandler:
+  // ui::EventHandler overrides:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // views::ScrollDelegate:
+  // views::ScrollDelegate overrides:
   bool OnScroll(float dx, float dy) override;
 
   // False if no event is recorded yet. True if the first event is recorded.

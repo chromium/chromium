@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
+#include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
 namespace {
@@ -32,7 +33,7 @@ StreamingRuntimeApplication::StreamingRuntimeApplication(
     CastWebService* web_service,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter)
-    : RuntimeApplicationBase(mojom::RendererType::REMOTING_RENDERER,
+    : RuntimeApplicationBase(mojom::RendererType::MOJO_RENDERER,
                              web_service,
                              std::move(task_runner)),
       network_context_getter_(std::move(network_context_getter)) {}
@@ -65,7 +66,7 @@ void StreamingRuntimeApplication::StartAvSettingsQuery(
                                        std::move(message_port));
 }
 
-GURL StreamingRuntimeApplication::ProcessWebView(
+GURL StreamingRuntimeApplication::InitializeAndGetInitialURL(
     CoreApplicationServiceGrpc* grpc_stub,
     CastWebContents* cast_web_contents) {
   message_port_service_ = std::make_unique<MessagePortService>(
@@ -81,7 +82,10 @@ GURL StreamingRuntimeApplication::ProcessWebView(
 
   // Initialize the streaming receiver.
   receiver_session_client_ = std::make_unique<StreamingReceiverSessionClient>(
-      task_runner(), network_context_getter_, std::move(client_port), this);
+      task_runner(), network_context_getter_, std::move(client_port), this,
+      true,
+      app_config().app_id() !=
+          openscreen::cast::GetIosAppStreamingAudioVideoAppId());
   receiver_session_client_->LaunchStreamingReceiverAsync(cast_web_contents);
 
   std::string streaming_url =

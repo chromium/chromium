@@ -28,7 +28,8 @@ def _CommonChecks(input_api, output_api):
         '.',
         files_to_check=TEST_PATTERNS,
         env=env,
-        run_on_python2=False)
+        run_on_python2=False,
+        skip_shebang_check=True)
     try:
         import sys
         old_sys_path = sys.path[:]

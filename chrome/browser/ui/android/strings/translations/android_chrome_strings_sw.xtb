@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Futa data iliyopo.</translation>
 <translation id="1146678959555564648">Tumia hali ya VR</translation>
 <translation id="114825011539563458">Vidhibiti muhimu zaidi vya faragha na usalama katika sehemu moja</translation>
+<translation id="1149401351239820326">Mwezi wa kuisha kwa muda wa matumizi</translation>
 <translation id="1154704303112745282">Ukurasa haupatikani nje ya mtandao: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Imetumika</translation>
 <translation id="1171770572613082465">Ona tovuti maarufu kwa kugusa kitufe cha "Tovuti maarufu"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Njia za mikato za vipengele vya Google Chrome</translation>
 <translation id="1344653310988386453">Jumuisha kiungo cha maandishi yaliyoangaziwa</translation>
 <translation id="1347468774581902829">Dhibiti shughuli</translation>
-<translation id="1353372385686746892">Ili kusaidia kuboresha programu, Chrome hutuma data ya uchunguzi kwa Google. <ph name="BEGIN_LINK" />Badilisha<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Utaondoka na uzime usawazishaji?</translation>
 <translation id="1373696734384179344">Hakuna hifadhi ya kutosha ya kupakua maudhui yaliyochaguliwa.</translation>
 <translation id="1376578503827013741">Inakokotoa...</translation>
@@ -817,7 +817,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5956665950594638604">Fungua Kituo cha Usaidizi cha Chrome katika kichupo kipya</translation>
 <translation id="5957442310066583693">Ili uone tovuti zako maarufu, gusa kitufe cha Ukurasa wa mwanzo</translation>
 <translation id="5958275228015807058">Tafuta faili na kurasa zako katika Vipakuliwa</translation>
-<translation id="5962272973076519240">Thibitisha kwamba ni wewe ili ufungue hali fiche</translation>
 <translation id="5962718611393537961">Gusa ili ukunje</translation>
 <translation id="5964805880140440652">Ili ushiriki ukurasa huu kwenye kifaa kingine, washa usawazishaji katika mipangilio ya Chrome</translation>
 <translation id="5964869237734432770">Komesha maelezo ya picha</translation>
@@ -1188,6 +1187,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="804335162455518893">Kadi ya SD haikupatikana</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{Kichupo <ph name="TAB_COUNT_ONE" /> fiche}other{Vichupo <ph name="TAB_COUNT_NORMAL" /> fiche}}</translation>
 <translation id="8051695050440594747">MB <ph name="MEGABYTES" /> zinapatikana</translation>
+<translation id="8058655154417507695">Mwaka wa kuisha kwa muda wa matumizi</translation>
 <translation id="8058746566562539958">Fungua katika kichupo kipya cha Chrome</translation>
 <translation id="8063895661287329888">Haikuweza kuongeza alamisho.</translation>
 <translation id="806745655614357130">Weka data yangu katika sehemu tofauti</translation>

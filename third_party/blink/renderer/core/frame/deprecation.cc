@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -807,7 +808,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
   }
   if (base::FeatureList::IsEnabled(
           features::kDeprecationWillLogToDevToolsIssue)) {
-    // TODO(crbug.com/1248484): Implement DevTools Issue logging.
+    AuditsIssue::ReportDeprecationIssue(context, info.message_);
   }
 
   Report* report = CreateReportInternal(context->Url(), info);

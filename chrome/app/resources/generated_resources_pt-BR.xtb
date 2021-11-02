@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Trabalho</translation>
 <translation id="1122198203221319518">&amp;Ferramentas</translation>
 <translation id="1122242684574577509">Falha na autenticação. Clique para visitar a página de login da rede Wi-Fi que você está usando (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Seus detalhes de login estão desatualizados. Saia da conta e faça login novamente.</translation>
 <translation id="1122960773616686544">Nome do favorito</translation>
 <translation id="1124772482545689468">Usuário</translation>
 <translation id="1125550662859510761">Resolução: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
@@ -7516,6 +7517,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8879284080359814990">&amp;Mostrar como guia</translation>
 <translation id="8879921471468674457">Lembrar informações de login</translation>
 <translation id="8880054210564666174">Não foi possível fazer o download da lista de contatos. Verifique sua conexão de rede ou <ph name="LINK_BEGIN" />tente novamente<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Abra as Configurações para conectar o dispositivo <ph name="USB_DEVICE_NAME" /> ao Linux ou ao Parallels Desktop</translation>
 <translation id="8881020143150461183">Tente novamente. Se precisar de suporte técnico, fale com a <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Ativar aceleração de touchpad</translation>
 <translation id="8884570509232205463">Seu dispositivo será bloqueado neste horário: <ph name="UNLOCK_TIME" />.</translation>

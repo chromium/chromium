@@ -25,7 +25,7 @@ async_test(t => {
           t.done();
         });
       });
-    }, 0);
+    }, 1);
   }
   channel.port1.postMessage(offscreen, [offscreen]);
 }, "Verify that posting an OffscreenCanvas through a MessageChannel works as intended.");

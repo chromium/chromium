@@ -8,12 +8,6 @@ import fnmatch
 from unexpected_passes_common import data_types
 
 VIRTUAL_PREFIX = 'virtual/'
-# According to //third_party/blink/web_tests/SlowTests, a test is considered
-# slow if it is slower than ~30% of the default timeout. The default timeouts
-# are 6s for release, 12s for release with DCHECKs enabled, and 30s for debug.
-RELEASE_THRESHOLD = 6 * 0.3
-RELEASE_DCHECK_THRESHOLD = 12 * 0.3
-DEBUG_THRESHOLD = 30 * 0.3
 
 
 class WebTestExpectation(data_types.BaseExpectation):
@@ -51,16 +45,18 @@ class WebTestResult(data_types.BaseResult):
         self._duration = 0
         self.is_slow_result = False
 
-    def SetDuration(self, duration):
+    def SetDuration(self, duration, timeout):
         self._duration = float(duration)
-        if 'debug' in self.tags:
-            threshold = DEBUG_THRESHOLD
-        else:
-            # TODO(crbug.com/1222827): Dynamically determine which builders are
-            # DCHECK builders by using Buildbucket to determine which builders
-            # actually compile things (i.e. find all parent builders) and get
-            # their GN args from //tools/mb/mb_config_expectations/
-            threshold = RELEASE_THRESHOLD
+        # Convert from milliseconds to seconds if necessary.
+        # TODO(crbug.com/1222827): Remove this conversion once all the old data
+        # in the tables has aged out.
+        timeout = float(timeout)
+        if timeout > 1000:
+            timeout /= 1000
+        # According to //third_party/blink/web_tests/SlowTests, as tests is
+        # considered slow if it is slower than ~30% of its timeout since test
+        # times can vary by up to 3x.
+        threshold = 0.3 * float(timeout)
         self.is_slow_result = (self._duration > threshold)
 
 

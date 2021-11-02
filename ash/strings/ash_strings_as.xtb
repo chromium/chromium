@@ -24,6 +24,7 @@
 <translation id="109942774857561566">মই বিৰক্ত হৈছোঁ</translation>
 <translation id="1104084341931202936">সাধ্য সুবিধাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="1104621072296271835">আপোনাৰ ডিভাইচসমূহে একেলগে আৰু ভালকৈ কাম কৰে</translation>
+<translation id="1111781754511998498">প্ৰ’জেক্টৰ</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" />এ আপোনাক এই <ph name="DEVICE_TYPE" />টো আপডে’ট কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="1119348796022671382">থীমযুক্ত ৰঙৰ ম'ডটোৱে ইণ্টাৰফে’চটো পাতলকৈ ৰঙীন কৰিবলৈ আপোনাৰ ৱালপেপাৰৰ পৰা আহৰণ কৰা ৰংবোৰ ব্যৱহাৰ কৰে।</translation>
 <translation id="112308213915226829">শ্বেল্ফ স্বয়ংক্রিয়ভাৱে লুকুৱাওক</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">মাইক্ৰ'ফ'ন ৰেকৰ্ড কৰক</translation>
 <translation id="3680908746918359504">আটাইবোৰ মাৰ্কাৰ মচক</translation>
 <translation id="36813544980941320">আপোনাৰ ফ'ন আৰু <ph name="DEVICE_NAME" />ৰ মাজত ৱাই-ফাই নেটৱৰ্কটো শ্বেয়াৰ কৰা হ'ব</translation>
+<translation id="3701206655856637070">আপুনি এতিয়া স্ক্ৰীন কেপচাৰ ক’ত ছেভ কৰা হয় সেইটো সলনি কৰিব পাৰে</translation>
 <translation id="3702809606464356667">বর্তমানৰ ডেস্কখনৰ পৰা ৱিণ্ড’সমূহ দেখুৱাই থকা হৈছে, আটাইবোৰ ডেস্কৰ পৰা ৱিণ্ড' দেখুৱাবলৈ আপ এৰ' কীটো টিপক</translation>
 <translation id="3702846122927433391">নাইজেৰিয়াৰ জনসংখ্যা</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">অফ আছে</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
 <translation id="3977512764614765090">বেটাৰীত <ph name="PERCENTAGE" />% চ্চাৰ্জ আছে আৰু চ্চাৰ্জ হৈ আছে।</translation>
+<translation id="3986082989454912832">উত্তৰ দিয়ক</translation>
 <translation id="3995138139523574647">USB-C ডিভাইচ (সোঁফালে থকা পিছফালৰ প’ৰ্ট)</translation>
 <translation id="40062176907008878">হস্তলিপি</translation>
 <translation id="4017989525502048489">লেজাৰ প্ৰিণ্টাৰ</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">কীব’ৰ্ডৰ শ্বৰ্টকাট কণ্ট্ৰ'ল+ অল্ট + ডাউন এৰ'টো সলনি হৈছে। এণ্ড কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + ৰাইট এৰ' টিপক।</translation>
 <translation id="4279490309300973883">প্ৰতিবিম্বকৰণ</translation>
 <translation id="4285498937028063278">আনপিন কৰক</translation>
-<translation id="4292904812939562398">শেহতীয়াকৈ ব্যৱহাৰ কৰা এপ্</translation>
 <translation id="429402653707266969">টুলবাৰৰ অৱস্থান ট’গল কৰক</translation>
 <translation id="4294319844246081198">সুপ্ৰভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">সম্পূৰ্ণ <ph name="COUNT" />টা জাননী মচক</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">জাননী অফ কৰক</translation>
 <translation id="4946376291507881335">কেপচাৰ কৰক</translation>
 <translation id="495046168593986294">ওপৰলৈ স্ক্ৰল কৰক</translation>
 <translation id="4952936045814352993">এলাৰ্মৰ ধ্বনি অক্ষম কৰা থাকিলে ফ’নৰ অৱস্থান নিৰূপণ কৰাৰ সুবিধাটো উপলব্ধ নহয়</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">মি</translation>
 <translation id="7600875258240007829">সকলো জাননী চাওক</translation>
 <translation id="7607002721634913082">পজ হৈ আছে</translation>
+<translation id="7610198039767537854">আপোনাৰ ফ’নৰ কেমেৰা ৰ’লৰ পৰা <ph name="DEVICE_TYPE" />ত শেহতীয়া ফট’সমূহ চাওক</translation>
 <translation id="7618774594543487847">নিৰপেক্ষ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">মাৰ্কাৰ কলম</translation>

@@ -95,6 +95,15 @@ enum class AppListSortOrder {
   kNameReverseAlphabetical
 };
 
+// Lists the reasons that ash requests for item position update.
+enum class RequestPositionUpdateReason {
+  // Fix the position when multiple items share the same position.
+  kFixItem,
+
+  // Move an item.
+  kMoveItem
+};
+
 // All possible states of the app list.
 // Note: Do not change the order of these as they are used for metrics.
 enum class AppListState {

@@ -1182,15 +1182,15 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // Create the render passes in dependency order.
   size_t render_surface_list_size = frame->render_surface_list->size();
   for (size_t i = 0; i < render_surface_list_size; ++i) {
-    size_t surface_index = render_surface_list_size - 1 - i;
+    const size_t surface_index = render_surface_list_size - 1 - i;
     RenderSurfaceImpl* render_surface =
         (*frame->render_surface_list)[surface_index];
     const auto& shared_element_id =
         render_surface->GetDocumentTransitionSharedElementId();
 
-    bool is_root_surface =
+    const bool is_root_surface =
         render_surface->EffectTreeIndex() == EffectTree::kContentsRootNodeId;
-    bool should_draw_into_render_pass =
+    const bool should_draw_into_render_pass =
         is_root_surface || render_surface->contributes_to_drawn_surface() ||
         render_surface->CopyOfOutputRequired() || shared_element_id.valid();
     if (should_draw_into_render_pass)
@@ -2203,6 +2203,29 @@ void LayerTreeHostImpl::OnCanDrawStateChangedForTree() {
   client_->OnCanDrawStateChanged(CanDraw());
 }
 
+viz::RegionCaptureBounds LayerTreeHostImpl::CollectRegionCaptureBounds() {
+  viz::RegionCaptureBounds bounds;
+  for (const auto* layer : base::Reversed(*active_tree())) {
+    for (const auto& bounds_pair : layer->capture_bounds().bounds()) {
+      // Perform transformation from the coordinate system of this |layer|
+      // to that of the root render surface.
+      gfx::Rect bounds_in_screen_space = MathUtil::ProjectEnclosingClippedRect(
+          layer->ScreenSpaceTransform(), bounds_pair.second);
+
+      const RenderSurfaceImpl* root_surface =
+          active_tree()->RootRenderSurface();
+      const gfx::Rect content_rect_in_screen_space = gfx::ToEnclosedRect(
+          MathUtil::MapClippedRect(root_surface->screen_space_transform(),
+                                   root_surface->DrawableContentRect()));
+
+      // The transformed bounds may be partially or entirely offscreen.
+      bounds_in_screen_space.Intersect(content_rect_in_screen_space);
+      bounds.Set(bounds_pair.first, bounds_in_screen_space);
+    }
+  }
+  return bounds;
+}
+
 viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   viz::CompositorFrameMetadata metadata;
   metadata.frame_token = ++next_frame_token_;
@@ -2259,6 +2282,8 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
         delegated_ink_metadata->ToString());
     metadata.delegated_ink_metadata = std::move(delegated_ink_metadata);
   }
+
+  metadata.capture_bounds = CollectRegionCaptureBounds();
   return metadata;
 }
 
@@ -3048,9 +3073,8 @@ absl::optional<viz::HitTestRegionList> LayerTreeHostImpl::BuildHitTestData() {
         continue;
       }
 
-      gfx::Rect content_rect(
-          gfx::ScaleToEnclosingRect(gfx::Rect(surface_layer->bounds()),
-                                    device_scale_factor, device_scale_factor));
+      gfx::Rect content_rect(gfx::ScaleToEnclosingRect(
+          gfx::Rect(surface_layer->bounds()), device_scale_factor));
 
       gfx::Rect layer_screen_space_rect = MathUtil::MapEnclosingClippedRect(
           surface_layer->ScreenSpaceTransform(),

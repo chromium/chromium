@@ -31,8 +31,6 @@
 
 namespace {
 
-constexpr char kRealTimeUrlLookupReferrerLengthParam[] =
-    "SafeBrowsingRealTimeUrlLookupReferrerLengthParam";
 constexpr int kDefaultRealTimeUrlLookupReferrerLength = 2;
 
 }  // namespace
@@ -130,13 +128,11 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
 }
 
 bool RealTimeUrlLookupService::CanAttachReferrerChain() const {
-  return base::FeatureList::IsEnabled(kRealTimeUrlLookupReferrerChain);
+  return true;
 }
 
 int RealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kRealTimeUrlLookupReferrerChain, kRealTimeUrlLookupReferrerLengthParam,
-      kDefaultRealTimeUrlLookupReferrerLength);
+  return kDefaultRealTimeUrlLookupReferrerLength;
 }
 
 bool RealTimeUrlLookupService::CanSendPageLoadToken() const {

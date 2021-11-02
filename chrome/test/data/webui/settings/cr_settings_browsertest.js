@@ -635,9 +635,13 @@ GEN('#if (!defined(OS_MAC)) && (!defined(OS_LINUX) || defined(NDEBUG))');
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 
-GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)');
 [['PasswordsSectionCros', 'passwords_section_test_cros.js'],
- ['PeoplePageChromeOS', 'people_page_test_cros.js'],
+].forEach(test => registerTest(...test));
+GEN('#endif  // BUILDFLAG(IS_CHROMEOS_ASH)) || BUILDFLAG(IS_CHROMEOS_LACROS)');
+
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
+[['PeoplePageChromeOS', 'people_page_test_cros.js'],
  // Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
  ['SiteListChromeOS', 'site_list_tests_cros.js', 'DISABLED_AndroidSmsInfo'],
 ].forEach(test => registerTest(...test));

@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
@@ -98,11 +97,15 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       app_list_view_(app_list_view),
       is_app_list_bubble_(!app_list_view_),
       is_tablet_mode_(view_delegate_->IsInTabletMode()) {
+  AppListModelProvider* const model_provider = AppListModelProvider::Get();
+  model_provider->AddObserver(this);
   search_box_model_observer_.Observe(
-      AppListModelProvider::Get()->search_model()->search_box());
+      model_provider->search_model()->search_box());
 }
 
-SearchBoxView::~SearchBoxView() = default;
+SearchBoxView::~SearchBoxView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
 
 void SearchBoxView::Init(const InitParams& params) {
   SearchBoxViewBase::Init(params);
@@ -114,6 +117,7 @@ void SearchBoxView::Init(const InitParams& params) {
     search_box()->SetProperty(views::kMarginsKey,
                               kTextFieldMarginsForAppListBubble);
   }
+  ShowAssistantChanged();
 }
 
 void SearchBoxView::SetResultSelectionController(
@@ -138,8 +142,10 @@ void SearchBoxView::ResetForShow() {
     return;
 
   ClearSearchAndDeactivateSearchBox();
-  SetSearchBoxBackgroundCornerRadius(
-      GetSearchBoxBorderCornerRadiusForState(contents_view_->GetActiveState()));
+  if (contents_view_) {
+    SetSearchBoxBackgroundCornerRadius(GetSearchBoxBorderCornerRadiusForState(
+        contents_view_->GetActiveState()));
+  }
 }
 
 void SearchBoxView::ClearSearch() {
@@ -165,11 +171,12 @@ void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
   SearchBoxViewBase::HandleSearchBoxEvent(located_event);
 }
 
-void SearchBoxView::ModelChanged() {
+void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
+                                                 SearchModel* search_model) {
   search_box_model_observer_.Reset();
-  search_box_model_observer_.Observe(
-      AppListModelProvider::Get()->search_model()->search_box());
+  search_box_model_observer_.Observe(search_model->search_box());
 
+  ResetForShow();
   UpdateSearchIcon();
   OnWallpaperColorsChanged();
   ShowAssistantChanged();

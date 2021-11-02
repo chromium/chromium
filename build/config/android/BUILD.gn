@@ -91,11 +91,6 @@ config("runtime_library") {
     libs += [ "android_support" ]
   }
 
-  # arm builds of libc++ starting in NDK r12 depend on unwind.
-  if (current_cpu == "arm") {
-    libs += [ "unwind" ]
-  }
-
   if (current_cpu == "arm" && arm_version == 6) {
     libs += [ "atomic" ]
   }

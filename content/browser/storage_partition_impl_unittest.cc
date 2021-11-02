@@ -73,7 +73,6 @@
 #include "third_party/leveldatabase/env_chromium.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "ppapi/shared_impl/ppapi_constants.h"  // nogncheck
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -571,10 +570,11 @@ class RemovePluginPrivateDataTester {
   std::string CreateFileSystem(const std::string& plugin_name,
                                const GURL& origin) {
     AwaitCompletionHelper await_completion;
-    std::string fsid = storage::IsolatedContext::GetInstance()
-                           ->RegisterFileSystemForVirtualPath(
-                               storage::kFileSystemTypePluginPrivate,
-                               ppapi::kPluginPrivateRootName, base::FilePath());
+    std::string fsid =
+        storage::IsolatedContext::GetInstance()
+            ->RegisterFileSystemForVirtualPath(
+                storage::kFileSystemTypePluginPrivate,
+                storage::kPluginPrivateRootName, base::FilePath());
     EXPECT_TRUE(storage::ValidateIsolatedFileSystemId(fsid));
     filesystem_context_->OpenPluginPrivateFileSystem(
         url::Origin::Create(origin), storage::kFileSystemTypePluginPrivate,
@@ -593,7 +593,7 @@ class RemovePluginPrivateDataTester {
                                     const std::string& file_name) {
     AwaitCompletionHelper await_completion;
     std::string root = storage::GetIsolatedFileSystemRootURIString(
-        origin, fsid, ppapi::kPluginPrivateRootName);
+        origin, fsid, storage::kPluginPrivateRootName);
     storage::FileSystemURL file_url =
         filesystem_context_->CrackURLInFirstPartyContext(
             GURL(root + file_name));

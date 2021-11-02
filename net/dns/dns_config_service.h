@@ -7,7 +7,9 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -15,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
+#include "net/dns/address_sorter.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
@@ -22,6 +25,8 @@
 #include "url/gurl.h"
 
 namespace net {
+
+class AddressList;
 
 // Service for reading system DNS settings, on demand or when signalled by
 // internal watchers and NetworkChangeNotifier. This object is not thread-safe
@@ -84,7 +89,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Watcher to observe for changes to DNS config or HOSTS (via overriding
   // `Watch()` with platform specifics) and trigger necessary refreshes on
   // changes.
-  class Watcher {
+  class NET_EXPORT_PRIVATE Watcher {
    public:
     // `service` is expected to own the created Watcher and thus stay valid for
     // the lifetime of the created Watcher.
@@ -117,7 +122,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // Reader of HOSTS files. In this base implementation, uses standard logic
   // appropriate to most platforms to read the HOSTS file located at
   // `hosts_file_path`.
-  class HostsReader : public SerialWorker {
+  class NET_EXPORT_PRIVATE HostsReader : public SerialWorker {
    public:
     // `service` is expected to own the created reader and thus stay valid for
     // the lifetime of the created reader.
@@ -129,9 +134,10 @@ class NET_EXPORT_PRIVATE DnsConfigService {
     HostsReader& operator=(const HostsReader&) = delete;
 
    protected:
-    class WorkItem : public SerialWorker::WorkItem {
+    class NET_EXPORT_PRIVATE WorkItem : public SerialWorker::WorkItem {
      public:
-      explicit WorkItem(base::FilePath hosts_file_path);
+      WorkItem(std::unique_ptr<DnsHostsParser> dns_hosts_parser,
+               std::unique_ptr<AddressSorter> address_sorter);
       ~WorkItem() override;
 
       // Override if needed to implement platform-specific behavior, e.g. for a
@@ -146,12 +152,28 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
       // SerialWorker::WorkItem:
       void DoWork() final;
+      void FollowupWork(base::OnceClosure closure) final;
 
      private:
       friend HostsReader;
 
+      using SortBarrier =
+          base::RepeatingCallback<void(std::pair<DnsHostsKey, AddressList>)>;
+
+      void OnIndividualAddressSortComplete(DnsHostsKey key,
+                                           SortBarrier barrier,
+                                           bool success,
+                                           AddressList sorted);
+      void OnAddressSortComplete(
+          base::OnceClosure closure,
+          std::vector<std::pair<DnsHostsKey, AddressList>> sorted);
+
       absl::optional<DnsHosts> hosts_;
-      const base::FilePath hosts_file_path_;
+
+      std::unique_ptr<DnsHostsParser> dns_hosts_parser_;
+      std::unique_ptr<AddressSorter> address_sorter_;
+
+      base::WeakPtrFactory<WorkItem> weak_ptr_factory_{this};
     };
 
     // SerialWorker:

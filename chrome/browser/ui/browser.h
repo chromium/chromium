@@ -893,6 +893,8 @@ class Browser : public TabStripModelObserver,
   std::string GetDefaultMediaDeviceID(
       content::WebContents* web_contents,
       blink::mojom::MediaStreamType type) override;
+  std::string GetTitleForMediaControls(
+      content::WebContents* web_contents) override;
 
 #if BUILDFLAG(ENABLE_PRINTING)
   void PrintCrossProcessSubframe(

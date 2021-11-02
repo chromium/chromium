@@ -4892,11 +4892,10 @@ void Document::NotifyFocusedElementChanged(Element* old_focused_element,
 void Document::SetSequentialFocusNavigationStartingPoint(Node* node) {
   if (!dom_window_)
     return;
-  if (!node) {
+  if (!node || node->GetDocument() != this) {
     sequential_focus_navigation_starting_point_ = nullptr;
     return;
   }
-  DCHECK_EQ(node->GetDocument(), this);
   if (!sequential_focus_navigation_starting_point_)
     sequential_focus_navigation_starting_point_ = Range::Create(*this);
   sequential_focus_navigation_starting_point_->selectNodeContents(

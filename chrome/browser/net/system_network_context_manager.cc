@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
@@ -93,20 +94,6 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
-
-constexpr bool kCertificateTransparencyEnabled =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD) && \
-    !defined(OS_ANDROID)
-    // Certificate Transparency is only enabled if:
-    //   - Desktop (!OS_ANDROID); OS_IOS does not use this file
-    //   - base::GetBuildTime() is deterministic to the source (OFFICIAL_BUILD)
-    //   - The build in reliably updatable (GOOGLE_CHROME_BRANDING)
-    true;
-#else
-    false;
-#endif
-
-bool g_enable_certificate_transparency = kCertificateTransparencyEnabled;
 
 // The global instance of the SystemNetworkContextmanager.
 SystemNetworkContextManager* g_system_network_context_manager = nullptr;
@@ -520,8 +507,7 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
       CreateHttpAuthDynamicParams(local_state_));
 
   // Configure the Certificate Transparency logs.
-#if !defined(OS_ANDROID)
-  if (g_enable_certificate_transparency) {
+  if (IsCertificateTransparencyEnabled()) {
     std::vector<std::string> operated_by_google_logs =
         certificate_transparency::GetLogsOperatedByGoogle();
     std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs =
@@ -550,7 +536,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
         std::move(log_list_mojo),
         certificate_transparency::GetLogListTimestamp());
   }
-#endif
 
   int max_connections_per_proxy =
       local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
@@ -696,13 +681,9 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   // point, all NetworkContexts will be destroyed as well.
   AddSSLConfigToNetworkContextParams(network_context_params);
 
-#if !defined(OS_ANDROID)
-
-  if (g_enable_certificate_transparency) {
+  if (IsCertificateTransparencyEnabled()) {
     network_context_params->enforce_chrome_ct_policy = true;
   }
-
-#endif
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   cert_verifier_creation_params->use_builtin_cert_verifier =
@@ -785,8 +766,29 @@ SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting() {
 
 void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
     absl::optional<bool> enabled) {
-  g_enable_certificate_transparency =
-      enabled.value_or(kCertificateTransparencyEnabled);
+  certificate_transparency_enabled_for_testing_ = enabled;
+}
+
+bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
+  if (certificate_transparency_enabled_for_testing_.has_value())
+    return certificate_transparency_enabled_for_testing_.value();
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
+// TODO(carlosil): Figure out if we can/should remove the OFFICIAL_BUILD and
+// GOOGLE_CHROME_BRANDING checks now that enforcement does not rely on build
+// dates, and allow embedders to enforce.
+//    Certificate Transparency is only enabled if:
+//   - base::GetBuildTime() is deterministic to the source (OFFICIAL_BUILD)
+//   - The build in reliably updatable (GOOGLE_CHROME_BRANDING)
+#if defined(OS_ANDROID)
+  // On Android, enforcement is currently controlled via a feature flag.
+  return base::FeatureList::IsEnabled(
+      features::kCertificateTransparencyAndroid);
+#else
+  return true;
+#endif
+#else
+  return false;
+#endif
 }
 
 network::mojom::NetworkContextParamsPtr
@@ -818,4 +820,9 @@ void SystemNetworkContextManager::UpdateReferrersEnabled() {
 
 // static
 StubResolverConfigReader*
-SystemNetworkContextManager::stub_resolver_config_reader_for_testing_ = nullptr;
+    SystemNetworkContextManager::stub_resolver_config_reader_for_testing_ =
+        nullptr;
+
+absl::optional<bool>
+    SystemNetworkContextManager::certificate_transparency_enabled_for_testing_ =
+        absl::nullopt;

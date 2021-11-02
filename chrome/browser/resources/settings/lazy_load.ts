@@ -62,7 +62,7 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {FontsBrowserProxy, FontsBrowserProxyImpl} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManagerImpl} from './autofill_page/address_edit_dialog.js';
 export {AutofillManager, AutofillManagerImpl} from './autofill_page/autofill_section.js';
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
 export {PaymentsManager, PaymentsManagerImpl} from './autofill_page/payments_section.js';

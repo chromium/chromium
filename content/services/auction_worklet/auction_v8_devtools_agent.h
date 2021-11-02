@@ -72,6 +72,12 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   void Connect(mojo::PendingReceiver<blink::mojom::DevToolsAgent> agent,
                int context_group_id);
 
+  // If any session debugging `context_group_id` has an instrumentation
+  // breakpoint named `name` set, asks for execution to be paused at next
+  // statement.
+  void MaybeTriggerInstrumentationBreakpoint(int context_group_id,
+                                             const std::string& name);
+
   // Cleans up all state associated with connections, so the v8 inspector can be
   // safely deleted.
   void DestroySessions();

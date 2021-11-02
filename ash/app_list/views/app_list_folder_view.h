@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/app_list_model_observer.h"
@@ -43,6 +44,7 @@ class ScrollViewGradientHelper;
 class ASH_EXPORT AppListFolderView
     : public views::View,
       public FolderHeaderViewDelegate,
+      public AppListModelProvider::Observer,
       public AppListModelObserver,
       public views::ViewObserver,
       public AppsGridViewFolderDelegate,
@@ -109,6 +111,13 @@ class ASH_EXPORT AppListFolderView
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* view) override;
 
   // AppListModelObserver
   void OnAppListItemWillBeDeleted(AppListItem* item) override;

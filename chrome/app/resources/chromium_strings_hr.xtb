@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium – Prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Ako dijelite računalo, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama.</translation>
 <translation id="2294245788148774212">Nije obavezno: pomozite poboljšati značajke i izvedbu OS-a Chromium automatskim slanjem podataka o upotrebi i dijagnostici Googleu.</translation>
+<translation id="2313870531055795960">Provjerava URL-ove s popisom nesigurnih web-lokacija pohranjenih u Chromiumu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="2343156876103232566">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chromium na oba uređaja.</translation>
 <translation id="2347108572062610441">Ovo proširenje promijenilo je stranicu koja se prikazuje prilikom pokretanja Chromiuma.</translation>
 <translation id="2396765026452590966">Proširenje "<ph name="EXTENSION_NAME" />" promijenilo je stranicu koja se prikazuje prilikom pokretanja Chromiuma.</translation>
@@ -42,6 +43,7 @@
 <translation id="2577788541081224677">Da biste pristupili svojim sadržajima u Chromiumu na svim svojim uređajima, prijavite se kako biste mogli uključiti sinkronizaciju.</translation>
 <translation id="2583187216237139145">Sve podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (primjerice izradom oznaka, povijesti, zaporki i drugih postavki) može ukloniti administrator poslovnog profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Potrebno je ponovo pokrenuti Chromium OS kako bi se ažuriranje primijenilo.</translation>
+<translation id="2614883797045469742">Većini korisnika odgovaraju zadane postavke, no možete ih prilagoditi prema željenom načinu upotrebe Chromiuma</translation>
 <translation id="2648074677641340862">Došlo je do pogreške operativnog sustava tijekom instalacije. Ponovo preuzmite Chromium.</translation>
 <translation id="2661879430930417727">Ako dijelite uređaj, prijatelji i članovi obitelji mogu zasebno pregledavati i postaviti Chromium prema svojim željama</translation>
 <translation id="2711502716910134313">Chromiumova kartica</translation>
@@ -50,6 +52,7 @@
 <translation id="2799223571221894425">Pokreni ponovo</translation>
 <translation id="2837693172913560447">Izradit će se novi profil u Chromiumu za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
+<translation id="2850691299438350830">Štiti vas na Chromiumu i može se upotrebljavati za poboljšanje sigurnosti u drugim Googleovim aplikacijama kad ste prijavljeni.</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2910007522516064972">O pregledniku &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium je ažuran</translation>
@@ -205,6 +208,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6990124437352146030">Chromium treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>
 <translation id="705851970750939768">Ažuriraj Chromium</translation>
 <translation id="7067091210845072982">Ako slika nema koristan opis, Chromium će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
+<translation id="7147279922647361552">Prilagodite neke od najvažnijih opcija privatnosti Chromiuma</translation>
 <translation id="718435575166326686">Chromium treba dopuštenje za fotoaparat za ovu web-lokaciju</translation>
 <translation id="7196312274710523067">Pokretanje Chromiuma nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7197677400338048821">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno nakon 24 sata.</translation>

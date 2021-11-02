@@ -9651,6 +9651,7 @@
         "test_id_prefix": "ninja://headless:headless_unittests/"
       },
       {
+        "experiment_percentage": 100,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10222,7 +10223,8 @@
               "os": "Mac-10.15"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "unit_tests",
         "test_id_prefix": "ninja://chrome/test:unit_tests/"
@@ -10388,6 +10390,7 @@
           "--num-retries=3",
           "--debug"
         ],
+        "experiment_percentage": 100,
         "isolate_name": "blink_web_tests",
         "merge": {
           "args": [

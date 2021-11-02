@@ -33,14 +33,16 @@ const char kComparatorTypeGreaterThanOrEqual[] = ">=";
 const char kComparatorTypeEqual[] = "==";
 const char kComparatorTypeNotEqual[] = "!=";
 
-const char kSessionRateImpactTypeAll[] = "all";
-const char kSessionRateImpactTypeNone[] = "none";
+const char kImpactedFeaturesTypeAll[] = "all";
+const char kImpactedFeaturesTypeNone[] = "none";
 
 const char kEventConfigUsedKey[] = "event_used";
 const char kEventConfigTriggerKey[] = "event_trigger";
 const char kEventConfigKeyPrefix[] = "event_";
 const char kSessionRateKey[] = "session_rate";
 const char kSessionRateImpactKey[] = "session_rate_impact";
+const char kBlockingKey[] = "blocking";
+const char kBlockedByKey[] = "blocked_by";
 const char kAvailabilityKey[] = "availability";
 const char kTrackingOnlyKey[] = "tracking_only";
 const char kIgnoredKeyPrefix[] = "x_";
@@ -222,12 +224,12 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
   if (trimmed_def.length() == 0)
     return false;
 
-  if (base::LowerCaseEqualsASCII(trimmed_def, kSessionRateImpactTypeAll)) {
+  if (base::LowerCaseEqualsASCII(trimmed_def, kImpactedFeaturesTypeAll)) {
     session_rate_impact->type = SessionRateImpact::Type::ALL;
     return true;
   }
 
-  if (base::LowerCaseEqualsASCII(trimmed_def, kSessionRateImpactTypeNone)) {
+  if (base::LowerCaseEqualsASCII(trimmed_def, kImpactedFeaturesTypeNone)) {
     session_rate_impact->type = SessionRateImpact::Type::NONE;
     return true;
   }
@@ -244,8 +246,8 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
                << "for feature " << this_feature->name;
       continue;
     }
-    if (base::LowerCaseEqualsASCII(feature_name, kSessionRateImpactTypeAll) ||
-        base::LowerCaseEqualsASCII(feature_name, kSessionRateImpactTypeNone)) {
+    if (base::LowerCaseEqualsASCII(feature_name, kImpactedFeaturesTypeAll) ||
+        base::LowerCaseEqualsASCII(feature_name, kImpactedFeaturesTypeNone)) {
       DVLOG(1) << "Illegal feature name when parsing session_rate_impact "
                << "for feature " << this_feature->name << ": " << feature_name;
       return false;
@@ -267,6 +269,82 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
   session_rate_impact->type = SessionRateImpact::Type::EXPLICIT;
   session_rate_impact->affected_features = std::move(affected_features);
   return true;
+}
+
+bool ParseBlockedBy(const base::StringPiece& definition,
+                    BlockedBy* blocked_by,
+                    const base::Feature* this_feature,
+                    const FeatureVector& all_features) {
+  base::StringPiece trimmed_def =
+      base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
+
+  if (trimmed_def.length() == 0)
+    return false;
+
+  if (base::LowerCaseEqualsASCII(trimmed_def, kImpactedFeaturesTypeAll)) {
+    blocked_by->type = BlockedBy::Type::ALL;
+    return true;
+  }
+
+  if (base::LowerCaseEqualsASCII(trimmed_def, kImpactedFeaturesTypeNone)) {
+    blocked_by->type = BlockedBy::Type::NONE;
+    return true;
+  }
+
+  auto parsed_feature_names = base::SplitStringPiece(
+      trimmed_def, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (parsed_feature_names.empty())
+    return false;
+
+  std::vector<std::string> affected_features;
+  for (const auto& feature_name : parsed_feature_names) {
+    if (feature_name.length() == 0) {
+      DVLOG(1) << "Empty feature name when parsing blocked_by "
+               << "for feature " << this_feature->name;
+      continue;
+    }
+    if (base::LowerCaseEqualsASCII(feature_name, kImpactedFeaturesTypeAll) ||
+        base::LowerCaseEqualsASCII(feature_name, kImpactedFeaturesTypeNone)) {
+      DVLOG(1) << "Illegal feature name when parsing blocked_by "
+               << "for feature " << this_feature->name << ": " << feature_name;
+      return false;
+    }
+    if (!IsKnownFeature(feature_name, all_features)) {
+      DVLOG(1) << "Unknown feature name found when parsing blocked_by "
+               << "for feature " << this_feature->name << ": " << feature_name;
+      stats::RecordConfigParsingEvent(
+          stats::ConfigParsingEvent::FAILURE_BLOCKED_BY_UNKNOWN_FEATURE);
+      continue;
+    }
+    affected_features.emplace_back(std::string(feature_name));
+  }
+
+  if (affected_features.empty())
+    return false;
+
+  blocked_by->type = BlockedBy::Type::EXPLICIT;
+  blocked_by->affected_features = std::move(affected_features);
+  return true;
+}
+
+bool ParseBlocking(const base::StringPiece& definition, Blocking* blocking) {
+  base::StringPiece trimmed_def =
+      base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
+
+  if (trimmed_def.length() == 0)
+    return false;
+
+  if (base::LowerCaseEqualsASCII(trimmed_def, kImpactedFeaturesTypeAll)) {
+    blocking->type = Blocking::Type::ALL;
+    return true;
+  }
+
+  if (base::LowerCaseEqualsASCII(trimmed_def, kImpactedFeaturesTypeNone)) {
+    blocking->type = Blocking::Type::NONE;
+    return true;
+  }
+
+  return false;
 }
 
 bool ParseSnoozeParams(const base::StringPiece& definition,
@@ -434,6 +512,24 @@ void ChromeVariationsConfiguration::ParseFeatureConfig(
         continue;
       }
       config.session_rate_impact = impact;
+    } else if (key == kBlockingKey) {
+      Blocking blocking;
+      if (!ParseBlocking(param_value, &blocking)) {
+        stats::RecordConfigParsingEvent(
+            stats::ConfigParsingEvent::FAILURE_BLOCKING_PARSE);
+        ++parse_errors;
+        continue;
+      }
+      config.blocking = blocking;
+    } else if (key == kBlockedByKey) {
+      BlockedBy blocked_by;
+      if (!ParseBlockedBy(param_value, &blocked_by, feature, all_features)) {
+        stats::RecordConfigParsingEvent(
+            stats::ConfigParsingEvent::FAILURE_BLOCKED_BY_PARSE);
+        ++parse_errors;
+        continue;
+      }
+      config.blocked_by = blocked_by;
     } else if (key == kTrackingOnlyKey) {
       bool tracking_only;
       if (!ParseTrackingOnly(param_value, &tracking_only)) {

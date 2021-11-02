@@ -41,6 +41,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -189,6 +190,15 @@ const LayoutLocale* FallbackLocaleForCharacter(
 }
 
 }  // namespace
+
+// static
+void FontCache::InitializeFontPrewarmer() {
+  DCHECK(IsMainThread());
+  // Platform is initialized before |FeatureList| that we may have a prewarmer
+  // even when the feature is not enabled.
+  if (prewarmer_ && !base::FeatureList::IsEnabled(kAsyncFontAccess))
+    prewarmer_ = nullptr;
+}
 
 // static
 void FontCache::PrewarmFamily(const AtomicString& family_name) {

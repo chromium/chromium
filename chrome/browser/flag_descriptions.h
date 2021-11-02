@@ -825,9 +825,6 @@ extern const char kTabSwitcherOnReturnDescription[];
 extern const char kHideShelfControlsInTabletModeName[];
 extern const char kHideShelfControlsInTabletModeDescription[];
 
-extern const char kHostedAppShimCreationName[];
-extern const char kHostedAppShimCreationDescription[];
-
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 
@@ -1722,9 +1719,6 @@ extern const char kChromeShareLongScreenshotDescription[];
 extern const char kChromeSharingHubLaunchAdjacentName[];
 extern const char kChromeSharingHubLaunchAdjacentDescription[];
 
-extern const char kClipboardSuggestionContentHiddenName[];
-extern const char kClipboardSuggestionContentHiddenDescription[];
-
 extern const char kCloseTabSuggestionsName[];
 extern const char kCloseTabSuggestionsDescription[];
 
@@ -2378,6 +2372,9 @@ extern const char kForceControlFaceAeDescription[];
 
 extern const char kHdrNetOverrideName[];
 extern const char kHdrNetOverrideDescription[];
+
+extern const char kCameraAppDocumentManualCropName[];
+extern const char kCameraAppDocumentManualCropDescription[];
 
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
@@ -3173,11 +3170,6 @@ extern const char kElasticOverscrollDescription[];
 extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kAuraWindowSubtreeCaptureName[];
-extern const char kAuraWindowSubtreeCaptureDescription[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
 extern const char kWebrtcPipeWireCapturerName[];

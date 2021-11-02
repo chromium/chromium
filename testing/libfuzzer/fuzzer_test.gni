@@ -280,6 +280,11 @@ template("fuzzer_test") {
         sources += invoker.generated_sources
       }
 
+      if (is_ios) {
+        info_plist =
+            "//testing/libfuzzer/fuzzer_support_ios/libfuzzer-Info.plist"
+      }
+
       if (is_mac) {
         sources += [ "//testing/libfuzzer/libfuzzer_exports.h" ]
       }

@@ -40,8 +40,6 @@ class PLATFORM_EXPORT StaticBitmapImageToVideoFrameCopier {
                    context_provider,
                FrameReadyCallback callback);
 
-  bool HasOngoingAsyncPixelReadouts() const;
-
  private:
   // Helper functions to read pixel content.
   void ReadARGBPixelsSync(scoped_refptr<StaticBitmapImage> image,
@@ -67,14 +65,8 @@ class PLATFORM_EXPORT StaticBitmapImageToVideoFrameCopier {
       scoped_refptr<media::VideoFrame> argb_video_frame,
       bool flip);
 
-  // Helper methods to increment/decrement the number of ongoing async pixel
-  // readouts currently happening.
-  void IncrementOngoingAsyncPixelReadouts();
-  void DecrementOngoingAsyncPixelReadouts();
-
   media::VideoFramePool frame_pool_;
   std::unique_ptr<WebGraphicsContext3DVideoFramePool> accelerated_frame_pool_;
-  int num_ongoing_async_pixel_readouts_ = 0;
   bool can_discard_alpha_ = false;
   const bool accelerated_frame_pool_enabled_;
 

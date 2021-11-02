@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">वर्क प्रोफ़ाइल</translation>
 <translation id="1122198203221319518">&amp;टूल</translation>
 <translation id="1122242684574577509">पुष्टि नहीं हो सकी. आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसके लॉगिन पेज पर जाएं.</translation>
+<translation id="1122913801042512795">आपके साइन इन क्रेडेंशियल अप-टू-डेट नहीं हैं. कृपया साइन आउट करके, फिर से साइन इन करें.</translation>
 <translation id="1122960773616686544">बुकमार्क का नाम</translation>
 <translation id="1124772482545689468">उपयोगकर्ता</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> जैसा लगता है (मूल)</translation>
@@ -328,6 +329,7 @@
 <translation id="133535873114485416">पसंदीदा इनपुट</translation>
 <translation id="1335929031622236846">अपना डिवाइस रजिस्टर करें</translation>
 <translation id="1336902454946927954">फ़िंगरप्रिंट की पहचान न होने की वजह से आपकी सुरक्षा कुंजी लॉक कर दी गई है. इसे अनलॉक करने के लिए, अपना पिन डालें.</translation>
+<translation id="1338631221631423366">जोड़ा जा रहा है...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> इस ऐप्लिकेशन को खोलना चाहता है.</translation>
 <translation id="1338950911836659113">हटाए जा रहे हैं...</translation>
 <translation id="1339009753652684748">"Ok Google" बोलकर अपनी Assistant को ऐक्सेस करें. बैटरी बचाने के लिए, “चालू करें (सुझाव दिया जाता है)” चुनें. आपकी Assistant सिर्फ़ तब जवाब देगी, जब आपका डिवाइस प्लग-इन होगा या चार्ज हो रहा होगा.</translation>
@@ -2087,6 +2089,7 @@
 <translation id="310671807099593501">साइट ब्लूटूथ का इस्तेमाल कर रही है</translation>
 <translation id="3108931485517391283">फ़ाइल नहीं मिल सकी</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
+<translation id="311214366526552035">फिर भी डाउनलोड करें</translation>
 <translation id="311394601889664316">साइटों को अपने डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति न दें</translation>
 <translation id="3115147772012638511">कैश मेमोरी का इंतज़ार कर रहे हैं...</translation>
 <translation id="3115580024857770654">सभी छिपाएं</translation>
@@ -2367,6 +2370,7 @@
 <translation id="3429160811076349561">ट्रायल की सुविधाएं बंद हैं</translation>
 <translation id="3429271624041785769">वेब कॉन्टेंट की भाषाएं</translation>
 <translation id="3429275422858276529">बाद में इस पेज को आसानी से पाने के लिए इसे बुकमार्क करें</translation>
+<translation id="343115368966109153">क्या आपको <ph name="FILE_NAME" /> को डाउनलोड करना है? इस डिवाइस को इस्तेमाल करने वाला हर व्यक्ति इसे देख सकता है.</translation>
 <translation id="3432227430032737297">दिखाई गईं सभी कुकी निकालें</translation>
 <translation id="3432762828853624962">शेयर किए गए वर्कर</translation>
 <translation id="3433621910545056227">ओह!  सिस्टम डिवाइस इंस्टॉलेशन-समय विशेषता लॉक स्थापित नहीं कर पाया.</translation>
@@ -2708,6 +2712,7 @@
 <translation id="3777806571986431400">एक्सटेंशन सक्षम किया गया</translation>
 <translation id="3778152852029592020">डाउनलोड रद्द कर दिया गया था.</translation>
 <translation id="3778208826288864398">सुरक्षा कुंजी लॉक कर दी गई है क्योंकि गलत पिन कई बार डाला गया है. आपको सुरक्षा कुंजी रीसेट करनी होगी.</translation>
+<translation id="3778369586810509692">इस फ़ाइल को डिवाइस में सेव किया जाएगा और सभी इसे देख पाएंगे.</translation>
 <translation id="3778740492972734840">&amp;डेवलपर टूल</translation>
 <translation id="3778868487658107119">इससे प्रश्न पूछें. इसे कुछ काम करने को कहें. यह आपका व्यक्तिगत Google है, जो हमेशा सहायता के लिए तैयार रहता है.</translation>
 <translation id="3781742599892759500">Linux में माइक्रोफ़ोन का ऐक्सेस</translation>
@@ -6557,6 +6562,7 @@
 <translation id="7887864092952184874">ब्लूटूथ माउस युग्मित किया गया</translation>
 <translation id="7889371445710865055">लिखी जाने वाली भाषा बदलना</translation>
 <translation id="7890147169288018054">नेटवर्क से जुड़ी जानकारी देखें, जैसे कि आपका आईपी या MAC पता</translation>
+<translation id="7892384782944609022">जोड़ा नहीं जा सका. फिर से कोशिश करने के लिए, डिवाइस चुनें.</translation>
 <translation id="7893008570150657497">आपके कंप्यूटर के फ़ोटो, संगीत, और दूसरे मीडिया को एक्सेस करने दें</translation>
 <translation id="7893153962594818789">इस <ph name="DEVICE_TYPE" /> पर ब्लूटूथ बंद है. अपना पासवर्ड डालें और ब्लूटूथ चालू करें.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (सामान्य)</translation>
@@ -7506,6 +7512,7 @@
 <translation id="8879284080359814990">टैब के रूप में &amp;दिखाएं</translation>
 <translation id="8879921471468674457">साइन इन की जानकारी याद रखें</translation>
 <translation id="8880054210564666174">संपर्क सूची डाउनलोड नहीं हो सकी. कृपया अपने इंटरनेट कनेक्शन की जांच करें या <ph name="LINK_BEGIN" />फिर से कोशिश करें<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">सेटिंग खोलकर, <ph name="USB_DEVICE_NAME" /> को Linux या Parallels Desktop से जोड़ें</translation>
 <translation id="8881020143150461183">कृपया फिर से कोशिश करें. तकनीकी सहायता के लिए <ph name="CARRIER_NAME" /> से संपर्क करें.</translation>
 <translation id="8883273463630735858">टचपैड की रफ़्तार बढ़ाने की सुविधा चालू करें</translation>
 <translation id="8884570509232205463">आपका डिवाइस अब <ph name="UNLOCK_TIME" /> बजे अनलॉक होगा.</translation>

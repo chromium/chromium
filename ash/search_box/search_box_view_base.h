@@ -153,8 +153,6 @@ class SearchBoxViewBase : public views::View,
   // Updates the search box's background color.
   void UpdateBackgroundColor(SkColor color);
 
-  virtual void ModelChanged() {}
-
   // Shows/hides the virtual keyboard if the search box is active.
   virtual void UpdateKeyboardVisibility() {}
 

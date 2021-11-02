@@ -10,7 +10,7 @@ import {OnboardingLandingPage} from 'chrome://shimless-rma/onboarding_landing_pa
 import {RmaState} from 'chrome://shimless-rma/shimless_rma_types.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 
 export function onboardingLandingPageTest() {
@@ -57,7 +57,7 @@ export function onboardingLandingPageTest() {
     assertTrue(!!basePage);
   });
 
-  test('OnBoardingPageOnNextCallsBeginFinalization', async () => {
+  test('OnBoardingPageValidationNotCompleteNextDisabled', async () => {
     const resolver = new PromiseResolver();
     await initializeLandingPage();
     let callCounter = 0;
@@ -66,14 +66,95 @@ export function onboardingLandingPageTest() {
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
+    let savedError;
+    component.onNextButtonClick().catch((err) => savedError = err);
     await flushTasks();
 
-    assertEquals(callCounter, 1);
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(0, callCounter);
+    assertEquals('Hardware verification is not complete.', savedError.message);
+  });
+
+  test('OnBoardingPageValidationCompleteEnablesNextButton', async () => {
+    await initializeLandingPage();
+    let disableNextButtonEventFired = false;
+    let disableNextButton = true;
+    component.addEventListener('disable-next-button', (e) => {
+      disableNextButtonEventFired = true;
+      disableNextButton = e.detail;
+    });
+
+    service.triggerHardwareVerificationStatusObserver(true, '', 0);
+    await flushTasks();
+    assertTrue(disableNextButtonEventFired);
+    assertFalse(disableNextButton);
+  });
+
+  test(
+      'OnBoardingPageValidationCompleteOnNextCallsBeginFinalization',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeLandingPage();
+        service.triggerHardwareVerificationStatusObserver(true, '', 0);
+        await flushTasks();
+        let callCounter = 0;
+        service.beginFinalization = () => {
+          callCounter++;
+          return resolver.promise;
+        };
+
+        const expectedResult = {foo: 'bar'};
+        let savedResult;
+        component.onNextButtonClick().then((result) => savedResult = result);
+        // Resolve to a distinct result to confirm it was not modified.
+        resolver.resolve(expectedResult);
+        await flushTasks();
+
+        assertEquals(1, callCounter);
+        assertDeepEquals(expectedResult, savedResult);
+      });
+
+  test('OnBoardingPageValidationSuccessCheckVisible', async () => {
+    await initializeLandingPage();
+
+    const busy = component.shadowRoot.querySelector('#busyIcon');
+    const verification =
+        component.shadowRoot.querySelector('#verificationIcon');
+    const error = component.shadowRoot.querySelector('#errorMessage');
+    assertTrue(isVisible(busy));
+    assertFalse(isVisible(verification));
+    assertFalse(isVisible(error));
+  });
+
+  test('OnBoardingPageValidationSuccessCheckVisible', async () => {
+    await initializeLandingPage();
+    service.triggerHardwareVerificationStatusObserver(true, '', 0);
+    await flushTasks();
+
+    const busy = component.shadowRoot.querySelector('#busyIcon');
+    const verification =
+        component.shadowRoot.querySelector('#verificationIcon');
+    const error = component.shadowRoot.querySelector('#errorMessage');
+    assertFalse(isVisible(busy));
+    assertTrue(isVisible(verification));
+    // TODO(gavindodd): replace with correct icon when implemented.
+    assertEquals('shimless-icon:wifi', verification.icon);
+    assertFalse(isVisible(error));
+  });
+
+  test('OnBoardingPageValidationFailedWarningAndErrorVisible', async () => {
+    await initializeLandingPage();
+    service.triggerHardwareVerificationStatusObserver(false, 'FAILURE', 0);
+    await flushTasks();
+
+    const busy = component.shadowRoot.querySelector('#busyIcon');
+    const verification =
+        component.shadowRoot.querySelector('#verificationIcon');
+    const error = component.shadowRoot.querySelector('#errorMessage');
+    assertTrue(busy.hidden);
+    assertTrue(isVisible(verification));
+    // TODO(gavindodd): replace with correct icon when implemented.
+    assertEquals('shimless-icon:info', verification.icon);
+    assertTrue(isVisible(error));
+    assertEquals('FAILURE', error.innerHTML);
   });
 }

@@ -602,21 +602,27 @@ void SearchResultView::OnSearchResultActionActivated(size_t index) {
   if (result()->is_omnibox_search()) {
     SearchResultActionType button_action = GetSearchResultActionType(index);
 
-    if (button_action == SearchResultActionType::kRemove) {
-      RecordZeroStateSearchResultUserActionHistogram(
-          ZeroStateSearchResultUserActionType::kRemoveResult);
-      auto dialog = std::make_unique<RemoveQueryConfirmationDialog>(
-          result()->title(),
-          base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
-                         weak_ptr_factory_.GetWeakPtr()));
-      list_view_->app_list_main_view()
-          ->contents_view()
-          ->search_result_page_view()
-          ->ShowAnchoredDialog(std::move(dialog));
-    } else if (button_action == SearchResultActionType::kAppend) {
-      RecordZeroStateSearchResultUserActionHistogram(
-          ZeroStateSearchResultUserActionType::kAppendResult);
-      list_view_->SearchResultActionActivated(this, index);
+    switch (button_action) {
+      case SearchResultActionType::kRemove: {
+        RecordZeroStateSearchResultUserActionHistogram(
+            ZeroStateSearchResultUserActionType::kRemoveResult);
+        auto dialog = std::make_unique<RemoveQueryConfirmationDialog>(
+            result()->title(),
+            base::BindOnce(&SearchResultView::OnQueryRemovalAccepted,
+                           weak_ptr_factory_.GetWeakPtr()));
+        list_view_->app_list_main_view()
+            ->contents_view()
+            ->search_result_page_view()
+            ->ShowAnchoredDialog(std::move(dialog));
+        break;
+      }
+      case SearchResultActionType::kAppend:
+        RecordZeroStateSearchResultUserActionHistogram(
+            ZeroStateSearchResultUserActionType::kAppendResult);
+        list_view_->SearchResultActionActivated(this, button_action);
+        break;
+      case SearchResultActionType::kSearchResultActionTypeMax:
+        NOTREACHED();
     }
   }
 }

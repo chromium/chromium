@@ -2115,6 +2115,62 @@ CtapDeviceResponseCode VirtualCtap2Device::OnCredentialManagement(
       *response = {};
       return CtapDeviceResponseCode::kSuccess;
     }
+    case CredentialManagementSubCommand::kUpdateUserInformation: {
+      request_state_.Reset();
+
+      const auto params_it = request_map.find(cbor::Value(
+          static_cast<int>(CredentialManagementRequestKey::kSubCommandParams)));
+      if (params_it == request_map.end() && !params_it->second.is_map()) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+      const cbor::Value::MapValue& params = params_it->second.GetMap();
+      std::vector<uint8_t> pinauth_bytes =
+          cbor::Writer::Write(cbor::Value(params)).value();
+      pinauth_bytes.insert(pinauth_bytes.begin(),
+                           static_cast<uint8_t>(subcommand));
+      CtapDeviceResponseCode pin_status = VerifyPINUVAuthToken(
+          *device_info_, mutable_state()->pin_token, request_map,
+          cbor::Value(
+              static_cast<int>(CredentialManagementRequestKey::kPinProtocol)),
+          cbor::Value(
+              static_cast<int>(CredentialManagementRequestKey::kPinAuth)),
+          pinauth_bytes);
+      if (pin_status != CtapDeviceResponseCode::kSuccess) {
+        return pin_status;
+      }
+
+      const auto credential_id_it = params.find(cbor::Value(static_cast<int>(
+          CredentialManagementRequestParamKey::kCredentialID)));
+      if (credential_id_it == params.end() ||
+          !credential_id_it->second.is_map()) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+      auto credential_id = PublicKeyCredentialDescriptor::CreateFromCBORValue(
+          cbor::Value(credential_id_it->second.GetMap()));
+      if (!credential_id) {
+        return CtapDeviceResponseCode::kCtap2ErrMissingParameter;
+      }
+      if (!base::Contains(mutable_state()->registrations,
+                          credential_id->id())) {
+        return CtapDeviceResponseCode::kCtap2ErrNoCredentials;
+      }
+
+      const auto new_user_it = params.find(cbor::Value(
+          static_cast<int>(CredentialManagementRequestParamKey::kUser)));
+      if (new_user_it == params.end() || !new_user_it->second.is_map()) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+      absl::optional<PublicKeyCredentialUserEntity> new_user =
+          PublicKeyCredentialUserEntity::CreateFromCBORValue(
+              cbor::Value(new_user_it->second.GetMap()));
+      if (!new_user) {
+        return CtapDeviceResponseCode::kCtap2ErrCBORUnexpectedType;
+      }
+
+      mutable_state()->registrations[credential_id->id()].user = new_user;
+      *response = {};
+      return CtapDeviceResponseCode::kSuccess;
+    }
   }
   NOTREACHED();
   return CtapDeviceResponseCode::kCtap2ErrInvalidOption;

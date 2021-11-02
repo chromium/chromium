@@ -452,6 +452,9 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   Shell::Get()->wallpaper_controller()->RemoveObserver(this);
   grid_event_handler_.reset();
 
+  if (desks_templates_grid_widget_)
+    CloseDesksTemplatesGrid(/*exit_overview=*/true);
+
   bool has_non_cover_animating = false;
   int animate_count = 0;
 
@@ -480,9 +483,6 @@ void OverviewGrid::Shutdown(OverviewEnterExitType exit_type) {
   }
 
   window_list_.clear();
-
-  if (desks_templates_grid_widget_)
-    desks_templates_grid_widget_->CloseNow();
 
   overview_session_ = nullptr;
 
@@ -643,7 +643,8 @@ void OverviewGrid::AddItem(aura::Window* window,
   auto* item = window_list_[index].get();
   item->PrepareForOverview();
 
-  if (animate && use_spawn_animation && reposition) {
+  if (animate && use_spawn_animation && reposition &&
+      !IsShowingDesksTemplatesGrid()) {
     item->set_should_use_spawn_animation(true);
   } else {
     // The item is added after overview enter animation is complete, so
@@ -662,6 +663,9 @@ void OverviewGrid::AddItem(aura::Window* window,
   }
   if (reposition)
     PositionWindows(animate, ignored_items);
+
+  if (IsShowingDesksTemplatesGrid())
+    item->HideForDesksTemplatesGrid();
 }
 
 void OverviewGrid::AppendItem(aura::Window* window,
@@ -909,14 +913,15 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
 
-void OverviewGrid::HideDesksTemplatesGrid() {
+void OverviewGrid::CloseDesksTemplatesGrid(bool exit_overview) {
   desks_templates_grid_widget_->CloseNow();
 
   // Un-hide the overview mode items.
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->RevertHideForDesksTemplatesGrid();
 
-  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+  if (!exit_overview)
+    desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
@@ -974,10 +979,13 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
     return;
 
   // Do not create or show the save desk as template button if there are no
-  // windows in this grid, during a window drag or in tablet mode.
-  const bool visible = !window_list_.empty() &&
-                       !overview_session_->GetCurrentDraggedOverviewItem() &&
-                       !Shell::Get()->tablet_mode_controller()->InTabletMode();
+  // windows in this grid, during a window drag or in tablet mode, or the desks
+  // templates grid is visible.
+  const bool visible =
+      !window_list_.empty() &&
+      !overview_session_->GetCurrentDraggedOverviewItem() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !IsShowingDesksTemplatesGrid();
 
   if (!visible) {
     if (save_desk_as_template_widget_)
@@ -987,7 +995,6 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
 
   if (!save_desk_as_template_widget_) {
     save_desk_as_template_widget_ = SaveDeskAsTemplateWidget(root_window_);
-    // TODO(sophiewen): Replace button label with localized text string.
     save_desk_as_template_widget_->SetContentsView(new PillButton(
         base::BindRepeating(&OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
                             base::Unretained(this)),

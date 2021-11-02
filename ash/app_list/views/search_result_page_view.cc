@@ -208,11 +208,14 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
       base::BindRepeating(&SearchResultPageView::SelectedResultChanged,
                           base::Unretained(this)));
 
-  search_box_observation_.Observe(
-      AppListModelProvider::Get()->search_model()->search_box());
+  AppListModelProvider* const model_provider = AppListModelProvider::Get();
+  model_provider->AddObserver(this);
+  search_box_observation_.Observe(model_provider->search_model()->search_box());
 }
 
-SearchResultPageView::~SearchResultPageView() = default;
+SearchResultPageView::~SearchResultPageView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
 
 void SearchResultPageView::InitializeContainers(
     AppListViewDelegate* view_delegate,
@@ -406,6 +409,15 @@ void SearchResultPageView::NotifySelectedResultChanged() {
   selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   search_box->set_a11y_selection_on_search_result(true);
+}
+
+void SearchResultPageView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  search_box_observation_.Reset();
+  search_box_observation_.Observe(search_model->search_box());
+  for (auto* container : result_container_views_)
+    container->SetResults(search_model->results());
 }
 
 void SearchResultPageView::OnSearchResultContainerResultsChanging() {

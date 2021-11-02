@@ -5,12 +5,37 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 
 #include "base/check_op.h"
+#include "base/values.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kPendingScreencastName[] = "name";
+constexpr char kPendingScreencastUploadProgress[] = "uploadProgress";
+
 ProjectorAppClient* g_instance = nullptr;
 }  // namespace
+
+base::Value PendingScreencast::ToValue() const {
+  base::Value val(base::Value::Type::DICTIONARY);
+  val.SetKey(kPendingScreencastName, base::Value(name));
+
+  // TODO(b/199421317): Show uploading progress of pending screencasts in
+  // gallery. Calculate and set the correct value here.
+  val.SetKey(kPendingScreencastUploadProgress, base::Value(0));
+  return val;
+}
+
+// TODO(b/199421317): Add transferred bytes check and show uploading progress of
+// pending screencasts in gallery.
+bool PendingScreencast::operator==(const PendingScreencast& rhs) const {
+  return rhs.container_dir == container_dir;
+}
+
+bool PendingScreencast::operator<(const PendingScreencast& rhs) const {
+  return rhs.container_dir < container_dir;
+}
 
 // static
 ProjectorAppClient* ProjectorAppClient::Get() {

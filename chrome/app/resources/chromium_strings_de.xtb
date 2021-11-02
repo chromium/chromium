@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium – Netzwerkanmeldung – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chromium jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="2294245788148774212">Optional: Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chromium OS zu verbessern.</translation>
+<translation id="2313870531055795960">Prüft URLs anhand einer Liste unsicherer Websites, die in Chromium gespeichert ist. Wenn eine Website versucht, Ihr Passwort zu stehlen, oder wenn Sie eine schädliche Datei herunterladen, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
 <translation id="2343156876103232566">Wenn Sie eine Nummer von diesem Gerät an Ihr Android-Smartphone senden möchten, müssen Sie sich auf beiden Geräten in Chromium anmelden.</translation>
 <translation id="2347108572062610441">Die beim Start von Chromium angezeigte Seite wurde durch diese Erweiterung geändert.</translation>
 <translation id="2396765026452590966">Die beim Start von Chromium angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
@@ -51,6 +52,7 @@
 <translation id="2799223571221894425">Neu starten</translation>
 <translation id="2837693172913560447">Dadurch wird ein neues Chromium-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt</translation>
 <translation id="2847479871509788944">Aus Chromium entfernen...</translation>
+<translation id="2850691299438350830">Schützt Sie in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind.</translation>
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2910007522516064972">Über &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>

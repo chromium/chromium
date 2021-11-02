@@ -86,7 +86,10 @@ void PagedViewStructure::LoadFromMetadata() {
   }
 
   int model_index = 0;
-  for (size_t i = 0; i < apps_grid_view_->item_list_->item_count(); ++i) {
+  const size_t item_count = apps_grid_view_->item_list_
+                                ? apps_grid_view_->item_list_->item_count()
+                                : 0;
+  for (size_t i = 0; i < item_count; ++i) {
     const auto* item = apps_grid_view_->item_list_->item_at(i);
     if (item->is_page_break()) {
       // Create a new page if a "page break" item is detected and current page

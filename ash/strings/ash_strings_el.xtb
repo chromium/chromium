@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Βαριέμαι</translation>
 <translation id="1104084341931202936">Εμφάνιση ρυθμίσεων προσβασιμότητας</translation>
 <translation id="1104621072296271835">Οι συσκευές σας λειτουργούν ακόμα καλύτερα συνδυαστικά</translation>
+<translation id="1111781754511998498">Προβολέας</translation>
 <translation id="1118549423835582252">Το <ph name="MANAGER" /> προτείνει να ενημερώσετε τη συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Η λειτουργία χρώματος με θέμα χρησιμοποιεί χρώματα που έχουν εξαχθεί από την ταπετσαρία για να χρωματίσει ελαφρώς τη διεπαφή.</translation>
 <translation id="112308213915226829">Αυτόματη απόκρυψη ραφιού</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Εγγραφή μικροφώνου</translation>
 <translation id="3680908746918359504">Διαγραφή όλων των δεικτών</translation>
 <translation id="36813544980941320">Θα γίνει κοινοποίηση των δικτύων Wi-Fi μεταξύ του τηλεφώνου σας και της συσκευής <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Μπορείτε πλέον να αλλάξετε τη θέση αποθήκευσης των καταγραφών οθόνης.</translation>
 <translation id="3702809606464356667">Εμφανίζονται παράθυρα από το τρέχον γραφείο. Πατήστε το πάνω βέλος για την εμφάνιση παραθύρων από όλα τα γραφεία</translation>
 <translation id="3702846122927433391">Πληθυσμός της Νιγηρίας</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Ανενεργό</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
 <translation id="3977512764614765090">Η μπαταρία είναι στο <ph name="PERCENTAGE" />% και φορτίζει.</translation>
+<translation id="3986082989454912832">Απάντηση</translation>
 <translation id="3995138139523574647">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
 <translation id="40062176907008878">Γραφή</translation>
 <translation id="4017989525502048489">Δείκτης λέιζερ</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Η συντόμευση πληκτρολογίου Ctrl + Alt + Κάτω βέλος άλλαξε. Για να χρησιμοποιήσετε το πλήκτρο End, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Δεξί βέλος.</translation>
 <translation id="4279490309300973883">Κατοπτρισμός</translation>
 <translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
-<translation id="4292904812939562398">Εφαρμογές που χρησιμοποιήθηκαν πρόσφατα</translation>
 <translation id="429402653707266969">Εναλλαγή θέσης γραμμής εργαλείων</translation>
 <translation id="4294319844246081198">Καλημέρα <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Διαγραφή και των <ph name="COUNT" /> ειδοποιήσεων</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Απενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4946376291507881335">Λήψη</translation>
 <translation id="495046168593986294">Κύλιση προς τα επάνω</translation>
 <translation id="4952936045814352993">Ο Εντοπισμός τηλεφώνου δεν είναι διαθέσιμος όταν οι ήχοι ξυπνητηριού είναι απενεργοποιημένοι</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">Δ</translation>
 <translation id="7600875258240007829">Δείτε όλες τις ειδοποιήσεις</translation>
 <translation id="7607002721634913082">Έγινε παύση</translation>
+<translation id="7610198039767537854">Δείτε πρόσφατες φωτογραφίες από τις φωτογραφίες κάμερας του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7618774594543487847">Ουδέτερο</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Στυλό δείκτη</translation>

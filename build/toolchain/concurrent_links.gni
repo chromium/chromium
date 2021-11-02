@@ -71,6 +71,8 @@ if (concurrent_links == -1) {
   } else if ((is_linux || is_chromeos_lacros) && symbol_level == 0) {
     # Memory consumption on link without debug symbols is low on linux.
     _args = [ "--mem_per_link_gb=3" ]
+  } else if (current_os == "zos") {
+    _args = [ "--mem_per_link_gb=1" ]
   } else {
     _args = []
   }

@@ -24,6 +24,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="109942774857561566">„I’m bored“ (Man nuobodu)</translation>
 <translation id="1104084341931202936">Rodyti pritaikymo neįgaliesiems nustatymus</translation>
 <translation id="1104621072296271835">Jūsų įrenginiai kartu veikia dar geriau</translation>
+<translation id="1111781754511998498">Projektorius</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> rekomenduoja, kad atnaujintumėte šį „<ph name="DEVICE_TYPE" />“ įrenginį.</translation>
 <translation id="1119348796022671382">Teminių spalvų režimu naudojamos spalvos, išskirtos iš ekrano fono siekiant pašviesinti sąsają.</translation>
 <translation id="112308213915226829">Automatiškai slėpti lentyną</translation>
@@ -373,6 +374,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3665889125180354336">Įrašyti mikrofoną</translation>
 <translation id="3680908746918359504">Išvalyti visus žymeklius</translation>
 <translation id="36813544980941320">„Wi-Fi“ tinklai bus bendrinami telefone ir „<ph name="DEVICE_NAME" />“ įrenginyje</translation>
+<translation id="3701206655856637070">Dabar galite pakeisti, kur išsaugomi ekrano fiksavimo failai</translation>
 <translation id="3702809606464356667">Rodomi dabartinio darbastalio langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi visų darbastalių langai</translation>
 <translation id="3702846122927433391">Populiacija Nigerijoje</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3969043077941541451">Išjungta</translation>
 <translation id="397105322502079400">Skaičiuojama...</translation>
 <translation id="3977512764614765090">Aumuliatoriaus įkrova <ph name="PERCENTAGE" /> % ir jis įkraunamas.</translation>
+<translation id="3986082989454912832">Atsakyti</translation>
 <translation id="3995138139523574647">USB-C įrenginys (prievadas dešinėje, užpakalinėje dalyje)</translation>
 <translation id="40062176907008878">Rašymas ranka</translation>
 <translation id="4017989525502048489">Lazerinis žymeklis</translation>
@@ -456,7 +459,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4274537685965975248">Pakeistas spartusis klavišas „Ctrl“ + „Alt“ + rodyklė žemyn. Jei norite naudoti klavišą „End“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę dešinėn.</translation>
 <translation id="4279490309300973883">Dubliuojama</translation>
 <translation id="4285498937028063278">Atsegti</translation>
-<translation id="4292904812939562398">Neseniai naudotos programos</translation>
 <translation id="429402653707266969">Perjungti įrankių juostos vietą</translation>
 <translation id="4294319844246081198">Labas rytas, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Išvalykite visus pranešimus (<ph name="COUNT" />)</translation>
@@ -562,6 +564,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Išjungti pranešimus</translation>
 <translation id="4946376291507881335">Užfiksuoti</translation>
 <translation id="495046168593986294">Slinkti į viršų</translation>
 <translation id="4952936045814352993">Telefono vietos nustatymo funkcija nepasiekiama, kai įspėjimų garsai yra išjungti</translation>
@@ -905,6 +908,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="7595633564847427181">P</translation>
 <translation id="7600875258240007829">Žr. visus pranešimus</translation>
 <translation id="7607002721634913082">Pristabdyta</translation>
+<translation id="7610198039767537854">Peržiūrėkite naujausias nuotraukas iš telefono fotoaparato aplanko „<ph name="DEVICE_TYPE" />“ įrenginyje</translation>
 <translation id="7618774594543487847">Neutrali</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Žymeklis</translation>

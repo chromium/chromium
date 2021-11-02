@@ -16,6 +16,7 @@
 #include "net/cert/internal/cert_issuer_source_sync_unittest.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/test_helpers.h"
+#include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
@@ -27,17 +28,34 @@ namespace net {
 
 namespace {
 
+// Returns true if the provided slot looks like a built-in root.
+bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
+  if (!PK11_IsPresent(slot) || !PK11_HasRootCerts(slot))
+    return false;
+  CERTCertList* cert_list = PK11_ListCertsInSlot(slot);
+  if (!cert_list)
+    return false;
+  bool built_in_cert_found = false;
+  for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
+       !CERT_LIST_END(node, cert_list); node = CERT_LIST_NEXT(node)) {
+    if (IsKnownRoot(node->cert)) {
+      built_in_cert_found = true;
+      break;
+    }
+  }
+  CERT_DestroyCertList(cert_list);
+  return built_in_cert_found;
+}
+
 // Returns the slot which holds the built-in root certificates.
-crypto::ScopedPK11Slot GetRootCertsSlot() {
+crypto::ScopedPK11Slot GetBuiltInRootCertsSlot() {
   crypto::AutoSECMODListReadLock auto_lock;
   SECMODModuleList* head = SECMOD_GetDefaultModuleList();
   for (SECMODModuleList* item = head; item != NULL; item = item->next) {
     int slot_count = item->module->loaded ? item->module->slotCount : 0;
     for (int i = 0; i < slot_count; i++) {
       PK11SlotInfo* slot = item->module->slots[i];
-      if (!PK11_IsPresent(slot))
-        continue;
-      if (PK11_HasRootCerts(slot))
+      if (IsBuiltInRootSlot(slot))
         return crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot));
     }
   }
@@ -48,7 +66,7 @@ crypto::ScopedPK11Slot GetRootCertsSlot() {
 // it is not specified which one is returned. If none are available, returns
 // nullptr.
 scoped_refptr<ParsedCertificate> GetASSLTrustedBuiltinRoot() {
-  crypto::ScopedPK11Slot root_certs_slot = GetRootCertsSlot();
+  crypto::ScopedPK11Slot root_certs_slot = GetBuiltInRootCertsSlot();
   if (!root_certs_slot)
     return nullptr;
 

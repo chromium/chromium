@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Arbeit</translation>
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicken Sie hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Die Anmeldedaten für Ihr Konto sind veraltet. Bitte melden Sie sich ab und wieder an.</translation>
 <translation id="1122960773616686544">Name des Lesezeichens</translation>
 <translation id="1124772482545689468">Nutzer</translation>
 <translation id="1125550662859510761">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativ)</translation>
@@ -325,6 +326,7 @@
 <translation id="133535873114485416">Bevorzugte Eingabe</translation>
 <translation id="1335929031622236846">Gerät registrieren</translation>
 <translation id="1336902454946927954">Ihr Sicherheitsschlüssel ist gesperrt, weil Ihr Fingerabdruck nicht erkannt werden konnte. Geben Sie Ihre PIN ein, um ihn zu entsperren.</translation>
+<translation id="1338631221631423366">Wird gekoppelt…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> möchte diese Anwendung öffnen.</translation>
 <translation id="1338950911836659113">Wird gelöscht...</translation>
 <translation id="1339009753652684748">Mit „Hey Google“ können Sie auf Assistant zugreifen. Damit der Akku geschont wird, sollten Sie die Option „An (empfohlen)“ auswählen. So reagiert Assistant nur, wenn Ihr Gerät an eine Stromquelle angeschlossen ist oder auflädt.</translation>
@@ -705,7 +707,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1719312230114180055">Hinweis: Ihr Fingerabdruck ist möglicherweise nicht so sicher wie ein starkes Passwort oder eine PIN.</translation>
 <translation id="1720318856472900922">TLS-WWW-Serverauthentifizierung</translation>
 <translation id="1720941539803966190">Anleitung schließen</translation>
-<translation id="172123215662733643">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> in Bildern suchen</translation>
+<translation id="172123215662733643">Bilder an <ph name="VISUAL_SEARCH_PROVIDER" /> senden</translation>
 <translation id="1721312023322545264">Du benötigst die Berechtigung von <ph name="NAME" />, um diese Website zu besuchen</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" />Ihr <ph name="DEVICE_TYPE" /> wird von <ph name="ENROLLMENT_DOMAIN" /> verwaltet<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">Neues &amp;Fenster</translation>
@@ -1565,7 +1567,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2602501489742255173">Zum Starten nach oben wischen</translation>
 <translation id="2603115962224169880">Computer bereinigen</translation>
 <translation id="2603355571917519942">Voice Match ist bereit</translation>
-<translation id="2604138917550693049">Bild mit Google Lens suchen</translation>
+<translation id="2604138917550693049">Bild an Google Lens senden</translation>
 <translation id="2604255671529671813">Fehler bei der Netzwerkverbindung</translation>
 <translation id="2605668923777146443">Rufen Sie <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> auf, um Better Together zu konfigurieren.</translation>
 <translation id="2606246518223360146">Daten verknüpfen</translation>
@@ -3864,7 +3866,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5051836348807686060">Die Rechtschreibprüfung wird für die ausgewählten Sprachen nicht unterstützt</translation>
 <translation id="5052499409147950210">Website bearbeiten</translation>
 <translation id="505347685865235222">Unbenannte Gruppe – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Bild mit Google Lens suchen</translation>
+<translation id="5053962746715621840">Bild an Google Lens senden</translation>
 <translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="505776528429481161">Einfache Verbindung und Einrichtung von Geräten in der Nähe</translation>
@@ -5867,7 +5869,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7230222852462421043">Fenster wiederherstellen</translation>
 <translation id="7230787553283372882">Textgröße anpassen</translation>
 <translation id="7232750842195536390">Fehler beim Umbenennen</translation>
-<translation id="723343421145275488">Mit <ph name="VISUAL_SEARCH_PROVIDER" /> in Bildern suchen</translation>
+<translation id="723343421145275488">Bilder an <ph name="VISUAL_SEARCH_PROVIDER" /> senden</translation>
 <translation id="7234010996000898150">Linux-Wiederherstellung wird abgebrochen</translation>
 <translation id="7235716375204803342">Aktivitäten werden abgerufen...</translation>
 <translation id="7235737137505019098">Auf Ihrem Sicherheitsschlüssel ist nicht genügend Platz für weitere Konten.</translation>
@@ -6540,6 +6542,7 @@ Drücken Sie zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter ode
 <translation id="7887864092952184874">Bluetooth-Maus ist gekoppelt</translation>
 <translation id="7889371445710865055">Eingabesprache ändern</translation>
 <translation id="7890147169288018054">Netzwerkinformationen wie Ihre IP- oder MAC-Adresse anzeigen</translation>
+<translation id="7892384782944609022">Fehler beim Koppeln. Wählen Sie ein Gerät aus und versuchen Sie es noch einmal.</translation>
 <translation id="7893008570150657497">Auf Fotos, Musik und andere Medien auf Ihrem Computer zugreifen</translation>
 <translation id="7893153962594818789">Bluetooth ist auf diesem <ph name="DEVICE_TYPE" /> deaktiviert. Geben Sie Ihr Passwort ein und aktivieren Sie Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Standard)</translation>
@@ -7488,6 +7491,7 @@ Unter <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> k
 <translation id="8879284080359814990">&amp;Als Tab anzeigen</translation>
 <translation id="8879921471468674457">Anmeldedaten speichern</translation>
 <translation id="8880054210564666174">Kontaktliste kann nicht heruntergeladen werden. Bitte die Netzwerkverbindung prüfen und <ph name="LINK_BEGIN" />noch einmal versuchen<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Öffnen Sie die Einstellungen, um <ph name="USB_DEVICE_NAME" /> mit Linux oder Parallels Desktop zu verbinden</translation>
 <translation id="8881020143150461183">Versuchen Sie es noch einmal. Für technischen Support wenden Sie sich bitte an <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Touchpad-Beschleunigung aktivieren</translation>
 <translation id="8884570509232205463">Das Gerät wird jetzt um <ph name="UNLOCK_TIME" /> gesperrt.</translation>

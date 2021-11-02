@@ -193,7 +193,6 @@ void StaticBitmapImageToVideoFrameCopier::ReadARGBPixelsAsync(
                                      ? kTopLeft_GrSurfaceOrigin
                                      : kBottomLeft_GrSurfaceOrigin;
 
-  IncrementOngoingAsyncPixelReadouts();
   gpu::MailboxHolder mailbox_holder = image->GetMailboxHolder();
   DCHECK(context_provider->RasterInterface());
   context_provider->RasterInterface()->WaitSyncTokenCHROMIUM(
@@ -248,7 +247,6 @@ void StaticBitmapImageToVideoFrameCopier::OnARGBPixelsReadAsync(
     GrSurfaceOrigin result_origin,
     bool success) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DecrementOngoingAsyncPixelReadouts();
   if (!success) {
     DLOG(ERROR) << "Couldn't read SkImage using async callback";
     // Async reading is not supported on some platforms, see
@@ -344,21 +342,6 @@ StaticBitmapImageToVideoFrameCopier::ConvertToYUVFrame(
   }
 
   return video_frame;
-}
-
-void StaticBitmapImageToVideoFrameCopier::IncrementOngoingAsyncPixelReadouts() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  ++num_ongoing_async_pixel_readouts_;
-}
-
-void StaticBitmapImageToVideoFrameCopier::DecrementOngoingAsyncPixelReadouts() {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  --num_ongoing_async_pixel_readouts_;
-  DCHECK_GE(num_ongoing_async_pixel_readouts_, 0);
-}
-
-bool StaticBitmapImageToVideoFrameCopier::HasOngoingAsyncPixelReadouts() const {
-  return num_ongoing_async_pixel_readouts_ > 0;
 }
 
 }  // namespace blink

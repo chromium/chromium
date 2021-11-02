@@ -1445,11 +1445,6 @@ const char kTabSwitcherOnReturnName[] = "Tab switcher on return";
 const char kTabSwitcherOnReturnDescription[] =
     "Enable tab switcher on return after specified time has elapsed";
 
-const char kHostedAppShimCreationName[] =
-    "Creation of app shims for hosted apps on Mac";
-const char kHostedAppShimCreationDescription[] =
-    "Create app shims on Mac when creating a hosted app.";
-
 const char kHttpsOnlyModeName[] = "HTTPS-First Mode Setting";
 const char kHttpsOnlyModeDescription[] =
     "Adds a setting under chrome://settings/security to opt-in to HTTPS-First "
@@ -3008,12 +3003,6 @@ const char kChromeSharingHubLaunchAdjacentDescription[] =
     "In multi-window mode, launches share hub actions in an adjacent window. "
     "For internal debugging.";
 
-const char kClipboardSuggestionContentHiddenName[] =
-    "Clipboard suggestion content hidden";
-const char kClipboardSuggestionContentHiddenDescription[] =
-    "Prevents the Clipboard suggestion from proactively retrieving the "
-    "clipboard content.";
-
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "
@@ -4137,6 +4126,12 @@ const char kForceControlFaceAeDescription[] =
 const char kHdrNetOverrideName[] = "HDRnet control override";
 const char kHdrNetOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the HDRnet feature";
+
+const char kCameraAppDocumentManualCropName[] =
+    "Enables document manual crop in camera app.";
+const char kCameraAppDocumentManualCropDescription[] =
+    "Enables document manual crop in camera app for allowing to tweak the "
+    "crop area and orientation in the document photo preview page.";
 
 const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
@@ -5434,13 +5429,6 @@ const char kUIDebugToolsName[] = "Debugging tools for UI";
 const char kUIDebugToolsDescription[] =
     "Enables additional keyboard shortcuts to help debugging.";
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kAuraWindowSubtreeCaptureName[] = "ChromeOS Window Subtree Capture";
-const char kAuraWindowSubtreeCaptureDescription[] =
-    "Enables capture of ChromeOS Aura windows using subtree capture. When "
-    "disabled, the legacy slow capturer will be used.";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
 const char kWebrtcPipeWireCapturerName[] = "WebRTC PipeWire support";

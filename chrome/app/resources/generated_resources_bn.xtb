@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">অফিস</translation>
 <translation id="1122198203221319518">&amp;সরঞ্জামসমূহ</translation>
 <translation id="1122242684574577509">যাচাইকরণ করা যায়নি৷ আপনি যে ওয়াই-ফাই নেটওয়ার্ক ব্যবহার করছেন তার লগ-ইন পেজ দেখতে ক্লিক করুন <ph name="NETWORK_ID" />৷</translation>
+<translation id="1122913801042512795">আপনার অ্যাকাউন্টে সাইন-ইন করার তারিখ ভুল রয়েছে। সাইন-আউট করে আবার সাইন-ইন করুন।</translation>
 <translation id="1122960773616686544">বুকমার্কের নাম</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1125550662859510761">মনে হচ্ছে <ph name="WIDTH" /> x <ph name="HEIGHT" /> (স্থানীয়)</translation>
@@ -328,6 +329,7 @@
 <translation id="133535873114485416">পছন্দের ইনপুট</translation>
 <translation id="1335929031622236846">আপনার ডিভাইস এনরোল করুন</translation>
 <translation id="1336902454946927954">আপনার 'নিরাপত্তা' কী লক করে রাখা হয়েছে, কারণ আপনার ফিঙ্গারপ্রিন্ট শনাক্ত করা যায়নি। এটি আনলক করতে, আপনার পিন এন্টার করুন।</translation>
+<translation id="1338631221631423366">পেয়ার করা হচ্ছে...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> এই অ্যাপ্লিকেশন খুলতে চায়।</translation>
 <translation id="1338950911836659113">মোছা হচ্ছে...</translation>
 <translation id="1339009753652684748">"Ok Google" বলে আপনার Assistant-কে অ্যাক্সেস করুন। ব্যাটারির চার্জ বাঁচাতে, "চালু করুন (সাজেস্ট করা)" বিকল্প বেছে নিন। আপনার ডিভাইস প্লাগ-ইন করা অথবা চার্জে বসানো থাকলে শুধুমাত্র তবেই Assistant উত্তর দেবে।</translation>
@@ -6561,6 +6563,7 @@
 <translation id="7887864092952184874">ব্লুটুথ মাউস যুক্ত হয়েছে</translation>
 <translation id="7889371445710865055">ডিকটেশনের ভাষা পরিবর্তন করুন</translation>
 <translation id="7890147169288018054">নেটওয়ার্কের তথ্য দেখুন, যেমন আপনার IP বা MAC অ্যাড্রেস</translation>
+<translation id="7892384782944609022">পেয়ার করা যায়নি। আবার চেষ্টা করতে ডিভাইস বেছে নিন।</translation>
 <translation id="7893008570150657497">আপনার কম্পিউটার থেকে ফটো, সঙ্গীত ও অন্য মিডিয়াতে অ্যাক্সেস করুন</translation>
 <translation id="7893153962594818789"><ph name="DEVICE_TYPE" /> এ ব্লুটুথ বন্ধ করা আছে৷ আপনার পাসওয়ার্ড লিখুন এবং ব্লুটুথ চালু করুন৷</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (ডিফল্ট)</translation>
@@ -7510,6 +7513,7 @@
 <translation id="8879284080359814990">ট্যাব রূপে &amp;দেখান</translation>
 <translation id="8879921471468674457">সাইন-ইন সংক্রান্ত তথ্য মনে রাখুন</translation>
 <translation id="8880054210564666174">পরিচিতি তালিকা ডাউনলোড করা যাচ্ছে না। আপনার নেটওয়ার্ক কানেকশন চেক করুন বা <ph name="LINK_BEGIN" />আবার চেষ্টা করুন<ph name="LINK_END" />।</translation>
+<translation id="8880344290593529089">Linux বা Parallels Desktop-এ <ph name="USB_DEVICE_NAME" /> যোগ করতে সেটিংস খুলুন</translation>
 <translation id="8881020143150461183">আবার চেষ্টা করুন। প্রযুক্তিগত সহায়তা পেতে <ph name="CARRIER_NAME" />-এর সাথে যোগাযোগ করুন।</translation>
 <translation id="8883273463630735858">টাচপ্যাড অ্যাক্সিলারেশন বিকল্পটি চালু করুন</translation>
 <translation id="8884570509232205463">তোমার ডিভাইস এখন <ph name="UNLOCK_TIME" />-এ লক হয়ে যায়।</translation>

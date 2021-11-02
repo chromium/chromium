@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación. Haz clic para acceder a la página de inicio de sesión de la red Wi-Fi que estés utilizando (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">La información de inicio de sesión de tu cuenta no está actualizada. Cierra la sesión y vuelve a iniciarla.</translation>
 <translation id="1122960773616686544">Nombre de marcador</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /> (nativa)</translation>
@@ -1111,7 +1112,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2136476978468204130">La frase de contraseña que has introducido no es correcta</translation>
 <translation id="2138398485845393913">La conexión con "<ph name="DEVICE_NAME" />" sigue en curso</translation>
 <translation id="2139919072249842737">Botón de configuración</translation>
-<translation id="2140788884185208305">Estado de la batería</translation>
+<translation id="2140788884185208305">Salud de la batería</translation>
 <translation id="214169863967063661">Abrir la configuración de apariencia</translation>
 <translation id="2142328300403846845">Abrir enlace como</translation>
 <translation id="2142582065325732898">Activa la función <ph name="LINK1_BEGIN" />Sincronización de Chrome<ph name="LINK1_END" /> para ver pestañas recientes de Chrome. <ph name="LINK2_BEGIN" />Más información<ph name="LINK2_END" /></translation>
@@ -1570,7 +1571,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2602501489742255173">Desliza el dedo hacia arriba para empezar</translation>
 <translation id="2603115962224169880">Limpiar ordenador</translation>
 <translation id="2603355571917519942">Voice Match está listo</translation>
-<translation id="2604138917550693049">Buscar imagen con Google Lens</translation>
+<translation id="2604138917550693049">Buscar imagen con Lens</translation>
 <translation id="2604255671529671813">No se ha podido establecer conexión con la red</translation>
 <translation id="2605668923777146443">Accede a <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" /> para ver las opciones de Better Together.</translation>
 <translation id="2606246518223360146">Vincular datos</translation>
@@ -3869,7 +3870,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5051836348807686060">La revisión ortográfica no es compatible con los idiomas que has seleccionado</translation>
 <translation id="5052499409147950210">Editar sitio web</translation>
 <translation id="505347685865235222">Grupo sin nombre - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Buscar imagen con Google Lens</translation>
+<translation id="5053962746715621840">Buscar imagen con Lens</translation>
 <translation id="5056950756634735043">Conectando con el contenedor</translation>
 <translation id="5057110919553308744">Al hacer clic en la extensión</translation>
 <translation id="505776528429481161">Conecta y configura dispositivos que estén cerca fácilmente</translation>
@@ -7495,6 +7496,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8879284080359814990">&amp;Mostrar como pestaña</translation>
 <translation id="8879921471468674457">Recordar información de inicio de sesión</translation>
 <translation id="8880054210564666174">No se ha podido descargar la lista de contactos. Revisa tu conexión de red o <ph name="LINK_BEGIN" />vuelve a intentarlo<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Abre Configuración para conectar <ph name="USB_DEVICE_NAME" /> a Linux o Parallels Desktop</translation>
 <translation id="8881020143150461183">Vuelve a intentarlo. Si necesitas asistencia técnica, ponte en contacto con <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Habilitar la aceleración del panel táctil</translation>
 <translation id="8884570509232205463">Ahora, el dispositivo se bloqueará a las <ph name="UNLOCK_TIME" />.</translation>

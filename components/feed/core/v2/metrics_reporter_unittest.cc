@@ -977,4 +977,44 @@ TEST_F(MetricsReporterTest, NetworkRequestCompleteReportsUma) {
       123, 1);
 }
 
+TEST_F(MetricsReporterTest, ReportNotice) {
+  reporter_->OnNoticeCreated(kForYouStream, "youtube");
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.NoticeCreated.Youtube",
+                                true, 1);
+
+  reporter_->OnNoticeViewed(kWebFeedStream, "YOUTUBE");
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.NoticeViewed.Youtube", true, 1);
+
+  reporter_->OnNoticeOpenAction(kForYouStream, "youTube");
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.NoticeOpenAction.Youtube", true, 1);
+
+  reporter_->OnNoticeDismissed(kWebFeedStream, "Youtube");
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.NoticeDismissed.Youtube", true, 1);
+
+  reporter_->OnNoticeAcknowledged(kForYouStream, "Youtube",
+                                  NoticeAcknowledgementPath::kViaOpenAction);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.NoticeAcknowledged.Youtube", true, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.NoticeAcknowledgementPath.Youtube",
+      NoticeAcknowledgementPath::kViaOpenAction, 1);
+
+  // Invalid key.
+  reporter_->OnNoticeAcknowledged(kForYouStream, "Test",
+                                  NoticeAcknowledgementPath::kViaOpenAction);
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.InvalidNoticeKey",
+                                true, 1);
+  EXPECT_TRUE(
+      histogram_
+          .GetAllSamples("ContentSuggestions.Feed.NoticeAcknowledged.Test")
+          .empty());
+  EXPECT_TRUE(histogram_
+                  .GetAllSamples(
+                      "ContentSuggestions.Feed.NoticeAcknowledgementPath.Test")
+                  .empty());
+}
+
 }  // namespace feed

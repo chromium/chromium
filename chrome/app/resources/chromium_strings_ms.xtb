@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium - Log Masuk Rangkaian - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Jika anda berkongsi komputer, rakan dan keluarga boleh menyemak imbas secara berasingan dan menyediakan Chromium sebagaimana yang mereka mahukan.</translation>
 <translation id="2294245788148774212">Pilihan: Bantu kami mempertingkat ciri dan prestasi OS Chromium dengan menghantar data diagnostik dan penggunaan kepada Google secara automatik.</translation>
+<translation id="2313870531055795960">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chromium. Jika laman cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chromium juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat.</translation>
 <translation id="2343156876103232566">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chromium pada kedua-dua peranti.</translation>
 <translation id="2347108572062610441">Sambungan ini telah menukar halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
 <translation id="2396765026452590966">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar halaman yang ditunjukkan apabila anda memulakan Chromium.</translation>
@@ -42,6 +43,7 @@
 <translation id="2577788541081224677">Untuk mengakses bahan Chromium anda pada semua peranti anda, log masuk supaya anda boleh menghidupkan penyegerakan.</translation>
 <translation id="2583187216237139145">Sebarang data Chromium yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Chromium OS perlu dimulakan semula untuk melaksanakan kemas kini.</translation>
+<translation id="2614883797045469742">Tetapan lalai berfungsi untuk kebanyakan orang, tetapi anda boleh menyesuaikan tetapan tersebut agar sesuai dengan cara anda suka menggunakan Chromium</translation>
 <translation id="2648074677641340862">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Chromium semula.</translation>
 <translation id="2661879430930417727">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chromium sebagaimana yang mereka ingini</translation>
 <translation id="2711502716910134313">Tab Chromium</translation>
@@ -50,6 +52,7 @@
 <translation id="2799223571221894425">Lancarkan semula</translation>
 <translation id="2837693172913560447">Tindakan ini akan membuat profil Chromium baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Alih keluar daripada Chromium...</translation>
+<translation id="2850691299438350830">Memastikan anda selamat pada Chromium dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk</translation>
 <translation id="2885378588091291677">Pengurus Tugas</translation>
 <translation id="2910007522516064972">Mengenai &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium telah dikemas kini</translation>
@@ -205,6 +208,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="6990124437352146030">Chromium memerlukan kebenaran untuk mengakses mikrofon anda bagi tapak ini</translation>
 <translation id="705851970750939768">Kemas kini Chromium</translation>
 <translation id="7067091210845072982">Jika imej tiada perihalan yang berguna, Chromium akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google.</translation>
+<translation id="7147279922647361552">Sesuaikan beberapa pilihan privasi Chromium yang paling penting</translation>
 <translation id="718435575166326686">Chromium memerlukan kebenaran kamera untuk laman ini</translation>
 <translation id="7196312274710523067">Tidak dapat melancarkan Chromium. Cuba lagi.</translation>
 <translation id="7197677400338048821">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam.</translation>

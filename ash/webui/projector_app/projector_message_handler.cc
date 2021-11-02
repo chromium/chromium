@@ -56,6 +56,16 @@ std::string ProjectorErrorToString(ProjectorError mode) {
   }
 }
 
+base::Value ScreencastListToValue(
+    const std::set<PendingScreencast>& screencasts) {
+  std::vector<base::Value> value;
+  value.reserve(screencasts.size());
+  for (const auto& item : screencasts)
+    value.push_back(item.ToValue());
+
+  return base::Value(std::move(value));
+}
+
 }  // namespace
 
 ProjectorMessageHandler::ProjectorMessageHandler()
@@ -113,6 +123,10 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "installSoda", base::BindRepeating(&ProjectorMessageHandler::InstallSoda,
                                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getPendingScreencasts",
+      base::BindRepeating(&ProjectorMessageHandler::GetPendingScreencasts,
+                          base::Unretained(this)));
 }
 
 void ProjectorMessageHandler::OnSodaProgress(int combined_progress) {
@@ -126,7 +140,12 @@ void ProjectorMessageHandler::OnSodaError() {
   FireWebUIListener("onSodaInstallError");
 }
 
-void ProjectorMessageHandler::OnScreencastsStateChange() {}
+void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
+    const std::set<PendingScreencast>& pending_screencast) {
+  AllowJavascript();
+  FireWebUIListener("onScreencastsStateChange",
+                    ScreencastListToValue(pending_screencast));
+}
 
 void ProjectorMessageHandler::OnNewScreencastPreconditionChanged(
     bool can_start) {
@@ -315,6 +334,18 @@ void ProjectorMessageHandler::OnXhrRequestCompleted(
   response.SetStringKey(kXhrError, error);
 
   ResolveJavascriptCallback(base::Value(js_callback_id), std::move(response));
+}
+
+void ProjectorMessageHandler::GetPendingScreencasts(
+    const base::Value::ConstListView args) {
+  AllowJavascript();
+  // Check that there is only one argument which is the callback id.
+  DCHECK_EQ(args.size(), 1u);
+
+  const std::set<PendingScreencast>& pending_screencasts =
+      ProjectorAppClient::Get()->GetPendingScreencasts();
+  ResolveJavascriptCallback(args[0],
+                            ScreencastListToValue(pending_screencasts));
 }
 
 }  // namespace ash

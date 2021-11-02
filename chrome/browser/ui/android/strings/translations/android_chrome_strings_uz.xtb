@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Mavjud ma’lumotlarni o‘chirish.</translation>
 <translation id="1146678959555564648">Virtual reallikka kirish</translation>
 <translation id="114825011539563458">Eng muhim maxfiylik va xavfsizlik boshqaruvlarini bir joyda</translation>
+<translation id="1149401351239820326">Muddati tugaydigan oy</translation>
 <translation id="1154704303112745282">Sahifa oflaynda ishlamaydi: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Sarflandi</translation>
 <translation id="1171770572613082465">Mashhur saytlarni chiqarish uchun “Top saytlar” tugmasini bosing</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome funksiyalari</translation>
 <translation id="1344653310988386453">Tanlangan matnga havola kiriting</translation>
 <translation id="1347468774581902829">Tarixni boshqarish</translation>
-<translation id="1353372385686746892">Ilovani yaxshilash maqsadida Chrome diagnostika axborotini Googlega yuboradi. <ph name="BEGIN_LINK" />Oʻzgartirish<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Chiqilsin va sinxronizatsiya uzilsinmi?</translation>
 <translation id="1373696734384179344">Tanlangan kontentni yuklab olish uchun yetarli bo‘sh joy yo‘q.</translation>
 <translation id="1376578503827013741">Hisoblanmoqda…</translation>
@@ -817,7 +817,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5956665950594638604">Chrome yordam markazini yangi varaqda ochish</translation>
 <translation id="5957442310066583693">Eng sara saytlarni koʻrish uchun bosh sahifa tugmasini bosing</translation>
 <translation id="5958275228015807058">Fayl va sahiflarni “Yuklanmalar” jildidan topish mumkin</translation>
-<translation id="5962272973076519240">Inkognito qulfini ochish uchun shaxsingizni tasdiqlang</translation>
 <translation id="5962718611393537961">Bosib yig‘ish</translation>
 <translation id="5964805880140440652">Bu sahifani boshqa qurilmaga ulashish uchun Chrome sozlamalarida sinxronizatsiyani yoqing</translation>
 <translation id="5964869237734432770">Rasm tavsiflari yuklanmasin</translation>
@@ -1188,6 +1187,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="804335162455518893">SD karta topilmadi</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta inkognito varaq}other{<ph name="TAB_COUNT_NORMAL" /> ta inkognito varaq}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB bo‘sh</translation>
+<translation id="8058655154417507695">Muddati tugaydigan yil</translation>
 <translation id="8058746566562539958">Yangi Chrome oynasida ochish</translation>
 <translation id="8063895661287329888">Xatcho‘pni qo‘shib bo‘lmadi.</translation>
 <translation id="806745655614357130">Ma’lumotlar alohida saqlansin</translation>

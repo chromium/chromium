@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">驗證失敗。按一下即可造訪目前所用 Wi-Fi 網路 (<ph name="NETWORK_ID" />) 的登入頁面。</translation>
+<translation id="1122913801042512795">你的帳戶登入詳細資料已過期，請登出後再登入。</translation>
 <translation id="1122960773616686544">書籤名稱</translation>
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1125550662859510761">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
@@ -7495,6 +7496,7 @@
 <translation id="8879284080359814990">以分頁顯示(&amp;S)</translation>
 <translation id="8879921471468674457">記住登入資訊</translation>
 <translation id="8880054210564666174">無法下載聯絡人清單。請檢查網路連線，或<ph name="LINK_BEGIN" />再試一次<ph name="LINK_END" />。</translation>
+<translation id="8880344290593529089">請開啟「設定」頁面，以將「<ph name="USB_DEVICE_NAME" />」連線至 Linux 或 Parallels Desktop</translation>
 <translation id="8881020143150461183">請再試一次。如需技術支援，請聯絡「<ph name="CARRIER_NAME" />」。</translation>
 <translation id="8883273463630735858">啟用觸控板加速</translation>
 <translation id="8884570509232205463">你的裝置會在 <ph name="UNLOCK_TIME" /> 遭到鎖定。</translation>

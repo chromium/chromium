@@ -931,7 +931,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
   *num_children = owner()->PlatformChildCount();
   *unique_id = -AXPlatformNodeWin::GetUniqueId();
 
-  if (owner()->IsPlatformDocument()) {
+  if (ui::IsPlatformDocument(owner()->GetRole())) {
     *node_type = NODETYPE_DOCUMENT;
   } else if (owner()->IsText()) {
     *node_type = NODETYPE_TEXT;
@@ -1415,7 +1415,7 @@ STDMETHODIMP BrowserAccessibilityComWin::InternalQueryInterface(
       return E_NOINTERFACE;
     }
   } else if (iid == IID_ISimpleDOMDocument) {
-    if (!accessibility->IsPlatformDocument()) {
+    if (!ui::IsPlatformDocument(accessibility->GetRole())) {
       *object = nullptr;
       return E_NOINTERFACE;
     }

@@ -140,6 +140,8 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
 
   virtual bool IsWorkletAnimation() const;
 
+  void SetKeyframeEffectForTesting(std::unique_ptr<KeyframeEffect>);
+
  private:
   friend class base::RefCounted<Animation>;
 
@@ -154,7 +156,6 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
 
  protected:
   explicit Animation(int id);
-  Animation(int id, std::unique_ptr<KeyframeEffect>);
   virtual ~Animation();
 
   AnimationHost* animation_host_;

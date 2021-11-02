@@ -39,7 +39,7 @@ class SendTabToSelfEntry {
                      const std::string& device_name,
                      const std::string& target_device_sync_cache_guid);
 
-  SendTabToSelfEntry(const SendTabToSelfEntry&) = delete;
+  SendTabToSelfEntry(const SendTabToSelfEntry&);
   SendTabToSelfEntry& operator=(const SendTabToSelfEntry&) = delete;
 
   ~SendTabToSelfEntry();

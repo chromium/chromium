@@ -43,6 +43,10 @@ class ObfuscatedFileUtilMemoryDelegate;
 class SpecialStoragePolicy;
 class WatcherManager;
 
+// TODO(crbug.com/1231162): Remove this when removing the plugin private FS.
+// Name of the root directory in the plugin private file system.
+const char kPluginPrivateRootName[] = "pluginprivate";
+
 class COMPONENT_EXPORT(STORAGE_BROWSER) PluginPrivateFileSystemBackend
     : public FileSystemBackend,
       public FileSystemQuotaUtil {

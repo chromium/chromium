@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image_manager.h"
@@ -21,6 +22,9 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
+
+const base::Feature kDelayParkingImages{"DelayParkingImages",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
 
@@ -89,10 +93,12 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
 const base::Feature kUseParkableImageSegmentReader{
     "UseParkableImageSegmentReader", base::FEATURE_DISABLED_BY_DEFAULT};
 
+constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
+
 void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
-  DCHECK(!frozen_);
+  DCHECK(!is_frozen());
   DCHECK(!is_on_disk());
   DCHECK(rw_buffer_);
 
@@ -115,6 +121,7 @@ scoped_refptr<SharedBuffer> ParkableImageImpl::Data() {
   do {
     shared_buffer->Append(static_cast<const char*>(it.data()), it.size());
   } while (it.Next());
+
   return shared_buffer;
 }
 
@@ -134,7 +141,8 @@ scoped_refptr<SegmentReader> ParkableImageImpl::GetROBufferSegmentReader() {
 
 bool ParkableImageImpl::CanParkNow() const {
   DCHECK(!is_on_disk());
-  return is_frozen() && !is_locked() && rw_buffer_->HasNoSnapshots();
+  return !TransientlyUnableToPark() && !is_locked() &&
+         rw_buffer_->HasNoSnapshots();
 }
 
 ParkableImageImpl::ParkableImageImpl(size_t initial_capacity)
@@ -161,8 +169,8 @@ scoped_refptr<ParkableImageImpl> ParkableImageImpl::Create(
 void ParkableImageImpl::Freeze() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MutexLocker lock(lock_);
-  DCHECK(!frozen_);
-  frozen_ = true;
+  DCHECK(!is_frozen());
+  frozen_time_ = base::TimeTicks::Now();
 
   if (is_below_min_parking_size()) {
     ParkableImageManager::Instance().Remove(this);
@@ -282,6 +290,19 @@ void ParkableImageImpl::DiscardData() {
   ParkableImageManager::Instance().OnWrittenToDisk(this);
 }
 
+bool ParkableImageImpl::TransientlyUnableToPark() const {
+  if (base::FeatureList::IsEnabled(kDelayParkingImages)) {
+    // Most images are used only once, for the initial decode at render time.
+    // Since rendering can happen multiple seconds after the image load (e.g.
+    // if paint by a synchronous <script> earlier in the document), we instead
+    // wait up to kParkingDelay before parking an unused image.
+    return !is_frozen() ||
+           (base::TimeTicks::Now() - frozen_time_ <= kParkingDelay && !used_);
+  } else {
+    return !is_frozen();
+  }
+}
+
 bool ParkableImageImpl::MaybePark() {
   DCHECK(ParkableImageManager::IsParkableImagesToDiskEnabled());
 
@@ -323,6 +344,10 @@ size_t ParkableImageImpl::ReadFromDiskIntoBuffer(
 }
 
 void ParkableImageImpl::Unpark() {
+  // We mark the ParkableImage as having been read here, since any access to
+  // its data must first make sure it's not on disk.
+  used_ = true;
+
   if (!is_on_disk()) {
     AsanUnpoisonBuffer(rw_buffer_.get());
     return;

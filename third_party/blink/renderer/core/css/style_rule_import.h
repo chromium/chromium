@@ -60,6 +60,7 @@ class StyleRuleImport : public StyleRuleBase {
 
   bool IsLayered() const { return layer_.size(); }
   const LayerName& GetLayerName() const { return layer_; }
+  String GetLayerNameAsString() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

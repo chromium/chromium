@@ -579,8 +579,8 @@
       'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_py3',
       'linux-builder-perf': 'official_goma_linux_perf_py3',
       'linux-builder-perf-rel': 'official_goma_linux_perf',
-      'mac-builder-perf': 'official_goma_mac_perf',
-      'mac-arm-builder-perf': 'official_goma_mac_arm_perf',
+      'mac-builder-perf': 'official_goma_mac_perf_py3',
+      'mac-arm-builder-perf': 'official_goma_mac_arm_perf_py3',
       'win32-builder-perf': 'official_goma_x86_perf',
       'win64-builder-perf': 'official_goma_perf',
     },
@@ -1477,7 +1477,7 @@
 
     'android_release_bot_minimal_symbols_x86_fastbuild_resource_allowlisting_webview_google': [
       'android', 'release_bot', 'minimal_symbols', 'x86',
-      'android_fastbuild', 'resource_allowlisting', 'webview_google',
+      'android_fastbuild', 'strip_debug_info', 'webview_google',
     ],
 
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_google': [
@@ -1543,7 +1543,7 @@
 
     'android_release_trybot_minimal_symbols_x86_fastbuild_resource_allowlisting_disable_proguard_chrome_google': [
       'android', 'release_trybot', 'minimal_symbols',
-      'android_fastbuild', 'x86', 'resource_allowlisting', 'disable_proguard',
+      'android_fastbuild', 'x86', 'strip_debug_info', 'disable_proguard',
       'chrome_google'
     ],
 
@@ -1555,12 +1555,12 @@
 
     'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google': [
       'android', 'release_trybot', 'x86', 'android_fastbuild',
-      'resource_allowlisting', 'webview_google',
+      'strip_debug_info', 'webview_google',
     ],
 
     'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google_coverage': [
       'android', 'release_trybot', 'x86', 'android_fastbuild',
-      'resource_allowlisting', 'webview_google', 'use_java_coverage',
+      'strip_debug_info', 'webview_google', 'use_java_coverage',
       'partial_code_coverage_instrumentation',
     ],
 
@@ -2679,8 +2679,16 @@
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0',
     ],
 
+    'official_goma_mac_perf_py3': [
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0', 'use_py3_for_perf'
+    ],
+
     'official_goma_mac_arm_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0',
+    ],
+
+    'official_goma_mac_arm_perf_py3': [
+      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0', 'use_py3_for_perf'
     ],
 
     'official_goma_mac_pgo': [

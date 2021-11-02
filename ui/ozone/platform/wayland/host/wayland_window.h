@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -243,6 +244,9 @@ class WaylandWindow : public PlatformWindow,
   // Sets the window geometry.
   virtual void SetWindowGeometry(gfx::Rect bounds);
 
+  // Sends configure acknowledgement to the wayland server.
+  virtual void AckConfigure(uint32_t serial) = 0;
+
   // Updates the window decorations, if possible at the moment.
   virtual void UpdateDecorations();
 
@@ -298,6 +302,36 @@ class WaylandWindow : public PlatformWindow,
 
   // Calls set_opaque_region for this window.
   virtual void UpdateWindowMask();
+
+  // Processes the pending bounds in dip.
+  void ProcessPendingBoundsDip(uint32_t serial);
+
+  // Processes the size information form visual size update and returns true if
+  // any pending configure is fulfilled.
+  bool ProcessVisualSizeUpdate(const gfx::Size& size_px, float scale_factor);
+
+  // Applies pending bounds.
+  virtual void ApplyPendingBounds() = 0;
+
+  // These bounds attributes below have suffixes that indicate units used.
+  // Wayland operates in DIP but the platform operates in physical pixels so
+  // our WaylandWindow is the link that has to translate the units. See also
+  // comments in the implementation.
+  //
+  // Bounds that will be applied when the window state is finalized. The window
+  // may get several configuration events that update the pending bounds, and
+  // only upon finalizing the state is the latest value stored as the current
+  // bounds via |ApplyPendingBounds|. Measured in DIP because updated in the
+  // handler that receives DIP from Wayland.
+  gfx::Rect pending_bounds_dip_;
+
+  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
+  // ack_configure with |serial| will be sent to the Wayland compositor.
+  struct PendingConfigure {
+    gfx::Rect bounds_dip;
+    uint32_t serial;
+  };
+  base::circular_deque<PendingConfigure> pending_configures_;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WaylandScreenTest, SetWindowScale);

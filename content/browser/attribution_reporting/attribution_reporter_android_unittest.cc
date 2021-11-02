@@ -53,6 +53,18 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
             test_manager_.last_impression_source_type());
 }
 
+TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
+  attribution_reporter_android::ReportAppImpression(
+      test_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0);
+
+  EXPECT_EQ(1u, test_manager_.num_sources());
+
+  EXPECT_EQ(OriginFromAndroidPackageName(kPackageName),
+            test_manager_.last_impression_origin());
+  EXPECT_EQ(StorableSource::SourceType::kEvent,
+            test_manager_.last_impression_source_type());
+}
+
 TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
   AttributionDisallowingContentBrowserClient browser_client;
 

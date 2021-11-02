@@ -1302,13 +1302,7 @@ TEST_F(FieldTrialListTest, AssociateFieldTrialParams) {
   EXPECT_EQ(2U, new_params.size());
 }
 
-#if defined(OS_FUCHSIA)
-// TODO(crbug.com/752368): This is flaky on Fuchsia.
-#define MAYBE_ClearParamsFromSharedMemory DISABLED_ClearParamsFromSharedMemory
-#else
-#define MAYBE_ClearParamsFromSharedMemory ClearParamsFromSharedMemory
-#endif
-TEST_F(FieldTrialListTest, MAYBE_ClearParamsFromSharedMemory) {
+TEST_F(FieldTrialListTest, ClearParamsFromSharedMemory) {
   std::string trial_name("Trial1");
   std::string group_name("Group1");
 

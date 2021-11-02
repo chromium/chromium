@@ -683,6 +683,7 @@ class CORE_EXPORT LocalFrameView final
 
   PaintArtifactCompositor* GetPaintArtifactCompositor() const;
 
+  cc::Layer* RootCcLayer();
   const cc::Layer* RootCcLayer() const;
 
   ScrollingCoordinatorContext* GetScrollingContext() const;

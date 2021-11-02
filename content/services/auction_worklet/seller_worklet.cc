@@ -273,6 +273,8 @@ void SellerWorklet::V8State::ScoreAd(
   v8::Local<v8::Value> score_ad_result;
   double score;
   std::vector<std::string> errors_out;
+  v8_helper_->MaybeTriggerInstrumentationBreakpoint(
+      context_group_id_, "beforeSellerWorkletScoringStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
                        "scoreAd", args, errors_out)
@@ -357,6 +359,8 @@ void SellerWorklet::V8State::ReportResult(
 
   v8::Local<v8::Value> signals_for_winner_value;
   std::vector<std::string> errors_out;
+  v8_helper_->MaybeTriggerInstrumentationBreakpoint(
+      context_group_id_, "beforeSellerWorkletReportingStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
                        "reportResult", args, errors_out)

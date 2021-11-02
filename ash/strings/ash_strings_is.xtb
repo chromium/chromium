@@ -24,6 +24,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="109942774857561566">Mér leiðist</translation>
 <translation id="1104084341931202936">Sýna aðgengisstillingar</translation>
 <translation id="1104621072296271835">Tækin þín virka enn betur saman</translation>
+<translation id="1111781754511998498">Skjávarpi</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> mælir með að þú uppfærir <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Litastilling með þema notar liti sem dregnir eru úr veggfóðrinu til að gefa viðmótinu léttan litablæ.</translation>
 <translation id="112308213915226829">Fela hillu sjálfkrafa</translation>
@@ -373,6 +374,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3665889125180354336">Upptaka hljóðnema</translation>
 <translation id="3680908746918359504">Hreinsa alla penna</translation>
 <translation id="36813544980941320">Wi-Fi netum verður deilt á milli símans og <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Núna er hægt að breyta því hvar skjáskot eru vistuð</translation>
 <translation id="3702809606464356667">Sýnir glugga núverandi skrifborðs, ýttu á ör upp til að sýna glugga allra skrifborða</translation>
 <translation id="3702846122927433391">Íbúafjöldi í Nígeríu</translation>
 <translation id="3705722231355495246">–</translation>
@@ -417,6 +419,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3969043077941541451">Slökkt</translation>
 <translation id="397105322502079400">Reiknar...</translation>
 <translation id="3977512764614765090">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu.</translation>
+<translation id="3986082989454912832">Svara</translation>
 <translation id="3995138139523574647">USB-C tæki (tengi hægra megin að aftan)</translation>
 <translation id="40062176907008878">Handskrift</translation>
 <translation id="4017989525502048489">Laser-bendill</translation>
@@ -456,7 +459,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4274537685965975248">Flýtilyklinum „Ctrl + Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör til hægri til að nota End-lykilinn.</translation>
 <translation id="4279490309300973883">Speglun</translation>
 <translation id="4285498937028063278">Losa</translation>
-<translation id="4292904812939562398">Nýlega notuð forrit</translation>
 <translation id="429402653707266969">Breyta staðsetningu tækjastiku</translation>
 <translation id="4294319844246081198">Góðan dag <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Hreinsa <ph name="COUNT" /> tilkynningar</translation>
@@ -562,6 +564,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Slökkva á tilkynningum</translation>
 <translation id="4946376291507881335">Taka mynd</translation>
 <translation id="495046168593986294">Fletta upp</translation>
 <translation id="4952936045814352993">„Staðsetja síma“ er ekki í boði þegar slökkt er á vekjarahljóðum</translation>
@@ -905,6 +908,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Sjá allar tilkynningar</translation>
 <translation id="7607002721634913082">Hlé</translation>
+<translation id="7610198039767537854">Skoða nýlegar myndir í myndavélarmöppu símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Hlutlaust</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Merkipenni</translation>

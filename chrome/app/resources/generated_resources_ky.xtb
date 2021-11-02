@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Жумуш</translation>
 <translation id="1122198203221319518">&amp;Куралдар</translation>
 <translation id="1122242684574577509">Аныктыгы текшерилбей койду. Сиз колдонуп жаткан Wi-Fi тармактын кирүү барагына баш багуу үчүн чыкылдатыңыз (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Аккаунтуңуздун кирүү маалыматы эскирип калды. Аккаунттан чыгып, кайра кириңиз.</translation>
 <translation id="1122960773616686544">Кыстарманын аталышы</translation>
 <translation id="1124772482545689468">Колдонуучу</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> сыяктуу көрүнөт (аппараттык дааналыгы)</translation>
@@ -720,7 +721,7 @@
 <translation id="1719312230114180055">Эскертүү: Манжа издерине караганда сырсөз же PIN код кыйла коопсузураак.</translation>
 <translation id="1720318856472900922">TLS WWW серверинин аныктыгын текшерүү</translation>
 <translation id="1720941539803966190">Үйрөткүчтү жабуу</translation>
-<translation id="172123215662733643">Сүрөттөрдү <ph name="VISUAL_SEARCH_PROVIDER" /> менен издөө</translation>
+<translation id="172123215662733643">Сүрөттөрдү <ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу издөө</translation>
 <translation id="1721312023322545264">Бул сайтка кирүү үчүн сизге <ph name="NAME" /> уруксат бериши керек</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> түзмөгүңүз<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> тарабынан башкарылууда</translation>
 <translation id="1723824996674794290">&amp;Жаңы терезе</translation>
@@ -1584,7 +1585,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2602501489742255173">Баштоо үчүн, өйдө сүрүп коюңуз</translation>
 <translation id="2603115962224169880">Компьютерди тазалоо</translation>
 <translation id="2603355571917519942">Voice Match даяр</translation>
-<translation id="2604138917550693049">Сүрөттү Google Lens менен издөө</translation>
+<translation id="2604138917550693049">Сүрөттү Google Lens аркылуу издөө</translation>
 <translation id="2604255671529671813">Тармакка туташуу катасы</translation>
 <translation id="2605668923777146443">Better Together функциясынын параметрлерин көрүү үчүн <ph name="LINK_BEGIN" />Жөндөөлөргө<ph name="LINK_END" /> өтүңүз.</translation>
 <translation id="2606246518223360146">Дайындарды байланыштыруу</translation>
@@ -3886,7 +3887,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5051836348807686060">Сиз тандаган тилдерде орфография текшерилбейт</translation>
 <translation id="5052499409147950210">Сайтты түзөтүү</translation>
 <translation id="505347685865235222">Аталышы жок топ – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Сүрөттү Google Lens менен издөө</translation>
+<translation id="5053962746715621840">Сүрөттү Google Lens аркылуу издөө</translation>
 <translation id="5056950756634735043">Контейнерге туташууда</translation>
 <translation id="5057110919553308744">Кеңейтүүнү чыкылдатканда</translation>
 <translation id="505776528429481161">Жакын жердеги түзмөктөрдү оңой туташтырып, тууралайсыз</translation>
@@ -5889,7 +5890,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7230222852462421043">&amp;Терезени калыбына келтирүү</translation>
 <translation id="7230787553283372882">Тексттин өлчөмүн тууралап алыңыз</translation>
 <translation id="7232750842195536390">Аталышы өзгөртүлбөй койду</translation>
-<translation id="723343421145275488">Сүрөттөрдү <ph name="VISUAL_SEARCH_PROVIDER" /> менен издөө</translation>
+<translation id="723343421145275488">Сүрөттөрдү <ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу издөө</translation>
 <translation id="7234010996000898150">Linux'ту калыбына келтирүү жокко чыгарылууда</translation>
 <translation id="7235716375204803342">Аракеттер алынууда…</translation>
 <translation id="7235737137505019098">Кошумча аккаунттарды кошуу үчүн коопсуздук ачкычыңызда орун жетишсиз.</translation>
@@ -7511,6 +7512,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8879284080359814990">&amp;Өтмөк катарында көрсөтүү</translation>
 <translation id="8879921471468674457">Кирүү маалыматын эстеп калуу</translation>
 <translation id="8880054210564666174">Байланыштар тизмеси жүктөлгөн жок. Тармактык туташууңузду текшериңиз же <ph name="LINK_BEGIN" />дагы бир жолу аракет кылыңыз<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089"><ph name="USB_DEVICE_NAME" /> түзмөгүн Linux же Parallels Desktop менен байланыштыруу үчүн Жөндөөлөрдү ачыңыз</translation>
 <translation id="8881020143150461183">Кайталап көрүңүз. Техникалык жардам алуу үчүн <ph name="CARRIER_NAME" /> менен байланышыңыз.</translation>
 <translation id="8883273463630735858">Сенсордук такта ылдамдаткычын иштетүү</translation>
 <translation id="8884570509232205463">Эми түзмөгүңүз саат <ph name="UNLOCK_TIME" /> кулпуланат.</translation>

@@ -127,8 +127,6 @@ int GetBoundaryTextOffsetInsideBaseAnchor(
 
 }  // namespace
 
-#if DCHECK_IS_ON()
-
 bool BrowserAccessibility::IsValid() const {
   // Currently we only perform validity checks on non-empty, atomic text fields.
   // An atomic text field does not expose its internal implementation to
@@ -156,12 +154,8 @@ bool BrowserAccessibility::IsValid() const {
   return true;
 }
 
-#endif  // DCHECK_IS_ON()
-
 void BrowserAccessibility::OnDataChanged() {
-#if DCHECK_IS_ON()
   DCHECK(IsValid()) << "Invalid node: " << *this;
-#endif
 }
 
 bool BrowserAccessibility::CanFireEvents() const {
@@ -222,10 +216,6 @@ bool BrowserAccessibility::IsDescendantOf(
     return false;
   DCHECK(ancestor->node());
   return node()->IsDescendantOfCrossingTreeBoundary(ancestor->node());
-}
-
-bool BrowserAccessibility::IsPlatformDocument() const {
-  return ui::IsPlatformDocument(GetRole());
 }
 
 bool BrowserAccessibility::IsIgnored() const {
@@ -345,25 +335,17 @@ BrowserAccessibility* BrowserAccessibility::PlatformDeepestLastChild() const {
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalDeepestFirstChild() const {
-  if (!InternalChildCount())
+  ui::AXNode* deepest_child = node()->GetDeepestFirstUnignoredChild();
+  if (!deepest_child)
     return nullptr;
-
-  BrowserAccessibility* deepest_child = InternalGetFirstChild();
-  while (deepest_child->InternalChildCount())
-    deepest_child = deepest_child->InternalGetFirstChild();
-
-  return deepest_child;
+  return manager()->GetFromAXNode(deepest_child);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalDeepestLastChild() const {
-  if (!InternalChildCount())
+  ui::AXNode* deepest_child = node()->GetDeepestLastUnignoredChild();
+  if (!deepest_child)
     return nullptr;
-
-  BrowserAccessibility* deepest_child = InternalGetLastChild();
-  while (deepest_child->InternalChildCount())
-    deepest_child = deepest_child->InternalGetLastChild();
-
-  return deepest_child;
+  return manager()->GetFromAXNode(deepest_child);
 }
 
 uint32_t BrowserAccessibility::InternalChildCount() const {
@@ -379,39 +361,38 @@ BrowserAccessibility* BrowserAccessibility::InternalGetChild(
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalGetParent() const {
-  ui::AXNode* child_node = node_->GetUnignoredParent();
-  if (!child_node)
+  ui::AXNode* parent_node = node_->GetUnignoredParent();
+  if (!parent_node)
     return nullptr;
-
-  return manager_->GetFromAXNode(child_node);
+  return manager_->GetFromAXNode(parent_node);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalGetFirstChild() const {
-  return InternalGetChild(0);
+  ui::AXNode* child_node = node_->GetFirstUnignoredChild();
+  if (!child_node)
+    return nullptr;
+  return manager_->GetFromAXNode(child_node);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalGetLastChild() const {
   ui::AXNode* child_node = node_->GetLastUnignoredChild();
   if (!child_node)
     return nullptr;
-
   return manager_->GetFromAXNode(child_node);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalGetNextSibling() const {
-  ui::AXNode* child_node = node_->GetNextUnignoredSibling();
-  if (!child_node)
+  ui::AXNode* sibling_node = node_->GetNextUnignoredSibling();
+  if (!sibling_node)
     return nullptr;
-
-  return manager_->GetFromAXNode(child_node);
+  return manager_->GetFromAXNode(sibling_node);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalGetPreviousSibling() const {
-  ui::AXNode* child_node = node_->GetPreviousUnignoredSibling();
-  if (!child_node)
+  ui::AXNode* sibling_node = node_->GetPreviousUnignoredSibling();
+  if (!sibling_node)
     return nullptr;
-
-  return manager_->GetFromAXNode(child_node);
+  return manager_->GetFromAXNode(sibling_node);
 }
 
 BrowserAccessibility::InternalChildIterator
@@ -429,7 +410,7 @@ BrowserAccessibility::AllChildrenRange::Iterator::operator*() {
   if (child_tree_root_)
     return index_ == 0 ? child_tree_root_ : nullptr;
 
-  ui::AXNode* child = parent_->node()->children().at(index_);
+  ui::AXNode* child = parent_->node()->GetChildAtIndex(index_);
   if (!child)
     return nullptr;
   return parent_->manager_->GetFromAXNode(child);
@@ -894,16 +875,8 @@ BrowserAccessibility* BrowserAccessibility::ApproximateHitTest(
   return this;
 }
 
-bool BrowserAccessibility::HasInheritedStringAttribute(
-    ax::mojom::StringAttribute attribute) const {
-  if (node_->HasStringAttribute(attribute))
-    return true;
-  return PlatformGetParent() &&
-         PlatformGetParent()->HasInheritedStringAttribute(attribute);
-}
-
 bool BrowserAccessibility::IsWebAreaForPresentationalIframe() const {
-  if (!IsPlatformDocument())
+  if (!ui::IsPlatformDocument(GetRole()))
     return false;
 
   BrowserAccessibility* parent = PlatformGetParent();
@@ -963,13 +936,8 @@ std::vector<int> BrowserAccessibility::GetLineStartOffsets() const {
 BrowserAccessibility::AXPosition BrowserAccessibility::CreatePositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  DCHECK(manager_);
-  if (node()->IsLeaf()) {
-    return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(),
-                                                  GetId(), offset, affinity);
-  }
-  return ui::AXNodePosition::CreateTreePosition(manager_->ax_tree_id(), GetId(),
-                                                offset);
+  return ui::AXNodePosition::CreatePosition(
+      *node(), /* child_index_or_text_offset */ offset);
 }
 
 // |offset| could either be a text character or a child index in case of
@@ -1197,7 +1165,7 @@ std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
 
 std::u16string BrowserAccessibility::GetAuthorUniqueId() const {
   std::u16string html_id;
-  GetHtmlAttribute("id", &html_id);
+  node()->GetHtmlAttribute("id", &html_id);
   return html_id;
 }
 
@@ -1257,7 +1225,6 @@ BrowserAccessibility::GetUIADirectChildrenInRange(
 }
 
 std::string BrowserAccessibility::GetLanguage() const {
-  DCHECK(node_) << "Did you forget to call BrowserAccessibility::Init?";
   return node()->GetLanguage();
 }
 
@@ -1274,21 +1241,13 @@ gfx::NativeViewAccessible BrowserAccessibility::GetNativeViewAccessible() {
 //
 // AXPlatformNodeDelegate.
 //
+
 const ui::AXNodeData& BrowserAccessibility::GetData() const {
-  static base::NoDestructor<ui::AXNodeData> empty_data;
-  if (node_) {
-    return node_->data();
-  } else {
-    return *empty_data;
-  }
+  return node_->data();
 }
 
 const ui::AXTreeData& BrowserAccessibility::GetTreeData() const {
-  static base::NoDestructor<ui::AXTreeData> empty_data;
-  if (manager())
-    return manager()->GetTreeData();
-  else
-    return *empty_data;
+  return manager()->GetTreeData();
 }
 
 ax::mojom::Role BrowserAccessibility::GetRole() const {
@@ -1466,7 +1425,6 @@ ax::mojom::NameFrom BrowserAccessibility::GetNameFrom() const {
 
 const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
     const {
-  DCHECK(manager());
   ui::AXTree::Selection selection =
       manager()->ax_tree()->GetUnignoredSelection();
 
@@ -1510,7 +1468,6 @@ const ui::AXTree::Selection BrowserAccessibility::GetUnignoredSelection()
 BrowserAccessibility::AXPosition BrowserAccessibility::CreateTextPositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  DCHECK(manager_);
   return ui::AXNodePosition::CreateTextPosition(manager_->ax_tree_id(), GetId(),
                                                 offset, affinity);
 }
@@ -1541,7 +1498,6 @@ gfx::NativeViewAccessible BrowserAccessibility::ChildAtIndex(int index) {
   BrowserAccessibility* child = PlatformGetChild(index);
   if (!child)
     return nullptr;
-
   return child->GetNativeViewAccessible();
 }
 
@@ -1553,7 +1509,6 @@ gfx::NativeViewAccessible BrowserAccessibility::GetFirstChild() {
   BrowserAccessibility* child = PlatformGetFirstChild();
   if (!child)
     return nullptr;
-
   return child->GetNativeViewAccessible();
 }
 
@@ -1561,7 +1516,6 @@ gfx::NativeViewAccessible BrowserAccessibility::GetLastChild() {
   BrowserAccessibility* child = PlatformGetLastChild();
   if (!child)
     return nullptr;
-
   return child->GetNativeViewAccessible();
 }
 
@@ -1569,7 +1523,6 @@ gfx::NativeViewAccessible BrowserAccessibility::GetNextSibling() {
   BrowserAccessibility* sibling = PlatformGetNextSibling();
   if (!sibling)
     return nullptr;
-
   return sibling->GetNativeViewAccessible();
 }
 
@@ -1577,7 +1530,6 @@ gfx::NativeViewAccessible BrowserAccessibility::GetPreviousSibling() {
   BrowserAccessibility* sibling = PlatformGetPreviousSibling();
   if (!sibling)
     return nullptr;
-
   return sibling->GetNativeViewAccessible();
 }
 

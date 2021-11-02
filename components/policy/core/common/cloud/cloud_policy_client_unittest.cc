@@ -150,24 +150,24 @@ base::Value ConvertEncryptedRecordToValue(
     }
     record_request.SetPath("encryptionInfo", std::move(encryption_info));
   }
-  if (record.has_sequencing_information()) {
-    base::Value sequencing_information(base::Value::Type::DICTIONARY);
-    if (record.sequencing_information().has_sequencing_id()) {
-      sequencing_information.SetStringKey(
-          "sequencingId", base::NumberToString(
-                              record.sequencing_information().sequencing_id()));
+  if (record.has_sequence_information()) {
+    base::Value sequence_information(base::Value::Type::DICTIONARY);
+    if (record.sequence_information().has_sequencing_id()) {
+      sequence_information.SetStringKey(
+          "sequencingId",
+          base::NumberToString(record.sequence_information().sequencing_id()));
     }
-    if (record.sequencing_information().has_generation_id()) {
-      sequencing_information.SetStringKey(
-          "generationId", base::NumberToString(
-                              record.sequencing_information().generation_id()));
+    if (record.sequence_information().has_generation_id()) {
+      sequence_information.SetStringKey(
+          "generationId",
+          base::NumberToString(record.sequence_information().generation_id()));
     }
-    if (record.sequencing_information().has_priority()) {
-      sequencing_information.SetIntKey(
-          "priority", record.sequencing_information().priority());
+    if (record.sequence_information().has_priority()) {
+      sequence_information.SetIntKey("priority",
+                                     record.sequence_information().priority());
     }
     record_request.SetPath("sequencingInformation",
-                           std::move(sequencing_information));
+                           std::move(sequence_information));
   }
   return record_request;
 }
@@ -1887,10 +1887,10 @@ TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
   // Create record
   ::reporting::EncryptedRecord record;
   record.set_encrypted_wrapped_record("Enterprise");
-  auto* sequencing_information = record.mutable_sequencing_information();
-  sequencing_information->set_sequencing_id(1701);
-  sequencing_information->set_generation_id(12345678);
-  sequencing_information->set_priority(::reporting::IMMEDIATE);
+  auto* sequence_information = record.mutable_sequence_information();
+  sequence_information->set_sequencing_id(1701);
+  sequence_information->set_generation_id(12345678);
+  sequence_information->set_priority(::reporting::IMMEDIATE);
 
   RegisterClient();
 

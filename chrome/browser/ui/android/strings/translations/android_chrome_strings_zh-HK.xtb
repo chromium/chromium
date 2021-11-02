@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1146678959555564648">進入 VR</translation>
 <translation id="114825011539563458">集中查看最重要的私隱和安全控制項</translation>
+<translation id="1149401351239820326">到期月份</translation>
 <translation id="1154704303112745282">頁面無法離線使用：<ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">已使用</translation>
 <translation id="1171770572613082465">輕按「熱門網站」按鈕，即可查看熱門網站</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
 <translation id="1344653310988386453">包含突顯文字的連結</translation>
 <translation id="1347468774581902829">管理活動</translation>
-<translation id="1353372385686746892">Chrome 會向 Google 傳送診斷資料，以協助改善應用程式。<ph name="BEGIN_LINK" />變更<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">要登出並停用同步功能嗎？</translation>
 <translation id="1373696734384179344">記憶體不足，無法下載所選內容。</translation>
 <translation id="1376578503827013741">正在運算…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">在新分頁中開啟 Chrome 說明中心</translation>
 <translation id="5957442310066583693">如要查看熱門網站，請輕按「主按鈕」</translation>
 <translation id="5958275228015807058">在「下載」主畫面尋找您的檔案和網頁</translation>
-<translation id="5962272973076519240">驗證身分以解鎖無痕模式</translation>
 <translation id="5962718611393537961">輕按即可收合</translation>
 <translation id="5964805880140440652">如要將此頁面分享至另一部裝置，請在 Chrome 設定中開啟同步功能</translation>
 <translation id="5964869237734432770">停止取得圖片說明</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">找不到 SD 卡</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個無痕式分頁}other{<ph name="TAB_COUNT_NORMAL" /> 個無痕式分頁}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>
+<translation id="8058655154417507695">到期年份</translation>
 <translation id="8058746566562539958">在 Chrome 新分頁中開啟</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">મને કંટાળો આવે છે</translation>
 <translation id="1104084341931202936">ઍક્સેસિબિલિટી સેટિંગ બતાવો</translation>
 <translation id="1104621072296271835">તમારા ઉપકરણો એક સાથે હોય ત્યારે વધુ કાર્યક્ષમ હોય છે</translation>
+<translation id="1111781754511998498">પ્રોજેક્ટર</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> દ્વારા સુઝાવ આપવામાં આવ્યો છે કે તમે આ <ph name="DEVICE_TYPE" /> અપડેટ કરો.</translation>
 <translation id="1119348796022671382">થીમ આધારિત કલર મોડ ઇન્ટરફેસને આછો રંગ આપવા માટે તમારા વૉલપેપરમાંથી મેળવવામાં આવેલા રંગોનો ઉપયોગ કરે છે.</translation>
 <translation id="112308213915226829">સ્વતઃછુપાવો શેલ્ફ</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">માઇક્રોફોનથી રેકોર્ડ કરો</translation>
 <translation id="3680908746918359504">બધાં માર્કર સાફ કરો</translation>
 <translation id="36813544980941320">તમારા ફોન અને <ph name="DEVICE_NAME" /> વચ્ચે વાઇ-ફાઇ નેટવર્ક શેર કરવામાં આવશે</translation>
+<translation id="3701206655856637070">હવે તમે સ્ક્રીન કૅપ્ચર સાચવવાનું સ્થાન બદલી શકો છો</translation>
 <translation id="3702809606464356667">વર્તમાન ડેસ્ક પરથી વિન્ડો બતાવી રહ્યાં છીએ, બધી ડેસ્ક પરની વિન્ડો બતાવવા માટે ઉપરની ઍરો કી દબાવો</translation>
 <translation id="3702846122927433391">નાઇજીરીયાની વસ્તી</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">બંધ</translation>
 <translation id="397105322502079400">ગણના કરી રહ્યું છે...</translation>
 <translation id="3977512764614765090">બૅટરી <ph name="PERCENTAGE" />% પર છે અને ચાર્જ થઈ રહી છે.</translation>
+<translation id="3986082989454912832">કૉલનો જવાબ આપો</translation>
 <translation id="3995138139523574647">USB-C ડિવાઇસ (જમણી બાજુનું પાછળનું પોર્ટ)</translation>
 <translation id="40062176907008878">હસ્તલેખન</translation>
 <translation id="4017989525502048489">લેઝર પૉઇન્ટર</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl કી + Alt કી + નીચેની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. End કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + જમણી ઍરો કી દબાવો.</translation>
 <translation id="4279490309300973883">પ્રતિબિંબત થઈ રહ્યું છે</translation>
 <translation id="4285498937028063278">અનપિન કરો</translation>
-<translation id="4292904812939562398">તાજેતરમાં વપરાયેલી ઍપ</translation>
 <translation id="429402653707266969">ટૂલબારનું સ્થાન ટૉગલ કરો</translation>
 <translation id="4294319844246081198">ગુડ મોર્નિંગ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">બધા <ph name="COUNT" /> નોટિફિકેશન સાફ કરો</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">નોટિફિકેશન બંધ કરો</translation>
 <translation id="4946376291507881335">કૅપ્ચર કરો</translation>
 <translation id="495046168593986294">ઉપર સ્ક્રોલ કરો</translation>
 <translation id="4952936045814352993">અલાર્મના સાઉન્ડ બંધ હોય ત્યારે ફોન શોધવાની સુવિધા ઉપલબ્ધ હોતી નથી</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">સો</translation>
 <translation id="7600875258240007829">બધા નોટિફિકેશન જુઓ</translation>
 <translation id="7607002721634913082">થોભાવેલું</translation>
+<translation id="7610198039767537854">તમારા ફોનના કૅમેરા રોલમાંથી <ph name="DEVICE_TYPE" /> પર તાજેતરના ફોટા જુઓ</translation>
 <translation id="7618774594543487847">ન્યૂટ્રલ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">માર્કર પેન</translation>

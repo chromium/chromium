@@ -145,9 +145,9 @@ crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Sk
 [ android android-nexus-5x no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
 
 # Fails on Android Nvidia Tegra driver version 343, passes on 361
-# We don't have tags for specific driver version so just skip all
-[ android nvidia ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-[ android nvidia no-swiftshader-gl ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
+# We don't have tags for specific driver version so just fail all.
+[ android nvidia ] WebglExtension_EXT_texture_compression_bptc [ Failure ]
+[ android nvidia no-swiftshader-gl ] WebglExtension_EXT_texture_compression_rgtc [ Failure ]
 
 # Extensions not available on angle-vulkan
 crbug.com/1187260 [ angle-vulkan passthrough ] WebglExtension_WEBGL_debug_shaders [ Skip ]
@@ -195,7 +195,7 @@ crbug.com/1175371 [ win ] conformance/extensions/khr-parallel-shader-compile.htm
 crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
 
 # Skipping new tests
-crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
+crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
@@ -249,35 +249,35 @@ crbug.com/angleproject/6228 [ win intel angle-vulkan passthrough ] conformance/m
 [ fuchsia fuchsia-board-astro no-swiftshader-gl ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
 
 # Astro specific issues
-crbug.com/1145858 [ fuchsia fuchsia-board-astro ] conformance/extensions/ext-disjoint-timer-query.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1145926 [ fuchsia fuchsia-board-astro ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Skip ]
-crbug.com/1145926 [ fuchsia fuchsia-board-astro ] conformance/ogles/GL/step/step_001_to_006.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
+crbug.com/1145858 [ fuchsia fuchsia-board-astro ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/1145926 [ fuchsia fuchsia-board-astro ] conformance/ogles/GL/faceforward/faceforward_001_to_006.html [ Failure ]
+crbug.com/1145926 [ fuchsia fuchsia-board-astro ] conformance/ogles/GL/step/step_001_to_006.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 # OOM on hardware devices
-crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/multisample-corruption.html [ Skip ]
-crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Skip ]
-crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/preservedrawingbuffer-leak.html [ Skip ]
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/multisample-corruption.html [ Failure ]
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Failure ]
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/preservedrawingbuffer-leak.html [ Failure ]
 # Specific build issue
-crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
-crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-upload-size.html [ Skip ]
-crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Skip ]
-crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
+crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
+crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-upload-size.html [ Failure ]
+crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
+crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Failure ]
 # Flaky tests
 [ fuchsia fuchsia-board-astro ] WebglExtension_EXT_float_blend [ Failure ]
 [ fuchsia fuchsia-board-astro ] conformance/rendering/rendering-stencil-large-viewport.html [ Failure ]
@@ -291,7 +291,9 @@ crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/te
 crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1210953 [ fuchsia fuchsia-board-astro ] conformance/textures/canvas/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 
-# GPU or renderer process crashes / Timed out tests
+# GPU or renderer process crashes / Timed out tests. At least some of these fail
+# in such a way that they negatively impact other tests (take extremely long to
+# fail, etc.)
 crbug.com/1175419 [ fuchsia ] conformance/extensions/khr-parallel-shader-compile.html [ Skip ]
 crbug.com/angleproject/5259 [ fuchsia ] conformance/uniforms/uniform-default-values.html [ Skip ]
 crbug.com/1143392 [ fuchsia ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
@@ -347,16 +349,16 @@ crbug.com/angleproject/5543 [ win intel angle-opengl passthrough ] conformance/e
 # case biuDepthRange_001_to_002 first.
 # Temporarily skip these two cases now because this issue blocks
 # WEBGL_video_texture implementation.
-crbug.com/907195 [ win intel angle-opengl passthrough intel_lt_25.20.100.6444 ] conformance/ogles/GL/biuDepthRange/biuDepthRange_001_to_002.html [ Skip ]
-crbug.com/907195 [ win intel angle-opengl passthrough intel_lt_25.20.100.6444 ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ Skip ]
+crbug.com/907195 [ win intel angle-opengl passthrough intel_lt_25.20.100.6444 ] conformance/ogles/GL/biuDepthRange/biuDepthRange_001_to_002.html [ Failure ]
+crbug.com/907195 [ win intel angle-opengl passthrough intel_lt_25.20.100.6444 ] conformance/uniforms/no-over-optimization-on-uniform-array-09.html [ Failure ]
 
 # Note that the following test seems to pass, but it may still be flaky.
 crbug.com/478572 [ win angle-d3d9 passthrough ] deqp/data/gles2/shaders/functions.html [ Failure ]
 
 # Win NVIDIA failures
-crbug.com/1045339 [ win10 debug-x64 nvidia ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1143392 [ win nvidia passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
-crbug.com/angleproject/5536 [ win nvidia angle-opengl passthrough oop-c ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Skip ]
+crbug.com/1045339 [ win10 debug-x64 nvidia ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/1143392 [ win nvidia passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/angleproject/5536 [ win nvidia angle-opengl passthrough oop-c ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 
 # Win10 / NVIDIA Quadro P400 / D3D9 failures
 crbug.com/750896 [ win10 nvidia-0x1cb3 angle-d3d9 ] conformance/textures/video/* [ RetryOnFailure ]
@@ -379,12 +381,12 @@ crbug.com/1152623 [ win amd-0x7340 angle-vulkan ] conformance/extensions/webgl-d
 
 # Win / D3D9 failures
 # Skipping these two tests because they're causing assertion failures.
-crbug.com/angleproject/896 [ win angle-d3d9 no-passthrough ] conformance/extensions/oes-texture-float-with-canvas.html [ Skip ]
-crbug.com/angleproject/896 [ win angle-d3d9 no-passthrough ] conformance/extensions/oes-texture-half-float-with-canvas.html [ Skip ]
+crbug.com/angleproject/896 [ win angle-d3d9 no-passthrough ] conformance/extensions/oes-texture-float-with-canvas.html [ Failure ]
+crbug.com/angleproject/896 [ win angle-d3d9 no-passthrough ] conformance/extensions/oes-texture-half-float-with-canvas.html [ Failure ]
 
 # The functions test have been persistently flaky on D3D9
-crbug.com/674572 [ win angle-d3d9 ] conformance/glsl/misc/large-loop-compile.html [ Skip ]
-crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Skip ]
+crbug.com/674572 [ win angle-d3d9 ] conformance/glsl/misc/large-loop-compile.html [ Failure ]
+crbug.com/956134 [ win angle-d3d9 ] conformance/extensions/webgl-depth-texture.html [ Failure ]
 
 # WIN / OpenGL / NVIDIA failures
 crbug.com/715001 [ win nvidia angle-opengl passthrough ] conformance/limits/gl-max-texture-dimensions.html [ Failure ]
@@ -420,9 +422,9 @@ crbug.com/1159126 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/ogles/GL
 crbug.com/angleproject/3469 [ win angle-vulkan passthrough nvidia ] conformance/extensions/webgl-draw-buffers.html [ Failure ]
 
 # Note: the following test crashes so it's skipped.  http://anglebug.com/3352
-crbug.com/angleproject/2921 [ win angle-vulkan passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Skip ]
-crbug.com/angleproject/3111 [ win angle-vulkan passthrough ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
-crbug.com/angleproject/4334 [ win angle-vulkan passthrough ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Skip ]
+crbug.com/angleproject/2921 [ win angle-vulkan passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ Failure ]
+crbug.com/angleproject/3111 [ win angle-vulkan passthrough ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
+crbug.com/angleproject/4334 [ win angle-vulkan passthrough ] conformance/textures/misc/canvas-teximage-after-multiple-drawimages.html [ Failure ]
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1216686 [ win angle-vulkan passthrough ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
 
@@ -561,6 +563,8 @@ crbug.com/642822 [ linux amd ] conformance/rendering/clipping-wide-points.html [
 crbug.com/1018028 [ linux amd-0x6613 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 
 # Linux AMD RX 5500 XT
+# Caused kernel panics on drivers from around November 2020, can likely be
+# re-enabled once newer drivers are obtained.
 crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
 # Linux passthrough AMD
@@ -573,6 +577,8 @@ crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] confor
 crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/renderbuffers/renderbuffer-initialization.html [ Failure ]
 
 # Linux Intel
+# Can occasionally kill machines. Appears to be tied to kernel version, so can
+# be removed once upgraded to kernel 5.4.0-77 or later.
 crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
 ####################
@@ -592,16 +598,17 @@ crbug.com/1165751 [ android-r ] conformance/glsl/bugs/vector-matrix-constructor-
 [ android ] conformance/rendering/multisample-corruption.html [ Skip ]
 crbug.com/679697 [ android qualcomm no-passthrough ] conformance/textures/misc/copytexsubimage2d-large-partial-copy-corruption.html [ Failure ]
 
-# The following WebView crashes are causing problems with further
-# tests in the suite, so skip them for now.
-crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
+# The following WebView crashes were causing problems with further tests in the
+# suite and subsequently skipped, but given the age of the bug, this may no
+# longer be an issue.
+crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 
 # Also flaky on nexus9 non-webview (bug=834933) but can't specify both.
-crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/352645 [ android android-webview-instrumentation angle-disabled ] conformance/textures/misc/texture-npot-video.html [ Skip ]
+crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
+crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
+crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+crbug.com/352645 [ android android-webview-instrumentation angle-disabled ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 
 # These video tests appear to be flaky.
 # TODO(crbug.com/1178518): This crbug caused the test to fail consistently. It
@@ -645,23 +652,18 @@ crbug.com/1264882 [ android-marshmallow android-nexus-5 ] conformance/glsl/bugs/
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
 # flaky (2018-09-10) that it had to be upgraded to Fail.
 crbug.com/882323 [ android android-nexus-5x ] deqp/data/gles2/shaders/conversions.html [ Failure ]
-# This one is causing intermittent timeouts on the device, and it
-# looks like when that happens, the next test also always times
-# out. Skip it for now until it's fixed and running reliably.
-crbug.com/609883 [ android android-nexus-5x ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-# This test is skipped because it is crashing the GPU process.
-crbug.com/784817 [ android android-nexus-5x ] conformance/glsl/bugs/init-array-with-loop.html [ Skip ]
+crbug.com/609883 [ android android-nexus-5x ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/784817 [ android android-nexus-5x ] conformance/glsl/bugs/init-array-with-loop.html [ Failure ]
 crbug.com/609883 [ android android-nexus-5x ] conformance/glsl/bugs/sampler-struct-function-arg.html [ Failure ]
-# This test is skipped because it is crashing the GPU process.
-crbug.com/609883 [ android android-nexus-5x no-passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Skip ]
-crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
+crbug.com/609883 [ android android-nexus-5x no-passthrough ] conformance/glsl/misc/shader-with-non-reserved-words.html [ Failure ]
+crbug.com/610951 [ android android-nexus-5x ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 crbug.com/1043431 [ android android-nexus-5x ] conformance/limits/gl-max-texture-dimensions.html [ RetryOnFailure ]
 crbug.com/951628 [ android android-nexus-5x no-passthrough no-swiftshader-gl ] conformance/rendering/blending.html [ Failure ]
-crbug.com/1083320 [ android android-nexus-5x ] conformance/misc/uninitialized-test.html [ Skip ]
+crbug.com/1083320 [ android android-nexus-5x ] conformance/misc/uninitialized-test.html [ Failure ]
 crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 # Timing out on this device for unknown reasons.
-crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
-crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Skip ]
+crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
+crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1163306 [ android android-nexus-5x ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1203167 [ android android-nexus-5x ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
@@ -669,12 +671,12 @@ crbug.com/1203167 [ android android-nexus-5x ] conformance/extensions/oes-textur
 crbug.com/798117 [ android android-nexus-9 ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
 crbug.com/606096 [ android android-nexus-9 ] conformance/glsl/bugs/multiplication-assignment.html [ Failure ]
 crbug.com/891456 [ android android-nexus-9 ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
-crbug.com/1025790 [ android android-nexus-9 ] conformance/textures/misc/tex-image-canvas-corruption.html [ Skip ]
+crbug.com/1025790 [ android android-nexus-9 ] conformance/textures/misc/tex-image-canvas-corruption.html [ Failure ]
 crbug.com/478572 [ android android-nexus-9 ] deqp/data/gles2/shaders/functions.html [ Failure ]
 crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
 crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/891456 [ android android-shield-android-tv ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1025790 [ android android-shield-android-tv ] conformance/textures/misc/tex-image-canvas-corruption.html [ Skip ]
+crbug.com/1025790 [ android android-shield-android-tv ] conformance/textures/misc/tex-image-canvas-corruption.html [ Failure ]
 # Texture tests found to generate intermittent GL errors in the GPU process
 crbug.com/1090407 [ android android-nexus-9 ] conformance/textures/* [ RetryOnFailure ]
 crbug.com/1090407 [ android android-shield-android-tv ] conformance/textures/* [ RetryOnFailure ]
@@ -719,20 +721,20 @@ crbug.com/957807 [ chromeos no-swiftshader-gl ] WebglExtension_EXT_sRGB [ Skip ]
 crbug.com/957807 [ chromeos ] WebglExtension_EXT_shader_texture_lod [ Skip ]
 crbug.com/957807 [ chromeos ] WebglExtension_EXT_texture_filter_anisotropic [ Skip ]
 crbug.com/957807 [ chromeos ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Skip ]
-crbug.com/957807 [ chromeos ] conformance/rendering/clipping-wide-points.html [ Skip ]
-crbug.com/957807 [ chromeos ] conformance/rendering/line-rendering-quality.html [ Skip ]
-crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Skip ]
-crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/conversions.html [ Skip ]
-crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/swizzles.html [ Skip ]
+crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
+crbug.com/957807 [ chromeos ] conformance/rendering/clipping-wide-points.html [ Failure ]
+crbug.com/957807 [ chromeos ] conformance/rendering/line-rendering-quality.html [ Failure ]
+crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/conversions.html [ Failure ]
+crbug.com/957807 [ chromeos ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
 # There is a crash, likely in this test, causing the root partition to become
 # read-only.
 crbug.com/1043953 [ chromeos chromeos-board-kevin ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
-crbug.com/1237319 [ chromeos chromeos-board-eve passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
-crbug.com/1237319 [ chromeos angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Skip ]
+crbug.com/1237319 [ chromeos chromeos-board-eve passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
+crbug.com/1237319 [ chromeos angle-opengles passthrough ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 
 # Texture compression is only expected to be available on desktop GPUs.
 crbug.com/1080360 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_bptc [ Skip ]

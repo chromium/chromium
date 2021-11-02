@@ -188,7 +188,7 @@ class ASH_EXPORT AppListControllerImpl
                         int suggestion_index,
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
-                                int action_index) override;
+                                SearchResultActionType action) override;
   using GetContextMenuModelCallback =
       AppListViewDelegate::GetContextMenuModelCallback;
   void GetSearchResultContextMenuModel(
@@ -204,6 +204,7 @@ class ASH_EXPORT AppListControllerImpl
   void GetContextMenuModel(const std::string& id,
                            GetContextMenuModelCallback callback) override;
   void SortAppList(AppListSortOrder order) override;
+  void RevertAppListSort() override;
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
@@ -297,9 +298,9 @@ class ASH_EXPORT AppListControllerImpl
       absl::optional<AssistantExitPoint> exit_point) override;
 
   // AppListModelDelegate:
-  void RequestPositionUpdate(
-      std::string id,
-      const syncer::StringOrdinal& new_position) override;
+  void RequestPositionUpdate(std::string id,
+                             const syncer::StringOrdinal& new_position,
+                             RequestPositionUpdateReason reason) override;
   void RequestMoveItemToFolder(std::string id,
                                const std::string& folder_id) override;
   void RequestMoveItemToRoot(

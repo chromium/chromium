@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Smazat existující data.</translation>
 <translation id="1146678959555564648">Zapnout VR</translation>
 <translation id="114825011539563458">Nejdůležitější ovládací prvky ochrany soukromí a zabezpečení na jednom místě</translation>
+<translation id="1149401351239820326">Měsíc vypršení platnosti</translation>
 <translation id="1154704303112745282">Stránka je v režimu offline nedostupná: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Využito</translation>
 <translation id="1171770572613082465">Populární weby zobrazíte klepnutím na tlačítko Top weby</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Zkratky funkcí prohlížeče Google Chrome</translation>
 <translation id="1344653310988386453">Zahrnout odkaz na zvýraznění</translation>
 <translation id="1347468774581902829">Spravovat aktivitu</translation>
-<translation id="1353372385686746892">Za účelem vylepšování aplikace Chrome odesílá diagnostická data do Googlu. <ph name="BEGIN_LINK" />Změnit<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Odhlásit se a vypnout synchronizaci?</translation>
 <translation id="1373696734384179344">Ke stažení vybraného obsahu není k dispozici dostatek paměti.</translation>
 <translation id="1376578503827013741">Probíhá výpočet…</translation>
@@ -714,7 +714,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5342314432463739672">Žádosti o oprávnění</translation>
 <translation id="5355191726083956201">Je zapnutá vylepšená ochrana</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{Je otevřená <ph name="OPEN_TABS_ONE" /> karta, můžete mezi nimi přepínat klepnutím}few{Je otevřených <ph name="OPEN_TABS_MANY" /> karet, můžete mezi nimi přepínat klepnutím}many{Je otevřených <ph name="OPEN_TABS_MANY" /> karty, můžete mezi nimi přepínat klepnutím}other{Je otevřených <ph name="OPEN_TABS_MANY" /> karet, můžete mezi nimi přepínat klepnutím}}</translation>
-<translation id="5375577065097716013">Vyhledat obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Novina<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Vyhledat obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Povolit pouze určité weby</translation>
 <translation id="5409881200985013443">Odeslat v klientu <ph name="CLIENT_NAME" /> kód <ph name="ONE_TIME_CODE" />?</translation>
 <translation id="5414836363063783498">Ověřování…</translation>
@@ -817,7 +817,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5956665950594638604">Otevřít centrum nápovědy Chrome na nové kartě</translation>
 <translation id="5957442310066583693">Chcete-li zobrazit své top weby, klepněte na tlačítko domovské stránky</translation>
 <translation id="5958275228015807058">Najděte stažené soubory a stránky</translation>
-<translation id="5962272973076519240">Pokud chcete odemknout anonymní relaci, ověřte svou totožnost</translation>
 <translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5964805880140440652">Chcete-li tuto stránku sdílet s jiným zařízením, zapněte v nastavení Chromu synchronizaci</translation>
 <translation id="5964869237734432770">Nezobrazovat popisy obrázků</translation>
@@ -1188,6 +1187,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="804335162455518893">SD karta nenalezena</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonymní karta}few{<ph name="TAB_COUNT_NORMAL" /> anonymní karty}many{<ph name="TAB_COUNT_NORMAL" /> anonymní karty}other{<ph name="TAB_COUNT_NORMAL" /> anonymních karet}}</translation>
 <translation id="8051695050440594747">K dispozici: <ph name="MEGABYTES" /> MB</translation>
+<translation id="8058655154417507695">Rok vypršení platnosti</translation>
 <translation id="8058746566562539958">Otevřít na nové kartě v Chromu</translation>
 <translation id="8063895661287329888">Přidání záložky se nezdařilo.</translation>
 <translation id="806745655614357130">Uchovat má data samostatně.</translation>

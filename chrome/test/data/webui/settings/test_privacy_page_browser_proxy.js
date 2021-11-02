@@ -5,8 +5,8 @@
 // clang-format off
 import {SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://settings/settings.js';
 
-import {assertFalse} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
 /** @implements {PrivacyPageBrowserProxy} */

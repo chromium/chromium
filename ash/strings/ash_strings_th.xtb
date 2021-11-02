@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
 <translation id="1104084341931202936">แสดงการตั้งค่าการเข้าถึงพิเศษ</translation>
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
+<translation id="1111781754511998498">โปรเจ็กเตอร์</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> แนะนำให้คุณอัปเดต <ph name="DEVICE_TYPE" /> นี้</translation>
 <translation id="1119348796022671382">โหมดสีที่มีธีมใช้สีที่ดึงมาจากวอลเปเปอร์เพื่อเติมสีให้อินเทอร์เฟซเล็กน้อย</translation>
 <translation id="112308213915226829">ซ่อนชั้นวางโดยอัตโนมัติ</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">การบันทึกเสียงจากไมโครโฟน</translation>
 <translation id="3680908746918359504">ล้างเครื่องหมายทั้งหมด</translation>
 <translation id="36813544980941320">จะมีการแชร์เครือข่าย Wi-Fi ระหว่างโทรศัพท์และ <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">คุณจะเปลี่ยนแปลงที่บันทึกภาพหน้าจอของคุณได้ในตอนนี้</translation>
 <translation id="3702809606464356667">กำลังแสดงหน้าต่างจากเดสก์ปัจจุบัน กดปุ่มลูกศรขึ้นเพื่อแสดงหน้าต่างจากเดสก์ทั้งหมด</translation>
 <translation id="3702846122927433391">ประชากรในประเทศไนจีเรีย</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">ปิด</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="3977512764614765090">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ</translation>
+<translation id="3986082989454912832">ตอบ</translation>
 <translation id="3995138139523574647">อุปกรณ์ USB-C (พอร์ตด้านหลังขวา)</translation>
 <translation id="40062176907008878">การเขียนด้วยลายมือ</translation>
 <translation id="4017989525502048489">ตัวชี้เลเซอร์</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรลง หากต้องการใช้แป้น End ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
 <translation id="4285498937028063278">เลิกปักหมุด</translation>
-<translation id="4292904812939562398">แอปที่ใช้ล่าสุด</translation>
 <translation id="429402653707266969">สลับตำแหน่งของแถบเครื่องมือ</translation>
 <translation id="4294319844246081198">สวัสดียามเช้า <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">ล้างการแจ้งเตือนทั้งหมด <ph name="COUNT" /> รายการ</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
 <translation id="4952936045814352993">ระบุตำแหน่งของโทรศัพท์ไม่ได้เมื่อปิดเสียงการปลุกไว้</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">จ.</translation>
 <translation id="7600875258240007829">ดูการแจ้งเตือนทั้งหมด</translation>
 <translation id="7607002721634913082">หยุดชั่วคราว</translation>
+<translation id="7610198039767537854">ดูรูปภาพล่าสุดจากกล้องโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">ปากกามาร์กเกอร์</translation>

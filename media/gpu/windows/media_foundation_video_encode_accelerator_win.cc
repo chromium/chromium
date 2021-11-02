@@ -886,10 +886,29 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
 
 HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     scoped_refptr<VideoFrame> frame) {
-  // Handle case where video frame is backed by a GPU texture
+  if (frame->storage_type() !=
+          VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER &&
+      !frame->IsMappable()) {
+    DLOG(ERROR) << "Unsupported video frame storage type";
+    return MF_E_INVALID_STREAM_DATA;
+  }
+
+  if (frame->format() != PIXEL_FORMAT_NV12 &&
+      frame->format() != PIXEL_FORMAT_I420) {
+    DLOG(ERROR) << "Unsupported video frame format";
+    return MF_E_INVALID_STREAM_DATA;
+  }
+
+  const uint8_t* src_y = nullptr;
+  const uint8_t* src_uv = nullptr;
+  base::ScopedClosureRunner scoped_unmap_gmb;
+
   if (frame->storage_type() ==
       VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER) {
-    DCHECK_EQ(frame->format(), PIXEL_FORMAT_NV12);
+    if (frame->format() != PIXEL_FORMAT_NV12) {
+      DLOG(ERROR) << "GMB video frame is not NV12";
+      return MF_E_INVALID_STREAM_DATA;
+    }
 
     gfx::GpuMemoryBuffer* gmb = frame->GetGpuMemoryBuffer();
     if (!gmb) {
@@ -897,59 +916,28 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
       return MF_E_INVALID_STREAM_DATA;
     }
 
-    gfx::GpuMemoryBufferHandle buffer_handle = gmb->CloneHandle();
-    DCHECK_EQ(gmb->GetType(), gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
-
-    auto d3d_device = dxgi_device_manager_->GetDevice();
-    if (!d3d_device) {
-      DLOG(ERROR) << "Failed to get device from MF DXGI device manager";
-      return E_HANDLE;
+    if (gmb->GetType() != gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE &&
+        gmb->GetType() != gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+      DLOG(ERROR) << "Unsupported GMB type";
+      return MF_E_INVALID_STREAM_DATA;
     }
 
-    Microsoft::WRL::ComPtr<ID3D11Device1> device1;
-    HRESULT hr = d3d_device.As(&device1);
-    RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
-
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
-    hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
-                                      IID_PPV_ARGS(&input_texture));
-    RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
-
-    // Check if we need to scale the input texture
-    D3D11_TEXTURE2D_DESC input_desc = {};
-    input_texture->GetDesc(&input_desc);
-
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
-    if (input_desc.Width !=
-            static_cast<uint32_t>(input_visible_size_.width()) ||
-        input_desc.Height !=
-            static_cast<uint32_t>(input_visible_size_.height())) {
-      hr = PerformD3DScaling(input_texture.Get());
-      RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
-      sample_texture = scaled_d3d11_texture_;
-    } else {
-      sample_texture = input_texture;
+    if (gmb->GetType() == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE) {
+      return PopulateInputSampleBufferGpu(std::move(frame));
     }
 
-    Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
-    hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
-                                   sample_texture.Get(), 0, FALSE,
-                                   &input_buffer);
-    RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
+    // Shared memory GMB case.
+    if (!gmb->Map()) {
+      DLOG(ERROR) << "Failed to map shared memory GMB";
+      return E_FAIL;
+    }
 
-    // Some encoder MFTs (e.g. Qualcomm) depend on the sample buffer having a
-    // valid current length. Call GetMaxLength() to compute the plane size.
-    DWORD buffer_length = 0;
-    hr = input_buffer->GetMaxLength(&buffer_length);
-    RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
-    hr = input_buffer->SetCurrentLength(buffer_length);
-    RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+    scoped_unmap_gmb.ReplaceClosure(
+        base::BindOnce([](gfx::GpuMemoryBuffer* gmb) { gmb->Unmap(); }, gmb));
 
-    hr = input_sample_->RemoveAllBuffers();
-    RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
-    hr = input_sample_->AddBuffer(input_buffer.Get());
-    RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
-    return S_OK;
+    src_y = reinterpret_cast<const uint8_t*>(gmb->memory(VideoFrame::kYPlane));
+    src_uv =
+        reinterpret_cast<const uint8_t*>(gmb->memory(VideoFrame::kUVPlane));
   }
 
   Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
@@ -985,17 +973,22 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
 
   if (frame->format() == PIXEL_FORMAT_NV12) {
     // Copy NV12 pixel data from |frame| to |input_buffer|.
-    int error = libyuv::NV12Copy(frame->visible_data(VideoFrame::kYPlane),
-                                 frame->stride(VideoFrame::kYPlane),
-                                 frame->visible_data(VideoFrame::kUVPlane),
-                                 frame->stride(VideoFrame::kUVPlane), dst_y,
-                                 frame->row_bytes(VideoFrame::kYPlane), dst_uv,
-                                 frame->row_bytes(VideoFrame::kUPlane),
+    if (frame->IsMappable()) {
+      src_y = frame->visible_data(VideoFrame::kYPlane);
+      src_uv = frame->visible_data(VideoFrame::kUVPlane);
+    }
+    int error = libyuv::NV12Copy(src_y, frame->stride(VideoFrame::kYPlane),
+                                 src_uv, frame->stride(VideoFrame::kUVPlane),
+                                 dst_y, frame->row_bytes(VideoFrame::kYPlane),
+                                 dst_uv, frame->row_bytes(VideoFrame::kUVPlane),
                                  input_visible_size_.width(),
                                  input_visible_size_.height());
-    if (error)
+    if (error) {
+      DLOG(ERROR) << "NV12Copy failed";
       return E_FAIL;
+    }
   } else if (frame->format() == PIXEL_FORMAT_I420) {
+    DCHECK(frame->IsMappable());
     // Convert I420 to NV12 as input.
     int error = libyuv::I420ToNV12(
         frame->visible_data(VideoFrame::kYPlane),
@@ -1007,12 +1000,76 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
         frame->row_bytes(VideoFrame::kYPlane), dst_uv,
         frame->row_bytes(VideoFrame::kUPlane) * 2, input_visible_size_.width(),
         input_visible_size_.height());
-    if (error)
+    if (error) {
+      DLOG(ERROR) << "I420ToNV12 failed";
       return E_FAIL;
+    }
   } else {
     NOTREACHED();
   }
 
+  return S_OK;
+}
+
+// Handle case where video frame is backed by a GPU texture
+HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
+    scoped_refptr<VideoFrame> frame) {
+  DCHECK_EQ(frame->storage_type(),
+            VideoFrame::StorageType::STORAGE_GPU_MEMORY_BUFFER);
+  DCHECK(frame->HasGpuMemoryBuffer());
+  DCHECK_EQ(frame->GetGpuMemoryBuffer()->GetType(),
+            gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+
+  gfx::GpuMemoryBufferHandle buffer_handle =
+      frame->GetGpuMemoryBuffer()->CloneHandle();
+
+  auto d3d_device = dxgi_device_manager_->GetDevice();
+  if (!d3d_device) {
+    DLOG(ERROR) << "Failed to get device from MF DXGI device manager";
+    return E_HANDLE;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device1> device1;
+  HRESULT hr = d3d_device.As(&device1);
+  RETURN_ON_HR_FAILURE(hr, "Failed to query ID3D11Device1", hr);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture;
+  hr = device1->OpenSharedResource1(buffer_handle.dxgi_handle.Get(),
+                                    IID_PPV_ARGS(&input_texture));
+  RETURN_ON_HR_FAILURE(hr, "Failed to open shared GMB D3D texture", hr);
+
+  // Check if we need to scale the input texture
+  D3D11_TEXTURE2D_DESC input_desc = {};
+  input_texture->GetDesc(&input_desc);
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> sample_texture;
+  if (input_desc.Width != static_cast<uint32_t>(input_visible_size_.width()) ||
+      input_desc.Height !=
+          static_cast<uint32_t>(input_visible_size_.height())) {
+    hr = PerformD3DScaling(input_texture.Get());
+    RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
+    sample_texture = scaled_d3d11_texture_;
+  } else {
+    sample_texture = input_texture;
+  }
+
+  Microsoft::WRL::ComPtr<IMFMediaBuffer> input_buffer;
+  hr = MFCreateDXGISurfaceBuffer(__uuidof(ID3D11Texture2D),
+                                 sample_texture.Get(), 0, FALSE, &input_buffer);
+  RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI surface buffer", hr);
+
+  // Some encoder MFTs (e.g. Qualcomm) depend on the sample buffer having a
+  // valid current length. Call GetMaxLength() to compute the plane size.
+  DWORD buffer_length = 0;
+  hr = input_buffer->GetMaxLength(&buffer_length);
+  RETURN_ON_HR_FAILURE(hr, "Failed to get max buffer length", hr);
+  hr = input_buffer->SetCurrentLength(buffer_length);
+  RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+
+  hr = input_sample_->RemoveAllBuffers();
+  RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
+  hr = input_sample_->AddBuffer(input_buffer.Get());
+  RETURN_ON_HR_FAILURE(hr, "Failed to add buffer to sample", hr);
   return S_OK;
 }
 

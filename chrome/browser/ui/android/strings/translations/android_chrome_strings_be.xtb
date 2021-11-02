@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1146678959555564648">Увайсці ў VR</translation>
 <translation id="114825011539563458">Самая важная інфармацыя аб кіраванні прыватнасцю і бяспекай – на адной старонцы</translation>
+<translation id="1149401351239820326">Месяц заканчэння тэрміну дзеяння</translation>
 <translation id="1154704303112745282">Старонка недаступная па-за сеткай: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Выкарыстана</translation>
 <translation id="1171770572613082465">Праглядайце папулярныя вэб-сайты, націснуўшы кнопку "Топ сайтаў"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Спалучэнні клавіш для функцый Google Chrome</translation>
 <translation id="1344653310988386453">Далучыць спасылку на вылучаны тэкст</translation>
 <translation id="1347468774581902829">Кіраваць дзеяннямі</translation>
-<translation id="1353372385686746892">Chrome адпраўляе даныя дыягностыкі ў Google, якія дапамогуць палепшыць праграму. <ph name="BEGIN_LINK" />Змяніць<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Выйсці і выключыць сінхранізацыю?</translation>
 <translation id="1373696734384179344">Недастаткова памяці, каб спампаваць выбранае змесціва.</translation>
 <translation id="1376578503827013741">Вылічэнне…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">Адкрыць Даведачны цэнтр Chrome у новай укладцы</translation>
 <translation id="5957442310066583693">Каб прагледзець папулярныя сайты, націсніце кнопку "Галоўная старонка"</translation>
 <translation id="5958275228015807058">Знайсці файлы і старонкі можна ў раздзеле "Спампоўкі"</translation>
-<translation id="5962272973076519240">Каб разблакіраваць сеанс інкогніта, прайдзіце спраўджанне асобы</translation>
 <translation id="5962718611393537961">Каб згарнуць, націсніце тут</translation>
 <translation id="5964805880140440652">Каб абагуліць гэту старонку і мець да яе доступ з іншай прылады, уключыце сінхранізацыю ў наладах Chrome</translation>
 <translation id="5964869237734432770">Не атр. апісанні відарысаў</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">SD-карта не знойдзена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта}one{<ph name="TAB_COUNT_NORMAL" /> укладка ў рэжыме інкогніта}few{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}many{<ph name="TAB_COUNT_NORMAL" /> укладак у рэжыме інкогніта}other{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}}</translation>
 <translation id="8051695050440594747">Даступна <ph name="MEGABYTES" /> МБ</translation>
+<translation id="8058655154417507695">Год заканчэння тэрміну дзеяння</translation>
 <translation id="8058746566562539958">Адкрыць у новай укладцы Chrome</translation>
 <translation id="8063895661287329888">Не ўдалося дадаць закладку.</translation>
 <translation id="806745655614357130">Захоўваць мае даныя асобна</translation>

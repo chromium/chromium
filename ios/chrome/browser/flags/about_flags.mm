@@ -802,6 +802,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"web-feed-ios", flag_descriptions::kFollowingFeedInNtpName,
      flag_descriptions::kFollowingFeedInNtpDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFollowingFeedInNTP)},
+    {"ntp-view-hierarchy-repair",
+     flag_descriptions::kNTPViewHierarchyRepairName,
+     flag_descriptions::kNTPViewHierarchyRepairDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kNTPViewHierarchyRepair)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

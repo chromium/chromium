@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1146678959555564648">Uđi u VR</translation>
 <translation id="114825011539563458">Najvažnije kontrole privatnosti i sigurnosti na jednom mjestu</translation>
+<translation id="1149401351239820326">Mjesec isteka</translation>
 <translation id="1154704303112745282">Stranica je nedostupna van mreže: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Iskorišteno</translation>
 <translation id="1171770572613082465">Dodirnite dugme "Popularno" i pristupite popularnim web lokacijama</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Prečice Google Chrome funkcija</translation>
 <translation id="1344653310988386453">Uključite link za istaknuti tekst</translation>
 <translation id="1347468774581902829">Upravljajte aktivnostima</translation>
-<translation id="1353372385686746892">Radi poboljšanja aplikacije Chrome šalje dijagnostičke podatke Googleu. <ph name="BEGIN_LINK" />Promijenite<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Odjaviti se i isključiti sinkronizaciju?</translation>
 <translation id="1373696734384179344">Nedovoljno memorije za preuzimanje odabranog sadržaja.</translation>
 <translation id="1376578503827013741">Računanje…</translation>
@@ -714,7 +714,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5342314432463739672">Zahtjevi za odobrenje</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{Otvorena je <ph name="OPEN_TABS_ONE" /> kartica. Dodirnite da pređete na drugu karticu}one{Otvorena je <ph name="OPEN_TABS_MANY" /> kartica. Dodirnite da pređete na drugu karticu}few{Otvorene su <ph name="OPEN_TABS_MANY" /> kartice. Dodirnite da pređete na drugu karticu}other{Otvoreno je <ph name="OPEN_TABS_MANY" /> kartica. Dodirnite da pređete na drugu karticu}}</translation>
-<translation id="5375577065097716013">Tražite sliku uz Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Pretraži sliku uz Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Dopusti samo određene web lokacije</translation>
 <translation id="5409881200985013443">Poslati <ph name="ONE_TIME_CODE" /> na uređaj <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Potvrđivanje…</translation>
@@ -817,7 +817,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5956665950594638604">Otvori Chrome Centar za pomoć u novoj kartici</translation>
 <translation id="5957442310066583693">Da pogledate najpopularnije web lokacije, dodirnite dugme za početni ekran</translation>
 <translation id="5958275228015807058">Pronađite svoje fajlove i stranice u meniju Preuzimanja</translation>
-<translation id="5962272973076519240">Potvrdite identitet da otključate anonimni način rada</translation>
 <translation id="5962718611393537961">Dodirnite da suzite</translation>
 <translation id="5964805880140440652">Da dijelite ovu stranicu s drugim uređajem, u postavkama Chromea uključite sinhronizaciju</translation>
 <translation id="5964869237734432770">Zaustavi opise slika</translation>
@@ -1188,6 +1187,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="804335162455518893">SD kartica nije pronađena</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonimna kartica}one{<ph name="TAB_COUNT_NORMAL" /> anonimna kartica}few{<ph name="TAB_COUNT_NORMAL" /> anonimne kartice}other{<ph name="TAB_COUNT_NORMAL" /> anonimnih kartica}}</translation>
 <translation id="8051695050440594747">Dostupno je <ph name="MEGABYTES" /> MB</translation>
+<translation id="8058655154417507695">Godina isteka</translation>
 <translation id="8058746566562539958">Otvori u novoj Chrome kartici</translation>
 <translation id="8063895661287329888">Dodavanje oznake nije uspjelo.</translation>
 <translation id="806745655614357130">Moje podatke čuvaj zasebno</translation>

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
 <translation id="1146678959555564648">Εισαγωγή VR</translation>
 <translation id="114825011539563458">Τα σημαντικότερα στοιχεία ελέγχου για το απόρρητο και την ασφάλεια σε μία τοποθεσία</translation>
+<translation id="1149401351239820326">Μήνας λήξης</translation>
 <translation id="1154704303112745282">Η σελίδα δεν είναι διαθέσιμη εκτός σύνδεσης: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Χρησιμοποιήθηκαν</translation>
 <translation id="1171770572613082465">Δείτε δημοφιλείς ιστοτόπους πατώντας το κουμπί "Κορυφαίοι ιστότοποι"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Συντομεύσεις λειτουργιών Google Chrome</translation>
 <translation id="1344653310988386453">Συμπερίληψη συνδέσμου προς την επισήμανση</translation>
 <translation id="1347468774581902829">Διαχείριση δραστηριότητας</translation>
-<translation id="1353372385686746892">Το Chrome στέλνει διαγνωστικά δεδομένα στην Google, στο πλαίσιο της βελτίωσης της εφαρμογής. <ph name="BEGIN_LINK" />Αλλαγή<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Αποσύνδεση και απενεργοπ. συγχρονισμού;</translation>
 <translation id="1373696734384179344">Ανεπαρκής μνήμη για τη λήψη του επιλεγμένου περιεχομένου.</translation>
 <translation id="1376578503827013741">Υπολογισμός…</translation>
@@ -405,6 +405,7 @@
 <translation id="3398320232533725830">Άνοιγμα του διαχειριστή σελιδοδεικτών</translation>
 <translation id="3414952576877147120">Μέγεθος:</translation>
 <translation id="3429160811076349561">Οι δοκιμαστικές λειτουργίες είναι απενεργοποιημένες</translation>
+<translation id="3435465986463792564">Έχετε πολλά παράθυρα; Μπορείτε να τα διαχειρίζεστε από εδώ.</translation>
 <translation id="3440975416244667276">Αγγίξτε παρατεταμένα για περισσότερες σχετικές πληροφορίες</translation>
 <translation id="3443221991560634068">Επαναφόρτωση της τρέχουσας σελίδας</translation>
 <translation id="3444179773590444986">Θέλετε να υποβάλετε σχόλια σχετικά με το σκούρο θέμα για ιστοτόπους;</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">Άνοιγμα Κέντρου βοήθειας Chrome σε νέα καρτέλα</translation>
 <translation id="5957442310066583693">Για να δείτε τους κορυφαίους ιστοτόπους, πατήστε το κουμπί αρχικής οθόνης.</translation>
 <translation id="5958275228015807058">Βρείτε τα αρχεία και τις σελίδες σας στις Λήψεις</translation>
-<translation id="5962272973076519240">Επαλήθευση ταυτότητας για ξεκλείδωμα Ανώνυμης περιήγησης</translation>
 <translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5964805880140440652">Για να κοινοποιήσετε αυτήν τη σελίδα σε μια άλλη συσκευή, ενεργοποιήστε τον συγχρονισμό στις ρυθμίσεις του Chrome.</translation>
 <translation id="5964869237734432770">Διακοπή περιγραφών εικόνων</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">Δεν βρέθηκε κάρτα SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα ανώνυμης περιήγησης}other{<ph name="TAB_COUNT_NORMAL" /> καρτέλες ανώνυμης περιήγησης}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB διαθέσιμα</translation>
+<translation id="8058655154417507695">Έτος λήξης</translation>
 <translation id="8058746566562539958">Άνοιγμα σε νέα καρτέλα Chrome</translation>
 <translation id="8063895661287329888">Η προσθήκη του σελιδοδείκτη απέτυχε.</translation>
 <translation id="806745655614357130">Διατήρηση των δεδομένων μου ξεχωριστά</translation>

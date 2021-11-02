@@ -1416,7 +1416,7 @@ html[dir='rtl'] .breadcrumbs .separator {
 }
 
 body.files-ng #read-only-indicator {
-  background-color: var(--google-grey-100);
+  background-color: var(--cros-highlight-color-hover);
   margin-inline-start: 12px;
   padding-inline-end: 16px;
   padding-inline-start: 12px;

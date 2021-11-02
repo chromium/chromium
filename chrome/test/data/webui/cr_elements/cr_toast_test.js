@@ -5,7 +5,7 @@
 // clang-format off
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {MockTimer} from '../mock_timer.m.js';
+import {MockTimer} from '../mock_timer.js';
 // clang-format on
 
 suite('cr-toast', function() {

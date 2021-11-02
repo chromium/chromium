@@ -17,19 +17,16 @@ def CommonChecks(input_api, output_api):
 
   tests = []
   tests.extend(
-      input_api.canned_checks.GetUnitTests(
-          input_api,
-          output_api,
-          unit_tests=[J('fvdl_target_test.py')],
-          run_on_python2=False,
-          run_on_python3=True))
-  tests.extend(
-      input_api.canned_checks.GetUnitTests(
-          input_api,
-          output_api,
-          unit_tests=[J('device_target_test.py')],
-          run_on_python2=False,
-          run_on_python3=True))
+      input_api.canned_checks.GetUnitTests(input_api,
+                                           output_api,
+                                           unit_tests=[
+                                               J('binary_sizes_test.py'),
+                                               J('binary_size_differ_test.py'),
+                                               J('device_target_test.py'),
+                                               J('fvdl_target_test.py')
+                                           ],
+                                           run_on_python2=False,
+                                           run_on_python3=True))
   return input_api.RunTests(tests)
 
 

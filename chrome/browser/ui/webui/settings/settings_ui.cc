@@ -316,6 +316,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("isOSSettings", false);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Lacros has no access to AccountHasUserFacingPassword() (Ash only). Assign
+  // userCannotManuallyEnterPassword to false so that WebUI would make auth
+  // token request, which is forwarded via crosapi to Ash, which then calls
+  // AccountHasUserFacingPassword().
+  html_source->AddBoolean("userCannotManuallyEnterPassword", false);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
   html_source->AddBoolean(
       "privacyReviewEnabled",
       !chrome::ShouldDisplayManagedUi(profile) &&

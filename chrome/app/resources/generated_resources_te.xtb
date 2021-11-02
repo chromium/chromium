@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">ఆఫీస్</translation>
 <translation id="1122198203221319518">&amp;సాధనాలు</translation>
 <translation id="1122242684574577509">ప్రామాణీకరణ విఫలమైంది. మీరు ఉపయోగిస్తున్న Wi-Fi నెట్‌వర్క్ (<ph name="NETWORK_ID" />) లాగిన్ పేజీని సందర్శించడానికి క్లిక్ చేయండి.</translation>
+<translation id="1122913801042512795">మీ ఖాతా సైన్-ఇన్ వివరాల గడువు తీరి పోయింది. దయచేసి సైన్ అవుట్ చేసి, మళ్ళీ సైన్ ఇన్ చేయండి.</translation>
 <translation id="1122960773616686544">బుక్‌మార్క్ పేరు</translation>
 <translation id="1124772482545689468">వినియోగదారు</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ఉన్నట్టుంది (అసలైనది)</translation>
@@ -719,7 +720,7 @@
 <translation id="1719312230114180055">గమనిక: శక్తివంతమైన పాస్‌వర్డ్ లేదా PIN కంటే మీ వేలిముద్ర తక్కువ సురక్షితంగా ఉండవచ్చు.</translation>
 <translation id="1720318856472900922">TLS WWW సర్వర్ ప్రామాణీకరణ</translation>
 <translation id="1720941539803966190">ట్యుటోరియల్‌ను మూసివేయండి</translation>
-<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> సహాయంతో ఇమేజ్‌లను సెర్చ్ చేయండి</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />‌ ఇమేజ్ సెర్చ్</translation>
 <translation id="1721312023322545264">ఈ సైట్‌ని సందర్శించడానికి మీకు <ph name="NAME" /> నుండి అనుమతి అవసరం</translation>
 <translation id="1722460139690167654">మీ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> నిర్వహణ<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ద్వారా చేయబడుతోంది</translation>
 <translation id="1723824996674794290">&amp;కొత్త విండో</translation>
@@ -1583,7 +1584,7 @@
 <translation id="2602501489742255173">ప్రారంభించడానికి పైకి స్వైప్ చేయండి</translation>
 <translation id="2603115962224169880">కంప్యూటర్‌ నుండి హానికరమైనవి తీసివేయండి</translation>
 <translation id="2603355571917519942">వాయిస్ మ్యాచ్ సిద్ధంగా ఉంది</translation>
-<translation id="2604138917550693049">Google Lensతో ఇమేజ్‌ను సెర్చ్ చేయండి</translation>
+<translation id="2604138917550693049">Google Lens ఇమేజ్ సెర్చ్</translation>
 <translation id="2604255671529671813">నెట్‌వర్క్ కనెక్షన్ ఎర్రర్</translation>
 <translation id="2605668923777146443">Better Together కోసం మీ ఎంపికలను చూడడానికి <ph name="LINK_BEGIN" />సెట్టింగ్‌ల<ph name="LINK_END" />కు వెళ్లండి.</translation>
 <translation id="2606246518223360146">డేటాను లింక్ చేయి</translation>
@@ -3885,7 +3886,7 @@
 <translation id="5051836348807686060">మీరు ఎంచుకున్న భాషలకు స్పెల్‌చెక్ మద్దతు లేదు</translation>
 <translation id="5052499409147950210">సైట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="505347685865235222">పేరు లేని గ్రూప్ - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google Lensతో ఇమేజ్‌ను సెర్చ్ చేయండి</translation>
+<translation id="5053962746715621840">Google Lens ఇమేజ్ సెర్చ్</translation>
 <translation id="5056950756634735043">కంటైనర్‌కు కనెక్ట్ చేస్తోంది</translation>
 <translation id="5057110919553308744">మీరు ఎక్స్‌టెన్షన్ క్లిక్ చేసినప్పుడు</translation>
 <translation id="505776528429481161">సమీపంలోని ఉన్న పరికరాలకు సులభంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
@@ -5888,7 +5889,7 @@
 <translation id="7230222852462421043">&amp;విండోను రీస్టోర్ చేయండి</translation>
 <translation id="7230787553283372882">మీ వచన పరిమాణాన్ని అనుకూలీకరించండి</translation>
 <translation id="7232750842195536390">పేరు మార్చడం విఫలమైంది</translation>
-<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> సహాయంతో ఇమేజ్‌లను సెర్చ్ చేయండి</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />‌ ఇమేజ్ సెర్చ్</translation>
 <translation id="7234010996000898150">Linux పునరుద్ధరణను రద్దు చేస్తోంది</translation>
 <translation id="7235716375204803342">యాక్టివిటీలను పొందుతోంది...</translation>
 <translation id="7235737137505019098">ఏ ఇతర ఖాతాల కోసం మీ సెక్యూరిటీ కీలో తగినంత స్థలం లేదు.</translation>
@@ -7507,6 +7508,7 @@
 <translation id="8879284080359814990">&amp;ట్యాబ్ లాగా చూపండి</translation>
 <translation id="8879921471468674457">సైన్-ఇన్ సమాచారం గుర్తుంచుకో</translation>
 <translation id="8880054210564666174">కాంటాక్ట్ లిస్ట్‌ను డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. దయచేసి మీ నెట్‌వర్క్ కనెక్షన్‌ను చెక్ చేయండి, లేదా <ph name="LINK_BEGIN" />మళ్లీ ట్రై చేయండి<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089"><ph name="USB_DEVICE_NAME" />ను Linux లేదా Parallels Desktopకు కనెక్ట్ చేయడానికి సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="8881020143150461183">దయచేసి మళ్లీ ప్రయత్నించండి. సాంకేతిక మద్దతు పొందడానికి, <ph name="CARRIER_NAME" />ను సంప్రదించండి.</translation>
 <translation id="8883273463630735858">టచ్‌ప్యాడ్ యాక్సిలరేషన్‌ను ప్రారంభించండి</translation>
 <translation id="8884570509232205463">మీ పరికరం ఇప్పుడు <ph name="UNLOCK_TIME" />కు లాక్ చేయబడుతుంది.</translation>

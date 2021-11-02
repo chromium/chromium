@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Töö</translation>
 <translation id="1122198203221319518">&amp;Tööriistad</translation>
 <translation id="1122242684574577509">Autentimine ebaõnnestus. Klõpsake kasutatava WiFi-võrgu sisselogimislehe (<ph name="NETWORK_ID" />) külastamiseks.</translation>
+<translation id="1122913801042512795">Teie konto sisselogimisandmed on aegunud. Logige välja ja uuesti sisse.</translation>
 <translation id="1122960773616686544">Järjehoidja nimi</translation>
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1125550662859510761">Näib kui <ph name="WIDTH" /> × <ph name="HEIGHT" /> (loomulik eraldusvõime)</translation>
@@ -712,7 +713,7 @@
 <translation id="1719312230114180055">Märkus. Sõrmejälg võib olla vähem turvaline kui tugev parool või PIN-kood.</translation>
 <translation id="1720318856472900922">TLS WWW serveri autentimine</translation>
 <translation id="1720941539803966190">Sule õpetus</translation>
-<translation id="172123215662733643">Otsige pilte rakendusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Otsi pilte rakendusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Vajate saidi külastamiseks halduri <ph name="NAME" /> luba</translation>
 <translation id="1722460139690167654">Teie seadet <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> haldab<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Uus aken</translation>
@@ -1575,7 +1576,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2602501489742255173">Alustamiseks pühkige üles</translation>
 <translation id="2603115962224169880">Puhasta arvuti</translation>
 <translation id="2603355571917519942">Voice Match on valmis</translation>
-<translation id="2604138917550693049">Pildi otsimine Google Lensiga</translation>
+<translation id="2604138917550693049">Otsi pilti Google Lensiga</translation>
 <translation id="2604255671529671813">Võrguühenduse viga</translation>
 <translation id="2605668923777146443">Avage menüü <ph name="LINK_BEGIN" />Seaded<ph name="LINK_END" />, et funktsiooni Better Together valikuid näha.</translation>
 <translation id="2606246518223360146">Lingi andmed</translation>
@@ -2079,6 +2080,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="310671807099593501">Sait kasutab Bluetoothi</translation>
 <translation id="3108931485517391283">Ei saa vastu võtta</translation>
 <translation id="3109724472072898302">Ahendatud</translation>
+<translation id="311214366526552035">Laadi ikkagi alla</translation>
 <translation id="311394601889664316">Ära luba saitidel muuta seadmes olevaid faile ega kaustu</translation>
 <translation id="3115147772012638511">Puhvri ootel...</translation>
 <translation id="3115580024857770654">Ahenda kõik</translation>
@@ -2359,6 +2361,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3429160811076349561">Prooviversiooni funktsioonid on välja lülitatud</translation>
 <translation id="3429271624041785769">Veebisisu keeled</translation>
 <translation id="3429275422858276529">Lisage see leht järjehoidjatesse, et see hiljem hõlpsalt üles leida</translation>
+<translation id="343115368966109153">Kas laadida fail <ph name="FILE_NAME" /> alla? Kõik, kes seadet kasutavad, näevad seda.</translation>
 <translation id="3432227430032737297">Eemalda kõik kuvatud</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Vabandust! Süsteemil ei õnnestunud määrata seadme installiaegsete atribuutide lukustust.</translation>
@@ -2700,6 +2703,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3777806571986431400">Laiendus on lubatud</translation>
 <translation id="3778152852029592020">Allalaadimine tühistati.</translation>
 <translation id="3778208826288864398">Turvavõti lukustati, kuna vale PIN-kood sisestati liiga palju kordi. Peate turvavõtme lähtestama.</translation>
+<translation id="3778369586810509692">See fail salvestatakse seadmesse ja kõik näevad seda.</translation>
 <translation id="3778740492972734840">&amp;Arendaja tööriistad</translation>
 <translation id="3778868487658107119">Esitage talle küsimusi või paluge tal toiminguid teha. See on teie isiklik Google – alati valmis teid aitama.</translation>
 <translation id="3781742599892759500">Linuxi juurdepääs mikrofonile</translation>
@@ -3873,7 +3877,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5051836348807686060">Õigekirjakontrolli teie valitud keelte puhul ei toetata</translation>
 <translation id="5052499409147950210">Saidi muutmine</translation>
 <translation id="505347685865235222">Nimetu grupp – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Pildi otsimine Google Lensiga</translation>
+<translation id="5053962746715621840">Otsi pilti Google Lensiga</translation>
 <translation id="5056950756634735043">Ühenduse loomine konteineriga</translation>
 <translation id="5057110919553308744">Laiendusel klõpsamisel</translation>
 <translation id="505776528429481161">Lähedusesolevate seadmete lihtne ühendamine ja seadistamine</translation>
@@ -5876,7 +5880,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7230222852462421043">&amp;Taasta aken</translation>
 <translation id="7230787553283372882">Teksti suuruse kohandamine</translation>
 <translation id="7232750842195536390">Ümbernimetamine ebaõnnestus</translation>
-<translation id="723343421145275488">Otsige pilte rakendusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Otsi pilte rakendusega <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Linuxi taastamise tühistamine</translation>
 <translation id="7235716375204803342">Tegevuste toomine …</translation>
 <translation id="7235737137505019098">Teie turvavõtmel pole muude kontode jaoks piisavalt ruumi.</translation>
@@ -7499,6 +7503,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8879284080359814990">&amp;Kuva vahelehena</translation>
 <translation id="8879921471468674457">Jäta sisselogimisandmed meelde</translation>
 <translation id="8880054210564666174">Kontaktide loendit ei õnnestu alla laadida. Kontrollige võrguühendust ja <ph name="LINK_BEGIN" />proovige uuesti<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Avage menüü Seaded, et seade <ph name="USB_DEVICE_NAME" /> Linuxi või Parallels Desktopiga ühendada</translation>
 <translation id="8881020143150461183">Proovige uuesti. Tehnilise toe saamiseks võtke ühendust operaatoriga <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Luba puuteplaadi kiirendi</translation>
 <translation id="8884570509232205463">Sinu seade lukustatakse nüüd kell <ph name="UNLOCK_TIME" />.</translation>

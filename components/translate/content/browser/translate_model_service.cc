@@ -70,7 +70,7 @@ TranslateModelService::~TranslateModelService() {
   for (auto& pending_request : pending_model_requests_) {
     // Clear any pending requests, no model file is acceptable as shutdown is
     // happening.
-    std::move(pending_request).Run(base::File());
+    std::move(pending_request).Run(false);
   }
   pending_model_requests_.clear();
 }
@@ -89,7 +89,7 @@ void TranslateModelService::Shutdown() {
   for (auto& pending_request : pending_model_requests_) {
     // Clear any pending requests, no model file is acceptable as shutdown is
     // happening.
-    std::move(pending_request).Run(base::File());
+    std::move(pending_request).Run(false);
   }
   pending_model_requests_.clear();
 }
@@ -127,24 +127,31 @@ void TranslateModelService::OnModelFileLoaded(base::File model_file) {
       "TranslateModelService.LanguageDetectionModel.PendingRequestCallbacks",
       pending_model_requests_.size());
   for (auto& pending_request : pending_model_requests_) {
-    std::move(pending_request).Run(language_detection_model_file_->Duplicate());
+    if (!pending_request) {
+      continue;
+    }
+    std::move(pending_request).Run(true);
   }
   pending_model_requests_.clear();
 }
 
-void TranslateModelService::GetLanguageDetectionModelFile(
-    GetModelCallback callback) {
+base::File TranslateModelService::GetLanguageDetectionModelFile() {
+  DCHECK(IsModelAvailable());
   if (!language_detection_model_file_) {
-    if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
-      pending_model_requests_.emplace_back(std::move(callback));
-      return;
-    }
-    std::move(callback).Run(base::File());
-    return;
+    return base::File();
   }
   // The model must be valid at this point.
   DCHECK(language_detection_model_file_->IsValid());
-  std::move(callback).Run(language_detection_model_file_->Duplicate());
+  return language_detection_model_file_->Duplicate();
 }
 
+void TranslateModelService::NotifyOnModelFileAvailable(
+    NotifyModelAvailableCallback callback) {
+  DCHECK(!IsModelAvailable());
+  if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
+    pending_model_requests_.emplace_back(std::move(callback));
+    return;
+  }
+  std::move(callback).Run(false);
+}
 }  // namespace translate

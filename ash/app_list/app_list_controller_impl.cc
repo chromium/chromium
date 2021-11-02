@@ -1169,9 +1169,12 @@ void AppListControllerImpl::OnUiVisibilityChanged(
 
 void AppListControllerImpl::RequestPositionUpdate(
     std::string id,
-    const syncer::StringOrdinal& new_position) {
-  if (client_)
-    client_->OnSetPositionRequested(profile_id_, std::move(id), new_position);
+    const syncer::StringOrdinal& new_position,
+    RequestPositionUpdateReason reason) {
+  if (client_) {
+    client_->OnSetPositionRequested(profile_id_, std::move(id), new_position,
+                                    reason);
+  }
 }
 
 void AppListControllerImpl::RequestMoveItemToFolder(
@@ -1412,9 +1415,9 @@ void AppListControllerImpl::OpenSearchResult(
 
 void AppListControllerImpl::InvokeSearchResultAction(
     const std::string& result_id,
-    int action_index) {
+    SearchResultActionType action) {
   if (client_)
-    client_->InvokeSearchResultAction(result_id, action_index);
+    client_->InvokeSearchResultAction(result_id, action);
 }
 
 void AppListControllerImpl::GetSearchResultContextMenuModel(
@@ -1480,6 +1483,11 @@ void AppListControllerImpl::GetContextMenuModel(
 void AppListControllerImpl::SortAppList(AppListSortOrder order) {
   if (client_)
     client_->OnAppListSortRequested(profile_id_, order);
+}
+
+void AppListControllerImpl::RevertAppListSort() {
+  if (client_)
+    client_->OnAppListSortRevertRequested(profile_id_);
 }
 
 ui::ImplicitAnimationObserver* AppListControllerImpl::GetAnimationObserver(

@@ -368,7 +368,7 @@ TEST_F(FileProxyTest, WriteAndFlush) {
 TEST_F(FileProxyTest, MAYBE_SetTimes) {
   FileProxy proxy(file_task_runner());
   CreateProxy(
-      File::FLAG_CREATE | File::FLAG_WRITE | File::FLAG_WIN_WRITE_ATTRIBUTES,
+      File::FLAG_CREATE | File::FLAG_WRITE | File::FLAG_WRITE_ATTRIBUTES,
       &proxy);
 
   Time last_accessed_time = Time::Now() - Days(12345);

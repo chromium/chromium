@@ -310,14 +310,20 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
 
   SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle());
 
-  // In order for the fence to be respected by the system, it needs to stick
-  // around until the next time the texture comes up for use. To avoid needing
-  // to remember the swap chain index, use frame_index %
-  // color_swapchain_images_.size() to keep them separated from one another.
-  openxr_->StoreFence(std::move(d3d11_fence), frame_index);
-
-  gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
-  gl->DestroyGpuFenceCHROMIUM(id);
+  // Calling SubmitFrameWithTextureHandle can cause openxr_ and
+  // context_provider_ to become nullptr in ClearPendingFrameInternal if we
+  // decide to stop the runtime.
+  if (openxr_) {
+    // In order for the fence to be respected by the system, it needs to stick
+    // around until the next time the texture comes up for use. To avoid needing
+    // to remember the swap chain index, use frame_index %
+    // color_swapchain_images_.size() to keep them separated from one another.
+    openxr_->StoreFence(std::move(d3d11_fence), frame_index);
+  }
+  if (context_provider_) {
+    gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
+    gl->DestroyGpuFenceCHROMIUM(id);
+  }
 }
 
 void OpenXrRenderLoop::SendInitialDisplayInfo() {

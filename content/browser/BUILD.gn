@@ -2353,11 +2353,22 @@ source_set("browser") {
 
   if (is_fuchsia) {
     sources += [
+      "accessibility/accessibility_event_recorder_fuchsia.cc",
+      "accessibility/accessibility_event_recorder_fuchsia.h",
+      "accessibility/accessibility_tree_formatter_fuchsia.cc",
+      "accessibility/accessibility_tree_formatter_fuchsia.h",
+      "accessibility/browser_accessibility_fuchsia.cc",
+      "accessibility/browser_accessibility_fuchsia.h",
+      "accessibility/browser_accessibility_manager_fuchsia.cc",
+      "accessibility/browser_accessibility_manager_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
       "memory/swap_metrics_driver_impl_fuchsia.cc",
       "speech/tts_fuchsia.cc",
     ]
-    deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
   } else if (is_posix) {
     sources += [
       "child_process_launcher_helper_posix.cc",
@@ -2435,15 +2446,6 @@ source_set("browser") {
       deps += [ "//ui/base/cursor" ]
     }
 
-    # TODO(crbug.com/1210549): Slow capturer should be removed once new path is stable.
-    if (is_chromeos_ash) {
-      sources += [
-        "media/capture/slow_capture_overlay_chromeos.cc",
-        "media/capture/slow_capture_overlay_chromeos.h",
-        "media/capture/slow_window_capturer_chromeos.cc",
-        "media/capture/slow_window_capturer_chromeos.h",
-      ]
-    }
     if (is_mac) {
       sources += [
         "media/capture/desktop_capture_device_mac.cc",
@@ -2598,9 +2600,6 @@ source_set("browser") {
       "media/cdm_storage_impl.cc",
       "media/cdm_storage_impl.h",
     ]
-
-    # Depends on ppapi_constants.h
-    deps += [ "//ppapi/shared_impl" ]
   }
 
   if (enable_library_cdms || is_win) {

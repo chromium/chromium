@@ -13,7 +13,7 @@
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig,} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // #import {mojoString16ToString} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
-// #import {eventToPromise} from 'chrome://test/test_util.m.js';
+// #import {eventToPromise} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('OsBluetoothSummaryTest', function() {

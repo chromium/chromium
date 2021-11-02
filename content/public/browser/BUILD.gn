@@ -555,6 +555,10 @@ source_set("browser_sources") {
     ]
   }
 
+  if (is_fuchsia) {
+    sources += [ "ax_inspect_factory_fuchsia.cc" ]
+  }
+
   if (is_win) {
     sources += [ "ax_inspect_factory_win.cc" ]
   }

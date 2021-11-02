@@ -183,12 +183,12 @@ xcode = struct(
     x12d4e = xcode_enum("12d4e"),
     # Xcode 12.5. Requires Mac11+ OS.
     x12e262 = xcode_enum("12e262"),
-    # in use by ios-webkit-tot
-    x12e262wk = xcode_enum("12e262wk"),
     # Default Xcode 13 for chromium iOS (release candidate).
     x13main = xcode_enum("13a233"),
     # Xcode 13.0 latest beta (release candidate).
     x13latestbeta = xcode_enum("13a233"),
+    # in use by ios-webkit-tot
+    x13wk = xcode_enum("13a1030dwk"),
 )
 
 # Git revision of the compilator_watcher luciexe sub_build binary for chromium

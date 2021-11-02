@@ -34,7 +34,7 @@ void MissiveStorageModuleDelegateImpl::Flush(
 }
 
 void MissiveStorageModuleDelegateImpl::ReportSuccess(
-    const SequencingInformation& sequencing_information,
+    const SequenceInformation& sequence_information,
     bool force) {
   // Intended for upload, but called directly to MissiveClient.
   DLOG(FATAL) << "Should never be called";

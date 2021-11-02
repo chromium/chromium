@@ -32,6 +32,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2185166961232948079">Chromium – Connexion au réseau – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="2294245788148774212">Facultatif : aidez-nous à améliorer les fonctionnalités et les performances de Chromium OS en envoyant automatiquement les données de diagnostic et d'utilisation à Google.</translation>
+<translation id="2313870531055795960">Il vérifie les URL en fonction d'une liste de sites non sécuritaires stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la navigation sécurisée.</translation>
 <translation id="2343156876103232566">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chromium sur vos deux appareils.</translation>
 <translation id="2347108572062610441">Cette extension a modifié la page qui s'affiche au démarrage de Chromium.</translation>
 <translation id="2396765026452590966">L'extension « <ph name="EXTENSION_NAME" /> » a modifié la page qui s'affiche au démarrage de Chromium.</translation>
@@ -44,6 +45,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2577788541081224677">Pour accéder à vos données Chromium sur tous vos appareils, connectez-vous afin de pouvoir activer la synchronisation.</translation>
 <translation id="2583187216237139145">L'administrateur du profil professionnel peut retirer toutes les données Chromium générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres). <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Redémarrez Chromium OS pour appliquer la mise à jour.</translation>
+<translation id="2614883797045469742">Les paramètres par défaut fonctionnent pour la plupart des gens, mais vous pouvez les personnaliser pour qu'ils correspondent aux façons dont vous aimez utiliser Chromium</translation>
 <translation id="2648074677641340862">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Chromium.</translation>
 <translation id="2661879430930417727">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chromium comme bon leur semble et naviguer sur le Web de façon autonome.</translation>
 <translation id="2711502716910134313">Onglet Chromium</translation>
@@ -52,6 +54,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2799223571221894425">Redémarrer</translation>
 <translation id="2837693172913560447">Cette action créera un profil Chromium associé au compte <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Supprimer de Chromium...</translation>
+<translation id="2850691299438350830">Il vous protège dans Chromium et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2910007522516064972">À propos de &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
@@ -206,6 +209,7 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="6990124437352146030">Chromium a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
 <translation id="7067091210845072982">Si une image n'est pas accompagnée d'une description utile, Chromium essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google.</translation>
+<translation id="7147279922647361552">Personnaliser certains des choix de confidentialité les plus importants de Chromium</translation>
 <translation id="718435575166326686">Chromium requiert l'autorisation d'accéder à l'appareil photo pour ce site</translation>
 <translation id="7196312274710523067">Impossible de lancer Chromium. Réessayez.</translation>
 <translation id="7197677400338048821">Chromium ne peut pas vérifier vos mots de passe. Réessayez dans 24 heures.</translation>

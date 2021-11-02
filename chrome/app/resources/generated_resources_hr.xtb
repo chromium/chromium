@@ -328,6 +328,7 @@
 <translation id="133535873114485416">Preferirani unos</translation>
 <translation id="1335929031622236846">Registrirajte svoj uređaj</translation>
 <translation id="1336902454946927954">Sigurnosni je ključ zaključan jer vaš otisak prsta nije prepoznat. Da biste ga otključali, unesite PIN.</translation>
+<translation id="1338631221631423366">Uparivanje...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> želi otvoriti ovu aplikaciju.</translation>
 <translation id="1338950911836659113">Brisanje...</translation>
 <translation id="1339009753652684748">Pristupajte svojem Asistentu tako što ćete izgovoriti: "Hey Google". Radi uštede baterije odaberite Uključeno (preporučeno). Asistent će odgovarati samo kad je uređaj priključen ili se puni.</translation>
@@ -1113,7 +1114,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2136476978468204130">Šifra koju ste unijeli nije točna</translation>
 <translation id="2138398485845393913">Povezivanje s uređajem "<ph name="DEVICE_NAME" />" još je u tijeku</translation>
 <translation id="2139919072249842737">Gumb za postavljanje</translation>
-<translation id="2140788884185208305">Stanje baterije</translation>
+<translation id="2140788884185208305">Status baterije</translation>
 <translation id="214169863967063661">Otvorite postavke izgleda</translation>
 <translation id="2142328300403846845">Otvori vezu kao</translation>
 <translation id="2142582065325732898">Uključite <ph name="LINK1_BEGIN" />Chrome sinkronizaciju<ph name="LINK1_END" /> da biste vidjeli nedavne Chromeove kartice. <ph name="LINK2_BEGIN" />Saznajte više<ph name="LINK2_END" /></translation>
@@ -2076,6 +2077,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="310671807099593501">Web-lokacija upotrebljava Bluetooth</translation>
 <translation id="3108931485517391283">Primanje nije moguće</translation>
 <translation id="3109724472072898302">Sažeto</translation>
+<translation id="311214366526552035">Svejedno preuzmi</translation>
 <translation id="311394601889664316">Ne dopuštaj web-lokacijama uređivanje datoteka ili mapa na uređaju</translation>
 <translation id="3115147772012638511">Čekanje predmemorije...</translation>
 <translation id="3115580024857770654">Sažmi sve</translation>
@@ -2356,6 +2358,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3429160811076349561">Probne značajke su isključene</translation>
 <translation id="3429271624041785769">Jezici web-sadržaja</translation>
 <translation id="3429275422858276529">Označite ovu stranicu da biste je kasnije lakše pronašli</translation>
+<translation id="343115368966109153">Želite li preuzeti <ph name="FILE_NAME" />? Datoteku mogu vidjeti svi korisnici uređaja.</translation>
 <translation id="3432227430032737297">Ukloni sve prikazano</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Ups! Sustav nije uspješno uspostavio zaključavanje atributa vremena instalacije uređaja.</translation>
@@ -2697,6 +2700,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3777806571986431400">Proširenje omogućeno</translation>
 <translation id="3778152852029592020">Preuzimanje je otkazano.</translation>
 <translation id="3778208826288864398">Sigurnosni je ključ zaključan jer je previše puta unesen pogrešan PIN. Morat ćete vratiti sigurnosni ključ na zadano.</translation>
+<translation id="3778369586810509692">Datoteka će se pohraniti na uređaju i svi će je moći vidjeti.</translation>
 <translation id="3778740492972734840">&amp;Alati za razvojne programere</translation>
 <translation id="3778868487658107119">Postavljajte mu pitanja. Dajte mu naredbe. To je vaš osobni Google, uvijek spreman pomoći.</translation>
 <translation id="3781742599892759500">Linuxov pristup mikrofonu</translation>
@@ -6546,6 +6550,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7887864092952184874">Bluetooth miš uparen</translation>
 <translation id="7889371445710865055">Promjena jezika diktiranja</translation>
 <translation id="7890147169288018054">Pregled informacija o mreži, kao što su IP ili MAC adresa</translation>
+<translation id="7892384782944609022">Uparivanje nije uspjelo. Odaberite uređaj i pokušajte ponovo.</translation>
 <translation id="7893008570150657497">pristupiti fotografijama, glazbi i drugim medijima s vašeg računala</translation>
 <translation id="7893153962594818789">Bluetooth je isključen na ovom <ph name="DEVICE_TYPE" /> uređaju. Unesite zaporku i uključite Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (zadano)</translation>

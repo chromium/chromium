@@ -600,6 +600,11 @@
     "expiry_milestone" : 103
   },
   {
+    "name": "camera-app-document-manual-crop",
+    "owners": [ "inker", "chromeos-canera-eng@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "canvas-2d-layers",
     "owners": [ "alisalin", "fserb", "juanmihd", "yiyix" ],
     "expiry_milestone": 100
@@ -1162,11 +1167,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "disable-hosted-app-shim-creation",
-    "owners": [ "ccameron" ],
-    "expiry_milestone": 77
-  },
-  {
     "name": "disable-idle-sockets-close-on-memory-pressure",
     "owners": [ "pmarko" ],
     "expiry_milestone": 100
@@ -1436,11 +1436,6 @@
     "name": "enable-async-dns",
     "owners": [ "ericorth", "net-dev" ],
     "expiry_milestone": 81
-  },
-  {
-    "name": "enable-aura-window-subtree-capture",
-    "owners": [ "jophba" ],
-    "expiry_milestone": 102
   },
   {
     "name": "enable-autofill-account-wallet-storage",
@@ -3951,6 +3946,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "ntp-view-hierarchy-repair",
+    "owners": [ "adamta", "sczs" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "offline-indicator-v2",
     "owners": [ "sinansahin@google.com", "twellington", "offline-dev" ],
     "expiry_milestone": 90
@@ -3992,11 +3992,6 @@
   {
     "name": "omnibox-bubble-url-suggestions",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
-    "name": "omnibox-clipboard-suggestions-content-hidden",
-    "owners": [ "gangwu", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
   },
   {

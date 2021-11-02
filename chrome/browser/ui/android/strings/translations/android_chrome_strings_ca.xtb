@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
 <translation id="1146678959555564648">Activa el mode RV</translation>
 <translation id="114825011539563458">Els controls de privadesa i seguretat més importants en un sol lloc</translation>
+<translation id="1149401351239820326">Mes de caducitat</translation>
 <translation id="1154704303112745282">Pàgina no disponible sense connexió: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Dades utilitzades</translation>
 <translation id="1171770572613082465">Toca el botó Llocs populars per veure les tendències en llocs web</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Dreceres per a funcions de Google Chrome</translation>
 <translation id="1344653310988386453">Inclou un enllaç al contingut marcat</translation>
 <translation id="1347468774581902829">Gestiona l'activitat</translation>
-<translation id="1353372385686746892">Per ajudar a millorar l'aplicació, Chrome envia dades de diagnòstic a Google. <ph name="BEGIN_LINK" />Canvia<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
 <translation id="1373696734384179344">No hi ha prou memòria per baixar el contingut seleccionat.</translation>
 <translation id="1376578503827013741">S'està calculant…</translation>
@@ -405,6 +405,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3398320232533725830">Obre el gestor d'adreces d'interès</translation>
 <translation id="3414952576877147120">Mida:</translation>
 <translation id="3429160811076349561">Les funcions de prova estan desactivades</translation>
+<translation id="3435465986463792564">Massa finestres obertes? Pots gestionar-les aquí.</translation>
 <translation id="3440975416244667276">Mantén premut per obtenir més informació</translation>
 <translation id="3443221991560634068">Torna a carregar la pàgina actual</translation>
 <translation id="3444179773590444986">Vols compartir suggeriments sobre el tema fosc per als llocs web?</translation>
@@ -816,7 +817,6 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5956665950594638604">Obre Centre d'ajuda de Chrome en una pestanya nova</translation>
 <translation id="5957442310066583693">Per consultar els llocs web que més visites, toca el botó d'inici</translation>
 <translation id="5958275228015807058">Trobaràs els teus fitxers i les teves pàgines a Baixades</translation>
-<translation id="5962272973076519240">Verifica la teva identitat per desbloquejar el mode d'incògnit</translation>
 <translation id="5962718611393537961">Toca per replegar</translation>
 <translation id="5964805880140440652">Per compartir aquesta pàgina amb un altre dispositiu, activa la sincronització a la configuració de Chrome</translation>
 <translation id="5964869237734432770">Atura descripcions d'imatges</translation>
@@ -1187,6 +1187,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="804335162455518893">La targeta SD no s'ha trobat</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestanya d'incògnit}other{<ph name="TAB_COUNT_NORMAL" /> pestanyes d'incògnit}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibles</translation>
+<translation id="8058655154417507695">Any de caducitat</translation>
 <translation id="8058746566562539958">Obre en pestanya nova a Chrome</translation>
 <translation id="8063895661287329888">L'adreça d'interès no s'ha pogut afegir.</translation>
 <translation id="806745655614357130">Mantén les meves dades separades</translation>

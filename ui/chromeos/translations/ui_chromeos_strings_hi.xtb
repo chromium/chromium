@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">दिखाई न देने वाले नेटवर्क से अपने आप जुड़ने से दूसरे लोग आपके डिवाइस और कुछ नेटवर्क सेटिंग को देख सकते हैं. ऐसा करने का सुझाव नहीं दिया जाता.</translation>
 <translation id="2125607626296734455">खमेर</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, कनेक्ट करें</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
 <translation id="2142680004883808240">फ़ोनेटिक YaZHert कीबोर्ड के साथ रशियन</translation>
 <translation id="2143778271340628265">मैन्‍युअल प्रॉक्सी कॉन्फ़िगरेशन</translation>
 <translation id="2163152940313951844">अमान्य वर्ण : <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">मेढक</translation>
 <translation id="2578394532502990878">तमिल फ़ोनेटिक</translation>
 <translation id="2579959351793446050">ओडिया</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल का स्तर <ph name="SIGNAL_STRENGTH" />%, आपके एडमिन ने ब्लॉक किया है, ब्यौरा</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> वीडियो</translation>
 <translation id="2617342710774726426">सिम कार्ड लॉक है</translation>
 <translation id="2620090360073999360">इस समय Google डिस्क तक नहीं पहुंचा जा सकता.</translation>

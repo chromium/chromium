@@ -18,6 +18,7 @@ compile_js_files = [
   "error.js",
   "expert.js",
   "face.js",
+  "flag.js",
   "focus_ring.js",
   "gallerybutton.js",
   "geometry.js",

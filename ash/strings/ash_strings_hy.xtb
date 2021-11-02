@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Ձանձրանում եմ</translation>
 <translation id="1104084341931202936">Ցուցադրել հատուկ գործառույթների կարգավորումները</translation>
 <translation id="1104621072296271835">Միասին ձեր սարքերն ավելի լավ կաշխատեն</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252">Կառավարիչը (<ph name="MANAGER" />) խորհուրդ է տալիս, որ թարմացնեք այս <ph name="DEVICE_TYPE" /> սարքը։</translation>
 <translation id="1119348796022671382">Թեմատիկ գույների ռեժիմում միջերեսը թեթև գունավորվում է ձեր պաստառի գույներով։</translation>
 <translation id="112308213915226829">Ինքնաթաքցնել դարակը</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Ձայնագրում</translation>
 <translation id="3680908746918359504">Ջնջել բոլոր նշիչները</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
+<translation id="3701206655856637070">Այժմ դուք կարող եք ընտրել պանակ, որում կպահվեն էկրանի տեսագրումները։</translation>
 <translation id="3702809606464356667">Ցուցադրվում են պատուհաններ ընթացիկ աշխատասեղանից։ Սեղմեք վեր սլաքի ստեղնը՝ բոլոր աշխատասեղանների պատուհանները ցուցադրելու համար։</translation>
 <translation id="3702846122927433391">Նիգերիայի բնակչությունը</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Անջատված է</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="3977512764614765090">Մարտկոցը լիցքավորվում է (լիցքը՝ <ph name="PERCENTAGE" />%)։</translation>
+<translation id="3986082989454912832">Պատասխանել</translation>
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
 <translation id="40062176907008878">Ձեռագիր</translation>
 <translation id="4017989525502048489">Լազերային ցուցիչ</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">«Ctrl + Alt + վար սլաք» ստեղնային դյուրանցումը փոփոխվել է։ End ստեղնի գործողություններն օգտագործելու համար սեղմեք «<ph name="LAUNCHER_KEY_NAME" /> + աջ սլաք» ստեղնային դյուրանցումը։</translation>
 <translation id="4279490309300973883">Հայելապատճենում</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
-<translation id="4292904812939562398">Վերջերս օգտագործված հավելվածներ</translation>
 <translation id="429402653707266969">Փոխել գործիքագոտու տեղադրությունը</translation>
 <translation id="4294319844246081198">Բարի լույս, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Մաքրել բոլոր <ph name="COUNT" /> ծանուցումները</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Անջատել ծանուցումները</translation>
 <translation id="4946376291507881335">Լուսանկարել</translation>
 <translation id="495046168593986294">Ոլորել վեր</translation>
 <translation id="4952936045814352993">«Հեռախոսի տեղորոշում» գործառույթն անհասանելի է, երբ ծանուցումների ազդանշաններն անջատված են</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">Ե</translation>
 <translation id="7600875258240007829">Տեսնել բոլոր ծանուցումները</translation>
 <translation id="7607002721634913082">Դադարեցված է</translation>
+<translation id="7610198039767537854">Դիտեք վերջերս արված լուսանկարները ձեր հեռախոսի ֆոտոժապավենից <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="7618774594543487847">Չեզոք</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Ֆլոմաստեր</translation>

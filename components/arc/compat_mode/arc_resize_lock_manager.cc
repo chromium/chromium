@@ -243,6 +243,12 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
                     } else {
                       manager->DisableResizeLock(window);
                     }
+                    // EnableResizeLock() and DisableResizeLock() are supposed
+                    // to be called only when resizability is toggled while
+                    // resize lock state may need to be updated even when
+                    // resizability doesn't change (e.g.NONE ->
+                    // RESIZE_ENABLED_TOGGLABLE)
+                    manager->UpdateResizeLockState(window);
                   },
                   weak_ptr_factory_.GetWeakPtr()));
 }
@@ -272,24 +278,7 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   // lock for an app for the first time.
   if (pref_delegate_->GetResizeLockState(*app_id) ==
       mojom::ArcResizeLockState::READY) {
-    const ash::ArcResizeLockType resize_lock_value =
-        window->GetProperty(ash::kArcResizeLockTypeKey);
-    switch (resize_lock_value) {
-      case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
-        pref_delegate_->SetResizeLockState(*app_id,
-                                           mojom::ArcResizeLockState::ON);
-        break;
-      case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
-        pref_delegate_->SetResizeLockState(
-            *app_id, mojom::ArcResizeLockState::FULLY_LOCKED);
-        break;
-      case ash::ArcResizeLockType::NONE:
-      case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
-        NOTREACHED();
-    }
-    // As we updated the resize lock state above, we need to update compat mode
-    // button.
-    compat_mode_button_controller_->Update(pref_delegate_, window);
+    UpdateResizeLockState(window);
 
     if (ShouldShowSplashScreenDialog(pref_delegate_)) {
       const bool is_for_unresizable =
@@ -311,17 +300,40 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
   const bool erased = resize_lock_enabled_windows_.erase(window);
   if (!erased)
     return;
-  const auto app_id = GetAppId(window);
-  DCHECK(app_id);
-  if (window->GetProperty(ash::kArcResizeLockTypeKey) ==
-      ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
-    pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
-  }
   window->SetProperty(ash::kResizeShadowTypeKey,
                       ash::ResizeShadowType::kUnlock);
   // Hide shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
+}
+
+void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {
+  const auto app_id = GetAppId(window);
+  DCHECK(app_id);
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  switch (resize_lock_type) {
+    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
+      pref_delegate_->SetResizeLockState(*app_id,
+                                         mojom::ArcResizeLockState::ON);
+      break;
+    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
+      pref_delegate_->SetResizeLockState(
+          *app_id, mojom::ArcResizeLockState::FULLY_LOCKED);
+      break;
+    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
+      pref_delegate_->SetResizeLockState(*app_id,
+                                         mojom::ArcResizeLockState::OFF);
+      break;
+    case ash::ArcResizeLockType::NONE:
+      // Maximizing an app with RESIZE_ENABLED_TOGGLABLE can lead to this case.
+      // Resize lock state shouldn't be updated as the pre-maximized state
+      // needs to be restored later.
+      break;
+  }
+
+  // As we updated the resize lock state above, we need to update compat mode
+  // button.
+  compat_mode_button_controller_->Update(pref_delegate_, window);
 }
 
 }  // namespace arc

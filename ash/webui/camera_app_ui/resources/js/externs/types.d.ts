@@ -110,7 +110,7 @@ interface StorageManager {
 
 interface Window {
   loadTimeData: {
-    getString(id: string): string;
+    getBoolean(id: string): boolean; getString(id: string): string;
     getStringF(id: string, ...args: (number|string)[]): string;
   }
 }

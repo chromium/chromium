@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">ነባሩን ውሂብ ይሰርዙ።</translation>
 <translation id="1146678959555564648">ምናባዊ ዕውነታ አስገባ</translation>
 <translation id="114825011539563458">በጣም አስፈላጊ የሆኑት የግላዊነት እና የደህንነት ቁጥጥሮች በአንድ ቦታ</translation>
+<translation id="1149401351239820326">ጊዜው የሚያልፍበት ወር</translation>
 <translation id="1154704303112745282">ገጽ ከመስመር ውጭ አይገኝም፦ <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">ጥቅም ላይ የዋለው</translation>
 <translation id="1171770572613082465">የ«ከፍተኛ ጣቢያዎች» አዝራሩን መታ በማድረግ ታዋቂ ድር ጣቢያዎችን ይመልከቱ</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">የGoogle Chrome ባህሪ አቋራጮች</translation>
 <translation id="1344653310988386453">ወደ ድምቀቱ የሚወስድ አገናኝን አካታትት</translation>
 <translation id="1347468774581902829">እንቅስቃሴን አቀናብር</translation>
-<translation id="1353372385686746892">መተግበሪያውን ለማሻሻል ለማገዝ፣ Chrome የምርመራ ውሂብን ወደ Google ይልካል። <ph name="BEGIN_LINK" />ቀይር<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">ዘግተው ወጥተው ስምረት ይጥፋ?</translation>
 <translation id="1373696734384179344">የተመረጠውን ይዘት ለማውረድ በቂ ያልሆነ ማህደረ ትውስታ።</translation>
 <translation id="1376578503827013741">በማስላት ላይ…</translation>
@@ -405,6 +405,7 @@
 <translation id="3398320232533725830">የዕልባቶች አስተዳዳሪን ክፈት</translation>
 <translation id="3414952576877147120">መጠን፦</translation>
 <translation id="3429160811076349561">የሙከራ ባህሪዎች ጠፍተዋል</translation>
+<translation id="3435465986463792564">ብዙ መስኮቶች አሉዎት? ከዚህ ሆነው እነሱን ማስተዳደር ይችላሉ።</translation>
 <translation id="3440975416244667276">ተጨማሪ ተዛማጅ መረጃ ለማግኘት ይንኩ እና ይያዙ</translation>
 <translation id="3443221991560634068">የአሁኑን ገጽ ዳግም ጫን</translation>
 <translation id="3444179773590444986">ለጣቢያዎች ጠቆር ያለ ገጽታ ላይ ግብረመልስ ይጋራ?</translation>
@@ -516,7 +517,7 @@
 <translation id="4170011742729630528">አገልግሎቱ አይገኝም፤ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ጥቅም ላይ ውሏል</translation>
 <translation id="4181841719683918333">ቋንቋዎች</translation>
-<translation id="4183868528246477015">በGoogle Lens ይፈልጉ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">በGoogle ሌንስ ይፈልጉ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4196597275619698563">ካርድ ፍጠር</translation>
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">የChrome እገዛ ማዕከልን በአዲስ ትር ውስጥ ክፈት</translation>
 <translation id="5957442310066583693">ከፍተኛዎቹን የእርስዎ ጣቢያዎች ለማየት የመነሻ አዝራሩን መታ ያድርጉት</translation>
 <translation id="5958275228015807058">የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
-<translation id="5962272973076519240">ማንነት የማያሳውቅን ለመክፈት እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="5962718611393537961">ለመሰብሰብ መታ ያድርጉ</translation>
 <translation id="5964805880140440652">ይህን ገጽ ለሌላ መሣሪያ ለማጋራት በChrome ቅንብሮች ውስጥ ስምረትን ያብሩ</translation>
 <translation id="5964869237734432770">የምስል መግለጫዎችን አቁም</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">ኤስዲ ካርድ አልተገኘም</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ማንነት የማያሳውቅ ትር}one{<ph name="TAB_COUNT_NORMAL" /> ማንነት የማያሳውቁ ትሮች}other{<ph name="TAB_COUNT_NORMAL" /> ማንነት የማያሳውቁ ትሮች}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> ሜባ አለ</translation>
+<translation id="8058655154417507695">ጊዜው የሚያበቃበት ዓመት</translation>
 <translation id="8058746566562539958">በአዲስ የChrome ትር ውስጥ ክፈት</translation>
 <translation id="8063895661287329888">ዕልባት ማከል አልተሳካም።</translation>
 <translation id="806745655614357130">የእኔን ውሂብ ለብቻው አቆይ</translation>

@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Työ</translation>
 <translation id="1122198203221319518">&amp;Työkalut</translation>
 <translation id="1122242684574577509">Todennus epäonnistui. Siirry käyttämäsi Wi-Fi-verkon (<ph name="NETWORK_ID" />) kirjautumissivulle klikkaamalla.</translation>
+<translation id="1122913801042512795">Tilin kirjautumistiedot ovat vanhentuneet. Kirjaudu ulos ja sitten takaisin sisään.</translation>
 <translation id="1122960773616686544">Kirjanmerkin nimi</translation>
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1125550662859510761">Näyttää olevan <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivi)</translation>
@@ -2087,6 +2088,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="310671807099593501">Sivusto käyttää Bluetoothia</translation>
 <translation id="3108931485517391283">Ei voi vastaanottaa</translation>
 <translation id="3109724472072898302">Tiivistetty</translation>
+<translation id="311214366526552035">Lataa silti</translation>
 <translation id="311394601889664316">Älä salli sivustojen muokata laitteen tiedostoja tai kansioita</translation>
 <translation id="3115147772012638511">Odotetaan välimuistia...</translation>
 <translation id="3115580024857770654">Tiivistä kaikki</translation>
@@ -2367,6 +2369,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3429160811076349561">Kokeiluominaisuudet ovat poissa käytöstä</translation>
 <translation id="3429271624041785769">Verkkosisällön kielet</translation>
 <translation id="3429275422858276529">Lisää tämä sivu kirjanmerkkeihin, niin löydät sen myöhemmin helposti.</translation>
+<translation id="343115368966109153">Ladataanko <ph name="FILE_NAME" />? Kaikki laitteen käyttäjät voivat nähdä sen.</translation>
 <translation id="3432227430032737297">Poista kaikki näytetyt</translation>
 <translation id="3432762828853624962">SharedWorkerit</translation>
 <translation id="3433621910545056227">Hups! Järjestelmä ei voi lukita laitteen asennuksen aikaisia attribuutteja.</translation>
@@ -2708,6 +2711,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3777806571986431400">Laajennus otettu käyttöön</translation>
 <translation id="3778152852029592020">Lataus peruutettiin.</translation>
 <translation id="3778208826288864398">Suojausavain on lukittu, koska väärä PIN-koodi syötettiin liian monta kertaa. Suojausavain on nollattava.</translation>
+<translation id="3778369586810509692">Tiedosto tallennetaan laitteelle, ja kaikki voivat nähdä sen.</translation>
 <translation id="3778740492972734840">&amp;Kehittäjän työkalut</translation>
 <translation id="3778868487658107119">Voit kysyä siltä tietoa ja pyytää asioita – se on henkilökohtainen Googlesi ja aina valmiina auttamaan.</translation>
 <translation id="3781742599892759500">Linuxin mikrofonin käyttöoikeus</translation>
@@ -7504,6 +7508,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8879284080359814990">&amp;Näytä välilehtenä</translation>
 <translation id="8879921471468674457">Muista kirjautumistiedot</translation>
 <translation id="8880054210564666174">Kontakteja ei voi ladata. Tarkista verkkoyhteys tai <ph name="LINK_BEGIN" />yritä uudelleen<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Avaa Asetukset, jotta <ph name="USB_DEVICE_NAME" /> voidaan yhdistää Linuxiin tai Parallels Desktopiin</translation>
 <translation id="8881020143150461183">Yritä uudelleen. Teknistä tukea tarjoaa <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Ota käyttöön kosketuslevyn nopeuttaminen</translation>
 <translation id="8884570509232205463">Laitteesi lukittuu nyt klo <ph name="UNLOCK_TIME" />.</translation>

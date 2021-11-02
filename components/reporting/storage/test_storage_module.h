@@ -36,7 +36,7 @@ class TestStorageModuleStrict : public StorageModuleInterface {
 
   MOCK_METHOD(void,
               ReportSuccess,
-              (SequencingInformation sequencing_information, bool force),
+              (SequenceInformation sequence_information, bool force),
               (override));
 
   MOCK_METHOD(void,

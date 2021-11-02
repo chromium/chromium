@@ -211,6 +211,25 @@ std::string GetDebugJSONForClusters(
       debug_visit.SetIntKey("visit_id",
                             visit.annotated_visit.visit_row.visit_id);
       debug_visit.SetDoubleKey("score", visit.score);
+      base::ListValue debug_categories;
+      for (const auto& category : visit.annotated_visit.content_annotations
+                                      .model_annotations.categories) {
+        base::DictionaryValue debug_category;
+        debug_category.SetStringKey("name", category.id);
+        debug_category.SetIntKey("value", category.weight);
+        debug_categories.Append(std::move(debug_category));
+      }
+      debug_visit.SetKey("categories", std::move(debug_categories));
+      base::ListValue debug_entities;
+      for (const auto& entity : visit.annotated_visit.content_annotations
+                                    .model_annotations.entities) {
+        base::DictionaryValue debug_entity;
+        debug_entity.SetStringKey("name", entity.id);
+        debug_entity.SetIntKey("value", entity.weight);
+        debug_entities.Append(std::move(debug_entity));
+      }
+      debug_visit.SetKey("entities", std::move(debug_entities));
+
       debug_visits.Append(std::move(debug_visit));
     }
     debug_cluster.SetKey("visits", std::move(debug_visits));
@@ -232,13 +251,33 @@ constexpr int kMaxCountForKeywordCacheBatch = 10;
 
 }  // namespace
 
+VisitDeletionObserver::VisitDeletionObserver(
+    HistoryClustersService* history_clusters_service)
+    : history_clusters_service_(history_clusters_service) {}
+
+VisitDeletionObserver::~VisitDeletionObserver() = default;
+
+void VisitDeletionObserver::AttachToHistoryService(
+    history::HistoryService* history_service) {
+  DCHECK(history_service);
+  history_service_observation_.Observe(history_service);
+}
+
+void VisitDeletionObserver::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  history_clusters_service_->ClearKeywordCache();
+}
+
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
     optimization_guide::EntityMetadataProvider* entity_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : history_service_(history_service) {
+    : history_service_(history_service), visit_deletion_observer_(this) {
   DCHECK(history_service_);
+
+  visit_deletion_observer_.AttachToHistoryService(history_service);
 
 #if BUILDFLAG(BUILD_WITH_ON_DEVICE_CLUSTERING_BACKEND)
   if (kUseOnDeviceClusteringBackend.Get()) {
@@ -469,6 +508,12 @@ std::vector<Cluster> HistoryClustersService::CollapseDuplicateVisits(
 
   DCHECK_EQ(result_clusters.size(), raw_clusters.size());
   return result_clusters;
+}
+
+void HistoryClustersService::ClearKeywordCache() {
+  all_keywords_cache_timestamp_ = base::Time();
+  all_keywords_cache_.clear();
+  cache_query_task_tracker_.TryCancelAll();
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(

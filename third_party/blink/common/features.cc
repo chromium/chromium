@@ -59,8 +59,16 @@ const base::Feature kPaintHolding{"PaintHolding",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable defer commits to avoid flash of unstyled content, for all navigation.
-const base::Feature kPaintHoldingCrossOrigin{"PaintHoldingCrossOrigin",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+// Disabled on Mobile to allow for a delayed Finch roll-out. Enabled on
+// Desktop platforms.
+const base::Feature kPaintHoldingCrossOrigin {
+  "PaintHoldingCrossOrigin",
+#if defined(OS_ANDROID)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enable eagerly setting up a CacheStorage interface pointer and
 // passing it to service workers on startup as an optimization.
@@ -167,7 +175,7 @@ const base::Feature kNavigatorPluginsFixed{"NavigatorPluginsFixed",
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 const base::Feature kPlzDedicatedWorker{"PlzDedicatedWorker",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable Portals. https://crbug.com/865123.
 // Note that default enabling this does not expose the portal
@@ -1104,7 +1112,7 @@ bool IsSetTimeoutWithoutClampEnabled() {
 const base::Feature kDeprecationWillLogToConsole{
     "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDeprecationWillLogToDevToolsIssue{
-    "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DeprecationWillLogToDevToolsIssue", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables reporting and web-exposure (respectively) of the time the first frame
 // of an animated image was painted.

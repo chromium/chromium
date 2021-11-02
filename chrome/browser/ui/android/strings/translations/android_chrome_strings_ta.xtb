@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">ஏற்கனவே உள்ள தரவை நீக்கு.</translation>
 <translation id="1146678959555564648">VRஐ உள்ளிடு</translation>
 <translation id="114825011539563458">மிக முக்கியமான தனியுரிமை &amp; பாதுகாப்புக் கட்டுப்பாடுகள் - ஒரே இடத்தில்</translation>
+<translation id="1149401351239820326">காலாவதியாகும் மாதம்</translation>
 <translation id="1154704303112745282">பக்கம் ஆஃப்லைனில் கிடைக்கவில்லை: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">பயன்படுத்தியது</translation>
 <translation id="1171770572613082465">"பிரபலமானவை" பட்டனைத் தட்டி பிரபல இணையதளங்களைப் பாருங்கள்</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome அம்சத்திற்கான ஷார்ட்கட்கள்</translation>
 <translation id="1344653310988386453">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பைச் சேருங்கள்</translation>
 <translation id="1347468774581902829">செயல்பாட்டை நிர்வகிக்கும்</translation>
-<translation id="1353372385686746892">ஆப்ஸை மேம்படுத்த உதவ, பிழைக் கண்டறிதல் தரவை Googleளுக்கு Chrome அனுப்பும். <ph name="BEGIN_LINK" />மாற்று<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">வெளியேறி, ஒத்திசைவை முடக்கவா?</translation>
 <translation id="1373696734384179344">தேர்ந்தெடுத்ததைப் பதிவிறக்க, போதுமான நினைவகம் இல்லை.</translation>
 <translation id="1376578503827013741">கணக்கிடுகிறது…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">Chrome உதவி மையத்தைப் புதிய தாவலில் திறக்கும்</translation>
 <translation id="5957442310066583693">நீங்கள் அடிக்கடி பயன்படுத்தும் தளங்களைப் பார்க்க, முகப்புப் பட்டனைத் தட்டவும்</translation>
 <translation id="5958275228015807058">பதிவிறக்கங்கள் என்பதில் கோப்புகளையும் பக்கங்களையும் கண்டறியலாம்</translation>
-<translation id="5962272973076519240">மறைநிலைப் பயன்முறையை அன்லாக் செய்ய, இது நீங்கள்தான் என்பதை உறுதிசெய்யவும்</translation>
 <translation id="5962718611393537961">சுருக்க, தட்டவும்</translation>
 <translation id="5964805880140440652">வேறொரு சாதனத்திற்கு இந்தப் பக்கத்தைப் பகிர, Chrome அமைப்புகளில் உள்ள 'ஒத்திசை' என்பதை இயக்கவும்</translation>
 <translation id="5964869237734432770">விளக்கத்தை பெறுவதை நிறுத்து</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">SD கார்டு இல்லை</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> மறைநிலைப் பக்கம்}other{<ph name="TAB_COUNT_NORMAL" /> மறைநிலைப் பக்கங்கள்}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> மெ.பை கிடைக்கிறது</translation>
+<translation id="8058655154417507695">காலாவதியாகும் ஆண்டு</translation>
 <translation id="8058746566562539958">புதிய Chrome தாவலில் திற</translation>
 <translation id="8063895661287329888">புக்மார்க்கைச் சேர்க்க முடியவில்லை.</translation>
 <translation id="806745655614357130">எனது தரவைத் தனியாக வை</translation>

@@ -23,10 +23,10 @@
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/reading_list/features/reading_list_switches.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
-#include "components/reading_list/features/reading_list_switches.h"
 #endif
 
 namespace feed {
@@ -156,11 +156,11 @@ feedwire::Request CreateFeedQueryRequest(
         feedwire::Capability::AMP_GROUP_DATASTORE);
   }
 
-#if defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
     feed_request.add_client_capability(feedwire::Capability::READ_LATER);
+  } else {
+    feed_request.add_client_capability(feedwire::Capability::DOWNLOAD_LINK);
   }
-#endif
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();

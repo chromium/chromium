@@ -24,6 +24,7 @@
 <translation id="109942774857561566">나 심심해</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
+<translation id="1111781754511998498">프로젝터</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" />에서 이 <ph name="DEVICE_TYPE" />의 업데이트를 권장합니다.</translation>
 <translation id="1119348796022671382">테마 색상 모드는 배경화면에서 추출한 색상을 사용하여 인터페이스에 부드럽게 반영합니다.</translation>
 <translation id="112308213915226829">실행기 자동 숨김</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">마이크 녹음</translation>
 <translation id="3680908746918359504">모든 마커 지우기</translation>
 <translation id="36813544980941320">Wi-Fi 네트워크가 휴대전화와 <ph name="DEVICE_NAME" /> 간에 공유됩니다.</translation>
+<translation id="3701206655856637070">이제 화면 캡처 저장 위치를 바꿀 수 있습니다.</translation>
 <translation id="3702809606464356667">현재 데스크의 창을 표시합니다. 모든 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
 <translation id="3702846122927433391">나이지리아의 인구</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">사용 안함</translation>
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
+<translation id="3986082989454912832">답변</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
 <translation id="40062176907008878">필기 입력</translation>
 <translation id="4017989525502048489">레이저 포인터</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4285498937028063278">고정 해제</translation>
-<translation id="4292904812939562398">최근 사용한 앱</translation>
 <translation id="429402653707266969">툴바 위치 전환</translation>
 <translation id="4294319844246081198">좋은 아침이에요, <ph name="GIVEN_NAME" />님</translation>
 <translation id="4296136865091727875">알림 <ph name="COUNT" />개 모두 지우기</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
 <translation id="4952936045814352993">알람 소리가 사용 중지되어 있는 상태에서는 휴대전화 찾기를 사용할 수 없습니다.</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">월</translation>
 <translation id="7600875258240007829">모든 알림 보기</translation>
 <translation id="7607002721634913082">일시중지됨</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" />에서 휴대전화 카메라 롤의 최근 사진을 봅니다.</translation>
 <translation id="7618774594543487847">중성 색상</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7631906263969450674">마커 펜</translation>

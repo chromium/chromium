@@ -625,7 +625,6 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
 <translation id="174765717426930019">Toestaan dat alle pop-ups die zijn geopend met het doel <ph name="BLANK_PAGE_NAME" />, interactie hebben met de pagina die het openen van de pop-up heeft aangevraagd, tenzij de openende pagina expliciet geen toestemming geeft voor dergelijke interactie </translation>
-<translation id="1750315445671978749">Alle downloads blokkeren</translation>
 <translation id="1751429117283165017">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers niet mogen vragen om hun schrijftoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem.
 
       Als je het beleid niet instelt, is <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van gebruikers.
@@ -1002,7 +1001,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2204379573346866896">Verstreken minuten in het huidige uur.</translation>
 <translation id="2204753382813641270">Automatisch verbergen van archief beheren</translation>
 <translation id="2208976000652006649">Parameters voor zoek-URL die POST gebruikt</translation>
-<translation id="2212603374276864511">Gebruikers mogen vooraf gedefinieerde desktemplates gebruiken</translation>
 <translation id="2213059592185933570">Maken van roamingprofielen aanzetten</translation>
 <translation id="2215238871726750562">Als je het beleid instelt op 'True', wordt het browservenster niet geopend nadat de sessie is gestart.
 
@@ -1068,6 +1066,7 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2266422599396179941">Toestaan dat gebruikers feedback indienen</translation>
 <translation id="2269319728625047531">Synchronisatietoestemming tonen tijdens het inloggen</translation>
 <translation id="2270747976331889601">TLS 1.3-beveiligingsfunctie voor lokale vertrouwensinstanties aanzetten.</translation>
+<translation id="22754818344448444">Toestaan dat gebruikers een indeling voor bureautemplates selecteren om te laden</translation>
 <translation id="2281496157391382819"> Bepaalt de privacywaarschuwing van de beheerde gastsessie op <ph name="PRODUCT_OS_NAME" />.
 
       Als dit beleid is ingesteld op False, worden de privacywaarschuwingen op het inlogscherm en de melding voor automatisch starten in de beheerde gastsessie gedeactiveerd.
@@ -1834,6 +1833,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="3092059499596000593">De standaardprinter van het systeem gebruiken als standaardprinter in het afdrukvoorbeeld</translation>
 <translation id="309416443108680956">Hiermee wordt aangegeven wat er gebeurt als een gebruiker die verificatie via een beveiligingstoken uitvoert (bijv. met een smartcard), dat token verwijdert tijdens een sessie. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Er gebeurt niets. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Het scherm wordt vergrendeld tot de gebruiker de verificatie opnieuw uitvoert. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: De sessie wordt beëindigd en de gebruiker wordt uitgelogd. Als je dit beleid niet instelt, geldt de standaardwaarde <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lijst met aangezette plug-ins</translation>
+<translation id="3101035417394748390">De maximumgrootte, in bytes, die kan worden overgezet tussen de client en host via klembordsynchronisatie</translation>
 <translation id="3101501961102569744">Kies hoe je proxyserverinstellingen wilt specificeren</translation>
 <translation id="3101709781009526431">Datum en tijd</translation>
 <translation id="3110248563985502478">Dit beleid is beëindigd in M88. Flash wordt niet meer ondersteund door Chrome. Als je het beleid toepast, worden verouderde plug-ins gebruikt als normale plug-ins. Als je het beleid niet toepast, worden verouderde plug-ins niet gebruikt.
@@ -2196,7 +2196,6 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="3540935459049973317">Tijdslimieten per app</translation>
-<translation id="354592434146464541">Gebruikers mogen geen vooraf gedefinieerde desktemplates gebruiken</translation>
 <translation id="3547954654003013442">Proxyinstellingen</translation>
 <translation id="3550122827225052130">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2604,6 +2603,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
       Als je het beleid hebt toegepast, heeft 'Snelle antwoorden' toegang tot geselecteerde content.
       Als je het beleid niet hebt toegepast, heeft 'Snelle antwoorden' geen toegang tot geselecteerde content.
       Als je het beleid niet instelt, kunnen gebruikers bepalen of 'Snelle antwoorden' toegang tot geselecteerde content heeft.</translation>
+<translation id="4016700865356669962">Als je het beleid toepast, kunnen gebruikers templates voor bureaubladindelingen gebruiken.  Als je het beleid niet toepast of niet instelt, zijn deze templates niet beschikbaar.</translation>
 <translation id="4020682745012723568">Cookies die worden overgedragen naar het profiel van de gebruiker, zijn niet toegankelijk voor Android-apps.</translation>
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
@@ -3506,7 +3506,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als dit beleid niet is ingesteld, worden er geen beperkingen toegepast en kan de gebruiker inloggen ongeacht de versie van <ph name="PRODUCT_NAME" />.
 
       'Versie' kan in dit geval een exacte versie zijn (zoals '61.0.3163.120') of een versievoorvoegsel (zoals '61.0').  </translation>
-<translation id="5247006254130721952">Gevaarlijke downloads blokkeren</translation>
 <translation id="5247973380763021389">Voorkomen dat cloudbeleidsregels voor gebruikers cloudbeleidsregels voor machines overschrijven.</translation>
 <translation id="5249453807420671499">Gebruikers kunnen Kerberos-accounts toevoegen</translation>
 <translation id="5252210248395576403">Dit beleid geeft Snelle antwoorden toegang tot geselecteerde content en toestemming om de informatie naar de server te sturen om vertaalresultaten te krijgen.
@@ -3771,7 +3770,6 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 <translation id="5521875416764302911">Voorkomen dat gebruikers inloggen op <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">Query's naar de Quirks Server en potentiële downloads van hardwarespecifieke configuratiebestanden toestaan</translation>
 <translation id="5526701598901867718">Alle (onbeveiligd)</translation>
-<translation id="5530347722229944744">Potentieel gevaarlijke downloads blokkeren</translation>
 <translation id="5534079385061985566">Functie voor volledig herstel aanzetten.</translation>
 <translation id="5535256585099022933">Het tijdsinterval voor herstarten instellen</translation>
 <translation id="5535973522252703021">Witte lijst voor Kerberos-delegatieserver</translation>
@@ -3994,7 +3992,6 @@ Als je dit beleid instelt, kun je bepalen of een gebruiker mag inloggen bij <ph 
 <translation id="5814301096961727113">De standaardstatus van gesproken feedback op het inlogscherm instellen</translation>
 <translation id="5815129011704381141">Automatisch opnieuw opstarten na update</translation>
 <translation id="5815990343032461023">Verouderd gedrag: Chrome-kiosk-apps worden geüpdatet door het extensiesysteem via de update-URL uit het extensiemanifest en door de cachingmanager via de update-URL uit het beleid</translation>
-<translation id="5816106589769772877">Als je het beleid aanzet, kunnen gebruikers vooraf ingestelde templates voor bureaubladindelingen gebruiken.  Als je het beleid uitzet of niet instelt, zijn deze templates niet beschikbaar.</translation>
 <translation id="582857022372205358">Dubbelzijdig afdrukken over korte zijde aanzetten</translation>
 <translation id="5830196507442186669">Toestaan dat apparaten <ph name="BOREALIS_NAME" /> gebruiken op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Beëindigde beleidsregels</translation>
@@ -4152,7 +4149,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="6019606564278029236">Externe gebruikers toestaan om vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="6022948604095165524">Actie bij starten</translation>
 <translation id="602318745029752898">Stemmen voor verbeterde tekst-naar-spraak via netwerk toestaan in Selecteer om uitgesproken te worden.</translation>
-<translation id="6025267044008029374">Schadelijke downloads blokkeren (aanbevolen)</translation>
 <translation id="6026722971789064331">Gebruik van de File System API voor schrijven beheren</translation>
 <translation id="602728333950205286">Instant-URL voor standaardzoekprovider</translation>
 <translation id="603410445099326293">Parameters voor suggestie-URL die POST gebruikt</translation>
@@ -4413,6 +4409,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="6371561334154580937">Dialoogvenster voor uitloggen tonen als het laatste venster wordt gesloten.</translation>
 <translation id="6372105930898423193">Hiermee sta je toe dat de AppCache-functie opnieuw wordt aangezet, ook als deze standaard is uitgezet.</translation>
 <translation id="6376659517206731212">Kan verplicht zijn</translation>
+<translation id="6377031865393559909">Toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6378076389057087301">Specificeer of audioactiviteit invloed heeft op stroombeheer</translation>
 <translation id="6378393933102834628">Als je het beleid instelt op 'True', wordt de app-snelkoppeling weergegeven. Als je het beleid instelt op 'False', wordt deze snelkoppeling nooit weergegeven.
 
@@ -4618,21 +4615,6 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
-<translation id="6640989746632867803">Als je het beleid instelt, kunnen gebruikers de keuzes voor downloadbeveiliging niet omzeilen.
-
-       Je kunt de volgende opties instellen voor het beleid:
-
-      * Gevaarlijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een beveiligingswaarschuwing is afgegeven.
-
-      * Potentieel gevaarlijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads waarvoor een beveiligingswaarschuwing is afgegeven of potentieel gevaarlijke downloads.
-
-      * Alle downloads blokkeren: Alle downloads worden geblokkeerd.
-
-      * Schadelijke downloads blokkeren: Alle downloads zijn toegestaan, met uitzondering van downloads die met grote zekerheid worden aangeduid als malware. Anders dan bij gevaarlijke downloads wordt hierbij geen rekening gehouden met het bestandstype, maar wordt wel rekening gehouden met de host.
-
-      * Geen speciale beperkingen: De gebruikelijke beveiligingsbeperkingen worden op de downloads toegepast op basis van de beveiligingsanalyse.
-
-      Opmerking: Deze beperkingen gelden zowel voor downloads die via de webpaginacontent als voor downloads die via de menuoptie 'Link downloaden...' geactiveerd zijn. De beperkingen gelden niet voor het downloaden van de huidige pagina die wordt weergegeven of voor de afdrukoptie 'Opslaan als pdf'. Bekijk meer informatie over Safe Browsing (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitzetten</translation>
 <translation id="6642682198621199507">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toestemming krijgen voor toegang tot alle beschikbare seriële poorten.
 
@@ -4923,6 +4905,7 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
       Als je het beleid uitzet, betekent dit dat ingeschreven apparaten geen audiostatus opnemen of rapporteren.</translation>
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
+<translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="6946652757373377924">Dit beleid is verwijderd in M77.
       Dit beleid is van toepassing op het inlogscherm. Zie ook het beleid <ph name="ISOLATE_ORIGINS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie.
@@ -5783,7 +5766,6 @@ Dit beleid kan alleen worden ingesteld via de <ph name="GOOGLE_ADMIN_CONSOLE_PRO
 
           Als deze instelling uitstaat en uitgaande UDP-verbindingen worden gefilterd door de firewall, kan dit apparaat alleen verbinding maken met hosts binnen het lokale netwerk.</translation>
 <translation id="7976157349247117979">Naam van de bestemming van <ph name="PRODUCT_NAME" /></translation>
-<translation id="7980227303582973781">Geen speciale beperkingen</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -6031,6 +6013,17 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
 
           Als dit beleid niet is ingesteld, staat de functie voor dicteren in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="8293414596801971604">Reguliere expressie die moet overeenkomen met de weergavenaam van de printer.</translation>
+<translation id="8293509904023267821">Als je dit beleid instelt, worden klembordgegevens die naar en vanaf de host worden gestuurd, ingekort tot de limiet die wordt ingesteld door dit beleid.
+
+          Als je de waarde 0 instelt, wordt klembordsynchronisatie uitgezet.
+
+          Dit beleid is van invloed op scenario's voor zowel externe toegang als externe support.
+
+          Dit beleid heeft geen effect als het niet is ingesteld.
+
+          Als je het beleid instelt op een waarde die niet binnen het minimale/maximale bereik ligt, kan de host misschien niet worden gestart.
+
+          Houd er rekening mee dat de werkelijke bovengrens voor de klembordgrootte is gebaseerd op de maximale berichtgrootte van het WebRTC-gegevenskanaal, waarop dit beleid geen invloed heeft.</translation>
 <translation id="8294750666104911727">Normaal worden pagina's waarvoor X-UA-Compatible is ingesteld op chrome=1, weergegeven in <ph name="PRODUCT_FRAME_NAME" /> ongeacht het beleid ChromeFrameRendererSettings.
 
           Als je deze instelling aanzet, worden pagina's niet gescand op metatags.

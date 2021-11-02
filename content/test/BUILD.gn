@@ -563,7 +563,6 @@ static_library("test_support") {
       "//ppapi/host",
       "//ppapi/proxy",
       "//ppapi/proxy:test_support",
-      "//ppapi/shared_impl",
       "//ppapi/shared_impl:test_support",
     ]
   }
@@ -2594,13 +2593,6 @@ test("content_unittests") {
       ]
       sources +=
           [ "../browser/media/capture/desktop_capture_device_unittest.cc" ]
-    }
-
-    # TODO(crbug.com/1210549): Slow capturer should be removed once new path is stable.
-    if (is_chromeos_ash) {
-      sources += [
-        "../browser/media/capture/slow_capture_overlay_chromeos_unittest.cc",
-      ]
     }
   }
 

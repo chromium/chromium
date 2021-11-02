@@ -57,6 +57,8 @@ SendTabToSelfEntry::SendTabToSelfEntry(
 
 SendTabToSelfEntry::~SendTabToSelfEntry() {}
 
+SendTabToSelfEntry::SendTabToSelfEntry(const SendTabToSelfEntry&) = default;
+
 const std::string& SendTabToSelfEntry::GetGUID() const {
   return guid_;
 }

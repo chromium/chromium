@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium - Login Jaringan - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Jika Anda berbagi komputer, teman dan keluarga bisa menjelajah secara terpisah dan menyiapkan Chromium sesuai keinginannya.</translation>
 <translation id="2294245788148774212">Opsional: Bantu sempurnakan fitur dan performa Chromium OS dengan mengirimkan data diagnostik dan penggunaan secara otomatis ke Google.</translation>
+<translation id="2313870531055795960">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chromium. Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirim URL, termasuk bit konten halaman, ke Safe Browsing.</translation>
 <translation id="2343156876103232566">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chromium di kedua perangkat.</translation>
 <translation id="2347108572062610441">Ekstensi ini telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chromium.</translation>
 <translation id="2396765026452590966">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chromium.</translation>
@@ -51,6 +52,7 @@
 <translation id="2799223571221894425">Luncurkan Ulang</translation>
 <translation id="2837693172913560447">Ini akan membuat profil Chromium baru untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Buang dari Chromium...</translation>
+<translation id="2850691299438350830">Memastikan Anda tetap aman di Chromium dan dapat digunakan untuk meningkatkan keamanan Anda di aplikasi Google lainnya saat login</translation>
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2910007522516064972">Tentang &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>

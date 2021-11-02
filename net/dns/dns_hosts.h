@@ -43,14 +43,12 @@ enum ParseHostsCommaMode {
 // Parsed results of a Hosts file.
 //
 // Although Hosts files map IP address to a list of domain names, for name
-// resolution the desired mapping direction is: domain name to IP address.
-// When parsing Hosts, we apply the "first hit" rule as Windows and glibc do.
-// With a Hosts file of:
-// 300.300.300.300 localhost # bad ip
-// 127.0.0.1 localhost
-// 10.0.0.1 localhost
-// The expected resolution of localhost is 127.0.0.1.
-using DnsHosts = std::unordered_map<DnsHostsKey, IPAddress, DnsHostsKeyHash>;
+// resolution the desired mapping direction is: (domain name, address family) to
+// IP address. A (domain name, address family) pair may match with multiple IP
+// addresses (stored as a `std::vector`) if the same name appears in multiple
+// (IP address) -> hostname mapping entries for the same family.
+using DnsHosts =
+    std::unordered_map<DnsHostsKey, std::vector<IPAddress>, DnsHostsKeyHash>;
 
 // Parses |contents| (as read from /etc/hosts or equivalent) and stores results
 // in |dns_hosts|. Invalid lines are ignored (as in most implementations).
@@ -62,15 +60,37 @@ void NET_EXPORT_PRIVATE ParseHostsWithCommaModeForTesting(
     ParseHostsCommaMode comma_mode);
 
 // Parses |contents| (as read from /etc/hosts or equivalent) and stores results
-// in |dns_hosts|. Invalid lines are ignored (as in most implementations).
+// in |dns_hosts|, with addresses in the order in which they were read. Invalid
+// lines are ignored (as in most implementations).
 void NET_EXPORT_PRIVATE ParseHosts(const std::string& contents,
                                    DnsHosts* dns_hosts);
 
-// As above but reads the file pointed to by |path|.
-bool NET_EXPORT_PRIVATE ParseHostsFile(const base::FilePath& path,
-                                       DnsHosts* dns_hosts);
+// Test-injectable HOSTS parser.
+class NET_EXPORT_PRIVATE DnsHostsParser {
+ public:
+  virtual ~DnsHostsParser();
 
+  // Parses HOSTS and stores results in `dns_hosts`, with addresses in the order
+  // in which they were read. Invalid lines are ignored (as in most
+  // implementations).
+  virtual bool ParseHosts(DnsHosts* hosts) const = 0;
+};
 
+// Implementation of `DnsHostsParser` that reads HOSTS from a given file.
+class NET_EXPORT_PRIVATE DnsHostsFileParser : public DnsHostsParser {
+ public:
+  explicit DnsHostsFileParser(base::FilePath hosts_file_path);
+  ~DnsHostsFileParser() override;
+
+  DnsHostsFileParser(const DnsHostsFileParser&) = delete;
+  DnsHostsFileParser& operator=(const DnsHostsFileParser&) = delete;
+
+  // DnsHostsParser:
+  bool ParseHosts(DnsHosts* dns_hosts) const override;
+
+ private:
+  const base::FilePath hosts_file_path_;
+};
 
 }  // namespace net
 

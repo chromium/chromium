@@ -2790,12 +2790,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kReaderModeDiscoverabilityVariations,
                                     "ReaderMode")},
 #endif  // !defined(OS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-aura-window-subtree-capture",
-     flag_descriptions::kAuraWindowSubtreeCaptureName,
-     flag_descriptions::kAuraWindowSubtreeCaptureDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAuraWindowSubtreeCapture)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(WEBRTC_USE_PIPEWIRE)
     {"enable-webrtc-pipewire-capturer",
      flag_descriptions::kWebrtcPipeWireCapturerName,
@@ -3441,12 +3435,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-vulkan", flag_descriptions::kEnableVulkanName,
      flag_descriptions::kEnableVulkanDescription,
      kOsWin | kOsLinux | kOsAndroid, FEATURE_VALUE_TYPE(features::kVulkan)},
-#if defined(OS_MAC)
-    {"disable-hosted-app-shim-creation",
-     flag_descriptions::kHostedAppShimCreationName,
-     flag_descriptions::kHostedAppShimCreationDescription, kOsMac,
-     SINGLE_DISABLE_VALUE_TYPE(switches::kDisableHostedAppShimCreation)},
-#endif  // OS_MAC
 #if defined(OS_ANDROID)
     {"translate-force-trigger-on-english",
      flag_descriptions::kTranslateForceTriggerOnEnglishName,
@@ -4401,6 +4389,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"hdrnet-override", flag_descriptions::kHdrNetOverrideName,
      flag_descriptions::kHdrNetOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kHdrNetOverrideChoices)},
+    {"camera-app-document-manual-crop",
+     flag_descriptions::kCameraAppDocumentManualCropName,
+     flag_descriptions::kCameraAppDocumentManualCropDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kCameraAppDocumentManualCrop)},
     {"crostini-gpu-support", flag_descriptions::kCrostiniGpuSupportName,
      flag_descriptions::kCrostiniGpuSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kCrostiniGpuSupport)},
@@ -4494,11 +4486,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxTabSwitchSuggestionsName,
      flag_descriptions::kOmniboxTabSwitchSuggestionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxTabSwitchSuggestions)},
-    {"omnibox-clipboard-suggestions-content-hidden",
-     flag_descriptions::kClipboardSuggestionContentHiddenName,
-     flag_descriptions::kClipboardSuggestionContentHiddenDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kClipboardSuggestionContentHidden)},
 #endif  // defined(OS_ANDROID)
 
     {"omnibox-clobber-triggers-contextual-web-zero-suggest",

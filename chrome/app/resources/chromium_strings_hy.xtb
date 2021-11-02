@@ -32,6 +32,7 @@
 <translation id="2185166961232948079">Chromium – Ցանցի մուտք – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Եթե ձեզնից բացի որևէ այլ մեկն օգտվում է այս համակարգչից, օրինակ ձեր ընկերները կամ հարազատները, ապա նրանք կարող են առանձին աշխատել և կարգավորել Chromium-ն իրենց ուզած ձևով:</translation>
 <translation id="2294245788148774212">Ըստ ցանկության. օգնեք ավելի լավը դարձնել Chromium OS-ի գործառույթներն ու աշխատանքը՝ Google-ին ավտոմատ ուղարկելով օգտագործման և դիագնոստիկ տվյալները։</translation>
+<translation id="2313870531055795960">Ստուգում է URL-ները Chromium-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chromium-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="2343156876103232566">Հեռախոսահամարն այստեղից ձեր Android հեռախոսին ուղարկելու համար երկու սարքերի Chromium դիտարկիչներում մտեք հաշիվ։</translation>
 <translation id="2347108572062610441">Այս ընդլայնումը փոխել է Chromium-ի մեկնարկի ժամանակ ցուցադրվող էջը:</translation>
 <translation id="2396765026452590966">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է Chromium-ի մեկնարկի ժամանակ ցուցադրվող էջը:</translation>
@@ -53,6 +54,7 @@
 <translation id="2799223571221894425">Վերագործարկել</translation>
 <translation id="2837693172913560447"><ph name="USER_EMAIL_ADDRESS" /> օգտատիրոջ համար կստեղծվի Chromium-ի նոր պրոֆիլ։</translation>
 <translation id="2847479871509788944">Հեռացնել Chromium-ից...</translation>
+<translation id="2850691299438350830">Ապահովում է ձեր անվտանգությունը Chromium-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">&amp;Chromium-ի մասին</translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>

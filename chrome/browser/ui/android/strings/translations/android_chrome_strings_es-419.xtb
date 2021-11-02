@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1146678959555564648">Entrar al modo RV</translation>
 <translation id="114825011539563458">Los controles de seguridad y privacidad más importantes en un solo lugar</translation>
+<translation id="1149401351239820326">Mes de vencimiento</translation>
 <translation id="1154704303112745282">Página no disponible sin conexión: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Usados</translation>
 <translation id="1171770572613082465">Presiona el botón "Populares" para ver los sitios web más conocidos</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Accesos directos a las funciones de Google Chrome</translation>
 <translation id="1344653310988386453">Incluir el vínculo al texto destacado</translation>
 <translation id="1347468774581902829">Administrar actividad</translation>
-<translation id="1353372385686746892">Para ayudar a mejorar la app, Chrome envía datos de diagnóstico a Google. <ph name="BEGIN_LINK" />Cambiar<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">¿Salir y desactivar la sincronización?</translation>
 <translation id="1373696734384179344">Memoria insuficiente para descargar el contenido seleccionado</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -817,7 +817,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5956665950594638604">Abrir Centro de ayuda de Chrome en pestaña nueva</translation>
 <translation id="5957442310066583693">Para ver los sitios que más visitas, presiona el botón de la página principal</translation>
 <translation id="5958275228015807058">Encuentra tus archivos y páginas en Descargas</translation>
-<translation id="5962272973076519240">Verifica tu identidad para desbloquear las pestañas de incógnito</translation>
 <translation id="5962718611393537961">Presiona para contraer</translation>
 <translation id="5964805880140440652">Para compartir esta página con otro dispositivo, activa la sincronización en la configuración de Chrome</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
@@ -1188,6 +1187,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="804335162455518893">No se encontró la tarjeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestañas de incógnito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponibles</translation>
+<translation id="8058655154417507695">Año de vencimiento</translation>
 <translation id="8058746566562539958">Abrir en una nueva pestaña de Chrome</translation>
 <translation id="8063895661287329888">Se produjo un error al agregar el marcador.</translation>
 <translation id="806745655614357130">Mantener mis datos separados</translation>

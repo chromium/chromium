@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ပျင်းနေတယ်</translation>
 <translation id="1104084341931202936">အများသုံးစွဲနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
+<translation id="1111781754511998498">ပရိုဂျက်တာ</translation>
 <translation id="1118549423835582252">ဤ <ph name="DEVICE_TYPE" /> ကို အပ်ဒိတ်လုပ်ရန် <ph name="MANAGER" /> က အကြံပြုသည်။</translation>
 <translation id="1119348796022671382">အပြင်အဆင်အရောင်မုဒ်သည် အင်တာဖေ့စ်ကို လင်းသည့်အရောင်ထည့်ရန် သင့်နောက်ခံမှ ထုတ်ယူထားသော အရောင်များကိုသုံးသည်။</translation>
 <translation id="112308213915226829">အလိုအလျောက် ဝှက်သည့် စင်</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">မိုက်ခရိုဖုန်းအသံဖမ်းရန်</translation>
 <translation id="3680908746918359504">အမှတ်အသားပြုမင်တံအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="36813544980941320">သင့်ဖုန်းနှင့် <ph name="DEVICE_NAME" /> အကြားတွင် Wi-Fi ကွန်ရက်များကို မျှဝေပါမည်</translation>
+<translation id="3701206655856637070">ဖန်သားပြင် ပုံဖမ်းခြင်း သိမ်းသည့်နေရာကို သင် အခုပြောင်းနိုင်သည်</translation>
 <translation id="3702809606464356667">လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြနေသည်၊ မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="3702846122927433391">နိုင်ဂျီးရီးယားရှိ လူဦးရေ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">ပိတ်ရန်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="3977512764614765090">ဘက်ထရီသည် <ph name="PERCENTAGE" />% ရှိပြီး အားသွင်းနေပါသည်။</translation>
+<translation id="3986082989454912832">ဖြေဆိုရန်</translation>
 <translation id="3995138139523574647">USB-C ကိရိယာ (ညာဘက် နောက်ပိုင်း ပို့တ်)</translation>
 <translation id="40062176907008878">လက်ရေး</translation>
 <translation id="4017989525502048489">လေဆာညွှန်တံ</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">‘Ctrl + Alt + အောက်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘အဆုံးသတ်ရန်’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘ညာညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="4279490309300973883">ထင်ဟပ်ပေးနေ</translation>
 <translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
-<translation id="4292904812939562398">မကြာသေးမီကအသုံးပြုထားသော အက်ပ်များ</translation>
 <translation id="429402653707266969">ကိရိယာဘားတည်နေရာ ပြောင်းရန်</translation>
 <translation id="4294319844246081198">မင်္ဂလာ နံနက်ခင်းပါ <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">အကြောင်းကြားချက် <ph name="COUNT" /> ခုလုံးကို ထုတ်ပစ်ရန်</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />၊
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">အကြောင်းကြားချက်များ ပိတ်ရန်</translation>
 <translation id="4946376291507881335">ရိုက်ယူရန်</translation>
 <translation id="495046168593986294">အပေါ်သို့ လှိမ့်ရန်</translation>
 <translation id="4952936045814352993">သတိပေးချက်အသံများ ပိတ်ထားပါက ဖုန်းရှာဖွေခြင်းကို အသုံးပြု၍မရပါ</translation>
@@ -750,7 +753,7 @@
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="649452524636452238">အဆင့်မြင့်ကတ် ပင်နံပါတ်</translation>
-<translation id="6495400115277918834">တစ်ခုပေါ်တစ်ခုထပ်၍ ဖွင့်ခြင်းကို စတင်ထားပြီး အထူးပြသရန် Alt+Shift+V နှိပ်ပါ</translation>
+<translation id="6495400115277918834">နှစ်ခုထပ်၍ကြည့်ခြင်းကို စတင်ထားပြီး အထူးပြသရန် Alt+Shift+V နှိပ်ပါ</translation>
 <translation id="6500818810472529210">Google Search တွင် ရလဒ်ကြည့်ပါ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />သို့ မျက်နှာပြင်ကို ကာစ် လုပ်နေသည်</translation>
 <translation id="6520517963145875092">ရိုက်ယူရန် ဝင်းဒိုးတစ်ခု ရွေးပါ</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">အကြောင်းကြားချက်အားလုံးကို ကြည့်ရန်</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> ရှိ သင့်ဖုန်းကင်မရာရိုးလ်မှ လတ်တလောဓာတ်ပုံများကို ကြည့်နိုင်သည်</translation>
 <translation id="7618774594543487847">ပုံမှန်</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">အမှတ်အသားပြုမင်တံ</translation>

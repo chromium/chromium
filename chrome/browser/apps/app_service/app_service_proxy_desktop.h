@@ -7,21 +7,17 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
-namespace web_app {
-class WebApps;
-}  // namespace web_app
-
 namespace apps {
-
-class ExtensionApps;
 
 // Singleton (per Profile) proxy and cache of an App Service's apps in Chrome
 // browser.
@@ -45,8 +41,7 @@ class AppServiceProxy : public AppServiceProxyBase {
   void Initialize() override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
 
-  std::unique_ptr<web_app::WebApps> web_apps_;
-  std::unique_ptr<ExtensionApps> extension_apps_;
+  std::unique_ptr<PublisherHost> publisher_host_;
 
   base::WeakPtrFactory<AppServiceProxy> weak_ptr_factory_{this};
 };

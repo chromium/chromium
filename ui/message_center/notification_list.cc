@@ -212,6 +212,10 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
     if (notification->priority() < DEFAULT_PRIORITY)
       continue;
 
+    // Group child notifications are shown in their parent's popup.
+    if (notification->group_child())
+      continue;
+
     if (!ShouldShowNotificationAsPopup(*notification, blockers)) {
       if (state->is_read)
         state->shown_as_popup = true;

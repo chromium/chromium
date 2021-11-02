@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Kantor</translation>
 <translation id="1122198203221319518">&amp;Alat</translation>
 <translation id="1122242684574577509">Autentikasi gagal. Klik untuk mengunjungi halaman masuk untuk jaringan Wi-Fi yang Anda gunakan (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Detail login akun Anda sudah tidak berlaku. Harap logout lalu login lagi.</translation>
 <translation id="1122960773616686544">Nama bookmark</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1125550662859510761">Sepertinya <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Asli)</translation>
@@ -327,6 +328,7 @@
 <translation id="133535873114485416">Preferensi masukan</translation>
 <translation id="1335929031622236846">Daftarkan perangkat Anda</translation>
 <translation id="1336902454946927954">Kunci keamanan Anda dikunci karena sidik jari Anda tidak dapat dikenali. Untuk membuka kuncinya, masukkan PIN.</translation>
+<translation id="1338631221631423366">Menyambungkan ...</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> ingin membuka aplikasi ini.</translation>
 <translation id="1338950911836659113">Menghapus...</translation>
 <translation id="1339009753652684748">Akses Asisten saat Anda mengucapkan "Ok Google". Untuk menghemat baterai, pilih "Aktif (Direkomendasikan)". Asisten Anda hanya akan merespons saat perangkat dicolokkan ke sumber listrik atau diisi daya.</translation>
@@ -6562,6 +6564,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7887864092952184874">Mouse Bluetooth disandingkan</translation>
 <translation id="7889371445710865055">Ubah bahasa Dikte</translation>
 <translation id="7890147169288018054">Melihat informasi jaringan, seperti alamat IP atau MAC</translation>
+<translation id="7892384782944609022">Tidak dapat menyambungkan. Pilih perangkat untuk mencoba lagi.</translation>
 <translation id="7893008570150657497">Mengakses foto, musik, dan media lain dari komputer Anda</translation>
 <translation id="7893153962594818789">Bluetooth di <ph name="DEVICE_TYPE" /> dinonaktifkan. Masukkan sandi dan aktifkan Bluetooth.</translation>
 <translation id="7893393459573308604"><ph name="ENGINE_NAME" /> (Default)</translation>
@@ -7510,6 +7513,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8879284080359814990">Tampilkan &amp;Sebagai Tab</translation>
 <translation id="8879921471468674457">Ingat info login</translation>
 <translation id="8880054210564666174">Tidak dapat mendownload daftar kontak. Periksa koneksi jaringan Anda, atau <ph name="LINK_BEGIN" />coba lagi<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Buka Setelan untuk menghubungkan <ph name="USB_DEVICE_NAME" /> ke Linux atau Parallels Desktop</translation>
 <translation id="8881020143150461183">Coba lagi. Untuk dukungan teknis, hubungi <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Aktifkan akselerasi touchpad</translation>
 <translation id="8884570509232205463">Sekarang perangkat akan terkunci pukul <ph name="UNLOCK_TIME" />.</translation>

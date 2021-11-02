@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium - 网络登录 - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">如果您与亲朋好友共用计算机，他们将能够使用单独的帐号进行浏览，并可随心所欲地设置Chromium。</translation>
 <translation id="2294245788148774212">（可选）自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
+<translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="2343156876103232566">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
 <translation id="2347108572062610441">此扩展程序更改了 Chromium 启动后系统显示的页面。</translation>
 <translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />”扩展程序更改了 Chromium 启动后系统显示的页面。</translation>
@@ -51,6 +52,7 @@
 <translation id="2799223571221894425">重新启动</translation>
 <translation id="2837693172913560447">这样做会为 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的 Chromium 个人资料</translation>
 <translation id="2847479871509788944">从Chromium中移除…</translation>
+<translation id="2850691299438350830">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2910007522516064972">关于 Chromium(&amp;C)</translation>
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>

@@ -937,8 +937,8 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationAudioEnabledTest, MediaControls) {
   if (observer.source_title.empty()) {
     observer.run_loop.Run();
   }
-  // TODO(b/189171964): Show a better source name than the URL.
-  EXPECT_EQ(u"chrome://media-app", observer.source_title);
+
+  EXPECT_EQ(u"Gallery", observer.source_title);
 }
 
 // Test that the MediaApp can navigate other files in the directory of a file

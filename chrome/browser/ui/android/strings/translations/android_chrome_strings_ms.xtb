@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Padam data sedia ada.</translation>
 <translation id="1146678959555564648">Masukkan VR</translation>
 <translation id="114825011539563458">Kawalan privasi dan keselamatan yang paling penting di satu tempat</translation>
+<translation id="1149401351239820326">Bulan tamat tempoh</translation>
 <translation id="1154704303112745282">Halaman tidak tersedia di luar talian: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Digunakan</translation>
 <translation id="1171770572613082465">Lihat tapak web popular dengan mengetik butang "Tapak popular"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Pintasan ciri Google Chrome</translation>
 <translation id="1344653310988386453">Sertakan pautan kepada serlahan</translation>
 <translation id="1347468774581902829">Urus aktiviti</translation>
-<translation id="1353372385686746892">Untuk membantu kami memperbaik apl ini, Chrome menghantar data diagnostik kepada Google. <ph name="BEGIN_LINK" />Tukar<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Log keluar dan matikan penyegerakan?</translation>
 <translation id="1373696734384179344">Memori tidak mencukupi untuk memuat turun kandungan yang dipilih.</translation>
 <translation id="1376578503827013741">Mengira...</translation>
@@ -405,6 +405,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="3398320232533725830">Buka pengurus penanda halaman</translation>
 <translation id="3414952576877147120">Saiz:</translation>
 <translation id="3429160811076349561">Ciri percubaan dimatikan</translation>
+<translation id="3435465986463792564">Ada banyak tetingkap? Anda boleh mengurus tetingkap tersebut dari sini</translation>
 <translation id="3440975416244667276">Sentuh &amp; tahan untuk mendapatkan pelbagai lagi maklumat yang berkaitan</translation>
 <translation id="3443221991560634068">Muat semula halaman semasa</translation>
 <translation id="3444179773590444986">Kongsikan maklum balas tentang tema gelap untuk laman?</translation>
@@ -816,7 +817,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5956665950594638604">Buka Pusat Bantuan Chrome dalam tab baharu</translation>
 <translation id="5957442310066583693">Untuk melihat tapak web yang paling kerap anda lawati, ketik butang Skrin Utama</translation>
 <translation id="5958275228015807058">Cari fail dan halaman anda dalam Muat Turun</translation>
-<translation id="5962272973076519240">Sahkan itu anda untuk membuka kunci Inkognito</translation>
 <translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
 <translation id="5964805880140440652">Untuk berkongsi halaman ini dengan peranti lain, hidupkan penyegerakan dalam tetapan Chrome</translation>
 <translation id="5964869237734432770">Hentikan perihalan imej</translation>
@@ -1187,6 +1187,7 @@ Sebagai contoh, sesetengah tapak web mungkin memberi respons kepada permintaan i
 <translation id="804335162455518893">Kad SD tidak ditemui</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab inkognito}other{<ph name="TAB_COUNT_NORMAL" /> tab inkognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tersedia</translation>
+<translation id="8058655154417507695">Tahun tamat tempoh</translation>
 <translation id="8058746566562539958">Buka dalam tab Chrome baharu</translation>
 <translation id="8063895661287329888">Gagal menambah penanda halaman.</translation>
 <translation id="806745655614357130">Biarkan data saya diasingkan</translation>

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">مجھے بوریت ہو رہی ہے</translation>
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
+<translation id="1111781754511998498">پروجیکٹر</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> کی تجویز ہے کہ آپ اس <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں۔</translation>
 <translation id="1119348796022671382">تھیم کردہ رنگ وضع انٹرفیس کو ہلکا رنگ دینے کے لیے آپ کے وال پیپر سے ایکسٹریکٹ کیے گئے رنگوں کا استعمال کرتی ہے۔</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">مائیکروفون کے ذریعے ریکارڈ کریں</translation>
 <translation id="3680908746918359504">سبھی مارکرز صاف کریں</translation>
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
+<translation id="3701206655856637070">اب آپ تبدیل کر سکتے ہیں کہ اسکرین کیپچرز کہاں محفوظ ہیں</translation>
 <translation id="3702809606464356667">موجودہ ڈیسک سے ونڈوز دکھائی جا رہی ہیں تمام ڈیسکس سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="3702846122927433391">نائیجیریا میں آبادی</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">آف</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
 <translation id="3977512764614765090">‏بیٹری ‎<ph name="PERCENTAGE" />%‎ ہے اور چارج ہو رہی ہے۔</translation>
+<translation id="3986082989454912832">جواب</translation>
 <translation id="3995138139523574647">‏USB-C آلہ (دائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="40062176907008878">ہینڈ رائٹنگ</translation>
 <translation id="4017989525502048489">لیزر پوائنٹر</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">‏Ctrl + Alt + 'نیچے تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ End کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + 'دائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4279490309300973883">مررنگ</translation>
 <translation id="4285498937028063278">پن ہٹائیں</translation>
-<translation id="4292904812939562398">حالیہ استعمال شدہ ایپس</translation>
 <translation id="429402653707266969">ٹول بار کا مقام ٹوگل کریں</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />،
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">اطلاعات آف کریں</translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
 <translation id="4952936045814352993">الارم کی آوازیں غیر فعال ہونے پر فون کا پتہ لگانے والی خصوصیت دستیاب نہیں ہے</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">تمام اطلاعات دیکھیں</translation>
 <translation id="7607002721634913082">موقوف</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> پر اپنے فون کے کیمرا رول سے حالیہ تصاویر کو دیکھیں</translation>
 <translation id="7618774594543487847">نیوٹرل</translation>
 <translation id="7624117708979618027">F °<ph name="TEMPERATURE_F" /></translation>
 <translation id="7631906263969450674">مارکر قلم</translation>

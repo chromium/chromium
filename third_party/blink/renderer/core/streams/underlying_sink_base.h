@@ -11,10 +11,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
-// Various files depend on us exporting this header.
-// TODO(ricea): Clean up the dependencies and remove this include.
-#include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
-
 namespace blink {
 
 class ExceptionState;

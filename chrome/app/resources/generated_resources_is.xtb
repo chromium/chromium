@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Vinna</translation>
 <translation id="1122198203221319518">Verkfæri</translation>
 <translation id="1122242684574577509">Auðkenning mistókst. Smelltu til að opna innskráningarsíðuna fyrir Wi-Fi netið sem þú ert að nota (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Innskráningarupplýsingar reikningsins eru úreltar. Skráðu þig út og skráðu þig síðan inn aftur.</translation>
 <translation id="1122960773616686544">Heiti bókamerkis</translation>
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1125550662859510761">Virðist vera <ph name="WIDTH" /> x <ph name="HEIGHT" /> (sérhannað)</translation>
@@ -721,7 +722,7 @@
 <translation id="1719312230114180055">Athugaðu: Fingrafar kann að vera ótraustari aðferð en sterkt aðgangsorð eða PIN-númer.</translation>
 <translation id="1720318856472900922">Auðkenning TLS WWW-þjóns</translation>
 <translation id="1720941539803966190">Loka leiðsögn</translation>
-<translation id="172123215662733643">Leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Leita að myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264"><ph name="NAME" /> þarf að veita þér heimild til að fara á þetta vefsvæði</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />hefur umsjón með <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Nýr gluggi</translation>
@@ -1585,7 +1586,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2602501489742255173">Strjúktu upp til að hefjast handa</translation>
 <translation id="2603115962224169880">Hreinsa tölvu</translation>
 <translation id="2603355571917519942">Voice Match er tilbúið</translation>
-<translation id="2604138917550693049">Leita í mynd með Google linsu</translation>
+<translation id="2604138917550693049">Leita að mynd með Google linsu</translation>
 <translation id="2604255671529671813">Villa í nettengingu</translation>
 <translation id="2605668923777146443">Farðu í <ph name="LINK_BEGIN" />stillingar<ph name="LINK_END" /> til að sjá valkosti þína fyrir Better Together.</translation>
 <translation id="2606246518223360146">Tengja gögn</translation>
@@ -2088,6 +2089,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="310671807099593501">Vefsvæði er að nota Bluetooth</translation>
 <translation id="3108931485517391283">Ekki er hægt að taka við</translation>
 <translation id="3109724472072898302">Minnkað</translation>
+<translation id="311214366526552035">Sækja samt</translation>
 <translation id="311394601889664316">Ekki leyfa vefsvæðum að breyta skrám eða möppum í tækinu</translation>
 <translation id="3115147772012638511">Bíður eftir skyndiminni...</translation>
 <translation id="3115580024857770654">Draga allt saman</translation>
@@ -2368,6 +2370,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3429160811076349561">Slökkt er á prufueiginleikum</translation>
 <translation id="3429271624041785769">Tungumál vefefnis</translation>
 <translation id="3429275422858276529">Settu þessa síðu í bókamerki til að auðvelt sé að finna hana síðar</translation>
+<translation id="343115368966109153">Sækja <ph name="FILE_NAME" />? Allir sem nota tækið geta séð þetta.</translation>
 <translation id="3432227430032737297">Fjarlægja öll sem birtast</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Úbbs! Kerfinu mistókst að koma á eigindalás við uppsetningu tækisins.</translation>
@@ -2709,6 +2712,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3777806571986431400">Viðbót gerð virk</translation>
 <translation id="3778152852029592020">Hætt var við niðurhalið.</translation>
 <translation id="3778208826288864398">Öryggislykillinn er læstur vegna þess að rangt PIN-númer var slegið inn of oft. Þú þarft að núllstilla öryggislykilinn.</translation>
+<translation id="3778369586810509692">Þess skrá verður geymd í tækinu og allir geta séð hana.</translation>
 <translation id="3778740492972734840">Forritunartól</translation>
 <translation id="3778868487658107119">Spyrðu hann spurninga. Biddu hann um að gera eitthvað fyrir þig. Þetta er þitt eigið Google, alltaf reiðubúið til aðstoðar.</translation>
 <translation id="3781742599892759500">Aðgangur að hljóðnema í Linux</translation>
@@ -3883,7 +3887,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5051836348807686060">Villuleit er ekki studd á þeim tungumálum sem þú valdir</translation>
 <translation id="5052499409147950210">Breyta vefsvæði</translation>
 <translation id="505347685865235222">Ónefndur hópur – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Leita í mynd með Google linsu</translation>
+<translation id="5053962746715621840">Leita að mynd með Google linsu</translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="505776528429481161">Tengdu og settu upp nálæg tæki á einfaldan hátt</translation>
@@ -5886,7 +5890,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7230222852462421043">&amp;Endurheimta glugga</translation>
 <translation id="7230787553283372882">Sérsníða textastærð</translation>
 <translation id="7232750842195536390">Breyting á heiti mistókst</translation>
-<translation id="723343421145275488">Leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Leita að myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Hættir við Linux-endurheimt</translation>
 <translation id="7235716375204803342">Sækir aðgerðir...</translation>
 <translation id="7235737137505019098">Ekki er nægilegt pláss á öryggislyklinum fyrir fleiri reikninga.</translation>
@@ -7509,6 +7513,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8879284080359814990">&amp;Sýna sem flipa</translation>
 <translation id="8879921471468674457">Muna eftir innskráningarupplýsingum</translation>
 <translation id="8880054210564666174">Ekki er hægt að sækja tengiliðalista. Athugaðu nettenginguna eða <ph name="LINK_BEGIN" />reyndu aftur<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Opnaðu stillingar til að tengja <ph name="USB_DEVICE_NAME" /> við Linux eða Parallels Desktop</translation>
 <translation id="8881020143150461183">Reyndu aftur. Hafðu samband við <ph name="CARRIER_NAME" /> til að fá tækniaðstoð.</translation>
 <translation id="8883273463630735858">Virkja vélbúnaðarhröðun snertiflatar</translation>
 <translation id="8884570509232205463">Tækið þitt læsist nú klukkan <ph name="UNLOCK_TIME" />.</translation>

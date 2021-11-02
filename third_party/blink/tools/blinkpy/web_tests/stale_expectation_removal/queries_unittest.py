@@ -32,12 +32,13 @@ class ConvertJsonResultToResultObjectUnittest(unittest.TestCase):
             'status': 'PASS',
             'typ_tags': ['debug'],
             'step_name': 'step_name',
-            'duration': '100000',
+            'duration': '10',
+            'timeout': '3',
         }
         querier = wt_uu.CreateGenericWebTestQuerier()
         result = querier._ConvertJsonResultToResultObject(json_result)
         self.assertTrue(result.is_slow_result)
-        self.assertEqual(result._duration, 100000)
+        self.assertEqual(result._duration, 10)
 
 
 class GetRelevantExpectationFilesForQueryResultUnittest(unittest.TestCase):

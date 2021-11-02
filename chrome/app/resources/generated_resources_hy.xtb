@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Աշխատանքային</translation>
 <translation id="1122198203221319518">&amp;Գործիքներ</translation>
 <translation id="1122242684574577509">Նույնականացումը չստացվեց: Սեղմեք՝ ձեր օգտագործած Wi-Fi ցանցի էջում մուտք գործելու համար (<ph name="NETWORK_ID" />):</translation>
+<translation id="1122913801042512795">Ձեր հաշվի մուտքի տվյալները հնացել են։ Դուրս եկեք հաշվից և նորից մուտք գործեք։</translation>
 <translation id="1122960773616686544">Էջանիշի անունը</translation>
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" /> (օրիգինալ)</translation>
@@ -711,7 +712,7 @@
 <translation id="1719312230114180055">Նկատի ունեցեք, որ ապակողպման հուսալի գաղտնաբառը կամ PIN կոդը կարող է մատնահետքից ավելի ապահով լինել:</translation>
 <translation id="1720318856472900922">TLS WWW սերվերի նույնականացում</translation>
 <translation id="1720941539803966190">Փակել ուղեցույցը</translation>
-<translation id="172123215662733643">Որոնել պատկերներ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
+<translation id="172123215662733643">Որոնել պատկերներ՝ օգտագործելով <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Այս էջն այցելելու համար հարկավոր է <ph name="NAME" />-ի թույլտվությունը</translation>
 <translation id="1722460139690167654">Ձեր <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> կայքի կողմից</translation>
 <translation id="1723824996674794290">&amp;Նոր պատուհան</translation>
@@ -1571,7 +1572,7 @@
 <translation id="2602501489742255173">Սկսելու համար մատը սահեցրեք վերև</translation>
 <translation id="2603115962224169880">Մաքրեք համակարգիչը</translation>
 <translation id="2603355571917519942">Voice Match-ը պատրաստ է</translation>
-<translation id="2604138917550693049">Որոնել պատկերը Google Տեսապակու օգնությամբ</translation>
+<translation id="2604138917550693049">Որոնել պատկերը Google Տեսապակու միջոցով</translation>
 <translation id="2604255671529671813">Ցանցի միացման սխալ</translation>
 <translation id="2605668923777146443">Better Together ռեժիմի ընտրանքները տեսնելու համար անցեք <ph name="LINK_BEGIN" />Կարգավորումներ<ph name="LINK_END" />։</translation>
 <translation id="2606246518223360146">Կցել տվյալները</translation>
@@ -3872,7 +3873,7 @@
 <translation id="5051836348807686060">Ուղղագրության ստուգումը չի աջակցվում ձեր ընտրած լեզուների համար</translation>
 <translation id="5052499409147950210">Փոփոխեք կայքը</translation>
 <translation id="505347685865235222">Անանուն խումբ – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Որոնել պատկերը Google Տեսապակու օգնությամբ</translation>
+<translation id="5053962746715621840">Որոնել պատկերը Google Տեսապակու միջոցով</translation>
 <translation id="5056950756634735043">Միացում կոնտեյներին</translation>
 <translation id="5057110919553308744">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
 <translation id="505776528429481161">Հեշտությամբ միացեք մոտակայքում գտնվող սարքերին և կարգավորեք դրանք</translation>
@@ -5877,7 +5878,7 @@
 <translation id="7230222852462421043">&amp;Վերականգնել պատուհանը</translation>
 <translation id="7230787553283372882">Թույլ է տալիս կարգավորել տեքստի չափը</translation>
 <translation id="7232750842195536390">Չհաջողվեց վերանվանել</translation>
-<translation id="723343421145275488">Որոնել պատկերներ <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
+<translation id="723343421145275488">Որոնել պատկերներ՝ օգտագործելով <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Լինուքսի վերականգնումը չեղարկվում է</translation>
 <translation id="7235716375204803342">Գործողությունների բեռնում...</translation>
 <translation id="7235737137505019098">Անվտանգության բանալու վրա բավարար տարածք չկա ևս մեկ հաշիվ ստեղծելու համար:</translation>
@@ -7498,6 +7499,7 @@
 <translation id="8879284080359814990">&amp;Ցույց տալ որպես ներդիր</translation>
 <translation id="8879921471468674457">Հիշել մուտքային տվյալները</translation>
 <translation id="8880054210564666174">Չհաջողվեց ներբեռնել կոնտակտների ցանկը։ Ստուգեք կապը կամ <ph name="LINK_BEGIN" />նորից փորձեք<ph name="LINK_END" />։</translation>
+<translation id="8880344290593529089">Անցեք Կարգավորումներ՝ <ph name="USB_DEVICE_NAME" /> սարքը Լինուքսին կամ Parallels Desktop-ին միացնելու համար։</translation>
 <translation id="8881020143150461183">Նորից փորձեք: Տեխնիկական աջակցման համար կապվեք <ph name="CARRIER_NAME" />-ի հետ։</translation>
 <translation id="8883273463630735858">Միացնել հպահարթակի արագացումը</translation>
 <translation id="8884570509232205463">Ձեր սարքն այսուհետ կկողպվի <ph name="UNLOCK_TIME" />-ին:</translation>

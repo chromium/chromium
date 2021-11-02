@@ -105,10 +105,12 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void OnFolderDeleted(std::unique_ptr<ash::AppListItemMetadata> item) override;
   void OnPageBreakItemDeleted(const std::string& id) override;
   void OnSortRequested(ash::AppListSortOrder order) override;
+  void OnSortRevertRequested() override;
 
   // Methods to handle app list item updates initiated from ash:
   void HandleSetPosition(std::string id,
-                         const syncer::StringOrdinal& new_position) override;
+                         const syncer::StringOrdinal& new_position,
+                         ash::RequestPositionUpdateReason reason) override;
   void HandleMoveItemToFolder(std::string id,
                               const std::string& folder_id) override;
   void HandleMoveItemToRoot(std::string id,
@@ -117,7 +119,62 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void AddObserver(AppListModelUpdaterObserver* observer) override;
   void RemoveObserver(AppListModelUpdaterObserver* observer) override;
 
+  // Returns the temporary sort order.
+  ash::AppListSortOrder GetTemporarySortOrderForTest() const;
+
+  // Returns true if the app list is under temporary sort.
+  bool is_under_temporary_sort() const { return !!temporary_sort_manager_; }
+
  private:
+  friend class TemporaryAppListSortTest;
+
+  class TemporarySortManager;
+
+  enum class ItemChangeType {
+    // An item is added.
+    kAdd,
+
+    // An item is updated.
+    kUpdate,
+
+    // An item will be deleted.
+    kDelete
+  };
+
+  // Notifies observers of the change on `chrome_item` when temporary app list
+  // sort is not active.
+  void MaybeNotifyObserversOfItemChange(ChromeAppListItem* chrome_item,
+                                        ItemChangeType type);
+
+  // Lists the action that can be performed when app list exits the temporary
+  // sort status.
+  enum class EndAction {
+    // Commit temporary positions and update the permanent order with the
+    // temporary order.
+    kCommit,
+
+    // Revert temporary positions and the permanent order does not change.
+    kRevert,
+
+    // Commit temporary positions and clear the permanent order.
+    kCommitAndClearSort
+  };
+
+  // Ends temporary sort status and performs the specified action.
+  void EndTemporarySortAndTakeAction(EndAction action);
+
+  // Reverts item positions under the temporary sort.
+  void RevertTemporaryPositions();
+
+  // Commits item positions under the temporary sort.
+  void CommitTemporaryPositions();
+
+  // Commits the temporary sort order.
+  void CommitOrder();
+
+  // Clears the permanent sort order.
+  void ClearOrder();
+
   // Indicates the profile that the model updater is associated with.
   Profile* const profile_ = nullptr;
 
@@ -132,6 +189,10 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   base::ObserverList<AppListModelUpdaterObserver> observers_;
   ash::AppListController* app_list_controller_ = nullptr;
   bool search_engine_is_google_ = false;
+
+  // Set when sort is triggered and reset when exiting the temporary sort
+  // status.
+  std::unique_ptr<TemporarySortManager> temporary_sort_manager_;
 
   base::WeakPtrFactory<ChromeAppListModelUpdater> weak_ptr_factory_{this};
 };

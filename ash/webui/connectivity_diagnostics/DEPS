@@ -1,0 +1,4 @@
+include_rules = [
+  "+chromeos/services/network_health",
+  "+chromeos/strings/grit/chromeos_strings.h",
+]

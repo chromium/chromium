@@ -111,6 +111,13 @@ public interface FeedActionsHandler {
     default void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {}
 
     /**
+     * Reports that the notice identified by the given key is created. It may not be visible yet.
+     * @param key Key to identify the type of the notice. For each new key, please update
+     *            "NoticeKey" token in histograms.xml and NoticeUmaName() in metrics_reporter.cc.
+     */
+    default void reportNoticeCreated(String key) {}
+
+    /**
      * Reports that the notice identified by the given key is viewed, fully visible in the viewport.
      * @param key Key to identify the type of the notice. This interaction info can be used to
      * determine if it is necessary to show the notice to the user again.

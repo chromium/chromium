@@ -287,12 +287,12 @@ void GtkRenderIcon(GtkStyleContext* context,
                    double x,
                    double y) {
   static void* render = DlSym(GetLibGtk(), "gtk_render_icon");
-  if (GtkCheckVersion(4)) {
-    DCHECK(texture);
+  if (texture) {
+    DCHECK(GtkCheckVersion(4));
     DlCast<void(GtkStyleContext*, cairo_t*, GdkTexture*, double, double)>(
         render)(context, cr, texture, x, y);
-  } else {
-    DCHECK(pixbuf);
+  } else if (pixbuf) {
+    DCHECK(!GtkCheckVersion(4));
     DlCast<void(GtkStyleContext*, cairo_t*, GdkPixbuf*, double, double)>(
         render)(context, cr, pixbuf, x, y);
   }

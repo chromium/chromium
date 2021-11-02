@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">လက်ရှိဒေတာများကို ဖျက်ပါ</translation>
 <translation id="1146678959555564648">VR သို့ ဝင်ပါ</translation>
 <translation id="114825011539563458">အရေးကြီးဆုံး ကိုယ်ရေးအချက်အလက်နှင့် လုံခြုံရေး ထိန်းချုပ်မှုများကို တစ်နေရာတည်းတွင်ရရှိခြင်း</translation>
+<translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
 <translation id="1154704303112745282">အော့ဖ်လိုင်းတွင် စာမျက်နှာကိုမရနိုင်ပါ - <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">သုံးထား</translation>
 <translation id="1171770572613082465">"ထိပ်တန်း ဝဘ်ဆိုက်များ" ခလုတ်ကို တို့ခြင်းဖြင့် လူကြိုက်များသော ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome ဝန်ဆောင်မှု ဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="1344653310988386453">မြင်သာအောင်လုပ်ထားသော စာသားသို့ လင့်ခ်ကို ထည့်သွင်းပါ</translation>
 <translation id="1347468774581902829">လုပ်ဆောင်ချက်ကို စီမံခန့်ခွဲရန်</translation>
-<translation id="1353372385686746892">အက်ပ်ပိုကောင်းလာစေရန် Chrome က Google သို့ အမှားရှာဖွေမှုဒေတာများ ပို့ပါသည်။ <ph name="BEGIN_LINK" />ပြောင်းရန်<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">ထွက်ပြီး စင့်ခ်လုပ်ခြင်းကို ပိတ်လိုသလား။</translation>
 <translation id="1373696734384179344">ရွေးချယ်ထားသည့် အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် မှတ်ဉာဏ် မလုံလောက်ပါ။</translation>
 <translation id="1376578503827013741">တွက်ချက်နေသည်…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">Chrome ကူညီရေးရာဌာနကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="5957442310066583693">သင်၏ ထိပ်တန်းဝဘ်ဆိုက်များကိုကြည့်ရန် 'ပင်မခလုတ်' ကို တို့ပါ</translation>
 <translation id="5958275228015807058">သင့်ဖိုင်များနှင့် စာမျက်နှာများကို ဒေါင်းလုဒ်များထဲတွင် ရှာဖွေပါ</translation>
-<translation id="5962272973076519240">ရုပ်ဖျက်မုဒ်ဖွင့်ရန် သင်ဖြစ်ကြောင်း အတည်ပြုပါ</translation>
 <translation id="5962718611393537961">လျှော့ပြရန် တို့ပါ</translation>
 <translation id="5964805880140440652">ဤစာမျက်နှာကို နောက်စက်တစ်လုံးသို့ မျှဝေရန် Chrome ဆက်တင်များထဲတွင် စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="5964869237734432770">ပုံရှင်းလင်းချက်များ ရပ်ရန်</translation>
@@ -1187,6 +1186,7 @@
 <translation id="804335162455518893">SD ကတ် မတွေ့ပါ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_NORMAL" /> ခု}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> မီဂါဘိုက် (MB) သိမ်းနိုင်သည်</translation>
+<translation id="8058655154417507695">သက်တမ်းကုန်ဆုံးမည့်နှစ်</translation>
 <translation id="8058746566562539958">Chrome တဘ်အသစ်တွင် ဖွင့်ပါ</translation>
 <translation id="8063895661287329888">စာညှပ်ကို ထည့်မရခဲ့ပါ။</translation>
 <translation id="806745655614357130">ကျွန်ုပ်၏ ဒေတာများကို ခွဲခြားထားရန်</translation>

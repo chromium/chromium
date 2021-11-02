@@ -484,6 +484,9 @@ std::vector<Notification*> MessagePopupCollection::GetPopupNotifications()
       continue;
     }
 
+    if (notification->group_child())
+      continue;
+
     if (BlockForMixedFullscreen(*notification))
       continue;
 

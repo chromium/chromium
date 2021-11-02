@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Excluir os dados atuais.</translation>
 <translation id="1146678959555564648">Entrar na RV</translation>
 <translation id="114825011539563458">Todos os controles de privacidade e segurança mais importantes em um só lugar</translation>
+<translation id="1149401351239820326">Mês de expiração</translation>
 <translation id="1154704303112745282">Página indisponível off-line: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Dados usados</translation>
 <translation id="1171770572613082465">Toque no botão "Sites famosos" para ver os sites muito acessados</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Atalhos de recursos do Google Chrome</translation>
 <translation id="1344653310988386453">Incluir link para o conteúdo destacado</translation>
 <translation id="1347468774581902829">Gerenciar atividade</translation>
-<translation id="1353372385686746892">Para ajudar a melhorar o app, o Chrome envia dados de diagnóstico ao Google. <ph name="BEGIN_LINK" />Mudar<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Sair e desativar a sincronização?</translation>
 <translation id="1373696734384179344">Memória insuficiente para fazer o download do conteúdo selecionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -818,7 +818,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5956665950594638604">Abrir Central de Ajuda do Chrome em uma nova guia</translation>
 <translation id="5957442310066583693">Para ver seus sites principais, toque no botão "Início"</translation>
 <translation id="5958275228015807058">Encontre seus arquivos e páginas em Downloads</translation>
-<translation id="5962272973076519240">Confirme sua identidade para desbloquear a navegação anônima</translation>
 <translation id="5962718611393537961">Toque para recolher</translation>
 <translation id="5964805880140440652">Para compartilhar esta página com outro dispositivo, ative a sincronização nas configurações do Chrome</translation>
 <translation id="5964869237734432770">Parar descrição de imagens</translation>
@@ -1189,6 +1188,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="804335162455518893">Cartão SD não encontrado</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> guia anônima}one{<ph name="TAB_COUNT_NORMAL" /> guia anônima}other{<ph name="TAB_COUNT_NORMAL" /> guias anônimas}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>
+<translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8058746566562539958">Abrir em nova guia do Chrome</translation>
 <translation id="8063895661287329888">Falha ao adicionar favorito.</translation>
 <translation id="806745655614357130">Manter meus dados separados</translation>

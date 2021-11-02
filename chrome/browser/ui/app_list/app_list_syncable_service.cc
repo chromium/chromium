@@ -329,11 +329,11 @@ class AppListSyncableService::ModelUpdaterObserver
     owner_->UpdateSyncItem(item);
   }
 
-  void OnAppListSortRequested(ash::AppListSortOrder order) override {
+  void OnAppListPreferredOrderChanged(ash::AppListSortOrder order) override {
     if (!active_)
       return;
     VLOG(2) << owner_ << " OnAppListSortRequested";
-    owner_->SortSyncItems(order);
+    owner_->SetSyncItemOrder(order);
   }
 
   AppListSyncableService* const owner_;
@@ -932,16 +932,20 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
   return app_item->item_ordinal.CreateAfter();
 }
 
-void AppListSyncableService::SortSyncItems(ash::AppListSortOrder order) {
+void AppListSyncableService::SetSyncItemOrder(ash::AppListSortOrder order) {
   // Update the preferred order that is shared among syncable devices.
   profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
                                    static_cast<int>(order));
+
+  if (order == ash::AppListSortOrder::kCustom)
+    return;
 
   // Too few sync items. Return early.
   if (sync_items_.size() < 2)
     return;
 
-  const auto reorder_params = reorder_delegate_->GenerateReorderParams(order);
+  const auto reorder_params =
+      reorder_delegate_->GenerateReorderParamsForSyncItems(order, sync_items_);
   for (const auto& reorder_param : reorder_params) {
     sync_pb::AppListSpecifics specifics;
     const SyncItem* sync_item = GetSyncItem(reorder_param.sync_item_id);

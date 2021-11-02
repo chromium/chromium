@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1146678959555564648">Hyr në VR</translation>
 <translation id="114825011539563458">Kontrollet më të rëndësishme të privatësisë dhe sigurisë në një vend</translation>
+<translation id="1149401351239820326">Muaji i skadimit</translation>
 <translation id="1154704303112745282">Faqja nuk ofrohet jashtë linje: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">TË PËRDORURA</translation>
 <translation id="1171770572613082465">Shiko sajte uebi të mirënjohura duke trokitur te butoni "Sajtet kryesore"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Shkurtoret e funksioneve të Google Chrome</translation>
 <translation id="1344653310988386453">Përfshi lidhjen për te teksti i theksuar</translation>
 <translation id="1347468774581902829">Menaxho aktivitetin</translation>
-<translation id="1353372385686746892">Për të ndihmuar në përmirësimin e aplikacionit, Chrome dërgon të dhëna diagnostike te Google. <ph name="BEGIN_LINK" />Ndrysho<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
 <translation id="1373696734384179344">Memorie e pamjaftueshme për të shkarkuar përmbajtjen e përzgjedhur.</translation>
 <translation id="1376578503827013741">Po llogarit...</translation>
@@ -817,7 +817,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5956665950594638604">Hap "Qendrën e ndihmës së Chrome" në një skedë të re</translation>
 <translation id="5957442310066583693">Për të parë sajtet e tua kryesore, trokit te butoni "Kreu"</translation>
 <translation id="5958275228015807058">Gjej skedarët dhe faqet e tua te "Shkarkimet"</translation>
-<translation id="5962272973076519240">Verifiko që je ti për të shkyçur modalitetin "I fshehtë"</translation>
 <translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5964805880140440652">Për ta ndarë këtë faqe në një pajisje tjetër, aktivizo sinkronizimin në cilësimet e Chrome</translation>
 <translation id="5964869237734432770">Ndalo përshkrimet e imazheve</translation>
@@ -1188,6 +1187,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="804335162455518893">Karta SD nuk u gjet</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë e fshehtë}other{<ph name="TAB_COUNT_NORMAL" /> skeda të fshehta}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB në dispozicion</translation>
+<translation id="8058655154417507695">Viti i skadimit</translation>
 <translation id="8058746566562539958">Hape në një skedë të re të Chrome</translation>
 <translation id="8063895661287329888">Shtimi i faqeshënuesit dështoi.</translation>
 <translation id="806745655614357130">Mbaji më vete të dhënat e mia</translation>

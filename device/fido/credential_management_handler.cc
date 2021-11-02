@@ -264,6 +264,31 @@ void CredentialManagementHandler::DeleteCredentials(
                      std::move(callback)));
 }
 
+static void OnUpdateUserInformation(
+    CredentialManagementHandler::UpdateUserInformationCallback callback,
+    CtapDeviceResponseCode status,
+    absl::optional<UpdateUserInformationResponse> response) {
+  std::move(callback).Run(status);
+}
+
+void CredentialManagementHandler::UpdateUserInformation(
+    const PublicKeyCredentialDescriptor& credential_id,
+    const PublicKeyCredentialUserEntity& updated_user,
+    UpdateUserInformationCallback callback) {
+  DCHECK(state_ == State::kReady && !get_credentials_callback_);
+  if (!authenticator_) {
+    // AuthenticatorRemoved() may have been called, but the observer would have
+    // seen a FidoAuthenticatorRemoved() call.
+    NOTREACHED();
+    return;
+  }
+  DCHECK(pin_token_);
+
+  authenticator_->UpdateUserInformation(
+      *pin_token_, credential_id, updated_user,
+      base::BindOnce(&OnUpdateUserInformation, std::move(callback)));
+}
+
 void CredentialManagementHandler::OnCredentialsMetadata(
     CtapDeviceResponseCode status,
     absl::optional<CredentialsMetadataResponse> response) {

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Kustutage olemasolevad andmed.</translation>
 <translation id="1146678959555564648">Ava VR</translation>
 <translation id="114825011539563458">Kõige olulisemad privaatsus- ja turvaseaded ühes kohas</translation>
+<translation id="1149401351239820326">Aegumiskuu</translation>
 <translation id="1154704303112745282">Leht pole võrguühenduseta saadaval: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Kasutatud</translation>
 <translation id="1171770572613082465">Vaadake populaarseid veebisaite, puudutades nuppu „Popid saidid”</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome'i funktsioonide otseteed</translation>
 <translation id="1344653310988386453">Lisage esiletõstmiseks link</translation>
 <translation id="1347468774581902829">Tegevuste haldamine</translation>
-<translation id="1353372385686746892">Chrome saadab rakenduse täiustamiseks Google'ile diagnostikaandmeid. <ph name="BEGIN_LINK" />Muuda<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Login välja ja keelan sünkroonimise?</translation>
 <translation id="1373696734384179344">Valitud sisu allalaadimiseks pole piisavalt mäluruumi.</translation>
 <translation id="1376578503827013741">Arvutamine …</translation>
@@ -405,6 +405,7 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="3398320232533725830">Järjehoidjate halduri avamine</translation>
 <translation id="3414952576877147120">Suurus:</translation>
 <translation id="3429160811076349561">Prooviversiooni funktsioonid on välja lülitatud</translation>
+<translation id="3435465986463792564">Kas teil on palju aknaid? Saate neid kõiki siin hallata.</translation>
 <translation id="3440975416244667276">Asjakohasema teabe nägemiseks puudutage pikalt</translation>
 <translation id="3443221991560634068">Praeguse lehe uuesti laadimine</translation>
 <translation id="3444179773590444986">Kas soovite saitide tumeda teema kohta tagasisidet jagada?</translation>
@@ -816,7 +817,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5956665950594638604">Chrome'i abikeskuse avamine uuel vahelehel</translation>
 <translation id="5957442310066583693">Oma sageli külastatud saitide nägemiseks puudutage avakuva nuppu</translation>
 <translation id="5958275228015807058">Leidke oma failid ja lehed jaotisest Allalaadimised</translation>
-<translation id="5962272973076519240">Inkognito seansi avamiseks kinnitage oma isik</translation>
 <translation id="5962718611393537961">Ahendamiseks puudutage</translation>
 <translation id="5964805880140440652">Selle lehe jagamiseks teise seadmega lülitage sünkroonimine Chrome'i seadetes sisse</translation>
 <translation id="5964869237734432770">Piltide kirjelduste peatam.</translation>
@@ -1187,6 +1187,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="804335162455518893">SD-kaarti ei leitud</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito vaheleht}other{<ph name="TAB_COUNT_NORMAL" /> inkognito vahelehte}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB on saadaval</translation>
+<translation id="8058655154417507695">Aegumisaasta</translation>
 <translation id="8058746566562539958">Ava uuel Chrome'i vahelehel</translation>
 <translation id="8063895661287329888">Järjehoidja lisamine ebaõnnestus.</translation>
 <translation id="806745655614357130">Hoia minu andmed eraldi</translation>

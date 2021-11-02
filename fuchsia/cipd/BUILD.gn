@@ -303,33 +303,31 @@ cipd_test_archive("tests") {
   ]
 }
 
-# Construct a consolidated directory of debugging symbols using the GNU
-# .build_id structure for CIPD archival.
-_build_ids_target = "debug_symbol_directory"
-_debug_symbols_archive_name = "debug_symbols"
-_debug_symbols_outdir =
-    "${target_gen_dir}/${_debug_symbols_archive_name}/${_build_ids_target}"
+# Construct a consolidated directory of web_engine debugging symbols using the
+# GNU .build_id structure for CIPD archival.
+_web_engine_build_ids_target = "web_engine_debug_symbol_directory"
+_web_engine_debug_symbols_archive_name = "web_engine_debug_symbols"
+_web_engine_debug_symbols_outdir = "${target_gen_dir}/${_web_engine_debug_symbols_archive_name}/${_web_engine_build_ids_target}"
 
-build_id_dir(_build_ids_target) {
+build_id_dir(_web_engine_build_ids_target) {
   testonly = true  # Some of the archives contain test packages.
-  output_path = _debug_symbols_outdir
-  deps = [ ":archives_with_symbols" ]
+  output_path = _web_engine_debug_symbols_outdir
+  deps = [ ":web_engine_archives_with_symbols" ]
 }
 
-fuchsia_cipd_package(_debug_symbols_archive_name) {
+fuchsia_cipd_package(_web_engine_debug_symbols_archive_name) {
   testonly = true
   package = "${package_base_path}/${_web_engine_directory}/${targetarch}/debug-symbols"
-  package_root = _debug_symbols_outdir
+  package_root = _web_engine_debug_symbols_outdir
   package_definition_name = "${target_name}.yaml"
   package_definition_dir = "${target_gen_dir}/${target_name}"
   description = "Debugging symbols for prebuilt binaries from Chromium."
   use_absolute_root_path = true
 
   directories = [ "." ]
-  deps = [ ":${_build_ids_target}" ]
+  deps = [ ":${_web_engine_build_ids_target}" ]
 }
 
-# TODO(crbug.com/1247812): Separately upload chrome's debug symbols.
 cipd_archive("chrome") {
   package_subdirectory = _chrome_directory
   description = "Prebuilt Chrome browser package."
@@ -338,24 +336,45 @@ cipd_archive("chrome") {
   sources = [ "${root_gen_dir}/chrome/app/chrome/chrome.far" ]
 }
 
+_chrome_build_ids_target = "chrome_debug_symbol_directory"
+_chrome_debug_symbols_archive_name = "chrome_debug_symbols"
+_chrome_debug_symbols_outdir = "${target_gen_dir}/${_chrome_debug_symbols_archive_name}/${_chrome_build_ids_target}"
+
+build_id_dir(_chrome_build_ids_target) {
+  testonly = true  # Some of the archives contain test packages.
+  output_path = _chrome_debug_symbols_outdir
+  deps = [ ":chrome" ]
+}
+
+fuchsia_cipd_package(_chrome_debug_symbols_archive_name) {
+  testonly = true
+  package =
+      "${package_base_path}/${_chrome_directory}/${targetarch}/debug-symbols"
+  package_root = _chrome_debug_symbols_outdir
+  package_definition_name = "${target_name}.yaml"
+  package_definition_dir = "${target_gen_dir}/${target_name}"
+  description = "Debugging symbols for prebuilt binaries from Chromium."
+  use_absolute_root_path = true
+
+  directories = [ "." ]
+  deps = [ ":${_chrome_build_ids_target}" ]
+}
+
 # A group for production archives to ensure nothing is testonly.
-group("production_archives") {
+group("web_engine_production_archives") {
   deps = [
     ":cast_runner",
     ":web_engine",
     ":web_runner",
   ]
-  if (!is_chrome_branded) {
-    deps += [ ":chrome" ]
-  }
 }
 
 # Used by both the main group as well as :debug_symbols.
-group("archives_with_symbols") {
+group("web_engine_archives_with_symbols") {
   testonly = true  # tests and web_engine_shell are testonly.
   deps = [
-    ":production_archives",
     ":tests",
+    ":web_engine_production_archives",
     ":web_engine_shell",
   ]
 }
@@ -363,12 +382,18 @@ group("archives_with_symbols") {
 group("cipd") {
   testonly = true  # Some archives are testonly.
   deps = [
-    ":archives_with_symbols",
+    ":web_engine_archives_with_symbols",
 
     # Symbols are not uploaded for the following.
     ":chromedriver",
-    ":debug_symbols",
+    ":web_engine_debug_symbols",
   ]
+  if (!is_chrome_branded) {
+    deps += [
+      ":chrome",
+      ":chrome_debug_symbols",
+    ]
+  }
   visibility = []  # Required to replace the file default.
   visibility = [ "//fuchsia:gn_all" ]
 }

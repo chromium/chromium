@@ -623,7 +623,6 @@
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="1736269219679256369">允許忽略 SSL 警告網頁，繼續前往原本指定的頁面</translation>
 <translation id="174765717426930019">除非要求開啟彈出式視窗的網頁明確拒絕與該彈出式視窗互動，否則一律允許透過 <ph name="BLANK_PAGE_NAME" /> 連結目標開啟的彈出式視窗進行這類互動 </translation>
-<translation id="1750315445671978749">封鎖所有下載作業</translation>
 <translation id="1751429117283165017">你可以透過這項政策建立網址模式清單，指定哪些網站無法要求使用者授予寫入權限，以寫入主機作業系統中檔案系統的檔案或目錄。
 
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
@@ -1001,7 +1000,6 @@
 <translation id="2204379573346866896">在這個小時內經過的分鐘數。</translation>
 <translation id="2204753382813641270">控制檔案櫃自動隱藏功能</translation>
 <translation id="2208976000652006649">使用 POST 的搜尋網址參數</translation>
-<translation id="2212603374276864511">允許使用者使用預先設定的桌面範本</translation>
 <translation id="2213059592185933570">啟用漫遊設定檔建立功能</translation>
 <translation id="2215238871726750562">如果將這項政策設為 True，系統不會在工作階段開始時啟動瀏覽器視窗。
 
@@ -1066,6 +1064,7 @@
 <translation id="2266422599396179941">允許使用者提出意見回饋</translation>
 <translation id="2269319728625047531">在登入期間允許顯示同步處理同意聲明</translation>
 <translation id="2270747976331889601">啟用本機信任錨點的傳輸層安全標準 (TLS) 1.3 安全功能。</translation>
+<translation id="22754818344448444">允許使用者選取要載入的桌面範本版面配置</translation>
 <translation id="2281496157391382819"> 控管 <ph name="PRODUCT_OS_NAME" />上受管理訪客工作階段的隱私權警告訊息。
 
       如果將這項政策設為 False, 系統會在受管理訪客工作階段中，停用登入畫面上的隱私權警告訊息和自動啟動通知。
@@ -1834,6 +1833,7 @@
 <translation id="3092059499596000593">將系統預設印表機設為列印預覽的預設選項</translation>
 <translation id="309416443108680956">指定當透過安全性權杖 (例如智慧型卡片) 驗證的使用者在工作階段中將該權杖移除時，系統要執行的動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不執行任何動作。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：鎖定螢幕，直到使用者再次驗證為止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：結束工作階段，並將使用者登出。如果不設定這項政策，系統會預設為 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">啟用的外掛程式清單</translation>
+<translation id="3101035417394748390">可透過剪貼簿同步功能在用戶端和主機之間傳輸的大小上限 (以位元組為單位)</translation>
 <translation id="3101501961102569744">選擇如何指定 Proxy 伺服器設定</translation>
 <translation id="3101709781009526431">日期與時間</translation>
 <translation id="3110248563985502478">這項政策已在 M88 版遭到淘汰，Chrome 已不再支援 Flash。如果將這項政策設為啟用，系統會將舊版外掛程式當做一般外掛程式使用。如果將這項政策設為停用，系統便不會使用舊版外掛程式。
@@ -2190,7 +2190,6 @@
 
       如果想進一步瞭解有效的網址模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3540935459049973317">個別應用程式的時間限制</translation>
-<translation id="354592434146464541">禁止使用者使用預先設定的桌面範本</translation>
 <translation id="3547954654003013442">Proxy 設定</translation>
 <translation id="3550122827225052130">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />。
 
@@ -2596,6 +2595,7 @@
       如果將這項政策設為啟用，快速解答功能將可存取所選內容。
       如果將這項政策設為停用，則快速解答功能無法存取所選內容。
       如果不設定這項政策，使用者可自行決定是否要允許快速解答功能存取所選內容。</translation>
+<translation id="4016700865356669962">如果將這項政策設為 Enabled，使用者就能使用桌面版面配置範本。如果將這項政策設為 Disabled 或不設定，則會導致使用者無法使用這些範本。</translation>
 <translation id="4020682745012723568">Android 應用程式無法存取傳輸到該使用者設定檔的 Cookie。</translation>
 <translation id="4025500273782820766">如有外部通訊協定對話方塊詢問使用者是否要略過日後的確認提示，允許使用者選取 [一律允許]</translation>
 <translation id="402759845255257575">不允許任何網站執行 JavaScript</translation>
@@ -3495,7 +3495,6 @@
       如果不設定這項政策，系統不會套用任何限制；不論使用哪種 <ph name="PRODUCT_NAME" /> 版本，使用者皆可登入。
 
       此處的「版本」可以指確切版本 (例如「61.0.3163.120」)，也可以指版本前置字元 (例如「61.0」)。  </translation>
-<translation id="5247006254130721952">封鎖危險下載作業</translation>
 <translation id="5247973380763021389">禁止使用者雲端政策覆寫裝置雲端政策。</translation>
 <translation id="5249453807420671499">使用者可以新增 Kerberos 帳戶</translation>
 <translation id="5252210248395576403">這項政策可讓快速解答功能存取所選內容，並將相關資訊傳送給伺服器，進而取得翻譯結果。
@@ -3757,7 +3756,6 @@
 <translation id="5521875416764302911">禁止使用者登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">允許向 Quirks Server 發送查詢，並有機會下載硬體專屬設定檔</translation>
 <translation id="5526701598901867718">全部 (不安全)</translation>
-<translation id="5530347722229944744">封鎖有安全疑慮的下載作業</translation>
 <translation id="5534079385061985566">啟用完整還原功能。</translation>
 <translation id="5535256585099022933">設定重新啟動的時間間隔</translation>
 <translation id="5535973522252703021">Kerberos 委派伺服器許可清單</translation>
@@ -3971,7 +3969,6 @@
 <translation id="5814301096961727113">設定互動朗讀在登入畫面的預設狀態</translation>
 <translation id="5815129011704381141">更新完成後自動重新啟動</translation>
 <translation id="5815990343032461023">舊行為：Kiosk Chrome 應用程式會由擴充功能系統透過擴充功能資訊清單中的更新網址進行更新，也會經由快取政策中管理員使用的更新網址完成更新</translation>
-<translation id="5816106589769772877">如果將這項政策設為 Enabled，使用者就能使用預先設定的桌面版面配置範本。如果將這項政策設為 Disabled 或不設定，則會導致使用者無法使用這些範本。</translation>
 <translation id="582857022372205358">啟用短邊雙面列印</translation>
 <translation id="5830196507442186669">允許裝置在 <ph name="PRODUCT_OS_NAME" />中使用 <ph name="BOREALIS_NAME" /></translation>
 <translation id="5832274826894536455">已淘汰的政策</translation>
@@ -4127,7 +4124,6 @@
 <translation id="6019606564278029236">允許遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="6022948604095165524">起始動作</translation>
 <translation id="602318745029752898">允許使用隨選朗讀中的加強型網路文字轉語音功能</translation>
-<translation id="6025267044008029374">封鎖惡意的下載內容 (建議)</translation>
 <translation id="6026722971789064331">控管使用 File System API 寫入的權限</translation>
 <translation id="602728333950205286">預設搜尋引擎互動智慧搜尋網址</translation>
 <translation id="603410445099326293">使用 POST 的建議網址參數</translation>
@@ -4390,6 +4386,7 @@
 <translation id="6371561334154580937">在最後一個關閉的視窗上顯示登出對話方塊。</translation>
 <translation id="6372105930898423193">允許重新啟用 AppCache 功能 (即使預設值為停用)。</translation>
 <translation id="6376659517206731212">可強制實行</translation>
+<translation id="6377031865393559909">允許使用者使用桌面範本</translation>
 <translation id="6378076389057087301">指定會影響電源管理的音訊活動</translation>
 <translation id="6378393933102834628">如果將這項政策設為 True，系統會顯示應用程式捷徑。如果將這項政策設為 False，系統一律不會顯示應用程式捷徑。
 
@@ -4593,21 +4590,6 @@
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
 <translation id="663685822663765995">限制列印色彩模式</translation>
-<translation id="6640989746632867803">如果設定這項政策，使用者無法略過下載作業安全性判斷。
-
-       這項政策可設定的值：
-
-      * 設為「封鎖危險下載作業」：除了會引發安全性警告的下載作業以外，其他下載作業都可正常執行。
-
-      * 設為「封鎖有安全疑慮的下載作業」：除了有安全疑慮而會引發安全性警告的下載作業以外，其他下載作業都可正常執行。
-
-      * 設為「封鎖所有下載作業」：所有下載作業都會遭到封鎖。
-
-      * 設為「封鎖惡意下載作業」：除了系統判定為極有可能是惡意軟體的檔案以外，其他下載作業都可正常執行。與危險下載作業不同的是，這項評估不會將檔案類型納入考量，但會將主機納入考量。
-
-      * 設為「無特殊限制」：系統會根據安全性的分析結果，檢查下載作業是否符合一般安全限制。
-
-      注意：這些限制適用於由網頁內容以及 [下載連結...] 選單選項所觸發的下載作業，但不適用於目前顯示網頁的下載作業，以及透過列印選項儲存為 PDF 檔的下載作業。如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="6641981670621198190">停止支援 3D 圖形 API</translation>
 <translation id="6642682198621199507">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
 
@@ -4901,6 +4883,7 @@
       如果將這項政策設為停用，那麼已註冊的裝置就不會記錄或回報音訊狀態。</translation>
 <translation id="6929746927224321095">停用自動填入功能</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
+<translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
 <translation id="6946652757373377924">
       這項政策已在 M77 版中移除。
@@ -5750,7 +5733,6 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於螢幕的關閉延遲時間 (如有設定) 和閒置延遲時間。</translation>
 <translation id="7974114691960514888">系統不再支援這項政策。連線至遠端用戶時，啟用 STUN 使用量和轉送伺服器。如果啟用這項設定，那麼即使遠端主機電腦被防火牆隔開，這台電腦也能發現遠端主機電腦並建立連結。如果停用這項設定，並且外傳 UDP 連結遭到防火牆篩選，則這台電腦只會與當地網路內的主機電腦建立連線。</translation>
 <translation id="7976157349247117979">「<ph name="PRODUCT_NAME" />」目的地名稱</translation>
-<translation id="7980227303582973781">無特殊限制</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
@@ -6000,6 +5982,17 @@
 
           如果未設定這項政策，系統預設會停用語音輸入功能，但使用者隨時可以啟用這項功能。</translation>
 <translation id="8293414596801971604">用於比對印表機顯示名稱的規則運算式。</translation>
+<translation id="8293509904023267821">如果設定這項政策，系統會根據政策設定的限制截斷主機接收和傳送的剪貼簿資料。
+
+          如果值設為 0，則會停用剪貼簿同步功能。
+
+          這項政策會同時影響遠端存取和遠端支援情境。
+
+          在未設定的情況下，這項政策不會有任何作用。
+
+          如果為這項政策設定低於下限或高於上限的值，可能會導致主機無法啟動。
+
+          請注意，剪貼簿的實際大小上限是根據 WebRTC 資料版本訊息大小上限而定，無法透過這項政策設定。</translation>
 <translation id="8294750666104911727">無論「ChromeFrameRendererSettings」政策為何，一般而言，X-UA-Compatible 設為 chrome=1 的網頁將會在 <ph name="PRODUCT_FRAME_NAME" /> 中開啟。
 
           如果你啟用這項設定，系統將不會掃描網頁的中繼標記。

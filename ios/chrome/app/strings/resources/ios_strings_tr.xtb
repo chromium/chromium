@@ -525,6 +525,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6127379762771434464">Öğe kaldırıldı</translation>
 <translation id="6136914049981179737">Sn. önce</translation>
 <translation id="6144589619057374135">Şunu Gizli modda aç: ${url}</translation>
+<translation id="6159839020698489198">isteğe bağlı</translation>
 <translation id="6177442314419606057">Chrome'da ara</translation>
 <translation id="6184086493125982861">Sekmeleri Göster</translation>
 <translation id="6187302354554850004">Son senkronizasyon tarihi: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 Her site için benzersiz bir şifre kullanmaya çalışın.</translation>
 <translation id="651505212789431520">Senkronizasyon iptal edilsin mi? Senkronizasyonu istediğiniz zaman Ayarlar'dan açabilirsiniz.</translation>
 <translation id="6524918542306337007">Gizli Mod Kullanılamıyor</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Yakınlaştır</translation>
 <translation id="6585618849026997638">Önemli gördüğünüz sayfalara yer işareti koyarak geri dönebilirsiniz.</translation>
 <translation id="6603393121510733479">Kuruluşunuz gizli taramayı kapattı.
@@ -623,6 +625,7 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="6851516051005285358">Masaüstü Sitesi İste</translation>
 <translation id="6858855187367714033">Tarandı</translation>
 <translation id="6859944681507688231">QR kodunu veya kredi kartını taramak için ayarlardan kamerayı etkinleştirin.</translation>
+<translation id="6867369562105931222">şifre</translation>
 <translation id="6869389390665537774">Ziyaret ettiğiniz sayfaları görebilir ve geçmişinizden silebilirsiniz</translation>
 <translation id="6873263987691478642">Bölünmüş Görünüm</translation>
 <translation id="6888009575607455378">Değişikliklerinizi iptal etmek istediğinizden emin misiniz?</translation>

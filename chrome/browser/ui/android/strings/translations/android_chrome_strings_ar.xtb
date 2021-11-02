@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
 <translation id="1146678959555564648">‏إدخال VR</translation>
 <translation id="114825011539563458">أهم عناصر التحكّم في الخصوصية والأمان من مكان واحد</translation>
+<translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1154704303112745282">لا تتوفّر الصفحة بلا اتصال بالإنترنت: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">المستخدَمة</translation>
 <translation id="1171770572613082465">عرض المواقع الإلكترونية الشائعة من خلال النقر على الزر "أهم المواقع"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">‏اختصارات ميزات Google Chrome</translation>
 <translation id="1344653310988386453">تضمين رابط يؤدي إلى النصوص التي تم تمييزها</translation>
 <translation id="1347468774581902829">إدارة النشاط</translation>
-<translation id="1353372385686746892">‏للمساعدة في تحسين التطبيق، يرسل Chrome بيانات التشخيص إلى Google. <ph name="BEGIN_LINK" />تغيير<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">هل تريد تسجيل الخروج وإيقاف المزامنة؟</translation>
 <translation id="1373696734384179344">لا توجد ذاكرة كافية لتنزيل المحتوى المحدد.</translation>
 <translation id="1376578503827013741">جارٍ الحوسبة...</translation>
@@ -405,6 +405,7 @@
 <translation id="3398320232533725830">فتح مدير الإشارات المرجعية</translation>
 <translation id="3414952576877147120">الحجم:</translation>
 <translation id="3429160811076349561">تم إيقاف ميزات الإصدار التجريبي.</translation>
+<translation id="3435465986463792564">في حال ظهور العديد من النوافذ، يمكنك إدارتها من هنا.</translation>
 <translation id="3440975416244667276">انقر مع الاستمرار لعرض معلومات أكثر صلة</translation>
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
 <translation id="3444179773590444986">هل تريد مشاركة ملاحظاتك وآرائك حول وضع "المظهر الداكن" للمواقع الإلكترونية؟</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">‏فتح مركز مساعدة Chrome في علامة تبويب جديدة</translation>
 <translation id="5957442310066583693">للاطّلاع على أهم المواقع الإلكترونية، انقر على زر "الشاشة الرئيسية".</translation>
 <translation id="5958275228015807058">العثور على الملفات والصفحات في مجلد "المحتوى الذي تم تنزيله"</translation>
-<translation id="5962272973076519240">إثبات هويتك لفتح علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="5962718611393537961">النقر للتصغير</translation>
 <translation id="5964805880140440652">‏لمشاركة هذه الصفحة مع جهاز آخر، يُرجى تفعيل المزامنة في إعدادات Chrome.</translation>
 <translation id="5964869237734432770">إيقاف عرض أوصاف الصور</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">‏لم يتم العثور على بطاقة SD.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{علامة تبويب واحدة في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_NORMAL" />)}few{<ph name="TAB_COUNT_NORMAL" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_NORMAL" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="8051695050440594747">هناك <ph name="MEGABYTES" /> ميغابايت متوفرة</translation>
+<translation id="8058655154417507695">سنة انتهاء الصلاحية</translation>
 <translation id="8058746566562539958">‏فتح بعلامة تبويب Chrome جديدة</translation>
 <translation id="8063895661287329888">تعذّرت إضافة الإشارة المرجعية.</translation>
 <translation id="806745655614357130">الحفاظ على البيانات التابعة لي منفصلة</translation>

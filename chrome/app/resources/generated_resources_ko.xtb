@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">직장</translation>
 <translation id="1122198203221319518">도구(&amp;T)</translation>
 <translation id="1122242684574577509">인증에 실패했습니다. 클릭하여 사용 중인 Wi-Fi 네트워크(<ph name="NETWORK_ID" />)의 로그인 페이지로 이동하세요.</translation>
+<translation id="1122913801042512795">계정 로그인 정보가 오래되었습니다. 로그아웃한 다음 다시 로그인하세요.</translation>
 <translation id="1122960773616686544">북마크 이름</translation>
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)처럼 보입니다.</translation>
@@ -1584,7 +1585,7 @@
 <translation id="2602501489742255173">위로 스와이프하여 시작하기</translation>
 <translation id="2603115962224169880">컴퓨터 정리</translation>
 <translation id="2603355571917519942">Voice Match가 준비됨</translation>
-<translation id="2604138917550693049">Google 렌즈로 이미지 검색하기</translation>
+<translation id="2604138917550693049">Google 렌즈로 이미지 검색</translation>
 <translation id="2604255671529671813">네트워크 연결 오류</translation>
 <translation id="2605668923777146443">Better Together 옵션을 확인하려면 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />으로 이동하세요</translation>
 <translation id="2606246518223360146">데이터 연결</translation>
@@ -3883,7 +3884,7 @@
 <translation id="5051836348807686060">선택한 언어의 맞춤법 검사가 지원되지 않습니다.</translation>
 <translation id="5052499409147950210">사이트 수정</translation>
 <translation id="505347685865235222">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Google 렌즈로 이미지 검색하기</translation>
+<translation id="5053962746715621840">Google 렌즈로 이미지 검색</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="505776528429481161">간편하게 근처 기기 연결 및 설정</translation>
@@ -7509,6 +7510,7 @@
 <translation id="8879284080359814990">탭으로 표시(&amp;S)</translation>
 <translation id="8879921471468674457">로그인 정보 저장</translation>
 <translation id="8880054210564666174">연락처 목록을 다운로드할 수 없습니다. 네트워크 연결을 확인하거나 <ph name="LINK_BEGIN" />다시 시도해 주세요<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">설정을 열어 <ph name="USB_DEVICE_NAME" /> 기기를 Linux 또는 Parallels Desktop에 연결하세요.</translation>
 <translation id="8881020143150461183">다시 시도해 주세요. 기술 지원이 필요하면 <ph name="CARRIER_NAME" />에 문의하세요.</translation>
 <translation id="8883273463630735858">터치패드 가속 사용</translation>
 <translation id="8884570509232205463">기기가 <ph name="UNLOCK_TIME" />에 잠깁니다.</translation>

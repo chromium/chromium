@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1146678959555564648">Увійти у VR-режим</translation>
 <translation id="114825011539563458">Переглядайте найважливіші елементи керування конфіденційністю та безпекою на одній сторінці</translation>
+<translation id="1149401351239820326">Місяць закінчення терміну дії</translation>
 <translation id="1154704303112745282">Сторінка недоступна в режимі офлайн: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Використано</translation>
 <translation id="1171770572613082465">Натисніть кнопку "Популярні сайти", щоб переглянути їх.</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Комбінації клавіш для функцій Google Chrome</translation>
 <translation id="1344653310988386453">Включити посилання на виділений текст</translation>
 <translation id="1347468774581902829">Керувати діями</translation>
-<translation id="1353372385686746892">Щоб покращити додаток, Chrome надсилає дані про діагностику в Google <ph name="BEGIN_LINK" />Змінити<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Вийти й вимкнути синхронізацію?</translation>
 <translation id="1373696734384179344">Недостатньо пам’яті, щоб завантажити вибраний вміст.</translation>
 <translation id="1376578503827013741">Обчислення…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">Відкрити Довідковий центр Chrome у новій вкладці</translation>
 <translation id="5957442310066583693">Щоб переглянути свої улюблені сайти, натисніть кнопку домашньої сторінки</translation>
 <translation id="5958275228015807058">Знаходьте свої файли та сторінки в розділі "Завантаження"</translation>
-<translation id="5962272973076519240">Щоб розблокувати анонімний режим, підтвердьте свою особу</translation>
 <translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5964805880140440652">Щоб ця сторінка була доступна на іншому пристрої, увімкніть синхронізацію в налаштуваннях Chrome</translation>
 <translation id="5964869237734432770">Не показувати описи</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">Карту SD не знайдено</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> анонімна вкладка}one{<ph name="TAB_COUNT_NORMAL" /> анонімна вкладка}few{<ph name="TAB_COUNT_NORMAL" /> анонімні вкладки}many{<ph name="TAB_COUNT_NORMAL" /> анонімних вкладок}other{<ph name="TAB_COUNT_NORMAL" /> анонімної вкладки}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> МБ доступно</translation>
+<translation id="8058655154417507695">Рік закінчення терміну дії</translation>
 <translation id="8058746566562539958">Відкрити в новій вкладці Chrome</translation>
 <translation id="8063895661287329888">Не вдалося додати закладку.</translation>
 <translation id="806745655614357130">Зберігати мої дані окремо</translation>

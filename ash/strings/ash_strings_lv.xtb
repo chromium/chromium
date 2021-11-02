@@ -24,6 +24,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="109942774857561566">Man ir garlaicīgi</translation>
 <translation id="1104084341931202936">Rādīt pieejamības iestatījumus</translation>
 <translation id="1104621072296271835">Kopā jūsu ierīces darbojas vēl labāk</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> iesaka atjaunināt šo <ph name="DEVICE_TYPE" /> datoru.</translation>
 <translation id="1119348796022671382">Motīva krāsu režīmā vieglai saskarnes iekrāsošanai tiek izmantotas fona tapetes krāsas.</translation>
 <translation id="112308213915226829">Automātiski slēpt plauktu</translation>
@@ -373,6 +374,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3665889125180354336">Ierakstīt mikrofona skaņu</translation>
 <translation id="3680908746918359504">Notīrīt visas atzīmes</translation>
 <translation id="36813544980941320">Wi-Fi tīkli tiks kopīgoti jūsu tālrunī un <ph name="DEVICE_NAME" /> ierīcē.</translation>
+<translation id="3701206655856637070">Tagad varat mainīt, kur tiek saglabāti ekrānuzņēmumi.</translation>
 <translation id="3702809606464356667">Tiek rādīti pašreizējās darbvietas logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti visu darbvietu logi.</translation>
 <translation id="3702846122927433391">Nigērijas iedzīvotāju skaits</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3969043077941541451">Izslēgt</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="3977512764614765090">Akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%, un notiek uzlāde.</translation>
+<translation id="3986082989454912832">Atbildēt</translation>
 <translation id="3995138139523574647">USB-C ierīce (pieslēgvieta labajā pusē aizmugurē)</translation>
 <translation id="40062176907008878">Rokraksts</translation>
 <translation id="4017989525502048489">Lāzera rādītājs</translation>
@@ -456,7 +459,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="4274537685965975248">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + lejupvērstais bulttaustiņš. Lai izmantotu beigvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + labais bulttaustiņš.</translation>
 <translation id="4279490309300973883">Spoguļošana</translation>
 <translation id="4285498937028063278">Atspraust</translation>
-<translation id="4292904812939562398">Nesen izmantotās lietotnes</translation>
 <translation id="429402653707266969">Pārslēgt rīkjoslas atrašanās vietu</translation>
 <translation id="4294319844246081198">Labrīt, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Notīrīt visus paziņojumus (kopā <ph name="COUNT" />)</translation>
@@ -562,6 +564,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Izslēgt paziņojumus</translation>
 <translation id="4946376291507881335">Tvert</translation>
 <translation id="495046168593986294">Ritināt uz augšu</translation>
 <translation id="4952936045814352993">Funkcija “Atrast tālruni” nav pieejama, ja brīdinājumu skaņas ir atspējotas</translation>
@@ -905,6 +908,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7595633564847427181">P</translation>
 <translation id="7600875258240007829">Skatīt visus paziņojumus</translation>
 <translation id="7607002721634913082">Apturēta</translation>
+<translation id="7610198039767537854">Skatiet pēdējos fotoattēlus no sava tālruņa kameras fotoalbuma šajā ierīcē: <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7618774594543487847">Neitrāls</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Flomāsters</translation>

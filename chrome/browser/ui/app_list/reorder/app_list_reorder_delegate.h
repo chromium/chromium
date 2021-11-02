@@ -50,10 +50,17 @@ class AppListReorderDelegate {
   ~AppListReorderDelegate();
 
   // Returns reorder params which indicate the changes in ordinals to ensure
-  // `order` among sync items. This function ensures that the number of updates
-  // is as few as possible.
-  std::vector<reorder::ReorderParam> GenerateReorderParams(
-      ash::AppListSortOrder order) const;
+  // `order` among the specified sync items. This function ensures that the
+  // number of updates is as few as possible.
+  std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
+      ash::AppListSortOrder order,
+      const AppListSyncableService::SyncItemMap& sync_item_map) const;
+
+  // Similar to `GenerateReorderParamsForSyncItems()` but accepts a vector of
+  // `ChromeAppListItem` pointers as the parameter.
+  std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
+      ash::AppListSortOrder order,
+      const std::vector<const ChromeAppListItem*>& app_list_items);
 
   // Calculates the position for an incoming item. `local_items` indicates the
   // elements in the active app list model before adding the new item. Note that

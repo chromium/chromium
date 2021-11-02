@@ -132,6 +132,9 @@ class CORE_EXPORT AuditsIssue {
       bool shared_buffer_transfer_allowed,
       SharedArrayBufferIssueType issue_type);
 
+  static void ReportDeprecationIssue(ExecutionContext* execution_context,
+                                     const String& message);
+
   static AuditsIssue CreateBlockedByResponseIssue(
       network::mojom::BlockedByResponseReason reason,
       uint64_t identifier,

@@ -282,8 +282,8 @@ void Frame::NotifyUserActivationInFrameTree(
     const SecurityOrigin* security_origin =
         local_frame->GetSecurityContext()->GetSecurityOrigin();
 
-    Frame& root = Tree().Top();
-    for (Frame* node = &root; node; node = node->Tree().TraverseNext(&root)) {
+    for (Frame* node = &Tree().Top(); node;
+         node = node->Tree().TraverseNext()) {
       auto* local_frame_node = DynamicTo<LocalFrame>(node);
       if (local_frame_node &&
           security_origin->CanAccess(
@@ -303,7 +303,7 @@ bool Frame::ConsumeTransientUserActivationInFrameTree() {
   if (IsA<LocalFrame>(root))
     root.user_activation_state_.RecordPreconsumptionUma();
 
-  for (Frame* node = &root; node; node = node->Tree().TraverseNext(&root))
+  for (Frame* node = &root; node; node = node->Tree().TraverseNext())
     node->user_activation_state_.ConsumeIfActive();
 
   return was_active;

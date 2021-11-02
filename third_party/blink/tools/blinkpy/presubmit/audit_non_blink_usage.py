@@ -112,7 +112,7 @@ _CONFIG = [
             # //base/allocator/partition_allocator/partition_alloc_constants.h
             'base::kAlignment',
 
-            # //base/bind_post_task.h
+            # //base/task/bind_post_task.h
             'base::BindPostTask',
 
             # //base/bits.h

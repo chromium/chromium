@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -1586,7 +1587,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser"
     enum="IsSyncPasswordHashSaved" expires_after="2022-10-11">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     This metric is recorded shortly after Chrome Startup, only for Advanced
@@ -1937,7 +1938,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.NonSyncPasswordHashChange"
     enum="GaiaPasswordHashChange" expires_after="2022-10-04">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     This metric reports a type of a password hash change event where the
@@ -2399,7 +2400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.RemoveCompromisedCredentials.RemoveReason"
     enum="RemoveCompromisedCredentialsReason" expires_after="2021-12-12">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Collects the cause of why remove SQL statement is called on the compromised
@@ -2620,7 +2621,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.SyncPasswordHashChange"
     enum="GaiaPasswordHashChange" expires_after="2021-12-05">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     This metric reports a type of a sync password hash change event. Recorded
@@ -3003,7 +3004,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordProtection.PageInfoAction"
     enum="PasswordProtectionWarningAction" expires_after="2022-08-15">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records how a user interacts with page info bubble that displays the
@@ -3040,7 +3041,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordProtection.PasswordProtectionResponseOrErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-24">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Response or error codes for PasswordProtectionRequest. Logged after chrome
@@ -3050,7 +3051,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordProtection.PasswordReuseSyncAccountType"
     enum="PasswordProtectionSyncAccountType" expires_after="2022-08-27">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     When password protection service detects a reuse of Chrome sync password,
@@ -3119,7 +3120,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordProtection.SampleReportSent" units="Boolean"
     expires_after="2022-10-31">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Logs when an event where users reuse their password or focus on a password

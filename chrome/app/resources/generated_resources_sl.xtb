@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Delo</translation>
 <translation id="1122198203221319518">&amp;Orodja</translation>
 <translation id="1122242684574577509">Preverjanje pristnosti ni uspelo. Kliknite, da obiščete prijavno stran za omrežje Wi-Fi, ki ga uporabljate (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Podrobnosti za prijavo v račun so zastarele. Odjavite se in se znova prijavite.</translation>
 <translation id="1122960773616686544">Ime zaznamka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1125550662859510761">Videti je <ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
@@ -1587,7 +1588,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2602501489742255173">Povlecite navzgor, če želite začeti</translation>
 <translation id="2603115962224169880">Čiščenje računalnika</translation>
 <translation id="2603355571917519942">Funkcija Voice Match je pripravljena</translation>
-<translation id="2604138917550693049">Iskanje slike z Googlom Lens</translation>
+<translation id="2604138917550693049">Išči sliko z Googlom Lens</translation>
 <translation id="2604255671529671813">Napaka v omrežni povezavi</translation>
 <translation id="2605668923777146443">Odprite <ph name="LINK_BEGIN" />nastavitve<ph name="LINK_END" />, če si želite ogledati možnosti funkcije Better Together.</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
@@ -3889,7 +3890,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="5051836348807686060">Preverjanje črkovanja za izbrane jezike ni podprto</translation>
 <translation id="5052499409147950210">Urejanje spletnega mesta</translation>
 <translation id="505347685865235222">Neimenovana skupina – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Iskanje slike z Googlom Lens</translation>
+<translation id="5053962746715621840">Išči sliko z Googlom Lens</translation>
 <translation id="5056950756634735043">Povezovanje z vsebnikom</translation>
 <translation id="5057110919553308744">Ko kliknete razširitev</translation>
 <translation id="505776528429481161">Preprosto povežite in nastavite naprave v bližini.</translation>
@@ -7520,6 +7521,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8879284080359814990">&amp;Pokaži kot zavihek</translation>
 <translation id="8879921471468674457">Shrani podatke za prijavo</translation>
 <translation id="8880054210564666174">Seznama stikov ni bilo mogoče prenesti. Preverite omrežno povezavo ali <ph name="LINK_BEGIN" />poskusite znova<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Odprite nastavitve, če želite napravo <ph name="USB_DEVICE_NAME" /> povezati z Linuxom ali programom Parallels Desktop.</translation>
 <translation id="8881020143150461183">Poskusite znova. Če potrebujete tehnično podporo, se obrnite na operaterja <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Omogočanje pospeševanja sledilne ploščice</translation>
 <translation id="8884570509232205463">Tvoja naprava se zdaj zaklene ob <ph name="UNLOCK_TIME" />.</translation>

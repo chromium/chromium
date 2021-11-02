@@ -67,6 +67,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
@@ -160,7 +161,11 @@ class BASE_EXPORT TimerBase {
   void StartInternal(const Location& posted_from, TimeDelta delay);
 
  private:
-  friend class BaseTimerTaskInternal;
+  friend class TaskDestructionDetector;
+
+  // Indicates that the scheduled task was destroyed from inside the queue.
+  // Stops the timer if it was running.
+  void OnTaskDestroyed();
 
   // Returns the task runner on which the task should be scheduled. If the
   // corresponding |task_runner_| field is null, the task runner for the current
@@ -210,8 +215,8 @@ class BASE_EXPORT TimerBase {
   // If true, |user_task_| is scheduled to run sometime in the future.
   bool is_running_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  WeakPtrFactory<TimerBase> weak_ptr_factory_
-      GUARDED_BY_CONTEXT(sequence_checker_){this};
+  // The handle to the posted delayed task.
+  DelayedTaskHandle delayed_task_handle_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace internal

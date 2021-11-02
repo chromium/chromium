@@ -190,13 +190,14 @@ void AppListClientImpl::OpenSearchResult(
   search_controller_->OpenResult(result, event_flags);
 }
 
-void AppListClientImpl::InvokeSearchResultAction(const std::string& result_id,
-                                                 int action_index) {
+void AppListClientImpl::InvokeSearchResultAction(
+    const std::string& result_id,
+    ash::SearchResultActionType action) {
   if (!search_controller_)
     return;
   ChromeSearchResult* result = search_controller_->FindSearchResult(result_id);
   if (result)
-    search_controller_->InvokeResultAction(result, action_index);
+    search_controller_->InvokeResultAction(result, action);
 }
 
 void AppListClientImpl::GetSearchResultContextMenuModel(
@@ -586,16 +587,27 @@ void AppListClientImpl::OnAppListSortRequested(int profile_id,
   requested_model_updater->OnSortRequested(order);
 }
 
-void AppListClientImpl::OnSetPositionRequested(
-    int profile_id,
-    std::string id,
-    const syncer::StringOrdinal& new_position) {
+void AppListClientImpl::OnAppListSortRevertRequested(int profile_id) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
   if (requested_model_updater != current_model_updater_ ||
       !requested_model_updater) {
     return;
   }
-  requested_model_updater->HandleSetPosition(std::move(id), new_position);
+  requested_model_updater->OnSortRevertRequested();
+}
+
+void AppListClientImpl::OnSetPositionRequested(
+    int profile_id,
+    std::string id,
+    const syncer::StringOrdinal& new_position,
+    ash::RequestPositionUpdateReason reason) {
+  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  if (requested_model_updater != current_model_updater_ ||
+      !requested_model_updater) {
+    return;
+  }
+  requested_model_updater->HandleSetPosition(std::move(id), new_position,
+                                             reason);
 }
 
 void AppListClientImpl::OnMoveItemToFolderRequested(

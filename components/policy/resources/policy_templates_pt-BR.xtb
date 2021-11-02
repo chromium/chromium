@@ -620,7 +620,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês). O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="1736269219679256369">Permitir a continuação na página de aviso SSL</translation>
 <translation id="174765717426930019">Permitir que todos os pop-ups abertos com direcionamento para <ph name="BLANK_PAGE_NAME" /> interajam com a página que abriu o pop-up, a menos que ela rejeite explicitamente a interação </translation>
-<translation id="1750315445671978749">Bloquear todos os downloads</translation>
 <translation id="1751429117283165017">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites não podem pedir que os usuários concedam permissão de gravação de arquivos ou diretórios no sistema de arquivos do sistema operacional do host.
 
       Se a política não tiver definição, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, as configurações pessoais dos usuários serão aplicadas.
@@ -1011,7 +1010,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2204379573346866896">Minutos decorridos da hora atual.</translation>
 <translation id="2204753382813641270">Controlar a ocultação automática da estante</translation>
 <translation id="2208976000652006649">Parâmetros para URL de pesquisa que usa POST</translation>
-<translation id="2212603374276864511">Permitir que os usuários usem modelos de espaço de trabalho predefinidos</translation>
 <translation id="2213059592185933570">Permitir a criação de perfis de roaming</translation>
 <translation id="2215238871726750562">Se a política for definida como verdadeira, a janela do navegador não será aberta no início da sessão.
 
@@ -1077,6 +1075,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2266422599396179941">Permitir que os usuários enviem feedback</translation>
 <translation id="2269319728625047531">Ativa a exibição do consentimento de sincronização durante o login</translation>
 <translation id="2270747976331889601">Ativa um recurso de segurança TLS 1.3 para âncoras de confiança locais.</translation>
+<translation id="22754818344448444">Permitir que os usuários selecionem um modelo de layout do espaço de trabalho para carregamento</translation>
 <translation id="2281496157391382819"> Controla o alerta de privacidade da Sessão de visitante gerenciada no <ph name="PRODUCT_OS_NAME" />.
 
       Se esta política for definida como falsa, os alertas de privacidade na tela de login e a notificação de início automático dentro da Sessão de visitante serão desativados.
@@ -1857,6 +1856,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3092059499596000593">Usar a impressora padrão do sistema como a escolha padrão na visualização de impressão</translation>
 <translation id="309416443108680956">Especifica o que acontece quando um usuário que está fazendo a autenticação com um token de segurança (por exemplo, com um cartão inteligente) remove o token durante a sessão. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: nada acontece. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: a tela é bloqueada até que o usuário faça a autenticação novamente. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: a sessão é encerrada e o usuário é desconectado. Se esta política não for definida, o comportamento padrão será <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lista de plug-ins ativados</translation>
+<translation id="3101035417394748390">O tamanho máximo, em bytes, que pode ser transferido entre cliente e host pela sincronização da área de transferência</translation>
 <translation id="3101501961102569744">Escolher o modo de especificar as configurações do servidor proxy</translation>
 <translation id="3101709781009526431">Data e hora</translation>
 <translation id="3110248563985502478">Esta política foi suspensa na versão M88. O Flash não é mais compatível com o Chrome. Se a política for definida como "Ativada" os plug-ins desatualizados serão usados como plug-ins normais. Se a política for definida como "Desativada", os plug-ins desatualizados não serão usados.
@@ -2219,7 +2219,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Limites de tempo por app</translation>
-<translation id="354592434146464541">Não permitir que os usuários usem modelos de espaços de trabalho predefinidos</translation>
 <translation id="3547954654003013442">Configurações de proxy</translation>
 <translation id="3550122827225052130">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2633,6 +2632,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se ela estiver ativada, o "Respostas rápidas" poderá acessar conteúdos selecionados.
       Se estiver desativada, o "Respostas rápidas" não poderá acessar conteúdos selecionados.
       Se a política não for definida, os usuários poderão decidir se concedem ou não permissão para o "Respostas rápidas" acessar conteúdos selecionados.</translation>
+<translation id="4016700865356669962">Se a política for ativada, os usuários poderão usar modelos de layout do espaço de trabalho.  Se ela for desativada ou deixada sem definição, esses modelos não ficarão disponíveis.</translation>
 <translation id="4020682745012723568">Os cookies transferidos para o perfil do usuário não podem ser acessados por apps Android.</translation>
 <translation id="4025500273782820766">Permitir que os usuários selecionem "Sempre permitir" em uma caixa de diálogo de protocolo externo para pular as solicitações de confirmação futuras</translation>
 <translation id="402759845255257575">Não permitir que nenhum site execute o JavaScript</translation>
@@ -3538,7 +3538,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se esta política não for definida, nenhuma restrição será aplicada e o usuário poderá fazer login independentemente da versão do <ph name="PRODUCT_NAME" />.
 
       Aqui, "versão" pode ser uma versão exata, como "61.0.3163.120", ou um prefixo de versão, como "61.0".  </translation>
-<translation id="5247006254130721952">Bloquear downloads perigosos</translation>
 <translation id="5247973380763021389">Impedir que políticas da nuvem de usuários substituam políticas da nuvem da máquina.</translation>
 <translation id="5249453807420671499">Os usuários podem adicionar contas do Kerberos</translation>
 <translation id="5252210248395576403">Esta política permite que as Respostas rápidas acessem conteúdos selecionados e enviem informações ao servidor para receber resultados de tradução.
@@ -3802,7 +3801,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5521875416764302911">Impedir que os usuários façam login no <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">Permitir consultas ao Quirks Server e possíveis downloads de arquivos de configuração específicos de hardware</translation>
 <translation id="5526701598901867718">Todos (não seguro)</translation>
-<translation id="5530347722229944744">Bloquear downloads potencialmente perigosos</translation>
 <translation id="5534079385061985566">Ativar o recurso de restauração completa.</translation>
 <translation id="5535256585099022933">Configurar o intervalo de tempo para reinicialização</translation>
 <translation id="5535973522252703021">Lista branca do servidor de delegação Kerberos</translation>
@@ -4035,7 +4033,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5814301096961727113">Definir estado padrão do feedback falado na tela de login</translation>
 <translation id="5815129011704381141">Reinicializar automaticamente após a atualização</translation>
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
-<translation id="5816106589769772877">Se a política for definida como "Ativada", os usuários poderão usar modelos de layout de área de trabalho pré-configurados.  Se a política for definida como "Desativada" ou não for definida, esses modelos não ficarão disponíveis.</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
 <translation id="5830196507442186669">Permitir que dispositivos usem a <ph name="BOREALIS_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas suspensas</translation>
@@ -4193,7 +4190,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6019606564278029236">Ativar a interação de usuários remotos com janelas elevadas em sessões de assistência remota</translation>
 <translation id="6022948604095165524">Ação na inicialização</translation>
 <translation id="602318745029752898">Permitir as vozes aprimoradas da conversão de texto em voz da rede no Selecionar para ouvir</translation>
-<translation id="6025267044008029374">Bloquear downloads maliciosos (recomendado)</translation>
 <translation id="6026722971789064331">Controlar o uso da API File System para gravação</translation>
 <translation id="602728333950205286">URL instantâneo do provedor de pesquisa padrão</translation>
 <translation id="603410445099326293">Parâmetros para URL de sugestões que usa POST</translation>
@@ -4478,6 +4474,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6371561334154580937">Mostrar a caixa de diálogo para saída na última janela fechada.</translation>
 <translation id="6372105930898423193">Permite que o recurso AppCache seja reativado mesmo se estiver desativado por padrão.</translation>
 <translation id="6376659517206731212">Pode ser obrigatória</translation>
+<translation id="6377031865393559909">Permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6378076389057087301">Especifica se a atividade de áudio afeta o gerenciamento de energia</translation>
 <translation id="6378393933102834628">Se a política for definida como verdadeira, o atalho de apps será exibido. Se ela for definida como falsa, o atalho não aparecerá.
 
@@ -4683,21 +4680,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="66265932317331474">Enviar informações da CPU</translation>
 <translation id="6628120204569232711">Informa o status de armazenamento</translation>
 <translation id="663685822663765995">Restringir o modo de cor de impressão</translation>
-<translation id="6640989746632867803">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
-
-       Se a política for definida como:
-
-      * "Bloquear downloads perigosos", todos os downloads serão permitidos, exceto os marcados com alertas de segurança.
-
-      * "Bloquear downloads potencialmente perigosos", todos os downloads serão permitidos, exceto os marcados com alertas de segurança para downloads potencialmente perigosos.
-
-      * "Bloquear todos os downloads", todos os downloads serão bloqueados.
-
-      * "Bloquear downloads maliciosos", todos os downloads serão permitidos, exceto os determinados como malware. Diferentemente dos downloads perigosos, esta política não considera o tipo de arquivo, mas sim o host.
-
-      * "Nenhuma restrição especial", os downloads passarão pelas restrições normais de segurança de acordo com os resultados de análise de segurança.
-
-      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Elas não se aplicam à opção de fazer o download da página atualmente exibida nem de salvar como PDF nas opções de impressão. Leia mais sobre o "Navegação segura" (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Desativar o suporte a APIs para gráficos 3D</translation>
 <translation id="6642682198621199507">Se a política for definida, você poderá listar sites com permissão automática para acessar todas as portas seriais disponíveis.
 
@@ -4988,6 +4970,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Se a política for desativada, os dispositivos registrados não gravarão nem informarão o status do áudio.</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
+<translation id="6940243892299228102">Não permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6943577887654905793">Nome de preferência Mac/Linux:</translation>
 <translation id="6946652757373377924">
       Esta política foi removida na versão M77.
@@ -5845,7 +5828,6 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de desligamento da tela (se definido) e ao intervalo de inatividade.</translation>
 <translation id="7974114691960514888">Esta política não é mais suportada. Ativa o uso de servidores STUN e de retransmissão ao estabelecer conexão a um cliente remoto. Se esta configuração estiver ativada, este computador pode descobrir e conectar-se a computadores host remotos mesmo se separados por um firewall. Se esta configuração estiver desativada e conexões de UDP enviadas forem filtradas pelo firewall, este computador só poderá estabelecer conexões a computadores host na rede local.</translation>
 <translation id="7976157349247117979">Nome do destino do <ph name="PRODUCT_NAME" /></translation>
-<translation id="7980227303582973781">Nenhuma restrição especial</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -6093,6 +6075,17 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
           Se a política não for definida, o ditado ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="8293414596801971604">Expressão regular para fazer a correspondência do nome de exibição da impressora.</translation>
+<translation id="8293509904023267821">Se esta política for definida, os dados da área de transferência enviados pelo host e para ele serão truncados até o limite definido.
+
+          Se um valor de 0 for definido, a sincronização da área de transferência ficará desativada.
+
+          Esta política afeta cenários de acesso e suporte remotos.
+
+          Ela não terá efeito se não for definida.
+
+          Se a política for definida com um valor que não está no intervalo mínimo/máximo, o host poderá não ser iniciado.
+
+          O limite superior do tamanho da área de transferência é baseado no tamanho máximo das mensagens no canal de dados WebRTC, que esta política não controla.</translation>
 <translation id="8294750666104911727">Normalmente as páginas com X-UA-Compatible configuradas para chrome=1 são renderizadas no <ph name="PRODUCT_FRAME_NAME" /> independentemente da política "ChromeFrameRendererSettings".
 
           Se você ativar essa configuração, não haverá a busca de metatags nas páginas.

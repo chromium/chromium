@@ -32,6 +32,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2185166961232948079">Chromium, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chromium a su gusto.</translation>
 <translation id="2294245788148774212">Opcional: Envía datos de uso y diagnóstico automáticamente a Google para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS.</translation>
+<translation id="2313870531055795960">Comprueba las URLs con una lista de sitios que no son seguros guardadas en Chromium. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chromium con ambos dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensión ha cambiado la página que se muestra al iniciar Chromium.</translation>
 <translation id="2396765026452590966">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al iniciar Chromium.</translation>
@@ -53,6 +54,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2837693172913560447">Se creará un perfil nuevo de Chromium para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Desinstalar de Chromium...</translation>
+<translation id="2850691299438350830">Te protege en Chromium y se puede usar para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="2885378588091291677">Administrador de tareas</translation>
 <translation id="2910007522516064972">Información de &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>

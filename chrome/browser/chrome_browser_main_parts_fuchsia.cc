@@ -14,8 +14,10 @@
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/process_lifecycle.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/notreached.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
 namespace {
@@ -200,6 +202,8 @@ ChromeBrowserMainPartsFuchsia::ChromeBrowserMainPartsFuchsia(
     StartupData* startup_data)
     : ChromeBrowserMainParts(parameters, startup_data) {}
 
+ChromeBrowserMainPartsFuchsia::~ChromeBrowserMainPartsFuchsia() = default;
+
 void ChromeBrowserMainPartsFuchsia::ShowMissingLocaleMessageBox() {
   // Locale data should be bundled for all possible platform locales,
   // so crash here to make missing-locale states more visible.
@@ -215,6 +219,14 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
   zx_status_t status =
       base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
   ZX_CHECK(status == ZX_OK, status);
+
+  // Publish the fuchsia.process.lifecycle.Lifecycle service to allow graceful
+  // teardown. If there is a |ui_task| then this is a browser-test and graceful
+  // shutdown is not required.
+  if (!parameters().ui_task) {
+    lifecycle_ = std::make_unique<base::ProcessLifecycle>(
+        base::BindOnce(&chrome::CloseAllBrowsersAndQuit));
+  }
 
   return ChromeBrowserMainParts::PreMainMessageLoopRun();
 }

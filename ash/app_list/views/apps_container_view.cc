@@ -120,11 +120,11 @@ constexpr int kPageSwitcherEndMargin = 16;
 // which is used as a margin for the `AppsGridView` contents.
 constexpr int kGridFadeoutZoneHeight = 24;
 
-// The space between sort buttons.
-constexpr int kSortButtonSpacing = 10;
+// The space between sort ui controls (including sort button and redo button).
+constexpr int kSortUiControlSpacing = 10;
 
-// The preferred size of a sort button.
-constexpr int kSortButtonPreferredSize = 20;
+// The preferred size of sort ui controls (like sort button and redo button).
+constexpr int kSortUiControlPreferredSize = 20;
 
 // The number of columns available for the ContinueSectionView.
 constexpr int kContinueColumnCount = 4;
@@ -135,55 +135,112 @@ constexpr int kSeparatorVerticalInset = 16;
 // The width of the separator.
 constexpr int kSeparatorWidth = 240;
 
-// SortButton ------------------------------------------------------------------
+// SortUiControl ---------------------------------------------------------------
 
-// A button for sorting the app icons on the launcher. Shown only when the
-// launcher apps sort is enabled.
-class SortButton : public views::ImageButton {
+class SortUiControl : public views::ImageButton {
  public:
-  METADATA_HEADER(SortButton);
-
-  SortButton(bool is_alphabetical, AppListViewDelegate* delegate)
-      : views::ImageButton(
-            base::BindRepeating(&SortButton::LauncherSortTriggered,
-                                base::Unretained(this))),
-        is_alphabetical_(is_alphabetical),
-        delegate_(delegate) {
+  SortUiControl(AppListViewDelegate* delegate,
+                views::Button::PressedCallback pressed_callback)
+      : views::ImageButton(pressed_callback), delegate_(delegate) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetPreferredSize(
-        gfx::Size(kSortButtonPreferredSize, kSortButtonPreferredSize));
+        gfx::Size(kSortUiControlPreferredSize, kSortUiControlPreferredSize));
 
     // This view is used behind the feature flag and is immature. Therefore
     // ignore it in a11y for now.
     GetViewAccessibility().OverrideIsIgnored(true);
   }
-  SortButton(const SortButton&) = delete;
-  SortButton& operator=(const SortButton&) = delete;
-  ~SortButton() override = default;
+  SortUiControl(const SortUiControl&) = delete;
+  SortUiControl& operator=(const SortUiControl&) = delete;
+  ~SortUiControl() override = default;
 
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    auto* color_provider = AshColorProvider::Get();
-    const SkColor icon_color = color_provider->GetContentLayerColor(
+    auto* inkdrop_host = views::InkDrop::Get(this);
+    AshColorProvider::Get()->DecorateInkDrop(
+        inkdrop_host, AshColorProvider::kConfigBaseColor |
+                          AshColorProvider::kConfigHighlightOpacity |
+                          AshColorProvider::kConfigHighlightOpacity);
+    views::InstallFixedSizeCircleHighlightPathGenerator(
+        this, kSortUiControlPreferredSize / 2);
+    views::InkDrop::UseInkDropForFloodFillRipple(inkdrop_host,
+                                                 /*highlight_on_hover=*/true,
+                                                 /*highlight_on_focus=*/true);
+  }
+
+ protected:
+  AppListViewDelegate* const delegate_;
+};
+
+// RedoButton ------------------------------------------------------------------
+
+// A button for reverting the temporary sort order if any.
+// TODO(https://crbug.com/1263999): remove `RedoButton` when the app list sort
+// is enabled as default.
+class RedoButton : public SortUiControl {
+ public:
+  METADATA_HEADER(RedoButton);
+
+  explicit RedoButton(AppListViewDelegate* delegate)
+      : SortUiControl(delegate,
+                      base::BindRepeating(&RedoButton::RevertAppListSort,
+                                          base::Unretained(this))) {}
+  RedoButton(const RedoButton&) = delete;
+  RedoButton& operator=(const RedoButton&) = delete;
+  ~RedoButton() override = default;
+
+ private:
+  // views::View:
+  void OnThemeChanged() override {
+    SortUiControl::OnThemeChanged();
+    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+    SetImage(views::Button::STATE_NORMAL,
+             gfx::CreateVectorIcon(kCloseButtonIcon, GetPreferredSize().width(),
+                                   icon_color));
+  }
+
+  void RevertAppListSort() {
+    views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(
+        views::InkDropState::ACTION_TRIGGERED);
+    delegate_->RevertAppListSort();
+  }
+};
+
+BEGIN_METADATA(RedoButton, views::View)
+END_METADATA
+
+// SortButton ------------------------------------------------------------------
+
+// A button for sorting the app icons on the launcher. Shown only when the
+// launcher apps sort is enabled.
+// TODO(https://crbug.com/1263999): remove `SortButton` when the app list sort
+// is enabled as default.
+class SortButton : public SortUiControl {
+ public:
+  METADATA_HEADER(SortButton);
+
+  SortButton(bool is_alphabetical, AppListViewDelegate* delegate)
+      : SortUiControl(delegate,
+                      base::BindRepeating(&SortButton::LauncherSortTriggered,
+                                          base::Unretained(this))),
+        is_alphabetical_(is_alphabetical) {}
+  SortButton(const SortButton&) = delete;
+  SortButton& operator=(const SortButton&) = delete;
+  ~SortButton() override = default;
+
+ private:
+  void OnThemeChanged() override {
+    SortUiControl::OnThemeChanged();
+    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kButtonIconColor);
     SetImage(views::Button::STATE_NORMAL,
              gfx::CreateVectorIcon(is_alphabetical_ ? kOverflowShelfLeftIcon
                                                     : kOverflowShelfRightIcon,
                                    GetPreferredSize().width(), icon_color));
-
-    auto* inkdrop_host = views::InkDrop::Get(this);
-    color_provider->DecorateInkDrop(
-        inkdrop_host, AshColorProvider::kConfigBaseColor |
-                          AshColorProvider::kConfigHighlightOpacity |
-                          AshColorProvider::kConfigHighlightOpacity);
-    views::InstallFixedSizeCircleHighlightPathGenerator(
-        this, kSortButtonPreferredSize / 2);
-    views::InkDrop::UseInkDropForFloodFillRipple(inkdrop_host,
-                                                 /*highlight_on_hover=*/true,
-                                                 /*highlight_on_focus=*/true);
   }
 
   void LauncherSortTriggered() {
@@ -194,24 +251,21 @@ class SortButton : public views::ImageButton {
                                : AppListSortOrder::kNameReverseAlphabetical);
   }
 
- private:
   // If true, apps are sorted by the app name alphabetical order; otherwise,
   // apps are sorted by the app name reverse alphabetical order.
   const bool is_alphabetical_;
-
-  AppListViewDelegate* const delegate_;
 };
 
 BEGIN_METADATA(SortButton, views::View)
 END_METADATA
 
-// SortButtonContainer ---------------------------------------------------------
+// SortUiControlContainer ------------------------------------------------------
 
-class SortButtonContainer : public views::View {
+class SortUiControlContainer : public views::View {
  public:
-  METADATA_HEADER(SortButtonContainer);
+  METADATA_HEADER(SortUiControlContainer);
 
-  explicit SortButtonContainer(AppListViewDelegate* delegate) {
+  explicit SortUiControlContainer(AppListViewDelegate* delegate) {
     // The layer is required in animation.
     SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);
 
@@ -219,7 +273,7 @@ class SortButtonContainer : public views::View {
     auto box_layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal,
         /*inside_border_insets=*/gfx::Insets(),
-        /*between_child_spacing=*/kSortButtonSpacing);
+        /*between_child_spacing=*/kSortUiControlSpacing);
     box_layout->set_main_axis_alignment(
         views::BoxLayout::MainAxisAlignment::kCenter);
     box_layout->set_cross_axis_alignment(
@@ -231,21 +285,24 @@ class SortButtonContainer : public views::View {
         std::make_unique<SortButton>(/*is_alphabetical_=*/true, delegate));
     AddChildView(
         std::make_unique<SortButton>(/*is_alphabetical_=*/false, delegate));
+    AddChildView(std::make_unique<RedoButton>(delegate));
 
     GetViewAccessibility().OverrideIsIgnored(true);
   }
-  SortButtonContainer(const SortButtonContainer&) = delete;
-  SortButtonContainer& operator=(const SortButtonContainer&) = delete;
-  ~SortButtonContainer() override = default;
+  SortUiControlContainer(const SortUiControlContainer&) = delete;
+  SortUiControlContainer& operator=(const SortUiControlContainer&) = delete;
+  ~SortUiControlContainer() override = default;
 };
 
-BEGIN_METADATA(SortButtonContainer, views::View)
+BEGIN_METADATA(SortUiControlContainer, views::View)
 END_METADATA
 
 }  // namespace
 
 AppsContainerView::AppsContainerView(ContentsView* contents_view)
     : contents_view_(contents_view) {
+  AppListModelProvider::Get()->AddObserver(this);
+
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
   scrollable_container_ = AddChildView(std::make_unique<views::View>());
@@ -330,7 +387,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
 
   if (features::IsLauncherAppSortEnabled()) {
     sort_button_container_ =
-        AddChildView(std::make_unique<SortButtonContainer>(view_delegate));
+        AddChildView(std::make_unique<SortUiControlContainer>(view_delegate));
   }
 
   // NOTE: At this point, the apps grid folder and recent apps grids are not
@@ -342,6 +399,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
 }
 
 AppsContainerView::~AppsContainerView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+
   if (features::IsProductivityLauncherEnabled())
     apps_grid_view_->pagination_model()->RemoveObserver(this);
 
@@ -425,6 +484,16 @@ void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds) {
   app_list_folder_view()->UpdateAppListConfig(app_list_config_.get());
   if (recent_apps_)
     recent_apps_->UpdateAppListConfig(app_list_config_.get());
+}
+
+void AppsContainerView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  // Nothing to do if the apps grid views have not yet been initialized.
+  if (!app_list_config_)
+    return;
+
+  UpdateForActiveAppListModel();
 }
 
 void AppsContainerView::ShowFolderForItemView(
@@ -823,15 +892,8 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   UpdateTopLevelGridDimensions();
 
   // Finish initialization of views that require app list config.
-  if (creating_initial_config) {
-    AppListModel* const model = AppListModelProvider::Get()->model();
-    apps_grid_view_->SetModel(model);
-    apps_grid_view_->SetItemList(model->top_level_item_list());
-    UpdateRecentApps();
-    UpdateSuggestionChips();
-
-    SetShowState(SHOW_APPS, false);
-  }
+  if (creating_initial_config)
+    UpdateForActiveAppListModel();
 }
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
@@ -1252,6 +1314,18 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
   result.first_page_rows = apps_grid_view_->CalculateFirstPageMaxRows(
       available_height, preferred_rows);
   return result;
+}
+
+void AppsContainerView::UpdateForActiveAppListModel() {
+  AppListModel* const model = AppListModelProvider::Get()->model();
+  apps_grid_view_->SetModel(model);
+  apps_grid_view_->SetItemList(model->top_level_item_list());
+  UpdateRecentApps();
+  UpdateSuggestionChips();
+
+  // If model changes, close the folder view if it's open, as the associated
+  // item list is about to go away.
+  SetShowState(SHOW_APPS, false);
 }
 
 void AppsContainerView::OnSuggestionChipsBlurDisablerReleased() {

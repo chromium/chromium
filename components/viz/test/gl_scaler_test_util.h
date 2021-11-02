@@ -89,6 +89,11 @@ class GLScalerTestUtil {
   // is being done).
   static void ConvertRGBABitmapToYUV(SkBitmap* image);
 
+  // Performs a transform of the given |color| from DefaultRGBColorSpace() to
+  // DefaultYUVColorSpace(). The color channels (plus one alpha) remain
+  // interleaved (i.e., no pixel blending or format transform is being done).
+  static SkColor ConvertRGBAColorToYUV(SkColor color);
+
   static SkBitmap CopyAndConvertToRGBA(const SkBitmap& bitmap);
 
   // Performs an in-place swizzling of the red and blue color channels in the

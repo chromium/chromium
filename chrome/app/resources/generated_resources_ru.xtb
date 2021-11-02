@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Рабочий профиль</translation>
 <translation id="1122198203221319518">&amp;Инструменты</translation>
 <translation id="1122242684574577509">Ошибка аутентификации. Нажмите, чтобы перейти на страницу входа используемой сети Wi-Fi (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Данные для входа в аккаунт устарели. Выйдите и войдите снова.</translation>
 <translation id="1122960773616686544">Название закладки</translation>
 <translation id="1124772482545689468">Пользователь</translation>
 <translation id="1125550662859510761">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /> (аппаратное разрешение)</translation>
@@ -711,7 +712,7 @@
 <translation id="1719312230114180055">Помните, что распознавание отпечатков защищает не так надежно, как сложный пароль или PIN-код.</translation>
 <translation id="1720318856472900922">Аутентификация сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыть руководство</translation>
-<translation id="172123215662733643">Искать изображения с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
+<translation id="172123215662733643">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Для доступа к этой странице требуется разрешение пользователя <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваше <ph name="BEGIN_LINK" />устройство <ph name="DEVICE_TYPE" /> находится под управлением<ph name="END_LINK" /> домена <ph name="ENROLLMENT_DOMAIN" />.</translation>
 <translation id="1723824996674794290">&amp;Новое окно</translation>
@@ -1571,7 +1572,7 @@
 <translation id="2602501489742255173">Чтобы начать, проведите по экрану вверх.</translation>
 <translation id="2603115962224169880">Удалить вредоносное ПО с компьютера</translation>
 <translation id="2603355571917519942">Функция Voice Match настроена</translation>
-<translation id="2604138917550693049">Выполнить поиск по изображению, используя Google Объектив</translation>
+<translation id="2604138917550693049">Найти через Google Объектив</translation>
 <translation id="2604255671529671813">Ошибка подключения к сети</translation>
 <translation id="2605668923777146443">Чтобы посмотреть параметры режима Better Together, откройте <ph name="LINK_BEGIN" />Настройки<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Связать данные</translation>
@@ -3871,7 +3872,7 @@
 <translation id="5051836348807686060">Проверка правописания не поддерживается для выбранных языков.</translation>
 <translation id="5052499409147950210">Изменение сайта</translation>
 <translation id="505347685865235222">Группа без названия: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Выполнить поиск по изображению, используя Google Объектив</translation>
+<translation id="5053962746715621840">Найти через Google Объектив</translation>
 <translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
 <translation id="505776528429481161">С легкостью подключайтесь к устройствам поблизости и настраивайте их.</translation>
@@ -5874,7 +5875,7 @@
 <translation id="7230222852462421043">&amp;Восстановить окно</translation>
 <translation id="7230787553283372882">Позволяет настроить размер текста</translation>
 <translation id="7232750842195536390">Название не изменено</translation>
-<translation id="723343421145275488">Искать изображения с помощью функции "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
+<translation id="723343421145275488">Найти через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Отмена восстановления контейнера Linux…</translation>
 <translation id="7235716375204803342">Загрузка действий...</translation>
 <translation id="7235737137505019098">На электронном ключе не хватает места для нового аккаунта.</translation>
@@ -7499,6 +7500,7 @@
 <translation id="8879284080359814990">Показать как вкладку</translation>
 <translation id="8879921471468674457">Запомнить учетные данные</translation>
 <translation id="8880054210564666174">Не удалось скачать список контактов. Проверьте подключение к сети и <ph name="LINK_BEGIN" />повторите попытку<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Откройте настройки, чтобы подключить устройство "<ph name="USB_DEVICE_NAME" />" к Linux или Parallels Desktop.</translation>
 <translation id="8881020143150461183">Повторите попытку. За технической поддержкой обратитесь к оператору "<ph name="CARRIER_NAME" />".</translation>
 <translation id="8883273463630735858">Включить ускорение сенсорной панели</translation>
 <translation id="8884570509232205463">Теперь устройство будет блокироваться в <ph name="UNLOCK_TIME" />.</translation>

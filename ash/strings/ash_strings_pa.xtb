@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ਮੈਂ ਬੋਰ ਹੋ ਚੁੱਕਾ/ਚੁੱਕੀ ਹਾਂ</translation>
 <translation id="1104084341931202936">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
+<translation id="1111781754511998498">ਪ੍ਰੋਜੈਕਟਰ</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
 <translation id="1119348796022671382">ਥੀਮਡ ਰੰਗ ਮੋਡ ਇੰਟਰਫੇਸ ਨੂੰ ਹਲਕਾ ਰੰਗੀਨ ਕਰਨ ਲਈ ਅਜਿਹੇ ਰੰਗਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ ਜੋ ਤੁਹਾਡੇ ਵਾਲਪੇਪਰ ਤੋਂ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤੇ ਗਏ ਹਨ।</translation>
 <translation id="112308213915226829">ਸ਼ੈਲਫ ਆਟੋਲੁਕਾਓ</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਨਾਲ ਰਿਕਾਰਡ ਕਰੋ</translation>
 <translation id="3680908746918359504">ਸਾਰੇ ਮਾਰਕਰਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="36813544980941320">ਤੁਹਾਡੇ ਫ਼ੋਨ ਅਤੇ <ph name="DEVICE_NAME" /> ਵਿਚਾਲੇ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕਾਂ ਨੂੰ ਸਾਂਝਾ ਕੀਤਾ ਜਾਵੇਗਾ</translation>
+<translation id="3701206655856637070">ਤੁਸੀਂ ਹੁਣ ਸਕ੍ਰੀਨ ਕੈਪਚਰਾਂ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਜਗ੍ਹਾ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
 <translation id="3702809606464356667">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ, ਸਾਰੇ ਡੈਸਕਾਂ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਉਣ ਲਈ ਉੱਪਰ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="3702846122927433391">ਨਾਈਜੀਰੀਆ ਦੀ ਜਨਸੰਖਿਆ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">ਬੰਦ ਹੈ</translation>
 <translation id="397105322502079400">ਅਨੁਮਾਨ ਲਗਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3977512764614765090">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ।</translation>
+<translation id="3986082989454912832">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="3995138139523574647">USB-C ਡੀਵਾਈਸ (ਸੱਜੇ ਪਾਸੇ ਪਿਛਲਾ ਪੋਰਟ)</translation>
 <translation id="40062176907008878">ਲਿਖਾਈ</translation>
 <translation id="4017989525502048489">ਲੇਜ਼ਰ ਪੁਆਇੰਟਰ</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + ਹੇਠਾਂ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। End ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਸੱਜਾ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="4279490309300973883">ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
-<translation id="4292904812939562398">ਹਾਲ ਹੀ ਵਿੱਚ ਵਰਤੀਆਂ ਗਈਆਂ ਐਪਾਂ</translation>
 <translation id="429402653707266969">ਟੂਲਬਾਰ ਦੇ ਟਿਕਾਣੇ ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="4294319844246081198">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">ਸਾਰੀਆਂ <ph name="COUNT" /> ਸੂਚਨਾਵਾਂ ਕਲੀਅਰ ਕਰੋ</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="4946376291507881335">ਕੈਪਚਰ ਕਰੋ</translation>
 <translation id="495046168593986294">ਉੱਪਰ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="4952936045814352993">ਅਲਾਰਮ ਧੁਨੀਆਂ ਬੰਦ ਹੋਣ 'ਤੇ ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਉਣ ਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਉਪਲਬਧ ਨਹੀਂ ਹੁੰਦੀ</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">ਸੋ</translation>
 <translation id="7600875258240007829">ਸਾਰੀਆਂ ਸੂਚਨਾਵਾਂ ਦੇਖੋ</translation>
 <translation id="7607002721634913082">ਰੋਕਿਆ ਗਿਆ</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੇ ਕੈਮਰਾ ਰੋਲ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਦੇਖੋ</translation>
 <translation id="7618774594543487847">ਨਿਰਪੱਖ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">ਮਾਰਕਰ ਪੈੱਨ</translation>

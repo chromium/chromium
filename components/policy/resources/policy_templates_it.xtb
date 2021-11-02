@@ -620,7 +620,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="1736269219679256369">Consenti di proseguire dalla pagina di avviso SSL</translation>
 <translation id="174765717426930019">Consenti a tutti i popup aperti con una destinazione <ph name="BLANK_PAGE_NAME" /> di interagire con la pagina che ha richiesto l'apertura del popup se la pagina di apertura non disattiva esplicitamente tale interazione </translation>
-<translation id="1750315445671978749">Blocca tutti i download</translation>
 <translation id="1751429117283165017">La configurazione del criterio consente di elencare i pattern URL che specificano i siti che non possono richiedere agli utenti l'accesso di scrittura di file o directory nel file system del sistema operativo host.
 
       Se il criterio non viene configurato, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, vengono applicate le impostazioni personali degli utenti.
@@ -1010,7 +1009,6 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2204379573346866896">I minuti trascorsi nell'ora corrente.</translation>
 <translation id="2204753382813641270">Controlla la visualizzazione automatica della barra delle app</translation>
 <translation id="2208976000652006649">Parametri per l'URL di ricerca che utilizza POST</translation>
-<translation id="2212603374276864511">Gli utenti possono usare i modelli di scrivanie predefiniti</translation>
 <translation id="2213059592185933570">Attiva la creazione di profili di roaming</translation>
 <translation id="2215238871726750562">Se il criterio è impostato su True, la finestra del browser non viene avviata all'inizio della sessione.
 
@@ -1076,6 +1074,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="2266422599396179941">Consenti agli utenti di inviare feedback</translation>
 <translation id="2269319728625047531">Abilita la visualizzazione del consenso alla sincronizzazione durante l'accesso</translation>
 <translation id="2270747976331889601">Attiva una funzionalità di sicurezza TLS 1.3 per i trust anchor locali</translation>
+<translation id="22754818344448444">Gli utenti possono selezionare un layout di modelli di scrivanie da caricare</translation>
 <translation id="2281496157391382819"> Consente di controllare gli avvisi sulla privacy della sessione Ospite gestita su <ph name="PRODUCT_OS_NAME" />.
 
       Se il criterio è impostato su false, gli avvisi sulla privacy sulla schermata di accesso e la notifica sull'avvio automatico all'interno della sessione Ospite verranno disattivati.
@@ -1848,6 +1847,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3092059499596000593">Usa la stampante di sistema come scelta predefinita in Anteprima di stampa</translation>
 <translation id="309416443108680956">Consente di specificare cosa succede quando un utente che sta effettuando l'autenticazione tramite un token di sicurezza (ad esempio con una smart card) rimuove il token durante una sessione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: non accade nulla. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: lo schermo viene bloccato finché l'utente non ripete l'autenticazione. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sessione viene terminata e l'utente viene disconnesso. Se questo criterio non viene configurato, per impostazione predefinita viene usata l'opzione <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Elenco dei plug-in attivati</translation>
+<translation id="3101035417394748390">Le dimensioni massime, in byte, che è possibile trasferire tra client e host tramite la sincronizzazione degli appunti</translation>
 <translation id="3101501961102569744">Scegli come specificare le impostazioni del server proxy</translation>
 <translation id="3101709781009526431">Data e ora</translation>
 <translation id="3110248563985502478">Questo criterio è deprecato in M88 e Flash non è più supportato da Chrome. Se il criterio viene impostato su Attivato, i plug-in obsoleti vengono utilizzati come normali plug-in. Se viene impostato su Disattivato, i plug-in obsoleti non vengono utilizzati.
@@ -2214,7 +2214,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Limiti di utilizzo per app</translation>
-<translation id="354592434146464541">Gli utenti non possono usare i modelli di scrivanie predefiniti</translation>
 <translation id="3547954654003013442">Impostazioni proxy</translation>
 <translation id="3550122827225052130">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
@@ -2622,6 +2621,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
       Se il criterio è attivato, Risposte rapide potrà accedere ai contenuti selezionati.
       Se il criterio è disattivato, Risposte rapide non potrà accedere ai contenuti selezionati.
       Se il criterio non viene impostato, gli utenti possono decidere se autorizzare Risposte rapide ad accedere ai contenuti selezionati.</translation>
+<translation id="4016700865356669962">Se il criterio viene impostato su Attivato, gli utenti possono usare i modelli di layout di scrivanie.  Se il criterio viene impostato su Disattivato o se non viene configurato, questi modelli non saranno disponibili.</translation>
 <translation id="4020682745012723568">Le app Android non possono accedere ai cookie trasferiti al profilo dell'utente.</translation>
 <translation id="4025500273782820766">Consenti agli utenti di selezionare "Consenti sempre" quando viene mostrata una finestra di dialogo relativa a un protocollo esterno per non ricevere più messaggi di conferma in futuro</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
@@ -3528,7 +3528,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se questo criterio non viene impostato, non saranno applicate limitazioni e l'utente potrà accedere qualunque sia la versione di <ph name="PRODUCT_NAME" />.
 
       Per "versione" si intende sia una versione esatta, ad esempio "61.0.3163.120", sia un prefisso di versione, ad esempio "61.0".  </translation>
-<translation id="5247006254130721952">Blocca download pericolosi</translation>
 <translation id="5247973380763021389">Impedisci ai criteri relativi al cloud degli utenti di eseguire l'override dei criteri relativi al cloud delle macchine.</translation>
 <translation id="5249453807420671499">Gli utenti possono aggiungere account Kerberos</translation>
 <translation id="5252210248395576403">Questo criterio consente di autorizzare Risposte rapide ad accedere ai contenuti selezionati e a inviare le informazioni al server per ricevere i risultati della traduzione.
@@ -3792,7 +3791,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5521875416764302911">Impedisci agli utenti di accedere a <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">Consenti le query a Quirks Server e il download di file di configurazione specifici per l'hardware</translation>
 <translation id="5526701598901867718">Tutto (non sicuro)</translation>
-<translation id="5530347722229944744">Blocca download potenzialmente pericolosi</translation>
 <translation id="5534079385061985566">Attiva la funzionalità di ripristino completo.</translation>
 <translation id="5535256585099022933">Imposta l'intervallo di tempo per il riavvio</translation>
 <translation id="5535973522252703021">Whitelist server di delega Kerberos</translation>
@@ -4018,7 +4016,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="5814301096961727113">Impostazione stato predefinito della lettura vocale nella schermata di accesso</translation>
 <translation id="5815129011704381141">Riavvia automaticamente dopo l'aggiornamento</translation>
 <translation id="5815990343032461023">Comportamento precedente: le app di Chrome Kiosk verranno aggiornate dal sistema di estensione utilizzando l'URL di aggiornamento dal manifest dell'estensione, nonché memorizzando nella cache il gestore usando l'URL di aggiornamento dal criterio</translation>
-<translation id="5816106589769772877">Se il criterio viene impostato su Attivato, gli utenti possono usare i modelli di layout di scrivanie preconfigurati.  Se il criterio viene impostato su Disattivato o se non viene configurato, questi modelli non saranno disponibili.</translation>
 <translation id="582857022372205358">Attiva la stampa fronte/retro su lato corto</translation>
 <translation id="5830196507442186669">Consenti ai dispositivi di usare <ph name="BOREALIS_NAME" /> su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Norme obsolete</translation>
@@ -4176,7 +4173,6 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="6019606564278029236">Attiva l'interazione degli utenti remoti con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
 <translation id="6022948604095165524">Azione all'avvio</translation>
 <translation id="602318745029752898">Consenti le voci di sintesi vocale di rete migliorate in di Seleziona per ascoltare</translation>
-<translation id="6025267044008029374">Blocca download dannosi (opzione consigliata)</translation>
 <translation id="6026722971789064331">Controlla l'utilizzo dell'API file system per la scrittura</translation>
 <translation id="602728333950205286">URL di ricerca istantanea del provider di ricerca predefinito</translation>
 <translation id="603410445099326293">Parametri per l'URL del suggerimento che utilizza POST</translation>
@@ -4449,6 +4445,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="6371561334154580937">Mostra finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
 <translation id="6372105930898423193">Consente di riattivare la funzionalità AppCache anche se è disattivata per impostazione predefinita.</translation>
 <translation id="6376659517206731212">Può essere obbligatorio</translation>
+<translation id="6377031865393559909">Gli utenti possono usare i modelli di scrivanie</translation>
 <translation id="6378076389057087301">Specifica se l'attività audio incide sulla gestione dell'alimentazione</translation>
 <translation id="6378393933102834628">Se il criterio è impostato su True, la scorciatoia per le app viene visualizzata. Se il criterio è impostato su False, tale scorciatoia non viene mai visualizzata.
 
@@ -4654,21 +4651,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
-<translation id="6640989746632867803">Se il criterio viene configurato, gli utenti non possono aggirare le decisioni di sicurezza.
-
-       Se il criterio viene impostato su:
-
-      * Blocca download pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza.
-
-      * Blocca download potenzialmente pericolosi, tutti i download vengono consentiti, ad eccezione di quelli contenenti avvisi di sicurezza che ne segnalano la potenziale pericolosità.
-
-      * Blocca tutti i download, tutti i download vengono bloccati.
-
-      * Blocca download dannosi, tutti i download vengono consentiti, ad eccezione di quelli che secondo la valutazione di sicurezza molto probabilmente sono malware. A differenza dei download pericolosi, questa opzione non prende in considerazione il tipo di file, bensì l'host.
-
-      * Nessuna limitazione speciale, i download sono sottoposti alle normali limitazioni di sicurezza in base ai risultati delle analisi di sicurezza.
-
-      Nota: tali limitazioni vengono applicate ai download attivati dai contenuti delle pagine web, nonché all'opzione del menu "Link di download…". Non vengono applicate al download della pagina attualmente visualizzata né al salvataggio in formato PDF tramite le opzioni di stampa. Leggi ulteriori informazioni sulla funzionalità Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
 <translation id="6642682198621199507">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere a tutte le porte seriali disponibili.
 
@@ -4961,6 +4943,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non registrano o non segnalano lo stato dell'audio.</translation>
 <translation id="6929746927224321095">Disattiva la compilazione automatica</translation>
 <translation id="6931242315485576290">Disattiva la sincronizzazione dei dati con Google</translation>
+<translation id="6940243892299228102">Gli utenti non possono usare i modelli di scrivanie</translation>
 <translation id="6943577887654905793">Nome di preferenza per Mac/Linux:</translation>
 <translation id="6946652757373377924">
       Questo criterio è stato rimosso da M77.
@@ -5819,7 +5802,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7974114691960514888">Questa norma non è più supportata. Consente di attivare l'utilizzo di server relay e STUN durante la connessione a un client remoto. Se questa impostazione viene attivata, questo computer potrà rilevare i computer host remoti e collegarsi a essi anche se sono separati da un firewall. Se questa impostazione viene disattivata e le connessioni UDP in uscita vengono filtrate dal firewall, questo computer potrà collegarsi ai computer host soltanto all'interno della rete locale.</translation>
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
-<translation id="7980227303582973781">Nessuna limitazione speciale</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
@@ -6067,6 +6049,17 @@ Su Windows è consigliabile configurare le norme tramite Criteri di gruppo, anch
 
           Se questo criterio non viene impostato, inizialmente la dettatura è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="8293414596801971604">Espressione regolare per trovare corrispondenze con il nome visualizzato della stampante.</translation>
+<translation id="8293509904023267821">Se questo criterio viene impostato, i dati degli appunti trasmessi da e verso l'host saranno troncati secondo il limite stabilito da questo criterio.
+
+          Se viene impostato un valore pari a 0, la sincronizzazione degli appunti è disattivata.
+
+          Il criterio riguarda entrambi gli scenari di accesso remoto e di assistenza remota
+
+          e non ha alcun effetto se non viene impostato.
+
+          Se il criterio viene impostato su un valore che non rientra nell'intervallo minimo/massimo, l'host potrebbe non essere avviato.
+
+          Tieni presente che l'effettivo limite superiore per le dimensioni degli appunti è basato sulle dimensioni massime del messaggio di canale dei dati WebRTC, che non sono controllate da questo criterio.</translation>
 <translation id="8294750666104911727">In genere le pagine con X-UA-Compatible impostato su chrome=1 saranno visualizzate in <ph name="PRODUCT_FRAME_NAME" /> nonostante la norma "£ChromeFrameRendererSettings".
 
 Se attivi questa impostazione, le pagine non saranno sottoposte a scansione per i metatag.

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
-#include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/services/app_service/app_service_mojom_impl.h"
@@ -29,8 +28,7 @@ void AppServiceProxy::Initialize() {
     return;
   }
 
-  web_apps_ = std::make_unique<web_app::WebApps>(app_service_, profile_);
-  extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
+  publisher_host_ = std::make_unique<PublisherHost>(profile_, app_service_);
 
   // Asynchronously add app icon source, so we don't do too much work in the
   // constructor.

@@ -5,7 +5,6 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOPLEVEL_WINDOW_H_
 
-#include "base/containers/circular_deque.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -41,7 +40,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // Apply the bounds specified in the most recent configure event. This should
   // be called after processing all pending events in the wayland connection.
-  void ApplyPendingBounds();
+  void ApplyPendingBounds() override;
 
   // WmMoveResizeHandler
   void DispatchHostWindowDragMovement(
@@ -96,6 +95,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsActive() const override;
   bool IsSurfaceConfigured() override;
   void SetWindowGeometry(gfx::Rect bounds) override;
+  void AckConfigure(uint32_t serial) override;
   void UpdateDecorations() override;
 
   // zaura_surface listeners
@@ -191,18 +191,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
 
-  // These bounds attributes below have suffices that indicate units used.
-  // Wayland operates in DIP but the platform operates in physical pixels so
-  // our WaylandToplevelWindow is the link that has to translate the units.  See
-  // also comments in the implementation.
-  //
-  // Bounds that will be applied when the window state is finalized.  The window
-  // may get several configuration events that update the pending bounds, and
-  // only upon finalizing the state is the latest value stored as the current
-  // bounds via |ApplyPendingBounds|.  Measured in DIP because updated in the
-  // handler that receives DIP from Wayland.
-  gfx::Rect pending_bounds_dip_;
-
   // Contains the current state of the window.
   PlatformWindowState state_;
   // Contains the previous state of the window.
@@ -243,14 +231,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   absl::optional<std::vector<gfx::Rect>> window_shape_in_dips_;
 
   absl::optional<gfx::Rect> input_region_px_;
-
-  // Pending xdg-shell configures, once this window is drawn to |bounds_dip|,
-  // ack_configure with |serial| will be sent to the Wayland compositor.
-  struct PendingConfigure {
-    gfx::Rect bounds_dip;
-    uint32_t serial;
-  };
-  base::circular_deque<PendingConfigure> pending_configures_;
 
   // Tracks how many the window show state requests by made by the Browser
   // are currently being processed by the Wayland Compositor. In practice,

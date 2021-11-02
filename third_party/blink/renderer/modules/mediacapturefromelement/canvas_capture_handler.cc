@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -32,28 +31,6 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
-
-namespace {
-
-const base::Feature kTwoCopyCanvasCapture {
-  "TwoCopyCanvasCapture",
-// For ChromeOS, currently just enable this feature on X86 CPU, see b/203695564.
-#if defined(OS_MAC) || (defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-};
-
-// Return the gfx::ColorSpace that the pixels resulting from calling
-// ConvertToYUVFrame on |image| will be in.
-gfx::ColorSpace GetImageYUVColorSpace(scoped_refptr<StaticBitmapImage> image) {
-  // TODO: Determine the ColorSpace::MatrixID and ColorSpace::RangeID that the
-  // calls to libyuv are assuming.
-  return gfx::ColorSpace();
-}
-
-}  // namespace
 
 // Implementation VideoCapturerSource that is owned by
 // MediaStreamVideoCapturerSource and delegates the Start/Stop calls to
@@ -159,8 +136,6 @@ CanvasCaptureHandler::CanvasCaptureHandler(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     MediaStreamComponent** component)
     : io_task_runner_(std::move(io_task_runner)) {
-  converter_ = std::make_unique<StaticBitmapImageToVideoFrameCopier>(
-      base::FeatureList::IsEnabled(kTwoCopyCanvasCapture));
   std::unique_ptr<VideoCapturerSource> video_source(
       new CanvasVideoCapturerSource(weak_ptr_factory_.GetWeakPtr(), size,
                                     frame_rate));
@@ -189,17 +164,38 @@ CanvasCaptureHandler::CreateCanvasCaptureHandler(
       frame, size, frame_rate, std::move(io_task_runner), component));
 }
 
-void CanvasCaptureHandler::SendNewFrame(
-    scoped_refptr<StaticBitmapImage> image,
-    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
-        context_provider) {
-  DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  TRACE_EVENT0("webrtc", "CanvasCaptureHandler::SendNewFrame");
-  converter_->Convert(
-      image, can_discard_alpha_, context_provider,
-      WTF::Bind(&CanvasCaptureHandler::SendFrame,
-                weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
-                GetImageYUVColorSpace(image)));
+CanvasCaptureHandler::NewFrameCallback
+CanvasCaptureHandler::GetNewFrameCallback() {
+  // Increment the number of pending calls, and create a ScopedClosureRunner
+  // to ensure that it be decremented even if the returned callback is dropped
+  // instead of being run.
+  pending_send_new_frame_calls_ += 1;
+  auto decrement_closure = WTF::Bind(
+      [](base::WeakPtr<CanvasCaptureHandler> handler) {
+        if (handler)
+          handler->pending_send_new_frame_calls_ -= 1;
+      },
+      weak_ptr_factory_.GetWeakPtr());
+
+  return WTF::Bind(&CanvasCaptureHandler::OnNewFrameCallback,
+                   weak_ptr_factory_.GetWeakPtr(),
+                   base::ScopedClosureRunner(std::move(decrement_closure)),
+                   base::TimeTicks::Now(), gfx::ColorSpace());
+}
+
+void CanvasCaptureHandler::OnNewFrameCallback(
+    base::ScopedClosureRunner decrement_runner,
+    base::TimeTicks this_frame_ticks,
+    const gfx::ColorSpace& color_space,
+    scoped_refptr<media::VideoFrame> video_frame) {
+  DCHECK_GT(pending_send_new_frame_calls_, 0u);
+  decrement_runner.RunAndReset();
+
+  if (video_frame)
+    SendFrame(this_frame_ticks, color_space, video_frame);
+
+  if (!pending_send_new_frame_calls_ && deferred_request_refresh_frame_)
+    SendRefreshFrame();
 }
 
 bool CanvasCaptureHandler::NeedsNewFrame() const {
@@ -231,7 +227,7 @@ void CanvasCaptureHandler::RequestRefreshFrame() {
     // emitting frames with non-incrementally increasing timestamps.
     // Defer sending the refresh frame until we have completed those async
     // reads.
-    if (converter_->HasOngoingAsyncPixelReadouts()) {
+    if (pending_send_new_frame_calls_) {
       deferred_request_refresh_frame_ = true;
       return;
     }
@@ -270,11 +266,6 @@ void CanvasCaptureHandler::SendFrame(
                          SendNewFrameOnIOThread,
                      delegate_->GetWeakPtrForIOThread(), std::move(video_frame),
                      this_frame_ticks));
-
-  if (!converter_->HasOngoingAsyncPixelReadouts() &&
-      deferred_request_refresh_frame_) {
-    SendRefreshFrame();
-  }
 }
 
 void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
@@ -305,7 +296,7 @@ void CanvasCaptureHandler::AddVideoCapturerSourceToVideoTrack(
 
 void CanvasCaptureHandler::SendRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
-  DCHECK(!converter_->HasOngoingAsyncPixelReadouts());
+  DCHECK_EQ(pending_send_new_frame_calls_, 0u);
   if (last_frame_ && delegate_) {
     io_task_runner_->PostTask(
         FROM_HERE,

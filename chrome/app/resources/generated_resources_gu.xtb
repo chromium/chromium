@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">કાર્ય</translation>
 <translation id="1122198203221319518">&amp;સાધનો</translation>
 <translation id="1122242684574577509">પ્રમાણીકરણ નિષ્ફળ થયું. તમે ઉપયોગ કરી રહ્યા છો તે વાઇ-ફાઇ નેટવર્ક (<ph name="NETWORK_ID" />) માટેના લોગિન પેજની મુલાકાત લેવા માટે ક્લિક કરો.</translation>
+<translation id="1122913801042512795">એકાઉન્ટમાં સાઇન ઇન કરવાની તમારી વિગતો જૂની છે. કૃપા કરીને સાઇન આઉટ કરો અને ફરીથી સાઇન ઇન કરો.</translation>
 <translation id="1122960773616686544">બુકમાર્ક નામ</translation>
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે (મૂળ)</translation>
@@ -7491,6 +7492,7 @@ USB ડિવાઇસ</translation>
 <translation id="8879284080359814990">ટૅબ તરીકે &amp;બતાવો</translation>
 <translation id="8879921471468674457">સાઇન ઇન માહિતી યાદ રાખો</translation>
 <translation id="8880054210564666174">સંપર્ક સૂચિ ડાઉનલોડ કરી શકતા નથી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન ચેક કરો અથવા <ph name="LINK_BEGIN" />ફરી પ્રયાસ કરો<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089"><ph name="USB_DEVICE_NAME" />ને Linux અથવા Parallels Desktop સાથે કનેક્ટ કરવા માટે સેટિંગ ખોલો</translation>
 <translation id="8881020143150461183">કૃપા કરીને ફરી પ્રયાસ કરો. ટેક્નિકલ સપોર્ટ માટે, <ph name="CARRIER_NAME" />નો સંપર્ક કરો.</translation>
 <translation id="8883273463630735858">ટચપૅડની ઍક્સલરેશન સુવિધા ચાલુ કરો</translation>
 <translation id="8884570509232205463">તમારું ડિવાઇસ હવે <ph name="UNLOCK_TIME" /> વાગ્યે લૉક થઈ જશે.</translation>

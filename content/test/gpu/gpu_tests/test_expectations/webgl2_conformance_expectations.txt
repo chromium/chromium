@@ -96,15 +96,19 @@ crbug.com/1142754 [ linux ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
 crbug.com/1142754 [ fuchsia ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
 crbug.com/1194209 [ mac no-passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
 
-# Disabling all multiview checks temporarily while ANGLE side changes
-# get merged in.
-crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ Skip ]
-crbug.com/864524 [ mac ] WebglExtension_OVR_multiview2 [ Skip ]
-crbug.com/864524 [ android ] WebglExtension_OVR_multiview2 [ Skip ]
-crbug.com/864524 [ linux ] WebglExtension_OVR_multiview2 [ Skip ]
+# Were skipped to allow ANGLE changes to merge, but should be fine now.
+crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/864524 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/864524 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/864524 [ linux ] WebglExtension_OVR_multiview2 [ Failure ]
+
+# Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
 crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
+
+# Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
-crbug.com/945970 [ android ] WebglExtension_EXT_float_blend [ Skip ]
+
+crbug.com/945970 [ android ] WebglExtension_EXT_float_blend [ Failure ]
 
 # TODO(crbug.com/891861): Remove when either workaround is implemented in cmd decoder,
 # or when angle is used everywhere.
@@ -124,7 +128,7 @@ crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-obje
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
 crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
-crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
+crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1136231 [ win passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 # The validating command decoder suppressions here will not be fixed.
@@ -234,13 +238,13 @@ crbug.com/1073613 [ angle-d3d11 win nvidia-0x2184 ] deqp/functional/gles3/shader
 # (72, 72, 72) when reading back pixels, rather than the expected values.
 # Going to try to skip the individual failing tests, rather than adding a
 # wildcard flaky suppression for all of the tests.
-crbug.com/844483 [ angle-d3d11 win amd ] conformance2/renderbuffers/multisampled-renderbuffer-initialization.html [ Skip ]
-crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-float.html [ Skip ]
-crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-half_float.html [ Skip ]
-crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas/tex-3d-rg8-rg-unsigned_byte.html [ Skip ]
-crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb9_e5-rgb-float.html [ Skip ]
-crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ Skip ]
-crbug.com/844483 [ angle-d3d11 win amd ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Skip ]
+crbug.com/844483 [ angle-d3d11 win amd ] conformance2/renderbuffers/multisampled-renderbuffer-initialization.html [ Failure ]
+crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-float.html [ Failure ]
+crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas/tex-2d-rgb9_e5-rgb-half_float.html [ Failure ]
+crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas/tex-3d-rg8-rg-unsigned_byte.html [ Failure ]
+crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb9_e5-rgb-float.html [ Failure ]
+crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/image_bitmap_from_canvas/tex-2d-rgb9_e5-rgb-half_float.html [ Failure ]
+crbug.com/844483 [ angle-d3d11 win amd ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Failure ]
 crbug.com/483282 [ angle-d3d11 win amd ] conformance2/rendering/blitframebuffer-stencil-only.html [ Failure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance/renderbuffers/depth-renderbuffer-initialization.html [ RetryOnFailure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
@@ -652,7 +656,7 @@ crbug.com/703779 [ angle-opengl linux nvidia-0x1cb3 ] conformance/extensions/web
 crbug.com/703779 [ angle-opengl linux nvidia-0x1cb3 ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 
 # Linux / OpenGL / NVIDIA failures
-crbug.com/angleproject/4555 [ linux angle-opengl passthrough nvidia ] conformance/misc/type-conversion-test.html [ Skip ]
+crbug.com/angleproject/4555 [ linux angle-opengl passthrough nvidia ] conformance/misc/type-conversion-test.html [ Failure ]
 crbug.com/766918 [ angle-opengl linux passthrough nvidia ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/965648 [ angle-opengl linux passthrough nvidia ] deqp/functional/gles3/shaderstruct.html [ RetryOnFailure ]
 
@@ -660,8 +664,8 @@ crbug.com/965648 [ angle-opengl linux passthrough nvidia ] deqp/functional/gles3
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 
 # Linux AMD only.
-crbug.com/483282 [ linux amd ] deqp/data/gles3/shaders/arrays.html [ Skip ]
-crbug.com/483282 [ linux amd ] deqp/data/gles3/shaders/qualification_order.html [ Skip ]
+crbug.com/483282 [ linux amd ] deqp/data/gles3/shaders/arrays.html [ Failure ]
+crbug.com/483282 [ linux amd ] deqp/data/gles3/shaders/qualification_order.html [ Failure ]
 crbug.com/483282 [ linux amd ] deqp/functional/gles3/transformfeedback/array_separate* [ Failure ]
 crbug.com/483282 [ linux amd ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
 

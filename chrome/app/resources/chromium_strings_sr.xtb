@@ -32,6 +32,7 @@
 <translation id="2185166961232948079">Chromium – пријављивање на мрежу – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Ако делите рачунар, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе.</translation>
 <translation id="2294245788148774212">Опционално: Аутоматски шаљите Google-у дијагностику и податке о коришћењу да бисте нам помогли да побољшамо функције и учинак Chromium ОС-а.</translation>
+<translation id="2313870531055795960">Проверава URL-ове са листом небезбедних сајтова који се чувају у Chromium-у. Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетну датотеку, Chromium може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање.</translation>
 <translation id="2343156876103232566">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chromium на оба уређаја.</translation>
 <translation id="2347108572062610441">Овај додатак је променио страницу која се приказује када покренете Chromium.</translation>
 <translation id="2396765026452590966">Додатак „<ph name="EXTENSION_NAME" />“ је променио страницу која се приказује када покренете Chromium.</translation>
@@ -53,6 +54,7 @@
 <translation id="2799223571221894425">Поново покрени</translation>
 <translation id="2837693172913560447">Овим ће се направити нов Chromium профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Уклони из Chromium-а...</translation>
+<translation id="2850691299438350830">Штити вас у Chromium-у и може да се користи за побољшање безбедности у другим Google апликацијама када сте пријављени.</translation>
 <translation id="2885378588091291677">Менаџер задатака</translation>
 <translation id="2910007522516064972">О &amp;Chromium-у</translation>
 <translation id="2977470724722393594">Chromium је ажуриран</translation>

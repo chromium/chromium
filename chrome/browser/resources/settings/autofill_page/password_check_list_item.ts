@@ -20,7 +20,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 
-// <if expr="chromeos">
+// <if expr="chromeos or lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -37,7 +37,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
 
   static get properties() {
     return {
-      // <if expr="chromeos">
+      // <if expr="chromeos or lacros">
       tokenRequestManager: Object,
       // </if>
 
@@ -73,7 +73,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
     };
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   tokenRequestManager: BlockingRequestManager;
   // </if>
 
@@ -174,7 +174,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
               this.set('item', insecureCredential);
             },
             _error => {
-              // <if expr="chromeos">
+              // <if expr="chromeos or lacros">
               // If no password was found, refresh auth token and retry.
               this.tokenRequestManager.request(() => this.showPassword());
               // </if>

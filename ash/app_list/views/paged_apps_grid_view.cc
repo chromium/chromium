@@ -794,7 +794,12 @@ void PagedAppsGridView::TotalPagesChanged(int previous_page_count,
 
   // Initial setup for the AppList starts with -1 pages. Ignore the page count
   // change resulting from the initialization of the view.
-  if (previous_page_count == -1)
+  if (previous_page_count <= 0)
+    return;
+
+  // Ignore page count changes after item list has been reset (e.g. during
+  // shutdown).
+  if (!item_list() || !item_list()->item_count())
     return;
 
   if (previous_page_count < new_page_count) {

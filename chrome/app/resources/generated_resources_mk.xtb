@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">Работен</translation>
 <translation id="1122198203221319518">&amp;Алатки</translation>
 <translation id="1122242684574577509">Проверката на успеа. Кликнете за да ја посетите страницата за пријавување за Wi-Fi мрежата што ја користите (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Деталите за најавување на сметката се застарени. Одјавете се и повторно најавете се.</translation>
 <translation id="1122960773616686544">Име на обележувачот</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1125550662859510761">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (матична)</translation>
@@ -7516,6 +7517,7 @@
 <translation id="8879284080359814990">&amp;Прикажи како картичка</translation>
 <translation id="8879921471468674457">Запомни ги информациите за најавување</translation>
 <translation id="8880054210564666174">Не може да се преземе списокот со контакти. Проверете ја мрежната врска или <ph name="LINK_BEGIN" />обидете се повторно<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Отворете „Поставки“ за да го поврзете <ph name="USB_DEVICE_NAME" /> со Linux или Parallels Desktop</translation>
 <translation id="8881020143150461183">Обидете се повторно. За техничка поддршка, контактирајте со <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Овозможи забрзување на подлогата за допир</translation>
 <translation id="8884570509232205463">Твојот уред сега се заклучува во <ph name="UNLOCK_TIME" />.</translation>

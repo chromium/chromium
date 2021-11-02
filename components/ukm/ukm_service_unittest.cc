@@ -864,9 +864,6 @@ TEST_F(UkmServiceTest, RecordSessionId) {
 }
 
 TEST_F(UkmServiceTest, SourceSize) {
-  // Set a threshold of number of Sources via Feature Params.
-  ScopedUkmFeatureParams params({{"MaxSources", "2"}});
-
   ClearPrefs();
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
@@ -877,20 +874,18 @@ TEST_F(UkmServiceTest, SourceSize) {
   service.EnableRecording(/*extensions=*/false);
   service.EnableReporting();
 
-  auto id = GetWhitelistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar1"));
-  id = GetWhitelistedSourceId(1);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar2"));
-  id = GetWhitelistedSourceId(2);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar3"));
+  // Add a large number of sources, more than the hardcoded max.
+  for (int i = 0; i < 1000; ++i) {
+    auto id = GetWhitelistedSourceId(i);
+    recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
+  }
 
   service.Flush();
   EXPECT_EQ(1, GetPersistedLogCount());
 
   auto proto_report = GetPersistedReport();
-  // Note, 2 instead of 3 sources, since we overrode the max number of sources
-  // via Feature params.
-  EXPECT_EQ(2, proto_report.sources_size());
+  // Note, 500 instead of 1000 sources, since 500 is the maximum.
+  EXPECT_EQ(500, proto_report.sources_size());
 }
 
 TEST_F(UkmServiceTest, PurgeMidUpload) {
@@ -983,13 +978,15 @@ TEST_F(UkmServiceTest, SourceURLLength) {
   EXPECT_EQ("URLTooLong", proto_source.urls(0).url());
 }
 
+// TODO(rkaplow): Revamp these tests once whitelisted entries are removed.
+// Currently this test is overly complicated, but can be simplified when the
+// restrict_to_whitelisted_source_ids is removed.
 TEST_F(UkmServiceTest, UnreferencedNonWhitelistedSources) {
   const GURL kURL("https://google.com/foobar");
   for (bool restrict_to_whitelisted_source_ids : {true, false}) {
     // Set a threshold of number of Sources via Feature Params.
     ScopedUkmFeatureParams params(
-        {{"MaxKeptSources", "3"},
-         {"WhitelistEntries", Entry1And2Whitelist()},
+        {{"WhitelistEntries", Entry1And2Whitelist()},
          {"RestrictToWhitelistedSourceIds",
           restrict_to_whitelisted_source_ids ? "true" : "false"}});
 
@@ -1053,10 +1050,8 @@ TEST_F(UkmServiceTest, UnreferencedNonWhitelistedSources) {
       // The one whitelisted source is of navigation type.
       EXPECT_EQ(1, proto_report.source_counts().navigation_sources());
       EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
-      // Source 0 of navigation type, and entryless sources 1, 3, 4, 5 of
-      // non-whitelisted type are eligible to be deferred, but MaxKeptSources
-      // restricts deferral to the 3 latest created ones.
-      EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
+
+      EXPECT_EQ(6, proto_report.source_counts().deferred_sources());
       EXPECT_EQ(0, proto_report.source_counts().carryover_sources());
 
       ASSERT_EQ(3, proto_report.sources_size());
@@ -1097,17 +1092,11 @@ TEST_F(UkmServiceTest, UnreferencedNonWhitelistedSources) {
       EXPECT_EQ(0, proto_report.source_counts().observed());
       EXPECT_EQ(0, proto_report.source_counts().navigation_sources());
       EXPECT_EQ(0, proto_report.source_counts().unmatched_sources());
-      // Only the navigation type source is deferred.
-      EXPECT_EQ(1, proto_report.source_counts().deferred_sources());
-      // Number of sources carried over from the previous report to this report.
-      EXPECT_EQ(3, proto_report.source_counts().carryover_sources());
-      // Out of sources 3, 4, 5 that were retained from the previous cycle,
-      // sources 3 and 4 got new entries are thus included in this report.
-      ASSERT_EQ(2, proto_report.sources_size());
-      EXPECT_EQ(ids[3], proto_report.sources(0).id());
-      EXPECT_EQ(kURL.spec(), proto_report.sources(0).urls(0).url());
-      EXPECT_EQ(ids[4], proto_report.sources(1).id());
-      EXPECT_EQ(kURL.spec(), proto_report.sources(1).urls(0).url());
+
+      EXPECT_EQ(3, proto_report.source_counts().deferred_sources());
+
+      EXPECT_EQ(6, proto_report.source_counts().carryover_sources());
+      ASSERT_EQ(5, proto_report.sources_size());
     }
   }
 }

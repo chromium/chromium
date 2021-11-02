@@ -90,6 +90,8 @@
 #define OS_AIX 1
 #elif defined(__asmjs__) || defined(__wasm__)
 #define OS_ASMJS 1
+#elif defined(__MVS__)
+#define OS_ZOS 1
 #else
 #error Please add support for your platform in build/build_config.h
 #endif
@@ -112,7 +114,7 @@
     defined(OS_FREEBSD) || defined(OS_IOS) || defined(OS_LINUX) ||  \
     defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_NACL) ||  \
     defined(OS_NETBSD) || defined(OS_OPENBSD) || defined(OS_QNX) || \
-    defined(OS_SOLARIS)
+    defined(OS_SOLARIS) || defined(OS_ZOS)
 #define OS_POSIX 1
 #endif
 

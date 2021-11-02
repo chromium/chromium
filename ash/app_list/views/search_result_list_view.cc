@@ -250,15 +250,19 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
       !by_button_press && view->is_default_result() /* launch_as_default */);
 }
 
-void SearchResultListView::SearchResultActionActivated(SearchResultView* view,
-                                                       size_t action_index) {
+void SearchResultListView::SearchResultActionActivated(
+    SearchResultView* view,
+    SearchResultActionType action) {
   if (view_delegate_ && view->result()) {
-    SearchResultActionType action = GetSearchResultActionType(action_index);
-    if (action == SearchResultActionType::kRemove) {
-      view_delegate_->InvokeSearchResultAction(view->result()->id(),
-                                               action_index);
-    } else if (action == SearchResultActionType::kAppend) {
-      main_view_->search_box_view()->UpdateQuery(view->result()->title());
+    switch (action) {
+      case SearchResultActionType::kRemove:
+        view_delegate_->InvokeSearchResultAction(view->result()->id(), action);
+        break;
+      case SearchResultActionType::kAppend:
+        main_view_->search_box_view()->UpdateQuery(view->result()->title());
+        break;
+      case SearchResultActionType::kSearchResultActionTypeMax:
+        NOTREACHED();
     }
   }
 }

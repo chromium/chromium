@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium – вход в сеть – "<ph name="PAGE_TITLE" />"</translation>
 <translation id="2241627712206172106">Если, кроме вас, компьютером пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
 <translation id="2294245788148774212">Автоматически отправлять данные об использовании и диагностике в Google, чтобы помогать нам повышать производительность и улучшать функции Chromium OS (необязательно)</translation>
+<translation id="2313870531055795960">Сверяет URL со списком небезопасных сайтов в Chromium. Если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chromium может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="2343156876103232566">Чтобы отправить номер на телефон Android, войдите в Chromium на обоих устройствах.</translation>
 <translation id="2347108572062610441">Расширение изменило стартовую страницу Chromium.</translation>
 <translation id="2396765026452590966">Расширение "<ph name="EXTENSION_NAME" />" изменило стартовую страницу Chromium.</translation>
@@ -51,6 +52,7 @@
 <translation id="2799223571221894425">Перезапустить</translation>
 <translation id="2837693172913560447">Будет создан новый профиль Chromium для <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2847479871509788944">Удалить из Chromium</translation>
+<translation id="2850691299438350830">Защищает вас в браузере Chromium и других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2910007522516064972">О &amp;Chromium</translation>
 <translation id="2977470724722393594">Вы используете последнюю версию Chromium</translation>

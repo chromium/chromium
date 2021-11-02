@@ -40,10 +40,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
-// Temporary definitions until a new hwcap.h is pulled in.
-#define HWCAP2_MTE (1 << 18)
-#define HWCAP2_BTI (1 << 17)
-
 struct ProcCpuInfo {
   std::string brand;
   uint8_t implementer = 0;

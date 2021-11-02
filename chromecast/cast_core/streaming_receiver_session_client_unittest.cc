@@ -64,7 +64,7 @@ class StreamingReceiverSessionClientTest : public testing::Test {
         base::BindOnce(
             &StreamingReceiverSessionClientTest::CreateReceiverSession,
             base::Unretained(this), std::move(receiver_session)),
-        &handler_);
+        &handler_, true, true);
     receiver_session_client_.reset(client);
   }
 

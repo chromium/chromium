@@ -7,6 +7,7 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view_factory.h"
 #include "chromecast/cast_core/grpc_method.h"
+#include "chromecast/cast_core/url_rewrite_rules_adapter.h"
 #include "third_party/cast_core/public/src/proto/runtime/runtime_service.grpc.pb.h"
 #include "third_party/grpc/src/include/grpcpp/channel.h"
 #include "third_party/grpc/src/include/grpcpp/create_channel.h"
@@ -37,6 +38,11 @@ bool RuntimeApplicationBase::Load(
     return false;
   }
 
+  set_application_config(request.application_config());
+  set_cast_session_id(request.cast_session_id());
+
+  LOG(INFO) << "Loading application: " << *this;
+
   const std::string& grpc_address =
       request.runtime_application_service_info().grpc_endpoint();
   grpc::ServerBuilder builder;
@@ -46,7 +52,8 @@ bool RuntimeApplicationBase::Load(
   SetCompletionQueue(builder.AddCompletionQueue());
   SetServer(builder.BuildAndStart());
   if (!grpc_server_) {
-    LOG(ERROR) << "Failed to start server on path: " << grpc_address;
+    LOG(ERROR) << "Failed to start server on path: " << *this
+               << ", endpoint=" << grpc_address;
     return false;
   }
   StartRuntimeApplicationServiceMethods(
@@ -55,19 +62,33 @@ bool RuntimeApplicationBase::Load(
                                                    weak_factory_.GetWeakPtr(),
                                                    grpc_cq_, &is_shutdown_);
   GrpcServer::Start();
+  LOG(INFO) << "Runtime application server started: " << *this
+            << ", endpoint=" << grpc_address;
 
-  set_cast_session_id(request.cast_session_id());
-  set_app_id(request.application_config().app_id());
-  set_display_name(request.application_config().display_name());
+  CreateCastWebView();
+  url_rewrite_adapter_ =
+      std::make_unique<UrlRewriteRulesAdapter>(request.url_rewrite_rules());
 
-  LOG(INFO) << *this << " successfully loaded!";
+  auto* web_service = cast_web_service();
+  if (web_service) {
+    MojoIdentificationSettings params(request.url_rewrite_rules());
+    web_service->CreateSessionWithSubstitutions(
+        cast_session_id(), std::move(params.substitutable_params));
+    web_service->UpdateAppSettingsForSession(
+        cast_session_id(), std::move(params.application_settings));
+    web_service->UpdateDeviceSettingsForSession(
+        cast_session_id(), std::move(params.device_settings));
+    LOG(INFO) << "CastWebService initialized: " << *this;
+  }
+
+  LOG(INFO) << "Successfully loaded: " << *this;
 
   return true;
 }
 
 bool RuntimeApplicationBase::Launch(
     const cast::runtime::LaunchApplicationRequest& request) {
-  LOG(INFO) << "Beginning launch of " << *this;
+  LOG(INFO) << "Launching application: " << *this;
 
   if (!request.has_cast_media_service_info()) {
     return false;
@@ -93,27 +114,24 @@ void RuntimeApplicationBase::FinishLaunch(
   core_app_stub_ =
       cast::v2::CoreApplicationService::NewStub(std::move(core_channel));
 
-  DLOG(INFO) << *this << "creating web view...";
-  cast_web_view_ = CreateWebView(core_app_stub_.get());
-
-  DLOG(INFO) << *this << "processing web view...";
-  GURL cast_application_url =
-      ProcessWebView(core_app_stub_.get(), cast_web_view_->cast_web_contents());
-
+  GURL cast_application_url = InitializeAndGetInitialURL(
+      core_app_stub_.get(), cast_web_view_->cast_web_contents());
+  LOG(INFO) << "Initialized initial URL: " << *this
+            << ", url=" << cast_application_url;
   const std::vector<int32_t> feature_permissions;
   const std::vector<std::string> additional_feature_permission_origins;
   // TODO(b/203580094): Currently we assume the app is not audio only.
   cast_web_view_->cast_web_contents()->SetAppProperties(
-      app_id(), cast_session_id(), false /*is_audio_app*/, cast_application_url,
-      false /*enforce_feature_permissions*/, feature_permissions,
-      additional_feature_permission_origins);
+      app_config().app_id(), cast_session_id(), false /*is_audio_app*/,
+      cast_application_url, false /*enforce_feature_permissions*/,
+      feature_permissions, additional_feature_permission_origins);
   cast_web_view_->cast_web_contents()->LoadUrl(cast_application_url);
   cast_web_view_->window()->GrantScreenAccess();
   cast_web_view_->window()->CreateWindow(
       ::chromecast::mojom::ZOrder::APP,
       chromecast::VisibilityPriority::STICKY_ACTIVITY);
 
-  LOG(INFO) << *this << " successfully launched!";
+  LOG(INFO) << "Launch finished: " << *this;
 }
 
 void RuntimeApplicationBase::PostMessage(const cast::web::Message& request,
@@ -132,6 +150,15 @@ void RuntimeApplicationBase::SetUrlRewriteRules(
     const cast::v2::SetUrlRewriteRulesRequest& request,
     cast::v2::SetUrlRewriteRulesResponse* response,
     GrpcMethod* callback) {
+  if (cast_session_id().empty()) {
+    callback->StepGRPC(
+        grpc::Status(grpc::StatusCode::NOT_FOUND,
+                     "No active cast session for SetUrlRewriteRules"));
+    return;
+  }
+  if (request.has_rules()) {
+    url_rewrite_adapter_->UpdateRules(request.rules());
+  }
   callback->StepGRPC(grpc::Status::OK);
 }
 
@@ -145,29 +172,34 @@ void RuntimeApplicationBase::SetApplicationStarted() {
       core_app_stub_->SetApplicationStatus(&context, app_status, &unused);
 
   if (!status.ok()) {
-    LOG(ERROR) << "Failed to call SetApplicationStatus() when starting "
-               << *this;
+    LOG(ERROR) << "Failed to call SetApplicationStatus() when starting: "
+               << *this << ", status=" << status.error_message();
+  } else {
+    LOG(INFO) << "Application is started: " << *this;
   }
 }
 
-CastWebView::Scoped RuntimeApplicationBase::CreateWebView(
-    CoreApplicationServiceGrpc* grpc_stub) {
+void RuntimeApplicationBase::CreateCastWebView() {
   CastWebView::CreateParams create_params;
   create_params.delegate = weak_factory_.GetWeakPtr();
   create_params.window_delegate = weak_factory_.GetWeakPtr();
 
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  params->renderer_type = renderer_type_;
+  params->handle_inner_contents = true;
+  params->session_id = cast_session_id();
 #if DCHECK_IS_ON()
   params->enabled_for_dev = true;
 #endif
-  params->renderer_type = renderer_type_;
 
-  return web_service_->CreateWebViewInternal(create_params, std::move(params));
+  cast_web_view_ =
+      web_service_->CreateWebViewInternal(create_params, std::move(params));
 }
 
 void RuntimeApplicationBase::StopApplication() {
-  is_application_stopped_ = true;
+  LOG(INFO) << "Stopping application: " << *this;
 
+  is_application_stopped_ = true;
   if (cast_session_id().empty()) {
     return;
   }
@@ -184,7 +216,7 @@ void RuntimeApplicationBase::StopApplication() {
         core_app_stub_->SetApplicationStatus(&context, app_status, &unused);
 
     if (!status.ok()) {
-      LOG(ERROR) << "Failed to call SetApplicationStatus() when starting "
+      LOG(ERROR) << "Failed to call SetApplicationStatus() when stopping: "
                  << *this;
     }
   }
@@ -198,6 +230,8 @@ void RuntimeApplicationBase::StopApplication() {
   }
 
   GrpcServer::Stop();
+  LOG(INFO) << "Application is stopped: " << *this;
+
   set_cast_session_id(std::string());
 }
 

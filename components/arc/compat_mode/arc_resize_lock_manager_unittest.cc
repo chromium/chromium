@@ -132,6 +132,7 @@ TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}
 // Tests that resize lock state is properly sync'ed with the window property.
 TEST_F(ArcResizeLockManagerTest, TestPropertyChange) {
   auto arc_window = CreateFakeWindow(true);
+  std::string app_id = "app-id";
 
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
 
@@ -162,6 +163,15 @@ TEST_F(ArcResizeLockManagerTest, TestPropertyChange) {
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,
                           ash::ArcResizeLockType::NONE);
   EXPECT_FALSE(IsResizeLockEnabled(arc_window.get()));
+
+  // Test if resize lock state is updated even when resizability doesn't
+  // change (NONE->RESIZE_ENABLED_TOGGLABLE).
+  EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
+            mojom::ArcResizeLockState::FULLY_LOCKED);
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);
+  EXPECT_EQ(pref_delegate()->GetResizeLockState(app_id),
+            mojom::ArcResizeLockState::OFF);
 
   // Test nothing will be called by the property overwrite with the same value.
   arc_window->SetProperty(ash::kArcResizeLockTypeKey,

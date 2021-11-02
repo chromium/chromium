@@ -121,6 +121,7 @@
 <translation id="1122068467107743258">कार्य प्रोफाइल</translation>
 <translation id="1122198203221319518">&amp;उपकरणहरू</translation>
 <translation id="1122242684574577509">प्रमाणीकरण विफल भयो। तपाईँले प्रयोग गरिरहेको (<ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कका लागि लगइन पृष्ठमा भ्रमण गर्न क्लिक गर्नुहोस्।</translation>
+<translation id="1122913801042512795">तपाईंको खाताको साइन इनसम्बन्धी विवरणको म्याद सकिएको छ। कृपया साइन आउट गरी फेरि साइन इन गर्नुहोस्।</translation>
 <translation id="1122960773616686544">बुकमार्क नाम</translation>
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (नेटिभ) जस्तो देखिन्छ</translation>
@@ -706,7 +707,7 @@
 <translation id="1719312230114180055">टिपोट: तपाईंको फिंगरप्रिन्ट भरपर्दो पासवर्ड वा PIN भन्दा कम सुरक्षित हुन सक्छ।</translation>
 <translation id="1720318856472900922">TLS WWW सर्भर प्रमाणीकरण</translation>
 <translation id="1720941539803966190">ट्युटोरियल बन्द गर्नुहोस्</translation>
-<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोहरू खोज्नुहोस्</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटोहरू खोज्नुहोस्</translation>
 <translation id="1721312023322545264">यो साइटमा जान तपाईंलाई <ph name="NAME" /> को अनुमति आवश्यक छ</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;नयाँ सञ्झ्याल</translation>
@@ -5869,7 +5870,7 @@
 <translation id="7230222852462421043">&amp;विन्डो रिस्टोर गर्नुहोस्</translation>
 <translation id="7230787553283372882">आफ्नो पाठको आकार आफू अनुकूल पार्नुहोस्</translation>
 <translation id="7232750842195536390">पुनः नामकरण गर्न सकिएन</translation>
-<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी फोटोहरू खोज्नुहोस्</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटोहरू खोज्नुहोस्</translation>
 <translation id="7234010996000898150">Linux को पुनर्स्थापना रद्द गरिँदै</translation>
 <translation id="7235716375204803342">क्रियाकलापहरू प्राप्त गर्दै...</translation>
 <translation id="7235737137505019098">तपाईंको सुरक्षा साँचोमा थप खाताका लागि पर्याप्त ठाउँ छैन।</translation>
@@ -7491,6 +7492,7 @@
 <translation id="8879284080359814990">ट्याबको रूपमा &amp;देखाउनुहोस्</translation>
 <translation id="8879921471468674457">साइन इनसम्बन्धी जानकारी याद गर्नुहोस्</translation>
 <translation id="8880054210564666174">सम्पर्क ठेगानाको सूची डाउनलोड गर्न सकिएन। कृपया आफ्नो इन्टरनेट कनेक्सन जाँच गर्नुहोस् वा <ph name="LINK_BEGIN" />फेरि प्रयास गर्नुहोस्<ph name="LINK_END" />।</translation>
+<translation id="8880344290593529089">Linux वा Parallels Desktop मा <ph name="USB_DEVICE_NAME" /> कनेक्ट गर्न सेटिङ खोल्नुहोस्</translation>
 <translation id="8881020143150461183">कृपया फेरि प्रयास गर्नुहोस्। प्राविधिक सहयोगका लागि <ph name="CARRIER_NAME" /> मा सम्पर्क गर्नुहोस्।</translation>
 <translation id="8883273463630735858">टचप्याडको गति बढाउने सुविधा सक्षम पार्नुहोस्</translation>
 <translation id="8884570509232205463">अब तपाईंको यन्त्र <ph name="UNLOCK_TIME" /> बजे लक हुन्छ।</translation>

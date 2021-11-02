@@ -21,6 +21,7 @@ import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import {StreamConstraints} from '../device/stream_constraints.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
+import {Flag} from '../flag.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
@@ -749,6 +750,15 @@ export class Camera extends View {
    * @override
    */
   async reviewDocument(originImage, refCorners) {
+    const needFirstRecrop = refCorners === null;
+    const allowRecrop = loadTimeData.getChromeFlag(Flag.DOCUMENT_MANUAL_CROP);
+    if (needFirstRecrop && !allowRecrop) {
+      const message = loadTimeData.getI18nMessage(
+          I18nString.DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE);
+      nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
+      throw new CanceledError(`Couldn't detect a document`);
+    }
+
     nav.open(ViewName.FLASH);
     const helper = await ChromeHelper.getInstance();
     let result = null;
@@ -768,7 +778,6 @@ export class Camera extends View {
           }
           return helper.convertToDocument(blob, rotatedCorns, MimeType.JPEG);
         };
-        const needFirstRecrop = refCorners === null;
         let corners =
             refCorners || getDefaultScanCorners(originImage.resolution);
         let docBlob;
@@ -850,18 +859,23 @@ export class Camera extends View {
               },
             }),
         );
-        const negative = new review.Options(
-            new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
-              callback: doRecrop,
-              hasPopup: true,
-            }),
-            new review.Option(I18nString.LABEL_RETAKE, {
-              callback: () => {
-                sendEvent(metrics.DocResultType.CANCELED);
-              },
-              exitValue: null,
-            }),
-        );
+
+        const optionsArgs = [
+          new review.Option(I18nString.LABEL_RETAKE, {
+            callback: () => {
+              sendEvent(metrics.DocResultType.CANCELED);
+            },
+            exitValue: null,
+          }),
+        ];
+        if (allowRecrop) {
+          optionsArgs.unshift(new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
+            callback: doRecrop,
+            hasPopup: true,
+          }));
+        }
+        const negative = new review.Options(...optionsArgs);
+
         const mimeType = await this.review_.startReview({positive, negative});
         assert(mimeType !== undefined);
         if (mimeType !== null) {

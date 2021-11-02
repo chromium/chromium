@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
 <translation id="1146678959555564648">Iniciar RV</translation>
 <translation id="114825011539563458">Los controles de privacidad y seguridad más importantes en un mismo lugar</translation>
+<translation id="1149401351239820326">Mes de caducidad</translation>
 <translation id="1154704303112745282">Página no disponible sin conexión: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Usados</translation>
 <translation id="1171770572613082465">Toca el botón Populares para ver los sitios web más populares</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Combinaciones de teclas de funciones de Google Chrome</translation>
 <translation id="1344653310988386453">Incluir enlace al texto destacado</translation>
 <translation id="1347468774581902829">Gestionar actividad</translation>
-<translation id="1353372385686746892">Para ayudar a mejorar la aplicación, Chrome envía datos de diagnósticos a Google. <ph name="BEGIN_LINK" />Cambiar<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">¿Cerrar sesión y detener sincronización?</translation>
 <translation id="1373696734384179344">No hay memoria suficiente para descargar el contenido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando…</translation>
@@ -817,7 +817,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5956665950594638604">Abre la Ayuda de Chrome en una pestaña nueva</translation>
 <translation id="5957442310066583693">Para ver tus sitios favoritos, toca el botón de inicio</translation>
 <translation id="5958275228015807058">Encuentra tus archivos y páginas en la sección Descargas</translation>
-<translation id="5962272973076519240">Verifica tu identidad para desbloquear las pestañas de incógnito</translation>
 <translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5964805880140440652">Para compartir esta página con otro dispositivo, activa la sincronización en los ajustes de Chrome.</translation>
 <translation id="5964869237734432770">Detener descripciones de imágenes</translation>
@@ -1188,6 +1187,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="804335162455518893">No se ha encontrado la tarjeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestañas de incógnito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponible(s)</translation>
+<translation id="8058655154417507695">Año de caducidad</translation>
 <translation id="8058746566562539958">Abrir en una pestaña nueva</translation>
 <translation id="8063895661287329888">No se ha podido añadir el marcador.</translation>
 <translation id="806745655614357130">Mantener mis datos separados</translation>

@@ -2,7 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//v8/gni/v8.gni")
+
+inspector_protocol_generate("protocol_sources") {
+  visibility = [ "//content/services/auction_worklet" ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  inspector_protocol_dir = "//third_party/inspector_protocol"
+  out_dir = target_gen_dir
+  config_file = "devtools_protocol_config.json"
+  _blink_protocol_path =
+      "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json"
+  protocol_path = rebase_path(_blink_protocol_path, root_build_dir)
+  config_values = [ "protocol.path=$protocol_path" ]
+
+  inputs = [
+    _blink_protocol_path,
+    config_file,
+  ]
+
+  # These are relative to $target_gen_dir.
+  outputs = [
+    "protocol/event_breakpoints.cc",
+    "protocol/event_breakpoints.h",
+    "protocol/forward.h",
+    "protocol/protocol.cc",
+    "protocol/protocol.h",
+    "protocol/base_string_adapter.cc",
+    "protocol/base_string_adapter.h",
+  ]
+}
 
 source_set("auction_worklet") {
   sources = [
@@ -34,12 +63,15 @@ source_set("auction_worklet") {
     "worklet_loader.h",
   ]
 
+  sources += get_target_outputs(":protocol_sources")
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//v8:external_startup_data",
   ]
 
   deps = [
+    ":protocol_sources",
     "//base",
     "//gin",
     "//mojo/public/cpp/bindings",

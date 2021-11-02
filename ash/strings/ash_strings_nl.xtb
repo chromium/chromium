@@ -24,6 +24,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="109942774857561566">Ik verveel me</translation>
 <translation id="1104084341931202936">Toegankelijkheidsinstellingen bekijken</translation>
 <translation id="1104621072296271835">Je apparaten werken samen nog beter</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> raadt aan deze <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="1119348796022671382">De kleurenmodus 'Met een thema' stelt de kleuren van de interface af op de kleuren van je achtergrond.</translation>
 <translation id="112308213915226829">Plank automatisch verbergen</translation>
@@ -373,6 +374,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3665889125180354336">Microfoon opnemen</translation>
 <translation id="3680908746918359504">Alle markeringen wissen</translation>
 <translation id="36813544980941320">Wifi-netwerken worden gedeeld tussen je telefoon en <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Je kunt nu wijzigen waar schermopnamen worden opgeslagen</translation>
 <translation id="3702809606464356667">Er worden vensters van het huidige bureau getoond, druk op de pijl-omhoog om vensters van alle bureaus te bekijken</translation>
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3969043077941541451">Uit</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3977512764614765090">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen.</translation>
+<translation id="3986082989454912832">Beantwoorden</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
 <translation id="40062176907008878">Handschrift</translation>
 <translation id="4017989525502048489">Laserpen</translation>
@@ -456,7 +459,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4274537685965975248">De sneltoets Ctrl + Alt + pijl-omlaag is veranderd. Als je de toets End wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-rechts.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Losmaken</translation>
-<translation id="4292904812939562398">Recent gebruikte apps</translation>
 <translation id="429402653707266969">Locatie van toolbar schakelen</translation>
 <translation id="4294319844246081198">Goedemorgen <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Alle <ph name="COUNT" /> meldingen wissen</translation>
@@ -562,6 +564,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
 <translation id="4952936045814352993">Telefoon vinden is niet beschikbaar als alarmgeluiden uitstaan</translation>
@@ -905,6 +908,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
+<translation id="7610198039767537854">Recente foto's van de filmrol van je camera bekijken op <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutraal</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Markeerstift</translation>

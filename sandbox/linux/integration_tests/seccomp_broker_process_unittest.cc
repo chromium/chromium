@@ -65,9 +65,11 @@ class InitializedOpenBroker {
     std::vector<BrokerFilePermission> permissions = {
         BrokerFilePermission::ReadOnly("/proc/allowed"),
         BrokerFilePermission::ReadOnly("/proc/cpuinfo")};
-    broker_process_ = std::make_unique<BrokerProcess>(EPERM, command_set,
-                                                      permissions, broker_type);
-    BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
+    broker_process_ = std::make_unique<BrokerProcess>(
+        syscall_broker::BrokerSandboxConfig(command_set, permissions, EPERM),
+        broker_type);
+    BPF_ASSERT(broker_process_->Fork(base::BindOnce(
+        [](const syscall_broker::BrokerSandboxConfig&) { return true; })));
   }
 
   BrokerProcess* broker_process() const { return broker_process_.get(); }
@@ -547,10 +549,13 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
     BrokerTestDelegate::BrokerParams broker_params =
         broker_test_delegate_->ChildSetUpPreSandbox();
 
+    auto policy = absl::make_optional<syscall_broker::BrokerSandboxConfig>(
+        broker_params.allowed_command_set, broker_params.permissions,
+        broker_params.denied_errno);
     broker_process_ = std::make_unique<BrokerProcess>(
-        broker_params.denied_errno, broker_params.allowed_command_set,
-        broker_params.permissions, broker_type_, fast_check_in_client_);
-    BPF_ASSERT(broker_process_->Init(base::BindOnce([]() { return true; })));
+        std::move(policy), broker_type_, fast_check_in_client_);
+    BPF_ASSERT(broker_process_->Fork(base::BindOnce(
+        [](const syscall_broker::BrokerSandboxConfig&) { return true; })));
     broker_test_delegate_->OnBrokerStarted(broker_process_->broker_pid());
 
     BPF_ASSERT(TestUtils::CurrentProcessHasChildren());

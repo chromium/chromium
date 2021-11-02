@@ -19,7 +19,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "ppapi/shared_impl/ppapi_constants.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/isolated_context.h"
@@ -129,8 +128,8 @@ void CdmStorageImpl::Open(const std::string& file_name, OpenCallback callback) {
 
   std::string fsid =
       storage::IsolatedContext::GetInstance()->RegisterFileSystemForVirtualPath(
-          storage::kFileSystemTypePluginPrivate, ppapi::kPluginPrivateRootName,
-          base::FilePath());
+          storage::kFileSystemTypePluginPrivate,
+          storage::kPluginPrivateRootName, base::FilePath());
   if (!storage::ValidateIsolatedFileSystemId(fsid)) {
     DVLOG(1) << "Invalid file system ID.";
     OnFileSystemOpened(base::File::FILE_ERROR_NOT_FOUND);
@@ -143,7 +142,7 @@ void CdmStorageImpl::Open(const std::string& file_name, OpenCallback callback) {
 
   // Keep track of the URI for this instance of the PluginPrivateFileSystem.
   file_system_root_uri_ = storage::GetIsolatedFileSystemRootURIString(
-      origin().GetURL(), fsid, ppapi::kPluginPrivateRootName);
+      origin().GetURL(), fsid, storage::kPluginPrivateRootName);
 
   file_system_context_->OpenPluginPrivateFileSystem(
       origin(), storage::kFileSystemTypePluginPrivate, fsid,

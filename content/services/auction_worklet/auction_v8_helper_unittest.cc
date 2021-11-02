@@ -76,6 +76,12 @@ class AuctionV8HelperTest : public testing::Test {
               std::vector<std::string> error_msgs;
               v8::Context::Scope ctx(context);
               v8::Local<v8::Value> result;
+              // This is here since it needs to be before RunScript() ---
+              // doing it before Compile() doesn't work.
+              helper->MaybeTriggerInstrumentationBreakpoint(context_group_id,
+                                                            "start");
+              helper->MaybeTriggerInstrumentationBreakpoint(context_group_id,
+                                                            "start2");
               bool success = helper
                                  ->RunScript(context, script, context_group_id,
                                              function_name,
@@ -722,6 +728,128 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
     EXPECT_EQ(30, result);
 
     FreeContextGroupIdAndWait(helper_, id);
+  }
+}
+
+TEST_F(AuctionV8HelperTest, DevToolsAgentDebuggerInstrumentationBreakpoint) {
+  const char kSession[] = "123-456";
+  const char kScript[] = R"(
+    function compute() {
+      return 42;
+    }
+  )";
+
+  for (bool use_binary_protocol : {false, true}) {
+    for (bool use_multiple_breakpoints : {false, true}) {
+      std::string test_name =
+          std::string(use_binary_protocol ? "Binary " : "JSON ") +
+          (use_multiple_breakpoints ? "Multi" : "Single");
+      SCOPED_TRACE(test_name);
+      // Need to use a separate thread for debugger stuff.
+      v8_scope_.reset();
+      helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+      int id = AllocContextGroupIdAndWait(helper_);
+
+      mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+      ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+      TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                           use_binary_protocol);
+      debug_client.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+          R"({"id":1,"method":"Runtime.enable","params":{}})");
+      debug_client.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+          R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+      debug_client.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kMain, 3,
+          "EventBreakpoints.setInstrumentationBreakpoint",
+          MakeInstrumentationBreakpointCommand(3, "set", "start"));
+      debug_client.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kMain, 4,
+          "EventBreakpoints.setInstrumentationBreakpoint",
+          MakeInstrumentationBreakpointCommand(4, "set", "start2"));
+      debug_client.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kMain, 5,
+          "EventBreakpoints.setInstrumentationBreakpoint",
+          MakeInstrumentationBreakpointCommand(5, "set", "start3"));
+      if (!use_multiple_breakpoints) {
+        debug_client.RunCommandAndWaitForResult(
+            TestDevToolsAgentClient::Channel::kMain, 6,
+            "EventBreakpoints.removeInstrumentationBreakpoint",
+            MakeInstrumentationBreakpointCommand(6, "remove", "start2"));
+      }
+
+      int result = -1;
+      base::RunLoop result_run_loop;
+      CompileAndRunScriptOnV8Thread(
+          id, "compute", GURL("https://example.com/test.js"), kScript,
+          /*expect_success=*/true, result_run_loop.QuitClosure(), &result);
+
+      // Wait for the pause.
+      TestDevToolsAgentClient::Event breakpoint_hit =
+          debug_client.WaitForMethodNotification("Debugger.paused");
+
+      // Make sure we identify the event the way DevTools frontend expects.
+      if (use_multiple_breakpoints) {
+        // Expect both 'start' and 'start2' to hit, so the event will list both
+        // inside the 'data.reasons' list, and top-level 'reason' field to say
+        // 'ambiguous' to reflect it.
+        const std::string* reason =
+            breakpoint_hit.value.FindStringPath("params.reason");
+        ASSERT_TRUE(reason);
+        EXPECT_EQ("ambiguous", *reason);
+
+        const base::Value* reasons =
+            breakpoint_hit.value.FindListPath("params.data.reasons");
+        ASSERT_TRUE(reasons);
+        base::Value::ConstListView reasons_list = reasons->GetList();
+        ASSERT_EQ(2u, reasons_list.size());
+        ASSERT_TRUE(reasons_list[0].is_dict());
+        ASSERT_TRUE(reasons_list[1].is_dict());
+        const std::string* ev1 =
+            reasons_list[0].FindStringPath("auxData.eventName");
+        const std::string* ev2 =
+            reasons_list[1].FindStringPath("auxData.eventName");
+        const std::string* r1 = reasons_list[0].FindStringPath("reason");
+        const std::string* r2 = reasons_list[1].FindStringPath("reason");
+        ASSERT_TRUE(ev1);
+        ASSERT_TRUE(ev2);
+        ASSERT_TRUE(r1);
+        ASSERT_TRUE(r2);
+        EXPECT_EQ("instrumentation:start", *ev1);
+        EXPECT_EQ("instrumentation:start2", *ev2);
+        EXPECT_EQ("EventListener", *r1);
+        EXPECT_EQ("EventListener", *r2);
+      } else {
+        // Here we expect 'start' to be the only event, since we remove
+        // 'start2', and 'start3' isn't checked by
+        // CompileAndRunScriptOnV8Thread.
+        EXPECT_FALSE(breakpoint_hit.value.FindPath("params.data.reasons"));
+        const std::string* reason =
+            breakpoint_hit.value.FindStringPath("params.reason");
+        ASSERT_TRUE(reason);
+        EXPECT_EQ("EventListener", *reason);
+
+        const std::string* event_name =
+            breakpoint_hit.value.FindStringPath("params.data.eventName");
+        ASSERT_TRUE(event_name);
+        EXPECT_EQ("instrumentation:start", *event_name);
+      }
+
+      // Resume.
+      debug_client.RunCommandAndWaitForResult(
+          TestDevToolsAgentClient::Channel::kIO, 10, "Debugger.resume",
+          R"({"id":10,"method":"Debugger.resume","params":{}})");
+
+      // Wait for result.
+      result_run_loop.Run();
+      EXPECT_EQ(42, result);
+
+      FreeContextGroupIdAndWait(helper_, id);
+    }
   }
 }
 

@@ -7698,6 +7698,7 @@ others/histograms.xml -->
   <int value="24" label="Feedv2 refresh task"/>
   <int value="25" label="Download later task"/>
   <int value="27" label="WebView Component Updater schedule task"/>
+  <int value="28" label="Attribution Provider flush task"/>
 </enum>
 
 <enum name="BackgroundTracingState">
@@ -8125,8 +8126,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Power state changed"/>
   <int value="3" label="Charge level unavailable"/>
   <int value="4" label="No battery"/>
-  <int value="5" label="Invalid discharge rate"/>
+  <int value="5" label="Battery level increased while disconnected"/>
   <int value="6" label="Invalid interval"/>
+  <int value="7"
+      label="Discharge rate could not be evaluated because Mac is fully
+             charged"/>
 </enum>
 
 <enum name="BatteryInfoSampleResult">
@@ -23502,6 +23506,14 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="File error"/>
 </enum>
 
+<enum name="DriveZeroStateProviderThrottleInterval">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="5 minutes"/>
+  <int value="2" label="10 minutes"/>
+  <int value="3" label="15 minutes"/>
+  <int value="4" label="30 minutes"/>
+</enum>
+
 <enum name="DspHotwordDetectionStatus">
   <int value="0" label="HARDWARE_ACCEPTED"/>
   <int value="1" label="SOFTWARE_REJECTED"/>
@@ -29788,6 +29800,8 @@ Called by update_extension_histograms.py.-->
   <int value="1595" label="PASSWORDSPRIVATE_GETURLCOLLECTION"/>
   <int value="1596" label="PASSWORDSPRIVATE_ADDPASSWORD"/>
   <int value="1597" label="PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT"/>
+  <int value="1598" label="WEB_AUTHENTICATION_PROXY_ATTACH"/>
+  <int value="1599" label="WEB_AUTHENTICATION_PROXY_DETACH"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -35390,6 +35404,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="22" label="Failed - data in store is expired"/>
   <int value="23" label="Failed - data in store is for another user"/>
   <int value="24" label="Failed - cannot load stream with pending clear all"/>
+</enum>
+
+<enum name="FeedNoticeAcknowledgementPath">
+  <int value="0"
+      label="The acknowledgment is reached after the user views the notice
+             for a required number of times."/>
+  <int value="1"
+      label="The acknowledgment is reached after the user taps the notice to
+             perform an open action for a required number of times."/>
+  <int value="2"
+      label="The acknowledgment is reached after the user fter the user taps
+             X button to close the notice."/>
 </enum>
 
 <enum name="FeedRequestReason">
@@ -50655,6 +50681,7 @@ from previous Chrome versions.
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
   <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>
+  <int value="-201829551" label="CameraAppDocumentManualCrop:enabled"/>
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>
   <int value="-200792853" label="UnifiedPasswordManagerAndroid:disabled"/>
@@ -52992,6 +53019,7 @@ from previous Chrome versions.
       label="DataReductionProxyEnabledWithNetworkService:enabled"/>
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
+  <int value="1580606206" label="CameraAppDocumentManualCrop:disabled"/>
   <int value="1581002467" label="enable-explicit-dma-fences"/>
   <int value="1582400283" label="VideoTutorials:enabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>

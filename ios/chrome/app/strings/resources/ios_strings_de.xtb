@@ -525,6 +525,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6127379762771434464">Eintrag entfernt</translation>
 <translation id="6136914049981179737">Gerade eben</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
+<translation id="6159839020698489198">optional</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@ Websites können Cookies nicht verwenden, um Ihre Browseraktivitäten auf andere
 Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</translation>
 <translation id="651505212789431520">Synchronisierung abbrechen? Sie können die Synchronisierung jederzeit in den Einstellungen aktivieren.</translation>
 <translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Heranzoomen</translation>
 <translation id="6585618849026997638">Sie können Lesezeichen setzen, damit Sie zu Seiten zurückfinden, die für Sie interessant sind</translation>
 <translation id="6603393121510733479">Ihre Organisation hat das private Surfen deaktiviert.
@@ -623,6 +625,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6851516051005285358">Desktop-Version</translation>
 <translation id="6858855187367714033">Gescannt</translation>
 <translation id="6859944681507688231">Wenn Sie einen QR-Code oder eine Kreditkarte scannen möchten, aktivieren Sie zuerst in den Einstellungen die Kamera.</translation>
+<translation id="6867369562105931222">Passwort</translation>
 <translation id="6869389390665537774">Sie können die von Ihnen besuchten Seiten ansehen oder sie aus Ihrem Verlauf löschen</translation>
 <translation id="6873263987691478642">Geteilte Ansicht</translation>
 <translation id="6888009575607455378">Möchten Sie die Änderungen wirklich verwerfen?</translation>

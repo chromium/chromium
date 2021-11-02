@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Travail</translation>
 <translation id="1122198203221319518">&amp;Outils</translation>
 <translation id="1122242684574577509">Échec de l'authentification. Cliquez ici pour accéder à la page de connexion du réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Les infos de connexion de votre compte sont obsolètes. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="1122960773616686544">Nom du favori</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1125550662859510761">La résolution est de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (native)</translation>
@@ -710,7 +711,7 @@
 <translation id="1719312230114180055">Remarque : Vos empreintes digitales peuvent être moins sécurisées qu'un mot de passe ou un code fiables.</translation>
 <translation id="1720318856472900922">Authentification du serveur WWW TLS</translation>
 <translation id="1720941539803966190">Fermer le tutoriel</translation>
-<translation id="172123215662733643">Rechercher dans les images avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Rechercher des images avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Vous devez disposer de l'autorisation de <ph name="NAME" /> pour consulter ce site</translation>
 <translation id="1722460139690167654">Votre <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> est géré<ph name="END_LINK" /> par <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
@@ -5875,7 +5876,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7230222852462421043">&amp;Restaurer la fenêtre</translation>
 <translation id="7230787553283372882">Personnaliser la taille du texte</translation>
 <translation id="7232750842195536390">Échec du changement de nom</translation>
-<translation id="723343421145275488">Rechercher dans les images avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Rechercher des images avec <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Annulation de la restauration de Linux…</translation>
 <translation id="7235716375204803342">Récupération des activités…</translation>
 <translation id="7235737137505019098">L'espace de stockage de votre clé de sécurité est insuffisant pour y enregistrer d'autres comptes.</translation>
@@ -7499,6 +7500,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8879284080359814990">Afficher dan&amp;s un onglet</translation>
 <translation id="8879921471468674457">Mémoriser les informations de connexion</translation>
 <translation id="8880054210564666174">Impossible de télécharger la liste de contacts. Veuillez vérifier votre connexion réseau ou <ph name="LINK_BEGIN" />réessayer<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Ouvrez les paramètres pour connecter <ph name="USB_DEVICE_NAME" /> à Linux ou Parallels Desktop</translation>
 <translation id="8881020143150461183">Veuillez réessayer. Pour obtenir une assistance technique, contactez <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Activer l'accélération du pavé tactile</translation>
 <translation id="8884570509232205463">Ton appareil se verrouille désormais à <ph name="UNLOCK_TIME" />.</translation>

@@ -421,7 +421,7 @@
   "ash/webui/camera_app_ui/resources/strings/camera_strings.grd": {
     "messages": [2940],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/connectivity_diagnostics_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [2960],
   },

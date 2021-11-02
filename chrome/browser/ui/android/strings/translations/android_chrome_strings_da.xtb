@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1146678959555564648">Angiv VR</translation>
 <translation id="114825011539563458">De vigtigste privatlivs- og sikkerhedsindstillinger samlet på ét sted</translation>
+<translation id="1149401351239820326">Udløbsmåned</translation>
 <translation id="1154704303112745282">Siden er ikke tilgængelig offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Brugt</translation>
 <translation id="1171770572613082465">Se populære websites ved at trykke på knappen "Topwebsites"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Funktionsgenveje i Google Chrome</translation>
 <translation id="1344653310988386453">Medtag link til fremhævning</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
-<translation id="1353372385686746892">Chrome sender diagnosticeringsdata til Google for at hjælpe med at forbedre appen. <ph name="BEGIN_LINK" />Juster<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
 <translation id="1373696734384179344">Der er ikke nok hukommelse til at downloade det valgte indhold.</translation>
 <translation id="1376578503827013741">Beregner…</translation>
@@ -405,6 +405,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3398320232533725830">Åbn bogmærkeadministratoren</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
 <translation id="3429160811076349561">Prøvefunktioner er slået fra</translation>
+<translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3440975416244667276">Tryk og hold for at få flere relevante oplysninger</translation>
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
 <translation id="3444179773590444986">Vil du dele feedback om Mørkt tema på websites?</translation>
@@ -816,7 +817,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5956665950594638604">Åbn Hjælp til Chrome i en ny fane</translation>
 <translation id="5957442310066583693">Hvis du vil se dine mest anvendte websites, skal du trykke på knappen Hjem</translation>
 <translation id="5958275228015807058">Find dine filer og sider i Downloads</translation>
-<translation id="5962272973076519240">Bekræft din identitet for at låse op for inkognito</translation>
 <translation id="5962718611393537961">Tryk for at skjule</translation>
 <translation id="5964805880140440652">Hvis du vil dele denne side med en anden enhed, skal du aktivere synkronisering i indstillingerne for Chrome</translation>
 <translation id="5964869237734432770">Stop billedbeskrivelser</translation>
@@ -1187,6 +1187,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="804335162455518893">SD-kortet blev ikke fundet</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitofane}one{<ph name="TAB_COUNT_NORMAL" /> inkognitofane}other{<ph name="TAB_COUNT_NORMAL" /> inkognitofaner}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB er ledig</translation>
+<translation id="8058655154417507695">Udløbsår</translation>
 <translation id="8058746566562539958">Åbn på ny fane i Chrome</translation>
 <translation id="8063895661287329888">Bogmærket kunne ikke tilføjes.</translation>
 <translation id="806745655614357130">Hold mine data adskilt</translation>

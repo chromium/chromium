@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<title>DedicatedWorker: ServiceWorker interception</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.js"></script>
+<script>
+
+// These tests should not be upstreamed to WPT because these check Chrome's
+// spec-incompatible behavior (https://crbug.com/731599). These should be
+// superseded by tests in WPT after the issue is fixed. See also
+// external/wpt/service-workers/service-worker/dedicated-worker-service-worker-interception.https.html
+
+const kServiceWorkerScriptURL =
+    'resources/service-worker-interception-service-worker.js';
+const kWindowURL = 'resources/new-worker-window.html';
+
+function openWindow(url) {
+  return new Promise(resolve => {
+      let win = window.open(url, '_blank');
+      add_result_callback(() => win.close());
+      window.onmessage = e => {
+        assert_equals(e.data, 'LOADED');
+        resolve(win);
+      };
+    });
+}
+
+// Tests that a dedicated worker should be served by the owner document's
+// service worker.
+//
+// [Current document] registers a service worker for Window's URL.
+// --(open)--> [Window] should be controlled by the service worker.
+//   --(new Worker)--> [Worker] should be served by the service worker.
+promise_test(async t => {
+    const registration = await service_worker_unregister_and_register(
+        t, kServiceWorkerScriptURL + '?controlled', kWindowURL);
+    add_result_callback(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+
+    const win = await openWindow(kWindowURL);
+    assert_not_equals(win.navigator.serviceWorker.controller, null,
+                      'The document should be controlled.');
+
+    // |win| is controlled by the service worker, so a new dedicated worker
+    // created from |win| should also be controlled by the service worker.
+    const kWorkerScriptURL = 'service-worker-interception-network-worker.js';
+    win.postMessage(kWorkerScriptURL, '*');
+    const msg_event = await new Promise(resolve => window.onmessage = resolve);
+    assert_equals(msg_event.data, 'LOADED_FROM_SERVICE_WORKER');
+}, 'Module loading for new Worker() on a controlled document should be ' +
+   'intercepted by a service worker.');
+
+// Tests that a dedicated worker should not be served by a service worker other
+// than the owner document's service worker.
+//
+// [Current document] registers a service worker for Worker's URL.
+// --(open)--> [Window] should not be controlled by the service worker.
+//   --(new Worker)--> [Worker] should not be served by the service worker.
+promise_test(async t => {
+    const kWorkerScriptURL = 'service-worker-interception-network-worker.js';
+    const kScope = 'resources/' + kWorkerScriptURL;
+
+    const registration = await service_worker_unregister_and_register(
+        t, kServiceWorkerScriptURL + '?non-controlled', kScope);
+    add_result_callback(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+
+    const win = await openWindow(kWindowURL);
+    assert_equals(win.navigator.serviceWorker.controller, null,
+                  'The document should not be controlled.');
+
+    // |win| is not controlled by the service worker, so a new dedicated worker
+    // created from |win| should not be controlled by the service worker even if
+    // the script URL of the dedicated worker is under the scope of the service
+    // worker.
+    win.postMessage(kWorkerScriptURL, '*');
+    const msg_event = await new Promise(resolve => window.onmessage = resolve);
+    assert_equals(msg_event.data, 'LOADED_FROM_NETWORK');
+}, 'Module loading for new Worker() on a non-controlled document should not ' +
+   'be intercepted by a service worker even if the script URL is under the ' +
+   'scope.');
+
+// Tests that static import should be served by the owner document's service
+// worker.
+//
+// [Current document] registers a service worker for Window's URL.
+// --(open)--> [Window] should be controlled by the service worker.
+//   --(new Worker)--> [Worker] should be controlled by the service worker.
+//     --(static import)--> [Script] should be served by the service worker.
+promise_test(async t => {
+    const registration = await service_worker_unregister_and_register(
+        t, kServiceWorkerScriptURL + '?static', kWindowURL);
+    add_result_callback(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+
+    const win = await openWindow(kWindowURL);
+    assert_not_equals(win.navigator.serviceWorker.controller, null,
+                      'The document should be controlled.');
+
+    // |win| is controlled by the service worker, so a new dedicated worker
+    // created from |win| and static import from the dedicated worker should
+    // also be controlled by the service worker.
+    const kWorkerScriptURL =
+        'service-worker-interception-static-import-worker.js';
+    win.postMessage(kWorkerScriptURL, '*');
+    const msg_event = await new Promise(resolve => window.onmessage = resolve);
+    assert_equals(msg_event.data, 'LOADED_FROM_SERVICE_WORKER');
+}, 'Static import on a controlled dedicated worker should be intercepted by ' +
+   'a service worker.');
+
+// Tests that dynamic import should be served by the owner document's service
+// worker.
+//
+// [Current document] registers a service worker for Window's URL.
+// --(open)--> [Window] should be controlled by the service worker.
+//   --(new Worker)--> [Worker] should be controlled by the service worker.
+//     --(dynamic import)--> [Script] should be served by the service worker.
+promise_test(async t => {
+    const registration = await service_worker_unregister_and_register(
+        t, kServiceWorkerScriptURL + '?dynamic', kWindowURL);
+    add_result_callback(() => registration.unregister());
+    await wait_for_state(t, registration.installing, 'activated');
+
+    const win = await openWindow(kWindowURL);
+    assert_not_equals(win.navigator.serviceWorker.controller, null,
+                      'The document should be controlled.');
+
+    // |win| is controlled by the service worker, so a new dedicated worker
+    // created from |win| and dynamic import from the dedicated worker should
+    // also be controlled by the service worker.
+    const kWorkerScriptURL =
+        'service-worker-interception-dynamic-import-worker.js';
+    win.postMessage(kWorkerScriptURL, '*');
+    const msg_event = await new Promise(resolve => window.onmessage = resolve);
+    assert_equals(msg_event.data, 'LOADED_FROM_SERVICE_WORKER');
+}, 'Dynamic import on a controlled dedicated worker should be intercepted by ' +
+   'a service worker.');
+
+</script>

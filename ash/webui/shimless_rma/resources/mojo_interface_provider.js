@@ -44,6 +44,8 @@ function setupFakeShimlessRmaService_() {
 
   service.setAbortRmaResult(RmadErrorCode.kOk);
 
+  service.automaticallyTriggerHardwareVerificationStatusObservation();
+
   service.setGetCurrentOsVersionResult(fakeChromeVersion[0]);
   service.setCheckForOsUpdatesResult(true, 'fake version 1.2.3.4');
   service.setUpdateOsResult(false);

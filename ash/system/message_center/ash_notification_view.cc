@@ -26,6 +26,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -79,6 +80,7 @@ constexpr char16_t kTitleRowDivider[] = u"\u2022";
 constexpr char kGoogleSansFont[] = "Google Sans";
 
 constexpr int kAppIconViewSize = 24;
+constexpr int kAppIconImageSize = 16;
 constexpr int kTitleCharacterLimit =
     message_center::kNotificationWidth * message_center::kMaxTitleLines /
     message_center::kMinPixelsPerTitleCharacter;
@@ -88,6 +90,10 @@ constexpr int kMessageLabelSize = 13;
 // The size for `icon_view_`, which is the icon within right content (between
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
+
+// Lightness value that is used to calculate themed color used for app icon.
+constexpr double kAppIconLightnessInDarkMode = 0.85;
+constexpr double kAppIconLightnessInLightMode = 0.4;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -663,37 +669,17 @@ void AshNotificationView::CreateOrUpdateSmallIconView(
     return;
   }
 
-  // TODO(crbug/1241990): Since we haven't decided which color we will use for
-  // app icon, we will need to change this part later.
-  SkColor icon_color = notification.accent_color().value_or(
-      AshColorProvider::Get()->GetContentLayerColor(
-          ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  // TODO(crbug.com/768748): figure out if this has a performance impact and
-  // cache images if so.
-  gfx::Image masked_small_icon = notification.GenerateMaskedSmallIcon(
-      kAppIconViewSize, icon_color,
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive),
-      AshColorProvider::Get()->GetContentLayerColor(
-          ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  if (masked_small_icon.IsEmpty()) {
-    app_icon_view_->SetImage(
-        gfx::CreateVectorIcon(message_center::kProductIcon, kAppIconViewSize,
-                              SK_ColorWHITE),
-        gfx::Size(kAppIconViewSize, kAppIconViewSize));
-  } else {
-    app_icon_view_->SetImage(masked_small_icon.AsImageSkia(),
-                             gfx::Size(kAppIconViewSize, kAppIconViewSize));
-  }
+  UpdateAppIconView();
 }
 
 void AshNotificationView::CreateOrUpdateInlineSettingsViews(
     const message_center::Notification& notification) {
   if (inline_settings_enabled()) {
-    DCHECK_EQ(message_center::SettingsButtonHandler::INLINE,
-              notification.rich_notification_data().settings_button_handler);
+    // TODO(crbug/1265636): Fix this logic when grouped parent notification has
+    // inline settings.
+    DCHECK(is_grouped_parent_view_ ||
+           (message_center::SettingsButtonHandler::INLINE ==
+            notification.rich_notification_data().settings_button_handler));
     return;
   }
 
@@ -756,6 +742,8 @@ void AshNotificationView::SetDrawBackgroundAsActive(bool active) {}
 void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);
+
+  UpdateAppIconView();
 
   header_row()->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
@@ -856,6 +844,45 @@ int AshNotificationView::GetExpandedMessageViewWidth() {
 
 void AshNotificationView::DisableNotification() {
   message_center::MessageCenter::Get()->DisableNotification(notification_id());
+}
+
+void AshNotificationView::UpdateAppIconView() {
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id());
+
+  SkColor accent_color = notification->accent_color().value_or(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive));
+
+  SkColor icon_color = AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+
+  // To ensure the app icon looks distinct enough in the notification
+  // background, we change the lightness of the accent color to generate app
+  // icon's background color.
+  color_utils::HSL hsl;
+  color_utils::SkColorToHSL(accent_color, &hsl);
+  hsl.l = AshColorProvider::Get()->IsDarkModeEnabled()
+              ? kAppIconLightnessInDarkMode
+              : kAppIconLightnessInLightMode;
+  SkColor icon_background_color =
+      color_utils::HSLToSkColor(hsl, SkColorGetA(accent_color));
+
+  // TODO(crbug.com/768748): figure out if this has a performance impact and
+  // cache images if so.
+  gfx::Image masked_small_icon = notification->GenerateMaskedSmallIcon(
+      kAppIconImageSize, icon_color, icon_background_color, icon_color);
+
+  gfx::ImageSkia app_icon =
+      masked_small_icon.IsEmpty()
+          ? gfx::CreateVectorIcon(message_center::kProductIcon,
+                                  kAppIconImageSize, icon_color)
+          : masked_small_icon.AsImageSkia();
+
+  app_icon_view_->SetImage(
+      gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+          kAppIconViewSize / 2, icon_background_color, app_icon));
 }
 
 }  // namespace ash

@@ -528,13 +528,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     table_cell_column_index_ = table_cell_column_index;
   }
 
-  void TransferGridData(std::unique_ptr<NGGridData> grid_data) {
-    grid_data_ = std::move(grid_data);
+  void TransferGridLayoutData(
+      std::unique_ptr<NGGridLayoutData> grid_layout_data) {
+    grid_layout_data_ = std::move(grid_layout_data);
   }
 
-  const NGGridData& GetNGGridData() const {
-    DCHECK(grid_data_);
-    return *grid_data_.get();
+  const NGGridLayoutData& GridLayoutData() const {
+    DCHECK(grid_layout_data_);
+    return *grid_layout_data_.get();
   }
 
   void SetGridBreakTokenData(
@@ -657,7 +658,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   absl::optional<wtf_size_t> table_cell_column_index_;
 
   // Grid specific types.
-  std::unique_ptr<NGGridData> grid_data_;
+  std::unique_ptr<NGGridLayoutData> grid_layout_data_;
   std::unique_ptr<const NGGridBreakTokenData> grid_break_token_data_;
 
   LogicalBoxSides sides_to_include_;

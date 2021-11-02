@@ -91,11 +91,13 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
   IPAddress loopback_ipv4 = IPAddress::IPv4Localhost();
   IPAddress loopback_ipv6 = IPAddress::IPv6Localhost();
 
-  // This does not override any pre-existing entries from the HOSTS file.
-  in_out_hosts.insert(std::make_pair(
-      DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4), loopback_ipv4));
-  in_out_hosts.insert(std::make_pair(
-      DnsHostsKey("localhost", ADDRESS_FAMILY_IPV6), loopback_ipv6));
+  // Should only add "localhost" entries if not already present in the file.
+  // Accomplish this by relying on `std::map::emplace()`s behavior of not
+  // modifying the map when the key is already present.
+  in_out_hosts.emplace(DnsHostsKey("localhost", ADDRESS_FAMILY_IPV4),
+                       std::vector<IPAddress>{loopback_ipv4});
+  in_out_hosts.emplace(DnsHostsKey("localhost", ADDRESS_FAMILY_IPV6),
+                       std::vector<IPAddress>{loopback_ipv6});
 
   wchar_t buffer[MAX_PATH];
   DWORD size = MAX_PATH;
@@ -139,12 +141,12 @@ bool AddLocalhostEntriesTo(DnsHosts& in_out_hosts) {
       }
       if (!have_ipv4 && (ipe.GetFamily() == ADDRESS_FAMILY_IPV4)) {
         have_ipv4 = true;
-        in_out_hosts[DnsHostsKey(localname, ADDRESS_FAMILY_IPV4)] =
-            ipe.address();
+        in_out_hosts[DnsHostsKey(localname, ADDRESS_FAMILY_IPV4)] = {
+            ipe.address()};
       } else if (!have_ipv6 && (ipe.GetFamily() == ADDRESS_FAMILY_IPV6)) {
         have_ipv6 = true;
-        in_out_hosts[DnsHostsKey(localname, ADDRESS_FAMILY_IPV6)] =
-            ipe.address();
+        in_out_hosts[DnsHostsKey(localname, ADDRESS_FAMILY_IPV6)] = {
+            ipe.address()};
       }
     }
   }
@@ -559,7 +561,9 @@ class DnsConfigServiceWin::HostsReader : public DnsConfigService::HostsReader {
   class WorkItem : public DnsConfigService::HostsReader::WorkItem {
    public:
     explicit WorkItem(base::FilePath hosts_file_path)
-        : DnsConfigService::HostsReader::WorkItem(std::move(hosts_file_path)) {}
+        : DnsConfigService::HostsReader::WorkItem(
+              std::make_unique<DnsHostsFileParser>(std::move(hosts_file_path)),
+              AddressSorter::CreateAddressSorter()) {}
 
     ~WorkItem() override = default;
 

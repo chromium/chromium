@@ -125,6 +125,7 @@
 <translation id="1122068467107743258">کار</translation>
 <translation id="1122198203221319518">&amp;ابزارها</translation>
 <translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">جزئیات ورود به سیستم حسابتان قدیمی است. لطفاً از سیستم خارج شوید و دوباره وارد شوید.</translation>
 <translation id="1122960773616686544">نام نشانک</translation>
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1125550662859510761">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (داخلی)</translation>
@@ -718,7 +719,7 @@
 <translation id="1719312230114180055">توجه: ممکن است امنیت اثر انگشت شما از یک گذرواژه یا پین قوی کمتر باشد.</translation>
 <translation id="1720318856472900922">‏راستی‌آزمایی سرور TLS WWW</translation>
 <translation id="1720941539803966190">بستن آموزش گام‌به‌گام</translation>
-<translation id="172123215662733643">جستجوی تصاویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">جستجوی تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">برای بازدید این سایت باید از <ph name="NAME" /> اجازه بگیرید</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> شما توسط <ph name="ENROLLMENT_DOMAIN" /> مدیریت می‌شود</translation>
 <translation id="1723824996674794290">پنجره &amp;جدید</translation>
@@ -5886,7 +5887,7 @@
 <translation id="7230222852462421043">&amp;بازیابی پنجره</translation>
 <translation id="7230787553283372882">سفارشی کردن اندازه نوشتار</translation>
 <translation id="7232750842195536390">تغییر نام انجام نشد</translation>
-<translation id="723343421145275488">جستجوی تصاویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">جستجوی تصویر با <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">‏درحال لغو بازیابی Linux</translation>
 <translation id="7235716375204803342">درحال واکشی فعالیت‌ها…</translation>
 <translation id="7235737137505019098">کلید امنیتی‌تان فضای آزاد کافی برای حساب دیگری ندارد.</translation>
@@ -7510,6 +7511,7 @@
 <translation id="8879284080359814990">&amp;نمایش به‌صورت برگه</translation>
 <translation id="8879921471468674457">اطلاعات ورود به سیستم به‌خاطر سپرده شود</translation>
 <translation id="8880054210564666174">فهرست مخاطبین بارگیری نشد. لطفاً اتصال شبکه‌تان را بررسی کنید یا <ph name="LINK_BEGIN" />دوباره امتحان کنید<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">‏برای اتصال <ph name="USB_DEVICE_NAME" /> به Linux یا Parallels Desktop، «تنظیمات» را باز کنید</translation>
 <translation id="8881020143150461183">لطفاً دوباره امتحان کنید. برای پشتیبانی فنی، با <ph name="CARRIER_NAME" /> تماس بگیرید.</translation>
 <translation id="8883273463630735858">فعال کردن شتاب‌دهنده صفحه لمسی</translation>
 <translation id="8884570509232205463">اکنون دستگاهتان ساعت <ph name="UNLOCK_TIME" /> قفل می‌شود.</translation>

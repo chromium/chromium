@@ -69,23 +69,18 @@ AssistantClientImpl::AssistantClientImpl(
     : AssistantClientV1(std::move(assistant_manager),
                         assistant_manager_internal),
       grpc_services_(libassistant_service_address, assistant_service_address),
-      libassistant_client_(grpc_services_.GrpcLibassistantClient()) {
-  services_status_observation_.Observe(
-      &grpc_services_.GetServicesStatusProvider());
-}
+      libassistant_client_(grpc_services_.GrpcLibassistantClient()) {}
 
 AssistantClientImpl::~AssistantClientImpl() = default;
 
 void AssistantClientImpl::StartServices(
-    base::OnceClosure services_ready_callback) {
-  DCHECK(services_ready_callback);
-  services_ready_callback_ = std::move(services_ready_callback);
+    ServicesStatusObserver* services_status_observer) {
+  grpc_services_.GetServicesStatusProvider().AddObserver(
+      services_status_observer);
 
   StartGrpcServices();
 
-  // Passes a no-op callback as we will not use the ready signal of v1.
-  AssistantClientV1::StartServices(
-      /*services_ready_callback=*/base::DoNothing());
+  AssistantClientV1::StartServices(services_status_observer);
 }
 
 bool AssistantClientImpl::StartGrpcServices() {
@@ -167,24 +162,6 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
       GetLoggingCallback<::assistant::api::SetInternalOptionsResponse>(
           /*request_name=*/__func__),
       kDefaultStateConfig);
-}
-
-void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {
-  switch (status) {
-    case ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE:
-      DVLOG(1) << "All Libassistant services are available.";
-
-      std::move(services_ready_callback_).Run();
-      break;
-    case ServicesStatus::ONLINE_BOOTING_UP:
-      DVLOG(3) << "Libassistant services are booting up.";
-      // Configing internal options or other essential services that are allowed
-      // to query during bootup should happen here.
-      break;
-    case ServicesStatus::OFFLINE:
-      // No action needed.
-      break;
-  }
 }
 
 // static

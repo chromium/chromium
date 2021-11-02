@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1146678959555564648">เข้าสู่ VR</translation>
 <translation id="114825011539563458">การควบคุมความเป็นส่วนตัวและความปลอดภัยที่สำคัญที่สุดในที่เดียว</translation>
+<translation id="1149401351239820326">เดือนที่หมดอายุ</translation>
 <translation id="1154704303112745282">หน้าเว็บใช้งานไม่ได้ขณะออฟไลน์: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">ใช้ไป</translation>
 <translation id="1171770572613082465">ดูเว็บไซต์ยอดนิยมโดยการแตะปุ่ม "เว็บไซต์อันดับสูงสุด"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">แป้นพิมพ์ลัดสำหรับฟีเจอร์ของ Google Chrome</translation>
 <translation id="1344653310988386453">รวมลิงก์ไปยังไฮไลต์</translation>
 <translation id="1347468774581902829">จัดการกิจกรรม</translation>
-<translation id="1353372385686746892">Chrome จะส่งข้อมูลการวินิจฉัยไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />เปลี่ยน<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">ออกจากระบบและปิดการซิงค์ไหม</translation>
 <translation id="1373696734384179344">หน่วยความจำไม่เพียงพอที่จะดาวน์โหลดเนื้อหาที่เลือก</translation>
 <translation id="1376578503827013741">กำลังประมวลผล…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">เปิดศูนย์ช่วยเหลือของ Chrome ในแท็บใหม่</translation>
 <translation id="5957442310066583693">หากต้องการดูเว็บไซต์ยอดนิยม ให้แตะปุ่มหน้าแรก</translation>
 <translation id="5958275228015807058">หาไฟล์และหน้าในโฟลเดอร์ดาวน์โหลด</translation>
-<translation id="5962272973076519240">ยืนยันว่าเป็นคุณเพื่อปลดล็อกเซสชันที่ไม่ระบุตัวตน</translation>
 <translation id="5962718611393537961">แตะเพื่อยุบ</translation>
 <translation id="5964805880140440652">หากต้องการแชร์หน้านี้กับอุปกรณ์อีกเครื่องหนึ่ง ให้เปิดการซิงค์ในการตั้งค่า Chrome</translation>
 <translation id="5964869237734432770">หยุดรับคำอธิบายรูปภาพ</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">ไม่พบการ์ด SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บที่ไม่ระบุตัวตน}other{<ph name="TAB_COUNT_NORMAL" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="8051695050440594747">สามารถใช้งานได้ <ph name="MEGABYTES" /> MB</translation>
+<translation id="8058655154417507695">ปีที่หมดอายุ</translation>
 <translation id="8058746566562539958">เปิดในแท็บใหม่ของ Chrome</translation>
 <translation id="8063895661287329888">เพิ่มบุ๊กมาร์กไม่สำเร็จ</translation>
 <translation id="806745655614357130">เก็บข้อมูลของฉันแยกต่างหาก</translation>

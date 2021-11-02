@@ -1,3 +1,7 @@
+-All/ResponseAnalyzerTest.CORBProtectionLogging/92
+-All/ResponseAnalyzerTest.CORBProtectionLogging/93
+-All/ResponseAnalyzerTest.ResponseBlocking/92
+-All/ResponseAnalyzerTest.ResponseBlocking/93
 -BluetoothSerialPortImplTest.StartReadingLargeBufferTest
 -BluetoothUtilsTest.GetBluetoothDeviceLabelForAccessibility
 -CertVerifierMojomTraitsTest.ConfigBasic
@@ -112,10 +116,6 @@
 -PrivateNetworkAccessCheckTest.BlockedByTargetIpAddressSpace
 -ProxyConfigTraitsTest.FromSystem
 -ResourceSchedulerTest.CheckCacheForQueuedRequests
--All/ResponseAnalyzerTest.CORBProtectionLogging/92
--All/ResponseAnalyzerTest.CORBProtectionLogging/93
--All/ResponseAnalyzerTest.ResponseBlocking/92
--All/ResponseAnalyzerTest.ResponseBlocking/93
 -SessionCleanupCookieManagerTest.DeleteSessionCookies
 -StructTraitsTest.CompositorFrameMetadata
 -StructTraitsTest.CompositorFrameTransitionDirective

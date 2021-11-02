@@ -170,18 +170,14 @@ bool BrowserAccessibilityAndroid::IsClickable() const {
   if (IsHeadingLink())
     return true;
 
-  if (!IsEnabled()) {
-    // TalkBack won't announce a control as disabled unless it's also marked
-    // as clickable. In other words, Talkback wants to know if the control
-    // might be clickable, if it wasn't disabled.
-    return ui::IsControl(GetRole());
-  }
-
   // Skip web areas, PDFs and iframes, they're focusable but not clickable.
   if (ui::IsIframe(GetRole()) || ui::IsPlatformDocument(GetRole()))
     return false;
 
-  // Otherwise it's clickable if it's a control.
+  // Otherwise it's clickable if it's a control. We include disabled nodes
+  // because TalkBack won't announce a control as disabled unless it's also
+  // marked as clickable. In other words, Talkback wants to know if the control
+  // might be clickable, if it wasn't disabled.
   return ui::IsControlOnAndroid(GetRole(), IsFocusable());
 }
 

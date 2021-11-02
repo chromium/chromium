@@ -24,6 +24,7 @@
 <translation id="109942774857561566">আমি বোর হয়ে গেছি</translation>
 <translation id="1104084341931202936">অ্যাক্সেসেবিলিটি সেটিংস দেখান</translation>
 <translation id="1104621072296271835">আপনার ডিভাইসগুলি একসাথে আরও ভাল কাজ করে</translation>
+<translation id="1111781754511998498">প্রোজেক্টর</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> সাজেশন দিচ্ছে যে আপনি যেন এই <ph name="DEVICE_TYPE" /> আপডেট করেন।</translation>
 <translation id="1119348796022671382">আপনার ইন্টারফেসে হালকা রং প্রয়োগ করতে 'থিমযুক্ত কালার' মোড ওয়ালপেপার থেকে রং নিয়ে ব্যবহার করে।</translation>
 <translation id="112308213915226829">তাককে স্বয়ংক্রিয়ভাবে লুকান</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">মাইক্রোফোনে রেকর্ড করুন</translation>
 <translation id="3680908746918359504">সমস্ত মার্কার মুছে ফেলুন</translation>
 <translation id="36813544980941320">ফোন ও <ph name="DEVICE_NAME" />-এর মধ্যে ওয়াই-ফাই নেটওয়ার্ক শেয়ার করা হবে।</translation>
+<translation id="3701206655856637070">স্ক্রিন ক্যাপচার কোথায় সেভ করা হবে, সেটি আপনি পরিবর্তন করতে পারবেন</translation>
 <translation id="3702809606464356667">বর্তমান ডেস্ক থেকে উইন্ডো দেখানো হচ্ছে, সব ডেস্ক থেকে উইন্ডো দেখাতে 'উর্ধমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="3702846122927433391">নাইজিরিয়াতে জনপ্রিয়</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">বন্ধ আছে</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
 <translation id="3977512764614765090">ব্যাটারি <ph name="PERCENTAGE" /> শতাংশ চার্জ করা হয়েছে এবং এখনও চার্জ করা চলছে।</translation>
+<translation id="3986082989454912832">উত্তর</translation>
 <translation id="3995138139523574647">USB-C ডিভাইস (ডান দিকের পিছনের পোর্ট)</translation>
 <translation id="40062176907008878">'হ্যান্ডরাইটিং' ফিচার</translation>
 <translation id="4017989525502048489">লেজার পয়েন্টার</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + Down Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। End কী ব্যবহার করতে <ph name="LAUNCHER_KEY_NAME" /> + Right Arrow কী প্রেস করুন।</translation>
 <translation id="4279490309300973883">অনুকরণ করা হচ্ছে</translation>
 <translation id="4285498937028063278">আনপিন</translation>
-<translation id="4292904812939562398">সম্প্রতি ব্যবহার করা অ্যাপ</translation>
 <translation id="429402653707266969">টুলবার লোকেশন টগল করুন</translation>
 <translation id="4294319844246081198">সুপ্রভাত <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875"><ph name="COUNT" />টি বিজ্ঞপ্তি মুছে ফেলুন</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="4946376291507881335">ক্যাপচার করুন</translation>
 <translation id="495046168593986294">উপরের দিকে স্ক্রল করুন</translation>
 <translation id="4952936045814352993">অ্যালার্মের শব্দ বন্ধ করা হলে, ফোন শনাক্ত করার বিকল্প ব্যবহার করা যাবে না</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">সো</translation>
 <translation id="7600875258240007829">সব বিজ্ঞপ্তি দেখুন</translation>
 <translation id="7607002721634913082">বিরত রয়েছে</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> ডিভাইসে আপনার ফোনের ক্যামেরা রোলে সাম্প্রতিক ফটো দেখুন</translation>
 <translation id="7618774594543487847">নিউট্রাল</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ফারেনহাইট</translation>
 <translation id="7631906263969450674">মার্কার পেন</translation>

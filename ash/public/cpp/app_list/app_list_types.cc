@@ -20,6 +20,9 @@ AppListItemMetadata::AppListItemMetadata(const AppListItemMetadata& rhs) =
     default;
 AppListItemMetadata::~AppListItemMetadata() = default;
 
+// TODO: This method could be eliminated, by passing the action with result
+// action metadata instead of implicitly relying on order in which actions are
+// listed in SearchResult::actions().
 SearchResultActionType GetSearchResultActionType(int button_index) {
   if (button_index < 0 ||
       button_index >= static_cast<int>(

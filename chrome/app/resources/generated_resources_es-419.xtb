@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación; haz clic para visitar la página de acceso correspondiente a la red Wi-Fi que estás usando (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Los detalles de acceso de tu cuenta están desactualizados. Sal y vuelve a acceder.</translation>
 <translation id="1122960773616686544">Nombre del marcador</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1125550662859510761">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (nativa)</translation>
@@ -665,7 +666,7 @@
 <translation id="1674073353928166410">Abrir todo (<ph name="URL_COUNT" />) en una ventana de incógnito</translation>
 <translation id="1677306805708094828">No se puede agregar la <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Tiempo restante <ph name="TIME" /></translation>
-<translation id="1679068421605151609">Herramientas del programador</translation>
+<translation id="1679068421605151609">Herramientas para desarrolladores</translation>
 <translation id="1679810534535368772">¿Confirmas que quieres salir?</translation>
 <translation id="167983332380191032">El servicio de administración envió un error de HTTP.</translation>
 <translation id="1680841347983561661">Intenta iniciar Google Play nuevamente en unos minutos.</translation>
@@ -1566,7 +1567,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2602501489742255173">Desliza hacia arriba para comenzar</translation>
 <translation id="2603115962224169880">Limpiar la computadora</translation>
 <translation id="2603355571917519942">Voice Match está listo</translation>
-<translation id="2604138917550693049">Buscar imagen con Google Lens</translation>
+<translation id="2604138917550693049">Buscar imagen con Lens</translation>
 <translation id="2604255671529671813">Error de conexión de red</translation>
 <translation id="2605668923777146443">Para ver tus opciones de Better Together, accede a la <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Vincular datos</translation>
@@ -3867,7 +3868,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="5051836348807686060">Los idiomas seleccionados no son compatibles con el corrector ortográfico</translation>
 <translation id="5052499409147950210">Editar sitio</translation>
 <translation id="505347685865235222">Grupo sin nombre: <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Buscar imagen con Google Lens</translation>
+<translation id="5053962746715621840">Buscar imagen con Lens</translation>
 <translation id="5056950756634735043">Conectando al contenedor</translation>
 <translation id="5057110919553308744">Cuando haces clic en la extensión</translation>
 <translation id="505776528429481161">Conéctate a dispositivos cercanos y configúralos fácilmente</translation>
@@ -7493,6 +7494,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8879284080359814990">Mo&amp;strar como pestaña</translation>
 <translation id="8879921471468674457">Recordar la información de acceso</translation>
 <translation id="8880054210564666174">No es posible descargar la lista de contactos. Comprueba la conexión de red y <ph name="LINK_BEGIN" />vuelve a intentarlo<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Abre la Configuración para conectar tu <ph name="USB_DEVICE_NAME" /> a Linux o Parallels Desktop.</translation>
 <translation id="8881020143150461183">Vuelve a intentarlo. Si necesitas asistencia técnica, comunícate con <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Habilitar la aceleración del panel táctil</translation>
 <translation id="8884570509232205463">Ahora, el dispositivo se bloqueará a la(s) <ph name="UNLOCK_TIME" />.</translation>

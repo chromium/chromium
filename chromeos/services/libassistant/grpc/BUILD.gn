@@ -121,6 +121,7 @@ source_set("unit_tests") {
 
   deps = [
     ":assistant_client",
+    ":grpc_service",
     "//base/test:test_support",
     "//chromeos/assistant/internal:test_support",
     "//chromeos/assistant/internal/proto:assistant",

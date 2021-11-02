@@ -573,13 +573,6 @@ class HeadlessWebContentsTaggedPDFTest
     : public HeadlessAsyncDevTooledBrowserTest,
       public page::Observer {
  public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Specifically request a tagged (accessible) PDF. Maybe someday
-    // we can enable this by default.
-    HeadlessAsyncDevTooledBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
-  }
-
   void RunDevTooledTest() override {
     EXPECT_TRUE(embedded_test_server()->Start());
 

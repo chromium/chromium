@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">ਮੌਜੂਦਾ ਡਾਟਾ ਮਿਟਾਓ।</translation>
 <translation id="1146678959555564648">VR ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="114825011539563458">ਸਭ ਤੋਂ ਮਹੱਤਵਪੂਰਨ ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਕੰਟਰੋਲ ਇੱਕੋ ਥਾਂ 'ਤੇ</translation>
+<translation id="1149401351239820326">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਮਹੀਨਾ</translation>
 <translation id="1154704303112745282">ਪੰਨਾ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">ਵਰਤਿਆ ਗਿਆ</translation>
 <translation id="1171770572613082465">"ਪ੍ਰਮੁੱਖ ਸਾਈਟਾਂ" ਬਟਨ 'ਤੇ ਟੈਪ ਕਰਕੇ ਪ੍ਰਸਿੱਧ ਵੈੱਬਸਾਈਟਾਂ ਦੇਖੋ</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome ਵਿਸ਼ੇਸ਼ਤਾ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="1344653310988386453">ਉਜਾਗਰ ਕੀਤੀ ਲਿਖਤ ਦਾ ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1347468774581902829">ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
-<translation id="1353372385686746892">ਐਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, Chrome Google ਨੂੰ ਤਸ਼ਖੀਸੀ ਡਾਟਾ ਭੇਜਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਬਦਲੋ<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">ਕੀ ਸਾਈਨ-ਆਊਟ ਕਰਕੇ ਸਮਕਾਲੀਕਰਨ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1373696734384179344">ਚੁਣੀ ਗਈ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਮੈਮੋਰੀ ਨਹੀਂ।</translation>
 <translation id="1376578503827013741">ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">ਇੱਕ ਨਵੀਂ ਟੈਬ ਵਿੱਚ Chrome ਮਦਦ ਕੇਂਦਰ ਖੋਲ੍ਹੋ</translation>
 <translation id="5957442310066583693">ਆਪਣੀਆਂ ਪ੍ਰਮੁੱਖ ਸਾਈਟਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਹੋਮ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5958275228015807058">ਡਾਊਨਲੋਡਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਪੰਨਿਆਂ ਨੂੰ ਲੱਭੋ</translation>
-<translation id="5962272973076519240">ਇਨਕੋਗਨਿਟੋ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="5962718611393537961">ਸਮੇਟਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="5964805880140440652">ਇਸ ਪੰਨੇ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਸਾਂਝਾ ਕਰਨ ਲਈ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5964869237734432770">ਚਿੱਤਰ ਦੇ ਵਰਣਨ ਬੰਦ ਕਰੋ</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">SD ਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬ}one{<ph name="TAB_COUNT_NORMAL" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬ}other{<ph name="TAB_COUNT_NORMAL" /> ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ਉਪਲਬਧ ਹੈ</translation>
+<translation id="8058655154417507695">ਮਿਆਦ ਸਮਾਪਤੀ ਦਾ ਸਾਲ</translation>
 <translation id="8058746566562539958">ਨਵੀਂ Chrome ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8063895661287329888">ਬੁੱਕਮਾਰਕ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="806745655614357130">ਮੇਰਾ  ਡਾਟਾ  ਵੱਖਰਾ ਰੱਖੋ</translation>

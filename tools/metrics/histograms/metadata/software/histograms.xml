@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -24,7 +25,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.Cleaner.ChromePromptChannelError"
     enum="SoftwareReporterChromePromptChannelError" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Keeps a tally of IPC related errors between chrome_cleaner and chrome. The
@@ -37,7 +37,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.Cleaner.CleaningTime" units="ms"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The time between sending the user's response to the Chrome Cleaner process
@@ -80,7 +79,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.Cleaner.DownloadStatusErrorCode"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The HTTP response or net error code when trying to download the Chrome
@@ -125,7 +123,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.Cleaner.RunningTime" units="ms"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     How long it took to run the software reporter cleaner tool. Warning: this
@@ -137,7 +134,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.Cleaner.ScanningTime" units="ms"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The time between launching the Chrome Cleaner process and the cleaner having
@@ -177,7 +173,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.CleanerLogsAcceptance" enum="BooleanAccepted"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether the user accepted to upload logs from Chrome Cleanup Tool. This is
@@ -206,7 +201,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.CleanupStarted"
     enum="SoftwareReporterCleanupStarted" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Indicates where the user started a cleanup from (e.g. from the prompt dialog
@@ -217,7 +211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.ConfigurationErrors"
     enum="SoftwareReporterConfigurationError" expires_after="2022-10-01">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether a configuration error prevented the experimental Software Reporter
@@ -227,7 +221,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.FoundUwSReadError" enum="BooleanError"
     expires_after="2022-05-01">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether there was an error reading the registry key containing UwS found by
@@ -238,7 +232,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.IPCDisconnected"
     enum="SoftwareReporterIPCDisconnected" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Indicates when the IPC with the Chrome Cleanup Tool process is disconnected
@@ -254,7 +247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SoftwareReporter.LastUploadResult" enum="BooleanSuccess"
     expires_after="M100">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>The result of the most recent SRT log upload.</summary>
 </histogram>
@@ -262,7 +255,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.LogsUploadEnabled"
     enum="SoftwareReporterLogsUploadEnabled" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     If logs uploads are enabled in the Software Reporter or the reason why it is
@@ -275,7 +267,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.LogsUploadResult"
     enum="SoftwareReporterLogsUploadResult" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The result of the most recent Software Reporter logs upload. Written by the
@@ -289,7 +280,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="SoftwareReporterLogsUploadResultRegistryError"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Error encountered when reading the software reporter logs upload result from
@@ -334,7 +324,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.NoPromptReason"
     enum="SoftwareReporterNoPromptReason" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The reason why the user has not been prompted to run the Chrome Cleanup Tool
@@ -377,7 +366,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.OnDemandUpdateSucceeded"
     enum="BooleanSuccess" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Whether an on-demand update of the Software Reporter component succeeded,
@@ -389,7 +377,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.PostCleanupSettingsReset" units="counts"
     expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The number of profiles whose settings will be reset once a successful
@@ -401,7 +388,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.PromptDialogResponse"
     enum="SoftwareReporterPromptDialogResponse" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     The user response on the modal Chrome Cleanup Tool prompt dialog (e.g.
@@ -431,7 +417,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SoftwareReporter.ReporterSequenceType"
     enum="SoftwareReporterSequenceType" expires_after="2022-08-25">
   <owner>drubery@chromium.org</owner>
-  <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Indicates the type of a reporter sequence run on the user system. Logged

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">我好无聊</translation>
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
+<translation id="1111781754511998498">投影仪</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> 建议您更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1119348796022671382">带主题背景的颜色模式会使用从您壁纸中提取的颜色为界面略施粉黛。</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">麦克风录音</translation>
 <translation id="3680908746918359504">清除所有标记</translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
+<translation id="3701206655856637070">现在您可以更改屏幕截图的保存位置</translation>
 <translation id="3702809606464356667">正在显示当前桌面中的窗口，按向上键即可显示所有桌面中的窗口</translation>
 <translation id="3702846122927433391">尼日利亚的人口</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">已关闭</translation>
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
+<translation id="3986082989454912832">接听</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
 <translation id="40062176907008878">手写</translation>
 <translation id="4017989525502048489">激光笔</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4285498937028063278">取消固定</translation>
-<translation id="4292904812939562398">最近使用过的应用</translation>
 <translation id="429402653707266969">切换工具栏位置</translation>
 <translation id="4294319844246081198"><ph name="GIVEN_NAME" />，上午好！</translation>
 <translation id="4296136865091727875">清除所有 <ph name="COUNT" /> 条通知</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />，
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>
 <translation id="4952936045814352993">当闹钟提示音处于停用状态时，无法使用“定位手机”功能</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">一</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暂停</translation>
+<translation id="7610198039767537854">在 <ph name="DEVICE_TYPE" /> 上查看您手机的相机胶卷中的近期照片</translation>
 <translation id="7618774594543487847">中性</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
 <translation id="7631906263969450674">标记笔</translation>

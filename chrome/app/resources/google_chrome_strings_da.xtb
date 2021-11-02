@@ -48,6 +48,7 @@
 <translation id="2121284319307530122">Genstart og opdater &amp;Chrome</translation>
 <translation id="2123055963409958220">Vær med til at gøre Chrome bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
 <translation id="2151406531797534936">Genstart Chrome nu</translation>
+<translation id="2189289170880510015">Tilpas nogle af Chromes vigtigste privatlivsindstillinger</translation>
 <translation id="2290014774651636340">Google API-nøgler mangler. Nogle funktioner i Google Chrome deaktiveres.</translation>
 <translation id="2290095356545025170">Er du sikker på, at du vil afinstallere Google Chrome?</translation>
 <translation id="2309047409763057870">Dette er en sekundær installation af Google Chrome, og den kan ikke gøres til din standardbrowser.</translation>
@@ -110,6 +111,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3622797965165704966">Nu er det blevet nemmere at bruge Chrome med din Google-konto og på delte computere.</translation>
 <translation id="3673813398384385993">Chrome har registreret malware i "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="3678552270983184277">De fleste brugere er tilfredse med standardindstillingerne, men du kan tilpasse dem, så de passer til den måde, du vil bruge Chrome på</translation>
 <translation id="3718181793972440140">Denne handling sletter ét element på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Udvidelsen "<ph name="EXTENSION_NAME" />" har ændret din startside i Chrome.</translation>
 <translation id="3779473566290487688">Hvis du vil have Google Chrome-opdateringer i fremtiden, skal du have OS X 10.11 eller nyere. Denne computer kører OS X 10.10.</translation>

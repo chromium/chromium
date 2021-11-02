@@ -147,8 +147,8 @@ class AppListSyncableService : public syncer::SyncableService,
   // provided `id`.
   syncer::StringOrdinal GetPositionAfterApp(const std::string& id) const;
 
-  // Sorts items following the given order.
-  void SortSyncItems(ash::AppListSortOrder order);
+  // Sets sync item order. Sorts items if `order` is not kCustom.
+  void SetSyncItemOrder(ash::AppListSortOrder order);
 
   // Called when properties of an item may have changed, e.g. default/oem state.
   void UpdateItem(const ChromeAppListItem* app_item);

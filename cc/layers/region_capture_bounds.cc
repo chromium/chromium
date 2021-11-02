@@ -13,12 +13,14 @@ RegionCaptureBounds::RegionCaptureBounds(const RegionCaptureBounds& regions) =
     default;
 RegionCaptureBounds::RegionCaptureBounds(RegionCaptureBounds&& regions) =
     default;
-
+RegionCaptureBounds::RegionCaptureBounds(
+    base::flat_map<RegionCaptureCropId, gfx::Rect> bounds)
+    : bounds_(std::move(bounds)) {}
 RegionCaptureBounds::~RegionCaptureBounds() = default;
 
 void RegionCaptureBounds::Set(const RegionCaptureCropId& crop_id,
                               const gfx::Rect& region) {
-  bounds_.emplace(crop_id, region);
+  bounds_.insert_or_assign(crop_id, region);
 }
 
 RegionCaptureBounds& RegionCaptureBounds::operator=(

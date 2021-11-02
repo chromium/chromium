@@ -47,14 +47,14 @@ import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IsReadyToPayServiceHelperTest {
     @Rule
-    private final ChromeTabbedActivityTestRule mActivityTestRule =
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    private final ExpectedException mExpectedExceptionRule = ExpectedException.none();
+    public final ExpectedException mExpectedExceptionRule = ExpectedException.none();
 
     @Rule
-    private final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
     private IBinder mBinderMock;

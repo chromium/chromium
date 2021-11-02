@@ -14,16 +14,18 @@ namespace cc {
 
 using RegionCaptureCropId = base::Token;
 
-// Represents a map from a region capture crop identifier, which is a
-// randomly generated token, to a rectangle representing the bounds
-// of the HTML element associated with the crop identifier.
-// See the design document at:
-// https://docs.google.com/document/d/1dULARMnMZggfWqa_Ti_GrINRNYXGIli3XK9brzAKEV8
+// Represents a map from a region capture crop identifier, which is a randomly
+// generated token, to a rectangle representing the bounds of the HTML element
+// associated with the crop identifier. The boundaries here are captured from
+// the CompositorFrame root render pass and are thus in that coordinate space.
+// See the design document at: https://tinyurl.com/region-capture.
 class CC_EXPORT RegionCaptureBounds final {
  public:
   RegionCaptureBounds();
   RegionCaptureBounds(const RegionCaptureBounds& regions);
   RegionCaptureBounds(RegionCaptureBounds&& regions);
+  explicit RegionCaptureBounds(
+      base::flat_map<RegionCaptureCropId, gfx::Rect> bounds);
   ~RegionCaptureBounds();
 
   // We currently only support a single set of bounds for a given crop id.

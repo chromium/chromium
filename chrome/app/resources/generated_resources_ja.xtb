@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">仕事</translation>
 <translation id="1122198203221319518">ツール(&amp;T)</translation>
 <translation id="1122242684574577509">認証できませんでした。クリックして、ご利用の Wi-Fi ネットワーク（<ph name="NETWORK_ID" />）のログインページにアクセスしてください。</translation>
+<translation id="1122913801042512795">アカウントのログイン情報が古くなっています。いったんログアウトしてからもう一度ログインしてください。</translation>
 <translation id="1122960773616686544">ブックマーク名</translation>
 <translation id="1124772482545689468">ユーザー</translation>
 <translation id="1125550662859510761">表示上のサイズ: <ph name="WIDTH" />x<ph name="HEIGHT" />（ネイティブ）</translation>
@@ -709,7 +710,7 @@
 <translation id="1719312230114180055">注: 指紋は複雑なパスワードや PIN より安全面で劣る場合があります。</translation>
 <translation id="1720318856472900922">TLS WWW サーバー認証</translation>
 <translation id="1720941539803966190">チュートリアルを閉じる</translation>
-<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
+<translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />で画像を検索</translation>
 <translation id="1721312023322545264">このサイトにアクセスするには <ph name="NAME" /> さんの許可が必要です</translation>
 <translation id="1722460139690167654">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
@@ -5867,7 +5868,7 @@
 <translation id="7230222852462421043">ウィンドウを復元(&amp;R)</translation>
 <translation id="7230787553283372882">テキストサイズをカスタマイズします</translation>
 <translation id="7232750842195536390">名前を変更できませんでした</translation>
-<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" /> で画像を検索</translation>
+<translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />で画像を検索</translation>
 <translation id="7234010996000898150">Linux の復元をキャンセルしています</translation>
 <translation id="7235716375204803342">アクティビティを取得しています...</translation>
 <translation id="7235737137505019098">セキュリティ キーに空き容量がないため、これ以上アカウントを追加できません。</translation>
@@ -7488,6 +7489,7 @@
 <translation id="8879284080359814990">タブで表示(&amp;S)</translation>
 <translation id="8879921471468674457">ログイン情報を保存する</translation>
 <translation id="8880054210564666174">連絡先リストをダウンロードできませんでした。ネットワーク接続を確認するか、<ph name="LINK_BEGIN" />もう一度お試しください<ph name="LINK_END" />。</translation>
+<translation id="8880344290593529089"><ph name="USB_DEVICE_NAME" /> を Linux または Parallels Desktop に接続するには、[設定] を開いてください</translation>
 <translation id="8881020143150461183">もう一度お試しください。技術的なサポートについては、<ph name="CARRIER_NAME" /> にお問い合わせください。</translation>
 <translation id="8883273463630735858">タッチパッド アクセラレーションを有効にする</translation>
 <translation id="8884570509232205463">デバイスは <ph name="UNLOCK_TIME" /> にロックされるようになりました。</translation>

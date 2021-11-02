@@ -24,6 +24,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="109942774857561566">I'm bored</translation>
 <translation id="1104084341931202936">Show accessibility settings</translation>
 <translation id="1104621072296271835">Your devices work even better together</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> recommends that you update this <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">The themed colour mode uses colours extracted from your wallpaper to lightly colourise the interface.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
@@ -418,6 +419,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3977512764614765090">Battery at <ph name="PERCENTAGE" />% and charging.</translation>
+<translation id="3986082989454912832">Answer</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
 <translation id="40062176907008878">Handwriting</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
@@ -457,7 +459,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="4274537685965975248">The Ctrl + Alt + down arrow keyboard shortcut has changed. To use the End key, press the <ph name="LAUNCHER_KEY_NAME" /> key + right arrow.</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4285498937028063278">Unpin</translation>
-<translation id="4292904812939562398">Recently used apps</translation>
 <translation id="429402653707266969">Toggle toolbar location</translation>
 <translation id="4294319844246081198">Good morning <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>
@@ -907,6 +908,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">See all notifications</translation>
 <translation id="7607002721634913082">Paused</translation>
+<translation id="7610198039767537854">View recent photos from your phone‘s camera roll on <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Marker pen</translation>

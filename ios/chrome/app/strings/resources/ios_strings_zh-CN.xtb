@@ -525,6 +525,7 @@
 <translation id="6127379762771434464">该项已移除</translation>
 <translation id="6136914049981179737">几秒前</translation>
 <translation id="6144589619057374135">在无痕模式下打开 ${url}</translation>
+<translation id="6159839020698489198">可选</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6184086493125982861">显示标签页</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@
 请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="651505212789431520">取消同步？您随时可在“设置”中开启同步功能。</translation>
 <translation id="6524918542306337007">无痕模式不可用</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
 <translation id="6603393121510733479">贵单位关闭了无痕浏览。
@@ -623,6 +625,7 @@
 <translation id="6851516051005285358">请求切换到桌面版网站</translation>
 <translation id="6858855187367714033">已扫描</translation>
 <translation id="6859944681507688231">要扫描二维码或信用卡，请在设置中允许该应用使用相机。</translation>
+<translation id="6867369562105931222">密码</translation>
 <translation id="6869389390665537774">您可以查看自己访问过的网页，也可将它们从历史记录中清除</translation>
 <translation id="6873263987691478642">拆分视图</translation>
 <translation id="6888009575607455378">确定要舍弃您所做的更改吗？</translation>

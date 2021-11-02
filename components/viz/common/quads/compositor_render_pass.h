@@ -22,7 +22,6 @@
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/render_pass_internal.h"
 #include "components/viz/common/shared_element_resource_id.h"
-#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,7 +76,6 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
               SubtreeCaptureId subtree_capture_id,
               gfx::Size subtree_capture_size,
-              std::unique_ptr<RegionCaptureBounds> capture_bounds,
               SharedElementResourceId shared_element_resource_id,
               bool has_transparent_background,
               bool cache_render_pass,
@@ -107,12 +105,6 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // equal to |output_rect|. If empty, then the full |output_rect| should be
   // copied.
   gfx::Size subtree_size;
-
-  // A map of region capture crop ids known in this render pass to the gfx::Rect
-  // of the region that they represent. A nullptr here may be considered
-  // simply an empty set.
-  // TODO(crbug.com/1254877): merge with |subtree_size|.
-  std::unique_ptr<RegionCaptureBounds> capture_bounds;
 
   // A unique ID that identifies an element that this render pass corresponds
   // to. This is used to implement a live snapshot of an element's content.

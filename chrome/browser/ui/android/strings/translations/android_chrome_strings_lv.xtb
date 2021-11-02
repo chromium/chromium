@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Dzēst esošos datus.</translation>
 <translation id="1146678959555564648">Ieiet virtuālajā realitātē</translation>
 <translation id="114825011539563458">Svarīgākās konfidencialitātes un drošības vadīklas vienuviet</translation>
+<translation id="1149401351239820326">Derīguma termiņa mēnesis</translation>
 <translation id="1154704303112745282">Šī lapa nav pieejama bezsaistē: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Izmantots</translation>
 <translation id="1171770572613082465">Lai skatītu populāras tīmekļa vietnes, pieskarieties pogai “Populāras”</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome funkciju īsinājumtaustiņi</translation>
 <translation id="1344653310988386453">Ietveriet saiti uz atzīmēto tekstu.</translation>
 <translation id="1347468774581902829">Pārvaldīt darbības</translation>
-<translation id="1353372385686746892">Lai palīdzētu uzlabot lietotni, uzņēmumam Google tiek sūtīti diagnostikas dati no pārlūka Chrome. <ph name="BEGIN_LINK" />Mainīt<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Izrakstīties un izslēgt sinhronizēšanu?</translation>
 <translation id="1373696734384179344">Nepietiek vietas, lai lejupielādētu atlasīto saturu.</translation>
 <translation id="1376578503827013741">Notiek aprēķināšana...</translation>
@@ -817,7 +817,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5956665950594638604">Atvērt Chrome palīdzības centru jaunā cilnē</translation>
 <translation id="5957442310066583693">Lai skatītu vietnes, ko apmeklējat visbiežāk, pieskarieties pogai Sākumlapa</translation>
 <translation id="5958275228015807058">Atrodiet savus failus un lapas sadaļā Lejupielādes</translation>
-<translation id="5962272973076519240">Identitātes apliecināšana, lai atbloķētu inkognito režīmu</translation>
 <translation id="5962718611393537961">Pieskarties, lai sakļautu</translation>
 <translation id="5964805880140440652">Lai kopīgotu šo lapu citā ierīcē, Chrome iestatījumos ieslēdziet sinhronizāciju.</translation>
 <translation id="5964869237734432770">Atspējot attēlu aprakstus</translation>
@@ -1188,6 +1187,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="804335162455518893">SD karte nav atrasta</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito cilne}zero{<ph name="TAB_COUNT_NORMAL" /> inkognito ciļņu}one{<ph name="TAB_COUNT_NORMAL" /> inkognito cilne}other{<ph name="TAB_COUNT_NORMAL" /> inkognito cilnes}}</translation>
 <translation id="8051695050440594747">Ir pieejami <ph name="MEGABYTES" /> MB</translation>
+<translation id="8058655154417507695">Derīguma termiņa gads</translation>
 <translation id="8058746566562539958">Atvērt jaunā Chrome cilnē</translation>
 <translation id="8063895661287329888">Neizdevās pievienot grāmatzīmi.</translation>
 <translation id="806745655614357130">Glabāt datus atsevišķi</translation>

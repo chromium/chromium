@@ -8,8 +8,10 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -17,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/ax_event_counter.h"
 
 namespace ash {
@@ -147,6 +150,51 @@ TEST_F(AppListBubbleSearchPageTest, SearchPageA11y) {
   test_helper->GetBubbleSearchPage()->GetAccessibleNodeData(&data);
   EXPECT_EQ("Displaying 5 results for a",
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
+}
+
+TEST_F(AppListBubbleSearchPageTest, SearchClearedOnModelUpdate) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+  // Create |kDefaultSearchItems| new search results for us to cycle through.
+  SetUpSearchResults(results, 1, kDefaultSearchItems);
+  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+
+  // The single result container is visible.
+  std::vector<SearchResultContainerView*> result_containers =
+      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+  ASSERT_EQ(result_containers.size(), 1u);
+  EXPECT_TRUE(result_containers[0]->GetVisible());
+
+  // Update the app list and search model, and verify the results page gets
+  // hidden.
+  auto app_list_model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      app_list_model_override.get(), search_model_override.get());
+
+  EXPECT_FALSE(test_helper->GetBubbleSearchPage()->GetVisible());
+  EXPECT_EQ(u"",
+            test_helper->GetBubbleSearchBoxView()->search_box()->GetText());
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+  SetUpSearchResults(search_model_override->results(), 2, 1);
+  test_helper->GetBubbleSearchPage()->OnSearchResultContainerResultsChanged();
+
+  result_containers =
+      test_helper->GetBubbleSearchPage()->result_container_views_for_test();
+  ASSERT_EQ(result_containers.size(), 1u);
+  EXPECT_TRUE(result_containers[0]->GetVisible());
+  EXPECT_EQ(1, result_containers[0]->num_results());
+  EXPECT_EQ(u"Result 2",
+            result_containers[0]->GetResultViewAt(0)->result()->title());
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
 }
 
 }  // namespace

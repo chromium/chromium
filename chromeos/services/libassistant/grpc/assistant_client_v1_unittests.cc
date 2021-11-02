@@ -9,6 +9,7 @@
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
+#include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,18 @@ class AssistantManagerInternalMock
                assistant_client::SuccessCallbackInternal on_done));
 };
 
+class MockServicesStatusObserver : public ServicesStatusObserver {
+ public:
+  MockServicesStatusObserver() = default;
+  MockServicesStatusObserver(const MockServicesStatusObserver&) = delete;
+  MockServicesStatusObserver& operator=(const MockServicesStatusObserver&) =
+      delete;
+  ~MockServicesStatusObserver() override = default;
+
+  // ServicesStatusObserver:
+  MOCK_METHOD(void, OnServicesStatusChanged, (ServicesStatus status));
+};
+
 }  // namespace
 
 class AssistantClientV1Test : public testing::Test {
@@ -62,9 +75,11 @@ class AssistantClientV1Test : public testing::Test {
 
     assistant_client_ = std::make_unique<AssistantClientV1>(
         std::move(assistant_manager), assistant_manager_internal_.get());
+  }
 
-    assistant_client_->StartServices(
-        /*services_ready_callback=*/base::DoNothing());
+  // Start Libassistant services.
+  void StartServices(ServicesStatusObserver* observer) {
+    assistant_client_->StartServices(observer);
   }
 
   AssistantClientV1& v1_client() { return *assistant_client_; }
@@ -85,13 +100,26 @@ class AssistantClientV1Test : public testing::Test {
       nullptr;
 };
 
+TEST_F(AssistantClientV1Test, ShouldNotifyServicesStarted) {
+  MockServicesStatusObserver services_status_observer;
+  EXPECT_CALL(services_status_observer,
+              OnServicesStatusChanged(ServicesStatus::ONLINE_BOOTING_UP));
+
+  StartServices(&services_status_observer);
+}
+
 TEST_F(AssistantClientV1Test, ShouldSetLocale) {
+  MockServicesStatusObserver services_status_observer;
+  StartServices(&services_status_observer);
+
   EXPECT_CALL(assistant_manager_internal_mock(), SetLocaleOverride("locale"));
 
   v1_client().SetLocaleOverride("locale");
 }
 
 TEST_F(AssistantClientV1Test, ShouldSetOptions) {
+  MockServicesStatusObserver services_status_observer;
+  StartServices(&services_status_observer);
   v1_client().SetDeviceAttributes(/*dark_mode_enabled=*/true);
 
   EXPECT_CALL(assistant_manager_internal_mock(), SetOptions);
@@ -100,14 +128,19 @@ TEST_F(AssistantClientV1Test, ShouldSetOptions) {
 }
 
 TEST_F(AssistantClientV1Test, ShouldSetListeningEnabled) {
+  MockServicesStatusObserver services_status_observer;
+  StartServices(&services_status_observer);
+
   EXPECT_CALL(assistant_manager_mock(), EnableListening(true));
 
   v1_client().EnableListening(true);
 }
 
 TEST_F(AssistantClientV1Test, ShouldSetAuthenticationTokens) {
-  const AssistantClient::AuthTokens expected = {{"user", "token"}};
+  MockServicesStatusObserver services_status_observer;
+  StartServices(&services_status_observer);
 
+  const AssistantClient::AuthTokens expected = {{"user", "token"}};
   EXPECT_CALL(assistant_manager_mock(), SetAuthTokens(expected));
 
   v1_client().SetAuthenticationInfo(expected);

@@ -4,7 +4,7 @@
 
 // clang-format off
 import {assertEquals, assertNotEquals} from '../chai_assert.js';
-import {FakeChromeEvent} from '../fake_chrome_event.m.js';
+import {FakeChromeEvent} from '../fake_chrome_event.js';
 // clang-format on
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */

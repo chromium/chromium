@@ -31,4 +31,15 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
   web_app::TestWebAppUrlLoader* url_loader_ = nullptr;
 };
 
+// Test util functions ---------------------------------------------------------
+
+scoped_refptr<extensions::Extension> MakeApp(
+    const std::string& name,
+    const std::string& id,
+    extensions::Extension::InitFromValueFlags flags);
+
+// Creates next by natural sort ordering application id. Application id has to
+// have 32 chars each in range 'a' to 'p' inclusively.
+std::string CreateNextAppId(const std::string& app_id);
+
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_TEST_UTIL_H_

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Hapus data yang sudah ada.</translation>
 <translation id="1146678959555564648">Masuki VR</translation>
 <translation id="114825011539563458">Kontrol privasi dan keamanan paling penting di satu tempat</translation>
+<translation id="1149401351239820326">Bulan akhir masa berlaku</translation>
 <translation id="1154704303112745282">Halaman tidak tersedia saat offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Digunakan</translation>
 <translation id="1171770572613082465">Lihat situs populer dengan mengetuk tombol "Situs populer"</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Pintasan fitur Google Chrome</translation>
 <translation id="1344653310988386453">Sertakan link ke sorotan</translation>
 <translation id="1347468774581902829">Kelola aktivitas</translation>
-<translation id="1353372385686746892">Untuk membantu meningkatkan aplikasi, Chrome mengirim data diagnostik kepada Google. <ph name="BEGIN_LINK" />Ubah<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
 <translation id="1373696734384179344">Memori tidak cukup untuk mendownload konten yang dipilih.</translation>
 <translation id="1376578503827013741">Menghitung…</translation>
@@ -817,7 +817,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5956665950594638604">Membuka Pusat Bantuan Chrome di tab baru</translation>
 <translation id="5957442310066583693">Untuk melihat situs teratas Anda, ketuk tombol Beranda</translation>
 <translation id="5958275228015807058">Temukan file dan halaman di Download</translation>
-<translation id="5962272973076519240">Verifikasi diri Anda untuk membuka kunci tab Samaran</translation>
 <translation id="5962718611393537961">Ketuk untuk menciutkan</translation>
 <translation id="5964805880140440652">Untuk membagikan halaman ini ke perangkat lain, aktifkan sinkronisasi di setelan Chrome</translation>
 <translation id="5964869237734432770">Hentikan deskripsi gambar</translation>
@@ -1188,6 +1187,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="804335162455518893">Kartu SD tidak ditemukan</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab samaran}other{<ph name="TAB_COUNT_NORMAL" /> tab samaran}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tersedia</translation>
+<translation id="8058655154417507695">Tahun akhir masa berlaku</translation>
 <translation id="8058746566562539958">Buka di tab Chrome baru</translation>
 <translation id="8063895661287329888">Gagal menambahkan bookmark.</translation>
 <translation id="806745655614357130">Tetap pisahkan data saya</translation>

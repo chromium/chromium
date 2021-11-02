@@ -24,6 +24,7 @@
 <translation id="109942774857561566">मलाई दिक्क लागिसक्यो</translation>
 <translation id="1104084341931202936">पहुँचसम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1104621072296271835">तपाईंका यन्त्रहरूलाई सँगै प्रयोग गरेमा तिनले अझ राम्रो काम गर्छन्</translation>
+<translation id="1111781754511998498">प्रोजेक्टर</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> का अनुसार तपाईंलाई <ph name="DEVICE_TYPE" /> अपडेट गर्न सिफारिस गरिन्छ।</translation>
 <translation id="1119348796022671382">'थिमको रङ' नामक मोडमा इन्टरफेसको हल्का रङ मिलाउन तपाईंको वालपेपरबाट निकालिएका रङ्गहरू प्रयोग गरिन्छ।</translation>
 <translation id="112308213915226829">तखता स्वत: लुकाउनुहोस्</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">माइक्रोफोनमार्फत रेकर्ड गर्नुहोस्</translation>
 <translation id="3680908746918359504">सबै मार्करहरू हटाउनुहोस्</translation>
 <translation id="36813544980941320">तपाईंको फोन र <ph name="DEVICE_NAME" /> का बिचमा Wi-Fi नेटवर्कहरू सेयर गरिने छन्</translation>
+<translation id="3701206655856637070">तपाईं अब स्क्रिन क्याप्चर सेभ गरिने स्थान बदल्न सक्नुहुन्छ</translation>
 <translation id="3702809606464356667">हालको डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, सबै डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
 <translation id="3702846122927433391">नाइजेरियाको जनसङ्ख्या कति छ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">अफ छ</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3977512764614765090">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ।</translation>
+<translation id="3986082989454912832">कल उठाउनुहोस्</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
 <translation id="40062176907008878">हस्तलेखन</translation>
 <translation id="4017989525502048489">लेजर प्वाइन्टर</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + डाउन एरो किबोर्ड सर्टकट परिवर्तन गरिएको छ। End की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + राइट एरो थिच्नुहोस्।</translation>
 <translation id="4279490309300973883">प्रतिबिम्ब गर्दै</translation>
 <translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
-<translation id="4292904812939562398">हालसालै चलाइएका एपहरू</translation>
 <translation id="429402653707266969">टगल गरी टुलबारको स्थान बदल्नुहोस्</translation>
 <translation id="4294319844246081198">नमस्ते <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">सबै <ph name="COUNT" /> सूचनाहरू हटाउनुहोस्</translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">सूचनाहरू अफ गर्नुहोस्</translation>
 <translation id="4946376291507881335">फोटो खिच्नुहोस्</translation>
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>
 <translation id="4952936045814352993">अलार्मका आवाजहरू अफ गरिएका बेला फोन रहेको स्थान पत्ता लगाउने सुविधा उपलब्ध हुँदैन</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">सोम</translation>
 <translation id="7600875258240007829">सबै सूचनाहरू हेर्नुहोस्</translation>
 <translation id="7607002721634913082">रोकिएको छ</translation>
+<translation id="7610198039767537854">आफ्नो क्यामेरा रोलका हालसालैका फोटोहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="7618774594543487847">तटस्थ</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">मार्कर पेन</translation>

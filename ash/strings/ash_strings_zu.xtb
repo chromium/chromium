@@ -24,6 +24,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="109942774857561566">Nginesithukuthezi</translation>
 <translation id="1104084341931202936">Bonisa izilungiselelo zokufinyelela</translation>
 <translation id="1104621072296271835">Amadivayisi akho asebenza kangcono uma ehlangene</translation>
+<translation id="1111781754511998498">Iphrojektha</translation>
 <translation id="1118549423835582252">I-<ph name="MANAGER" /> incoma ukuba ubuyekeze le <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Imodi yombala wetimu isebenzisa imibala ekhishwe esithombeni sakho sangemuva ukuze ikhanyise umbala wesixhumi esibonakalayo.</translation>
 <translation id="112308213915226829">Fihla ngokuzenzakalela ishelufu</translation>
@@ -418,6 +419,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="3969043077941541451">Valiwe</translation>
 <translation id="397105322502079400">Iyabala...</translation>
 <translation id="3977512764614765090">Ibhethri ku-<ph name="PERCENTAGE" />% futhi liyashaja.</translation>
+<translation id="3986082989454912832">Phendula</translation>
 <translation id="3995138139523574647">Idivayisi ye-USB-C (imbobo yasemuva yohlangothi lwesinxele)</translation>
 <translation id="40062176907008878">Ukubhala ngesandla</translation>
 <translation id="4017989525502048489">Isikhombi se-Laser</translation>
@@ -457,7 +459,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="4274537685965975248">Isifinyezo sekhibhodi sika-Ctrl + Alt + Umcibisholo Waphansi sishintshile. Ukuze usebenzise ukhiye we-End, cindezela ukhiye we-<ph name="LAUNCHER_KEY_NAME" /> + Umcibisholo Wangakwesokudla.</translation>
 <translation id="4279490309300973883">Yenza isibuko</translation>
 <translation id="4285498937028063278">Susa ukuphina</translation>
-<translation id="4292904812939562398">Izinhlelo zokusebenza ezisanda kusetshenziswa</translation>
 <translation id="429402653707266969">Guqula indawo yebha lamathuluzi</translation>
 <translation id="4294319844246081198">Sawubona <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Susa zonke izaziso ezingu-<ph name="COUNT" /></translation>
@@ -907,6 +908,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Bona zonke izaziso</translation>
 <translation id="7607002721634913082">Imiswe isikhashana</translation>
+<translation id="7610198039767537854">Buka izithombe zakho zakamuva ezisuka kuroli yekhamera yefoni yakho ku-<ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Maphakathi nendawo</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Ipeni yemaka</translation>

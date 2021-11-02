@@ -282,6 +282,13 @@ TEST_F(DocumentLayoutTest, ComputeLayoutOneUp) {
   EXPECT_EQ(gfx::Size(320, 2231), layout_.size());
 }
 
+TEST_F(DocumentLayoutTest, ComputeLayoutOneUpWithNoPages) {
+  SetPageSpread(DocumentLayout::PageSpread::kOneUp);
+
+  layout_.ComputeLayout({});
+  ASSERT_EQ(0u, layout_.page_count());
+}
+
 TEST_F(DocumentLayoutTest, DirtySetOnLayoutInputChangeOneUp) {
   SetPageSpread(DocumentLayout::PageSpread::kOneUp);
 
@@ -352,6 +359,13 @@ TEST_F(DocumentLayoutTest, ComputeLayoutTwoUpOdd) {
   EXPECT_EQ(gfx::Rect(401, 303, 244, 490), layout_.page_bounds_rect(3));
   EXPECT_EQ(gfx::Rect(105, 903, 290, 390), layout_.page_bounds_rect(4));
   EXPECT_EQ(gfx::Size(800, 1300), layout_.size());
+}
+
+TEST_F(DocumentLayoutTest, ComputeLayoutTwoUpOddWithNoPages) {
+  SetPageSpread(DocumentLayout::PageSpread::kTwoUpOdd);
+
+  layout_.ComputeLayout({});
+  ASSERT_EQ(0u, layout_.page_count());
 }
 
 TEST_F(DocumentLayoutTest, DirtySetOnLayoutInputChangeTwoUpOdd) {

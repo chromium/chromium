@@ -6,11 +6,36 @@
 #define CHROME_BROWSER_EXTENSIONS_API_WEB_AUTHENTICATION_PROXY_WEB_AUTHENTICATION_PROXY_API_H_
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
 
 namespace extensions {
 
-// WebAuthenticationProxyCompleteIsUvpaaRequestFunction implements
-// the chrome.webAuthenticationProxy.completeIsUvpaaRequest() API.
+class WebAuthenticationProxyAttachFunction : public ExtensionFunction {
+ public:
+  WebAuthenticationProxyAttachFunction();
+
+ protected:
+  ~WebAuthenticationProxyAttachFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("webAuthenticationProxy.attach",
+                             WEB_AUTHENTICATION_PROXY_ATTACH)
+};
+
+class WebAuthenticationProxyDetachFunction : public ExtensionFunction {
+ public:
+  WebAuthenticationProxyDetachFunction();
+
+ protected:
+  ~WebAuthenticationProxyDetachFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("webAuthenticationProxy.detach",
+                             WEB_AUTHENTICATION_PROXY_DETACH)
+};
+
 class WebAuthenticationProxyCompleteIsUvpaaRequestFunction
     : public ExtensionFunction {
  public:

@@ -24,6 +24,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="109942774857561566">Jeg keder mig</translation>
 <translation id="1104084341931202936">Vis indstillinger for hjælpefunktioner</translation>
 <translation id="1104621072296271835">Dine enheder fungerer endnu bedre sammen</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> anbefaler, at du opdaterer denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Tilstanden med temafarver anvender farver fra din baggrund til at give grænsefladen en svag farve.</translation>
 <translation id="112308213915226829">Skjul hylde automatisk</translation>
@@ -373,6 +374,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3665889125180354336">Optag mikrofon</translation>
 <translation id="3680908746918359504">Ryd alle tuscher</translation>
 <translation id="36813544980941320">Wi-Fi-netværk deles mellem din telefon og <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Nu kan du ændre, hvor screenshots gemmes</translation>
 <translation id="3702809606464356667">Når du får vist vinduer fra det aktuelle skrivebord, kan du trykke på pil op for at få vist vinduer fra alle skriveborde</translation>
 <translation id="3702846122927433391">Befolkningstallet i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3969043077941541451">Fra</translation>
 <translation id="397105322502079400">Beregner...</translation>
 <translation id="3977512764614765090">Batteriet er på <ph name="PERCENTAGE" /> % og oplader.</translation>
+<translation id="3986082989454912832">Svar</translation>
 <translation id="3995138139523574647">USB-C-enhed (porten bagpå i højre side)</translation>
 <translation id="40062176907008878">Håndskrift</translation>
 <translation id="4017989525502048489">Lasermarkør</translation>
@@ -456,7 +459,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="4274537685965975248">Tastaturgenvejen Ctrl+Alt+pil ned er blevet ændret. Hvis du vil bruge End-tasten, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+højrepil.</translation>
 <translation id="4279490309300973883">Spejling</translation>
 <translation id="4285498937028063278">Frigør</translation>
-<translation id="4292904812939562398">Apps, du har brugt for nylig</translation>
 <translation id="429402653707266969">Skift placering for værktøjslinjen</translation>
 <translation id="4294319844246081198">Godmorgen <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Ryd alle <ph name="COUNT" /> notifikationer</translation>
@@ -562,6 +564,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Deaktiver notifikationer</translation>
 <translation id="4946376291507881335">Tag billeder</translation>
 <translation id="495046168593986294">Rul op</translation>
 <translation id="4952936045814352993">Funktionen "Find telefon" er ikke tilgængelig, når alarmlyde er deaktiveret</translation>
@@ -905,6 +908,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Se alle notifikationer</translation>
 <translation id="7607002721634913082">Sat på pause</translation>
+<translation id="7610198039767537854">Se nye billeder fra din telefons kamerarulle på <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutral</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Tusch</translation>

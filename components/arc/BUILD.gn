@@ -219,24 +219,11 @@ static_library("prefs") {
   defines = [ "ARC_IMPLEMENTATION" ]
 
   deps = [
-    ":arc_base_enums",
     "//build:chromeos_buildflags",
+    "//components/arc/session:arc_base_enums",
     "//components/guest_os:prefs",
     "//components/prefs",
   ]
-}
-
-static_library("arc_base_enums") {
-  sources = [
-    "session/arc_instance_mode.cc",
-    "session/arc_instance_mode.h",
-    "session/arc_management_transition.cc",
-    "session/arc_management_transition.h",
-    "session/arc_stop_reason.cc",
-    "session/arc_stop_reason.h",
-  ]
-
-  deps = [ "//base" ]
 }
 
 source_set("arc_features") {
@@ -275,89 +262,21 @@ static_library("arc_base") {
     "arc_browser_context_keyed_service_factory_base.h",
     "arc_features_parser.cc",
     "arc_features_parser.h",
-    "arc_service_manager.cc",
-    "arc_service_manager.h",
-    "session/adb_sideloading_availability_delegate.h",
-    "session/arc_bridge_host_impl.cc",
-    "session/arc_bridge_host_impl.h",
-    "session/arc_bridge_service.cc",
-    "session/arc_bridge_service.h",
-    "session/arc_client_adapter.cc",
-    "session/arc_client_adapter.h",
-    "session/arc_container_client_adapter.cc",
-    "session/arc_container_client_adapter.h",
-    "session/arc_data_remover.cc",
-    "session/arc_data_remover.h",
-    "session/arc_dlc_installer.cc",
-    "session/arc_dlc_installer.h",
-    "session/arc_session.cc",
-    "session/arc_session.h",
-    "session/arc_session_impl.cc",
-    "session/arc_session_impl.h",
-    "session/arc_session_runner.cc",
-    "session/arc_session_runner.h",
-    "session/arc_start_params.cc",
-    "session/arc_start_params.h",
-    "session/arc_upgrade_params.cc",
-    "session/arc_upgrade_params.h",
-    "session/arc_vm_client_adapter.cc",
-    "session/arc_vm_client_adapter.h",
-    "session/file_system_status.cc",
-    "session/file_system_status.h",
   ]
 
   deps = [
-    "//ash/constants",
-    "//ash/public/cpp",
-    "//ash/public/cpp/external_arc",
     "//base",
-    "//chromeos/components/sensors:buildflags",
-    "//chromeos/components/sensors/mojom",
-    "//chromeos/cryptohome",
-    "//chromeos/dbus:common",
-    "//chromeos/dbus:concierge_proto",
-    "//chromeos/dbus:dbus",
-    "//chromeos/dbus/dlcservice:dlcservice",
-    "//chromeos/dbus/session_manager",
-    "//chromeos/dbus/session_manager:login_manager_proto",
-    "//chromeos/dbus/upstart",
-    "//chromeos/memory:memory",
-    "//chromeos/system:system",
     "//components/account_id",
-    "//components/arc/enterprise",
     "//components/keyed_service/content",
-    "//components/prefs",
-    "//components/user_manager",
-    "//components/version_info",
-    "//content/public/browser",
-    "//content/public/common",
-    "//mojo/public/cpp/platform",
-    "//mojo/public/cpp/system",
-    "//ui/aura",
   ]
 
   public_deps = [
-    ":arc_base_enums",
     ":arc_base_utils",
-    ":connection_holder",
-    ":prefs",
     "//components/arc/mojom",
+    "//components/arc/session",
+    "//components/arc/session:arc_base_enums",
+    "//components/arc/session:connection_holder",
     "//dbus",
-  ]
-}
-
-source_set("connection_holder") {
-  sources = [
-    "session/connection_holder.h",
-    "session/connection_notifier.cc",
-    "session/connection_notifier.h",
-    "session/connection_observer.h",
-    "session/mojo_channel.h",
-  ]
-
-  deps = [
-    "//base",
-    "//mojo/public/cpp/bindings",
   ]
 }
 
@@ -390,8 +309,8 @@ static_library("notification_test_support") {
   ]
 
   public_deps = [
-    ":connection_holder",
     "//components/arc/mojom:notifications",
+    "//components/arc/session:connection_holder",
   ]
 }
 
@@ -546,19 +465,6 @@ source_set("unit_tests") {
     "property/arc_property_bridge_unittest.cc",
     "rotation_lock/arc_rotation_lock_bridge_unittest.cc",
     "sensor/arc_iio_sensor_bridge_unittest.cc",
-    "session/arc_bridge_host_impl_unittest.cc",
-    "session/arc_bridge_service_unittest.cc",
-    "session/arc_client_adapter_unittest.cc",
-    "session/arc_container_client_adapter_unittest.cc",
-    "session/arc_data_remover_unittest.cc",
-    "session/arc_dlc_installer_unittest.cc",
-    "session/arc_instance_mode_unittest.cc",
-    "session/arc_management_transition_unittest.cc",
-    "session/arc_session_impl_unittest.cc",
-    "session/arc_session_runner_unittest.cc",
-    "session/arc_stop_reason_unittest.cc",
-    "session/arc_vm_client_adapter_unittest.cc",
-    "session/file_system_status_unittest.cc",
     "storage_manager/arc_storage_manager_unittest.cc",
     "timer/arc_timer_bridge_unittest.cc",
     "usb/usb_host_bridge_unittest.cc",
@@ -588,7 +494,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/upstart",
     "//chromeos/disks:test_support",
     "//chromeos/network:test_support",
-    "//chromeos/system:system",
     "//chromeos/ui/frame",
     "//components/account_id",
     "//components/arc/enterprise",
@@ -601,7 +506,6 @@ source_set("unit_tests") {
     "//components/session_manager/core:core",
     "//components/user_manager",
     "//components/user_manager:test_support",
-    "//components/version_info",
     "//content/public/common",
     "//content/test:test_support",
     "//device/bluetooth",

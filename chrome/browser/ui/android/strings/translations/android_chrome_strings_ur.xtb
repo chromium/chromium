@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">موجودہ ڈیٹا کو حذف کریں۔</translation>
 <translation id="1146678959555564648">‏VR درج کریں</translation>
 <translation id="114825011539563458">ایک ہی مقام پر انتہائی اہم رازداری اور سیکیورٹی کنٹرولز</translation>
+<translation id="1149401351239820326">میعاد کے اختتام کا مہینہ</translation>
 <translation id="1154704303112745282">صفحہ آف لائن غیر دستیاب ہے: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">استعمال شدہ</translation>
 <translation id="1171770572613082465">"سر فہرست سائٹس" بٹن پر تھپتھپا کر مقبول ویب سائٹس دیکھیں</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">‏Google Chrome خصوصیت کے شارٹ کٹس</translation>
 <translation id="1344653310988386453">نمایاں کرنے کا لنک شامل کریں</translation>
 <translation id="1347468774581902829">سرگرمی کا نظم کریں</translation>
-<translation id="1353372385686746892">‏Chrome ایپ کو بہتر بنانے میں مدد کرنے کے لیے Google کو ڈائیگناسٹک ڈیٹا بھیجتا ہے۔ <ph name="BEGIN_LINK" />تبدیل کریں<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">سائن آؤٹ کریں اور مطابقت پذیری آف کریں؟</translation>
 <translation id="1373696734384179344">منتخب مواد ڈاؤن لوڈ کرنے کیلئے ناکافی میموری۔</translation>
 <translation id="1376578503827013741">شمار کیا جا رہا ہے…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">‏Chrome امدادی مرکز کو ایک نئے ٹیب میں کھولیں</translation>
 <translation id="5957442310066583693">اپنی سر فہرست سائٹس دیکھنے کے لیے، ہوم بٹن پر تھپتھپائیں</translation>
 <translation id="5958275228015807058">اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
-<translation id="5962272973076519240">پوشیدگی کو غیر مقفل کرنے کیلئے توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
 <translation id="5964805880140440652">‏اس صفحہ کا کسی دوسرے آلہ پر اشتراک کرنے کے لیے Chrome کی ترتیبات میں 'سِنک کرنا' آن کریں</translation>
 <translation id="5964869237734432770">تصویری تفصیلات کو روکیں</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">‏SD کارڈ نہیں ملا</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> پوشیدگی ٹیب}other{<ph name="TAB_COUNT_NORMAL" /> پوشیدگی ٹیبز}}</translation>
 <translation id="8051695050440594747">‏<ph name="MEGABYTES" /> MB دستیاب ہے</translation>
+<translation id="8058655154417507695">میعاد کے اختتام کا سال</translation>
 <translation id="8058746566562539958">‏نئے Chrome ٹیب میں کھولیں</translation>
 <translation id="8063895661287329888">بُک مارک شامل کرنے میں ناکام۔</translation>
 <translation id="806745655614357130">میرا ڈیٹا علیحدہ رکھیں</translation>

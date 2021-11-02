@@ -188,6 +188,30 @@ class BidderWorkletTest : public testing::Test {
     RunReportWinExpectingResult(expected_report_url, expected_errors);
   }
 
+  // Runs reportWin() on an already loaded worklet,  verifies the return
+  // value and invokes `done_closure` when done. Expects something else to
+  // spin the event loop.
+  void RunReportWinExpectingResultAsync(
+      mojom::BidderWorklet* bidder_worklet,
+      const absl::optional<GURL>& expected_report_url,
+      const std::vector<std::string>& expected_errors,
+      base::OnceClosure done_closure) {
+    bidder_worklet->ReportWin(
+        seller_signals_, browser_signal_render_url_,
+        browser_signal_ad_render_fingerprint_, browser_signal_bid_,
+        base::BindOnce(
+            [](const absl::optional<GURL>& expected_report_url,
+               const std::vector<std::string>& expected_errors,
+               base::OnceClosure done_closure,
+               const absl::optional<GURL>& report_url,
+               const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_report_url, report_url);
+              EXPECT_EQ(expected_errors, errors);
+              std::move(done_closure).Run();
+            },
+            expected_report_url, expected_errors, std::move(done_closure)));
+  }
+
   // Loads and runs a reportWin() with the provided return line, expecting the
   // supplied result.
   void RunReportWinExpectingResult(
@@ -198,17 +222,8 @@ class BidderWorkletTest : public testing::Test {
     ASSERT_TRUE(bidder_worklet);
 
     base::RunLoop run_loop;
-    bidder_worklet->ReportWin(
-        seller_signals_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, browser_signal_bid_,
-        base::BindLambdaForTesting(
-            [&run_loop, &expected_report_url, &expected_errors](
-                const absl::optional<GURL>& report_url,
-                const std::vector<std::string>& errors) {
-              EXPECT_EQ(expected_report_url, report_url);
-              EXPECT_EQ(expected_errors, errors);
-              run_loop.Quit();
-            }));
+    RunReportWinExpectingResultAsync(bidder_worklet.get(), expected_report_url,
+                                     expected_errors, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1916,6 +1931,85 @@ TEST_F(BidderWorkletTest, BasicDevToolsDebug) {
 
   ASSERT_TRUE(bid_);
   EXPECT_EQ(1, bid_->bid);
+}
+
+TEST_F(BidderWorkletTest, InstrumentationBreakpoints) {
+  const char kUrl[] = "http://example.com/bid.js";
+
+  AddJavascriptResponse(
+      &url_loader_factory_, GURL(kUrl),
+      CreateReportWinScript(R"(sendReportTo("https://foo.test"))"));
+
+  auto worklet =
+      CreateWorklet(GURL(kUrl), true /* pause_for_debugger_on_start */);
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug(std::move(agent), "123",
+                                true /* use_binary_protocol */);
+
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Set the instrumentation breakpoints.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3,
+      "EventBreakpoints.setInstrumentationBreakpoint",
+      MakeInstrumentationBreakpointCommand(3, "set",
+                                           "beforeBidderWorkletBiddingStart"));
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "EventBreakpoints.setInstrumentationBreakpoint",
+      MakeInstrumentationBreakpointCommand(
+          4, "set", "beforeBidderWorkletReportingStart"));
+
+  // Unpause the execution. We should immediately hit the breakpoint right
+  // after since BidderWorklet does bidding on creation.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 5,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":5,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+
+  TestDevToolsAgentClient::Event breakpoint_hit1 =
+      debug.WaitForMethodNotification("Debugger.paused");
+  const std::string* breakpoint1 =
+      breakpoint_hit1.value.FindStringPath("params.data.eventName");
+  ASSERT_TRUE(breakpoint1);
+  EXPECT_EQ("instrumentation:beforeBidderWorkletBiddingStart", *breakpoint1);
+
+  // Resume and wait for bid result.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  load_script_run_loop_->Run();
+
+  ASSERT_TRUE(bid_);
+  EXPECT_EQ(1, bid_->bid);
+  bid_.reset();
+
+  // Now ask for reporting. This should hit the other breakpoint.
+  base::RunLoop run_loop;
+  RunReportWinExpectingResultAsync(worklet.get(), GURL("https://foo.test/"), {},
+                                   run_loop.QuitClosure());
+
+  TestDevToolsAgentClient::Event breakpoint_hit2 =
+      debug.WaitForMethodNotification("Debugger.paused");
+  const std::string* breakpoint2 =
+      breakpoint_hit2.value.FindStringPath("params.data.eventName");
+  ASSERT_TRUE(breakpoint2);
+  EXPECT_EQ("instrumentation:beforeBidderWorkletReportingStart", *breakpoint2);
+
+  // Resume and wait for reporting to finish.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 7, "Debugger.resume",
+      R"({"id":7,"method":"Debugger.resume","params":{}})");
+  run_loop.Run();
 }
 
 }  // namespace

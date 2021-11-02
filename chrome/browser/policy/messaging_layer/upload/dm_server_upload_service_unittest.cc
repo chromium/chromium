@@ -93,7 +93,7 @@ class DmServerUploaderTest : public ::testing::TestWithParam<
   const base::TimeDelta kMaxDelay_ = base::Seconds(1);
 };
 
-using TestSuccessfulUpload = MockFunction<void(SequencingInformation,
+using TestSuccessfulUpload = MockFunction<void(SequenceInformation,
                                                /*force_confirm*/ bool)>;
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
@@ -146,11 +146,11 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(
         base::StrCat({"Record Number ", base::NumberToString(i)}));
-    auto* sequencing_information =
-        encrypted_record.mutable_sequencing_information();
-    sequencing_information->set_generation_id(kGenerationId);
-    sequencing_information->set_sequencing_id(i);
-    sequencing_information->set_priority(Priority::IMMEDIATE);
+    auto* sequence_information =
+        encrypted_record.mutable_sequence_information();
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_sequencing_id(i);
+    sequence_information->set_priority(Priority::IMMEDIATE);
     records_->push_back(std::move(encrypted_record));
   }
 

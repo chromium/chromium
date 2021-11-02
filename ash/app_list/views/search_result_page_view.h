@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_box_model_observer.h"
@@ -38,6 +39,7 @@ class ViewShadow;
 // The search results page for the app list.
 class ASH_EXPORT SearchResultPageView
     : public AppListPage,
+      public AppListModelProvider::Observer,
       public SearchResultContainerView::Delegate,
       public SearchBoxModelObserver {
  public:
@@ -89,6 +91,10 @@ class ASH_EXPORT SearchResultPageView
                           AppListState from_state,
                           AppListState to_state) override;
   gfx::Size GetPreferredSearchBoxSize() const override;
+
+  // Overridden from AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // Overridden from SearchResultContainerView::Delegate:
   void OnSearchResultContainerResultsChanging() override;

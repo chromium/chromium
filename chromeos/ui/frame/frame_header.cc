@@ -201,6 +201,11 @@ views::View::Views FrameHeader::GetAdjustedChildrenInZOrder(
 }
 
 FrameHeader::~FrameHeader() {
+  if (center_button_ && !center_button_->parent()) {
+    delete center_button_;
+    center_button_ = nullptr;
+  }
+
   auto* target_window = target_widget_->GetNativeView();
   if (target_window && target_window->GetProperty(kFrameHeaderKey) == this)
     target_window->ClearProperty(kFrameHeaderKey);
@@ -289,6 +294,7 @@ void FrameHeader::SetBackButton(views::FrameCaptionButton* back_button) {
 }
 
 void FrameHeader::SetCenterButton(chromeos::FrameCenterButton* center_button) {
+  DCHECK(!center_button_);
   center_button_ = center_button;
   if (center_button_)
     center_button_->SetBackgroundColor(GetCurrentFrameColor());

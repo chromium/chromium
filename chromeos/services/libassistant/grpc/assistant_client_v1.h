@@ -20,6 +20,8 @@ class AlarmTimerManager;
 namespace chromeos {
 namespace libassistant {
 
+class ServicesStatusObserver;
+
 class AssistantClientV1 : public AssistantClient {
  public:
   AssistantClientV1(
@@ -28,7 +30,7 @@ class AssistantClientV1 : public AssistantClient {
   ~AssistantClientV1() override;
 
   // chromeos::libassistant::AssistantClient:
-  void StartServices(base::OnceClosure services_ready_callback) override;
+  void StartServices(ServicesStatusObserver* services_status_observer) override;
   void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
@@ -125,8 +127,7 @@ class AssistantClientV1 : public AssistantClient {
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
 
-  // Invoked when Libassistant services are ready to query.
-  base::OnceClosure services_ready_callback_;
+  ServicesStatusObserver* services_status_observer_ = nullptr;
 
   base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Би уйдаж байна</translation>
 <translation id="1104084341931202936">Нэвтрэлтийн тохиргоог харуулах</translation>
 <translation id="1104621072296271835">Таны төхөөрөмжүүд хамтдаа илүү сайн ажилладаг</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> танд энэ <ph name="DEVICE_TYPE" />-г шинэчлэхийг санал болгож байна.</translation>
 <translation id="1119348796022671382">Загвартай хоршсон өнгөний горим нь харагдах байдлыг бага зэрэг өнгөтэй болгохын тулд дэлгэцийн зургаас гаргаж авсан өнгийг ашигладаг.</translation>
 <translation id="112308213915226829">Autohide shelf</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Микрофоныг бичих</translation>
 <translation id="3680908746918359504">Бүх тэмдэглэгээг арилгах</translation>
 <translation id="36813544980941320">Wi-Fi сүлжээг таны утас болон <ph name="DEVICE_NAME" />-н хооронд хуваалцана</translation>
+<translation id="3701206655856637070">Та одоо дэлгэцийн зургийг хаана хадгалахаа өөрчлөх боломжтой</translation>
 <translation id="3702809606464356667">Одоогийн дэлгэцээс цонхнуудыг харуулж байна. Бүх дэлгэцээс цонхнуудыг харуулахын тулд Дээш сум товчийг дарна уу</translation>
 <translation id="3702846122927433391">Нигери улсын хүн ам</translation>
 <translation id="3705722231355495246">-</translation>
@@ -418,6 +420,7 @@
 <translation id="3969043077941541451">Унтраах</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
 <translation id="3977512764614765090">Батарей <ph name="PERCENTAGE" />%-тай байгаа бөгөөд цэнэглэж байна.</translation>
+<translation id="3986082989454912832">Хариулах</translation>
 <translation id="3995138139523574647">USB-C төхөөрөмж (ард талын портын баруун тал)</translation>
 <translation id="40062176907008878">Гараар бичих</translation>
 <translation id="4017989525502048489">Лазер заагч</translation>
@@ -457,7 +460,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + Доош сумны товчлуурын шууд холбоосыг өөрчилсөн байна. End товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Баруун сумыг дарна уу.</translation>
 <translation id="4279490309300973883">Толин тусгал үүсгэх</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
-<translation id="4292904812939562398">Саяхан ашигласан аппууд</translation>
 <translation id="429402653707266969">Самбарын байршлыг асаах/унтраах</translation>
 <translation id="4294319844246081198">Өглөөний мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Бүх <ph name="COUNT" /> мэдэгдлийг устгах</translation>
@@ -563,6 +565,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Мэдэгдлийг унтраах</translation>
 <translation id="4946376291507881335">Зураг авах</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
 <translation id="4952936045814352993">Сэрүүлгийн дууг идэвхгүй болгосон үед утасны байршил олох боломжгүй</translation>
@@ -906,6 +909,7 @@
 <translation id="7595633564847427181">Да</translation>
 <translation id="7600875258240007829">Бүх мэдэгдлийг харах</translation>
 <translation id="7607002721634913082">зогссон</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> дээр утасныхаа камераар авсан зургийн цомгоос саяхны зургуудыг үзнэ үү</translation>
 <translation id="7618774594543487847">Завсрын</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Тэмдэглэгээний үзэг</translation>

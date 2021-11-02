@@ -50,7 +50,6 @@ group("closure_compile") {
   # TODO(https://crbug.com/1164001): closure_compile deps should be moved to
   # the appropriate place during the code migration project.
   deps = [
-    "//chromeos/components/connectivity_diagnostics:closure_compile",
     "//chromeos/components/multidevice/debug_webui/resources:closure_compile",
   ]
 }

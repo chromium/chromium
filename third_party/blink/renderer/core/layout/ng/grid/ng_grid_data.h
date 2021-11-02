@@ -11,41 +11,52 @@
 
 namespace blink {
 
-// Given grid-template-columns: repeat(5, 30px 50px) 25px;
-// Recall that the first set represents the grid item offset.
-// If there are no grid items to break things up, we would expect the set and
-// range data to be as follows:
-//  Vector<SetData>: [{0,1}, {150,5}, {250, 5}, {25, 1}]
-//  Vector<RangeData>: [{10, 1, 2}, {1, 3, 1}]
-// This means that although splitting the sets by their track count would not
-// give the correct result.
-struct NGGridData {
-  USING_FAST_MALLOC(NGGridData);
+struct CORE_EXPORT NGGridPlacementData {
+  explicit NGGridPlacementData(Vector<GridArea>&& grid_item_positions)
+      : grid_item_positions(grid_item_positions) {}
+
+  bool operator==(const NGGridPlacementData& other) const {
+    return grid_item_positions == other.grid_item_positions &&
+           column_auto_repetitions == other.column_auto_repetitions &&
+           row_auto_repetitions == other.row_auto_repetitions &&
+           column_start_offset == other.column_start_offset &&
+           row_start_offset == other.row_start_offset;
+  }
+
+  Vector<GridArea> grid_item_positions;
+
+  wtf_size_t column_auto_repetitions;
+  wtf_size_t row_auto_repetitions;
+  wtf_size_t column_start_offset;
+  wtf_size_t row_start_offset;
+};
+
+// This struct contains a bundle of the ranges from the track collection and the
+// resolved used sizes of the sets in a given track direction.
+struct CORE_EXPORT NGGridLayoutData {
+  USING_FAST_MALLOC(NGGridLayoutData);
 
  public:
   using RangeData = NGGridLayoutAlgorithmTrackCollection::Range;
 
-  wtf_size_t row_start;
-  wtf_size_t column_start;
-  wtf_size_t row_auto_repeat_track_count;
-  wtf_size_t column_auto_repeat_track_count;
-  wtf_size_t number_of_items;
-
   struct SetData {
     SetData(LayoutUnit offset, wtf_size_t track_count)
         : offset(offset), track_count(track_count) {}
+
     LayoutUnit offset;
     wtf_size_t track_count;
   };
 
   struct TrackCollectionGeometry {
-    Vector<SetData> sets;
     Vector<RangeData> ranges;
+    Vector<SetData> sets;
+
     LayoutUnit gutter_size;
-    wtf_size_t total_track_count;
+    wtf_size_t track_count;
   };
-  TrackCollectionGeometry row_geometry;
+
   TrackCollectionGeometry column_geometry;
+  TrackCollectionGeometry row_geometry;
 };
 
 }  // namespace blink

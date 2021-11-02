@@ -623,7 +623,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Esta política no acepta el valor <ph name="WILDCARD_VALUE" />.</translation>
 <translation id="1736269219679256369">Permitir que se continúe desde la página de advertencia de SSL</translation>
 <translation id="174765717426930019">Permitir que todas las ventanas emergentes abiertas con <ph name="BLANK_PAGE_NAME" /> como objetivo interactúen con la página que ha solicitado abrir la ventana emergente a no ser que esa página haya rechazado explícitamente dicha interacción </translation>
-<translation id="1750315445671978749">Bloquear todas las descargas</translation>
 <translation id="1751429117283165017">Si se le asigna un valor a esta política, podrás establecer una lista de patrones de URL donde se especifique qué sitios no pueden pedir a los usuarios que les concedan acceso de escritura a archivos o directorios en el sistema de archivos del sistema operativo del host.
 
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_FILE_SYSTEM_WRITE_GUARD_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
@@ -1018,7 +1017,6 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2204379573346866896">Minutos transcurridos en la hora actual.</translation>
 <translation id="2204753382813641270">Controlar opción para ocultar archivos automáticamente</translation>
 <translation id="2208976000652006649">Parámetros para URL de búsqueda que utiliza POST</translation>
-<translation id="2212603374276864511">Permitir que los usuarios usen plantillas de escritorio predefinidas</translation>
 <translation id="2213059592185933570">Habilitar la creación de perfiles de roaming</translation>
 <translation id="2215238871726750562">Si se asigna el valor "Verdadero" a esta política, impedirá que se abra la ventana del navegador al comienzo de la sesión.
 
@@ -1084,6 +1082,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2266422599396179941">Permitir que los usuarios archiven sugerencias</translation>
 <translation id="2269319728625047531">Habilitar Sync Consent durante el inicio de sesión</translation>
 <translation id="2270747976331889601">Habilita una función de seguridad de TLS 1.3 para los anclajes de veracidad locales.</translation>
+<translation id="22754818344448444">Permitir que los usuarios seleccionen un diseño de plantilla de escritorio para cargarlo</translation>
 <translation id="2281496157391382819"> Controla las advertencias de privacidad de las sesiones de invitado administradas en <ph name="PRODUCT_OS_NAME" />.
 
       Si se asigna el valor "False" a esta política, se desactivarán las advertencias de privacidad en la pantalla de inicio de sesión y las notificaciones de inicio automático en las sesiones de invitado administradas.
@@ -1864,6 +1863,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3092059499596000593">Utilizar la impresora predeterminada del sistema como opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica qué ocurre cuando un usuario que se autentica mediante un token de seguridad (por ejemplo, con una tarjeta inteligente) quita ese token durante una sesión. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: no ocurre nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: la sesión finaliza y se cierra la sesión del usuario. Si no se define esta política, se utiliza <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> de forma predeterminada.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
+<translation id="3101035417394748390">Tamaño máximo (en bytes) que se puede transferir entre el cliente y el host mediante la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Seleccionar la forma de especificar la configuración del servidor proxy</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
 <translation id="3110248563985502478">Esta política está obsoleta en M88. Chrome ya no es compatible con Flash. Si la política se habilita, los complementos obsoletos se utilizarán como complementos normales. Si la política se inhabilita, los complementos obsoletos no se utilizarán.
@@ -2234,7 +2234,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Límites de tiempo por aplicación</translation>
-<translation id="354592434146464541">No permitir que los usuarios usen plantillas de escritorio predefinidas</translation>
 <translation id="3547954654003013442">Configuración de proxy</translation>
 <translation id="3550122827225052130">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" /> en su lugar.
 
@@ -2648,6 +2647,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se habilita esta política, la función de Respuestas rápidas podrá acceder al contenido seleccionado.
       Si se inhabilita, la función de Respuestas rápidas no podrá acceder al contenido seleccionado.
       Si no se asigna ningún valor a esta política, los usuarios podrán decidir si permiten o no que la función de Respuestas rápidas acceda al contenido seleccionado.</translation>
+<translation id="4016700865356669962">Si se habilita esta política, se permitirá que los usuarios usen plantillas de diseño de escritorio.  Si se inhabilita esta política o no se establece, estas plantillas no estarán disponibles.</translation>
 <translation id="4020682745012723568">Las aplicaciones para Android no pueden acceder a las cookies transferidas al perfil del usuario.</translation>
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando un diálogo de protocolo externo aparezca para así saltarse futuras solicitudes de confirmación</translation>
 <translation id="402759845255257575">No permitir que ningún sitio ejecute JavaScript</translation>
@@ -3556,7 +3556,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se establece esta política, no se aplicará ninguna restricción y el usuario podrá iniciar sesión independientemente de la versión de <ph name="PRODUCT_NAME" />.
 
       "Versión" puede hacer referencia a una versión exacta, como "61.0.3163.120", o al prefijo de una versión, como "61.0".  </translation>
-<translation id="5247006254130721952">Bloquear descargas peligrosas</translation>
 <translation id="5247973380763021389">Impedir que las políticas basadas en la nube a nivel de usuario anulen las políticas basadas en la nube a nivel de máquina</translation>
 <translation id="5249453807420671499">Los usuarios pueden añadir cuentas de Kerberos</translation>
 <translation id="5252210248395576403">Esta política da permiso a la función Respuestas rápidas para acceder al contenido seleccionado y enviar la información al servidor con el fin de obtener resultados de traducción.
@@ -3821,7 +3820,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5521875416764302911">Evitar que los usuarios inicien sesión en <ph name="PRODUCT_NAME" /></translation>
 <translation id="5526184558582921522">Permitir que se realicen consultas a Quirks Server y que potencialmente se descarguen archivos de configuración de hardware concreto</translation>
 <translation id="5526701598901867718">Todos (no seguro)</translation>
-<translation id="5530347722229944744">Bloquear descargas potencialmente peligrosas</translation>
 <translation id="5534079385061985566">Habilitar la función de restauración completa</translation>
 <translation id="5535256585099022933">Definir el intervalo de tiempo para el reinicio</translation>
 <translation id="5535973522252703021">Lista de admisión de servidores de delegación Kerberos</translation>
@@ -4056,7 +4054,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5814301096961727113">Establecer el estado predeterminado de los comentarios por voz en la pantalla de inicio de sesión</translation>
 <translation id="5815129011704381141">Reiniciar automáticamente después de la actualización</translation>
 <translation id="5815990343032461023">Comportamiento antiguo: el sistema de extensiones actualiza las aplicaciones de kiosco de Chrome mediante la URL de actualización del archivo de manifiesto de la extensión. También las puede actualizar el gestor de almacenamiento en caché mediante la URL de actualización de la política.</translation>
-<translation id="5816106589769772877">Si se habilita esta política, se permitirá que los usuarios usen plantillas de diseño de escritorio preconfiguradas.  Si se inhabilita esta política o no se establece, esas plantillas no estarán disponibles.</translation>
 <translation id="582857022372205358">Habilitar impresión de borde corto por las dos caras</translation>
 <translation id="5830196507442186669">Permite que los dispositivos utilicen <ph name="BOREALIS_NAME" /> en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5832274826894536455">Políticas obsoletas</translation>
@@ -4214,7 +4211,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6019606564278029236">Habilitar la interacción de los usuarios remotos con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
 <translation id="602318745029752898">Permitir las voces de conversión de texto a voz de red mejorada en Enunciar selección</translation>
-<translation id="6025267044008029374">Bloquear descargas maliciosas (recomendado)</translation>
 <translation id="6026722971789064331">Controlar el uso de la API File System para escritura</translation>
 <translation id="602728333950205286">URL de función Instant del proveedor de búsquedas predeterminadas</translation>
 <translation id="603410445099326293">Parámetros para URL sugerida que utiliza POST</translation>
@@ -4501,6 +4497,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="6371561334154580937">Muestra el cuadro de diálogo de cierre de sesión cuando se cierra la última ventana.</translation>
 <translation id="6372105930898423193">Permite volver a habilitar la función AppCache aunque esté desactivada de forma predeterminada.</translation>
 <translation id="6376659517206731212">Puede ser obligatoria</translation>
+<translation id="6377031865393559909">Permitir que los usuarios usen plantillas de escritorio</translation>
 <translation id="6378076389057087301">Especificar si la actividad de audio afecta a la administración de energía</translation>
 <translation id="6378393933102834628">Si se asigna el valor "Verdadero" a esta política, se mostrarán los accesos directos a aplicaciones. Si se le asigna el valor "Falso", no se mostrarán nunca estos accesos directos.
 
@@ -4706,21 +4703,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
-<translation id="6640989746632867803">Si se le asigna un valor a la política, los usuarios no podrán saltarse las medidas de seguridad de las descargas.
-
-       Estos son los efectos de cada valor:
-
-      * Bloquear descargas peligrosas: se permiten todas las descargas, excepto las que incluyan advertencias de seguridad.
-
-      * Bloquear descargas potencialmente peligrosas: se permiten todas las descargas, excepto las que incluyan advertencias de seguridad sobre descargas potencialmente peligrosas.
-
-      * Bloquear todas las descargas: se bloquean todas las descargas.
-
-      * Bloquear las descargas de contenido malicioso: se permiten todas las descargas, excepto las definidas como software malicioso con un nivel elevado de certeza. A diferencia de la opción Bloquear descargas peligrosas, esta opción no tiene en cuenta el tipo de archivo, pero sí el host.
-
-      * Sin restricciones especiales: las restricciones de seguridad habituales se aplican a las descargas en función de los resultados de análisis de seguridad.
-
-      Nota: Estas restricciones se aplican a las descargas activadas desde el contenido de las páginas web o mediante la opción Descargar enlace… del menú. No se aplican a la opción Descargar de la página que se muestra ni a la opción Guardar como PDF de las opciones de impresión. Consulta más información sobre Navegación segura en https://developers.google.com/safe-browsing.</translation>
 <translation id="6641981670621198190">Inhabilitar compatibilidad con API de gráficos 3D</translation>
 <translation id="6642682198621199507">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los puertos serie disponibles.
 
@@ -5013,6 +4995,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita la política, los dispositivos inscritos no registrarán ni informarán del estado del audio.</translation>
 <translation id="6929746927224321095">Inhabilitar Autocompletar</translation>
 <translation id="6931242315485576290">Inhabilitar sincronización de datos con Google</translation>
+<translation id="6940243892299228102">No permitir que los usuarios usen plantillas de escritorio</translation>
 <translation id="6943577887654905793">Nombre de preferencia en Mac/Linux:</translation>
 <translation id="6946652757373377924">
       Esta política se retiró en la versión M77.
@@ -5878,7 +5861,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 
           Si se inhabilita esta opción y el firewall filtra las conexiones UDP salientes, el ordenador solo podrá establecer conexión con hosts dentro de la red local.</translation>
 <translation id="7976157349247117979">Nombre del destino de <ph name="PRODUCT_NAME" /></translation>
-<translation id="7980227303582973781">Sin restricciones especiales</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7991022023019679916">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
@@ -6126,6 +6108,17 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
 
           Si no se le asigna ningún valor, el dictado se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="8293414596801971604">Expresión regular con la que debe coincidir el nombre visible de la impresora.</translation>
+<translation id="8293509904023267821">Si se establece esta política, los datos del portapapeles que se envíen al host y desde él se truncarán para que cumplan el límite definido por esta política.
+
+          Si se asigna un valor de 0, se inhabilita la sincronización del portapapeles.
+
+          Esta política afecta tanto a las situaciones de acceso remoto como a las de asistencia remota.
+
+          Esta política no tendrá efecto si no se le asigna ningún valor.
+
+          La asignación de un valor que no esté dentro del intervalo mínimo/máximo puede evitar que el host se inicie.
+
+          Ten en cuenta que el límite superior real del tamaño del portapapeles se basa en el tamaño máximo del mensaje del canal de datos webRTC, y esta política no lo controla.</translation>
 <translation id="8294750666104911727">Normalmente, las páginas con X-UA-Compatible establecido en chrome=1 se mostrarán en <ph name="PRODUCT_FRAME_NAME" />, independientemente de la política ChromeFrameRendererSettings.
 
           Si habilitas esta opción, las páginas no se escanearán para buscar metaetiquetas.

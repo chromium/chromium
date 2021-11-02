@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Vorhandene Daten löschen</translation>
 <translation id="1146678959555564648">VR aktivieren</translation>
 <translation id="114825011539563458">Die wichtigsten Datenschutz- und Sicherheitseinstellungen an einem Ort</translation>
+<translation id="1149401351239820326">Ablaufmonat</translation>
 <translation id="1154704303112745282">Seite offline nicht verfügbar: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Genutzt</translation>
 <translation id="1171770572613082465">Tippen Sie auf die Schaltfläche "Top-Websites", um beliebte Websites zu sehen</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Tastenkombinationen für Google Chrome-Funktionen</translation>
 <translation id="1344653310988386453">Link zum markierten Text hinzufügen</translation>
 <translation id="1347468774581902829">Aktivitäten verwalten</translation>
-<translation id="1353372385686746892">Chrome sendet Fehlerberichte an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Ändern<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
 <translation id="1373696734384179344">Der Speicher reicht nicht aus, um den ausgewählten Inhalt herunterzuladen.</translation>
 <translation id="1376578503827013741">Berechnung läuft...</translation>
@@ -817,7 +817,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5956665950594638604">Chrome-Hilfe in einem neuen Tab öffnen</translation>
 <translation id="5957442310066583693">Auf die Schaltfläche "Startseite" tippen, um Ihre Top-Websites aufzurufen</translation>
 <translation id="5958275228015807058">Ihre Dateien und Seiten finden Sie unter "Downloads"</translation>
-<translation id="5962272973076519240">Bestätigen Sie Ihre Identität, um die Inkognitositzung zu entsperren</translation>
 <translation id="5962718611393537961">Zum Minimieren tippen</translation>
 <translation id="5964805880140440652">Wenn Sie diese Seite mit einem anderen Gerät teilen möchten, aktivieren Sie in den Chrome-Einstellungen die Synchronisierung</translation>
 <translation id="5964869237734432770">Bildbeschreibungen beenden</translation>
@@ -1188,6 +1187,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="804335162455518893">SD-Karte nicht gefunden</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Inkognitotab}other{<ph name="TAB_COUNT_NORMAL" /> Inkognitotabs}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB verfügbar</translation>
+<translation id="8058655154417507695">Ablaufjahr</translation>
 <translation id="8058746566562539958">In neuem Chrome-Tab öffnen</translation>
 <translation id="8063895661287329888">Fehler beim Hinzufügen des Lesezeichens.</translation>
 <translation id="806745655614357130">Daten getrennt halten</translation>

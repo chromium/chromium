@@ -1841,9 +1841,14 @@ class _InfiniteScrollStory(system_health_story.SystemHealthStory):
   MAX_SCROLL_RETRIES = 3
   TIME_TO_WAIT_BEFORE_STARTING_IN_SECONDS = 5
 
-  def __init__(self, story_set, take_memory_measurement):
-    super(_InfiniteScrollStory, self).__init__(story_set,
-        take_memory_measurement)
+  def __init__(self,
+               story_set,
+               take_memory_measurement,
+               extra_browser_args=None):
+    super(_InfiniteScrollStory,
+          self).__init__(story_set,
+                         take_memory_measurement,
+                         extra_browser_args=extra_browser_args)
     self.script_to_evaluate_on_commit = '''
         window.WebSocket = undefined;
         window.Worker = undefined;
@@ -1963,6 +1968,17 @@ class TumblrStory2018(_InfiniteScrollStory):
       story_tags.HEALTH_CHECK, story_tags.INFINITE_SCROLL,
       story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2018
   ]
+
+  def __init__(self, story_set, take_memory_measurement):
+    # TODO(crbug.com/1256844): Disable the ForceSynchronousHTMLParsing and
+    # LoaderDataPipeTuning experiments, because they cause failures and
+    # flakiness for this story as-recorded in 2018.
+    extra_browser_args = [
+        '--disable-features=ForceSynchronousHTMLParsing,LoaderDataPipeTuning'
+    ]
+    super(TumblrStory2018, self).__init__(story_set,
+                                          take_memory_measurement,
+                                          extra_browser_args=extra_browser_args)
 
   def _Login(self, action_runner):
     tumblr_login.LoginDesktopAccount(action_runner, 'tumblr')

@@ -67,10 +67,8 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
                                 bool launch_as_default) = 0;
 
   // Called to invoke a custom action on a result with |result_id|.
-  // |action_index| corresponds to the index of an icon in
-  // |result.action_icons()|.
   virtual void InvokeSearchResultAction(const std::string& result_id,
-                                        int action_index) = 0;
+                                        SearchResultActionType action) = 0;
 
   // Returns the context menu model for a ChromeSearchResult with |result_id|,
   // or nullptr if there is currently no menu for the result.
@@ -107,6 +105,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
 
   // Sorts app list items (including apps and folders) with the given order.
   virtual void SortAppList(AppListSortOrder order) = 0;
+
+  // Reverts the app list temporary sort order (i.e. the order that has not been
+  // committed yet) if any.
+  virtual void RevertAppListSort() = 0;
 
   // Returns an animation observer if the |target_state| is interesting to the
   // delegate.

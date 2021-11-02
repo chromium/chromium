@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1146678959555564648">VR-г оруулна уу</translation>
 <translation id="114825011539563458">Нууцлал болон аюулгүй байдлын хамгийн чухал хяналтууд нэг дор</translation>
+<translation id="1149401351239820326">Хугацаа дуусах сар</translation>
 <translation id="1154704303112745282">Хуудас офлайн үед боломжгүй: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Ашигласан</translation>
 <translation id="1171770572613082465">"Шилдэг сайтууд" товчлуурыг товшин, түгээмэл хэрэглэгддэг веб сайтыг харна уу</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome онцлогийн товчлол</translation>
 <translation id="1344653310988386453">Тодруулсан текстийн холбоосыг багтаах</translation>
 <translation id="1347468774581902829">Үйл ажиллагааг удирдах</translation>
-<translation id="1353372385686746892">Аппыг сайжруулахад туслахын тулд Chrome оношилгооны өгөгдлийг Google-д илгээнэ. <ph name="BEGIN_LINK" />Өөрчлөх<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Гараад синк хийхийг унтраах уу?</translation>
 <translation id="1373696734384179344">Сонгосон агуулгыг татаж авахад таны багтаамж хүрэлцэхгүй байна.</translation>
 <translation id="1376578503827013741">Тооцоолж байна...</translation>
@@ -816,7 +816,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5956665950594638604">Chrome тусламжийн төвийг шинэ табад нээх</translation>
 <translation id="5957442310066583693">Шилдэг сайтуудаа харахын тулд Нүүр хуудасны товчлуурыг товшино уу</translation>
 <translation id="5958275228015807058">Файл, хуудсаа Таталт хэсгээс хайна уу</translation>
-<translation id="5962272973076519240">Нууцлалтай харилцан үйлдлийн түгжээг тайлахын тулд өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="5962718611393537961">Буулгахын тулд товших</translation>
 <translation id="5964805880140440652">Энэ хуудсыг өөр төхөөрөмжтэй хуваалцахын тулд Chrome-н тохиргоонд синк хийхийг асаана уу</translation>
 <translation id="5964869237734432770">Зургийн тайлбарыг зогсоох</translation>
@@ -1187,6 +1186,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="804335162455518893">SD карт олдсонгүй</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> нууцлалтай таб}other{<ph name="TAB_COUNT_NORMAL" /> нууцлалтай таб}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> МБ боломжтой</translation>
+<translation id="8058655154417507695">Дуусах он</translation>
 <translation id="8058746566562539958">Chrome-н шинэ табад нээх</translation>
 <translation id="8063895661287329888">Хавчуургыг нэмж чадсангүй.</translation>
 <translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>

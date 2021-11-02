@@ -26,12 +26,18 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":breadcrumbs",
+    "//base",
     "//chrome/test:test_support",
     "//components/breadcrumbs/core",
     "//components/crash/core/common:crash_key",
+    "//components/infobars/content",
+    "//components/infobars/core",
     "//content/test:test_support",
     "//testing/gtest",
   ]
 
-  sources = [ "crash_reporter_breadcrumb_observer_unittest.cc" ]
+  sources = [
+    "breadcrumb_manager_tab_helper_unittest.cc",
+    "crash_reporter_breadcrumb_observer_unittest.cc",
+  ]
 }

@@ -127,6 +127,7 @@
 <translation id="2122305276694332719">ಮರೆ ಮಾಡಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಂಪರ್ಕಗೊಳ್ಳುವುದರಿಂದ ಇತರರು ನಿಮ್ಮ ಸಾಧನ ಮತ್ತು ಕೆಲವು ನೆಟ್‌ವರ್ಕ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಲು ಅನುಮತಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದನ್ನು ಬಳಸಲು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ.</translation>
 <translation id="2125607626296734455">ಖ್ಮೇರ್</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="NETWORK_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ, ಕನೆಕ್ಟ್</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="2142680004883808240">ಫೋನೆಟಿಕ್ YaZHert ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ರಷ್ಯನ್</translation>
 <translation id="2143778271340628265">ಹಸ್ತಚಾಲಿತ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="2163152940313951844">ಅಮಾನ್ಯ ಅಕ್ಷರ: <ph name="CHARACTER_NAME" /></translation>
@@ -181,6 +182,7 @@
 <translation id="2563185590376525700">ಕಪ್ಪೆ</translation>
 <translation id="2578394532502990878">ತಮಿಳು ಫೋನೆಟಿಕ್</translation>
 <translation id="2579959351793446050">ಒಡಿಯಾ</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ, ವಿವರಗಳು</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ವೀಡಿಯೊ</translation>
 <translation id="2617342710774726426">ಸಿಮ್‌ ಕಾರ್ಡ್ ಲಾಕ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2620090360073999360">ಈ ಸಮಯದಲ್ಲಿ Google ಡ್ರೈವ್‌ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>

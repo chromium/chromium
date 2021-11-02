@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Jeśli dzielisz się komputerem ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chromium.</translation>
 <translation id="2294245788148774212">Opcjonalnie: pomóż ulepszyć funkcje i działanie Systemu operacyjnego Chromium, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>
+<translation id="2313870531055795960">Sprawdza, czy URL jest na liście niebezpiecznych stron zapisanej w Chromium. Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2343156876103232566">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chromium na obu urządzeniach.</translation>
 <translation id="2347108572062610441">To rozszerzenie ustawiło inną stronę wyświetlaną po uruchomieniu Chromium.</translation>
 <translation id="2396765026452590966">Rozszerzenie „<ph name="EXTENSION_NAME" />” ustawiło inną stronę wyświetlaną po uruchomieniu Chromium.</translation>
@@ -42,6 +43,7 @@
 <translation id="2577788541081224677">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się, co umożliwi włączenie synchronizacji.</translation>
 <translation id="2583187216237139145">Wszystkie dane Chromium wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Zastosowanie aktualizacji wymaga ponownego uruchomienia systemu operacyjnego Chromium.</translation>
+<translation id="2614883797045469742">Większości użytkowników odpowiadają ustawienia domyślne, ale możesz je dostosować do swojego stylu korzystania z Chromium</translation>
 <translation id="2648074677641340862">Podczas instalacji wystąpił błąd systemu operacyjnego. Pobierz Chromium ponownie.</translation>
 <translation id="2661879430930417727">Jeśli dzielisz urządzenie ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i skonfigurować Chromium po swojemu</translation>
 <translation id="2711502716910134313">Karta Chromium</translation>
@@ -50,6 +52,7 @@
 <translation id="2799223571221894425">Uruchom ponownie</translation>
 <translation id="2837693172913560447">Spowoduje to utworzenie nowego profilu Chromium dla użytkownika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Usuń z Chromium...</translation>
+<translation id="2850691299438350830">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz</translation>
 <translation id="2885378588091291677">Menedżer zadań</translation>
 <translation id="2910007522516064972">&amp;Chromium – informacje</translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
@@ -202,6 +205,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="6990124437352146030">Chromium potrzebuje uprawnień dostępu do mikrofonu na tej stronie</translation>
 <translation id="705851970750939768">Zaktualizuj Chromium</translation>
 <translation id="7067091210845072982">Jeśli obraz nie ma przydatnego opisu, Chromium spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google.</translation>
+<translation id="7147279922647361552">Dostosuj najważniejsze ustawienia prywatności Chromium</translation>
 <translation id="718435575166326686">Ta strona musi mieć w Chromium dostęp do aparatu</translation>
 <translation id="7196312274710523067">Nie udało się uruchomić Chromium. Spróbuj ponownie.</translation>
 <translation id="7197677400338048821">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>

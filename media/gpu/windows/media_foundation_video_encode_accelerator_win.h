@@ -102,6 +102,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Populates input sample buffer with contents of a video frame
   HRESULT PopulateInputSampleBuffer(scoped_refptr<VideoFrame> frame);
+  HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
 
   int AssignTemporalId(bool keyframe);
   bool temporalScalableCoding() { return num_temporal_layers_ > 1; }

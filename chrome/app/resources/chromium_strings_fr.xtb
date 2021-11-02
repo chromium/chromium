@@ -31,6 +31,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2185166961232948079">Chromium - Connexion au réseau - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Chromium comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="2294245788148774212">Facultatif : contribuez à améliorer les fonctionnalités et les performances de Chromium OS en envoyant automatiquement des données de diagnostic et d'utilisation à Google.</translation>
+<translation id="2313870531055795960">Il vérifie les URL d'après une liste de sites dangereux stockée dans Chromium. Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu de pages, à la fonctionnalité de navigation sécurisée.</translation>
 <translation id="2343156876103232566">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chromium sur les deux appareils.</translation>
 <translation id="2347108572062610441">Cette extension a modifié la page qui s'affiche lorsque vous démarrez Chromium.</translation>
 <translation id="2396765026452590966">L'extension <ph name="EXTENSION_NAME" /> a modifié la page qui s'affiche lorsque vous démarrez Chromium.</translation>
@@ -52,6 +53,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2799223571221894425">Relancer</translation>
 <translation id="2837693172913560447">Cela va créer un profil Chromium pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Supprimer de Chromium</translation>
+<translation id="2850691299438350830">Ce mode vous protège dans Chromium et peut servir à renforcer votre sécurité dans d'autres applis Google lorsque vous êtes connecté.</translation>
 <translation id="2885378588091291677">Gestionnaire de tâches</translation>
 <translation id="2910007522516064972">À propos de &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>

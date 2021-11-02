@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -3516,14 +3517,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.AllowedByPage" enum="BooleanEnabled"
-    expires_after="2022-04-17">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks whether a web page allows content to be remoted.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioBitrate" units="kbps"
-    expires_after="2022-07-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3532,28 +3533,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.AudioChannelLayout" enum="ChannelLayout"
-    expires_after="2022-07-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio channel layout used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioCodec" enum="AudioCodec"
-    expires_after="2022-04-17">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio codec used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecond" enum="AudioSampleRate"
-    expires_after="2022-07-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio sampling rate while remoting audio content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecondUnexpected" units="Hz"
-    expires_after="2022-07-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3562,7 +3563,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.Compatibility" enum="RemotingCompatibility"
-    expires_after="2022-04-10">
+    expires_after="2022-10-26">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3573,30 +3574,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.SessionDuration" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Measures the duration of each remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartTrigger"
-    enum="RemotingStartTrigger" expires_after="2022-04-17">
+    enum="RemotingStartTrigger" expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the trigger for starting a remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStopTrigger" enum="RemotingStopTrigger"
-    expires_after="2022-04-17">
-<!-- Name completed by histogram_suffixes name="RemotingSessionDuration" -->
-
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the trigger for stopping a remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.ShortSessionDuration" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3605,7 +3604,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilFirstPlayout" units="ms"
-    expires_after="2022-07-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3615,7 +3614,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilRemoteInitialized" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3625,21 +3624,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.TrackConfiguration"
-    enum="RemotingTrackConfiguration" expires_after="2022-05-01">
+    enum="RemotingTrackConfiguration" expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks whether audio or video or both are remoted.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoAspectRatio" units="%"
-    expires_after="2022-05-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Aspect ratio of video while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoBitrate" units="kbps"
-    expires_after="2022-07-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -3648,28 +3647,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodec" enum="VideoCodec"
-    expires_after="2022-05-01">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video codec used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodecProfile" enum="VideoCodecProfile"
-    expires_after="2021-11-07">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video codec profile used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoNaturalWidth" units="pixels"
-    expires_after="2021-11-07">
+    expires_after="2022-10-26">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Video width while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoPixelRateSupport"
-    enum="RemotingVideoPixelRateSupport" expires_after="2022-02-01">
+    enum="RemotingVideoPixelRateSupport" expires_after="2022-10-26">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

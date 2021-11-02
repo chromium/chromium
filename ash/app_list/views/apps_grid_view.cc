@@ -878,6 +878,9 @@ void AppsGridView::ViewHierarchyChanged(
     if (selected_view_ == details.child)
       selected_view_ = nullptr;
 
+    if (drag_view_ == details.child)
+      drag_view_ = nullptr;
+
     if (features::IsProductivityLauncherEnabled()) {
       if (current_ghost_view_ == details.child)
         current_ghost_view_ = nullptr;
@@ -896,19 +899,24 @@ bool AppsGridView::EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event) {
 }
 
 void AppsGridView::Update() {
-  DCHECK(!selected_view_ && !drag_view_);
   UpdateBorder();
 
   view_model_.Clear();
-  if (!item_list_ || !item_list_->item_count())
-    return;
-  for (size_t i = 0; i < item_list_->item_count(); ++i) {
-    // Skip "page break" items.
-    if (item_list_->item_at(i)->is_page_break())
-      continue;
-    std::unique_ptr<AppListItemView> view = CreateViewForItemAtIndex(i);
-    view_model_.Add(view.get(), view_model_.view_size());
-    items_container_->AddChildView(std::move(view));
+  pulsing_blocks_model_.Clear();
+  items_container_->RemoveAllChildViews();
+
+  DCHECK(!selected_view_);
+  DCHECK(!drag_view_);
+
+  if (item_list_ && item_list_->item_count()) {
+    for (size_t i = 0; i < item_list_->item_count(); ++i) {
+      // Skip "page break" items.
+      if (item_list_->item_at(i)->is_page_break())
+        continue;
+      std::unique_ptr<AppListItemView> view = CreateViewForItemAtIndex(i);
+      view_model_.Add(view.get(), view_model_.view_size());
+      items_container_->AddChildView(std::move(view));
+    }
   }
   view_structure_.LoadFromMetadata();
   UpdateColsAndRowsForFolder();
@@ -929,9 +937,10 @@ void AppsGridView::UpdatePulsingBlockViews() {
   const int tiles_per_page = std::min(TilesPerPage(0), tablet_page_size);
   const int available_slots =
       tiles_per_page - (existing_items % tiles_per_page);
-  const int desired = model_->status() == AppListModelStatus::kStatusSyncing
-                          ? available_slots
-                          : 0;
+  const int desired =
+      model_ && model_->status() == AppListModelStatus::kStatusSyncing
+          ? available_slots
+          : 0;
 
   if (pulsing_blocks_model_.view_size() == desired)
     return;

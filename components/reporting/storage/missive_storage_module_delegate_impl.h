@@ -33,7 +33,7 @@ class MissiveStorageModuleDelegateImpl
   void Flush(Priority priority,
              base::OnceCallback<void(Status)> callback) override;
 
-  void ReportSuccess(const SequencingInformation& sequencing_information,
+  void ReportSuccess(const SequenceInformation& sequence_information,
                      bool force) override;
 
   void UpdateEncryptionKey(

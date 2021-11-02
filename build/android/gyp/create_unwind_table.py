@@ -235,7 +235,7 @@ class UnwindType(enum.Enum):
   # Use lr as the return address.
   RETURN_TO_LR = 1
 
-  # Increment or decrement the stack pointer and/or pop registers.
+  # Increment or decrement the stack pointer and/or pop registers (r4 ~ r15).
   # If both, the increment/decrement occurs first.
   UPDATE_SP_AND_OR_POP_REGISTERS = 2
 
@@ -388,6 +388,10 @@ class PushOrSubSpParser(UnwindInstructionsParser):
     registers = sorted([
         int(register)
         for register in self.register_regex.findall(match.group(3))
+        # `UpdateSpAndOrPopRegisters` only supports popping of register
+        # r4 ~ r15. The ignored registers are translated to sp increments by
+        # the following calculation on `sp_offset`.
+        if int(register) in range(4, 16)
     ] +
                        # Also pop lr (ra in breakpad terms) if it was stored.
                        ([14] if ra_cfa_offset is not None else []))

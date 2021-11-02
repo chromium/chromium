@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Professionnel</translation>
 <translation id="1122198203221319518">Ou&amp;tils</translation>
 <translation id="1122242684574577509">L’authentification a échoué. Cliquez pour accéder à la page de connexion au réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Les renseignements de connexion de votre compte sont obsolètes. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="1122960773616686544">Nom du favori</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1125550662859510761">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution native)</translation>
@@ -2075,6 +2076,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="310671807099593501">Le site utilise le Bluetooth</translation>
 <translation id="3108931485517391283">Impossible de recevoir le fichier</translation>
 <translation id="3109724472072898302">Réduit</translation>
+<translation id="311214366526552035">Télécharger quand même</translation>
 <translation id="311394601889664316">Ne pas autoriser les sites à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="3115147772012638511">En attente de l'affichage du cache…</translation>
 <translation id="3115580024857770654">Tout réduire</translation>
@@ -2355,6 +2357,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3429160811076349561">Les fonctionnalités d'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues pour le contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver plus facilement plus tard</translation>
+<translation id="343115368966109153">Téléchargez le fichier <ph name="FILE_NAME" />? Tous les utilisateurs de cet appareil pourront le consulter.</translation>
 <translation id="3432227430032737297">Supprimer tous les éléments affichés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Oups… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
@@ -2696,6 +2699,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3777806571986431400">Extension activée</translation>
 <translation id="3778152852029592020">Téléchargement annulé.</translation>
 <translation id="3778208826288864398">La clé de sécurité est verrouillée, car un NIP incorrect a été entré trop de fois. Vous devez réinitialiser la clé de sécurité.</translation>
+<translation id="3778369586810509692">Ce fichier sera stocké sur l'appareil et tous les utilisateurs pourront le consulter.</translation>
 <translation id="3778740492972734840">Outils de &amp;développement</translation>
 <translation id="3778868487658107119">Posez-lui des questions. Dites-lui ce qu'il doit faire. C'est votre Google personnel, toujours prêt à vous aider.</translation>
 <translation id="3781742599892759500">Accès au microphone pour Linux</translation>
@@ -7495,6 +7499,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8879284080359814990">&amp;Afficher en tant qu'onglet</translation>
 <translation id="8879921471468674457">Mémoriser les données de connexion</translation>
 <translation id="8880054210564666174">Impossible de télécharger la liste de contacts. Veuillez vérifier votre connexion réseau ou <ph name="LINK_BEGIN" />réessayer<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Ouvrez les paramètres pour connecter <ph name="USB_DEVICE_NAME" /> à Linux ou à Parallels Desktop</translation>
 <translation id="8881020143150461183">Veuillez réessayer. Pour obtenir de l'assistance technique, communiquez avec <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Activer l'accélération du pavé tactile</translation>
 <translation id="8884570509232205463">Votre appareil se verrouillera maintenant à <ph name="UNLOCK_TIME" />.</translation>

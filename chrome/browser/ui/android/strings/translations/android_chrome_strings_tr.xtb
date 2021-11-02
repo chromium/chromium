@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Mevcut verileri silin.</translation>
 <translation id="1146678959555564648">VR'ye Gir</translation>
 <translation id="114825011539563458">Gizlilik ve güvenlikle ilgili en önemli kontrolleri tek bir yerde inceleyin</translation>
+<translation id="1149401351239820326">Son kullanım tarihinin ayı</translation>
 <translation id="1154704303112745282">Sayfa çevrimdışı kullanılamaz: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Kullanılan</translation>
 <translation id="1171770572613082465">"Popüler siteler" düğmesine dokunarak popüler web sitelerini görün</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome'un özellik kısayolları</translation>
 <translation id="1344653310988386453">Seçili metin bağlantısını ekle</translation>
 <translation id="1347468774581902829">Etkinliği yönet</translation>
-<translation id="1353372385686746892">Chrome, uygulamanın iyileştirilmesine yardımcı olmak üzere teşhis verilerini Google'a gönderir. <ph name="BEGIN_LINK" />Değiştir<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Oturum ve senkronizasyon kapatılsın mı?</translation>
 <translation id="1373696734384179344">Seçilen içeriği indirmek için bellek yetersiz.</translation>
 <translation id="1376578503827013741">Hesaplanıyor…</translation>
@@ -714,7 +714,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5342314432463739672">İzin istekleri</translation>
 <translation id="5355191726083956201">Gelişmiş Koruma açık</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> açık sekme, sekmeler arasında geçiş yapmak için dokunun}other{<ph name="OPEN_TABS_MANY" /> açık sekme, sekmeler arasında geçiş yapmak için dokunun}}</translation>
-<translation id="5375577065097716013">Google Lens'le görsel ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Google Lens ile görsel ara <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Yalnızca belirli sitelere izin ver</translation>
 <translation id="5409881200985013443"><ph name="CLIENT_NAME" /> üzerinde <ph name="ONE_TIME_CODE" /> gönderilsin mi?</translation>
 <translation id="5414836363063783498">Doğrulanıyor…</translation>
@@ -817,7 +817,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5956665950594638604">Chrome Yardım Merkezi'ni yeni bir sekmede açar</translation>
 <translation id="5957442310066583693">Popüler sitelerinizi görmek için Ana sayfa düğmesine dokunun</translation>
 <translation id="5958275228015807058">Dosyalarınızı ve sayfalarınızı İndirilenler bölümünde bulabilirsiniz</translation>
-<translation id="5962272973076519240">Gizli modun kilidini açmak için kimliğinizi doğrulama</translation>
 <translation id="5962718611393537961">Daraltmak için dokunun</translation>
 <translation id="5964805880140440652">Bu sayfayı başka bir cihazla paylaşmak için Chrome ayarlarında senkronizasyonu açın</translation>
 <translation id="5964869237734432770">Resim açıklamasını durdur</translation>
@@ -1188,6 +1187,7 @@ Privacy Sandbox denemeleri, hâlâ aktif geliştirme aşamasında olup belirli b
 <translation id="804335162455518893">SD kart bulunamadı</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> gizli sekme}other{<ph name="TAB_COUNT_NORMAL" /> gizli sekme}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB kullanılabilir</translation>
+<translation id="8058655154417507695">Son kullanım tarihinin yılı</translation>
 <translation id="8058746566562539958">Yeni Chrome sekmesinde aç</translation>
 <translation id="8063895661287329888">Yer işareti eklenemedi.</translation>
 <translation id="806745655614357130">Verilerimi ayrı tut</translation>

@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_APP_CLIENT_H_
 #define ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_APP_CLIENT_H_
 
+#include <set>
 #include <string>
 
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -39,9 +40,12 @@ class MockAppClient : public ProjectorAppClient {
   // ProjectorAppClient:
   signin::IdentityManager* GetIdentityManager() override;
   network::mojom::URLLoaderFactory* GetUrlLoaderFactory() override;
+
   MOCK_METHOD1(AddObserver, void(Observer*));
   MOCK_METHOD1(RemoveObserver, void(Observer*));
   MOCK_METHOD1(OnNewScreencastPreconditionChanged, void(bool));
+  MOCK_CONST_METHOD0(GetPendingScreencasts,
+                     const std::set<PendingScreencast>&());
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

@@ -35,19 +35,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider data_provider(data, size);
 
   // Determine if the DNS lookup returns synchronously or asynchronously,
-  // succeeds or fails, and returns an IPv4 or IPv6 address.
+  // succeeds or fails. Only returning an IPv4 address is fine, as SOCKS only
+  // issues IPv4 requests.
   net::MockHostResolver mock_host_resolver;
   mock_host_resolver.set_synchronous_mode(data_provider.ConsumeBool());
-  switch (data_provider.ConsumeIntegralInRange(0, 2)) {
-    case 0:
-      mock_host_resolver.rules()->AddRule("*", "127.0.0.1");
-      break;
-    case 1:
-      mock_host_resolver.rules()->AddRule("*", "::1");
-      break;
-    case 2:
-      mock_host_resolver.rules()->AddRule("*", net::ERR_NAME_NOT_RESOLVED);
-      break;
+  if (data_provider.ConsumeBool()) {
+    mock_host_resolver.rules()->AddRule("*", "127.0.0.1");
+  } else {
+    mock_host_resolver.rules()->AddRule("*", net::ERR_NAME_NOT_RESOLVED);
   }
 
   net::TestCompletionCallback callback;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FakeChromeEvent} from '../fake_chrome_event.m.js';
+import {FakeChromeEvent} from '../fake_chrome_event.js';
 import {TestBrowserProxy} from '../test_browser_proxy.js';
 
 /** An extensions.Service implementation to be used in tests. */

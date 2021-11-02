@@ -59,5 +59,16 @@ Polymer({
     this.addWebUIListener('onSodaInstallError', (args) => {
       client.onSodaInstallError();
     });
+
+    // TODO(b/204372280): Rename onScreencastsStateChange to
+    // OnPendingScreencastsStateChanged.
+    this.addWebUIListener('onScreencastsStateChange', (pendingScreencasts) => {
+      if (!Array.isArray(pendingScreencasts)) {
+        console.error(
+            'Invalid argument to onScreencastsStateChange', pendingScreencasts);
+        return;
+      }
+      client.onScreencastsStateChange(pendingScreencasts);
+    });
   },
 });

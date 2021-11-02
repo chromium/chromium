@@ -1109,7 +1109,7 @@
       'android-12-x64-fyi-rel': {
         'mixins': [
           '12-x64-emulator',
-          'emulator-4-cores',
+          'emulator-8-cores',
           'has_native_resultdb_integration',
           'linux-xenial-or-bionic',
           'x86-64',

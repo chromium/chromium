@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="1146678959555564648">VR-ൽ പ്രവേശിക്കുക</translation>
 <translation id="114825011539563458">ഏറ്റവും പ്രധാനപ്പെട്ട സ്വകാര്യതാ, സുരക്ഷാ നിയന്ത്രണങ്ങൾ ഒരിടത്ത്</translation>
+<translation id="1149401351239820326">കാലാവധി കഴിയുന്ന മാസം</translation>
 <translation id="1154704303112745282">ഓഫ്‌ലൈനിൽ പേജ് ലഭ്യമല്ല: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">ഉപയോഗിച്ചത്</translation>
 <translation id="1171770572613082465">"മികച്ച സൈറ്റുകൾ" ബട്ടൺ ടാപ്പ് ചെയ്‌ത് ജനപ്രിയ വെബ്‌സൈറ്റുകൾ കാണുക</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome ഫീച്ചർ കുറുക്കുവഴികൾ</translation>
 <translation id="1344653310988386453">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് ഉൾപ്പെടുത്തുക</translation>
 <translation id="1347468774581902829">ആക്റ്റിവിറ്റി മാനേജ് ചെയ്യുക</translation>
-<translation id="1353372385686746892">ആപ്പ് മെച്ചപ്പെടുത്താൻ സഹായിക്കുന്നതിന് Chrome, ഡയഗ്‌നോസ്‌റ്റിക് ഡാറ്റ Google-ന് അയയ്ക്കുന്നു. <ph name="BEGIN_LINK" />മാറ്റുക<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">സൈൻ ഔട്ട് ചെയ്‌ത് സമന്വയം ഓഫാക്കണോ?</translation>
 <translation id="1373696734384179344">തിരഞ്ഞെടുത്ത ഉള്ളടക്കം ഡൗൺലോഡ് ചെയ്യുന്നതിന് ആവശ്യമായ മെമ്മറിയില്ല.</translation>
 <translation id="1376578503827013741">കണക്കാക്കുന്നു…</translation>
@@ -405,6 +405,7 @@
 <translation id="3398320232533725830">ബുക്ക്‌മാർക്കുകൾ മാനേജർ തുറക്കുക</translation>
 <translation id="3414952576877147120">വലുപ്പം:</translation>
 <translation id="3429160811076349561">ട്രയൽ ഫീച്ചറുകൾ ഓഫാണ്</translation>
+<translation id="3435465986463792564">നിരവധി വിൻഡോകളുണ്ടോ? നിങ്ങൾക്ക് അവ ഇവിടെ മാനേജ് ചെയ്യാം</translation>
 <translation id="3440975416244667276">കൂടുതൽ പ്രസക്തമായ വിവരങ്ങൾക്ക് സ്‌പർശിച്ച് പിടിക്കുക</translation>
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="3444179773590444986">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീമുകൾ സംബന്ധിച്ച് ഫീഡ്ബാക്ക് പങ്കിടണോ?</translation>
@@ -516,7 +517,7 @@
 <translation id="4170011742729630528">സേവനം ലഭ്യമല്ല; പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ഉപയോഗിച്ചു</translation>
 <translation id="4181841719683918333">ഭാഷകൾ‌</translation>
-<translation id="4183868528246477015">Google ലെൻസ് ഉപയോഗിച്ച് തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">പുതിയ ടാബില്‍ തുറക്കുക</translation>
 <translation id="4196597275619698563">കാർഡ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="4198423547019359126">ലഭ്യമായ ഡൗൺലോഡ് ലൊക്കേഷനുകളൊന്നും ഇല്ല</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">പുതിയ ടാബിൽ Chrome സഹായകേന്ദ്രം തുറക്കുക</translation>
 <translation id="5957442310066583693">നിങ്ങളുടെ പ്രധാന സൈറ്റുകൾ കാണാൻ, ഹോം ബോട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5958275228015807058">ഡൗൺലോഡുകളിൽ നിന്നും നിങ്ങളുടെ ഫയലുകളും ‌പേജുകളും കണ്ടെത്തുക</translation>
-<translation id="5962272973076519240">അദൃശ്യ മോഡ് അൺലോക്ക് ചെയ്യാൻ ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="5962718611393537961">ചുരുക്കാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5964805880140440652">മറ്റൊരു ഉപകരണത്തിലേക്ക് ഈ പേജ് പങ്കിടാൻ, Chrome ക്രമീകരണത്തിൽ സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="5964869237734432770">ചിത്ര വിവരണങ്ങൾ നിർത്തുക</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">SD കാർഡ് കണ്ടെത്തിയില്ല</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> അദൃശ്യ ടാബ്}other{<ph name="TAB_COUNT_NORMAL" /> അദൃശ്യ ടാബുകൾ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB ലഭ്യമാണ്</translation>
+<translation id="8058655154417507695">കാലാവധി കഴിയുന്ന വർഷം</translation>
 <translation id="8058746566562539958">പുതിയ Chrome ടാബിൽ തുറക്കുക</translation>
 <translation id="8063895661287329888">ബുക്ക്മാർക്ക് ചേർക്കാനായില്ല.</translation>
 <translation id="806745655614357130">എന്റെ വിവരങ്ങൾ പ്രത്യേകം വേർതിരിച്ച് സൂക്ഷിക്കുക</translation>

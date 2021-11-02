@@ -32,6 +32,11 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>tbarzic@chromium.org</owner>
     <owner>chromeos-launcher@google.com</owner>
   </variant>
+  <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
+    <owner>jimmyxgong@chromium.org</owner>
+    <owner>zentaro@chromium.org</owner>
+    <owner>cros-peripherals@google.com</owner>
+  </variant>
   <variant name="ESim" summary="esim">
     <owner>azeemarshad@chromium.org</owner>
     <owner>cros-connectivity@google.com</owner>

@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MenuModuleTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, MockTimerTest) {
-  LoadTestUrl("mock_timer_test.html");
+  LoadTestUrl("?module=mock_timer_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PositionUtilModuleTest) {

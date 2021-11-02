@@ -525,6 +525,7 @@
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6136914049981179737">только что</translation>
 <translation id="6144589619057374135">Открыть ${url} в режиме инкогнито</translation>
+<translation id="6159839020698489198">(необязательно)</translation>
 <translation id="6177442314419606057">Поиск в Chrome</translation>
 <translation id="6184086493125982861">Показать вкладки</translation>
 <translation id="6187302354554850004">Послед. синхр.: <ph name="LAST_USED_TIME" /></translation>
@@ -582,6 +583,7 @@
 Для каждого сайта желательно использовать уникальный пароль.</translation>
 <translation id="651505212789431520">Отключить синхронизацию? Ее можно включить в настройках в любой момент.</translation>
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Увеличить</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
 <translation id="6603393121510733479">В вашей организации режим инкогнито отключен.
@@ -623,6 +625,7 @@
 <translation id="6851516051005285358">Версия для ПК</translation>
 <translation id="6858855187367714033">Просканировано</translation>
 <translation id="6859944681507688231">Чтобы сканировать QR-код или банковскую карту, разрешите приложению доступ к камере.</translation>
+<translation id="6867369562105931222">(пароль)</translation>
 <translation id="6869389390665537774">Вы можете посмотреть посещенные страницы или удалить их из истории.</translation>
 <translation id="6873263987691478642">Режим Split View</translation>
 <translation id="6888009575607455378">Отменить изменения?</translation>

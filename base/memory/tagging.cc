@@ -13,7 +13,6 @@
 #include <arm_acle.h>
 #include <sys/auxv.h>
 #include <sys/prctl.h>
-#define HWCAP2_MTE (1 << 18)
 #define PR_SET_TAGGED_ADDR_CTRL 55
 #define PR_GET_TAGGED_ADDR_CTRL 56
 #define PR_TAGGED_ADDR_ENABLE (1UL << 0)
@@ -28,35 +27,6 @@
 
 #if defined(OS_ANDROID)
 #include "base/native_library.h"
-#define M_BIONIC_SET_HEAP_TAGGING_LEVEL (-204)
-
-/**
- * Constants for use with the M_BIONIC_SET_HEAP_TAGGING_LEVEL mallopt() option.
- * These come from Android's platform bionic/libc/include/malloc.h
- */
-enum HeapTaggingLevel {
-  /**
-   * Disable heap tagging and memory tag checks (if supported).
-   * Heap tagging may not be re-enabled after being disabled.
-   */
-  M_HEAP_TAGGING_LEVEL_NONE = 0,
-  /**
-   * Address-only tagging. Heap pointers have a non-zero tag in the
-   * most significant ("top") byte which is checked in free(). Memory
-   * accesses ignore the tag using arm64's Top Byte Ignore (TBI) feature.
-   */
-  M_HEAP_TAGGING_LEVEL_TBI = 1,
-  /**
-   * Enable heap tagging and asynchronous memory tag checks (if supported).
-   * Disable stack trace collection.
-   */
-  M_HEAP_TAGGING_LEVEL_ASYNC = 2,
-  /**
-   * Enable heap tagging and synchronous memory tag checks (if supported).
-   * Enable stack trace collection.
-   */
-  M_HEAP_TAGGING_LEVEL_SYNC = 3,
-};
 #endif  // defined(OS_ANDROID)
 
 namespace base {

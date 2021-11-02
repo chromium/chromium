@@ -30,6 +30,7 @@
 <translation id="2185166961232948079">Chromium - Tarmoqqa kirish - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Agar kompyuterdan yaqinlaringiz va do‘stlaringiz ham foydalansa, ular Chromium brauzerini o‘zlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="2294245788148774212">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi ma’lumotlarini yuborish orqali Chromium OS tizimini takomillashtirishga yordam bering.</translation>
+<translation id="2313870531055795960">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="2347108572062610441">Bu kengaytma Chromium ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
 <translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />” kengaytmasi Chromium ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
@@ -42,7 +43,7 @@
 <translation id="2577788541081224677">Chromium brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing.</translation>
 <translation id="2583187216237139145">Bu profil ishlatilganda yaratilgan har qanday Chromium maʼlumotlari (bukmarklar, tarix, parollar va boshqa sozlamalar kabi) ish profili administratori tomonidan tozalanishi mumkin. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Yangilovni o‘rnatish uchun Chromium OS qaytadan ishga tushirilishi kerak.</translation>
-<translation id="2614883797045469742">Standart sozlamalar koʻplab odamlarga mos keladi, lekin siz Chromium brauzeridan qanday foydalanishni istasangiz, shunday sozlashingiz mumkin.</translation>
+<translation id="2614883797045469742">Standart sozlamalar koʻplab odamlarga mos keladi, lekin siz Chromium brauzeridan qanday foydalanishni istasangiz, shunday sozlashingiz mumkin</translation>
 <translation id="2648074677641340862">O‘rnatish vaqtida operatsion tizim xatoligi yuz berdi. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="2661879430930417727">Agar qurilmangizdan yaqinlaringiz va doʻstlaringiz ham foydalansa, ular Chromium brauzerini oʻzlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="2711502716910134313">Chromium sahifasi</translation>
@@ -51,6 +52,7 @@
 <translation id="2799223571221894425">Qaytadan ishga tushirish</translation>
 <translation id="2837693172913560447">Bunda <ph name="USER_EMAIL_ADDRESS" /> uchun yangi Chromium profili yaratiladi</translation>
 <translation id="2847479871509788944">Chromium‘dan o‘chirish...</translation>
+<translation id="2850691299438350830">Hisobingizga kirganingizda Chromium va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2910007522516064972">&amp;Chromium haqida</translation>
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>

@@ -106,6 +106,10 @@ source_set("dns") {
     ]
   }
 
+  if (is_ios) {
+    sources += [ "address_sorter_ios.cc" ]
+  }
+
   if (is_android) {
     sources += [
       "dns_config_service_android.cc",
@@ -415,7 +419,7 @@ source_set("tests") {
     sources += [ "dns_config_service_android_unittest.cc" ]
   } else if (is_linux) {
     sources += [ "dns_config_service_linux_unittest.cc" ]
-  } else if (is_posix) {
+  } else if (is_posix && !is_ios) {
     sources += [ "dns_config_service_posix_unittest.cc" ]
   }
 

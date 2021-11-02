@@ -302,7 +302,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
         auto* evaluator = FindContainerQueryEvaluator(container_query->Name(),
                                                       style_recalc_context_);
 
-        if (!evaluator || !evaluator->EvalAndAdd(*container_query)) {
+        if (!evaluator || !evaluator->EvalAndAdd(*container_query, result_)) {
           rejected++;
           if (AffectsAnimations(*rule_data))
             result_.SetConditionallyAffectsAnimations();

@@ -162,18 +162,17 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
 
   void LoadAhem() { helper_.LoadAhem(); }
 
-  const cc::ScrollNode* ScrollNodeForScrollableArea(
-      const ScrollableArea* scrollable_area) const {
+  cc::ScrollNode* ScrollNodeForScrollableArea(
+      const ScrollableArea* scrollable_area) {
     if (!scrollable_area)
       return nullptr;
-    const auto* property_trees =
-        RootCcLayer()->layer_tree_host()->property_trees();
+    auto* property_trees = RootCcLayer()->layer_tree_host()->property_trees();
     return property_trees->scroll_tree.Node(
         property_trees->element_id_to_scroll_node_index.at(
             scrollable_area->GetScrollElementId()));
   }
 
-  const cc::ScrollNode* ScrollNodeByDOMElementId(const char* dom_id) const {
+  cc::ScrollNode* ScrollNodeByDOMElementId(const char* dom_id) {
     return ScrollNodeForScrollableArea(ScrollableAreaByDOMElementId(dom_id));
   }
 
@@ -189,19 +188,19 @@ class ScrollingTest : public testing::Test, public PaintTestConfigurations {
   }
 
   cc::ScrollbarLayerBase* ScrollbarLayerForScrollNode(
-      const cc::ScrollNode* scroll_node,
-      cc::ScrollbarOrientation orientation) const {
+      cc::ScrollNode* scroll_node,
+      cc::ScrollbarOrientation orientation) {
     return blink::ScrollbarLayerForScrollNode(RootCcLayer(), scroll_node,
                                               orientation);
   }
+
+  cc::Layer* RootCcLayer() { return GetFrame()->View()->RootCcLayer(); }
 
   const cc::Layer* RootCcLayer() const {
     return GetFrame()->View()->RootCcLayer();
   }
 
-  cc::LayerTreeHost* LayerTreeHost() const {
-    return helper_.GetLayerTreeHost();
-  }
+  cc::LayerTreeHost* LayerTreeHost() { return helper_.GetLayerTreeHost(); }
 
   const cc::Layer* FrameScrollingContentsLayer(const LocalFrame& frame) const {
     return ScrollingContentsCcLayerByScrollElementId(
@@ -1411,7 +1410,7 @@ TEST_P(ScrollingTest, overflowScrolling) {
   SetupHttpTestURL("overflow-scrolling.html");
 
   // Verify the scroll node of the accelerated scrolling element.
-  const auto* scroll_node = ScrollNodeByDOMElementId("scrollable");
+  auto* scroll_node = ScrollNodeByDOMElementId("scrollable");
   ASSERT_TRUE(scroll_node);
   EXPECT_TRUE(scroll_node->user_scrollable_horizontal);
   EXPECT_TRUE(scroll_node->user_scrollable_vertical);
@@ -1459,7 +1458,7 @@ TEST_P(ScrollingTest, iframeScrolling) {
   ASSERT_TRUE(inner_frame_view);
 
   // Verify the scroll node of the accelerated scrolling iframe.
-  const auto* scroll_node =
+  auto* scroll_node =
       ScrollNodeForScrollableArea(inner_frame_view->LayoutViewport());
   ASSERT_TRUE(scroll_node);
   EXPECT_TRUE(ScrollbarLayerForScrollNode(
@@ -1521,11 +1520,10 @@ TEST_P(ScrollingTest, setupScrollbarLayerShouldSetScrollLayerOpaque)
   LocalFrameView* frame_view = GetFrame()->View();
   ASSERT_TRUE(frame_view);
 
-  const auto* scroll_node =
-      ScrollNodeForScrollableArea(frame_view->LayoutViewport());
+  auto* scroll_node = ScrollNodeForScrollableArea(frame_view->LayoutViewport());
   ASSERT_TRUE(scroll_node);
 
-  const auto* horizontal_scrollbar_layer = ScrollbarLayerForScrollNode(
+  auto* horizontal_scrollbar_layer = ScrollbarLayerForScrollNode(
       scroll_node, cc::ScrollbarOrientation::HORIZONTAL);
   ASSERT_TRUE(horizontal_scrollbar_layer);
   // TODO(crbug.com/1029620): CAP needs more accurate contents_opaque.
@@ -2013,7 +2011,7 @@ TEST_P(ScrollingTest, ThumbInvalidatesLayer) {
   )HTML");
   ForceFullCompositingUpdate();
 
-  const auto* scroll_node = ScrollNodeByDOMElementId("scroller");
+  auto* scroll_node = ScrollNodeByDOMElementId("scroller");
   auto* layer = ScrollbarLayerForScrollNode(scroll_node,
                                             cc::ScrollbarOrientation::VERTICAL);
   // Solid color scrollbars do not repaint (see:

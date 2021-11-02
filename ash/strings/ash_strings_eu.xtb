@@ -24,6 +24,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="109942774857561566">Aspertuta nago</translation>
 <translation id="1104084341931202936">Erakutsi erabilerraztasun-ezarpenak</translation>
 <translation id="1104621072296271835">Gailuek are hobeto funtzionatzen dute batera</translation>
+<translation id="1111781754511998498">Proiektorea</translation>
 <translation id="1118549423835582252"><ph name="DEVICE_TYPE" /> eguneratzeko gomendatzen dizu <ph name="MANAGER" /> kudeatzaileak.</translation>
 <translation id="1119348796022671382">Gaikako kolore moduak horma-paperetik ateratako koloreak erabiltzen ditu interfazea pixka bat koloreztatzeko.</translation>
 <translation id="112308213915226829">Ezkutatu apala automatikoki</translation>
@@ -373,6 +374,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3665889125180354336">Mikrofono bidezko grabaketa</translation>
 <translation id="3680908746918359504">Garbitu markatzaile guztiak</translation>
 <translation id="36813544980941320">Wifi-sareak telefonoaren eta <ph name="DEVICE_NAME" /> gailuaren artean partekatuko dira</translation>
+<translation id="3701206655856637070">Pantaila-argazkiak eta -kapturak gordetzeko tokia alda dezakezu orain</translation>
 <translation id="3702809606464356667">Une honetako lan-eremuko leihoak daude ikusgai. Lan-eremu guztietako leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="3702846122927433391">Zenbat biztanle ditu Nigeriak</translation>
 <translation id="3705722231355495246">-</translation>
@@ -418,6 +420,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="3969043077941541451">Desaktibatuta</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="3977512764614765090">% <ph name="PERCENTAGE" /> geratzen zaio bateriari, eta kargatzen ari da.</translation>
+<translation id="3986082989454912832">Erantzun</translation>
 <translation id="3995138139523574647">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="40062176907008878">Eskuzko idazketa</translation>
 <translation id="4017989525502048489">Laser-erakuslea</translation>
@@ -457,7 +460,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4274537685965975248">Ktrl + Alt + behera egiteko gezi-tekla lasterbidea aldatu egin da. Amaiera tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + eskuinera egiteko gezi-tekla.</translation>
 <translation id="4279490309300973883">Islatzen</translation>
 <translation id="4285498937028063278">Desainguratu</translation>
-<translation id="4292904812939562398">Erabilitako azken aplikazioak</translation>
 <translation id="429402653707266969">Aldatu tresna-barraren kokapena</translation>
 <translation id="4294319844246081198">Egun on, <ph name="GIVEN_NAME" />:</translation>
 <translation id="4296136865091727875">Garbitu <ph name="COUNT" /> jakinarazpenak</translation>
@@ -563,6 +565,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Desaktibatu jakinarazpenak</translation>
 <translation id="4946376291507881335">Atera argazkia</translation>
 <translation id="495046168593986294">Egin gora</translation>
 <translation id="4952936045814352993">Telefonoa aurkitzeko aukera ez dago erabilgarri alarmen soinuak desgaituta daudenean</translation>
@@ -906,6 +909,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="7595633564847427181">A</translation>
 <translation id="7600875258240007829">Ikusi jakinarazpen guztiak</translation>
 <translation id="7607002721634913082">Pausatuta</translation>
+<translation id="7610198039767537854">Ikusi telefonoaren kamerako azken argazkiak <ph name="DEVICE_TYPE" /> gailuan</translation>
 <translation id="7618774594543487847">Neutroa</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Markatzailea</translation>

@@ -90,7 +90,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     helper_.AsyncCall(&Helper::ProcessRecord)
         .WithArgs(std::move(data), std::move(processed_cb));
   }
-  void ProcessGap(SequencingInformation start,
+  void ProcessGap(SequenceInformation start,
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
     helper_.AsyncCall(&Helper::ProcessGap)
@@ -110,7 +110,7 @@ class ReportingClient::Uploader : public UploaderInterface {
     Helper& operator=(const Helper& other) = delete;
     void ProcessRecord(EncryptedRecord data,
                        base::OnceCallback<void(bool)> processed_cb);
-    void ProcessGap(SequencingInformation start,
+    void ProcessGap(SequenceInformation start,
                     uint64_t count,
                     base::OnceCallback<void(bool)> processed_cb);
     void Completed(Status final_status);
@@ -150,7 +150,7 @@ void ReportingClient::Uploader::Helper::ProcessRecord(
 }
 
 void ReportingClient::Uploader::Helper::ProcessGap(
-    SequencingInformation start,
+    SequenceInformation start,
     uint64_t count,
     base::OnceCallback<void(bool)> processed_cb) {
   if (completed_) {
@@ -159,7 +159,7 @@ void ReportingClient::Uploader::Helper::ProcessGap(
   }
   for (uint64_t i = 0; i < count; ++i) {
     encrypted_records_->emplace_back();
-    *encrypted_records_->rbegin()->mutable_sequencing_information() = start;
+    *encrypted_records_->rbegin()->mutable_sequence_information() = start;
     start.set_sequencing_id(start.sequencing_id() + 1);
   }
   std::move(processed_cb).Run(true);

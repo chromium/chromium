@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_page.h"
@@ -36,6 +37,7 @@ class SuggestionChipContainerView;
 // active folder.
 class ASH_EXPORT AppsContainerView
     : public AppListPage,
+      public AppListModelProvider::Observer,
       public AppListFolderController,
       public PaginationModelObserver,
       public PagedAppsGridView::ContainerDelegate,
@@ -134,6 +136,10 @@ class ASH_EXPORT AppsContainerView
   void AnimateYPosition(AppListViewState target_view_state,
                         const TransformAnimator& animator,
                         float default_offset) override;
+
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // AppListFolderController:
   void ShowFolderForItemView(AppListItemView* folder_item_view) override;
@@ -234,6 +240,11 @@ class ASH_EXPORT AppsContainerView
   // updates `app_list_config_` to be used within the apps container, and passes
   // it on to child views that require it.
   void UpdateAppListConfig(const gfx::Rect& contents_bounds);
+
+  // Updates the apps container UI to display contents from the active app list
+  // model. Should be called to initialize the apps container contents, and
+  // whenever the active app list model changes.
+  void UpdateForActiveAppListModel();
 
   // Callback returned by DisableBlur().
   void OnSuggestionChipsBlurDisablerReleased();

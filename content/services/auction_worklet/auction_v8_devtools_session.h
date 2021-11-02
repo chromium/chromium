@@ -65,6 +65,10 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
 
   int context_group_id() const { return context_group_id_; }
 
+  // If an instrumentation breakpoint named `name` has been set, asks V8 for
+  // execution to be paused at next statement.
+  void MaybeTriggerInstrumentationBreakpoint(const std::string& name);
+
   // Invoked from IOSession via DebugCommandQueue.
   void DispatchProtocolCommandFromIO(int32_t call_id,
                                      const std::string& method,
@@ -97,6 +101,7 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
 
  private:
   class IOSession;
+  class BreakpointHandler;
 
   void SendProtocolResponseImpl(int call_id, std::vector<uint8_t> message);
   void SendNotificationImpl(std::vector<uint8_t> message);
@@ -112,6 +117,7 @@ class AuctionV8DevToolsSession : public blink::mojom::DevToolsSession,
   mojo::AssociatedRemote<blink::mojom::DevToolsSessionHost> host_;
   SessionDestroyedCallback on_delete_callback_;
   std::unique_ptr<v8_inspector::V8InspectorSession> v8_session_;
+  std::unique_ptr<BreakpointHandler> breakpoint_handler_;
   crdtp::UberDispatcher fallback_dispatcher_{this};
   SEQUENCE_CHECKER(v8_sequence_checker_);
   base::WeakPtrFactory<AuctionV8DevToolsSession> weak_ptr_factory_{this};

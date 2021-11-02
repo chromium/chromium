@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Ішім пысты</translation>
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> бұл <ph name="DEVICE_TYPE" /> құрылғысын жаңартуды ұсынады.</translation>
 <translation id="1119348796022671382">Интерфейсті ашық түске бояу үшін тақырыптық түс режимі тұсқағазыңыздан алынған түстерді пайдаланады.</translation>
 <translation id="112308213915226829">Сөрені автоматты жасыру</translation>
@@ -417,6 +418,7 @@
 <translation id="3969043077941541451">Өшіру</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
+<translation id="3986082989454912832">Жауап беру</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
 <translation id="40062176907008878">Қолжазба</translation>
 <translation id="4017989525502048489">Лазер меңзер</translation>
@@ -456,7 +458,6 @@
 <translation id="4274537685965975248">Ctrl + Alt + төменге бағыттауыш перне тіркесімінің функциясы өзгерді. End пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> пернесі + оң жаққа бағыттауыш перне тіркесімін басыңыз.</translation>
 <translation id="4279490309300973883">Экран көшірмесін көрсету</translation>
 <translation id="4285498937028063278">Босату</translation>
-<translation id="4292904812939562398">Жақында пайдаланылған қолданбалар</translation>
 <translation id="429402653707266969">Құралдар тақтасының орнын ауыстыру</translation>
 <translation id="4294319844246081198">Қайырлы таң, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Барлық <ph name="COUNT" /> хабарландыруды өшіру</translation>
@@ -905,6 +906,7 @@
 <translation id="7595633564847427181">Д</translation>
 <translation id="7600875258240007829">Барлық хабарландыруды көру</translation>
 <translation id="7607002721634913082">Кідіртілген</translation>
+<translation id="7610198039767537854"><ph name="DEVICE_TYPE" /> құрылғысындағы камераның суреттер қалтасынан жақында түсірілген фотосуреттерді көре аласыз.</translation>
 <translation id="7618774594543487847">Бейтарап</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Фломастер</translation>

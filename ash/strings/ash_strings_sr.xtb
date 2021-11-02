@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Досадно ми је</translation>
 <translation id="1104084341931202936">Прегледајте подешавања приступачности</translation>
 <translation id="1104621072296271835">Уређаји заједно функционишу још боље</translation>
+<translation id="1111781754511998498">Пројектор</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> препоручује да ажурирате овај <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Режим тематских боја користи боје изведене из позадине да би се благо обојио интефејс.</translation>
 <translation id="112308213915226829">Аутоматски сакриј полицу</translation>
@@ -418,6 +419,7 @@
 <translation id="3969043077941541451">Искључи</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
 <translation id="3977512764614765090">Батерија је на <ph name="PERCENTAGE" />% и пуни се.</translation>
+<translation id="3986082989454912832">Одговори</translation>
 <translation id="3995138139523574647">Уређај са USB прикључком типа C (десни задњи порт)</translation>
 <translation id="40062176907008878">Писање руком</translation>
 <translation id="4017989525502048489">Ласерски показивач</translation>
@@ -457,7 +459,6 @@
 <translation id="4274537685965975248">Тастерска пречица Ctrl + Alt + стрелица надоле је промењена. Да бисте користили тастер End, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + стрелица надесно</translation>
 <translation id="4279490309300973883">Пресликавање</translation>
 <translation id="4285498937028063278">Откачи</translation>
-<translation id="4292904812939562398">Недавно коришћене апликације</translation>
 <translation id="429402653707266969">Укључи/искључи локацију</translation>
 <translation id="4294319844246081198">Добро јутро, <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Обришите сва обавештења (<ph name="COUNT" />)</translation>
@@ -907,6 +908,7 @@
 <translation id="7595633564847427181">П</translation>
 <translation id="7600875258240007829">Погледајте сва обавештења</translation>
 <translation id="7607002721634913082">Паузирано</translation>
+<translation id="7610198039767537854">Прегледајте недавне слике са телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Неутрално</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Оловка за маркер</translation>

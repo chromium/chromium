@@ -116,6 +116,9 @@ class FeedStream : public ::feed::FeedStreamSurface {
   jlong GetLastFetchTimeMs(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
 
+  void ReportNoticeCreated(JNIEnv* env,
+                           const base::android::JavaParamRef<jobject>& obj,
+                           const base::android::JavaParamRef<jstring>& key);
   void ReportNoticeViewed(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,
                           const base::android::JavaParamRef<jstring>& key);

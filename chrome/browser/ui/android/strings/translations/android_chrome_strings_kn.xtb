@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">ಪ್ರಸ್ತುತ ಡೇಟಾ ಅಳಿಸಿ.</translation>
 <translation id="1146678959555564648">VR ನಮೂದಿಸಿ</translation>
 <translation id="114825011539563458">ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಲಭ್ಯವಿರುವ ಪ್ರಮುಖ ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷತಾ ನಿಯಂತ್ರಣಗಳು</translation>
+<translation id="1149401351239820326">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="1154704303112745282">ಪುಟ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">ಬಳಕೆಯಾಗಿದ್ದು</translation>
 <translation id="1171770572613082465">"ಉನ್ನತ ಸೈಟ್‌ಗಳು" ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡುವ ಮೂಲಕ ಜನಪ್ರಿಯ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ನೋಡಿ</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Google Chrome ವೈಶಿಷ್ಟ್ಯ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="1344653310988386453">ಹೈಲೈಟ್ ಮಾಡಲು ಲಿಂಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1347468774581902829">ಚಟುವಟಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
-<translation id="1353372385686746892">ಆ್ಯಪ್ ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಬದಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">ಸೈನ್ ಔಟ್ ಮಾಡಿ, ಸಿಂಕ್ ಆಫ್ ಮಾಡುವುದೇ?</translation>
 <translation id="1373696734384179344">ಆಯ್ಕೆಮಾಡಲಾದ ವಿಷಯವನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಮೆಮೊರಿಯು ಸಾಕಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1376578503827013741">ಲೆಕ್ಕ ಮಾಡುತ್ತಿದೆ...</translation>
@@ -517,7 +517,7 @@
 <translation id="4170011742729630528">ಈ ಸೇವೆಯು ಲಭ್ಯವಿಲ್ಲ; ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ಬಳಸಲಾಗಿದೆ</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
-<translation id="4183868528246477015">Google ಲೆನ್ಸ್ ಮೂಲಕ ಹುಡುಕಿ<ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ<ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4196597275619698563">ಕಾರ್ಡ್ ರಚಿಸಿ</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -816,7 +816,6 @@
 <translation id="5956665950594638604">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ Chrome ಸಹಾಯ ಕೇಂದ್ರ ತೆರೆಯಿರಿ</translation>
 <translation id="5957442310066583693">ನಿಮ್ಮ ಪ್ರಮುಖ ಸೈಟ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ಹೋಮ್ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5958275228015807058">ಡೌನ್‌ಲೋಡ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ಮತ್ತು ಪುಟಗಳನ್ನು ಹುಡುಕಿ</translation>
-<translation id="5962272973076519240">ಅಜ್ಞಾತ ಮೋಡ್ ಅನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡುವುದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="5962718611393537961">ಕುಗ್ಗಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5964805880140440652">ಈ ಪುಟವನ್ನು ಇನ್ನೊಂದು ಸಾಧನದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="5964869237734432770">ಚಿತ್ರ ವಿವರಣೆಗಳನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -1187,6 +1186,7 @@
 <translation id="804335162455518893">SD ಕಾರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌}one{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB  ಲಭ್ಯವಿದೆ</translation>
+<translation id="8058655154417507695">ಮುಕ್ತಾಯದ ವರ್ಷ</translation>
 <translation id="8058746566562539958">ಹೊಸ Chrome ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="8063895661287329888">ಬುಕ್‌ಮಾರ್ಕ್‌ ಸೇರಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="806745655614357130">ನನ್ನ ಡೇಟಾ ಪ್ರತ್ಯೇಕವಾಗಿ ಇರಿಸಿಕೊಳ್ಳಿ</translation>

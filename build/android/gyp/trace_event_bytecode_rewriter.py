@@ -6,6 +6,7 @@
 
 import argparse
 import sys
+import os
 
 from util import build_utils
 
@@ -26,6 +27,11 @@ def main(argv):
   args.classpath = build_utils.ParseGnList(args.classpath)
   args.input_jars = build_utils.ParseGnList(args.input_jars)
   args.output_jars = build_utils.ParseGnList(args.output_jars)
+
+  for output_jar in args.output_jars:
+    jar_dir = os.path.dirname(output_jar)
+    if not os.path.exists(jar_dir):
+      os.makedirs(jar_dir)
 
   all_input_jars = set(args.classpath + args.input_jars)
   cmd = [

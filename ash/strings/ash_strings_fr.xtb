@@ -24,6 +24,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="109942774857561566">Je m'ennuie</translation>
 <translation id="1104084341931202936">Afficher les paramètres d'accessibilité</translation>
 <translation id="1104621072296271835">Vos appareils fonctionnent encore mieux ensemble</translation>
+<translation id="1111781754511998498">Projecteur</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> vous recommande de mettre à jour ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Le mode couleur thématique applique une légère teinte à l'interface en se basant sur les couleurs de votre fond d'écran.</translation>
 <translation id="112308213915226829">Masquer automatiquement l'étagère</translation>
@@ -373,6 +374,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3665889125180354336">Enregistrer via le micro</translation>
 <translation id="3680908746918359504">Supprimer tous les repères</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront synchronisés sur votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Vous pouvez maintenant modifier l'endroit où les captures d'écran sont enregistrées</translation>
 <translation id="3702809606464356667">Affichage des fenêtres du bureau actuel. Appuyez sur la flèche vers le haut pour afficher les fenêtres de tous les bureaux.</translation>
 <translation id="3702846122927433391">Population au Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
 <translation id="3977512764614765090">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant.</translation>
+<translation id="3986082989454912832">Répondre</translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
 <translation id="40062176907008878">Écriture manuscrite</translation>
 <translation id="4017989525502048489">Pointeur laser</translation>
@@ -456,7 +459,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4285498937028063278">Retirer</translation>
-<translation id="4292904812939562398">Applications récemment utilisées</translation>
 <translation id="429402653707266969">Activer/Désactiver la position de la barre d'outils</translation>
 <translation id="4294319844246081198">Bonjour <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Effacer les <ph name="COUNT" /> notifications</translation>
@@ -562,6 +564,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
 <translation id="4952936045814352993">Impossible de localiser le téléphone lorsque les sons de l'alarme sont désactivés</translation>
@@ -905,6 +908,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7595633564847427181">L</translation>
 <translation id="7600875258240007829">Afficher toutes les notifications</translation>
 <translation id="7607002721634913082">Suspendu</translation>
+<translation id="7610198039767537854">Afficher les photos récentes de la pellicule de votre téléphone sur <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutre</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Stylo marqueur</translation>

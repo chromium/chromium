@@ -94,6 +94,10 @@ public final class ChromePreferenceKeys {
     /** Assistant voice search keys. */
     public static final String ASSISTANT_VOICE_SEARCH_ENABLED = "Chrome.Assistant.Enabled";
 
+    /** The last time the browser was started for the Attribution Provider. */
+    public static final String ATTRIBUTION_PROVIDER_LAST_BROWSER_START =
+            "Chrome.Attribution.LastBrowserStart";
+
     /** Whether Autofill Assistant is enabled */
     public static final String AUTOFILL_ASSISTANT_ENABLED = "autofill_assistant_switch";
     /** Whether the Autofill Assistant onboarding has been accepted. */
@@ -1035,6 +1039,7 @@ public final class ChromePreferenceKeys {
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
                 ASSISTANT_VOICE_CONSENT_OUTSIDE_TAPS,
                 ASSISTANT_VOICE_SEARCH_ENABLED,
+                ATTRIBUTION_PROVIDER_LAST_BROWSER_START,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP,

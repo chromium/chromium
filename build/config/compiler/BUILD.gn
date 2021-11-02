@@ -198,7 +198,8 @@ declare_args() {
   # lld doesn't have the bug.
   use_icf =
       (is_posix || is_fuchsia) && !is_debug && !using_sanitizer &&
-      !use_clang_coverage && !(is_android && use_order_profiling) &&
+      !use_clang_coverage && current_os != "zos" &&
+      !(is_android && use_order_profiling) &&
       (use_lld || (use_gold && (is_chromeos_ash || !(current_cpu == "x86" ||
                                                      current_cpu == "x64"))))
 }
@@ -289,6 +290,8 @@ config("compiler") {
     configs += [ "//build/config/fuchsia:compiler" ]
   } else if (current_os == "aix") {
     configs += [ "//build/config/aix:compiler" ]
+  } else if (current_os == "zos") {
+    configs += [ "//build/config/zos:compiler" ]
   }
 
   configs += [
@@ -337,7 +340,9 @@ config("compiler") {
     } else if ((is_posix && !is_chromeos_ash && !is_nacl) || is_fuchsia) {
       # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
       # See also https://crbug.com/533294
-      cflags += [ "--param=ssp-buffer-size=4" ]
+      if (current_os != "zos") {
+        cflags += [ "--param=ssp-buffer-size=4" ]
+      }
 
       # The x86 toolchain currently has problems with stack-protector.
       if (is_android && current_cpu == "x86") {
@@ -356,7 +361,8 @@ config("compiler") {
     }
 
     # Linker warnings.
-    if (fatal_linker_warnings && !is_apple && current_os != "aix") {
+    if (fatal_linker_warnings && !is_apple && current_os != "aix" &&
+        current_os != "zos") {
       ldflags += [ "-Wl,--fatal-warnings" ]
     }
     if (fatal_linker_warnings && is_apple) {
@@ -399,7 +405,7 @@ config("compiler") {
       # compute, so only use it in the official build to avoid slowing down
       # links.
       ldflags += [ "-Wl,--build-id=sha1" ]
-    } else if (current_os != "aix") {
+    } else if (current_os != "aix" && current_os != "zos") {
       ldflags += [ "-Wl,--build-id" ]
     }
 
@@ -532,7 +538,7 @@ config("compiler") {
     ldflags += [ "-Wl,-z,keep-text-section-prefix" ]
   }
 
-  if (is_clang && !is_nacl && !use_xcode_clang) {
+  if (is_clang && !is_nacl && !use_xcode_clang && current_os != "zos") {
     cflags += [ "-fcrash-diagnostics-dir=" + clang_diagnostic_dir ]
 
     # TODO(hans): Remove this once Clang generates better optimized debug info
@@ -611,7 +617,7 @@ config("compiler") {
   # C++17 removes trigraph support, so preemptively disable trigraphs. This is
   # especially useful given the collision with ecmascript's logical assignment
   # operators: https://github.com/tc39/proposal-logical-assignment
-  if (is_clang) {
+  if (is_clang && current_os != "zos") {
     # clang-cl disables trigraphs by default
     if (!is_win) {
       # The gnu variants of C++11 and C++14 already disable trigraph support,
@@ -1900,7 +1906,7 @@ if (is_win) {
         "-Wl,-no_function_starts",
       ]
     }
-  } else if (current_os != "aix") {
+  } else if (current_os != "aix" && current_os != "zos") {
     # Non-Mac Posix flags.
     # Aix does not support these.
 
@@ -2255,7 +2261,7 @@ config("symbols") {
     # build-directory-independent output. pnacl and nacl-clang do support that
     # flag, so we can use use -g1 for pnacl and nacl-clang compiles.
     # gcc nacl is is_nacl && !is_clang, pnacl and nacl-clang are && is_clang.
-    if (!is_nacl || is_clang) {
+    if ((!is_nacl || is_clang) && current_os != "zos") {
       cflags += [ "-g2" ]
     }
 
@@ -2295,7 +2301,7 @@ config("symbols") {
     # obj/native_client/src/trusted/service_runtime/sel_asm/nacl_switch_32.o:
     # DWARF info may be corrupt; offsets in a range list entry are in different
     # sections" there.  Maybe just a bug in nacl_switch_32.S.
-    if (!is_apple && !is_nacl && current_cpu != "x86" &&
+    if (!is_apple && !is_nacl && current_cpu != "x86" && current_os != "zos" &&
         (use_gold || use_lld)) {
       if (is_clang) {
         # This flag enables the GNU-format pubnames and pubtypes sections,
@@ -2308,7 +2314,7 @@ config("symbols") {
     }
   }
 
-  if (is_clang && !is_nacl && !use_xcode_clang) {
+  if (is_clang && !is_nacl && !use_xcode_clang && current_os != "zos") {
     if (is_apple) {
       # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
       # Make sure we don't use constructor homing on mac.

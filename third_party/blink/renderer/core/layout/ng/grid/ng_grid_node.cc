@@ -6,41 +6,42 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 
 namespace blink {
 
-absl::optional<wtf_size_t>
-NGGridNode::GetPreviousGridItemsSizeForReserveCapacity() const {
+absl::optional<const wtf_size_t> NGGridNode::CachedGridItemCount() const {
   LayoutNGGrid* layout_grid = To<LayoutNGGrid>(box_.Get());
-  return layout_grid->GetPreviousGridItemsSizeForReserveCapacity();
+  if (layout_grid->HasCachedPlacementData())
+    return layout_grid->CachedPlacementData().grid_item_positions.size();
+  return absl::nullopt;
 }
 
-const NGGridPlacementProperties& NGGridNode::GetPositions(
-    const NGGridPlacement& grid_placement,
+const Vector<GridArea>& NGGridNode::ResolveGridItemPositions(
     const GridItems& grid_items,
-    wtf_size_t column_auto_repetitions,
-    wtf_size_t row_auto_repetitions) const {
+    NGGridPlacement* grid_placement) const {
   LayoutNGGrid* layout_grid = To<LayoutNGGrid>(box_.Get());
 
-  // Always re-run placement if |grid_items| is empty, as this method also
-  // gets called for CSS Contains, where there won't be any children. In that
-  // case, we don't want to use cached placements even if the cache is clean.
-  if (!RuntimeEnabledFeatures::LayoutNGGridCachingEnabled() ||
-      !layout_grid->HasCachedPlacements(column_auto_repetitions,
-                                        row_auto_repetitions) ||
-      grid_items.IsEmpty()) {
-    auto properties = grid_placement.RunAutoPlacementAlgorithm(grid_items);
-    layout_grid->SetCachedPlacementProperties(
-        std::move(properties), column_auto_repetitions, row_auto_repetitions);
-  } else {
+  if (layout_grid->HasCachedPlacementData() &&
+      RuntimeEnabledFeatures::LayoutNGGridCachingEnabled()) {
+    const auto& cached_data = layout_grid->CachedPlacementData();
+
+    if (cached_data.column_auto_repetitions ==
+            grid_placement->AutoRepetitions(kForColumns) &&
+        cached_data.row_auto_repetitions ==
+            grid_placement->AutoRepetitions(kForRows)) {
 #if DCHECK_IS_ON()
-    auto duplicate_properties =
-        grid_placement.RunAutoPlacementAlgorithm(grid_items);
-    DCHECK(duplicate_properties == layout_grid->GetCachedPlacementProperties());
+      auto duplicate_data =
+          grid_placement->RunAutoPlacementAlgorithm(grid_items);
+      DCHECK(cached_data == duplicate_data);
 #endif
+      grid_placement->SetPlacementData(cached_data);
+      return cached_data.grid_item_positions;
+    }
   }
-  return layout_grid->GetCachedPlacementProperties();
+
+  layout_grid->SetCachedPlacementData(
+      grid_placement->RunAutoPlacementAlgorithm(grid_items));
+  return layout_grid->CachedPlacementData().grid_item_positions;
 }
 
 }  // namespace blink

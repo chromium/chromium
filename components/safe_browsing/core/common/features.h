@@ -112,9 +112,6 @@ extern const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests;
 // Controls the daily quota for the suspicious site trigger.
 extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 
-// Controls whether the referrer chain is attached to real time requests.
-extern const base::Feature kRealTimeUrlLookupReferrerChain;
-
 // Controls whether the referrer chain is attached to real time requests for
 // enterprise.
 extern const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise;

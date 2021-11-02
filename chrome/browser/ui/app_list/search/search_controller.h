@@ -84,7 +84,7 @@ class SearchController {
 
   virtual void OpenResult(ChromeSearchResult* result, int event_flags) = 0;
   virtual void InvokeResultAction(ChromeSearchResult* result,
-                                  int action_index) = 0;
+                                  ash::SearchResultActionType action) = 0;
 
   // Adds a new mixer group. See Mixer::AddGroup.
   virtual size_t AddGroup(size_t max_results) = 0;

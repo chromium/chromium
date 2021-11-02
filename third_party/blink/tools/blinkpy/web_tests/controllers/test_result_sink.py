@@ -125,7 +125,8 @@ class TestResultSink(object):
             pair('web_tests_result_type', result.type),
             pair('web_tests_flag_specific_config_name',
                  self._port.flag_specific_config_name() or ''),
-            pair('web_tests_base_timeout', str(self._port.timeout_ms())),
+            pair('web_tests_base_timeout',
+                 str(self._port.timeout_ms() / 1000)),
         ]
 
         for used_file in self._port.used_expectations_files():

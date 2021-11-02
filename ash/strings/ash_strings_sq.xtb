@@ -24,6 +24,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="109942774857561566">Jam i mërzitur</translation>
 <translation id="1104084341931202936">Shfaq cilësimet e qasshmërisë</translation>
 <translation id="1104621072296271835">Pajisjet e tua punojnë edhe më mirë së bashku</translation>
+<translation id="1111781754511998498">Projektori</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> rekomandon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Modaliteti me ngjyra me temë përdor ngjyrat e nxjerra nga imazhi i sfondit për të ngjyrosur lehtë ndërfaqen.</translation>
 <translation id="112308213915226829">Fshih raftin automatikisht</translation>
@@ -373,6 +374,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3665889125180354336">Regjistro me mikrofonin</translation>
 <translation id="3680908746918359504">Pastro të gjitha piketat</translation>
 <translation id="36813544980941320">Rrjetet Wi-Fi do të ndahen mes telefonit tënd dhe <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Tani mund të ndryshosh se ku ruhen regjistrimet e ekranit</translation>
 <translation id="3702809606464356667">Po shfaqen dritaret nga tavolina aktuale e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga të gjitha tavolinat e punës</translation>
 <translation id="3702846122927433391">Popullsia në Nigeri</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3969043077941541451">Joaktive</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3977512764614765090">Bateria është në <ph name="PERCENTAGE" />% dhe po karikohet.</translation>
+<translation id="3986082989454912832">Përgjigju</translation>
 <translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
 <translation id="40062176907008878">Shkrim dore</translation>
 <translation id="4017989525502048489">Treguesi me lazer</translation>
@@ -456,7 +459,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4274537685965975248">Shkurtorja e tastierës për Alt + Shigjeta poshtë është ndryshuar. Për të përdorur tastin End, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta djathtas.</translation>
 <translation id="4279490309300973883">Pasqyrim</translation>
 <translation id="4285498937028063278">Zhgozhdo</translation>
-<translation id="4292904812939562398">Aplikacionet e përdorura së fundi</translation>
 <translation id="429402653707266969">Aktivizo/çaktivizo vendndodhjen e shiritit të veglave</translation>
 <translation id="4294319844246081198">Mirëmëngjesi <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Pastro të <ph name="COUNT" /> njoftimet</translation>
@@ -562,6 +564,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Çaktivizo njoftimet</translation>
 <translation id="4946376291507881335">Regjistrimi</translation>
 <translation id="495046168593986294">Lëviz lart</translation>
 <translation id="4952936045814352993">"Gjej telefonin" nuk ofrohet kur tingujt e alarmeve janë çaktivizuar</translation>
@@ -905,6 +908,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="7595633564847427181">H</translation>
 <translation id="7600875258240007829">Shiko të gjitha njoftimet</translation>
 <translation id="7607002721634913082">Ndërprerë</translation>
+<translation id="7610198039767537854">Shiko fotografitë e fundit nga filmi i kamerës së telefonit në <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Neutrale</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Pena e piketës</translation>

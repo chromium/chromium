@@ -49,13 +49,13 @@ struct SearchCandidate {
   DISALLOW_NEW();
 
   SearchCandidate()
-      : layout_object(nullptr), distance(std::numeric_limits<float>::max()) {}
-  SearchCandidate(LayoutObject* layout_object, float distance)
+      : layout_object(nullptr), distance(std::numeric_limits<double>::max()) {}
+  SearchCandidate(LayoutObject* layout_object, double distance)
       : layout_object(layout_object), distance(distance) {}
   void Trace(Visitor* visitor) const { visitor->Trace(layout_object); }
 
   Member<LayoutObject> layout_object;
-  float distance;
+  double distance;
 };
 
 gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
@@ -442,8 +442,8 @@ static inline bool CompareCandidateDistance(const SearchCandidate& r1,
   return r1.distance < r2.distance;
 }
 
-static inline float DistanceToChildLayoutObject(LayoutObject* child,
-                                                const gfx::PointF& point) {
+static inline double DistanceToChildLayoutObject(LayoutObject* child,
+                                                 const gfx::PointF& point) {
   const AffineTransform& local_to_parent_transform =
       child->LocalToSVGParentTransform();
   if (!local_to_parent_transform.IsInvertible())
@@ -468,7 +468,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
   for (LayoutObject* child = layout_object->SlowLastChild(); child;
        child = child->PreviousSibling()) {
     if (child->IsSVGText() || child->IsNGSVGText()) {
-      float distance = DistanceToChildLayoutObject(child, point);
+      double distance = DistanceToChildLayoutObject(child, point);
       if (distance >= closest_text.distance)
         continue;
       closest_text.layout_object = child;
@@ -477,7 +477,7 @@ static SearchCandidate SearchTreeForFindClosestLayoutSVGText(
     }
 
     if (child->IsSVGContainer() && !layout_object->IsSVGHiddenContainer()) {
-      float distance = DistanceToChildLayoutObject(child, point);
+      double distance = DistanceToChildLayoutObject(child, point);
       if (distance > closest_text.distance)
         continue;
       candidates.push_back(SearchCandidate(child, distance));

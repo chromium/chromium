@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">কোনও লুকানো নেটওয়ার্কে অটোমেটিক কানেক্ট করলে, অন্যরা আপনার ডিভাইস ও নেটওয়ার্কের কিছু সেটিংস দেখার সুযোগ পান। তাই, এটি সাজেস্ট করা হয় না।</translation>
 <translation id="2125607626296734455">খেমের</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, কানেক্ট করুন</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" />টি নেটওয়ার্কের মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
 <translation id="2142680004883808240">রাশিয়ান ভাষায় ফোনেটিক ইয়াজহার্ট (YaZHert) কীবোর্ড</translation>
 <translation id="2143778271340628265">ম্যানুয়াল প্রক্সি কনফিগারেশন</translation>
 <translation id="2163152940313951844">ভুল অক্ষর: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">ব্যাঙ</translation>
 <translation id="2578394532502990878">তামিল ফোনেটিক</translation>
 <translation id="2579959351793446050">ওড়িয়া</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" />টি নেটওয়ার্কের মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ব্লক করেছেন, বিবরণ</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ভিডিও</translation>
 <translation id="2617342710774726426">সিম কার্ড লক করা আছে</translation>
 <translation id="2620090360073999360">এই সময়ে Google ড্রাইভে পৌঁছানো যাবে না৷</translation>

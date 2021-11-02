@@ -32,6 +32,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2185166961232948079">Chromium - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chromium pikërisht ashtu si dëshirojnë.</translation>
 <translation id="2294245788148774212">Opsionale: Ndihmo në përmirësimin e veçorive dhe cilësisë së funksionimit të sistemit operativ Chromium duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
+<translation id="2313870531055795960">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chromium. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqes, te "Shfletimi i sigurt".</translation>
 <translation id="2343156876103232566">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chromium në të dyja pajisjet.</translation>
 <translation id="2347108572062610441">Kjo shtesë ka ndryshuar se cila faqe shfaqet kur nis Chromium.</translation>
 <translation id="2396765026452590966">Shtesa "<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur nis Chromium.</translation>
@@ -53,6 +54,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2799223571221894425">Nis sërish</translation>
 <translation id="2837693172913560447">Kjo do të krijojë një profil të ri të Chromium për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Hiqe nga Chromium...</translation>
+<translation id="2850691299438350830">Të mban të sigurt në Chromium dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je identifikuar</translation>
 <translation id="2885378588091291677">Menaxheri i detyrave</translation>
 <translation id="2910007522516064972">Rreth &amp;Chromium</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>

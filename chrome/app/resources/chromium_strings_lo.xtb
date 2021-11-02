@@ -32,6 +32,7 @@
 <translation id="2185166961232948079">Chromium - ການເຂົ້າສູ່ລະບົບເຄືອຂ່າຍ - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">ຖ້າທ່ານແຊຣ໌ຄອມພິວເຕີ, ໝູ່​ເພື່ອນ ແລະຄອບຄົວຂອງທ່ານ ສາມາດທ່ອງເນັດໄດ້ແຍກຕ່າງຫາກ ແລະຕັ້ງ Chromium ໄດ້ຕາມ​ແບບທີ່ພວກເຂົາຕ້ອງການ.</translation>
 <translation id="2294245788148774212">ບໍ່ບັງຄັບ: ຊ່ວຍປັບປຸງຄຸນສົມບັດ ແລະ ປະສິດທິພາບຂອງ Chromium OS ໂດຍການສົ່ງຂໍ້ມູນການວິເຄາະ ແລະ ການນຳໃຊ້ໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
+<translation id="2313870531055795960">ກວດສອບ URL ກັບລາຍຊື່ເວັບໄຊທີ່ບໍ່ປອດໄພທີ່ຈັດເກັບໄວ້ໃນ Chromium. ຖ້າມີເວັບໄຊໃດໜຶ່ງພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ອັນຕະລາຍ, Chromium ອາດສົ່ງ URL, ຮວມທັງເນື້ອຫາບາງສ່ວນຂອງໜ້າໄປໃຫ້ Safe Browsing.</translation>
 <translation id="2343156876103232566">ເພື່ອສົ່ງເບີຈາກບ່ອນນີ້ໃຫ້ໂທລະສັບ Android ຂອງທ່ານ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chromium ຢູ່ໃນທັງສອງອຸປະກອນ.</translation>
 <translation id="2347108572062610441">ສ່ວນຂະຫຍາຍ​ນີ້​ໄດ້ປ່ຽນສິ່ງທີ່ໜ້າສະແດງຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນ Chromium​.</translation>
 <translation id="2396765026452590966">ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />" ໄດ້ປ່ຽນສິ່ງທີ່ໜ້າສະແດງຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນ Chromium​.</translation>
@@ -53,6 +54,7 @@
 <translation id="2799223571221894425">ເລີ່ມເປີດໃຊ້ໃໝ່</translation>
 <translation id="2837693172913560447">ນີ້ຈະເປັນການສ້າງໂປຣໄຟລ໌ Chromium ໃໝ່ສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">ເອົາ​ອອກ​ຈາກ Chromium...</translation>
+<translation id="2850691299438350830">ຮັກສາຄວາມປອດໄພຂອງທ່ານໃນ Chromium ແລະ ອາດຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພຂອງທ່ານໃນແອັບ Google ອື່ນໆເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="2885378588091291677">ຕົວຈັດການໜ້າວຽກ</translation>
 <translation id="2910007522516064972">ກ່ຽວ​ກັບ​ Chromium</translation>
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>

@@ -49,8 +49,7 @@ StandaloneBrowserExtensionAppContextMenu::
 
 void StandaloneBrowserExtensionAppContextMenu::GetMenuModel(
     GetMenuModelCallback callback) {
-  // TODO(https://crbug.com/1225848): Use Crosapi to help populate the shelf. In
-  // the meanwhile, we do an asynchronous dispatch of callback.
+  // Always invoke the callback asynchronously to avoid re-entrancy.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel,

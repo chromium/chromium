@@ -525,6 +525,7 @@
 <translation id="6127379762771434464">項目已移除</translation>
 <translation id="6136914049981179737">幾秒前</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
+<translation id="6159839020698489198">選填</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步處理時間：<ph name="LAST_USED_TIME" /></translation>
@@ -580,6 +581,7 @@
 <translation id="6497772452874122664">如果您信任 <ph name="TIME" />，可使用已儲存的其他網站密碼。請嘗試在每個網站使用不重複的密碼。</translation>
 <translation id="651505212789431520">要取消同步處理嗎？您可隨時在「設定」中開啟同步功能。</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">放大</translation>
 <translation id="6585618849026997638">您可新增書籤，以便快速返回您認為重要的網頁</translation>
 <translation id="6603393121510733479">您的機構已關閉私密瀏覽功能。
@@ -621,6 +623,7 @@
 <translation id="6851516051005285358">切換至電腦版網站</translation>
 <translation id="6858855187367714033">已經掃咗瞄</translation>
 <translation id="6859944681507688231">如要掃瞄二維條碼或信用卡，請在設定中啟用相機。</translation>
+<translation id="6867369562105931222">密碼</translation>
 <translation id="6869389390665537774">您可查看瀏覽過的網頁，或從記錄移除網頁</translation>
 <translation id="6873263987691478642">分割檢視</translation>
 <translation id="6888009575607455378">確定要捨棄變更嗎？</translation>

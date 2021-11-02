@@ -7,7 +7,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/cpp/compositing/compositor_render_pass_id_mojom_traits.h"
-#include "services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/subtree_capture_id_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
@@ -21,7 +20,6 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
     Read(viz::mojom::CompositorRenderPassDataView data,
          std::unique_ptr<viz::CompositorRenderPass>* out) {
   *out = viz::CompositorRenderPass::Create();
-  absl::optional<viz::RegionCaptureBounds> bounds;
   if (!data.ReadOutputRect(&(*out)->output_rect) ||
       !data.ReadDamageRect(&(*out)->damage_rect) ||
       !data.ReadTransformToRootTarget(&(*out)->transform_to_root_target) ||
@@ -30,7 +28,6 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
       !data.ReadBackdropFilterBounds(&(*out)->backdrop_filter_bounds) ||
       !data.ReadSubtreeCaptureId(&(*out)->subtree_capture_id) ||
       !data.ReadSubtreeSize(&(*out)->subtree_size) ||
-      !data.ReadCaptureBounds(&bounds) ||
       !data.ReadCopyRequests(&(*out)->copy_requests) ||
       !data.ReadSharedElementResourceId(&(*out)->shared_element_resource_id) ||
       !data.ReadId(&(*out)->id)) {
@@ -46,11 +43,6 @@ bool StructTraits<viz::mojom::CompositorRenderPassDataView,
     return false;
   }
 
-  // Only map bounds to a new std::unique_ptr if it is not absl::nullopt.
-  if (bounds) {
-    (*out)->capture_bounds =
-        std::make_unique<viz::RegionCaptureBounds>(bounds.value());
-  }
   (*out)->has_transparent_background = data.has_transparent_background();
   (*out)->has_per_quad_damage = data.has_per_quad_damage();
 

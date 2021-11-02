@@ -2288,19 +2288,31 @@ TEST_P(PaintLayerTest, SetNeedsRepaintSelfPaintingUnderNonSelfPainting) {
   auto* span_layer = GetPaintLayerByElementId("span");
   auto* floating_layer = GetPaintLayerByElementId("floating");
   auto* multicol_layer = GetPaintLayerByElementId("multicol");
+
+  // Multicol doesn't trigger creation of a (non-self-painting) PaintLayer when
+  // LayoutNGBlockFragmentation is enabled.
+  if (!multicol_layer)
+    ASSERT_TRUE(RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled());
+
   EXPECT_FALSE(html_layer->SelfNeedsRepaint());
   EXPECT_FALSE(span_layer->SelfNeedsRepaint());
   EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
-  EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
-
-  multicol_layer->SetNeedsRepaint();
+  if (multicol_layer) {
+    EXPECT_FALSE(multicol_layer->SelfNeedsRepaint());
+    multicol_layer->SetNeedsRepaint();
+  } else {
+    EXPECT_FALSE(floating_layer->SelfNeedsRepaint());
+    floating_layer->SetNeedsRepaint();
+  }
   EXPECT_TRUE(html_layer->DescendantNeedsRepaint());
   if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_TRUE(span_layer->DescendantNeedsRepaint());
   else
     EXPECT_TRUE(span_layer->SelfNeedsRepaint());
-  EXPECT_TRUE(floating_layer->DescendantNeedsRepaint());
-  EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
+  if (multicol_layer)
+    EXPECT_TRUE(multicol_layer->SelfNeedsRepaint());
+  else
+    EXPECT_TRUE(floating_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {

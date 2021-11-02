@@ -594,6 +594,7 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
       cached_is_inert_(false),
       cached_is_aria_hidden_(false),
       cached_is_descendant_of_disabled_node_(false),
+      cached_can_set_focus_attribute_(false),
       cached_live_region_root_(nullptr),
       cached_aria_column_index_(0),
       cached_aria_row_index_(0),
@@ -3111,9 +3112,27 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
          GetLayoutObject()->Style()->Visibility() == EVisibility::kVisible;
 }
 
+bool AXObject::CanSetFocusAttribute() const {
+  AXObjectCacheImpl& cache = AXObjectCache();
+  auto* document = GetDocument();
+
+  if (document->StyleVersion() != focus_attribute_style_version_ ||
+      document->DomTreeVersion() != focus_attribute_dom_tree_version_ ||
+      cache.ModificationCount() != focus_attribute_cache_modification_count_) {
+    focus_attribute_style_version_ = document->StyleVersion();
+    focus_attribute_dom_tree_version_ = document->DomTreeVersion();
+    focus_attribute_cache_modification_count_ = cache.ModificationCount();
+
+    cached_can_set_focus_attribute_ = ComputeCanSetFocusAttribute();
+  } else {
+    DCHECK_EQ(cached_can_set_focus_attribute_, ComputeCanSetFocusAttribute());
+  }
+  return cached_can_set_focus_attribute_;
+}
+
 // This does not use Element::IsFocusable(), as that can sometimes recalculate
 // styles because of IsFocusableStyle() check, resetting the document lifecycle.
-bool AXObject::CanSetFocusAttribute() const {
+bool AXObject::ComputeCanSetFocusAttribute() const {
   if (IsDetached())
     return false;
 
@@ -5962,13 +5981,14 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         // because this code will be handled in IsFocusable(), once
         // KeyboardFocusableScrollersEnabled is permanently enabled.
         // Note: this uses the same scrollable check that element.cc uses.
-        bool is_focusable_scrollable =
-            RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
-            IsUserScrollable();
-        bool is_focusable = is_focusable_scrollable || CanSetFocusAttribute();
-        result = is_focusable && !IsEditable() &&
-                 !GetAOMPropertyOrARIAAttribute(
-                     AOMRelationProperty::kActiveDescendant);
+        result = false;
+        if (!IsEditable() && !GetAOMPropertyOrARIAAttribute(
+                                 AOMRelationProperty::kActiveDescendant)) {
+          bool is_focusable_scrollable =
+              RuntimeEnabledFeatures::KeyboardFocusableScrollersEnabled() &&
+              IsUserScrollable();
+          result = is_focusable_scrollable || CanSetFocusAttribute();
+        }
       }
       break;
 

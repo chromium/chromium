@@ -132,7 +132,7 @@ class AddressSorterWin : public AddressSorter {
           list.push_back(ipe);
         }
       }
-      std::move(callback_).Run(success_, list);
+      std::move(callback_).Run(success_, std::move(list));
     }
 
     CallbackType callback_;

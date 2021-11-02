@@ -180,6 +180,9 @@ class ASH_EXPORT AshNotificationView
   // notifications button is clicked.
   void DisableNotification();
 
+  // Update the color and icon for `app_icon_view_`.
+  void UpdateAppIconView();
+
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;

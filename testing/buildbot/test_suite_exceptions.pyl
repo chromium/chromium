@@ -266,6 +266,7 @@
         },
       },
       'Mac10.15 Tests (dbg)': {
+        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
@@ -658,6 +659,21 @@
         ],
       },
       'Mac10.15 Tests': {
+        # crbug.com/1042757
+        'swarming': {
+          'dimension_sets': [
+            {
+              # These shards are liable to time out when running on macmini7,1.
+              'cores': '8|12',
+            }
+          ],
+        },
+        # crbug.com/1196416
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
+        ],
+      },
+      'Mac10.15 Tests (dbg)': {
         # crbug.com/1042757
         'swarming': {
           'dimension_sets': [
@@ -1853,6 +1869,9 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
+      'Mac10.15 Tests (dbg)': { # https://crbug.com/1265051
+        'experiment_percentage': 100,
+      },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
@@ -2984,6 +3003,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
+      },
+      'Mac10.15 Tests (dbg)': {
+        'swarming': {
+          'shards': 2,
+        },
       },
       'ToTLinuxASan': {
         'swarming': {

@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1146678959555564648">‏כניסה למצב VR</translation>
 <translation id="114825011539563458">אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה מרוכזים במקום אחד</translation>
+<translation id="1149401351239820326">חודש פקיעת התוקף</translation>
 <translation id="1154704303112745282">הדף הזה לא זמין ללא חיבור לאינטרנט: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">צרכת</translation>
 <translation id="1171770572613082465">הקשה על הלחצן "אתרים נבחרים" תציג אתרים פופולריים</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">‏מקשי קיצור לתכונות של Google Chrome‏</translation>
 <translation id="1344653310988386453">עליך לכלול קישור לטקסט המודגש</translation>
 <translation id="1347468774581902829">ניהול פעילות</translation>
-<translation id="1353372385686746892">‏כדי לעזור בשיפור האפליקציה, Chrome שולח ל-Google נתוני אבחון. <ph name="BEGIN_LINK" />שינוי<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
 <translation id="1373696734384179344">אין מספיק זיכרון להורדת התוכן הנבחר.</translation>
 <translation id="1376578503827013741">מחשב...</translation>
@@ -405,6 +405,7 @@
 <translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3429160811076349561">התכונות הניסיוניות מושבתות</translation>
+<translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן</translation>
 <translation id="3440975416244667276">לחיצה ארוכה תציג פרטים רלוונטים נוספים</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3444179773590444986">רוצה לשתף משוב לגבי עיצוב כהה של אתרים?</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">‏פתיחת מרכז העזרה של Chrome בכרטיסייה חדשה</translation>
 <translation id="5957442310066583693">להצגת האתרים המובילים שלך, יש להקיש על לחצן דף הבית</translation>
 <translation id="5958275228015807058">הקבצים והדפים שלך נמצאים ב'הורדות'</translation>
-<translation id="5962272973076519240">אימות זהותך לביטול הנעילה של המצב הפרטי</translation>
 <translation id="5962718611393537961">יש להקיש כדי לכווץ</translation>
 <translation id="5964805880140440652">‏כדי לשתף את הדף הזה עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות של Chrome</translation>
 <translation id="5964869237734432770">הפסקה של תיאורי התמונות</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">‏לא נמצא כרטיס SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) של מצב אנונימי}two{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}many{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="8051695050440594747">‏‎<ph name="MEGABYTES" />MB זמינים</translation>
+<translation id="8058655154417507695">שנת תפוגה</translation>
 <translation id="8058746566562539958">‏פתיחה בכרטיסייה חדשה של Chrome</translation>
 <translation id="8063895661287329888">הוספת הסימנייה נכשלה.</translation>
 <translation id="806745655614357130">שמירת הנתונים שלי בנפרד</translation>

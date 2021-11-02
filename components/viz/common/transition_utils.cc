@@ -60,9 +60,6 @@ TransitionUtils::CopyPassWithQuadFiltering(
       source_pass.transform_to_root_target, source_pass.filters,
       source_pass.backdrop_filters, source_pass.backdrop_filter_bounds,
       source_pass.subtree_capture_id, source_pass.subtree_size,
-      source_pass.capture_bounds
-          ? std::make_unique<RegionCaptureBounds>(*source_pass.capture_bounds)
-          : nullptr,
       source_pass.shared_element_resource_id,
       source_pass.has_transparent_background, source_pass.cache_render_pass,
       source_pass.has_damage_from_contributing_content,

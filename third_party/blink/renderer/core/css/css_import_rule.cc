@@ -55,6 +55,16 @@ String CSSImportRule::cssText() const {
   result.Append(import_rule_->Href());
   result.Append("\")");
 
+  if (import_rule_->IsLayered()) {
+    result.Append(" layer");
+    String layer_name = import_rule_->GetLayerNameAsString();
+    if (layer_name.length()) {
+      result.Append("(");
+      result.Append(layer_name);
+      result.Append(")");
+    }
+  }
+
   if (import_rule_->MediaQueries()) {
     String media_text = import_rule_->MediaQueries()->MediaText();
     if (!media_text.IsEmpty()) {

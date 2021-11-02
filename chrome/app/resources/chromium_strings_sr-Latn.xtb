@@ -32,6 +32,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2185166961232948079">Chromium – prijavljivanje na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Ako delite računar, prijatelji i porodica mogu zasebno da pregledaju i da podese Chromium baš onako kako žele.</translation>
 <translation id="2294245788148774212">Opcionalno: Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chromium OS-a.</translation>
+<translation id="2313870531055795960">Proverava URL-ove sa listom nebezbednih sajtova koji se čuvaju u Chromium-u. Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetnu datoteku, Chromium može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje.</translation>
 <translation id="2343156876103232566">Da biste poslali broj sa ovog uređaja na Android telefon, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="2347108572062610441">Ovaj dodatak je promenio stranicu koja se prikazuje kada pokrenete Chromium.</translation>
 <translation id="2396765026452590966">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio stranicu koja se prikazuje kada pokrenete Chromium.</translation>
@@ -53,6 +54,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2799223571221894425">Ponovo pokreni</translation>
 <translation id="2837693172913560447">Ovim će se napraviti nov Chromium profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="2847479871509788944">Ukloni iz Chromium-a...</translation>
+<translation id="2850691299438350830">Štiti vas u Chromium-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="2885378588091291677">Menadžer zadataka</translation>
 <translation id="2910007522516064972">O &amp;Chromium-u</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>

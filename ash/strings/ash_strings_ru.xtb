@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Мне скучно</translation>
 <translation id="1104084341931202936">Показать настройки специальных возможностей</translation>
 <translation id="1104621072296271835">Вместе ваши устройства будут работать ещё лучше</translation>
+<translation id="1111781754511998498">Проектор</translation>
 <translation id="1118549423835582252">Администратор (<ph name="MANAGER" />) рекомендует обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Интерфейс будет окрашен в оттенки ваших обоев.</translation>
 <translation id="112308213915226829">Автоматически скрывать панель запуска</translation>
@@ -373,6 +374,7 @@
 <translation id="3665889125180354336">Запись микрофона</translation>
 <translation id="3680908746918359504">Удалить все маркеры</translation>
 <translation id="36813544980941320">На вашем телефоне и устройстве <ph name="DEVICE_NAME" /> будут использоваться одинаковые сети Wi-Fi.</translation>
+<translation id="3701206655856637070">Теперь вы можете выбрать папку, в которой будут храниться записи экрана.</translation>
 <translation id="3702809606464356667">Показаны окна текущего рабочего стола. Чтобы показать окна со всех рабочих столов, нажмите на стрелку вверх.</translation>
 <translation id="3702846122927433391">Население Нигерии</translation>
 <translation id="3705722231355495246">-</translation>
@@ -417,6 +419,7 @@
 <translation id="3969043077941541451">Отключен</translation>
 <translation id="397105322502079400">Вычисление…</translation>
 <translation id="3977512764614765090">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания.</translation>
+<translation id="3986082989454912832">Ответить</translation>
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
 <translation id="40062176907008878">Рукописный ввод</translation>
 <translation id="4017989525502048489">Лазерная указка</translation>
@@ -456,7 +459,6 @@
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4279490309300973883">Отражение</translation>
 <translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
-<translation id="4292904812939562398">Недавние приложения</translation>
 <translation id="429402653707266969">Изменить местоположение панели инструментов</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
@@ -562,6 +564,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Отключить уведомления</translation>
 <translation id="4946376291507881335">Снимок</translation>
 <translation id="495046168593986294">Прокрутить вверх</translation>
 <translation id="4952936045814352993">Функция "Найти телефон" недоступна, так как отключены сигналы оповещений</translation>
@@ -905,6 +908,7 @@
 <translation id="7595633564847427181">П</translation>
 <translation id="7600875258240007829">Показать все уведомления</translation>
 <translation id="7607002721634913082">Приостановлен</translation>
+<translation id="7610198039767537854">Просматривайте недавние фотографии с камеры телефона на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7631906263969450674">Фломастер</translation>

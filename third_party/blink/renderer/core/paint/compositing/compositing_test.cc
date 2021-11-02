@@ -66,11 +66,9 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
 
   WebViewImpl* WebView() { return web_view_helper_->GetWebView(); }
 
-  const cc::Layer* RootCcLayer() {
-    return paint_artifact_compositor()->RootLayer();
-  }
+  cc::Layer* RootCcLayer() { return paint_artifact_compositor()->RootLayer(); }
 
-  const cc::Layer* CcLayerByDOMElementId(const char* id) {
+  cc::Layer* CcLayerByDOMElementId(const char* id) {
     auto layers = CcLayersByDOMElementId(RootCcLayer(), id);
     return layers.IsEmpty() ? nullptr : layers[0];
   }
@@ -151,7 +149,7 @@ TEST_P(CompositingTest, DidScrollCallbackAfterScrollableAreaChanges) {
   EXPECT_NE(nullptr, scrollable_area);
 
   CompositorElementId scroll_element_id = scrollable_area->GetScrollElementId();
-  const auto* overflow_scroll_layer =
+  auto* overflow_scroll_layer =
       CcLayerByCcElementId(RootCcLayer(), scroll_element_id);
   const auto* scroll_node =
       RootCcLayer()
