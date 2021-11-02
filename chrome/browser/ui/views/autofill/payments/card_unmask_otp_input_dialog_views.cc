@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller.h"
+#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -46,8 +47,10 @@ CardUnmaskOtpInputDialogViews::CardUnmaskOtpInputDialogViews(
 
 CardUnmaskOtpInputDialogViews::~CardUnmaskOtpInputDialogViews() {
   // Inform |controller_| of the dialog's destruction.
-  if (controller_)
-    controller_->OnDialogClosed();
+  if (controller_) {
+    controller_->OnDialogClosed(/*user_closed_dialog=*/true);
+    controller_ = nullptr;
+  }
 }
 
 // static
@@ -79,9 +82,25 @@ void CardUnmaskOtpInputDialogViews::ShowInvalidState(
   otp_input_textfield_invalid_label_padding_->SetVisible(false);
 }
 
-void CardUnmaskOtpInputDialogViews::OnControllerDestroying() {
-  controller_ = nullptr;
-  GetWidget()->Close();
+void CardUnmaskOtpInputDialogViews::Dismiss(
+    bool show_confirmation_before_closing,
+    bool user_closed_dialog) {
+  // If |show_confirmation_before_closing| is true, show the confirmation and
+  // close the widget with a delay.
+  if (show_confirmation_before_closing) {
+    progress_throbber_->Stop();
+    progress_label_->SetText(controller_->GetConfirmationMessage());
+    progress_throbber_->SetChecked(true);
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CardUnmaskOtpInputDialogViews::CloseWidget,
+                       weak_ptr_factory_.GetWeakPtr(), user_closed_dialog),
+        kDelayBeforeDismissingProgressDialog);
+    return;
+  }
+
+  // Otherwise close the widget directly.
+  CloseWidget(user_closed_dialog);
 }
 
 std::u16string CardUnmaskOtpInputDialogViews::GetWindowTitle() const {
@@ -95,6 +114,7 @@ void CardUnmaskOtpInputDialogViews::AddedToWidget() {
 }
 
 bool CardUnmaskOtpInputDialogViews::Accept() {
+  controller_->OnOkButtonClicked(otp_input_textfield_->GetText());
   ShowPendingState();
   return false;
 }
@@ -182,10 +202,9 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
   footer_label->AddStyleRange(
       gfx::Range(footer_text.link_offset_in_text,
                  footer_text.link_offset_in_text + link_text.length()),
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          // TODO(crbug.com/1243475): Switch with correct callback for re-send
-          // OTP once implemented.
-          views::Link::ClickedCallback()));
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &CardUnmaskOtpInputDialogController::OnNewCodeLinkClicked,
+          base::Unretained(controller_))));
   footer_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 }
 
@@ -217,6 +236,14 @@ void CardUnmaskOtpInputDialogViews::HideInvalidState() {
   otp_input_textfield_->SetInvalid(false);
   otp_input_textfield_invalid_label_->SetVisible(false);
   otp_input_textfield_invalid_label_padding_->SetVisible(true);
+}
+
+void CardUnmaskOtpInputDialogViews::CloseWidget(bool user_closed_dialog) {
+  if (controller_) {
+    controller_->OnDialogClosed(user_closed_dialog);
+    controller_ = nullptr;
+  }
+  GetWidget()->Close();
 }
 
 }  // namespace autofill

@@ -32,9 +32,13 @@ class CardUnmaskOtpInputDialogView {
   // hidden, the OK button might still be disabled due to not being a valid OTP.
   virtual void ShowInvalidState(const std::u16string& invalid_label_text) = 0;
 
-  // Method to safely close this dialog when the controller is destroyed by
-  // unlinking the controller and closing the widget that owns this dialog.
-  virtual void OnControllerDestroying() = 0;
+  // Method to safely close this dialog including the case where the controller
+  // is destroyed first. |show_confirmation_before_closing| indicates whether we
+  // should update the throbber to show a checkmark before closing the dialog.
+  // |user_closed_dialog| indicates whether the dismissal was triggered by user
+  // closing the dialog.
+  virtual void Dismiss(bool show_confirmation_before_closing,
+                       bool user_closed_dialog) = 0;
 };
 
 }  // namespace autofill

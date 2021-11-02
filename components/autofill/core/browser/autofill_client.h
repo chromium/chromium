@@ -70,6 +70,8 @@ class FormDataImporter;
 class FormStructure;
 class LogManager;
 class MigratableCreditCard;
+class OtpUnmaskDelegate;
+enum class OtpUnmaskResult;
 class PersonalDataManager;
 class SingleFieldFormFillRouter;
 class StrikeDatabase;
@@ -378,6 +380,14 @@ class AutofillClient : public RiskDataLoader {
   // Causes the Autofill settings UI to be shown. If |show_credit_card_settings|
   // is true, will show the credit card specific subpage.
   virtual void ShowAutofillSettings(bool show_credit_card_settings) = 0;
+
+  // Show the OTP unmask dialog to accept user-input OTP value.
+  virtual void ShowCardUnmaskOtpInputDialog(
+      const size_t& otp_length,
+      base::WeakPtr<OtpUnmaskDelegate> delegate);
+
+  // Invoked when we receive the server response of the OTP unmask request.
+  virtual void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result);
 
   // A user has attempted to use a masked card. Prompt them for further
   // information to proceed.

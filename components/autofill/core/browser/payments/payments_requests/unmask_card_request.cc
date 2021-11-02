@@ -31,6 +31,8 @@ const char kUnmaskCardRequestFormatWithOtp[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
     "&s7e_263_otp=%s";
 
+constexpr size_t kDefaultOtpLength = 6U;
+
 CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
     const base::Value& challenge_option) {
   CardUnmaskChallengeOption card_unmask_challenge_option;
@@ -51,6 +53,12 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
     DCHECK(masked_phone_number);
     card_unmask_challenge_option.challenge_info =
         base::UTF8ToUTF16(*masked_phone_number);
+    absl::optional<int> otp_length =
+        sms_challenge_option->FindIntKey("otp_length");
+    if (otp_length.has_value())
+      card_unmask_challenge_option.otp_length = *otp_length;
+    else
+      card_unmask_challenge_option.otp_length = kDefaultOtpLength;
   }
 
   return card_unmask_challenge_option;

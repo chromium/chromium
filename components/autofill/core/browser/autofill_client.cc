@@ -81,6 +81,19 @@ AutofillClient::CreateCreditCardInternalAuthenticator(
 }
 #endif
 
+void AutofillClient::ShowCardUnmaskOtpInputDialog(
+    const size_t& otp_length,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
+}
+
+void AutofillClient::OnUnmaskOtpVerificationResult(
+    OtpUnmaskResult unmask_result) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop and Clank) implements this.
+}
+
 void AutofillClient::ShowOfferNotificationIfApplicable(
     const AutofillOfferData* offer) {
   // This is overridden by platform subclasses. Currently only

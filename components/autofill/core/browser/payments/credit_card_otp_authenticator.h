@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
 
 namespace autofill {
@@ -18,7 +19,7 @@ namespace autofill {
 // full card request is removed from the flow.
 // Authenticates credit card unmasking through OTP (One-Time Password)
 // verification.
-class CreditCardOtpAuthenticator {
+class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
  public:
   struct OtpAuthenticationResponse {
     OtpAuthenticationResponse();
@@ -59,6 +60,11 @@ class CreditCardOtpAuthenticator {
   CreditCardOtpAuthenticator& operator=(const CreditCardOtpAuthenticator&) =
       delete;
 
+  // OtpUnmaskDelegate:
+  void OnUnmaskPromptAccepted(const std::u16string& otp) override;
+  void OnUnmaskPromptClosed(bool user_closed_dialog) override;
+  void OnNewOtpRequested() override;
+
   // Start the OTP authentication for the |card| with
   // |selected_challenge_option|. Will invoke
   // |SendSelectChallengeOptionRequest()| to send the selected challenge option
@@ -82,15 +88,6 @@ class CreditCardOtpAuthenticator {
   // and end session.
   void OnDidSelectChallengeOption(AutofillClient::PaymentsRpcResult result,
                                   const std::string& context_token);
-
-  // Called when the user has attempted an OTP verification. This will prepare
-  // unmask request and invoke |SendUnmaskCardRequest()|. Note that this can
-  // also be invoked when user retries with a new OTP.
-  void OnUnmaskPromptAccepted(const std::u16string& otp);
-
-  // Called when the unmask prompt is closed. |dismiss_by_cancellation|
-  // indicates whether the closure was triggered by user cancellation.
-  void OnUnmaskPromptClosed(bool dismiss_by_cancellation);
 
   // Callback function invoked when the client receives a response from the
   // server. Updates locally-cached |context_token_| to the latest version. If
@@ -136,6 +133,9 @@ class CreditCardOtpAuthenticator {
   std::string risk_data_;
 
   int64_t billing_customer_number_;
+
+  // Whether there is a SelectChallengeOption request ongoing.
+  bool selected_challenge_option_request_ongoing_ = false;
 
   // The associated autofill client.
   AutofillClient* autofill_client_;

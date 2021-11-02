@@ -22,23 +22,63 @@ CardUnmaskOtpInputDialogControllerImpl::
   // dialog is visible. In this case the controller is destroyed before
   // CardUnmaskOtpInputDialogViews::dtor() is called, but the reference to
   // controller is not reset. This resets the reference via
-  // CardUnmaskOtpInputDialogView::OnControllerDestroying() to avoid
+  // CardUnmaskOtpInputDialogView::Dismiss() to avoid
   // a crash.
   if (dialog_view_)
-    dialog_view_->OnControllerDestroying();
+    dialog_view_->Dismiss(/*show_confirmation_before_closing=*/false,
+                          /*user_closed_dialog=*/true);
 }
 
-void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(size_t otp_length) {
+void CardUnmaskOtpInputDialogControllerImpl::ShowDialog(
+    size_t otp_length,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {
   if (dialog_view_)
     return;
 
   otp_length_ = otp_length;
+  delegate_ = delegate;
   dialog_view_ =
       CardUnmaskOtpInputDialogView::CreateAndShow(this, web_contents());
 }
 
-void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed() {
+void CardUnmaskOtpInputDialogControllerImpl::OnOtpVerificationResult(
+    OtpUnmaskResult result) {
+  switch (result) {
+    case OtpUnmaskResult::kSuccess:
+      dialog_view_->Dismiss(/*show_confirmation_before_closing=*/true,
+                            /*user_closed_dialog=*/false);
+      break;
+    case OtpUnmaskResult::kPermanentFailure:
+      dialog_view_->Dismiss(/*show_confirmation_before_closing=*/false,
+                            /*user_closed_dialog=*/false);
+      break;
+    case OtpUnmaskResult::kOtpExpired:
+    case OtpUnmaskResult::kOtpMismatch:
+      ShowInvalidState(result);
+      break;
+    case OtpUnmaskResult::kUnknownType:
+      NOTREACHED();
+      break;
+  }
+}
+
+void CardUnmaskOtpInputDialogControllerImpl::OnDialogClosed(
+    bool user_closed_dialog) {
+  if (delegate_)
+    delegate_->OnUnmaskPromptClosed(user_closed_dialog);
+
   dialog_view_ = nullptr;
+}
+
+void CardUnmaskOtpInputDialogControllerImpl::OnOkButtonClicked(
+    const std::u16string& otp) {
+  if (delegate_)
+    delegate_->OnUnmaskPromptAccepted(otp);
+}
+
+void CardUnmaskOtpInputDialogControllerImpl::OnNewCodeLinkClicked() {
+  if (delegate_)
+    delegate_->OnNewOtpRequested();
 }
 
 std::u16string CardUnmaskOtpInputDialogControllerImpl::GetWindowTitle() const {
@@ -90,6 +130,12 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetProgressLabel()
     const {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_PENDING_MESSAGE);
+}
+
+std::u16string CardUnmaskOtpInputDialogControllerImpl::GetConfirmationMessage()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_UNMASK_VERIFICATION_SUCCESS);
 }
 
 #if defined(UNIT_TEST)

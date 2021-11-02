@@ -37,6 +37,9 @@ struct CardUnmaskChallengeOption {
   // The user-facing text providing additional information for the challenge
   // option, such as the masked phone number that will receive an SMS, etc.
   std::u16string challenge_info = std::u16string();
+
+  // The predetermined length of the OTP value.
+  size_t otp_length = 0U;
 };
 
 }  // namespace autofill

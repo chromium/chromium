@@ -32,7 +32,7 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
 
     // Do lazy initialization of controller.
     CardUnmaskOtpInputDialogControllerImpl::CreateForWebContents(web_contents);
-    controller()->ShowDialog(kDefaultOtpLength);
+    controller()->ShowDialog(kDefaultOtpLength, /*delegate=*/nullptr);
   }
 
   CardUnmaskOtpInputDialogView* GetDialog() {
