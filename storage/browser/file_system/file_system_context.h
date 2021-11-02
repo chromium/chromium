@@ -99,6 +99,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
+  FileSystemContext() = delete;
+  FileSystemContext(const FileSystemContext&) = delete;
+  FileSystemContext& operator=(const FileSystemContext&) = delete;
+
   // Returns file permission policy we should apply for the given `type`.
   // The return value must be bitwise-or'd of FilePermissionPolicy.
   //
@@ -458,8 +462,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   const std::unique_ptr<FileSystemOperationRunner> operation_runner_;
 
   std::unique_ptr<mojo::Receiver<mojom::QuotaClient>> quota_client_receiver_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FileSystemContext);
 };
 
 }  // namespace storage

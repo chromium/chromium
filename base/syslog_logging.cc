@@ -39,6 +39,10 @@ class EventLogHandleTraits {
  public:
   using Handle = HANDLE;
 
+  EventLogHandleTraits() = delete;
+  EventLogHandleTraits(const EventLogHandleTraits&) = delete;
+  EventLogHandleTraits& operator=(const EventLogHandleTraits&) = delete;
+
   // Closes the handle.
   static bool CloseHandle(HANDLE handle) {
     return ::DeregisterEventSource(handle) != FALSE;
@@ -49,9 +53,6 @@ class EventLogHandleTraits {
 
   // Returns null handle value.
   static HANDLE NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(EventLogHandleTraits);
 };
 
 using ScopedEventLogHandle =

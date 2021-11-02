@@ -35,6 +35,10 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
     bool accelerated_video_encode_enabled = false;
   };
 
+  SandboxSeccompBPF() = delete;
+  SandboxSeccompBPF(const SandboxSeccompBPF&) = delete;
+  SandboxSeccompBPF& operator=(const SandboxSeccompBPF&) = delete;
+
   // This is the API to enable a seccomp-bpf sandbox for content/
   // process-types:
   // Is the sandbox globally enabled, can anything use it at all ?
@@ -70,9 +74,6 @@ class SANDBOX_POLICY_EXPORT SandboxSeccompBPF {
 
   // The "baseline" policy can be a useful base to build a sandbox policy.
   static std::unique_ptr<bpf_dsl::Policy> GetBaselinePolicy();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SandboxSeccompBPF);
 };
 
 }  // namespace policy

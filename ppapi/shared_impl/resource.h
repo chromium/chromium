@@ -106,6 +106,8 @@ enum ResourceObjectType { OBJECT_IS_IMPL, OBJECT_IS_PROXY };
 class PPAPI_SHARED_EXPORT Resource
     : public base::RefCountedThreadSafe<Resource> {
  public:
+  Resource() = delete;
+
   // Constructor for impl and non-proxied, instance-only objects.
   //
   // For constructing "impl" (non-proxied) objects, this just takes the
@@ -139,6 +141,9 @@ class PPAPI_SHARED_EXPORT Resource
   // PPB_MessageLoop resource for the main thread.
   struct Untracked {};
   explicit Resource(Untracked);
+
+  Resource(const Resource&) = delete;
+  Resource& operator=(const Resource&) = delete;
 
   virtual ~Resource();
 
@@ -228,8 +233,6 @@ class PPAPI_SHARED_EXPORT Resource
   // See the getters above.
   PP_Resource pp_resource_;
   HostResource host_resource_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Resource);
 };
 
 // Template-based dynamic casting. These specializations forward to the

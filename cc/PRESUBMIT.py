@@ -291,8 +291,7 @@ def CheckForDisallowMacros(input_api, output_api, allowlist=CC_SOURCE_FILES,
     # DISALLOW macros are not allowed, use deleted constructors instead.
     if re.search(r"\bDISALLOW_COPY\(", contents) or \
        re.search(r"\bDISALLOW_ASSIGN\(", contents) or \
-       re.search(r"\bDISALLOW_COPY_AND_ASSIGN\(", contents) or \
-       re.search(r"\bDISALLOW_IMPLICIT_CONSTRUCTORS\(", contents):
+       re.search(r"\bDISALLOW_COPY_AND_ASSIGN\(", contents):
       disallow_macro_files.append(f.LocalPath())
 
   if disallow_macro_files:

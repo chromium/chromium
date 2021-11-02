@@ -26,12 +26,6 @@
   DISALLOW_COPY(TypeName);                 \
   DISALLOW_ASSIGN(TypeName)
 
-// DEPRECATED: See above. Disallow all implicit constructors, namely the
-// default constructor, copy constructor and operator= functions.
-#define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
-  TypeName() = delete;                           \
-  DISALLOW_COPY_AND_ASSIGN(TypeName)
-
 // Used to explicitly mark the return value of a function as unused. If you are
 // really sure you don't want to do anything with the return value of a function
 // that has been marked WARN_UNUSED_RESULT, wrap it with this. Example:
