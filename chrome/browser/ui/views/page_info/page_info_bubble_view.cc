@@ -104,6 +104,33 @@ namespace {
 constexpr int kMinBubbleWidth = 320;
 constexpr int kMaxBubbleWidth = 1000;
 
+// Adds a row showing `text` in `layout`.
+void AddSecondaryLabelRow(views::GridLayout* layout,
+                          const std::u16string& text) {
+  layout->StartRow(1.0, PageInfoBubbleView::kPermissionColumnSetId);
+  layout->SkipColumns(1);
+  auto sublabel = std::make_unique<views::Label>(text);
+  sublabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  sublabel->SetEnabledColor(PageInfoUI::GetSecondaryTextColor());
+  // The |sublabel| should wrap when it's too long instead of
+  // stretching its parent view horizontally, but also ensure long strings
+  // aren't wrapped too early.
+  int preferred_width = sublabel->GetPreferredSize().width();
+  sublabel->SetMultiLine(true);
+
+  // Long labels that cannot fit in the existing space under the permission
+  // label should be allowed to use up to |kMaxSecondaryLabelWidth| for
+  // display.
+  constexpr int kMaxSecondaryLabelWidth = 140;
+  if (preferred_width > kMaxSecondaryLabelWidth) {
+    layout->AddView(std::move(sublabel), 1, 1, views::GridLayout::LEADING,
+                    views::GridLayout::CENTER, kMaxSecondaryLabelWidth, 0);
+  } else {
+    layout->AddView(std::move(sublabel), 1, 1, views::GridLayout::FILL,
+                    views::GridLayout::CENTER);
+  }
+}
+
 }  // namespace
 
 // The regular PageInfoBubbleView is not supported for internal Chrome pages and
@@ -303,9 +330,7 @@ PageInfoBubbleView::PageInfoBubbleView(
   int link_text_id = 0;
   int tooltip_text_id = 0;
   if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id)) {
-    layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
-                                views::GridLayout::kFixedSize, 0);
-
+    layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
     site_settings_link = layout->AddView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
@@ -510,9 +535,31 @@ void PageInfoBubbleView::SetPermissionInfo(
 
   int min_height_for_permission_rows = 0;
   for (const auto& permission : permission_info_list) {
+    const int list_item_padding =
+        layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL) / 2;
+    layout->StartRowWithPadding(1.0, kPermissionColumnSetId,
+                                views::GridLayout::kFixedSize,
+                                list_item_padding);
+
     std::unique_ptr<PermissionSelectorRow> selector =
         std::make_unique<PermissionSelectorRow>(ui_delegate_.get(), permission,
                                                 layout);
+
+    // Add extra details as sublabel.
+    std::u16string detail = ui_delegate_->GetPermissionDetail(permission.type);
+    if (!detail.empty())
+      AddSecondaryLabelRow(layout, detail);
+
+    // Show the permission decision reason, if it was not the user.
+    std::u16string reason = PageInfoUI::PermissionDecisionReasonToUIString(
+        ui_delegate_.get(), permission);
+    if (!reason.empty())
+      AddSecondaryLabelRow(layout, reason);
+
+    layout->AddPaddingRow(views::GridLayout::kFixedSize,
+                          selector->CalculatePaddingBeneathPermissionRow(
+                              !detail.empty() || !reason.empty()));
+
     selector->AddObserver(this);
     min_height_for_permission_rows = std::max(
         min_height_for_permission_rows, selector->MinHeightForPermissionRow());
