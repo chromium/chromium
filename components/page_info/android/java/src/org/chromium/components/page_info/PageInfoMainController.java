@@ -50,4 +50,7 @@ public interface PageInfoMainController {
 
     /** @return The GURL of the page associated with the controller. */
     GURL getURL();
+
+    /** Dismiss the page info dialog. */
+    void dismiss();
 }
