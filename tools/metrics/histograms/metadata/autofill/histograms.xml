@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard{AutofillDataAvailability}"
-    enum="AutofillFormEvent" expires_after="2021-12-12">
+    enum="AutofillFormEvent" expires_after="2022-10-31">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2189,7 +2189,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
     Logs that a specific type was changed in a profile update process that was
-    shown to the user when a profile similar to an already exisintg profile was
+    shown to the user when a profile similar to an already existing profile was
     observed in a form submission. This metric is emitted only when the user
     accepts the update without further edits.
   </summary>
@@ -2256,7 +2256,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
     Logs that a specific type was edited in a profile update prompt that was
-    shown to the user when a profile similar to an already exisintg profile was
+    shown to the user when a profile similar to an already existing profile was
     observed in a form submission. This metric is emitted once the user-provided
     import decision is final.
   </summary>
