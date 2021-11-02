@@ -5,23 +5,24 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_OFFLINER_POLICY_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_OFFLINER_POLICY_H_
 
-namespace {
+namespace offline_pages {
+
 // The max number of started tries is to guard against pages that make the
 // background loader crash. It should be greater than or equal to the max
 // number of completed tries.
-const int kMaxStartedTries = 5;
+constexpr int kMaxStartedTries = 5;
 // The number of max completed tries is based on Gin2G-poor testing showing that
 // we often need about 4 tries with a 2 minute window, or 3 retries with a 3
 // minute window. Also, we count one try now for foreground/disabled requests.
-const int kMaxCompletedTries = 3;
+constexpr int kMaxCompletedTries = 3;
 // By the time we get to a week, the user has forgotten asking for a page.
-const int kRequestExpirationTimeInSeconds = 60 * 60 * 24 * 7;
+constexpr int kRequestExpirationTimeInSeconds = 60 * 60 * 24 * 7;
 
 // Scheduled background processing time limits.
-const int kDozeModeBackgroundServiceWindowSeconds = 60 * 3;
-const int kDefaultBackgroundProcessingTimeBudgetSeconds =
+constexpr int kDozeModeBackgroundServiceWindowSeconds = 60 * 3;
+constexpr int kDefaultBackgroundProcessingTimeBudgetSeconds =
     kDozeModeBackgroundServiceWindowSeconds - 10;
-const int kSinglePageTimeLimitWhenBackgroundScheduledSeconds =
+constexpr int kSinglePageTimeLimitWhenBackgroundScheduledSeconds =
     kDozeModeBackgroundServiceWindowSeconds - 10;
 
 // Immediate processing time limits.  Note: experiments on GIN-2g-poor show many
@@ -31,12 +32,9 @@ const int kSinglePageTimeLimitWhenBackgroundScheduledSeconds =
 // to 3 of those requests in processing window.
 // TODO(petewil): Consider if we want to up the immediate window to 8 minutes
 // now that we are always using the background loader.
-const int kSinglePageTimeLimitForImmediateLoadSeconds = 60 * 4 + 50;
-const int kImmediateLoadProcessingTimeBudgetSeconds =
+constexpr int kSinglePageTimeLimitForImmediateLoadSeconds = 60 * 4 + 50;
+constexpr int kImmediateLoadProcessingTimeBudgetSeconds =
     kSinglePageTimeLimitForImmediateLoadSeconds * 5;
-}  // namespace
-
-namespace offline_pages {
 
 // Policy for the Background Offlining system.  Some policy will belong to the
 // RequestCoordinator, some to the RequestQueue, and some to the Offliner.
