@@ -21,7 +21,10 @@ namespace autofill {
 class AutofillProgressDialogController {
  public:
   // Callback received when the progress dialog is dismissed.
-  virtual void OnDismissed() = 0;
+  // |is_canceled_by_user| is a boolean that is true if the user cancels the
+  // progress dialog, false if the progress dialog closes automatically after a
+  // confirmation message.
+  virtual void OnDismissed(bool is_canceled_by_user) = 0;
 
   // Title and button label.
   virtual const std::u16string GetTitle() = 0;

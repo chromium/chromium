@@ -87,6 +87,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="Request failed in retrieving the virtual card information."/>
 </variants>
 
+<variants name="Autofill.ProgressDialog.FlowType">
+  <variant name="CardUnmask"
+      summary="Progress dialog for the VCN Card Unmask Flow"/>
+</variants>
+
 <variants name="Autofill.Snackbar.Type">
   <variant name="VirtualCard"
       summary="Snackbar shown after virtual card is autofilled."/>
@@ -2327,6 +2332,41 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     experiment is enabled and profile suggestions are available. This metric
     measures how often suggestions were created with and without a formatter.
   </summary>
+</histogram>
+
+<histogram name="Autofill.ProgressDialog.{FlowType}.Result"
+    enum="BooleanCanceled" expires_after="2022-04-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the result of the progress dialog, which can either be canceled
+    (user canceled while it was in progress) or not canceled (user waited until
+    confirmation). This dialog is shown in between other dialogs in a flow to
+    provide a progress state to the user. If the user does not cancel it, after
+    its related background task completes it moves on to the next dialog in the
+    flow that it is a part of. The metric is recorded when this dialog is
+    dismissed, and the result that gets logged is false if the user waited until
+    confirmation or true if the user canceled the dialog.
+  </summary>
+  <token key="FlowType" variants="Autofill.ProgressDialog.FlowType"/>
+</histogram>
+
+<histogram name="Autofill.ProgressDialog.{FlowType}.Shown" enum="BooleanShown"
+    expires_after="2022-04-01">
+  <owner>siashah@chromium.org</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records true every time the progress dialog is shown. This dialog is shown
+    in between other dialogs in a payments autofill flow to provide a progress
+    state to the user. If the user does not cancel it, after its related
+    background task completes it moves on to the next dialog in the flow that it
+    is a part of.
+  </summary>
+  <token key="FlowType" variants="Autofill.ProgressDialog.FlowType"/>
 </histogram>
 
 <histogram name="Autofill.QueriedCreditCardFormIsSecure" enum="BooleanSecure"

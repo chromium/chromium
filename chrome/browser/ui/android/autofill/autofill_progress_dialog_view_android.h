@@ -39,6 +39,10 @@ class AutofillProgressDialogViewAndroid : public AutofillProgressDialogView {
   AutofillProgressDialogController* controller_;
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // Set to false if the dialog closes automatically after a confirmation
+  // message, true for user canceling the dialog.
+  bool is_canceled_by_user_ = true;
 };
 
 }  // namespace autofill

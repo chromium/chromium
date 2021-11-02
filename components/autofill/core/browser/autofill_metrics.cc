@@ -1272,6 +1272,15 @@ void AutofillMetrics::LogOfferNotificationInfoBarShown() {
       "Autofill.OfferNotificationInfoBarOffer.CardLinkedOffer", true);
 }
 
+void AutofillMetrics::LogProgressDialogResultMetric(bool is_canceled_by_user) {
+  base::UmaHistogramBoolean("Autofill.ProgressDialog.CardUnmask.Result",
+                            is_canceled_by_user);
+}
+
+void AutofillMetrics::LogProgressDialogShown() {
+  base::UmaHistogramBoolean("Autofill.ProgressDialog.CardUnmask.Shown", true);
+}
+
 // static
 void AutofillMetrics::LogVirtualCardManualFallbackBubbleShown(bool is_reshow) {
   base::UmaHistogramBoolean("Autofill.VirtualCardManualFallbackBubble.Shown",

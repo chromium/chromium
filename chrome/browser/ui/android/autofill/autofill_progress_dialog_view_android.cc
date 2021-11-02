@@ -42,6 +42,7 @@ AutofillProgressDialogView* AutofillProgressDialogView::CreateAndShow(
 void AutofillProgressDialogViewAndroid::Dismiss(
     bool show_confirmation_before_closing) {
   if (show_confirmation_before_closing) {
+    is_canceled_by_user_ = false;
     ShowConfirmation();
     return;
   }
@@ -55,7 +56,7 @@ void AutofillProgressDialogViewAndroid::Dismiss(
 }
 
 void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
-  controller_->OnDismissed();
+  controller_->OnDismissed(is_canceled_by_user_);
   controller_ = nullptr;
   delete this;
 }
