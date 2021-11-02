@@ -3003,12 +3003,6 @@ const char kChromeSharingHubLaunchAdjacentDescription[] =
     "In multi-window mode, launches share hub actions in an adjacent window. "
     "For internal debugging.";
 
-const char kClipboardSuggestionContentHiddenName[] =
-    "Clipboard suggestion content hidden";
-const char kClipboardSuggestionContentHiddenDescription[] =
-    "Prevents the Clipboard suggestion from proactively retrieving the "
-    "clipboard content.";
-
 const char kCloseTabSuggestionsName[] = "Suggest to close Tabs";
 const char kCloseTabSuggestionsDescription[] =
     "Suggests to the user to close Tabs that haven't been used beyond a "
