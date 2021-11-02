@@ -442,6 +442,11 @@ Polymer({
       return true;
     }
 
+    // Valid for the ChromeVox combination.
+    if (event.ctrlKey && event.altKey && event.key === 'z') {
+      return true;
+    }
+
     // The rest of the keys are invalid.
     return false;
   },
