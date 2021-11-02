@@ -17,39 +17,55 @@ enum class AuthFactorType {
   kSmartLock = 1 << 1,
 };
 
+using AuthFactorTypeBits = int;
+
 // Allow combining AuthFactorTypes with bitwise OR. Used to look up the
 // appropriate label to show when several auth factors are visible.
-int operator|(int types, AuthFactorType type);
-int operator|(AuthFactorType type1, AuthFactorType type2);
+constexpr AuthFactorTypeBits operator|(AuthFactorTypeBits types,
+                                       AuthFactorType type) {
+  return types | static_cast<AuthFactorTypeBits>(type);
+}
+constexpr AuthFactorTypeBits operator|(AuthFactorType type1,
+                                       AuthFactorType type2) {
+  return static_cast<AuthFactorTypeBits>(type1) |
+         static_cast<AuthFactorTypeBits>(type2);
+}
 
 // Base class representing an auth factor. Used by LoginAuthFactorsView to
 // display a list of auth factors.
 class ASH_EXPORT AuthFactorModel {
  public:
+  // DO NOT change the relative ordering of these enum values. The values
+  // assigned here correspond to the priority of these states. For example, if
+  // LoginAuthFactorsView has one auth factor in the kClickRequired state and
+  // one auth factor in the kReady state, then it will prioritize showing the
+  // kClickRequired state since it's assigned a higher priority. With the
+  // exception of the error states, a higher priority generally implies that
+  // there are fewer steps left to complete authentication.
   enum class AuthFactorState {
     // The feature is disabled, disallowed by policy, or requires
     // hardware that isn’t present.
-    kUnavailable,
+    kUnavailable = 0,
+    // The auth factor cannot be used because of an unrecoverable
+    // error, e.g. Fingerprint’s “Too many attempts”. GetLabel()
+    // and UpdateIcon() show the relevant messages.
+    kErrorPermanent = 1,
     // The auth factor can be used but requires additional steps
     // before use, e.g. turn on Bluetooth.
-    kAvailable,
+    kAvailable = 2,
     // The auth factor is ready to authenticate. This state should
     // only be returned if authentication can be completed in one
     // step (two if a click is required).
-    kReady,
+    kReady = 3,
     // The auth factor has a non-blocking error to show the
     // user, e.g. Fingerprint’s “Not recognized”, which clears
     // after a few seconds. GetLabel() and UpdateIcon() show the
     // relevant messages.
-    kErrorTemporary,
-    // The auth factor cannot be used because of an unrecoverable
-    // error, e.g. Fingerprint’s “Too many attempts”. GetLabel()
-    // and UpdateIcon() show the relevant messages.
-    kErrorPermanent,
+    kErrorTemporary = 4,
     // The auth factor requires the user to tap/click to enter.
-    kClickRequired,
+    kClickRequired = 5,
     // Authentication is complete.
-    kAuthenticated,
+    kAuthenticated = 6,
   };
 
   AuthFactorModel();
@@ -57,8 +73,26 @@ class ASH_EXPORT AuthFactorModel {
   AuthFactorModel& operator=(AuthFactorModel&) = delete;
   virtual ~AuthFactorModel();
 
+  // Initializes |icon_| and |on_state_changed_callback_|. Should be called
+  // exactly once before any other methods. The |on_state_changed_callback| is
+  // used by LoginAuthFactorsView to determine when it is necessary to update
+  // the displayed icons and label.
+  // TODO(crbug.com/1233614): Refactor to disallow the creation of partially
+  // initialized objects.
+  void Init(AuthIconView* icon,
+            base::RepeatingClosure on_state_changed_callback);
+
+  // Set the visibility of the associated icon.
+  void SetVisible(bool visible);
+
+  // Should be called when the parent View's theme changes.
+  void OnThemeChanged();
+
+  // Return the current state of this auth factor.
   virtual AuthFactorState GetAuthFactorState() = 0;
 
+  // Returns the type of the auth factor. Each implementation of AuthFactorModel
+  // should add a new type to the AuthFactorType enum.
   virtual AuthFactorType GetType() = 0;
 
   // The ID of the label that should be shown in the current state.
@@ -70,24 +104,22 @@ class ASH_EXPORT AuthFactorModel {
   // Alternative text to be provided to screen readers.
   virtual int GetAccessibleNameId() = 0;
 
-  // Update an AuthIconView to represent the current state of the auth factor.
-  // Should call SetIcon() or set up an animation.
-  virtual void UpdateIcon(AuthIconView* icon_view) = 0;
-
   // This will be called when the auth factor's icon is tapped or clicked.
   virtual void OnTapOrClickEvent() = 0;
 
-  // Set a callback that will be called by the AuthFactorModel whenever its
-  // internal state changes. Used by LoginAuthFactorsView to determine when it
-  // is necessary to update the displayed icons and label.
-  void SetOnStateChangedCallback(base::RepeatingClosure on_state_changed);
-
  protected:
   // Should be called whenever the internal state of the auth model changes to
-  // invoke the |on_state_changed_callback_| if set.
+  // invoke the |on_state_changed_callback_| if set. Calls UpdateIcon().
   void NotifyOnStateChanged();
 
+ private:
+  // Update |icon| to represent the current state of the auth factor. Called by
+  // NotifyOnStateChanged(), so implementations do not need to call this
+  // method directly.
+  virtual void UpdateIcon(AuthIconView* icon) = 0;
+
   base::RepeatingClosure on_state_changed_callback_;
+  AuthIconView* icon_ = nullptr;
 };
 
 }  // namespace ash

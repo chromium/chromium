@@ -5,6 +5,8 @@
 #ifndef ASH_LOGIN_UI_LOGIN_AUTH_FACTORS_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_AUTH_FACTORS_VIEW_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/callback.h"
 #include "ui/views/view.h"
@@ -32,8 +34,13 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
 
     void UpdateState();
 
+    // Accessor methods for getting references to private members of
+    // LoginAuthFactorsView.
     std::vector<std::unique_ptr<AuthFactorModel>>& auth_factors();
     views::Label* label();
+    views::View* auth_factor_icon_row();
+    ArrowButtonView* arrow_button();
+    AuthIconView* checkmark_icon();
 
    private:
     LoginAuthFactorsView* const view_;
@@ -62,17 +69,47 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   // reflected in the UI.
   void UpdateState();
 
+  void ShowArrowButton();
+  void ShowSingleAuthFactor(AuthFactorModel* auth_factor);
+  void ShowReadyAuthFactors();
+  void ShowCheckmark();
+
+  // Sets the text and accessible name of the label using the provided string
+  // IDs.
+  void SetLabelTextAndAccessibleName(int label_id, int accessible_name_id);
+
+  // Computes the label to be shown when one or more auth factors are in the
+  // Ready state.
+  int GetReadyLabelId() const;
+
   // Causes screen readers to read the label as an alert.
   void FireAlert();
 
   // Should be called when the "click to enter" button is pressed.
   void ArrowButtonPressed(const ui::Event& event);
 
-  // TODO(crbug.com/1233614): Replace |icon_| with a collection of icons and
-  // animate them with, e.g. an AnimatingLayoutManager.
-  AuthIconView* icon_;
+  /////////////////////////////////////////////////////////////////////////////
+  // Child views, owned by the Views hierarchy
+
+  // A container laying added icons horizontally.
+  views::View* auth_factor_icon_row_;
+
+  // The label shown under the icons. Always visible.
   AuthFactorsLabel* label_;
+
+  // A button with an arrow icon. Only visible when an auth factor is in the
+  // kClickRequired state.
   ArrowButtonView* arrow_button_;
+
+  // A green checkmark icon (or animation) shown when an auth factor reaches
+  // the kAuthenticated state, just before the login/lock screen is dismissed.
+  AuthIconView* checkmark_icon_;
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  // The auth factor models that have been added by calling AddAuthFactor().
+  // The order here should match the order in which they appear in the UI when
+  // multiple are visible.
   std::vector<std::unique_ptr<AuthFactorModel>> auth_factors_;
 
   base::RepeatingClosure on_click_to_enter_callback_;
