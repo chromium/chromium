@@ -34,6 +34,7 @@ polymer_element_files = [
   "repair_component_chip.js",
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
+  "splash_screen.js",
   "wrapup_finalize_page.js",
   "wrapup_repair_complete_page.js",
   "wrapup_restock_page.js",
@@ -90,6 +91,7 @@ js_type_check("closure_compile_module") {
     ":repair_component_chip",
     ":shimless_rma",
     ":shimless_rma_types",
+    ":splash_screen",
     ":wrapup_finalize_page",
     ":wrapup_repair_complete_page",
     ":wrapup_restock_page",
@@ -122,6 +124,7 @@ js_library("shimless_rma") {
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
     ":shimless_rma_types",
+    ":splash_screen",
     ":wrapup_finalize_page",
     ":wrapup_repair_complete_page",
     ":wrapup_restock_page",
@@ -341,6 +344,13 @@ js_library("calibration_component_chip") {
 
 js_library("repair_component_chip") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("splash_screen") {
+  deps = [
+    ":base_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
