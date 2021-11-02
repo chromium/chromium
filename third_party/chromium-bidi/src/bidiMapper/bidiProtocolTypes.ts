@@ -95,6 +95,7 @@ export namespace Script {
 // https://w3c.github.io/webdriver-bidi/#module-browsingContext
 export namespace BrowsingContext {
   export type BrowsingContext = string;
+  export type Navigation = string;
 
   export type BrowsingContextGetTreeCommand = {
     method: 'browsingContext.getTree';
@@ -119,20 +120,42 @@ export namespace BrowsingContext {
     children: BrowsingContextInfoList;
   };
 
-  // `browsingContext.create`
-  export type BrowsingContextCreateCommand = {
-    method: 'browsingContext.create';
-    params: BrowsingContextCreateParameters;
+  export type BrowsingContextNavigateCommand = {
+    method: 'browsingContext.navigate';
+    params: BrowsingContextNavigateParameters;
   };
 
-  export type BrowsingContextCreateType = 'tab' | 'window';
-
-  export type BrowsingContextCreateParameters = {
-    type: BrowsingContextCreateType;
-  };
-  export type BrowsingContextCreateResult = {
+  export type BrowsingContextNavigateParameters = {
     context: BrowsingContext;
+    url: string;
+    wait?: ReadinessState;
   };
+
+  export type ReadinessState = 'none';
+  // TODO sadym: implement 'interactive' and 'complete' states.
+  export type BrowsingContextNavigateResult = {
+    navigation?: Navigation;
+    url: string;
+  };
+
+  export namespace PROTO {
+    // `browsingContext.create`:
+    // https://github.com/w3c/webdriver-bidi/pull/133
+    export type BrowsingContextCreateCommand = {
+      method: 'PROTO.browsingContext.create';
+      params: BrowsingContextCreateParameters;
+    };
+
+    export type BrowsingContextCreateType = 'tab' | 'window';
+
+    export type BrowsingContextCreateParameters = {
+      type?: BrowsingContextCreateType;
+    };
+
+    export type BrowsingContextCreateResult = {
+      context: BrowsingContext;
+    };
+  }
 }
 
 export namespace Session {

@@ -130,7 +130,7 @@ export class MapperServer {
     const { sessionId: mapperSessionId } =
       await browserClient.Target.attachToTarget({ targetId, flatten: true });
 
-    const mapperCdpClient = cdpConnection.sessionClient(mapperSessionId);
+    const mapperCdpClient = cdpConnection.getCdpClient(mapperSessionId);
     if (!mapperCdpClient) {
       throw new Error('Unable to connect to mapper CDP target');
     }

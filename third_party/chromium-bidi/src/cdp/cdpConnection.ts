@@ -67,7 +67,7 @@ export class CdpConnection {
    * @param sessionId The sessionId of the CdpClient to retrieve.
    * @returns The CdpClient object attached to the given session, or null if the session is not attached.
    */
-  sessionClient(sessionId: string): CdpClient {
+  getCdpClient(sessionId: string): CdpClient {
     const cdpClient = this._sessionCdpClients.get(sessionId);
     if (!cdpClient) {
       throw new Error('Unknown CDP session ID');

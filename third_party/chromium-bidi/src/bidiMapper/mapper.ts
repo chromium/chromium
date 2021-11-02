@@ -21,6 +21,8 @@ import { CdpClient, CdpConnection } from '../cdp';
 import { BidiServer } from './utils/bidiServer';
 import { ITransport } from '../utils/transport';
 
+import EVALUATOR_SCRIPT from './scripts/eval.es';
+
 import { log } from '../utils/log';
 const logSystem = log('system');
 
@@ -60,7 +62,12 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 
   // The command processor needs to start running before calling _prepareCdp
   // so that it has a chance to set up event listeners for tracking targets.
-  CommandProcessor.run(cdpConnection, bidiServer, selfTargetId);
+  CommandProcessor.run(
+    cdpConnection,
+    bidiServer,
+    selfTargetId,
+    EVALUATOR_SCRIPT
+  );
 
   // Needed to get events about new targets.
   await _prepareCdp(cdpClient);

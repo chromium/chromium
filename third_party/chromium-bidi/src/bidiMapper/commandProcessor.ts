@@ -29,12 +29,14 @@ export class CommandProcessor {
   static run(
     cdpConnection: CdpConnection,
     bidiServer: IBidiServer,
-    selfTargetId: string
+    selfTargetId: string,
+    EVALUATOR_SCRIPT: string
   ) {
     const commandProcessor = new CommandProcessor(
       cdpConnection,
       bidiServer,
-      selfTargetId
+      selfTargetId,
+      EVALUATOR_SCRIPT
     );
 
     commandProcessor.run();
@@ -43,7 +45,8 @@ export class CommandProcessor {
   private constructor(
     private _cdpConnection: CdpConnection,
     private _bidiServer: IBidiServer,
-    private _selfTargetId: string
+    private _selfTargetId: string,
+    EVALUATOR_SCRIPT: string
   ) {
     this._browserCdpClient = this._cdpConnection.browserClient();
 
@@ -55,21 +58,12 @@ export class CommandProcessor {
       },
       (t: Context) => {
         return this._onContextDestroyed(t);
-      }
+      },
+      EVALUATOR_SCRIPT
     );
   }
 
   private run() {
-    this._browserCdpClient.Target.on('attachedToTarget', async (params) => {
-      await this._contextProcessor.handleAttachedToTargetEvent(params);
-    });
-    this._browserCdpClient.Target.on('targetInfoChanged', (params) => {
-      this._contextProcessor.handleInfoChangedEvent(params);
-    });
-    this._browserCdpClient.Target.on('detachedFromTarget', (params) => {
-      this._contextProcessor.handleDetachedFromTargetEvent(params);
-    });
-
     this._bidiServer.on('message', (messageObj) => {
       return this._onBidiMessage(messageObj);
     });
@@ -181,9 +175,13 @@ export class CommandProcessor {
         return await this._contextProcessor.process_script_evaluate(
           commandData as Script.ScriptEvaluateCommand
         );
-      case 'browsingContext.create':
-        return await this._contextProcessor.process_createContext(
-          commandData as BrowsingContext.BrowsingContextCreateCommand
+      case 'PROTO.browsingContext.create':
+        return await this._contextProcessor.process_PROTO_browsingContext_create(
+          commandData as BrowsingContext.PROTO.BrowsingContextCreateCommand
+        );
+      case 'browsingContext.navigate':
+        return await this._contextProcessor.process_browsingContext_navigate(
+          commandData as BrowsingContext.BrowsingContextNavigateCommand
         );
 
       case 'PROTO.script.invoke':

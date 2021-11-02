@@ -71,10 +71,10 @@ async def read_JSON_message(websocket):
 
 # Open given URL in the given context.
 async def goto_url(websocket, contextID, url):
-    # Send "PROTO.browsingContext.navigate" command.
+    # Send "browsingContext.navigate" command.
     command = {
         "id": 9998,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": url,
             "context": contextID}}
@@ -84,7 +84,7 @@ async def goto_url(websocket, contextID, url):
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "DEBUG.Page.load"
 
-    # Assert "PROTO.browsingContext.navigate" command done.
+    # Assert "browsingContext.navigate" command done.
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 9998
     return contextID
@@ -169,22 +169,22 @@ async def ignore_test_getTreeWithNestedContexts_contextReturned(websocket):
     # TODO sadym: implement
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated(websocket):
-    # Send command.
+async def test_PROTO_browsingContextCreate_eventContextCreatedEmittedAndContextCreated(websocket):
+    initialContextID = await get_open_context_id(websocket)
+
     command = {
         "id": 9,
-        "method": "browsingContext.create",
+        "method": "PROTO.browsingContext.create",
         "params": {}}
     await send_JSON_command(websocket, command)
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
-    contextID = resp['params']['context']
+    newContextID = resp['params']['context']
     assert resp == {
         "method": "browsingContext.contextCreated",
         "params": {
-            "context":contextID,
+            "context": newContextID,
             "parent": None,
             "url": ""}}
 
@@ -193,9 +193,28 @@ async def _ignore_test_createContext_eventContextCreatedEmittedAndContextCreated
     assert resp == {
         "id": 9,
         "result": {
-            "context": contextID,
+            "context": newContextID,
             "parent": None,
             "url": ""}}
+
+    # Get all contexts and assert new context is created.
+    command = {"id": 10, "method": "browsingContext.getTree", "params": {}}
+    await send_JSON_command(websocket, command)
+
+    # Assert "browsingContext.getTree" command done.
+    # TODO sadym: make order-agnostic. Maybe order by `context`?
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 10,
+        "result": {
+            "contexts": [{
+                "context": newContextID,
+                "url": "about:blank",
+                "children": []
+            }, {
+                "context": initialContextID,
+                "url": "about:blank",
+                "children": [] }]}}
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -220,30 +239,39 @@ async def _ignore_test_PageClose_browsingContextContextDestroyedEmitted(websocke
             "url": "about:blank"}}
 
 @pytest.mark.asyncio
-# Not implemented yet.
-async def _ignore_test_navigate_eventPageLoadEmittedAndNavigated(websocket):
+async def test_navigateWaitNone_navigated(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     command = {
         "id": 15,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
-            "waitUntil": ["load", "domcontentloaded", "networkidle0", "networkidle2"],
+            "wait": "none",
             "context": contextID}}
     await send_JSON_command(websocket, command)
 
-    # Assert "DEBUG.Page.load" event emitted.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "method": "DEBUG.Page.load",
-        "params": {
-            "context": contextID}}
-
     # Assert command done.
     resp = await read_JSON_message(websocket)
-    assert resp == {"id": 15, "result": {}}
+    recursiveCompare(
+        resp,
+        {
+            "id": 15,
+            "result": {
+                "navigation": "F595626837D41F9A72482D53B0C22F25",
+                "url": "data:text/html,<h2>test</h2>"}},
+        ["navigation"])
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def _ignore_test_navigateWaitInteractive_navigated(websocket):
+    ignore = True
+
+@pytest.mark.asyncio
+# Not implemented yet.
+async def _ignore_test_navigateWaitComplete_navigated(websocket):
+    ignore = True
 
 @pytest.mark.asyncio
 # Not implemented yet.
@@ -253,7 +281,7 @@ async def _ignore_test_navigateWithShortTimeout_timeoutOccuredAndEventPageLoadEm
     # Send command.
     command = {
         "id": 16,
-        "method": "PROTO.browsingContext.navigate",
+        "method": "browsingContext.navigate",
         "params": {
             "url": "data:text/html,<h2>test</h2>",
             "context": contextID,
