@@ -602,6 +602,11 @@ const base::Feature kHandwritingGestureEditing{
 const base::Feature kHandwritingLegacyRecognition{
     "HandwritingLegacyRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables new on-device recognition for legacy handwriting input in all
+// supported languages.
+const base::Feature kHandwritingLegacyRecognitionAllLang{
+    "HandwritingLegacyRecognitionAllLang", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Background Page in the help app.
 const base::Feature kHelpAppBackgroundPage{"HelpAppBackgroundPage",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
