@@ -1,0 +1,50 @@
+From cf823a224ac15aff4e937a844191f19213b3e9fc Mon Sep 17 00:00:00 2001
+From: danakj <danakj@chromium.org>
+Date: Fri, 29 Oct 2021 11:18:28 -0400
+Subject: [PATCH] Remove cc and cfg macro usage from build.rs for
+ link-cplusplus
+
+---
+ third_party/rust/link_cplusplus/v1/crate/Cargo.toml | 5 +++--
+ third_party/rust/link_cplusplus/v1/crate/build.rs   | 4 ++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/rust/link_cplusplus/v1/crate/Cargo.toml b/third_party/rust/link_cplusplus/v1/crate/Cargo.toml
+index 139999b1a8b67..701b3e984c1e6 100644
+--- a/third_party/rust/link_cplusplus/v1/crate/Cargo.toml
++++ b/third_party/rust/link_cplusplus/v1/crate/Cargo.toml
+@@ -23,8 +23,9 @@ license = "MIT OR Apache-2.0"
+ repository = "https://github.com/dtolnay/link-cplusplus"
+ [package.metadata.docs.rs]
+ targets = ["x86_64-unknown-linux-gnu"]
+-[build-dependencies.cc]
+-version = "1.0"
++# Removed for Chromium build.
++#[build-dependencies.cc]
++#version = "1.0"
+ 
+ [features]
+ default = []
+diff --git a/third_party/rust/link_cplusplus/v1/crate/build.rs b/third_party/rust/link_cplusplus/v1/crate/build.rs
+index b95f79610c4b5..0e3340f7fd532 100644
+--- a/third_party/rust/link_cplusplus/v1/crate/build.rs
++++ b/third_party/rust/link_cplusplus/v1/crate/build.rs
+@@ -3,6 +3,9 @@ use std::fs;
+ use std::path::PathBuf;
+ 
+ fn main() {
++    // Removed for Chromium build. Chromium always uses libc++ and does this
++    // via GN rules.
++    /*
+     let libstdcxx = cfg!(feature = "libstdc++");
+     let libcxx = cfg!(feature = "libc++");
+     let nothing = cfg!(feature = "nothing");
+@@ -29,4 +32,5 @@ fn main() {
+             cc::Build::new().cpp(true).file(&path).compile("link-cplusplus");
+         }
+     }
++    */
+ }
+-- 
+2.33.1.1089.g2158813163f-goog
+
