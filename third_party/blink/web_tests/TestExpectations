@@ -5814,9 +5814,6 @@ crbug.com/1107944 [ Mac ] http/tests/devtools/tracing/timeline-paint/timeline-pa
 
 crbug.com/1092794 fast/canvas/OffscreenCanvas-2d-placeholder-willReadFrequently.html [ Failure Pass ]
 
-# Sheriff 2020-07-30
-crbug.com/1111287 http/tests/devtools/sources/debugger-breakpoints/breakpoint-with-sourcemap-dart.js [ Failure Pass Skip Timeout ]
-
 # Sheriff 2020-08-03
 crbug.com/1106429 virtual/percent-based-scrolling/max-percent-delta-page-zoom.html [ Failure Pass ]
 

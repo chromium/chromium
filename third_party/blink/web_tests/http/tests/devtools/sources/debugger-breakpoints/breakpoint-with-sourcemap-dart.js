@@ -8,12 +8,12 @@
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/breakpoint.js');
   let sourceFrame = await new Promise(
-      resolve =>
-          SourcesTestRunner.showScriptSource('breakpoint.dart', resolve));
-  SourcesTestRunner.toggleBreakpoint(sourceFrame, 2, false);
-  SourcesTestRunner.toggleBreakpoint(sourceFrame, 3, false);
-  await SourcesTestRunner.waitDebuggerPluginBreakpoints(sourceFrame);
+    resolve =>
+    SourcesTestRunner.showScriptSource('breakpoint.dart', resolve));
   await SourcesTestRunner.waitUntilDebuggerPluginLoaded(sourceFrame);
-  SourcesTestRunner.dumpDebuggerPluginBreakpoints(sourceFrame);
+  await SourcesTestRunner.runActionAndWaitForExactBreakpointDecorations(sourceFrame, [[2, 1], [3, 1]], async () => {
+    await SourcesTestRunner.toggleBreakpoint(sourceFrame, 2, false);
+    await SourcesTestRunner.toggleBreakpoint(sourceFrame, 3, false);
+  });
   SourcesTestRunner.completeDebuggerTest();
 })();
