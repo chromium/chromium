@@ -16,6 +16,7 @@
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -1323,6 +1324,20 @@ TEST_F(WindowRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
                                /*is_taskless_arc_app=*/false)
                                ->GetNativeWindow();
   EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
+}
+
+// Tests that when a window is saved in overview, its pre-overview bounds are
+// used. See https://crbug.com/1265750.
+TEST_F(WindowRestoreControllerTest, WindowsSavedInOverview) {
+  const gfx::Rect window_bounds(300, 200);
+  auto window = CreateAppWindow(window_bounds, AppType::BROWSER);
+
+  ToggleOverview();
+  EXPECT_NE(window_bounds, window->GetBoundsInScreen());
+
+  app_restore::WindowInfo* window_info = GetWindowInfo(window.get());
+  ASSERT_TRUE(window_info);
+  EXPECT_EQ(window_bounds, window_info->current_bounds);
 }
 
 }  // namespace ash
