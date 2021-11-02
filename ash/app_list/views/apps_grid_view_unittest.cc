@@ -215,6 +215,29 @@ class TestSuggestedSearchResult : public TestSearchResult {
   ~TestSuggestedSearchResult() override = default;
 };
 
+// Counts when the observed view's bounds change.
+class BoundsChangeCounter : public views::ViewObserver {
+ public:
+  explicit BoundsChangeCounter(views::View* observed_view)
+      : observed_view_(observed_view) {
+    observed_view->AddObserver(this);
+  }
+  BoundsChangeCounter(const BoundsChangeCounter&) = delete;
+  BoundsChangeCounter& operator=(const BoundsChangeCounter&) = delete;
+  ~BoundsChangeCounter() override { observed_view_->RemoveObserver(this); }
+
+  //  views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    ++bounds_change_count_;
+  }
+
+  int bounds_change_count() const { return bounds_change_count_; }
+
+ private:
+  views::View* const observed_view_;
+  int bounds_change_count_ = 0;
+};
+
 }  // namespace
 
 // Subclasses should set `is_rtl_`, `create_as_tablet_mode_`, etc. in their
@@ -2770,8 +2793,11 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
 TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   // Creates a folder item with two items.
   model_->CreateAndPopulateFolderWithApps(2);
+  model_->PopulateApps(1);
   test_api_->Update();
-  EXPECT_EQ(1, apps_grid_view_->view_model()->view_size());
+
+  // One folder and one app. Therefore the top level view count is 2.
+  EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
 
   // Open the folder.
   test_api_->PressItemAt(0);
@@ -2789,27 +2815,36 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   // of folder bounds.
   ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
 
-  // Drop the item in (0,1) spot is the root apps grid. The spot is expected to
+  // Drop the item in (0,2) spot is the root apps grid. The spot is expected to
   // be empty.
-  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
   views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              /*steps=*/5);
+  BoundsChangeCounter counter(GetItemViewInTopLevelGrid(1));
   EndDrag(folder_apps_grid_view(), /*cancel=*/false);
 
-  // The folder should be deleted. The first item should be Item 1 while the
-  // second item should be Item 2.
-  EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
-  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(1);
-  EXPECT_EQ("Item 0", dragged_view->item()->id());
+  // The folder should be deleted. The first item should be Item 1, the second
+  // item should be Item 2 and the last item should be Item 0.
+  EXPECT_EQ(3, apps_grid_view_->view_model()->view_size());
   EXPECT_EQ("Item 1", GetItemViewInTopLevelGrid(0)->item()->id());
+  EXPECT_EQ("Item 2", GetItemViewInTopLevelGrid(1)->item()->id());
+  EXPECT_EQ("Item 0", GetItemViewInTopLevelGrid(2)->item()->id());
 
+  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(2);
   if (features::IsProductivityLauncherEnabled()) {
+    // Verify that Item 2's bounds do not change after calling `EndDrag()`.
+    EXPECT_EQ(0, counter.bounds_change_count());
+
     // ProductivityLauncher keeps focus on the search box after drags.
     EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
     EXPECT_FALSE(dragged_view->HasFocus());
   } else {
+    // Verify that Item 2's bounds change once after calling `EndDrag()` due to
+    // ending the cardified state.
+    EXPECT_EQ(1, counter.bounds_change_count());
+
     // The dragged item is focused but is not selected.
     EXPECT_TRUE(dragged_view->HasFocus());
     EXPECT_FALSE(apps_grid_view_->has_selected_view());

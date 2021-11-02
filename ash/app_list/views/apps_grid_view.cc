@@ -248,23 +248,45 @@ class AppsGridView::DragViewHider : public views::ViewObserver {
 };
 
 // Class used by AppsGridView to track whether app list model is being updated
-// by the AppsGridView (by setting `updating_model_`). While this is in scope,
-// app list model changes will not cancel in progress drag, and will delay
-// `view_structure_` sanitization until the app list model update finishes.
+// by the AppsGridView (by setting `updating_model_`). While this is in scope:
+// (1) Do not cancel in progress drag due to app list model changes, and
+// (2) Delay `view_structure_` sanitization until the app list model update
+// finishes, and
+// (3) Ignore apps grid layout
 class AppsGridView::ScopedModelUpdate {
  public:
   explicit ScopedModelUpdate(AppsGridView* apps_grid_view)
-      : apps_grid_view_(apps_grid_view) {
+      : apps_grid_view_(apps_grid_view),
+        initial_grid_size_(apps_grid_view_->GetTileGridSize()) {
+    DCHECK(!apps_grid_view_->updating_model_);
     apps_grid_view_->updating_model_ = true;
+
+    // One model update may elicit multiple changes on apps grid layout. For
+    // example, moving one item out of a folder may empty the parent folder then
+    // have the folder deleted. Therefore ignore layout when `ScopedModelUpdate`
+    // is in the scope to avoid handling temporary layout.
+    DCHECK(!apps_grid_view_->ignore_layout_);
+    apps_grid_view_->ignore_layout_ = true;
+
     view_structure_sanitize_lock_ =
         apps_grid_view_->view_structure_.GetSanitizeLock();
   }
   ScopedModelUpdate(const ScopedModelUpdate&) = delete;
   ScopedModelUpdate& operator=(const ScopedModelUpdate&) = delete;
-  ~ScopedModelUpdate() { apps_grid_view_->updating_model_ = false; }
+  ~ScopedModelUpdate() {
+    DCHECK(apps_grid_view_->updating_model_);
+    apps_grid_view_->updating_model_ = false;
+
+    DCHECK(apps_grid_view_->ignore_layout_);
+    apps_grid_view_->ignore_layout_ = false;
+
+    // Perform update for the final layout.
+    apps_grid_view_->ScheduleLayout(initial_grid_size_);
+  }
 
  private:
   AppsGridView* const apps_grid_view_;
+  const gfx::Size initial_grid_size_;
   std::unique_ptr<PagedViewStructure::ScopedSanitizeLock>
       view_structure_sanitize_lock_;
 };
@@ -1912,7 +1934,8 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
   int target_item_index =
       view_structure_.GetTargetItemListIndexForMove(item, target);
 
-  // Move the item from its parent folder to top level item list.
+  // Move the item from its parent folder to top level item list. Calculate the
+  // target position in the top level list.
   syncer::StringOrdinal target_position;
   if (target_item_index < static_cast<int>(item_list_->item_count()))
     target_position = item_list_->item_at(target_item_index)->position();
@@ -1920,9 +1943,8 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
   {
     ScopedModelUpdate update(this);
     model_->MoveItemToRootAt(item, target_position);
+    RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
   }
-
-  RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
 }
 
 bool AppsGridView::ReparentItemToAnotherFolder(AppListItem* item,
@@ -1944,18 +1966,16 @@ bool AppsGridView::ReparentItemToAnotherFolder(AppListItem* item,
   if (target_item->id() == item->folder_id())
     return false;
 
-  std::string target_id_after_merge;
   {
     ScopedModelUpdate update(this);
-    target_id_after_merge = model_->MergeItems(target_item->id(), item->id());
+    const std::string target_id_after_merge =
+        model_->MergeItems(target_item->id(), item->id());
+    if (target_id_after_merge.empty()) {
+      LOG(ERROR) << "Unable to reparent to item id: " << target_item->id();
+      return false;
+    }
+    RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
   }
-
-  if (target_id_after_merge.empty()) {
-    LOG(ERROR) << "Unable to reparent to item id: " << target_item->id();
-    return false;
-  }
-
-  RemoveLastItemFromReparentItemFolderIfNecessary(source_folder_id);
 
   RecordAppMovingTypeMetrics(kMoveIntoAnotherFolder);
   return true;
@@ -1967,6 +1987,10 @@ bool AppsGridView::ReparentItemToAnotherFolder(AppListItem* item,
 // accordingly.
 void AppsGridView::RemoveLastItemFromReparentItemFolderIfNecessary(
     const std::string& source_folder_id) {
+  // This function should be called along with other model updates, such as
+  // moving an item out of the parent folder.
+  DCHECK(updating_model_);
+
   AppListFolderItem* source_folder =
       static_cast<AppListFolderItem*>(item_list_->FindItem(source_folder_id));
   if (!source_folder || (source_folder && !source_folder->ShouldAutoRemove()))
@@ -1980,7 +2004,6 @@ void AppsGridView::RemoveLastItemFromReparentItemFolderIfNecessary(
 
   // Now make the data change to remove the folder item in model.
   AppListItem* last_item = source_folder->item_list()->item_at(0);
-  ScopedModelUpdate update(this);
   model_->MoveItemToRootAt(last_item, source_folder->position());
 }
 
