@@ -10820,19 +10820,22 @@ Called by update_bad_message_reasons.py.-->
   <int value="14" label="SurfaceContent quads not supported"/>
   <int value="15" label="YUVVideo quads not supported"/>
   <int value="16"
-      label="Different clip settings in a sorting context is not supported."/>
+      label="Different clip settings in a sorting context is not supported"/>
   <int value="17"
       label="Different vertex opacities for a single texture is not supported"/>
-  <int value="18" label="RenderPassDrawQuad has a filter scale."/>
-  <int value="19" label="RenderPassDrawQuad has background filters."/>
-  <int value="20" label="RenderPassDrawQuad has a mask."/>
-  <int value="21" label="RenderPassDrawQuad has unconvertable filters."/>
-  <int value="22" label="RenderPassDrawQuad has a sorting context id."/>
-  <int value="23" label="Too many RenderPassDrawQuads."/>
-  <int value="24" label="Unsupported rounded corner rect."/>
-  <int value="25" label="Rounded rect doesn't match clip rect."/>
-  <int value="26" label="Rounded rect doesn't have uniform corner radii."/>
-  <int value="27" label="Too many quads."/>
+  <int value="18" label="RenderPassDrawQuad has a filter scale"/>
+  <int value="19" label="RenderPassDrawQuad has background filters"/>
+  <int value="20" label="RenderPassDrawQuad has a mask"/>
+  <int value="21" label="RenderPassDrawQuad has unconvertable filters"/>
+  <int value="22" label="RenderPassDrawQuad has a sorting context id"/>
+  <int value="23" label="Too many RenderPassDrawQuads"/>
+  <int value="24" label="Unsupported rounded corner rect"/>
+  <int value="25" label="Rounded rect doesn't match clip rect"/>
+  <int value="26" label="Rounded rect doesn't have uniform corner radii"/>
+  <int value="27" label="Too many quads"/>
+  <int value="28" label="YUVVideoDrawQuad not overlay candidate"/>
+  <int value="29" label="YUVVideoDrawQuad Y/UV coordinates mismatch"/>
+  <int value="30" label="YUVVideoDrawQuad has Invalid planes"/>
 </enum>
 
 <enum name="CameraPrivacySwitchEvent">
