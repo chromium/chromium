@@ -68,6 +68,46 @@ void RecordDeviceNotificationUserActionMetric(
                             type);
 }
 
+using file_manager::io_task::OperationType;
+using file_manager::io_task::ProgressStatus;
+using file_manager::util::GetDisplayableFileName16;
+using l10n_util::GetStringFUTF16;
+
+std::u16string GetIOTaskMessage(const ProgressStatus& status) {
+  switch (status.type) {
+    case OperationType::kCopy:
+      if (status.sources.size() > 1) {
+        return GetStringFUTF16(IDS_FILE_BROWSER_COPY_ITEMS_REMAINING,
+                               base::NumberToString16(status.sources.size()));
+      }
+      return GetStringFUTF16(
+          IDS_FILE_BROWSER_COPY_FILE_NAME,
+          GetDisplayableFileName16(status.sources.back().url));
+    case OperationType::kMove:
+      if (status.sources.size() > 1) {
+        return GetStringFUTF16(IDS_FILE_BROWSER_MOVE_ITEMS_REMAINING,
+                               base::NumberToString16(status.sources.size()));
+      }
+      return GetStringFUTF16(
+          IDS_FILE_BROWSER_MOVE_FILE_NAME,
+          GetDisplayableFileName16(status.sources.back().url));
+    case OperationType::kDelete:
+      // TODO: Add the right message here.
+      return u"delete";
+    case OperationType::kZip:
+      if (status.sources.size() > 1) {
+        return GetStringFUTF16(IDS_FILE_BROWSER_ZIP_ITEMS_REMAINING,
+                               base::NumberToString16(status.sources.size()));
+      }
+      return GetStringFUTF16(
+          IDS_FILE_BROWSER_ZIP_FILE_NAME,
+          GetDisplayableFileName16(status.sources.back().url));
+    default:
+      NOTREACHED();
+      return u"Unknown operation type";
+  }
+}
+
 }  // namespace
 
 namespace file_manager {
@@ -618,14 +658,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
   // From here state is kQueued or kInProgress:
   std::u16string title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
 
-  std::u16string message =
-      status.sources.size() > 1
-          ? l10n_util::GetStringFUTF16(
-                IDS_FILE_BROWSER_COPY_ITEMS_REMAINING,
-                base::NumberToString16(status.sources.size()))
-          : l10n_util::GetStringFUTF16(
-                IDS_FILE_BROWSER_COPY_FILE_NAME,
-                util::GetDisplayableFileName16(status.sources.back().url));
+  std::u16string message = GetIOTaskMessage(status);
 
   int progress = 0;
   if (status.total_bytes > 0) {
