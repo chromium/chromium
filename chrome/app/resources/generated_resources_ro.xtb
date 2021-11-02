@@ -1539,7 +1539,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2602501489742255173">Glisează în sus pentru a începe</translation>
 <translation id="2603115962224169880">Curăță computerul</translation>
 <translation id="2603355571917519942">Voice Match este gata</translation>
-<translation id="2604138917550693049">Caută imaginea folosind Google Lens</translation>
+<translation id="2604138917550693049">Caută imaginea cu Google Lens</translation>
 <translation id="2604255671529671813">Eroare de conectare la rețea</translation>
 <translation id="2605668923777146443">Accesează <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" /> ca să vezi opțiunile pentru Better Together.</translation>
 <translation id="2606246518223360146">Conectează datele</translation>
@@ -3805,7 +3805,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5051836348807686060">Verificarea ortografiei nu este acceptată pentru limbile selectate</translation>
 <translation id="5052499409147950210">Editează site-ul</translation>
 <translation id="505347685865235222">Grup nedenumit – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Caută imaginea folosind Google Lens</translation>
+<translation id="5053962746715621840">Caută imaginea cu Google Lens</translation>
 <translation id="5056950756634735043">Se conectează la container</translation>
 <translation id="5057110919553308744">Când dai clic pe extensie</translation>
 <translation id="5057403786441168405">Gestionează-ți conturile conectate. Site-urile, aplicațiile și extensiile din Chrome și Google Play pot folosi aceste conturi pentru a-ți personaliza experiența, în funcție de permisiuni. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
