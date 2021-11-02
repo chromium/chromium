@@ -1133,8 +1133,8 @@ const base::Feature kLateFormNewlineNormalization{
 
 // TODO(crbug.com/1185950): Remove this flag when the feature is fully launched
 // and released to stable with no issues.
-const base::Feature kAutoExpandDetailsElement{
-    "AutoExpandDetailsElement", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink
