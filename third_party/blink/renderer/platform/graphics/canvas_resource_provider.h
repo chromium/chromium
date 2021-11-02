@@ -89,7 +89,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // long-running RasterCHROMIUM calls that monopolize the main thread
   // of the GPU process.  By flushing periodically, we allow the rasterization
   // of canvas contents to be interleaved with other compositing and UI work.
-  static constexpr size_t kMaxRecordedOpBytes = 1024 * 1024;
+  static constexpr size_t kMaxRecordedOpBytes = 4 * 1024 * 1024;
   // The same value as is used in content::WebGraphicsConext3DProviderImpl.
   static constexpr uint64_t kMaxPinnedImageBytes = 64 * 1024 * 1024;
 
