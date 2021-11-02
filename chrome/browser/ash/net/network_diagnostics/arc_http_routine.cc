@@ -12,7 +12,7 @@
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -132,4 +132,4 @@ void ArcHttpRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

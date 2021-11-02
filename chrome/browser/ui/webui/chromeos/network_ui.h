@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_NETWORK_UI_H_
 
+#include "ash/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
+#include "ash/services/network_health/public/mojom/network_health.mojom-forward.h"
 #include "base/macros.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
-#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -39,14 +39,15 @@ class NetworkUI : public ui::MojoWebUIController {
   // Instantiates implementation of the mojom::NetworkHealthService mojo
   // interface passing the pending receiver that will be bound.
   void BindInterface(
-      mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
+      mojo::PendingReceiver<ash::network_health::mojom::NetworkHealthService>
           receiver);
 
   // Instantiates implementation of the mojom::NetworkDiagnosticsRoutines mojo
   // interface passing the pending receiver that will be bound.
   void BindInterface(
       mojo::PendingReceiver<
-          network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver);
+          ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          receiver);
 
   // Instantiates implementor of the mojom::ESimManager mojo interface
   // passing the pending receiver that will be internally bound.

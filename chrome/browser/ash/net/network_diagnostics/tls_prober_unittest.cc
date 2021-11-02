@@ -31,7 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -399,4 +399,4 @@ TEST_F(TlsProberWithRealNetworkContextTest,
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

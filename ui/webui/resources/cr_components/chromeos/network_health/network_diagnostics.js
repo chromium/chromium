@@ -11,7 +11,7 @@
  */
 
 // Namespace to make using the mojom objects more readable.
-const diagnosticsMojom = chromeos.networkDiagnostics.mojom;
+const diagnosticsMojom = ash.networkDiagnostics.mojom;
 
 /**
  * Helper function to create a routine object.
@@ -719,7 +719,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.networkDiagnostics.mojom.RoutineVerdict} verdict
+   * @param {!ash.networkDiagnostics.mojom.RoutineVerdict} verdict
    * @return {string} Untranslated string for a network diagnostic verdict
    * @private
    */

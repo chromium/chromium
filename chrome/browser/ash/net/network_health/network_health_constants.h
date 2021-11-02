@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_health {
 
 // The rate in seconds at which to sample all network's signal strengths.
@@ -18,6 +18,6 @@ constexpr base::TimeDelta kSignalStrengthSampleRate = base::Seconds(5);
 constexpr base::TimeDelta kSignalStrengthSampleWindow = base::Minutes(15);
 
 }  // namespace network_health
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_CONSTANTS_H_

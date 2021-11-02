@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
 
-#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace network_diagnostics {
 class NetworkDiagnostics;
@@ -45,6 +45,13 @@ class NetworkHealthService {
 };
 
 }  // namespace network_health
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+namespace network_health {
+using ::ash::network_health::NetworkHealthService;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_

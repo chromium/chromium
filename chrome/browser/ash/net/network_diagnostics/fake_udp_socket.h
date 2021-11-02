@@ -14,7 +14,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Provides some UDP socket functionality in tests. Most methods, unless
@@ -128,6 +128,6 @@ class FakeUdpSocket : public network::mojom::UDPSocket {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_UDP_SOCKET_H_

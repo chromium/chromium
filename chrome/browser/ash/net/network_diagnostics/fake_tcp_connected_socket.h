@@ -10,7 +10,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
-namespace chromeos {
+namespace ash {
 
 class FakeTCPConnectedSocket : public network::mojom::TCPConnectedSocket {
  public:
@@ -55,6 +55,6 @@ class FakeTCPConnectedSocket : public network::mojom::TCPConnectedSocket {
   bool disconnect_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_TCP_CONNECTED_SOCKET_H_

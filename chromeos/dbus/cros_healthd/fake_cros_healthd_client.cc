@@ -12,6 +12,9 @@ namespace cros_healthd {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after moving to ash/.
+namespace network_health = ::ash::network_health;
+
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeCrosHealthdClient* g_instance = nullptr;
 
@@ -164,7 +167,7 @@ void FakeCrosHealthdClient::EmitAudioUnderrunEventForTesting() {
 
 void FakeCrosHealthdClient::EmitConnectionStateChangedEventForTesting(
     const std::string& network_guid,
-    chromeos::network_health::mojom::NetworkState state) {
+    network_health::mojom::NetworkState state) {
   // Flush the receiver, so any pending observers are registered before the
   // event is emitted.
   receiver_.FlushForTesting();
@@ -173,7 +176,7 @@ void FakeCrosHealthdClient::EmitConnectionStateChangedEventForTesting(
 
 void FakeCrosHealthdClient::EmitSignalStrengthChangedEventForTesting(
     const std::string& network_guid,
-    chromeos::network_health::mojom::UInt32ValuePtr signal_strength) {
+    network_health::mojom::UInt32ValuePtr signal_strength) {
   // Flush the receiver, so any pending observers are registered before the
   // event is emitted.
   receiver_.FlushForTesting();
@@ -182,8 +185,8 @@ void FakeCrosHealthdClient::EmitSignalStrengthChangedEventForTesting(
 }
 
 void FakeCrosHealthdClient::RequestNetworkHealthForTesting(
-    chromeos::network_health::mojom::NetworkHealthService::
-        GetHealthSnapshotCallback callback) {
+    network_health::mojom::NetworkHealthService::GetHealthSnapshotCallback
+        callback) {
   // Flush the receiver, so any requests to send the NetworkHealthService remote
   // are processed before the request is emitted.
   receiver_.FlushForTesting();
@@ -191,7 +194,7 @@ void FakeCrosHealthdClient::RequestNetworkHealthForTesting(
 }
 
 void FakeCrosHealthdClient::RunLanConnectivityRoutineForTesting(
-    chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+    ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
         RunLanConnectivityCallback callback) {
   // Flush the receiver, so the NetworkDiagnosticsRoutines interface is
   // registered before routines are called on it.

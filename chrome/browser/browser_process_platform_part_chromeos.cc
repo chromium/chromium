@@ -298,8 +298,8 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
               &BrowserProcessPlatformPart::ShutdownPrimaryProfileServices,
               base::Unretained(this)));
 
-  if (chromeos::SystemProxyManager::Get()) {
-    chromeos::SystemProxyManager::Get()->StartObservingPrimaryProfilePrefs(
+  if (ash::SystemProxyManager::Get()) {
+    ash::SystemProxyManager::Get()->StartObservingPrimaryProfilePrefs(
         primary_profile);
   }
 
@@ -315,8 +315,8 @@ void BrowserProcessPlatformPart::ShutdownPrimaryProfileServices() {
   if (manager)
     manager->policy_service()->StopObservingPrimaryProfilePrefs();
 
-  if (chromeos::SystemProxyManager::Get())
-    chromeos::SystemProxyManager::Get()->StopObservingPrimaryProfilePrefs();
+  if (ash::SystemProxyManager::Get())
+    ash::SystemProxyManager::Get()->StopObservingPrimaryProfilePrefs();
   in_session_password_change_manager_.reset();
 }
 
@@ -361,8 +361,8 @@ ash::TimeZoneResolver* BrowserProcessPlatformPart::GetTimezoneResolver() {
         ash::SimpleGeolocationProvider::DefaultGeolocationProviderURL(),
         base::BindRepeating(&ash::system::ApplyTimeZone),
         base::BindRepeating(
-            &chromeos::DelayNetworkCall,
-            base::Milliseconds(chromeos::kDefaultNetworkRetryDelayMS)),
+            &ash::DelayNetworkCall,
+            base::Milliseconds(ash::kDefaultNetworkRetryDelayMS)),
         g_browser_process->local_state());
   }
   return timezone_resolver_.get();

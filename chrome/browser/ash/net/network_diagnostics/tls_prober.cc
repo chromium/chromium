@@ -23,7 +23,7 @@
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -185,4 +185,4 @@ void TlsProber::OnDone(int result, ProbeExitEnum probe_exit_enum) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -19,7 +19,7 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
 
@@ -257,4 +257,4 @@ void HttpsLatencyRoutine::OnHttpsRequestComplete(bool connected) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
