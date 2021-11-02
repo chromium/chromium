@@ -18,9 +18,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference;
-import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
 import org.chromium.chrome.browser.privacy_review.PrivacyReviewDialog;
@@ -64,6 +62,7 @@ public class PrivacySettings
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
+    private IncognitoLockSettings mIncognitoLockSettings;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -95,7 +94,10 @@ public class PrivacySettings
             });
         }
 
-        setUpIncognitoReauthPreference();
+        IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
+                (IncognitoReauthSettingSwitchPreference) findPreference(PREF_INCOGNITO_LOCK);
+        mIncognitoLockSettings = new IncognitoLockSettings(incognitoReauthPreference);
+        mIncognitoLockSettings.setUpIncognitoReauthPreference(getActivity());
 
         Preference safeBrowsingPreference = findPreference(PREF_SAFE_BROWSING);
         safeBrowsingPreference.setSummary(
@@ -163,36 +165,6 @@ public class PrivacySettings
                 new SpanApplier.SpanInfo("<link2>", "</link2>", servicesLink));
     }
 
-    private void setUpIncognitoReauthPreference() {
-        IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
-                (IncognitoReauthSettingSwitchPreference) findPreference(PREF_INCOGNITO_LOCK);
-        if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
-            incognitoReauthPreference.setVisible(false);
-            return;
-        }
-        incognitoReauthPreference.setLinkClickDelegate(() -> {
-            getActivity().startActivity(
-                    IncognitoReauthSettingUtils.getSystemLocationSettingsIntent());
-        });
-        incognitoReauthPreference.setOnPreferenceChangeListener(this);
-
-        updateIncognitoReauthPreference();
-    }
-
-    private void updateIncognitoReauthPreference() {
-        if (!IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) return;
-        IncognitoReauthSettingSwitchPreference incognitoReauthPreference =
-                (IncognitoReauthSettingSwitchPreference) findPreference(PREF_INCOGNITO_LOCK);
-        incognitoReauthPreference.setSummary(
-                IncognitoReauthSettingUtils.getSummaryString(getActivity()));
-        incognitoReauthPreference.setPreferenceInteractable(
-                IncognitoReauthSettingUtils.isDeviceScreenLockEnabled());
-
-        boolean lastPrefValue = UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                        .getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
-        incognitoReauthPreference.setChecked(lastPrefValue);
-    }
-
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         String key = preference.getKey();
@@ -205,11 +177,7 @@ public class PrivacySettings
         } else if (PREF_HTTPS_FIRST_MODE.equals(key)) {
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.HTTPS_ONLY_MODE_ENABLED, (boolean) newValue);
-        } else if (PREF_INCOGNITO_LOCK.equals(key)) {
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, (boolean) newValue);
         }
-
         return true;
     }
 
@@ -275,7 +243,7 @@ public class PrivacySettings
                     PrivacySandboxSettingsFragment.getStatusString(getContext()));
         }
 
-        updateIncognitoReauthPreference();
+        mIncognitoLockSettings.updateIncognitoReauthPreferenceIfNeeded(getActivity());
     }
 
     private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {

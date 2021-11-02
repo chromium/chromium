@@ -61,7 +61,7 @@ public class IncognitoReauthSettingUtils {
      * @return An {@link Intent} with the action to launch the Android security settings
      *         page.
      */
-    public static Intent getSystemLocationSettingsIntent() {
+    public static Intent getSystemSecuritySettingsIntent() {
         Intent i = new Intent(Settings.ACTION_SECURITY_SETTINGS);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return i;

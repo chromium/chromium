@@ -989,6 +989,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/printing/PrintShareActivity.java",
   "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/DoNotTrackSettings.java",
+  "java/src/org/chromium/chrome/browser/privacy/settings/IncognitoLockSettings.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImpl.java",
   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettings.java",
   "java/src/org/chromium/chrome/browser/provider/BaseColumns.java",
