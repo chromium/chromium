@@ -231,14 +231,8 @@ CopyOutputTextureResult::CopyOutputTextureResult(
     DCHECK_EQ(rect.IsEmpty(), texture_result_.planes[1].mailbox.IsZero());
   }
   // If we're constructing empty result, the callbacks must be empty.
-  // If we're constructing non-empty result, the callbacks must not be empty.
-  DCHECK_EQ(rect.IsEmpty(), release_callbacks_.empty());
-
-  if (format == Format::NV12_PLANES && !rect.IsEmpty()) {
-    // For non-empty NV12 result, we must have kNV12MaxPlanes release callbacks.
-    DCHECK_EQ(release_callbacks_.size(), kNV12MaxPlanes);
-  }
-
+  // From definition of implication: p => q  <=>  !p || q.
+  DCHECK(!rect.IsEmpty() || release_callbacks_.empty());
   // Color space must be valid for non-empty results.
   DCHECK(rect.IsEmpty() || texture_result_.color_space.IsValid());
 }

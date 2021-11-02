@@ -167,6 +167,8 @@ viz_component("common") {
     "frame_sinks/begin_frame_args.h",
     "frame_sinks/begin_frame_source.cc",
     "frame_sinks/begin_frame_source.h",
+    "frame_sinks/blit_request.cc",
+    "frame_sinks/blit_request.h",
     "frame_sinks/copy_output_request.cc",
     "frame_sinks/copy_output_request.h",
     "frame_sinks/copy_output_result.cc",

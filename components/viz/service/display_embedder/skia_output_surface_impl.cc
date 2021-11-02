@@ -775,6 +775,15 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     std::unique_ptr<CopyOutputRequest> request,
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (request->has_blit_request()) {
+    for (const auto& mailbox_holder : request->blit_request().mailboxes) {
+      if (mailbox_holder.sync_token.HasData()) {
+        resource_sync_tokens_.push_back(mailbox_holder.sync_token);
+      }
+    }
+  }
+
   auto callback =
       base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
                      base::Unretained(impl_on_gpu_.get()), id, geometry,

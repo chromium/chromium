@@ -110,7 +110,7 @@ std::unique_ptr<AggregatedRenderPass> GenerateRootRenderPass(
     DisplayResourceProvider* resource_provider,
     scoped_refptr<ContextProvider> child_context_provider,
     ClientResourceProvider* child_resource_provider,
-    SkBitmap bitmap) {
+    const SkBitmap& bitmap) {
   ResourceFormat format = (bitmap.info().colorType() == kBGRA_8888_SkColorType)
                               ? ResourceFormat::BGRA_8888
                               : ResourceFormat::RGBA_8888;
@@ -196,14 +196,19 @@ void ReadbackTextureOnGpuThread(gpu::SharedImageManager* shared_image_manager,
 
 // Reads back NV12 planes from textures returned in the result.
 // Will issue a task to the GPU thread and block on its completion.
+// The |texture_size| needs to be passed in explicitly, because if the request
+// was issued with an appended BlitRequest, the |result->size()| only describes
+// the size of the region that was populated in the caller-provided textures,
+// *not* the entire texture.
 void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
-                        std::unique_ptr<CopyOutputResult> result,
+                        CopyOutputResult* result,
+                        const gfx::Size& texture_size,
                         SkBitmap& out_luma_plane,
                         SkBitmap& out_chroma_planes) {
   base::WaitableEvent wait;
 
   gpu_service_holder->ScheduleGpuTask(base::BindLambdaForTesting(
-      [&out_luma_plane, &out_chroma_planes, &result, &wait]() {
+      [&out_luma_plane, &out_chroma_planes, result, &wait, &texture_size]() {
         auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
                                          ->gpu_service()
                                          ->shared_image_manager();
@@ -214,19 +219,35 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
 
         ReadbackTextureOnGpuThread(
             shared_image_manager, context_state,
-            result->GetTextureResult()->planes[0].mailbox, result->size(),
+            result->GetTextureResult()->planes[0].mailbox, texture_size,
             kAlpha_8_SkColorType, out_luma_plane);
 
         ReadbackTextureOnGpuThread(
             shared_image_manager, context_state,
             result->GetTextureResult()->planes[1].mailbox,
-            gfx::Size(result->size().width() / 2, result->size().height() / 2),
+            gfx::Size(texture_size.width() / 2, texture_size.height() / 2),
             kR8G8_unorm_SkColorType, out_chroma_planes);
 
         wait.Signal();
       }));
 
   wait.Wait();
+}
+
+// Generates a sequence of bytes of specified length, using the given pattern.
+// The pattern will be repeated in the generated sequence, and does not have to
+// fit in the |num_bytes| evenly. For example, for byte pattern A B C and length
+// 7, the result will be: A B C A B C A.
+std::vector<uint8_t> GeneratePixels(size_t num_bytes,
+                                    base::span<const uint8_t> pattern) {
+  std::vector<uint8_t> result;
+  result.reserve(num_bytes);
+
+  while (result.size() < num_bytes) {
+    result.push_back(pattern[result.size() % pattern.size()]);
+  }
+
+  return result;
 }
 
 }  // namespace
@@ -473,10 +494,6 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
   // Examine the image in the |result|, and compare it to the baseline PNG file.
   // Approach is the same as the one in GLNV12ConverterPixelTest.
 
-  // Allocate new bitmap, it will then be populated with Y & UV data.
-  SkBitmap actual = GLScalerTestUtil::AllocateRGBABitmap(result->size());
-  actual.eraseColor(SkColorSetARGB(0xff, 0x00, 0x00, 0x00));
-
   SkBitmap luma_plane;
   SkBitmap chroma_planes;
 
@@ -499,9 +516,13 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
     luma_plane = GLScalerTestUtil::AllocateRGBABitmap(luma_plane_size);
     chroma_planes = GLScalerTestUtil::AllocateRGBABitmap(chroma_planes_size);
 
-    ReadbackNV12Planes(gpu_service_holder_, std::move(result), luma_plane,
-                       chroma_planes);
+    ReadbackNV12Planes(gpu_service_holder_, result.get(), result->size(),
+                       luma_plane, chroma_planes);
   }
+
+  // Allocate new bitmap & populate it with Y & UV data.
+  SkBitmap actual = GLScalerTestUtil::AllocateRGBABitmap(result->size());
+  actual.eraseColor(SkColorSetARGB(0xff, 0x00, 0x00, 0x00));
 
   GLScalerTestUtil::UnpackPlanarBitmap(luma_plane, 0, &actual);
   GLScalerTestUtil::UnpackUVBitmap(chroma_planes, &actual);
@@ -517,7 +538,7 @@ TEST_P(SkiaReadbackPixelTestNV12, ExecutesCopyRequest) {
   GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
 
   constexpr float kAvgAbsoluteErrorLimit = 16.f;
-  constexpr int kMaxAbsoluteErrorLimit = 0x80;
+  constexpr int kMaxAbsoluteErrorLimit = 128;
   if (!cc::MatchesBitmap(
           actual, expected,
           cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
@@ -542,6 +563,245 @@ INSTANTIATE_TEST_SUITE_P(
 // with NV12 format if the platform does not support GL_EXT_texture_rg extension
 // in GL ES 2.0 (which is the case on Android emulator).
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SkiaReadbackPixelTestNV12);
+#endif
+
+class SkiaReadbackPixelTestNV12WithBlit
+    : public cc::PixelTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool ScaleByHalf() const { return GetParam(); }
+
+  CopyOutputResult::Destination RequestDestination() const {
+    return CopyOutputResult::Destination::kNativeTextures;
+  }
+
+  CopyOutputResult::Format RequestFormat() const {
+    return CopyOutputResult::Format::NV12_PLANES;
+  }
+
+  void SetUp() override {
+    SetUpSkiaRenderer(gfx::SurfaceOrigin::kBottomLeft);
+
+    ASSERT_TRUE(cc::ReadPNGFile(
+        GetTestFilePath(FILE_PATH_LITERAL("16_color_rects.png")),
+        &source_bitmap_));
+    source_bitmap_.setImmutable();
+  }
+
+  // Returns filepath for expected output PNG.
+  base::FilePath GetExpectedPath() const {
+    return GetTestFilePath(
+        ScaleByHalf() ? FILE_PATH_LITERAL("half_of_one_of_16_color_rects.png")
+                      : FILE_PATH_LITERAL("one_of_16_color_rects.png"));
+  }
+
+  gpu::gles2::GLES2Interface* gl() {
+    return child_context_provider_->ContextGL();
+  }
+
+ protected:
+  SkBitmap source_bitmap_;
+};
+
+// Test that SkiaRenderer readback works correctly. This test will use the
+// default readback implementation for the platform, which is either the legacy
+// GLRendererCopier or the new Skia readback API.
+TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
+  // In order to test coordinate calculations the tests will issue copy requests
+  // for a small region just to the right and below the center of the entire
+  // source texture/framebuffer.
+  gfx::Rect result_selection(kSourceSize.width() / 2, kSourceSize.height() / 2,
+                             kSourceSize.width() / 4, kSourceSize.height() / 4);
+
+  if (ScaleByHalf()) {
+    result_selection =
+        gfx::ScaleToEnclosingRect(gfx::Rect(result_selection), 0.5f);
+  }
+
+  // Check if width/2 and height/2 are even.
+  if (result_selection.width() % 2 != 0 || result_selection.height() % 2 != 0) {
+    // TODO(https://crbug.com/1256483): Fail the test case after adjusting asset
+    // sizes, if we got odd dimensions it means that the assets have been
+    // accidentally changed to no longer be even, even after scaling by half.
+    GTEST_SKIP()
+        << " The test case expects the result size to match the "
+           "request size exactly, which is not possible with NV12 "
+           "when the request size dimensions aren't even. result_selection="
+        << result_selection.ToString() << ", ScaleByHalf()=" << ScaleByHalf()
+        << ", RequestDestination()="
+        << static_cast<int>(base::to_underlying(RequestDestination()));
+  }
+
+  // Generate 2 shared images that will be owned by us. They will be used as the
+  // destination for the issued BlitRequest. The logical size of the image will
+  // be the same as kSourceSize. The destination region will be the same size of
+  // |result_selection| rectangle, with the same center as the center of
+  // kSourceSize rectangle. As a consequence, the CopyOutputResult should
+  // contain the pixels from the source image in the middle, and the rest should
+  // remain unchanged.
+
+  gfx::Rect destination_subregion = gfx::Rect(kSourceSize);
+  destination_subregion.ClampToCenteredSize(result_selection.size());
+
+  const SkColor rgba_red = SkColorSetARGB(0xff, 0xff, 0, 0);
+  const SkColor yuv_red = GLScalerTestUtil::ConvertRGBAColorToYUV(rgba_red);
+
+  const std::vector<uint8_t> luma_pattern = {
+      static_cast<uint8_t>(SkColorGetR(yuv_red))};
+  const std::vector<uint8_t> chromas_pattern = {
+      static_cast<uint8_t>(SkColorGetG(yuv_red)),
+      static_cast<uint8_t>(SkColorGetB(yuv_red))};
+
+  std::array<gpu::MailboxHolder, CopyOutputResult::kMaxPlanes> mailboxes;
+  for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+    const auto resource_format =
+        i == 0 ? ResourceFormat::RED_8 : ResourceFormat::RG_88;
+    const gfx::Size plane_size =
+        i == 0 ? kSourceSize
+               : gfx::Size(kSourceSize.width() / 2, kSourceSize.height() / 2);
+    const size_t plane_size_in_bytes =
+        plane_size.GetArea() *
+        (resource_format == ResourceFormat::RED_8 ? 1 : 2);
+
+    std::vector<uint8_t> pixels =
+        (i == 0) ? GeneratePixels(plane_size_in_bytes, luma_pattern)
+                 : GeneratePixels(plane_size_in_bytes, chromas_pattern);
+
+    mailboxes[i].mailbox =
+        child_context_provider_->SharedImageInterface()->CreateSharedImage(
+            resource_format, plane_size, gfx::ColorSpace::CreateREC709(),
+            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+            gpu::SHARED_IMAGE_USAGE_DISPLAY, pixels);
+    DCHECK(!mailboxes[i].mailbox.IsZero());
+  }
+
+  std::unique_ptr<CopyOutputResult> result;
+  {
+    auto pass = GenerateRootRenderPass(
+        resource_provider_.get(), child_context_provider_.get(),
+        child_resource_provider_.get(), source_bitmap_);
+
+    base::RunLoop loop;
+    auto request = std::make_unique<CopyOutputRequest>(
+        RequestFormat(), RequestDestination(),
+        base::BindOnce(
+            [](std::unique_ptr<CopyOutputResult>* result_out,
+               base::OnceClosure quit_closure,
+               std::unique_ptr<CopyOutputResult> result_from_copier) {
+              *result_out = std::move(result_from_copier);
+              std::move(quit_closure).Run();
+            },
+            &result, loop.QuitClosure()));
+
+    // Build CopyOutputRequest based on test parameters.
+    if (ScaleByHalf()) {
+      request->SetUniformScaleRatio(2, 1);
+    }
+    request->set_result_selection(result_selection);
+
+    request->set_blit_request(
+        BlitRequest(destination_subregion.origin(), mailboxes));
+
+    pass->copy_requests.push_back(std::move(request));
+
+    AggregatedRenderPassList pass_list;
+    SurfaceDamageRectList surface_damage_rect_list;
+    pass_list.push_back(std::move(pass));
+
+    renderer_->DecideRenderPassAllocationsForFrame(pass_list);
+    renderer_->DrawFrame(&pass_list, 1.0f, kSourceSize,
+                         gfx::DisplayColorSpaces(),
+                         std::move(surface_damage_rect_list));
+    // Call SwapBuffersSkipped(), so the renderer can have a chance to release
+    // resources.
+    renderer_->SwapBuffersSkipped();
+
+    loop.Run();
+  }
+
+  // Check that a result was produced and is of the expected rect/size.
+  ASSERT_TRUE(result);
+  ASSERT_FALSE(result->IsEmpty());
+  ASSERT_EQ(result_selection, result->rect());
+  ASSERT_EQ(result->destination(),
+            CopyOutputResult::Destination::kNativeTextures);
+
+  // Packed plane sizes. Note that for blit request, the size of the returned
+  // textures is caller-controlled, and we have issued a COR w/ blit request
+  // that is supposed to write to an image of |kSourceSize| size.
+  const gfx::Size luma_plane_size =
+      gfx::Size(kSourceSize.width() / 4, kSourceSize.height());
+  const gfx::Size chroma_planes_size =
+      gfx::Size(luma_plane_size.width(), luma_plane_size.height() / 2);
+
+  SkBitmap luma_plane = GLScalerTestUtil::AllocateRGBABitmap(luma_plane_size);
+  SkBitmap chroma_planes =
+      GLScalerTestUtil::AllocateRGBABitmap(chroma_planes_size);
+
+  ReadbackNV12Planes(gpu_service_holder_, result.get(), kSourceSize, luma_plane,
+                     chroma_planes);
+
+  for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+    child_context_provider_->SharedImageInterface()->DestroySharedImage(
+        result->GetTextureResult()->planes[i].sync_token,
+        result->GetTextureResult()->planes[i].mailbox);
+  }
+
+  // Allocate new bitmap & populate it with Y & UV data.
+  SkBitmap actual = GLScalerTestUtil::AllocateRGBABitmap(kSourceSize);
+  actual.eraseColor(SkColorSetARGB(0xff, 0x00, 0x00, 0x00));
+
+  GLScalerTestUtil::UnpackPlanarBitmap(luma_plane, 0, &actual);
+  GLScalerTestUtil::UnpackUVBitmap(chroma_planes, &actual);
+
+  // Load the expected subregion from a file - we will then write it on top of
+  // a new, all-red bitmap:
+  SkBitmap expected_subregion;
+  if (!cc::ReadPNGFile(GetExpectedPath(), &expected_subregion)) {
+    LOG(ERROR) << "Cannot read reference image: " << GetExpectedPath().value();
+    ADD_FAILURE();
+    return;
+  }
+  expected_subregion =
+      GLScalerTestUtil::CopyAndConvertToRGBA(expected_subregion);
+
+  // The textures that we passed in to BlitRequest contained NV12 plane data for
+  // an all-red image, let's re-create such a bitmap:
+  SkBitmap expected = GLScalerTestUtil::AllocateRGBABitmap(kSourceSize);
+  expected.eraseColor(rgba_red);
+
+  // Blit request should "stitch" the pixels from the source image into a
+  // sub-region of caller-provided texture - let's write our expected pixels
+  // loaded from a file into the same subregion of an all-red texture:
+  expected.writePixels(expected_subregion.pixmap(), destination_subregion.x(),
+                       destination_subregion.y());
+
+  // Now let's convert it to YUV so we can compare with the result:
+  GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
+
+  constexpr float kAvgAbsoluteErrorLimit = 16.f;
+  constexpr int kMaxAbsoluteErrorLimit = 128;
+  if (!cc::MatchesBitmap(
+          actual, expected,
+          cc::FuzzyPixelComparator(false, 100.f, 0.f, kAvgAbsoluteErrorLimit,
+                                   kMaxAbsoluteErrorLimit, 0))) {
+    ADD_FAILURE();
+    return;
+  }
+}
+
+#if !defined(OS_ANDROID) || !defined(ARCH_CPU_X86_FAMILY)
+INSTANTIATE_TEST_SUITE_P(,
+                         SkiaReadbackPixelTestNV12WithBlit,
+                         // Result scaling: Scale by half?
+                         testing::Values(true, false));
+#else
+// Don't instantiate the NV12 tests when run on Android emulator, they won't
+// work since the SkiaRenderer currently does not support CopyOutputRequests
+// with NV12 format if the platform does not support GL_EXT_texture_rg extension
+// in GL ES 2.0 (which is the case on Android emulator).
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    SkiaReadbackPixelTestNV12WithBlit);
 #endif
 
 }  // namespace viz

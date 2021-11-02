@@ -70,13 +70,14 @@ CopyOutputRequest::~CopyOutputRequest() {
 
 std::string CopyOutputRequest::ToString() const {
   return base::StringPrintf(
-      "[%s] -%s→%s-> [%s] @ [%s, %s]",
+      "[%s] -%s→%s-> [%s] @ [%s, %s] %s",
       has_area() ? area().ToString().c_str() : "noclip",
       scale_from().ToString().c_str(), scale_to().ToString().c_str(),
       has_result_selection() ? result_selection().ToString().c_str()
                              : "noclamp",
       ResultFormatToShortString(result_format()),
-      ResultDestinationToShortString(result_destination()));
+      ResultDestinationToShortString(result_destination()),
+      has_blit_request() ? blit_request_->ToString().c_str() : "noblit");
 }
 
 void CopyOutputRequest::SetScaleRatio(const gfx::Vector2d& scale_from,
@@ -100,6 +101,39 @@ void CopyOutputRequest::SetUniformScaleRatio(int scale_from, int scale_to) {
 
   scale_from_ = gfx::Vector2d(scale_from, scale_from);
   scale_to_ = gfx::Vector2d(scale_to, scale_to);
+}
+
+void CopyOutputRequest::set_blit_request(const BlitRequest& blit_request) {
+  DCHECK(!blit_request_);
+  DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
+  DCHECK_EQ(result_format(), ResultFormat::NV12_PLANES);
+
+#if DCHECK_IS_ON()
+  {
+    const gpu::MailboxHolder* first_zeroed_mailbox_it = std::find_if(
+        blit_request.mailboxes.begin(), blit_request.mailboxes.end(),
+        [](const gpu::MailboxHolder& mailbox_holder) {
+          return mailbox_holder.mailbox.IsZero();
+        });
+
+    size_t num_nonzeroed_mailboxes =
+        first_zeroed_mailbox_it - blit_request.mailboxes.begin();
+
+    switch (result_format()) {
+      case ResultFormat::RGBA:
+        DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kRGBAMaxPlanes);
+        break;
+      case ResultFormat::NV12_PLANES:
+        DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kNV12MaxPlanes);
+        break;
+      case ResultFormat::I420_PLANES:
+        DCHECK_EQ(num_nonzeroed_mailboxes, CopyOutputResult::kI420MaxPlanes);
+        break;
+    }
+  }
+#endif
+
+  blit_request_ = blit_request;
 }
 
 void CopyOutputRequest::SendResult(std::unique_ptr<CopyOutputResult> result) {

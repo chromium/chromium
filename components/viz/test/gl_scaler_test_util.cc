@@ -221,6 +221,23 @@ void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
 }
 
 // static
+SkColor GLScalerTestUtil::ConvertRGBAColorToYUV(SkColor color) {
+  const auto transform = gfx::ColorTransform::NewColorTransform(
+      DefaultRGBColorSpace(), DefaultYUVColorSpace());
+
+  gfx::ColorTransform::TriStim stim;
+
+  stim.set_x(SkColorGetR(color) / 255.0f);
+  stim.set_y(SkColorGetG(color) / 255.0f);
+  stim.set_z(SkColorGetB(color) / 255.0f);
+
+  transform->Transform(&stim, 1);
+
+  return SkColorSetARGB(SkColorGetA(color), ToClamped255(stim.x()),
+                        ToClamped255(stim.y()), ToClamped255(stim.z()));
+}
+
+// static
 SkBitmap GLScalerTestUtil::CopyAndConvertToRGBA(const SkBitmap& bitmap) {
   SkBitmap result;
   result.allocPixels(SkImageInfo::Make(

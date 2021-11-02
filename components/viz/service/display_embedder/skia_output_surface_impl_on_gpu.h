@@ -359,6 +359,13 @@ class SkiaOutputSurfaceImplOnGpu
       const gfx::ColorSpace& color_space,
       std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
           plane_access_datas);
+  // Imports surfaces needed to store the data in NV12 format from a blit
+  // request. |plane_access_datas| will be populated with information needed to
+  // access the NV12 planes.
+  bool ImportSurfacesForNV12Planes(
+      const BlitRequest& blit_request,
+      std::array<PlaneAccessData, CopyOutputResult::kNV12MaxPlanes>&
+          plane_access_datas);
 
   // Schedules a task to check if any skia readback requests have completed
   // after a short delay. Will not schedule a task if there is already a
