@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 
 namespace proxy_resolver_win {
 
@@ -37,7 +38,7 @@ class ScopedIEConfig final {
 // and it's expected that the caller will handle using it on the same thread or
 // sequence. In general, documentation for these APIs can be found here:
 // https://docs.microsoft.com/en-us/windows/win32/api/winhttp/
-class WinHttpAPIWrapper {
+class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WinHttpAPIWrapper {
  public:
   WinHttpAPIWrapper();
 

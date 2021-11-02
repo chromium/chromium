@@ -6,9 +6,8 @@ assert(is_win)
 
 component("proxy_resolver_win") {
   sources = [
-    # TODO(https://crbug.com/1032820): Implement Proxy Resolver
-    # "windows_system_proxy_resolver_impl.cc",
-    # "windows_system_proxy_resolver_impl.h",
+    "windows_system_proxy_resolver_impl.cc",
+    "windows_system_proxy_resolver_impl.h",
     "winhttp_api_wrapper.cc",
     "winhttp_api_wrapper.h",
     "winhttp_proxy_resolver_functions.cc",
@@ -19,11 +18,30 @@ component("proxy_resolver_win") {
 
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//url",
   ]
 
   public_deps = [
     "//net",
-    "//net:constants",
+    "//services/proxy_resolver_win/public/mojom",
+  ]
+
+  defines = [ "IS_PROXY_RESOLVER_WIN_IMPL" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "windows_system_proxy_resolver_impl_unittest.cc" ]
+
+  deps = [
+    ":proxy_resolver_win",
+    "//base",
+    "//base/test:test_support",
+    "//net:test_support",
+    "//services/proxy_resolver_win/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }
