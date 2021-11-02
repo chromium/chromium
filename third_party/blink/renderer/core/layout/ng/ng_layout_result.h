@@ -258,7 +258,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return HasRareData() ? rare_data_->table_column_count_ : 0;
   }
 
-  const NGGridData* GridData() const {
+  const NGGridLayoutData* GridLayoutData() const {
     return HasRareData() ? rare_data_->grid_layout_data_.get() : nullptr;
   }
 
@@ -482,7 +482,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           math_layout_data_(rare_data.math_layout_data_) {
       if (rare_data.grid_layout_data_) {
         grid_layout_data_ =
-            std::make_unique<NGGridData>(*rare_data.grid_layout_data_);
+            std::make_unique<NGGridLayoutData>(*rare_data.grid_layout_data_);
       }
     }
 
@@ -515,7 +515,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     LayoutUnit block_end_annotation_space;
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;
-    std::unique_ptr<const NGGridData> grid_layout_data_;
+    std::unique_ptr<const NGGridLayoutData> grid_layout_data_;
     absl::optional<MathData> math_layout_data_;
   };
 

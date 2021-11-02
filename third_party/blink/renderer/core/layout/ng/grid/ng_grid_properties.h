@@ -39,15 +39,6 @@ struct CORE_EXPORT NGGridProperties {
   bool has_orthogonal_item : 1;
 };
 
-struct CORE_EXPORT NGGridPlacementProperties {
-  wtf_size_t column_start_offset;
-  wtf_size_t row_start_offset;
-  wtf_size_t minor_max_end_line;
-  Vector<GridArea> positions;
-
-  bool operator==(const NGGridPlacementProperties& other) const;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_PROPERTIES_H_

@@ -46,21 +46,21 @@ class NGGridLayoutAlgorithmTest
 
   void BuildGridItemsAndTrackCollections(
       const NGGridLayoutAlgorithm& algorithm) {
-    // Measure items.
-    NGGridProperties grid_properties;
-    algorithm.ConstructAndAppendGridItems(&grid_items_, &grid_properties,
-                                          &out_of_flow_items_);
-
     NGGridPlacement grid_placement(
         algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
         algorithm.ComputeAutomaticRepetitions(kForRows));
 
+    // Measure items.
+    NGGridProperties grid_properties;
+    algorithm.ConstructAndAppendGridItems(
+        &grid_items_, &grid_placement, &grid_properties, &out_of_flow_items_);
+
     // Build block track collections.
     NGGridBlockTrackCollection column_block_track_collection(kForColumns);
     NGGridBlockTrackCollection row_block_track_collection(kForRows);
-    algorithm.BuildBlockTrackCollections(
-        &grid_items_, &column_block_track_collection,
-        &row_block_track_collection, &grid_placement);
+    algorithm.BuildBlockTrackCollections(grid_placement, &grid_items_,
+                                         &column_block_track_collection,
+                                         &row_block_track_collection);
 
     // Build algorithm track collections from the block track collections.
     column_track_collection_ = NGGridLayoutAlgorithmTrackCollection(

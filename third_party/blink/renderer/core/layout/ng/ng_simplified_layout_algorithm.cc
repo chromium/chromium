@@ -146,8 +146,8 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   }
 
   if (physical_fragment.IsGridNG()) {
-    container_builder_.TransferGridData(
-        std::make_unique<NGGridData>(*result.GridData()));
+    container_builder_.TransferGridLayoutData(
+        std::make_unique<NGGridLayoutData>(*result.GridLayoutData()));
   }
 
   if (physical_fragment.IsHiddenForPaint())
