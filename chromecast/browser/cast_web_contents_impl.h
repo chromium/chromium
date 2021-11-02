@@ -65,8 +65,6 @@ class CastWebContentsImpl : public CastWebContents,
   // CastWebContents implementation:
   int tab_id() const override;
   int id() const override;
-  void AllowWebAndMojoWebUiBindings() override;
-  void ClearRenderWidgetHostView() override;
   void SetAppProperties(const std::string& app_id,
                         const std::string& session_id,
                         bool is_audio_app,
@@ -75,6 +73,8 @@ class CastWebContentsImpl : public CastWebContents,
                         const std::vector<int32_t>& feature_permissions,
                         const std::vector<std::string>&
                             additional_feature_permission_origins) override;
+  void SetGroupInfo(const std::string& session_id,
+                    bool is_multizone_launch) override;
   void AddRendererFeatures(base::Value features) override;
   void SetInterfacesForRenderer(
       mojo::PendingRemote<mojom::RemoteInterfaces> remote_interfaces) override;
@@ -82,9 +82,6 @@ class CastWebContentsImpl : public CastWebContents,
   void ClosePage() override;
   void Stop(int error_code) override;
   void SetWebVisibilityAndPaint(bool visible) override;
-  void RegisterInterfaceProvider(
-      const InterfaceSet& interface_set,
-      service_manager::InterfaceProvider* interface_provider) override;
   bool TryBindReceiver(mojo::GenericPendingReceiver& receiver) override;
   InterfaceBundle* local_interfaces() override;
   void BlockMediaLoading(bool blocked) override;
@@ -225,10 +222,6 @@ class CastWebContentsImpl : public CastWebContents,
   RemoteInterfaces remote_interfaces_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  // Map of InterfaceSet -> InterfaceProvider pointer.
-  base::flat_map<InterfaceSet, service_manager::InterfaceProvider*>
-      interface_providers_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastWebContentsImpl> weak_factory_;

@@ -28,8 +28,7 @@ class RuntimeApplicationBase
     : public RuntimeApplication,
       public GrpcServer,
       public RuntimeApplicationServiceDelegate,
-      public RuntimeMessagePortApplicationServiceDelegate,
-      public CastWebView::Delegate {
+      public RuntimeMessagePortApplicationServiceDelegate {
  public:
   ~RuntimeApplicationBase() override;
 

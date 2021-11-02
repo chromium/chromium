@@ -98,8 +98,6 @@ group("browser") {
 
 cast_source_set("browser_base") {
   sources = [
-    "application_media_capabilities.cc",
-    "application_media_capabilities.h",
     "application_media_info_manager.cc",
     "application_media_info_manager.h",
     "audio_socket_broker.cc",
@@ -561,7 +559,10 @@ cast_source_set("simple_client") {
 
   public_deps = [ ":browser_base" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromecast/common:cors_exempt_headers",
+  ]
 }
 
 cast_source_set("base_types") {
@@ -614,18 +615,26 @@ cast_source_set("public") {
 }
 
 cast_source_set("client") {
-  public = [ "cast_web_contents_observer.h" ]
-  sources = [ "cast_web_contents_observer.cc" ]
+  public = [
+    "application_media_capabilities.h",
+    "cast_web_contents_observer.h",
+  ]
+  sources = [
+    "application_media_capabilities.cc",
+    "cast_web_contents_observer.cc",
+  ]
 
   public_deps = [
     ":base_types",
+    "//base",
     "//chromecast/browser/mojom",
     "//chromecast/common/mojom",
-    "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  deps = [ "//chromecast/base" ]
 }
 
 cast_source_set("test_support") {
@@ -633,8 +642,6 @@ cast_source_set("test_support") {
   sources = [
     "test/cast_browser_test.cc",
     "test/cast_browser_test.h",
-    "test/mock_cast_content_window_delegate.cc",
-    "test/mock_cast_content_window_delegate.h",
     "test/mock_cast_web_view.cc",
     "test/mock_cast_web_view.h",
   ]
@@ -642,6 +649,7 @@ cast_source_set("test_support") {
   public_deps = [
     ":browser",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
   ]
 
   deps = [
@@ -786,6 +794,7 @@ cast_source_set("simple_browser") {
     ":browser",
     ":prefs",
     "//chromecast/base:default_create_sys_info",
+    "//chromecast/common:cors_exempt_headers",
   ]
 }
 
