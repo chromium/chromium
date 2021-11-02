@@ -271,9 +271,9 @@ import java.lang.annotation.RetentionPolicy;
 
     // Implement WebContentsObserver:
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
             @LifecycleState int rfhLifecycleState) {
-        if (rfhLifecycleState != LifecycleState.ACTIVE || !isMainFrame) return;
+        if (!isInPrimaryMainFrame) return;
         mHandler.post(() -> {
             mCloseReason = CloseReason.FAIL_LOAD;
             mHider.run();

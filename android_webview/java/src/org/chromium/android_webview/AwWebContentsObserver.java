@@ -78,10 +78,10 @@ public class AwWebContentsObserver extends WebContentsObserver {
 
     @Override
     public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
         if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         String validatedUrl = isKnownValid ? url.getSpec() : url.getPossiblyInvalidSpec();
-        if (isMainFrame && getClientIfNeedToFireCallback(validatedUrl) != null) {
+        if (isInPrimaryMainFrame && getClientIfNeedToFireCallback(validatedUrl) != null) {
             mLastDidFinishLoadUrl = validatedUrl;
         }
     }
@@ -105,10 +105,9 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, @NetError int errorCode, GURL failingGurl,
+    public void didFailLoad(boolean isInPrimaryMainFrame, @NetError int errorCode, GURL failingGurl,
             @LifecycleState int frameLifecycleState) {
-        processFailedLoad(isMainFrame && frameLifecycleState == LifecycleState.ACTIVE, errorCode,
-                failingGurl);
+        processFailedLoad(isInPrimaryMainFrame, errorCode, failingGurl);
     }
 
     private void processFailedLoad(
