@@ -996,7 +996,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexRestoreCacheTime" units="ms"
-    expires_after="2022-03-01">
+    expires_after="2022-05-01">
   <owner>tommycli@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <summary>

@@ -281,7 +281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataReductionProxy.LastWeekAggregateKB.Services"
-    enum="DataUseServicesHash" expires_after="2022-02-27">
+    enum="DataUseServicesHash" expires_after="2022-05-01">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="DataReductionProxy.LastWeekAggregateKB.UserTraffic.Downstream.ContentType"
-    enum="DataUseContentType" expires_after="2022-02-27">
+    enum="DataUseContentType" expires_after="2022-05-01">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
   <summary>
@@ -398,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataReductionProxy.ThisWeekAggregateKB.Services"
-    enum="DataUseServicesHash" expires_after="2022-02-27">
+    enum="DataUseServicesHash" expires_after="2022-05-01">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -413,7 +413,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="DataReductionProxy.ThisWeekAggregateKB.UserTraffic.Downstream.ContentType"
-    enum="DataUseContentType" expires_after="2022-02-27">
+    enum="DataUseContentType" expires_after="2022-05-01">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
