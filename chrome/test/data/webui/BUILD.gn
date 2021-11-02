@@ -605,6 +605,8 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
     "chai_assert.js",
+    "fake_chrome_event.js",
+    "mock_timer.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
     "test_plural_string_proxy.js",

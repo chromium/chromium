@@ -46,7 +46,7 @@ var CrSettingsBrowserTest = class extends PolymerTest {
 var CrSettingsAboutPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/about_page_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/about_page_tests.js&host=webui-test';
   }
 };
 
@@ -63,7 +63,7 @@ GEN('#endif');
 var CrSettingsAvatarIconTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/avatar_icon_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/avatar_icon_test.js&host=webui-test';
   }
 };
 
@@ -74,7 +74,7 @@ TEST_F('CrSettingsAvatarIconTest', 'All', function() {
 var CrSettingsBasicPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js&host=webui-test';
   }
 
   /** @override */
@@ -92,7 +92,7 @@ TEST_F('CrSettingsBasicPageTest', 'All', function() {
 var CrSettingsBasicPageRedesignTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/basic_page_test.js&host=webui-test';
   }
 
   /** @override */
@@ -111,7 +111,7 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrSettingsLanguagesPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_page_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/languages_page_tests.js&host=webui-test';
   }
 };
 
@@ -148,7 +148,7 @@ GEN('#endif');
 var CrSettingsLanguagesSubpageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_tests.js&host=webui-test';
   }
 };
 
@@ -165,7 +165,7 @@ var CrSettingsLanguagesSubpageDetailedTest =
     class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_details_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/languages_subpage_details_tests.js&host=webui-test';
   }
 };
 
@@ -188,7 +188,7 @@ GEN('#endif');
 var CrSettingsLanguagesPageMetricsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/languages_page_metrics_test_browser.js';
+    return 'chrome://settings/test_loader.html?module=settings/languages_page_metrics_test_browser.js&host=webui-test';
   }
 };
 
@@ -203,7 +203,7 @@ GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrSettingsClearBrowsingDataTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/clear_browsing_data_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/clear_browsing_data_test.js&host=webui-test';
   }
 
   /** @override */
@@ -239,7 +239,7 @@ GEN('#endif');
 var CrSettingsMainPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/settings_main_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/settings_main_test.js&host=webui-test';
   }
 };
 
@@ -254,7 +254,7 @@ TEST_F('CrSettingsMainPageTest', 'DISABLED_MainPage', function() {
 var CrSettingsAutofillPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/autofill_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/autofill_page_test.js&host=webui-test';
   }
 };
 
@@ -266,7 +266,7 @@ var CrSettingsAutofillSectionCompanyEnabledTest =
     class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/autofill_section_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/autofill_section_test.js&host=webui-test';
   }
 };
 
@@ -282,7 +282,7 @@ TEST_F('CrSettingsAutofillSectionCompanyEnabledTest', 'All', function() {
 var CrSettingsPasswordsSectionTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/passwords_section_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/passwords_section_test.js&host=webui-test';
   }
 };
 
@@ -301,7 +301,7 @@ var CrSettingsMultiStorePasswordUiEntryTest =
     class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/multi_store_password_ui_entry_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/multi_store_password_ui_entry_test.js&host=webui-test';
   }
 };
 
@@ -312,7 +312,7 @@ TEST_F('CrSettingsMultiStorePasswordUiEntryTest', 'All', function() {
 var CrSettingsPasswordsDeviceSectionTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/passwords_device_section_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/passwords_device_section_test.js&host=webui-test';
   }
 };
 
@@ -323,7 +323,7 @@ TEST_F('CrSettingsPasswordsDeviceSectionTest', 'All', function() {
 var CrSettingsPasswordEditDialogTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/password_edit_dialog_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/password_edit_dialog_test.js&host=webui-test';
   }
 };
 
@@ -335,7 +335,7 @@ var CrSettingsMultiStoreExceptionEntryTest =
     class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/multi_store_exception_entry_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/multi_store_exception_entry_test.js&host=webui-test';
   }
 };
 
@@ -346,7 +346,7 @@ TEST_F('CrSettingsMultiStoreExceptionEntryTest', 'All', function() {
 var CrSettingsPasswordsCheckTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/password_check_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/password_check_test.js&host=webui-test';
   }
 };
 
@@ -364,7 +364,7 @@ GEN('#undef MAYBE_All');
 var CrSettingsSafetyCheckPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/safety_check_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/safety_check_page_test.js&host=webui-test';
   }
 };
 
@@ -377,7 +377,7 @@ var CrSettingsSafetyCheckChromeCleanerTest =
     class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/safety_check_chrome_cleaner_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/safety_check_chrome_cleaner_test.js&host=webui-test';
   }
 };
 
@@ -389,7 +389,7 @@ GEN('#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 var CrSettingsSiteListTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/site_list_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/site_list_tests.js&host=webui-test';
   }
 };
 
@@ -416,7 +416,7 @@ TEST_F('CrSettingsSiteListTest', 'AddExceptionDialog', function() {
 var CrSettingsSiteDetailsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/site_details_tests.js';
+    return 'chrome://settings/test_loader.html?module=settings/site_details_tests.js&host=webui-test';
   }
 };
 
@@ -436,7 +436,7 @@ TEST_F('CrSettingsSiteDetailsTest', 'MAYBE_SiteDetails', function() {
 var CrSettingsPersonalizationOptionsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/personalization_options_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/personalization_options_test.js&host=webui-test';
   }
 };
 
@@ -501,7 +501,7 @@ GEN('#endif');
 var CrSettingsPrivacyReviewPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_review_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/privacy_review_page_test.js&host=webui-test';
   }
 
   /** @override */
@@ -550,7 +550,7 @@ TEST_F('CrSettingsRouteTest', 'MAYBE_NonExistentRoute', function() {
 var CrSettingsAdvancedPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/advanced_page_test.js';
+    return 'chrome://settings/test_loader.html?module=settings/advanced_page_test.js&host=webui-test';
   }
 };
 
@@ -616,7 +616,7 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
  ['Subpage', 'settings_subpage_test.js'],
  ['SyncAccountControl', 'sync_account_control_test.js'],
  ['Textarea', 'settings_textarea_tests.js'],
- ['ToggleButton', 'settings_toggle_button_tests.js', undefined, true],
+ ['ToggleButton', 'settings_toggle_button_tests.js'],
  ['ZoomLevels', 'zoom_levels_tests.js'],
 ].forEach(test => registerTest(...test));
 
@@ -676,13 +676,12 @@ registerTest('MetricsReporting', 'metrics_reporting_tests.js');
 GEN('#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) ' +
     '&& !BUILDFLAG(IS_CHROMEOS_ASH)');
 
-function registerTest(testName, module, caseName, useNewTestHost = false) {
+function registerTest(testName, module, caseName) {
   const className = `CrSettings${testName}Test`;
-  const testHostParam = useNewTestHost ? '&host=webui-test' : '';
   this[className] = class extends CrSettingsBrowserTest {
     /** @override */
     get browsePreload() {
-      return `chrome://settings/test_loader.html?module=settings/${module}${testHostParam}`;
+      return `chrome://settings/test_loader.html?module=settings/${module}&host=webui-test`;
     }
   };
 

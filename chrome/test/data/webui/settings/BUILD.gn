@@ -137,6 +137,8 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
     "import_data_dialog_test.js",
     "system_page_tests.js",
   ]
+} else {
+  non_preprocessed_files += [ "passwords_section_test_cros.js" ]
 }
 
 if (!is_mac && !is_chromeos_ash) {
@@ -148,7 +150,6 @@ if (!is_mac && !is_chromeos_ash) {
 
 if (is_chromeos_ash) {
   non_preprocessed_files += [
-    "passwords_section_test_cros.js",
     "people_page_test_cros.js",
     "site_list_tests_cros.js",
   ]
