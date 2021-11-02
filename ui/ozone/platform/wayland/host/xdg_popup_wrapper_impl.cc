@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/xdg_popup_wrapper_impl.h"
 
+#include <aura-shell-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
@@ -17,6 +18,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
@@ -24,6 +26,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 
@@ -169,6 +172,20 @@ bool XDGPopupWrapperImpl::Initialize(const ShellPopupParams& params) {
                                          positioner));
   if (!xdg_popup_)
     return false;
+
+  if (connection_->zaura_shell()) {
+    uint32_t version =
+        zaura_shell_get_version(connection_->zaura_shell()->wl_object());
+    if (version >= ZAURA_SHELL_GET_AURA_POPUP_FOR_XDG_POPUP_SINCE_VERSION) {
+      aura_popup_.reset(zaura_shell_get_aura_popup_for_xdg_popup(
+          connection_->zaura_shell()->wl_object(), xdg_popup_.get()));
+      if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
+          version >=
+              ZAURA_POPUP_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION) {
+        zaura_popup_surface_submission_in_pixel_coordinates(aura_popup_.get());
+      }
+    }
+  }
 
   xdg_positioner_destroy(positioner);
 

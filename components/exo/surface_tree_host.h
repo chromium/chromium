@@ -123,6 +123,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
+  void set_client_submits_surfaces_in_pixel_coordinates(bool enabled) {
+    client_submits_surfaces_in_pixel_coordinates_ = enabled;
+  }
+
  protected:
   void UpdateDisplayOnTree();
 

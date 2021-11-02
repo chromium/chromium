@@ -487,6 +487,10 @@ class WaylandPopup : aura::WindowObserver {
       shell_surface_data_->shell_surface->host_window()->RemoveObserver(this);
   }
 
+  ShellSurfaceBase* GetShellSurface() {
+    return shell_surface_data_->shell_surface.get();
+  }
+
   void Grab() {
     if (!shell_surface_data_) {
       wl_resource_post_error(resource_, XDG_POPUP_ERROR_INVALID_GRAB,
@@ -805,6 +809,11 @@ void bind_xdg_shell(wl_client* client,
 ShellSurfaceBase* GetShellSurfaceFromToplevelResource(wl_resource* resource) {
   auto* toplevel = GetUserDataAs<WaylandToplevel>(resource);
   return toplevel->GetShellSurface();
+}
+
+ShellSurfaceBase* GetShellSurfaceFromPopupResource(wl_resource* resource) {
+  auto* popup = GetUserDataAs<WaylandPopup>(resource);
+  return popup->GetShellSurface();
 }
 
 }  // namespace wayland

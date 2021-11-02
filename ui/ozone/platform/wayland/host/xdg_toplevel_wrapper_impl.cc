@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/hit_test.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -90,11 +91,19 @@ bool XDGToplevelWrapperImpl::Initialize() {
     return false;
   }
 
-  if (connection_->zaura_shell() &&
-      zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
-          ZAURA_SHELL_GET_AURA_TOPLEVEL_FOR_XDG_TOPLEVEL_SINCE_VERSION) {
-    aura_toplevel_.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
-        connection_->zaura_shell()->wl_object(), xdg_toplevel_.get()));
+  if (connection_->zaura_shell()) {
+    uint32_t version =
+        zaura_shell_get_version(connection_->zaura_shell()->wl_object());
+    if (version >=
+        ZAURA_SHELL_GET_AURA_TOPLEVEL_FOR_XDG_TOPLEVEL_SINCE_VERSION) {
+      aura_toplevel_.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+          connection_->zaura_shell()->wl_object(), xdg_toplevel_.get()));
+      if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
+          version >=
+              ZAURA_TOPLEVEL_SURFACE_SUBMISSION_IN_PIXEL_COORDINATES_SINCE_VERSION)
+        zaura_toplevel_surface_submission_in_pixel_coordinates(
+            aura_toplevel_.get());
+    }
   }
 
   xdg_toplevel_add_listener(xdg_toplevel_.get(), &xdg_toplevel_listener, this);
