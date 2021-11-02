@@ -190,6 +190,12 @@ class BASE_EXPORT TaskQueueImpl {
     return main_thread_only().task_execution_trace_logger;
   }
 
+  // Removes all canceled tasks from the front of the delayed incoming queue.
+  // After calling this, GetNextDesiredWakeUp() is guaranteed to return a time
+  // for a non-canceled task, if one exists. Return true if a canceled task was
+  // removed.
+  bool RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
+
   // Enqueues any delayed tasks which should be run now on the
   // |delayed_work_queue|. Must be called from the main thread.
   void MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now);

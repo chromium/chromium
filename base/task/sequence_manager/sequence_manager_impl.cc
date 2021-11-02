@@ -4,6 +4,7 @@
 
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
+#include <atomic>
 #include <queue>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -61,6 +63,10 @@ class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
  private:
   base::Value value_;
 };
+
+// Controls whether canceled tasks are removed from the front of the queue when
+// deciding when the next wake up should happen.
+std::atomic_bool g_no_wake_ups_for_canceled_tasks{false};
 
 }  // namespace
 
@@ -190,6 +196,10 @@ SequenceManagerImpl* SequenceManagerImpl::GetCurrent() {
   return GetTLSSequenceManagerImpl()->Get();
 }
 
+// static
+const Feature SequenceManagerImpl::kNoWakeUpsForCanceledTasks{
+    "NoWakeUpsForCanceledTasks", FEATURE_DISABLED_BY_DEFAULT};
+
 SequenceManagerImpl::SequenceManagerImpl(
     std::unique_ptr<internal::ThreadController> controller,
     SequenceManager::Settings settings)
@@ -301,6 +311,17 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
       ThreadControllerWithMessagePumpImpl::CreateUnbound(settings);
   return WrapUnique(new SequenceManagerImpl(std::move(thread_controller),
                                             std::move(settings)));
+}
+
+// static
+void SequenceManagerImpl::MaybeSetNoWakeUpsForCanceledTasks() {
+  if (FeatureList::IsEnabled(kNoWakeUpsForCanceledTasks))
+    g_no_wake_ups_for_canceled_tasks.store(true, std::memory_order_relaxed);
+}
+
+// static
+void SequenceManagerImpl::ResetNoWakeUpsForCanceledTasksForTesting() {
+  g_no_wake_ups_for_canceled_tasks.store(false, std::memory_order_relaxed);
 }
 
 void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {
@@ -688,6 +709,15 @@ void SequenceManagerImpl::DidRunTask() {
 
   if (main_thread_only().nesting_depth == 0)
     CleanUpQueues();
+}
+
+void SequenceManagerImpl::RemoveAllCanceledDelayedTasksFromFront(
+    LazyNow* lazy_now) {
+  if (!g_no_wake_ups_for_canceled_tasks.load(std::memory_order_relaxed))
+    return;
+
+  for (TimeDomain* time_domain : main_thread_only().time_domains)
+    time_domain->RemoveAllCanceledDelayedTasksFromFront(lazy_now);
 }
 
 TimeTicks SequenceManagerImpl::GetNextTaskTime(LazyNow* lazy_now,

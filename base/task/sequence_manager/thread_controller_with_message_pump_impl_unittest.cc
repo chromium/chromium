@@ -128,6 +128,8 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
 
   void DidRunTask() override { running_stack_.pop_back(); }
 
+  void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override {}
+
   TimeTicks GetNextTaskTime(LazyNow* lazy_now,
                             SelectTaskOption option) const override {
     if (tasks_.empty())

@@ -229,6 +229,7 @@ void ThreadControllerImpl::DoWork(WorkType work_type) {
   work_deduplicator_.WillCheckForMoreWork();
 
   LazyNow lazy_now(time_source_);
+  sequence_->RemoveAllCanceledDelayedTasksFromFront(&lazy_now);
   TimeTicks next_task_time = sequence_->GetNextTaskTime(&lazy_now);
   // The OnSystemIdle callback allows the TimeDomains to advance virtual time
   // in which case we now have immediate word to do.

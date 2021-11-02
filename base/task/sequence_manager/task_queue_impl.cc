@@ -564,6 +564,31 @@ void TaskQueueImpl::OnFinishWakeUp(LazyNow& lazy_now) {
   }
 }
 
+bool TaskQueueImpl::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
+  // Because task destructors could have a side-effect of posting new tasks, we
+  // move all the cancelled tasks into a temporary container before deleting
+  // them. This is to avoid the queue from changing while iterating over it.
+  StackVector<Task, 8> tasks_to_delete;
+
+  while (!main_thread_only().delayed_incoming_queue.empty()) {
+    Task* task =
+        const_cast<Task*>(&main_thread_only().delayed_incoming_queue.top());
+    CHECK(task->task);
+    if (!task->task.IsCancelled())
+      break;
+
+    tasks_to_delete->push_back(std::move(*task));
+    main_thread_only().delayed_incoming_queue.pop();
+  }
+
+  if (!tasks_to_delete->empty()) {
+    UpdateDelayedWakeUp(lazy_now);
+    return true;
+  }
+
+  return false;
+}
+
 void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   // Enqueue all delayed tasks that should be running now, skipping any that
   // have been canceled.
