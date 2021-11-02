@@ -199,7 +199,13 @@ def SymbolInfosFromBinary(binary_filename):
     A list of SymbolInfo from the binary.
   """
   command = (host_paths.ToolPath('objdump', _arch), '-t', '-w', binary_filename)
-  p = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE)
+  try:
+    p = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE)
+  except OSError as error:
+    logging.error("Failed to execute the command: path=%s, binary_filename=%s",
+                  command[0], binary_filename)
+    raise error
+
   try:
     result = _SymbolInfosFromStream(p.stdout)
     return result
