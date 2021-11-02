@@ -6460,12 +6460,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoStoreInfo)},
 #endif  // !defined(OS_ANDROID)
 
-#if !defined(OS_ANDROID)
-    {"page-info-version-2-desktop", flag_descriptions::kPageInfoV2DesktopName,
-     flag_descriptions::kPageInfoV2DesktopDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoV2Desktop)},
-#endif  // !defined(OS_ANDROID)
-
     {"page-info-about-this-site", flag_descriptions::kPageInfoAboutThisSiteName,
      flag_descriptions::kPageInfoAboutThisSiteDescription,
      kOsDesktop | kOsAndroid,

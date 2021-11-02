@@ -1939,10 +1939,6 @@ const char kPageInfoAboutThisSiteName[] =
 const char kPageInfoAboutThisSiteDescription[] =
     "Enable the 'About this site' section in the page info.";
 
-const char kPageInfoV2DesktopName[] = "Page info version two desktop";
-const char kPageInfoV2DesktopDescription[] =
-    "Enable the second version of the page info menu on desktop.";
-
 const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";

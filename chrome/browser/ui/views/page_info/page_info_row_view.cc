@@ -8,7 +8,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
-#include "components/page_info/features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -18,10 +17,6 @@
 PageInfoRowView::PageInfoRowView() {
   auto button_insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
-  if (!base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    button_insets.set_left(0);
-    button_insets.set_right(0);
-  }
   layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager_->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetInteriorMargin(button_insets);
@@ -98,14 +93,6 @@ gfx::Size PageInfoRowView::CalculatePreferredSize() const {
   width += title_->GetPreferredSize().width();
   width += controls_width_;
 
-  // For current version, the row doesn't include side margins, they are part
-  // of the dialog. Because of that, min width must be adjusted.
-  int min_width = PageInfoViewFactory::kMinBubbleWidth;
-  if (!base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    min_width -= ChromeLayoutProvider::Get()
-                     ->GetInsetsMetric(views::INSETS_DIALOG)
-                     .width();
-  }
-  width = std::max(width, min_width);
+  width = std::max(width, PageInfoViewFactory::kMinBubbleWidth);
   return gfx::Size(width, views::View::GetHeightForWidth(width));
 }

@@ -37,6 +37,8 @@ class Combobox;
 // control whether that access is granted. A |PermissionSelectorRow| is not
 // itself a |View|, but creates some |View|s, which end up owned by the |View|
 // hierarchy.
+// TODO(crbug.com/1188101): Clean up permission combobox code, it isn't used
+// anymore.
 class PermissionSelectorRow {
  public:
   // The |PermissionSelectorRow|'s constituent views are added to |layout|.

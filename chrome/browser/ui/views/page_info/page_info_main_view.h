@@ -33,8 +33,7 @@ class PageInfoBubbleViewTestApi;
 }  // namespace test
 
 // The main view of the page info, contains security information, permissions
-// and  site-related settings. This is used in the experimental
-// PageInfoNewBubbleView (under a flag PageInfoV2Desktop).
+// and  site-related settings.
 class PageInfoMainView : public views::View,
                          public PageInfoUI,
                          public PermissionSelectorRowObserver,

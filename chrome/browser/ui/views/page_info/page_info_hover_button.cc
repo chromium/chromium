@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/page_info/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -80,9 +79,7 @@ PageInfoHoverButton::PageInfoHoverButton(
                      views::GridLayout::ColumnSize::kFixed, 16, 0);
 
   views::style::TextContext text_context =
-      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)
-          ? views::style::CONTEXT_DIALOG_BODY_TEXT
-          : views::style::CONTEXT_LABEL;
+      views::style::CONTEXT_DIALOG_BODY_TEXT;
 
   // Force row to have sufficient height for full line-height of the title.
   grid_layout->StartRow(
@@ -93,28 +90,17 @@ PageInfoHoverButton::PageInfoHoverButton(
   auto title_label = std::make_unique<views::StyledLabel>();
   title_label->SetTextContext(text_context);
 
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    title_ = grid_layout->AddView(std::move(title_label));
-    title_->SetCanProcessEventsWithinSubtree(false);
+  title_ = grid_layout->AddView(std::move(title_label));
+  title_->SetCanProcessEventsWithinSubtree(false);
 
-    auto secondary_label = std::make_unique<views::Label>(
-        std::u16string(), views::style::CONTEXT_LABEL,
-        views::style::STYLE_SECONDARY);
-    secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-    secondary_label_ = grid_layout->AddView(std::move(secondary_label));
+  auto secondary_label = std::make_unique<views::Label>(
+      std::u16string(), views::style::CONTEXT_LABEL,
+      views::style::STYLE_SECONDARY);
+  secondary_label->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
+  secondary_label_ = grid_layout->AddView(std::move(secondary_label));
 
-    if (action_image_icon.has_value()) {
-      grid_layout->AddView(CreateIconView(action_image_icon.value()));
-    }
-  } else {
-    auto title_wrapper = std::make_unique<views::View>();
-    title_wrapper->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal));
-    title_ = title_wrapper->AddChildView(std::move(title_label));
-    // Hover the whole button when hovering |title_|. This is OK because
-    // |title_| will never have a link in it.
-    title_wrapper->SetCanProcessEventsWithinSubtree(false);
-    grid_layout->AddView(std::move(title_wrapper));
+  if (action_image_icon.has_value()) {
+    grid_layout->AddView(CreateIconView(action_image_icon.value()));
   }
 
   if (title_resource_id)
@@ -145,21 +131,9 @@ PageInfoHoverButton::PageInfoHoverButton(
 void PageInfoHoverButton::SetTitleText(int title_resource_id,
                                        const std::u16string& secondary_text) {
   DCHECK(title_);
-  if (secondary_text.empty()) {
-    title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
-  } else if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-    title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
+  title_->SetText(l10n_util::GetStringUTF16(title_resource_id));
+  if (!secondary_text.empty()) {
     secondary_label_->SetText(secondary_text);
-  } else {
-    size_t offset;
-    auto title_text =
-        l10n_util::GetStringFUTF16(title_resource_id, secondary_text, &offset);
-    title_->SetText(title_text);
-    views::StyledLabel::RangeStyleInfo style_info;
-    style_info.text_style = views::style::STYLE_SECONDARY;
-    title_->AddStyleRange(gfx::Range(offset, offset + secondary_text.length()),
-                          style_info);
-    title_->SizeToFit(0);
   }
   UpdateAccessibleName();
 }

@@ -21,11 +21,6 @@ extern const base::Feature kPageInfoHistory;
 extern const base::Feature kPageInfoStoreInfo;
 #endif
 
-#if !defined(OS_ANDROID)
-// Enables the second version of the Page Info View on desktop.
-extern const base::Feature kPageInfoV2Desktop;
-#endif
-
 // Enables the "About this site" section in Page Info.
 extern const base::Feature kPageInfoAboutThisSite;
 

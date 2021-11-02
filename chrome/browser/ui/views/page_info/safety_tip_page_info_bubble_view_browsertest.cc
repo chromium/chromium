@@ -367,13 +367,9 @@ class SafetyTipPageInfoBubbleViewBrowserTest
 
   std::u16string GetSafetyTipSummaryText() {
     auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
-    if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-      auto* summary_label = page_info->GetViewByID(
-          PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
-      return static_cast<views::StyledLabel*>(summary_label)->GetText();
-    }
-
-    return page_info->GetWindowTitle();
+    auto* summary_label = page_info->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
+    return static_cast<views::StyledLabel*>(summary_label)->GetText();
   }
 
   void CheckPageInfoShowsSafetyTipInfo(

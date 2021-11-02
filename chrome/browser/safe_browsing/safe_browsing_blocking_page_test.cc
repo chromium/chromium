@@ -117,6 +117,7 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/styled_label.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Delayed warnings feature checks if the Suspicious Site Reporter extension
@@ -2015,13 +2016,9 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
 
   std::u16string GetSecuritySummaryTextFromPageInfo() {
     auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
-    if (base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop)) {
-      auto* summary_label = page_info->GetViewByID(
-          PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
-      return static_cast<views::StyledLabel*>(summary_label)->GetText();
-    }
-
-    return page_info->GetWindowTitle();
+    auto* summary_label = page_info->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
+    return static_cast<views::StyledLabel*>(summary_label)->GetText();
   }
 
  protected:
