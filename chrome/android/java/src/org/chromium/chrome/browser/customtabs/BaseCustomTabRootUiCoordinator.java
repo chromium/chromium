@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +16,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
@@ -24,6 +27,7 @@ import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -152,6 +156,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
 
         mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager);
         mNavigationController.get().onToolbarInitialized(mToolbarManager);
+
+        CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
+        View coordinator = mActivity.findViewById(R.id.coordinator);
+        mCustomTabHeightStrategy.onToolbarInitialized(coordinator, toolbar);
     }
 
     @Override
