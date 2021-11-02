@@ -240,10 +240,6 @@ bool AutocompleteActionPredictor::IsPreconnectable(
   return AutocompleteMatch::IsSearchType(match.type);
 }
 
-bool AutocompleteActionPredictor::IsPrerenderAbandonedForTesting() {
-  return no_state_prefetch_handle_ && no_state_prefetch_handle_->IsAbandoned();
-}
-
 void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   if (!initialized_)
     return;
