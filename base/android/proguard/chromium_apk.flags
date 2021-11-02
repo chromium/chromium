@@ -23,9 +23,6 @@
 -keepclassmembers class * extends android.app.Fragment {
   public <init>();
 }
--keepclassmembers class * extends android.support.v4.app.Fragment {
-  public <init>();
-}
 -keepclassmembers class * extends androidx.fragment.app.Fragment {
   public <init>();
 }
@@ -50,7 +47,7 @@
   public <init>(...);
 }
 
-# Referenced by android.support.v7.preference.PreferenceInflater.
+# Referenced by androidx.preference.PreferenceInflater.
 -keep public class androidx.preference.SwitchPreference {}
 
 # Don't obfuscate Parcelables as they might be marshalled outside Chrome.
