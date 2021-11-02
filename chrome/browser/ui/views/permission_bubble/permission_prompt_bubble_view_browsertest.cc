@@ -786,7 +786,8 @@ IN_PROC_BROWSER_TEST_P(QuietChipPermissionPromptBubbleViewBrowserTest,
     // Chip experiment is disabled.
     EXPECT_EQ(
         test_api_->manager()->current_request_prompt_disposition_for_testing(),
-        permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
   }
 }
 

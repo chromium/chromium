@@ -346,6 +346,8 @@ std::string GetPromptDispositionString(
       return "LocationBarLeftChip";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
       return "LocationBarLeftQuietChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
+      return "LocationBarLeftQuietAbusiveChip";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
       return "LocationBarRightAnimatedIcon";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
@@ -1036,6 +1038,7 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
       return true;
@@ -1060,6 +1063,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_STATIC_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
     case PermissionPromptDisposition::NONE_VISIBLE:
