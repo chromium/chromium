@@ -7,8 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
 #include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -24,7 +24,7 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
   DCHECK(window);
 
   const chromeos::WindowPinType previous_type =
-      window->GetProperty(chromeos::kWindowPinTypeKey);
+      window->GetProperty(lacros::kWindowPinTypeKey);
   DCHECK_NE(previous_type, chromeos::WindowPinType::kTrustedPinned)
       << "Extensions only set Trusted Pinned";
 
@@ -34,7 +34,7 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
   if (previous_pinned == pinned)
     return;
 
-  window->SetProperty(chromeos::kWindowPinTypeKey,
+  window->SetProperty(lacros::kWindowPinTypeKey,
                       pinned ? chromeos::WindowPinType::kTrustedPinned
                              : chromeos::WindowPinType::kNone);
 

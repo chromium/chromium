@@ -16,8 +16,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
 #include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -94,7 +94,7 @@ bool IsBrowserLockedFullscreen(const Browser* browser) {
   if (!window)
     return false;
 
-  return window->GetProperty(chromeos::kWindowPinTypeKey) ==
+  return window->GetProperty(lacros::kWindowPinTypeKey) ==
          chromeos::WindowPinType::kTrustedPinned;
 #else
   return false;

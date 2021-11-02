@@ -5138,6 +5138,8 @@ static_library("browser") {
       "speech/tts_lacros.h",
       "task_manager/providers/crosapi/task_manager_controller_lacros.cc",
       "task_manager/providers/crosapi/task_manager_controller_lacros.h",
+      "ui/lacros/window_properties.cc",
+      "ui/lacros/window_properties.h",
     ]
     deps += [
       "//chromeos/crosapi/cpp",
