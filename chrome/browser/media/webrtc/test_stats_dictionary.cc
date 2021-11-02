@@ -167,11 +167,11 @@ bool TestStatsDictionary::GetSequenceBoolean(
   if (!stats_->GetList(key, &list))
     return false;
   std::vector<bool> sequence;
-  bool element;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    if (!list->GetBoolean(i, &element))
+  base::Value::ConstListView args_list = list->GetList();
+  for (const base::Value& arg : args_list) {
+    if (!arg.is_bool())
       return false;
-    sequence.push_back(element);
+    sequence.push_back(arg.GetBool());
   }
   *out = std::move(sequence);
   return true;
