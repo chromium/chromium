@@ -82,7 +82,7 @@
   "chromeos-kevin-chrome": {
     "args_file": "//build/args/chromeos/kevin.gni",
     "gn_args": {
-      "dcheck_always_on": false,
+      "dcheck_always_on": true,
       "exclude_unwind_tables": false,
       "is_chrome_branded": true,
       "is_chromeos_device": true,
