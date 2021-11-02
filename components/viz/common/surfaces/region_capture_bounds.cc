@@ -21,6 +21,11 @@ RegionCaptureBounds& RegionCaptureBounds::operator=(
     const RegionCaptureBounds&) = default;
 RegionCaptureBounds::~RegionCaptureBounds() = default;
 
+void RegionCaptureBounds::Set(const RegionCaptureCropId& crop_id,
+                              const gfx::Rect& region) {
+  bounds_.insert_or_assign(crop_id, region);
+}
+
 bool RegionCaptureBounds::operator==(const RegionCaptureBounds& rhs) const {
   return bounds_ == rhs.bounds_;
 }

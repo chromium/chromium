@@ -69,7 +69,8 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
          data.ReadBeginFrameAck(&out->begin_frame_ack) &&
          data.ReadDisplayTransformHint(&out->display_transform_hint) &&
          data.ReadDelegatedInkMetadata(&out->delegated_ink_metadata) &&
-         data.ReadTransitionDirectives(&out->transition_directives);
+         data.ReadTransitionDirectives(&out->transition_directives) &&
+         data.ReadCaptureBounds(&out->capture_bounds);
 }
 
 }  // namespace mojo

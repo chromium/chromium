@@ -877,6 +877,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     SkColor background_color;
 
+    // TODO(crbug.com/1264177): properties that are rarely set should be
+    // moved to a separate sub-struct.
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
     RegionCaptureBounds capture_bounds;

@@ -84,6 +84,7 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -124,6 +125,8 @@ struct FrameTimingDetails;
 
 namespace cc {
 namespace {
+
+constexpr gfx::Size kDefaultLayerSize(100, 100);
 
 viz::SurfaceId MakeSurfaceId(const viz::FrameSinkId& frame_sink_id,
                              uint32_t parent_id) {
@@ -342,7 +345,8 @@ class LayerTreeHostImplTest : public testing::Test,
     return static_cast<T*>(root);
   }
 
-  LayerImpl* SetupDefaultRootLayer(const gfx::Size& viewport_size) {
+  LayerImpl* SetupDefaultRootLayer(
+      const gfx::Size& viewport_size = kDefaultLayerSize) {
     return SetupRootLayer<LayerImpl>(host_impl_->active_tree(), viewport_size);
   }
 
@@ -18149,7 +18153,7 @@ TEST_F(OccludedSurfaceThrottlingLayerTreeHostImplTest,
 }
 
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestSimple) {
-  SetupDefaultRootLayer(gfx::Size(100, 100));
+  SetupDefaultRootLayer();
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
@@ -18165,7 +18169,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestSimple) {
 }
 
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
-  SetupDefaultRootLayer(gfx::Size(100, 100));
+  SetupDefaultRootLayer();
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
@@ -18198,7 +18202,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestInheritance) {
 }
 
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlap) {
-  SetupDefaultRootLayer(gfx::Size(100, 100));
+  SetupDefaultRootLayer();
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
@@ -18227,7 +18231,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlap) {
 }
 
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSimpleClip) {
-  SetupDefaultRootLayer(gfx::Size(100, 100));
+  SetupDefaultRootLayer();
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
@@ -18255,7 +18259,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSimpleClip) {
 }
 
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapRoundedCorners) {
-  SetupDefaultRootLayer(gfx::Size(100, 100));
+  SetupDefaultRootLayer();
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
@@ -18285,7 +18289,7 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapRoundedCorners) {
 }
 
 TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSibling) {
-  SetupDefaultRootLayer(gfx::Size(100, 100));
+  SetupDefaultRootLayer();
 
   LayerImpl* frame_layer = AddLayer();
   frame_layer->SetBounds(gfx::Size(50, 50));
@@ -18348,6 +18352,73 @@ TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
                      false);
   EXPECT_TRUE(did_request_redraw_);
   EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
+}
+
+TEST_F(LayerTreeHostImplTest, CollectRegionCaptureBounds) {
+  const auto kFirstId = RegionCaptureCropId::CreateRandom();
+  const auto kSecondId = RegionCaptureCropId::CreateRandom();
+  const auto kThirdId = RegionCaptureCropId::CreateRandom();
+  const auto kFourthId = RegionCaptureCropId::CreateRandom();
+
+  const RegionCaptureBounds kRootBounds{
+      {{kFirstId, gfx::Rect{0, 0, 250, 250}}, {kSecondId, gfx::Rect{}}}};
+  const RegionCaptureBounds kChildBounds{
+      {{kThirdId, gfx::Rect{5, 6, 300, 400}}}};
+  const RegionCaptureBounds kSecondChildBounds{
+      {{kFourthId, gfx::Rect{20, 10, 400, 500}}}};
+
+  // Set up the root layer.
+  LayerImpl* root_layer = SetupDefaultRootLayer(gfx::Size(350, 360));
+  root_layer->SetCaptureBounds(kRootBounds);
+
+  // Set up a child layer, with a scaling transform.
+  LayerImpl* child_layer = AddLayer();
+  CopyProperties(root_layer, child_layer);
+  child_layer->SetCaptureBounds(kChildBounds);
+  gfx::Transform child_layer_transform;
+  child_layer_transform.Scale(2.0, 3.0);
+  child_layer->draw_properties().screen_space_transform =
+      std::move(child_layer_transform);
+
+  // Set up another child layer, with a rotation transform.
+  LayerImpl* second_child_layer = AddLayer();
+  CopyProperties(root_layer, second_child_layer);
+  second_child_layer->SetCaptureBounds(kSecondChildBounds);
+  gfx::Transform second_layer_transform;
+  second_layer_transform.Rotate(45);
+  second_child_layer->draw_properties().screen_space_transform =
+      std::move(second_layer_transform);
+
+  // Set up the drawable content rect and transforms for the root surface.
+  // Drawing the frame sets up the RenderSurfaceImpl in the backend.
+  UpdateDrawProperties(host_impl_->active_tree());
+  DrawFrame();
+
+  // NOTE: setting contribution has to be done after updating and drawing, and
+  // causes the layers to use draw_properties().screen_screen_transform instead
+  // of using values from the transform tree.
+  child_layer->set_contributes_to_drawn_render_surface(true);
+  second_child_layer->set_contributes_to_drawn_render_surface(true);
+
+  // Actually collect the region capture bounds.
+  const viz::RegionCaptureBounds collected_bounds =
+      host_impl_->CollectRegionCaptureBounds();
+  EXPECT_EQ(4u, collected_bounds.bounds().size());
+
+  // Validate expectations.
+  EXPECT_EQ((gfx::Rect{0, 0, 250, 250}),
+            collected_bounds.bounds().find(kFirstId)->second);
+  EXPECT_EQ((gfx::Rect{}), collected_bounds.bounds().find(kSecondId)->second);
+
+  // The third case is more interesting: the bounds are scaled 2x and 3x,
+  // which changes the origin but also causes both bounds to clip at the
+  // content rect.
+  EXPECT_EQ((gfx::Rect{10, 18, 340, 342}),
+            collected_bounds.bounds().find(kThirdId)->second);
+
+  // Finally, test a rotation instead of a simple scaling.
+  EXPECT_EQ((gfx::Rect{0, 21, 290, 339}),
+            collected_bounds.bounds().find(kFourthId)->second);
 }
 
 }  // namespace cc
