@@ -352,6 +352,17 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsPolicyTest,
 class SigninProfileExtensionsPolicyOfflineLaunchTest
     : public SigninProfileExtensionsPolicyTest {
  protected:
+  SigninProfileExtensionsPolicyOfflineLaunchTest() {
+    // In the non-PRE test, this simulates inability to make network requests
+    // for fetching the extension update manifest and CRX files. In the PRE test
+    // the server is not hung, allowing the initial installation of the
+    // extension.
+    if (!content::IsPreTest()) {
+      extension_force_install_mixin_.SetServerErrorMode(
+          ExtensionForceInstallMixin::ServerErrorMode::kHung);
+    }
+  }
+
   void SetUpOnMainThread() override {
     SigninProfileExtensionsPolicyTest::SetUpOnMainThread();
 
@@ -364,13 +375,6 @@ class SigninProfileExtensionsPolicyOfflineLaunchTest
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
             .AppendASCII(kAllowlistedAppCrxPath),
         ExtensionForceInstallMixin::WaitMode::kNone));
-
-    // In the non-PRE test, this simulates inability to make network requests
-    // for fetching the extension update manifest and CRX files. In the PRE test
-    // the server is not shut down, in order to allow the initial installation
-    // of the extension.
-    if (!content::IsPreTest())
-      EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
   }
 
   void TearDownOnMainThread() override {
