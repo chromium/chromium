@@ -398,7 +398,7 @@ BrowserDataMigrator::MigrationResult BrowserDataMigrator::MigrateInternal(
   TargetInfo target_info = GetTargetInfo(original_user_dir);
   base::ElapsedTimer timer;
 
-  if (!HasEnoughDiskSpace(target_info, new_user_dir)) {
+  if (!HasEnoughDiskSpace(target_info, original_user_dir, Mode::kCopy)) {
     RecordStatus(FinalStatus::kNotEnoughSpace, &target_info);
     return {data_wipe_result, ResultValue::kFailed};
   }
@@ -533,15 +533,35 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
 }
 
 // static
-bool BrowserDataMigrator::HasEnoughDiskSpace(const TargetInfo& target_info,
-                                             const base::FilePath& to_dir) {
-  // Check the amount of free disk space for `to_dir`'s parent directory. We
-  // check the parent directly because `to_dir` (i.e. /home/chronos/user/lacros)
-  // does not exist yet.
+bool BrowserDataMigrator::HasEnoughDiskSpace(
+    const TargetInfo& target_info,
+    const base::FilePath& original_user_dir,
+    Mode mode) {
   const int64_t free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(to_dir.DirName());
-  if (free_disk_space < target_info.TotalCopySize() + kBuffer) {
-    LOG(ERROR) << "Aborting migration. Need " << target_info.TotalCopySize()
+      base::SysInfo::AmountOfFreeDiskSpace(original_user_dir);
+
+  int64_t required_space;
+  switch (mode) {
+    case Mode::kMove:
+      required_space = target_info.common_data_size;
+      break;
+    case Mode::kDeleteAndCopy:
+      required_space =
+          target_info.TotalCopySize() - target_info.no_copy_data_size;
+      break;
+    case Mode::kDeleteAndMove:
+      required_space =
+          target_info.common_data_size - target_info.no_copy_data_size;
+      break;
+    case Mode::kCopy:
+    default:
+      DCHECK_EQ(mode, Mode::kCopy);
+      required_space = target_info.TotalCopySize();
+      break;
+  }
+
+  if (free_disk_space < required_space + kBuffer) {
+    LOG(ERROR) << "Aborting migration. Need " << required_space
                << " bytes but only have " << free_disk_space << " bytes left.";
     return false;
   }
@@ -679,6 +699,19 @@ void BrowserDataMigrator::DryRunToCollectUMA(
   RecordTargetItemSizes(target_info.ash_data_items);
   RecordTargetItemSizes(target_info.lacros_data_items);
   RecordTargetItemSizes(target_info.common_data_items);
+
+  base::UmaHistogramBoolean(
+      kDryRunCopyMigrationHasEnoughDiskSpace,
+      HasEnoughDiskSpace(target_info, profile_data_dir, Mode::kCopy));
+  base::UmaHistogramBoolean(
+      kDryRunMoveMigrationHasEnoughDiskSpace,
+      HasEnoughDiskSpace(target_info, profile_data_dir, Mode::kMove));
+  base::UmaHistogramBoolean(
+      kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace,
+      HasEnoughDiskSpace(target_info, profile_data_dir, Mode::kDeleteAndCopy));
+  base::UmaHistogramBoolean(
+      kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace,
+      HasEnoughDiskSpace(target_info, profile_data_dir, Mode::kDeleteAndMove));
 }
 
 // staic

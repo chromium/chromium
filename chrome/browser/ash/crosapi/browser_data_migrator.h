@@ -49,6 +49,15 @@ constexpr char kDryRunLacrosDataSize[] =
 constexpr char kDryRunCommonDataSize[] =
     "Ash.BrowserDataMigrator.DryRunCommonDataSizeMB";
 
+constexpr char kDryRunCopyMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Copy";
+constexpr char kDryRunMoveMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.Move";
+constexpr char kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndCopy";
+constexpr char kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace[] =
+    "Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.DeleteAndMove";
+
 // BrowserDataMigrator is responsible for one time browser data migration from
 // ash-chrome to lacros-chrome.
 class BrowserDataMigrator {
@@ -132,7 +141,18 @@ class BrowserDataMigrator {
     ResultValue data_migration;
   };
 
-  // Checks if migration is required for the user identified by `user_context`
+  // Specifies the mode of migration.
+  enum class Mode {
+    kCopy = 0,  // Copies browser related files to lacros.
+    kMove = 1,  // Moves browser related files to lacros while copying files
+                // that are needed by both ash and lacros.
+    kDeleteAndCopy = 2,  // Similar to kCopy but deletes
+                         // TargetInfo::no_copy_items to make extra space.
+    kDeleteAndMove = 3   // Similar to kMove but deletes
+                         // TargetInfo::no_copy_items to make extra space.
+  };
+
+  // Checks if migration is required for the user identified by `user_id_hash`
   // and if it is required, calls a DBus method to session_manager and
   // terminates ash-chrome.
   static void MaybeRestartToMigrate(const UserContext& user_context);
@@ -182,7 +202,8 @@ class BrowserDataMigrator {
   // Compares space available for `to_dir` against total byte size that
   // needs to be copied.
   static bool HasEnoughDiskSpace(const TargetInfo& target_info,
-                                 const base::FilePath& to_dir);
+                                 const base::FilePath& original_user_dir,
+                                 Mode mode);
 
   // TODO(crbug.com/1248318):Remove this arbitrary cap for migration once a long
   // term solution is found. Temporarily limit the migration size to 4GB until

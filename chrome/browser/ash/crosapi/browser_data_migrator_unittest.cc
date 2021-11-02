@@ -274,6 +274,13 @@ TEST_F(BrowserDataMigratorTest, DryRunToCollectUMA) {
                                      kFileSize / 1024 / 1024, 1);
   histogram_tester.ExpectBucketCount(kDryRunCommonDataSize,
                                      kFileSize * 3 / 1024 / 1024, 1);
+
+  histogram_tester.ExpectTotalCount(kDryRunCopyMigrationHasEnoughDiskSpace, 1);
+  histogram_tester.ExpectTotalCount(kDryRunMoveMigrationHasEnoughDiskSpace, 1);
+  histogram_tester.ExpectTotalCount(
+      kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace, 1);
+  histogram_tester.ExpectTotalCount(
+      kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace, 1);
 }
 
 TEST_F(BrowserDataMigratorTest, RecordStatus) {
