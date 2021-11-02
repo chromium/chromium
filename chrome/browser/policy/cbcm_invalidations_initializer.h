@@ -17,10 +17,6 @@ class SharedURLLoaderFactory;
 namespace policy {
 class CloudPolicyClient;
 
-namespace {
-class MachineLevelDeviceAccountInitializerHelper;
-}
-
 class CBCMInvalidationsInitializer {
  public:
   class Delegate {
@@ -45,6 +41,8 @@ class CBCMInvalidationsInitializer {
                            const std::string& account_email);
 
  private:
+  class MachineLevelDeviceAccountInitializerHelper;
+
   // Called by the DeviceAccountInitializer when the device service account is
   // ready.
   void AccountInitCallback(const std::string& account_email, bool success);

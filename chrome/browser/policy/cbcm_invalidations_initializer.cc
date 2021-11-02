@@ -15,12 +15,10 @@
 
 namespace policy {
 
-namespace {
-
 // A helper class to make the appropriate calls into the device account
 // initializer and manage the ChromeBrowserCloudManagementRegistrar callback's
 // lifetime.
-class MachineLevelDeviceAccountInitializerHelper
+class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
     : public DeviceAccountInitializer::Delegate {
  public:
   using Callback = base::OnceCallback<void(bool)>;
@@ -123,8 +121,6 @@ class MachineLevelDeviceAccountInitializerHelper
   Callback callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
-
-}  // namespace
 
 CBCMInvalidationsInitializer::CBCMInvalidationsInitializer(Delegate* delegate)
     : delegate_(delegate) {}
