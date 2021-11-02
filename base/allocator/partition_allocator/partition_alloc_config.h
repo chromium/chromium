@@ -39,8 +39,10 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-// Disable currently the card table to check the memory improvement.
-#define PA_STARSCAN_USE_CARD_TABLE 0
+// Use card table to avoid races for PCScan configuration without safepoints.
+// The card table provides the guaranteee that for a marked card the underling
+// super-page is fully initialized.
+#define PA_STARSCAN_USE_CARD_TABLE 1
 #else
 // The card table is permanently disabled for 32-bit.
 #define PA_STARSCAN_USE_CARD_TABLE 0
