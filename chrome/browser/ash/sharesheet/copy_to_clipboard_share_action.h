@@ -7,14 +7,12 @@
 
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 
-class Profile;
-
 namespace ash {
 namespace sharesheet {
 
 class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
  public:
-  explicit CopyToClipboardShareAction(Profile* profile);
+  CopyToClipboardShareAction();
   ~CopyToClipboardShareAction() override;
   CopyToClipboardShareAction(const CopyToClipboardShareAction&) = delete;
   CopyToClipboardShareAction& operator=(const CopyToClipboardShareAction&) =
@@ -29,7 +27,6 @@ class CopyToClipboardShareAction : public ::sharesheet::ShareAction {
   void OnClosing(::sharesheet::SharesheetController* controller) override;
 
  private:
-  Profile* profile_;
   ::sharesheet::SharesheetController* controller_ = nullptr;
 };
 

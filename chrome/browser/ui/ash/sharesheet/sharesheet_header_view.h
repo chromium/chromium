@@ -65,6 +65,9 @@ class SharesheetHeaderView : public views::View {
                  HoldingSpaceImage::BitmapCallback callback);
   void OnImageLoaded(const gfx::Size& size, size_t index);
 
+  const base::FilePath GetFilePathFromFileSystemUrl(
+      const GURL& file_system_url);
+
   // Contains the share title and text preview views.
   views::View* text_view_ = nullptr;
   SharesheetImagePreview* image_preview_;
