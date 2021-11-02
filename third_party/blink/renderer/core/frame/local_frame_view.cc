@@ -2950,6 +2950,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
     if (paint_controller_->ShouldForcePaintForBenchmark() ||
         GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint() ||
         visual_viewport_or_overlay_needs_repaint_) {
+      pre_composited_layers_.clear();
       GraphicsContext graphics_context(*paint_controller_);
 
       // Draw the overlay layer (video or WebXR DOM overlay) if present.
