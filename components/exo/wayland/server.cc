@@ -320,25 +320,11 @@ Server::~Server() {
 
 // static
 std::unique_ptr<Server> Server::Create(Display* display) {
-  std::unique_ptr<Server> server(new Server(display));
-  server->Initialize();
-
   char* runtime_dir_str = getenv("XDG_RUNTIME_DIR");
   if (!runtime_dir_str) {
     LOG(ERROR) << "XDG_RUNTIME_DIR not set in the environment";
     return nullptr;
   }
-
-  const base::FilePath runtime_dir(runtime_dir_str);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On debugging chromeos-chrome on linux platform,
-  // try to ensure the directory if missing.
-  if (!base::SysInfo::IsRunningOnChromeOS()) {
-    CHECK(base::DirectoryExists(runtime_dir) ||
-          base::CreateDirectory(runtime_dir))
-        << "Failed to create XDG_RUNTIME_DIR";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::string socket_name(kSocketName);
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -346,13 +332,36 @@ std::unique_ptr<Server> Server::Create(Display* display) {
     socket_name =
         command_line->GetSwitchValueASCII(switches::kWaylandServerSocket);
   }
+  return Create(display, base::FilePath(runtime_dir_str).Append(socket_name));
+}
 
-  if (!server->AddSocket(socket_name.c_str())) {
-    LOG(ERROR) << "Failed to add socket: " << socket_name;
+// static
+std::unique_ptr<Server> Server::Create(Display* display,
+                                       const base::FilePath& socket_path) {
+  if (!socket_path.IsAbsolute()) {
+    LOG(ERROR) << "Unable to create a wayland server. The provided path must "
+                  "be absolute, got: "
+               << socket_path;
     return nullptr;
   }
 
-  base::FilePath socket_path = base::FilePath(runtime_dir).Append(socket_name);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On debugging chromeos-chrome on linux platform,
+  // try to ensure the directory if missing.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    base::FilePath runtime_dir = socket_path.DirName();
+    CHECK(base::DirectoryExists(runtime_dir) ||
+          base::CreateDirectory(runtime_dir))
+        << "Failed to create XDG_RUNTIME_DIR";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  std::unique_ptr<Server> server(new Server(display));
+  server->Initialize();
+  if (!server->AddSocket(socket_path.MaybeAsASCII().c_str())) {
+    LOG(ERROR) << "Failed to add socket: " << socket_path;
+    return nullptr;
+  }
 
   // Change permissions on the socket.
   struct group wayland_group;

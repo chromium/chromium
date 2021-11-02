@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "components/exo/wayland/scoped_wl.h"
@@ -52,6 +53,10 @@ class Server : public display::DisplayObserver {
   // Creates a Wayland display server that clients can connect to using the
   // default socket name.
   static std::unique_ptr<Server> Create(Display* display);
+
+  // As above, but where the socket's name is |socket_path|.
+  static std::unique_ptr<Server> Create(Display* display,
+                                        const base::FilePath& socket_path);
 
   void Initialize();
 
