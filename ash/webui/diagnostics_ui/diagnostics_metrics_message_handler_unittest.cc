@@ -4,6 +4,7 @@
 
 #include "ash/webui/diagnostics_ui/diagnostics_metrics_message_handler.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/public/test/test_web_ui.h"
@@ -16,11 +17,23 @@ namespace {
 
 const base::TimeDelta kDefaultTimeDelta = base::Minutes(1);
 
+// Handler names:
+const char kRecordNavigation[] = "recordNavigation";
+
+// Metrics:
+const char kConnectivityOpenDurationMetric[] =
+    "ChromeOS.DiagnosticsUi.Connectivity.OpenDuration";
+const char kInputOpenDurationMetric[] =
+    "ChromeOS.DiagnosticsUi.Input.OpenDuration";
+const char kSystemOpenDurationMetric[] =
+    "ChromeOS.DiagnosticsUi.System.OpenDuration";
+
 class DiagnosticsMetricsMessageHandlerTest : public testing::Test {
  public:
   DiagnosticsMetricsMessageHandlerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        web_ui_() {}
+        web_ui_(),
+        histograms() {}
 
   ~DiagnosticsMetricsMessageHandlerTest() override = default;
 
@@ -34,7 +47,7 @@ class DiagnosticsMetricsMessageHandlerTest : public testing::Test {
     base::ListValue args;
     args.Append(base::Value(static_cast<int>(from)));
     args.Append(base::Value(static_cast<int>(to)));
-    web_ui_.HandleReceivedMessage("recordNavigation", &args);
+    web_ui_.HandleReceivedMessage(kRecordNavigation, &args);
 
     task_environment_.RunUntilIdle();
   }
@@ -47,6 +60,7 @@ class DiagnosticsMetricsMessageHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   content::TestWebUI web_ui_;
   std::unique_ptr<DiagnosticsMetricsMessageHandler> handler_;
+  base::HistogramTester histograms;
 };
 }  // namespace
 
@@ -62,6 +76,38 @@ TEST_F(DiagnosticsMetricsMessageHandlerTest, InitializedCorrectly) {
   EXPECT_EQ(expected_view, handler_->GetCurrentViewForTesting());
   EXPECT_EQ(kDefaultTimeDelta,
             handler_->GetElapsedNavigationTimeDeltaForTesting());
+}
+
+TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleNoRecordNavigationMessage) {
+  NavigationView expected_initial_view = NavigationView::kSystem;
+  InitializeHandler(expected_initial_view);
+  AdvanceClock(kDefaultTimeDelta);
+
+  histograms.ExpectTotalCount(
+      ash::diagnostics::metrics::kConnectivityOpenDurationMetric,
+      /** count= */ 0);
+  histograms.ExpectTotalCount(
+      ash::diagnostics::metrics::kConnectivityOpenDurationMetric,
+      /** count= */ 0);
+  histograms.ExpectTotalCount(
+      ash::diagnostics::metrics::kInputOpenDurationMetric, /** count= */ 0);
+  EXPECT_EQ(expected_initial_view, handler_->GetCurrentViewForTesting());
+  EXPECT_EQ(kDefaultTimeDelta,
+            handler_->GetElapsedNavigationTimeDeltaForTesting());
+  // Application shutdown should trigger metrics.
+  handler_.reset();
+  task_environment_.RunUntilIdle();
+  histograms.ExpectTimeBucketCount(kSystemOpenDurationMetric,
+                                   /** elapsed_time */ kDefaultTimeDelta,
+                                   /** count= */ 1);
+
+  histograms.ExpectTotalCount(
+      ash::diagnostics::metrics::kSystemOpenDurationMetric, /** count= */ 1);
+  histograms.ExpectTotalCount(
+      ash::diagnostics::metrics::kConnectivityOpenDurationMetric,
+      /** count= */ 0);
+  histograms.ExpectTotalCount(
+      ash::diagnostics::metrics::kInputOpenDurationMetric, /** count= */ 0);
 }
 
 TEST_F(DiagnosticsMetricsMessageHandlerTest, HandleRecordNavigationMessage) {

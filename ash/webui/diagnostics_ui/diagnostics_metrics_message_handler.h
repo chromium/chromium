@@ -33,10 +33,11 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
   DiagnosticsMetricsMessageHandler(DiagnosticsMetricsMessageHandler&) = delete;
   DiagnosticsMetricsMessageHandler& operator=(
       DiagnosticsMetricsMessageHandler&) = delete;
-  ~DiagnosticsMetricsMessageHandler() override = default;
+  ~DiagnosticsMetricsMessageHandler() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
+
   // Test helper functions:
   NavigationView GetCurrentViewForTesting();
   base::TimeDelta GetElapsedNavigationTimeDeltaForTesting();
