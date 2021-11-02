@@ -249,11 +249,6 @@ enum DocumentClass {
   kXMLDocumentClass = 1 << 6,
 };
 
-// Best understood as a boolean.
-// kShadowCascadeNone means that there are no shadow roots.
-// kShadowCascade means that there might be shadow roots.
-enum ShadowCascadeOrder { kShadowCascadeNone, kShadowCascade };
-
 using DocumentClassFlags = unsigned char;
 
 // A map of IDL attribute name to Element list value, for one particular
@@ -1493,14 +1488,9 @@ class CORE_EXPORT Document : public ContainerNode,
   SnapCoordinator& GetSnapCoordinator();
   void PerformScrollSnappingTasks();
 
-  ShadowCascadeOrder GetShadowCascadeOrder() const {
-    return shadow_cascade_order_;
-  }
-  void SetShadowCascadeOrder(ShadowCascadeOrder);
+  void SetContainsShadowRoot() { may_contain_shadow_roots_ = true; }
 
-  bool ContainsShadowTree() const {
-    return shadow_cascade_order_ == ShadowCascadeOrder::kShadowCascade;
-  }
+  bool MayContainShadowRoots() const { return may_contain_shadow_roots_; }
 
   RootScrollerController& GetRootScrollerController() const {
     DCHECK(root_scroller_controller_);
@@ -1838,8 +1828,6 @@ class CORE_EXPORT Document : public ContainerNode,
   Node* Clone(Document&, CloneChildrenFlag) const override;
   void CloneDataFromDocument(const Document&);
 
-  ShadowCascadeOrder shadow_cascade_order_ = kShadowCascadeNone;
-
   void UpdateTitle(const String&);
   void DispatchDidReceiveTitle();
   void UpdateFocusAppearance();
@@ -2048,6 +2036,10 @@ class CORE_EXPORT Document : public ContainerNode,
   bool is_dns_prefetch_enabled_;
   bool have_explicitly_disabled_dns_prefetch_;
   bool contains_plugins_;
+
+  // Set to true whenever shadow root is attached to document. Does not
+  // get reset if all roots are removed.
+  bool may_contain_shadow_roots_ = false;
 
   // https://html.spec.whatwg.org/C/dynamic-markup-insertion.html#ignore-destructive-writes-counter
   unsigned ignore_destructive_write_count_;
