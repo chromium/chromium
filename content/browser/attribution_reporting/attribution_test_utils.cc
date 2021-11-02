@@ -149,6 +149,7 @@ void TestAttributionManager::HandleSource(StorableSource source) {
   last_impression_source_type_ = source.source_type();
   last_impression_origin_ = source.impression_origin();
   last_attribution_source_priority_ = source.priority();
+  last_impression_time_ = source.impression_time();
 }
 
 void TestAttributionManager::HandleTrigger(StorableTrigger trigger) {

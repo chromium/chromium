@@ -76,8 +76,8 @@ public class AttributionReportingProviderImpl extends AttributionReportingProvid
                 values.getAsString(AttributionConstants.EXTRA_ATTRIBUTION_REPORT_TO);
         final Long expiry = values.getAsLong(AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY);
 
-        final AttributionParameters parameters = new AttributionParameters(sourcePackageName,
-                sourceEventId, destination, reportTo, expiry == null ? 0 : expiry.longValue());
+        final AttributionParameters parameters = new AttributionParameters(
+                sourcePackageName, sourceEventId, destination, reportTo, expiry);
 
         FutureTask<Uri> insertTask = new FutureTask<>(() -> {
             if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
@@ -142,7 +142,8 @@ public class AttributionReportingProviderImpl extends AttributionReportingProvid
     private Uri insertOnUiThread(final AttributionParameters parameters) {
         AttributionReporter.getInstance().reportAppImpression(Profile.getLastUsedRegularProfile(),
                 parameters.getSourcePackageName(), parameters.getSourceEventId(),
-                parameters.getDestination(), parameters.getReportTo(), parameters.getExpiry());
+                parameters.getDestination(), parameters.getReportTo(), parameters.getExpiry(),
+                parameters.getEventTime());
 
         // We don't have a meaningful Uri to return, so just return an empty one to indicate
         // success (in place of null for failure).

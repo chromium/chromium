@@ -206,6 +206,8 @@ class TestAttributionManager : public AttributionManager {
     return last_impression_origin_;
   }
 
+  const base::Time last_impression_time() { return last_impression_time_; }
+
   const absl::optional<int64_t>& last_attribution_source_priority() {
     return last_attribution_source_priority_;
   }
@@ -217,6 +219,7 @@ class TestAttributionManager : public AttributionManager {
   absl::optional<StorableSource::SourceType> last_impression_source_type_;
   absl::optional<url::Origin> last_impression_origin_;
   absl::optional<int64_t> last_attribution_source_priority_;
+  base::Time last_impression_time_;
   size_t num_sources_ = 0;
   size_t num_triggers_ = 0;
 
