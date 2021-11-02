@@ -83,6 +83,8 @@ class SSLClientCertPendingRequests
 
   void AddRequest(std::unique_ptr<ClientCertRequest> request);
 
+  size_t GetDialogCount();
+
   void RequestComplete(net::SSLCertRequestInfo* info,
                        scoped_refptr<net::X509Certificate> cert,
                        scoped_refptr<net::SSLPrivateKey> key);
@@ -108,6 +110,8 @@ class SSLClientCertPendingRequests
     void ResetCount() { count_ = 0; }
     // Increment the counter.
     void IncrementCount() { count_++; }
+    // Get the counter.
+    size_t GetCount() { return count_; }
 
    private:
     size_t count_ = 0;
@@ -212,6 +216,10 @@ void SSLClientCertPendingRequests::AddRequest(
   PumpRequests();
 }
 
+size_t SSLClientCertPendingRequests::GetDialogCount() {
+  return dialog_policy_.GetCount();
+}
+
 // Note that the default value for |on_drop| is a no-op.
 void SSLClientCertPendingRequests::FilterPendingRequests(
     std::function<bool(ClientCertRequest*)> should_keep,
@@ -273,9 +281,6 @@ void SSLClientCertPendingRequests::ReadyToCommitNavigation(
   // navigation is user-initiated. Note that |HasUserGesture| does not capture
   // browser-initiated navigations. The negation of |IsRendererInitiated| tells
   // us whether the navigation is browser-generated.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
       (navigation_handle->HasUserGesture() ||
        !navigation_handle->IsRendererInitiated())) {
@@ -392,6 +397,14 @@ base::OnceClosure ShowSSLClientCertificateSelector(
       client_cert_request->GetCancellationCallback();
   active_requests->AddRequest(std::move(client_cert_request));
   return cancellation_callback;
+}
+
+size_t GetCountOfSSLClientCertificateSelectorForTesting(  // IN-TEST
+    content::WebContents* contents) {
+  SSLClientCertPendingRequests* active_requests =
+      SSLClientCertPendingRequests::FromWebContents(contents);
+  DCHECK(active_requests);
+  return active_requests->GetDialogCount();
 }
 
 }  // namespace browser_ui

@@ -41,6 +41,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -257,7 +258,14 @@ class WorkerTest : public ContentBrowserTest,
   net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }
 
  private:
-  void OnSelectClientCertificate() { select_certificate_count_++; }
+  base::OnceClosure OnSelectClientCertificate(
+      content::WebContents* web_contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+    select_certificate_count_++;
+    return base::OnceClosure();
+  }
 
   std::unique_ptr<net::test_server::HttpResponse> MonitorRequestCookies(
       const net::test_server::HttpRequest& request) {

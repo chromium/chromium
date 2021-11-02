@@ -772,12 +772,15 @@ if (!is_ios) {
         "autofill_assistant/browser/mock_script_executor_delegate.cc",
         "autofill_assistant/browser/mock_script_executor_delegate.h",
         "autofill_assistant/browser/web/web_controller_browsertest.cc",
+        "browser_ui/client_certificate/android/ssl_client_certificate_request_browsertest.cc",
         "test/android/browsertests_apk/components_browser_tests_jni_onload.cc",
       ]
       sources -= [ "autofill/content/browser/risk/fingerprint_browsertest.cc" ]
       deps += [
         "//components/autofill_assistant/browser",
         "//components/autofill_assistant/browser:proto",
+        "//components/browser_ui/client_certificate/android",
+        "//components/browser_ui/client_certificate/android:java",
         "//components/download/internal/common:internal_java",
         "//content/public/test/android:android_test_message_pump_support_java",
         "//content/shell:content_shell_app",
