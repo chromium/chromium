@@ -990,9 +990,13 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
   gpu::Mailbox mailbox;
   gpu::SyncToken produce_sync_token;
   GLuint texture_id_to_restore_access = 0;
+  viz::ResourceFormat format;
+  gfx::Size size;
   if (src_buffer == kFrontBuffer && front_color_buffer_) {
     mailbox = front_color_buffer_->mailbox;
     produce_sync_token = front_color_buffer_->produce_sync_token;
+    format = front_color_buffer_->format;
+    size = ToGfxSize(front_color_buffer_->size);
   } else {
     GLuint texture_id = 0;
     if (premultiplied_alpha_false_texture_) {
@@ -1003,6 +1007,8 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
       mailbox = back_color_buffer_->mailbox;
       texture_id = back_color_buffer_->texture_id;
     }
+    format = back_color_buffer_->format;
+    size = ToGfxSize(back_color_buffer_->size);
     src_gl->EndSharedImageAccessDirectCHROMIUM(texture_id);
     src_gl->GenUnverifiedSyncTokenCHROMIUM(produce_sync_token.GetData());
     texture_id_to_restore_access = texture_id;
@@ -1015,7 +1021,10 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
 
   dst_interface->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
 
-  copy_function(mailbox);
+  // Use an empty sync token for `mailbox_holder` because we have already waited
+  // on the required sync tokens above.
+  gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), texture_target_);
+  copy_function(mailbox_holder, format, size);
 
   gpu::SyncToken sync_token;
   dst_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -1047,9 +1056,10 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
   else if (want_alpha_channel_ && !premultiplied_alpha_ && premultiply_alpha)
     unpack_premultiply_alpha_needed = GL_TRUE;
 
-  auto copy_function = [&](gpu::Mailbox src_mailbox) {
-    GLuint src_texture =
-        dst_gl->CreateAndTexStorage2DSharedImageCHROMIUM(src_mailbox.name);
+  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
+                           viz::ResourceFormat, gfx::Size) {
+    GLuint src_texture = dst_gl->CreateAndTexStorage2DSharedImageCHROMIUM(
+        src_mailbox.mailbox.name);
     dst_gl->BeginSharedImageAccessDirectCHROMIUM(
         src_texture, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
     dst_gl->CopySubTextureCHROMIUM(
@@ -1063,7 +1073,6 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
   };
   return CopyToPlatformInternal(dst_gl, src_buffer, copy_function);
 }
-
 bool DrawingBuffer::CopyToPlatformMailbox(
     gpu::raster::RasterInterface* dst_raster_interface,
     gpu::Mailbox dst_mailbox,
@@ -1076,16 +1085,38 @@ bool DrawingBuffer::CopyToPlatformMailbox(
   if (want_alpha_channel_ && !premultiplied_alpha_)
     unpack_premultiply_alpha_needed = GL_TRUE;
 
-  auto copy_function = [&](gpu::Mailbox src_mailbox) {
+  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
+                           viz::ResourceFormat, const gfx::Size&) {
     dst_raster_interface->CopySubTexture(
-        src_mailbox, dst_mailbox, dst_texture_target, dst_texture_offset.x(),
-        dst_texture_offset.y(), src_sub_rectangle.x(), src_sub_rectangle.y(),
-        src_sub_rectangle.width(), src_sub_rectangle.height(), flip_y,
-        unpack_premultiply_alpha_needed);
+        src_mailbox.mailbox, dst_mailbox, dst_texture_target,
+        dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
+        src_sub_rectangle.y(), src_sub_rectangle.width(),
+        src_sub_rectangle.height(), flip_y, unpack_premultiply_alpha_needed);
   };
 
   return CopyToPlatformInternal(dst_raster_interface, src_buffer,
                                 copy_function);
+}
+
+void DrawingBuffer::CopyToVideoFrame(
+    WebGraphicsContext3DVideoFramePool* frame_pool,
+    SourceDrawingBuffer src_buffer,
+    bool src_origin_is_top_left,
+    const gfx::ColorSpace& dst_color_space,
+    WebGraphicsContext3DVideoFramePool::FrameReadyCallback& callback) {
+  const gfx::ColorSpace src_color_space = storage_color_space_;
+  const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
+                                                 ? kTopLeft_GrSurfaceOrigin
+                                                 : kBottomLeft_GrSurfaceOrigin;
+  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
+                           viz::ResourceFormat src_format,
+                           const gfx::Size& src_size) {
+    frame_pool->CopyRGBATextureToVideoFrame(
+        src_format, src_size, src_color_space, src_surface_origin, src_mailbox,
+        dst_color_space, std::move(callback));
+  };
+  CopyToPlatformInternal(frame_pool->GetRasterInterface(), src_buffer,
+                         copy_function);
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {

@@ -28,6 +28,17 @@ StaticBitmapImageToVideoFrameCopier::StaticBitmapImageToVideoFrameCopier(
 StaticBitmapImageToVideoFrameCopier::~StaticBitmapImageToVideoFrameCopier() =
     default;
 
+WebGraphicsContext3DVideoFramePool*
+StaticBitmapImageToVideoFrameCopier::GetAcceleratedVideoFramePool(
+    base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
+        context_provider) {
+  if (accelerated_frame_pool_enabled_ && !accelerated_frame_pool_) {
+    accelerated_frame_pool_ =
+        std::make_unique<WebGraphicsContext3DVideoFramePool>(context_provider);
+  }
+  return accelerated_frame_pool_.get();
+}
+
 void StaticBitmapImageToVideoFrameCopier::Convert(
     scoped_refptr<StaticBitmapImage> image,
     bool can_discard_alpha,

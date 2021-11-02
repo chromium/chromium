@@ -1738,6 +1738,26 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   return true;
 }
 
+void WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
+    WebGraphicsContext3DVideoFramePool* frame_pool,
+    SourceDrawingBuffer src_buffer,
+    const gfx::ColorSpace& dst_color_space,
+    VideoFrameCopyCompletedCallback& callback) {
+  if (!frame_pool)
+    return;
+
+  auto* drawing_buffer = GetDrawingBuffer();
+  if (!drawing_buffer)
+    return;
+
+  ScopedFramebufferRestorer fbo_restorer(this);
+  if (!drawing_buffer->ResolveAndBindForReadAndDraw())
+    return;
+
+  drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer, is_origin_top_left_,
+                                   dst_color_space, callback);
+}
+
 IntSize WebGLRenderingContextBase::DrawingBufferSize() const {
   if (isContextLost())
     return IntSize(0, 0);

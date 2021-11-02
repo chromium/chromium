@@ -705,6 +705,12 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
   bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
                                              SourceDrawingBuffer) override;
+  void CopyRenderingResultsToVideoFrame(
+      WebGraphicsContext3DVideoFramePool*,
+      SourceDrawingBuffer,
+      const gfx::ColorSpace&,
+      VideoFrameCopyCompletedCallback&) override;
+
   cc::Layer* CcLayer() const override;
   void Stop() override;
   void FinalizeFrame() override;
