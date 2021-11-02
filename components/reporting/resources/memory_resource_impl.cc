@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/reporting/storage/resources/memory_resource_impl.h"
+#include "components/reporting/resources/memory_resource_impl.h"
 
 #include <atomic>
 #include <cstdint>

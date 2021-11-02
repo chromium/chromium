@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_REPORTING_STORAGE_RESOURCES_DISK_RESOURCE_IMPL_H_
-#define COMPONENTS_REPORTING_STORAGE_RESOURCES_DISK_RESOURCE_IMPL_H_
+#ifndef COMPONENTS_REPORTING_RESOURCES_MEMORY_RESOURCE_IMPL_H_
+#define COMPONENTS_REPORTING_RESOURCES_MEMORY_RESOURCE_IMPL_H_
 
 #include <atomic>
 #include <cstdint>
 
-#include "components/reporting/storage/resources/resource_interface.h"
+#include "components/reporting/resources/resource_interface.h"
 
 namespace reporting {
 
 // Interface to resources management by Storage module.
 // Must be implemented by the caller base on the platform limitations.
 // All APIs are non-blocking.
-class DiskResourceImpl : public ResourceInterface {
+class MemoryResourceImpl : public ResourceInterface {
  public:
-  DiskResourceImpl();
-  ~DiskResourceImpl() override;
+  MemoryResourceImpl();
+  ~MemoryResourceImpl() override;
 
   // Implementation of ResourceInterface methods.
   bool Reserve(uint64_t size) override;
@@ -34,4 +34,4 @@ class DiskResourceImpl : public ResourceInterface {
 
 }  // namespace reporting
 
-#endif  // COMPONENTS_REPORTING_STORAGE_RESOURCES_DISK_RESOURCE_IMPL_H_
+#endif  // COMPONENTS_REPORTING_RESOURCES_MEMORY_RESOURCE_IMPL_H_
