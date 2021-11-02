@@ -70429,6 +70429,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Unknown result"/>
 </enum>
 
+<enum name="ProxyScheme">
+  <int value="0" label="SCHEME_INVALID"/>
+  <int value="1" label="SCHEME_DIRECT"/>
+  <int value="2" label="SCHEME_HTTP"/>
+  <int value="3" label="SCHEME_SOCKS4"/>
+  <int value="4" label="SCHEME_SOCKS5"/>
+  <int value="5" label="SCHEME_HTTPS"/>
+  <int value="6" label="SCHEME_QUIC"/>
+</enum>
+
 <enum name="ProxyStatus">
   <int value="0" label="PROXY_STATUS_IGNORED"/>
   <int value="1" label="PROXY_UNINITIALIZED"/>

@@ -1973,6 +1973,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.ProxyTypeFailed" enum="ProxyScheme"
+    expires_after="2022-05-11">
+  <owner>rch@chromium.org</owner>
+  <summary>
+    Scheme of the proxy server used by an HTTP job that failed, or SCHEME_DIRECT
+    if not proxy was used.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.ProxyTypeSuccess" enum="ProxyScheme"
+    expires_after="2022-05-11">
+  <owner>rch@chromium.org</owner>
+  <summary>
+    Scheme of the proxy server used by an HTTP job that succeeded, or
+    SCHEME_DIRECT if not proxy was used.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.TotalTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
