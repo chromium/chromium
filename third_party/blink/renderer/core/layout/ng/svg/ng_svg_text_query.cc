@@ -57,8 +57,10 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
       if (item.Type() == NGFragmentItem::kSvgText) {
         item_list.push_back(&item);
       } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
-        if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText)
-          item_list.push_back(descendants.CurrentItem());
+        for (; descendants; descendants.MoveToNext()) {
+          if (descendants.CurrentItem()->Type() == NGFragmentItem::kSvgText)
+            item_list.push_back(descendants.CurrentItem());
+        }
       }
     }
   }
