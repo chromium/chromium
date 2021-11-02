@@ -10,11 +10,8 @@
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
-
-namespace mojo {
-class IsolatedConnection;
-}  // namespace mojo
 
 namespace remoting {
 
@@ -50,7 +47,7 @@ class RemoteWebAuthnNativeMessagingHost final
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   extensions::NativeMessageHost::Client* client_ = nullptr;
-  std::unique_ptr<mojo::IsolatedConnection> connection_;
+  ChromotingHostServicesClient host_service_api_client_;
   mojo::Remote<mojom::WebAuthnProxy> remote_;
 };
 

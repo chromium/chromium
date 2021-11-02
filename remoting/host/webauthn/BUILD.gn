@@ -17,7 +17,7 @@ source_set("webauthn") {
   deps = [
     "//base",
     "//extensions/browser/api/messaging:native_messaging",
-    "//remoting/host/mojo_ipc",
+    "//remoting/host:chromoting_host_services_client",
     "//remoting/host/mojom",
     "//remoting/host/native_messaging",
     "//remoting/proto",

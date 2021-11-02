@@ -20,6 +20,7 @@
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/pairing_registry.h"
@@ -37,6 +38,7 @@ class TransportContext;
 }  // namespace protocol
 
 class DesktopEnvironmentFactory;
+class IpcServer;
 
 // A class to implement the functionality of a host process.
 //
@@ -61,7 +63,8 @@ class DesktopEnvironmentFactory;
 //    all pending tasks to complete. After all of that has completed, we
 //    return to the idle state. We then go to step (2) to wait for a new
 //    incoming connection.
-class ChromotingHost : public ClientSession::EventHandler {
+class ChromotingHost : public ClientSession::EventHandler,
+                       public mojom::ChromotingHostServices {
  public:
   typedef std::vector<std::unique_ptr<ClientSession>> ClientSessions;
 
@@ -85,6 +88,11 @@ class ChromotingHost : public ClientSession::EventHandler {
   //
   // This method can only be called once during the lifetime of this object.
   void Start(const std::string& host_owner);
+
+  // Starts running the ChromotingHostServices server and listening for incoming
+  // IPC binding requests.
+  // It must be started exactly once across all Chromoting processes.
+  void StartChromotingHostServices();
 
   scoped_refptr<HostStatusMonitor> status_monitor() { return status_monitor_; }
   const DesktopEnvironmentOptions& desktop_environment_options() const {
@@ -118,6 +126,10 @@ class ChromotingHost : public ClientSession::EventHandler {
                             const std::string& channel_name,
                             const protocol::TransportRoute& route) override;
 
+  // mojom::ChromotingHostServices implementation.
+  void BindWebAuthnProxy(
+      mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) override;
+
   // Callback for SessionManager to accept incoming sessions.
   void OnIncomingSession(
       protocol::Session* session,
@@ -140,6 +152,9 @@ class ChromotingHost : public ClientSession::EventHandler {
   }
 
  private:
+  // Returns the currently connected client session, or nullptr if not found.
+  ClientSession* GetConnectedClientSession() const;
+
   friend class ChromotingHostTest;
 
   // Unless specified otherwise, all members of this class must be
@@ -174,6 +189,10 @@ class ChromotingHost : public ClientSession::EventHandler {
 
   // List of host extensions.
   std::vector<std::unique_ptr<HostExtension>> extensions_;
+
+  // IPC server that runs the CRD host service API. Non-null if the server name
+  // is set and the host is started.
+  std::unique_ptr<IpcServer> ipc_server_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

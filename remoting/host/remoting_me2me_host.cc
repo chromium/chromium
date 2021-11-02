@@ -1733,6 +1733,7 @@ void HostProcess::StartHost() {
 #endif  // defined(OS_APPLE)
 
   host_->Start(host_owner_);
+  host_->StartChromotingHostServices();
 
   CreateAuthenticatorFactory();
 

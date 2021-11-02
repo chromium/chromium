@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/desktop_and_cursor_composer_notifier.h"
@@ -24,6 +25,7 @@
 #include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/remote_input_filter.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/protocol/clipboard_echo_filter.h"
@@ -53,6 +55,7 @@ class DesktopEnvironmentFactory;
 class InputInjector;
 class KeyboardLayoutMonitor;
 class MouseShapePump;
+class RemoteWebAuthnMessageHandler;
 class ScreenControls;
 
 namespace protocol {
@@ -167,9 +170,13 @@ class ClientSession : public protocol::HostStub,
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
+  void BindWebAuthnProxy(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
+
   protocol::ConnectionToClient* connection() const { return connection_.get(); }
 
-  bool is_authenticated() { return is_authenticated_; }
+  bool is_authenticated() const { return is_authenticated_; }
+
+  bool channels_connected() const { return channels_connected_; }
 
   const std::string* client_capabilities() const {
     return client_capabilities_.get();
@@ -362,6 +369,8 @@ class ClientSession : public protocol::HostStub,
 
   base::WeakPtr<DesktopAndCursorConditionalComposer>
       desktop_and_cursor_composer_;
+
+  base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

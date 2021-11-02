@@ -152,6 +152,31 @@ source_set("base") {
   ]
 }
 
+source_set("ipc_constants") {
+  sources = [
+    "ipc_constants.cc",
+    "ipc_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/platform",
+    "//remoting/host/mojo_ipc",
+  ]
+}
+
+source_set("chromoting_host_services_client") {
+  sources = [
+    "chromoting_host_services_client.cc",
+    "chromoting_host_services_client.h",
+  ]
+  deps = [
+    ":ipc_constants",
+    "//base",
+    "//mojo/public/cpp/platform",
+    "//remoting/host/mojom",
+  ]
+}
+
 # Split up from common to avoid circular dependency.
 source_set("client_session_control") {
   sources = [ "client_session_control.h" ]
@@ -324,8 +349,6 @@ static_library("common") {
     "ipc_action_executor.h",
     "ipc_audio_capturer.cc",
     "ipc_audio_capturer.h",
-    "ipc_constants.cc",
-    "ipc_constants.h",
     "ipc_desktop_environment.cc",
     "ipc_desktop_environment.h",
     "ipc_host_event_logger.cc",
@@ -400,6 +423,7 @@ static_library("common") {
     ":client_session_control",
     ":clipboard",
     ":host_main_headers",
+    ":ipc_constants",
     ":resources",
     ":settings",
     "//base:i18n",
