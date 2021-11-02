@@ -31,9 +31,9 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -62,15 +62,21 @@ public class FirstRunActivitySigninAndSyncTest {
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
 
+    @Mock
+    private DataReductionProxySettings mDataReductionProxySettingsMock;
+
     @Before
     public void setUp() {
+        when(mDataReductionProxySettingsMock.isDataReductionProxyManaged()).thenReturn(false);
+        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
+                .thenReturn(true);
+        DataReductionProxySettings.setInstanceForTesting(mDataReductionProxySettingsMock);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1260822")
     public void dismissButtonClickSkipsSyncConsentPageWhenNoAccountsAreOnDevice() {
         launchFirstRunActivity();
         onView(withId(R.id.signin_fre_selected_account)).check(matches(not(isDisplayed())));
@@ -82,7 +88,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1260822")
     public void dismissButtonClickSkipsSyncConsentPageWhenOneAccountIsOnDevice() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivity();
@@ -121,7 +126,6 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1260822")
     public void continueButtonClickSkipsSyncConsentPageWhenCannotUseGooglePlayServices() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(false);
         launchFirstRunActivity();
