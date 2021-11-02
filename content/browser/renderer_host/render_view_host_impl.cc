@@ -292,7 +292,8 @@ RenderViewHostImpl::RenderViewHostImpl(
     bool has_initialized_audio_host)
     : render_widget_host_(std::move(widget)),
       delegate_(delegate),
-      render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(instance)),
+      render_view_host_map_id_(frame_tree->GetRenderViewHostMapId(
+          static_cast<SiteInstanceImpl*>(instance)->group())),
       site_info_(static_cast<SiteInstanceImpl*>(instance)
                      ->GetSiteInfoForRenderViewHost()),
       routing_id_(routing_id),
