@@ -19,7 +19,11 @@ def RunUnittests(input_api, output_api):
 
   results.extend(
       input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api, output_api, '.', files_to_check=[r'.+_unittest\.py$']))
+          input_api,
+          output_api,
+          '.',
+          files_to_check=[r'.+_unittest\.py$'],
+          skip_shebang_check=True))
   return results
 
 
