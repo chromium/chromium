@@ -35396,6 +35396,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="24" label="Failed - cannot load stream with pending clear all"/>
 </enum>
 
+<enum name="FeedNoticeAcknowledgementPath">
+  <int value="0"
+      label="The acknowledgment is reached after the user views the notice
+             for a required number of times."/>
+  <int value="1"
+      label="The acknowledgment is reached after the user taps the notice to
+             perform an open action for a required number of times."/>
+  <int value="2"
+      label="The acknowledgment is reached after the user fter the user taps
+             X button to close the notice."/>
+</enum>
+
 <enum name="FeedRequestReason">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="ZERO_STATE"/>

@@ -1,6 +1,5 @@
 include_rules = [
   "-components/feed/core/v2/stream_model",
-  "-components/feed/core/v2/stream",
   "-components/feed/core/v2/tasks",
   "-components/feed/core/v2/web_feed_subscriptions",
   "+components/reading_list/features",

@@ -1827,6 +1827,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.{FeedType}.InvalidNoticeKey" enum="Boolean"
+    expires_after="2022-10-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports when an invalid notice key is received from the server.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
 <histogram name="ContentSuggestions.{FeedType}.LoadedCardCount" units="index"
     expires_after="2022-07-01">
   <owner>harringtond@chromium.org</owner>
@@ -1936,6 +1949,59 @@ chromium-metrics-reviews@google.com.
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
     <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ContentSuggestions.{FeedType}.NoticeAcknowledgementPath.{NoticeType}"
+    enum="FeedNoticeAcknowledgementPath" expires_after="2022-10-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports how the notice acknowledgement is reached. Reported when an
+    action, i.e. viewing, tapping or dismissing the notice, results in the
+    notice being acknowledged.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+  <token key="NoticeType">
+    <variant name="Youtube" summary="YouTube Privacy Notice"/>
+  </token>
+</histogram>
+
+<histogram name="ContentSuggestions.{FeedType}.Notice{Action}.{NoticeType}"
+    enum="Boolean" expires_after="2022-10-01">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports whether an {Action} for an notice is performed.
+  </summary>
+  <token key="FeedType">
+    <variant name="Feed" summary="For-You Feed"/>
+    <variant name="Feed.WebFeed" summary="Web Feed"/>
+  </token>
+  <token key="Action">
+    <variant name="Acknowledged"
+        summary="Reported when an user action, i.e. viewing, tapping or
+                 dismissing the notice, results in the notice being
+                 acknowledged."/>
+    <variant name="Created"
+        summary="Reported when the notice is created for the first time."/>
+    <variant name="Dismissed"
+        summary="Reported when the user taps the X button to dismiss the
+                 notice."/>
+    <variant name="OpenAction"
+        summary="Reported when the user taps the notice or highlighted link
+                 text to perform an open action, like launching an URL or
+                 settings."/>
+    <variant name="Viewed"
+        summary="Reported when the user scrolls down the NTP and the notice
+                 becomes fully visible on the screen."/>
+  </token>
+  <token key="NoticeType">
+    <variant name="Youtube" summary="YouTube Privacy Notice"/>
   </token>
 </histogram>
 

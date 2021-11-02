@@ -298,6 +298,12 @@ public class FeedStream implements Stream {
         }
 
         @Override
+        public void reportNoticeCreated(String key) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportNoticeCreated(mNativeFeedStream, FeedStream.this, key);
+        }
+
+        @Override
         public void reportNoticeViewed(String key) {
             assert ThreadUtils.runningOnUiThread();
             FeedStreamJni.get().reportNoticeViewed(mNativeFeedStream, FeedStream.this, key);
@@ -1125,6 +1131,7 @@ public class FeedStream implements Stream {
         void surfaceClosed(long nativeFeedStream, FeedStream caller);
         int getSurfaceId(long nativeFeedStream, FeedStream caller);
         long getLastFetchTimeMs(long nativeFeedStream, FeedStream caller);
+        void reportNoticeCreated(long nativeFeedStream, FeedStream caller, String key);
         void reportNoticeViewed(long nativeFeedStream, FeedStream caller, String key);
         void reportNoticeOpenAction(long nativeFeedStream, FeedStream caller, String key);
         void reportNoticeDismissed(long nativeFeedStream, FeedStream caller, String key);
