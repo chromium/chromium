@@ -24,7 +24,8 @@ ScopedJavaLocalRef<jobject> CreateJavaMetadataAndMaybeAddToList(
       env, jlist, static_cast<uint32_t>(reaction_metadata.type()),
       ConvertUTF8ToJavaString(env, reaction_metadata.localized_name()),
       ConvertUTF8ToJavaString(env, reaction_metadata.thumbnail_url()),
-      ConvertUTF8ToJavaString(env, reaction_metadata.asset_url()));
+      ConvertUTF8ToJavaString(env, reaction_metadata.asset_url()),
+      reaction_metadata.frame_count());
 }
 
 }  // namespace

@@ -35,9 +35,9 @@ public class ReactionMetadataConversionBridge {
     @CalledByNative
     private static ReactionMetadata createMetadataAndMaybeAddToList(
             @Nullable List<ReactionMetadata> list, int type, String localizedName,
-            String thumbnailUrl, String assetUrl) {
+            String thumbnailUrl, String assetUrl, int frameCount) {
         ReactionMetadata metadata =
-                new ReactionMetadata(type, localizedName, thumbnailUrl, assetUrl);
+                new ReactionMetadata(type, localizedName, thumbnailUrl, assetUrl, frameCount);
 
         if (list != null) {
             list.add(metadata);

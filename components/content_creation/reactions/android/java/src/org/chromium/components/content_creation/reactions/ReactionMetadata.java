@@ -12,12 +12,14 @@ public class ReactionMetadata {
     public final String localizedName;
     public final String thumbnailUrl;
     public final String assetUrl;
+    public final int frameCount;
 
-    public ReactionMetadata(
-            @ReactionType int type, String localizedName, String thumbnailUrl, String assetUrl) {
+    public ReactionMetadata(@ReactionType int type, String localizedName, String thumbnailUrl,
+            String assetUrl, int frameCount) {
         this.type = type;
         this.localizedName = localizedName;
         this.thumbnailUrl = thumbnailUrl;
         this.assetUrl = assetUrl;
+        this.frameCount = frameCount;
     }
 }
