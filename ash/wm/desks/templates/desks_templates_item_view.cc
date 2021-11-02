@@ -114,18 +114,16 @@ std::vector<std::pair<std::string, int>> CountAndSortIconIdentifiers(
   // Create a vector using `identifier_info` that contains pairs of identifiers
   // and counts. This will be unsorted.
   std::vector<std::pair<std::string, int>> identifiers_with_count;
-  for (auto entry : identifier_info) {
-    identifiers_with_count.emplace_back(
-        std::pair<std::string, int>{entry.first, entry.second.count});
-  }
+  for (const auto& entry : identifier_info)
+    identifiers_with_count.emplace_back(entry.first, entry.second.count);
 
   // Sort `identifiers_with_count` using the activation indices stored in
   // `identifier_info`.
   std::sort(identifiers_with_count.begin(), identifiers_with_count.end(),
-            [identifier_info](std::pair<std::string, int> data_1,
-                              std::pair<std::string, int> data_2) {
-              return identifier_info.at(data_1.first).activation_index <
-                     identifier_info.at(data_2.first).activation_index;
+            [&identifier_info](const std::pair<std::string, int>& data_1,
+                               const std::pair<std::string, int>& data_2) {
+              return identifier_info[data_1.first].activation_index <
+                     identifier_info[data_2.first].activation_index;
             });
 
   return identifiers_with_count;
