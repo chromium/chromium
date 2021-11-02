@@ -2777,7 +2777,8 @@ TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
   EXPECT_EQ(std::vector<bool>({false}), observer.calls);
 }
 
-TEST_F(FeedApiTest, NoticeViewed) {
+// TODO(crbug.com/1266030): Fix flakes.
+TEST_F(FeedApiTest, DISABLED_NoticeViewed) {
   base::HistogramTester histograms;
 
   for (int i = 1; i <= NoticeCardTracker::kViewCountThreshold; ++i) {
