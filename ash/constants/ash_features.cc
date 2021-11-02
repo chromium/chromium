@@ -217,6 +217,11 @@ const base::Feature kButtonARCNetworkDiagnostics{
 const base::Feature kCalendarView{"CalendarView",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable manual crop document page to ChromeOS camera app. The flag
+// will be deprecated after feature is fully launched: crbug.com/1259731.
+const base::Feature kCameraAppDocumentManualCrop{
+    "CameraAppDocumentManualCrop", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{

@@ -95,6 +95,8 @@ extern const base::Feature kButtonARCNetworkDiagnostics;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCalendarView;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kCameraAppDocumentManualCrop;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCameraPrivacySwitchNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kCellularBypassESimInstallationConnectivityCheck;

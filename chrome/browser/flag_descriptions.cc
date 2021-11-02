@@ -4133,6 +4133,12 @@ const char kHdrNetOverrideName[] = "HDRnet control override";
 const char kHdrNetOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the HDRnet feature";
 
+const char kCameraAppDocumentManualCropName[] =
+    "Enables document manual crop in camera app.";
+const char kCameraAppDocumentManualCropDescription[] =
+    "Enables document manual crop in camera app for allowing to tweak the "
+    "crop area and orientation in the document photo preview page.";
+
 const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
     "Launcher search results grouped by categories";

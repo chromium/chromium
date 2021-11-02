@@ -8,6 +8,7 @@
  * It is available since we enabled and filled data in it while creating
  * content::WebUIDataSource for CCA.
  * @typedef {{
+ *   getBoolean: function(string): boolean,
  *   getString: function(string): string,
  *   getStringF: function(string, ...(string|number)): string,
  * }}

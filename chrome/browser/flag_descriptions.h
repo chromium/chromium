@@ -2376,6 +2376,9 @@ extern const char kForceControlFaceAeDescription[];
 extern const char kHdrNetOverrideName[];
 extern const char kHdrNetOverrideDescription[];
 
+extern const char kCameraAppDocumentManualCropName[];
+extern const char kCameraAppDocumentManualCropDescription[];
+
 extern const char kCategoricalSearchName[];
 extern const char kCategoricalSearchDescription[];
 

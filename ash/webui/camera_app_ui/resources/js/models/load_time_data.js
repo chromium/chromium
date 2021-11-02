@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 // eslint-disable-next-line no-unused-vars
+import {Flag} from '../flag.js';
+// eslint-disable-next-line no-unused-vars
 import {I18nString} from '../i18n_string.js';
 
 /**
@@ -37,4 +39,13 @@ export function getI18nMessage(name, ...substitutions) {
  */
 export function getTextDirection() {
   return window.loadTimeData.getString('textdirection');
+}
+
+/**
+ * Returns the boolean value of the chrome flag.
+ * @param {Flag} flag
+ * @return {boolean}
+ */
+export function getChromeFlag(flag) {
+  return window.loadTimeData.getBoolean(flag);
 }

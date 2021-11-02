@@ -6,9 +6,11 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -189,6 +191,10 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
+  // Add chrome flags.
+  source->AddBoolean("cameraAppDocumentManualCrop",
+                     base::FeatureList::IsEnabled(
+                         chromeos::features::kCameraAppDocumentManualCrop));
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
