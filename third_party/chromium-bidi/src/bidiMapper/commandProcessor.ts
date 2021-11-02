@@ -164,9 +164,9 @@ export class CommandProcessor {
         return await this._contextProcessor.process_PROTO_browsingContext_create(
           commandData as BrowsingContext.PROTO.BrowsingContextCreateCommand
         );
-      case 'PROTO.script.invoke':
-        return await this._contextProcessor.process_PROTO_script_invoke(
-          commandData as Script.PROTO.ScriptInvokeCommand
+      case 'PROTO.script.callFunction':
+        return await this._contextProcessor.process_PROTO_script_callFunction(
+          commandData as Script.PROTO.ScriptCallFunctionCommand
         );
 
       case 'DEBUG.Page.close':

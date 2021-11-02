@@ -25,8 +25,12 @@ export namespace CommonDataTypes {
 }
 
 export namespace Script {
-  export type CommandType = ScriptEvaluateCommand | PROTO.ScriptInvokeCommand;
-  export type ResultType = ScriptEvaluateResult | PROTO.ScriptInvokeResult;
+  export type CommandType =
+    | ScriptEvaluateCommand
+    | PROTO.ScriptCallFunctionCommand;
+  export type ResultType =
+    | ScriptEvaluateResult
+    | PROTO.ScriptCallFunctionResult;
 
   export type RealmTarget = {
     // TODO sadym: implement.
@@ -62,27 +66,27 @@ export namespace Script {
   };
 
   export namespace PROTO {
-    export type ScriptInvokeCommand = {
-      method: 'PROTO.script.invoke';
-      params: ScriptInvokeParameters;
+    export type ScriptCallFunctionCommand = {
+      method: 'PROTO.script.callFunction';
+      params: ScriptCallFunctionParameters;
     };
 
-    export type ScriptInvokeParameters = {
+    export type ScriptCallFunctionParameters = {
       functionDeclaration: string;
-      args: InvokeArgument[];
+      args: CallFunctionArgument[];
       awaitPromise?: boolean;
       target: Target;
     };
 
-    export type ScriptInvokeResult =
-      | ScriptInvokeSuccessResult
+    export type ScriptCallFunctionResult =
+      | ScriptCallFunctionSuccessResult
       | ScriptExceptionResult;
 
-    export type ScriptInvokeSuccessResult = {
+    export type ScriptCallFunctionSuccessResult = {
       result: CommonDataTypes.RemoteValue;
     };
 
-    export type InvokeArgument = RemoteValueArgument | LocalValueArgument;
+    export type CallFunctionArgument = RemoteValueArgument | LocalValueArgument;
 
     export type RemoteValueArgument = {
       objectId: string;

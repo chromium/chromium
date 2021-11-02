@@ -231,14 +231,14 @@ export class BrowsingContextProcessor {
     );
   }
 
-  async process_PROTO_script_invoke(
-    commandData: Script.PROTO.ScriptInvokeCommand
-  ): Promise<Script.PROTO.ScriptInvokeResult> {
+  async process_PROTO_script_callFunction(
+    commandData: Script.PROTO.ScriptCallFunctionCommand
+  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
     const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
-    return await context.PROTO_scriptInvoke(
+    return await context.callFunction(
       params.functionDeclaration,
       params.args,
       params.awaitPromise !== false // `awaitPromise` by default is `true`.

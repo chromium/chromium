@@ -991,13 +991,13 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptInvokeWithArgs_invokeResultReturn(websocket):
+async def test_PROTO_scriptCallFunctionWithArgs_resultReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 48,
-        "method": "PROTO.script.invoke",
+        "method": "PROTO.script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
             "args": [{
@@ -1025,13 +1025,13 @@ async def test_PROTO_scriptInvokeWithArgs_invokeResultReturn(websocket):
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptInvokeWithThenableArgsAndAwaitParam_thenableReturn(websocket):
+async def test_PROTO_scriptCallFunctionWithThenableArgsAndAwaitParam_thenableReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 49,
-        "method": "PROTO.script.invoke",
+        "method": "PROTO.script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
             "args": [{
@@ -1062,13 +1062,13 @@ async def test_PROTO_scriptInvokeWithThenableArgsAndAwaitParam_thenableReturn(we
         ["objectId"])
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
+async def test_PROTO_scriptCallFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
     await send_JSON_command(websocket, {
         "id": 49,
-        "method": "PROTO.script.invoke",
+        "method": "PROTO.script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
             "args": [{
@@ -1091,7 +1091,7 @@ async def test_PROTO_scriptInvokeWithArgsAndDoNotAwaitPromise_promiseReturn(webs
         }, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_PROTO_scriptInvokeWithRemoteValueArgument_resultReturn(websocket):
+async def test_PROTO_scriptCallFunctionWithRemoteValueArgument_resultReturn(websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -1112,7 +1112,7 @@ async def test_PROTO_scriptInvokeWithRemoteValueArgument_resultReturn(websocket)
     # Send command.
     await send_JSON_command(websocket, {
         "id": 51,
-        "method": "PROTO.script.invoke",
+        "method": "PROTO.script.callFunction",
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
             "args": [{

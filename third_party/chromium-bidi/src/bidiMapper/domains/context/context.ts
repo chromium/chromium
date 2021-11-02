@@ -32,7 +32,7 @@ export class Context {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
   private _evaluateStacktraceLineOffset = 1;
-  private _invokeStacktraceLineOffset = 1;
+  private _callFunctionStacktraceLineOffset = 1;
 
   private constructor(
     private _contextId: string,
@@ -242,15 +242,15 @@ export class Context {
     };
   }
 
-  public async PROTO_scriptInvoke(
+  public async callFunction(
     functionDeclaration: string,
-    args: Script.PROTO.InvokeArgument[],
+    args: Script.PROTO.CallFunctionArgument[],
     awaitPromise: boolean
-  ): Promise<Script.PROTO.ScriptInvokeResult> {
+  ): Promise<Script.PROTO.ScriptCallFunctionResult> {
     // TODO sadym: add error handling for serialization/deserialization errors.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/57
-    const invokeAndSerializeScript = `async (...serializedArgs)=>{ return _invoke(\n${functionDeclaration}\n, serializedArgs);
-      async function _invoke(f, serializedArgs) {
+    const callFunctionAndSerializeScript = `async (...serializedArgs)=>{ return _callFunction(\n${functionDeclaration}\n, serializedArgs);
+      async function _callFunction(f, serializedArgs) {
         const evaluator = (${this.EVALUATOR_SCRIPT});
         const deserializedArgs = serializedArgs.map(evaluator.deserialize);
         let resultValue = f.apply(this, deserializedArgs);
@@ -261,24 +261,24 @@ export class Context {
         return evaluator.serialize(resultValue);
       }}`;
 
-    const cdpInvokeResult = await this._cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: invokeAndSerializeScript,
+    const cdpCallFunctionResult = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: callFunctionAndSerializeScript,
       arguments: args.map((a) => ({ value: a })),
       awaitPromise: true,
       returnByValue: true,
       objectId: this._dummyContextObjectId,
     });
 
-    if (cdpInvokeResult.exceptionDetails) {
+    if (cdpCallFunctionResult.exceptionDetails) {
       // Serialize exception details.
       return await this._serializeCdpExceptionDetails(
-        cdpInvokeResult.exceptionDetails,
-        this._invokeStacktraceLineOffset
+        cdpCallFunctionResult.exceptionDetails,
+        this._callFunctionStacktraceLineOffset
       );
     }
 
     return {
-      result: cdpInvokeResult.result.value,
+      result: cdpCallFunctionResult.result.value,
     };
   }
 }
