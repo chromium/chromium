@@ -339,7 +339,7 @@
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
-      'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest',
+      'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_no_lld',
       'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_lacros_rel_reclient',
       'linux-annotator-rel': 'release_bot',
@@ -2480,6 +2480,10 @@
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation', 'ios_build_chromium',
     ],
 
+    'ios_simulator_debug_static_bot_xctest_no_lld': [
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation', 'ios_build_chromium', 'no_lld',
+    ],
+
     'ios_simulator_debug_static_bot_xctest_reclient': [
         'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
@@ -3659,6 +3663,10 @@
 
     'no_keystone_registration_framework': {
       'gn_args': 'enable_keystone_registration_framework=false',
+    },
+
+    'no_lld': {
+      'gn_args': 'use_lld=false',
     },
 
     'no_webui_optimize': {
