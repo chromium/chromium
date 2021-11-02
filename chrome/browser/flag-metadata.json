@@ -265,6 +265,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "ash-advanced-screen-capture-settings",
+    "owners": [ "afakhry", "gzadina", "fanafan" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "ash-bento-bar",
     "owners": [ "minch", "janetmac" ],
     "expiry_milestone": 100

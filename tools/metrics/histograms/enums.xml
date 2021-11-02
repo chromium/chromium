@@ -48474,6 +48474,7 @@ from previous Chrome versions.
   <int value="-1887053262"
       label="enable-zero-suggest-most-visited-without-serp"/>
   <int value="-1886997564" label="EnableSwitchAccessPointScanning:enabled"/>
+  <int value="-1886760950" label="ImprovedScreenCaptureSettings:enabled"/>
   <int value="-1886713568"
       label="AutofillGetPaymentsIdentityFromSync:disabled"/>
   <int value="-1885074774" label="ShelfScrollable:enabled"/>
@@ -50235,6 +50236,7 @@ from previous Chrome versions.
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>
   <int value="-567197068" label="ProductivityLauncherAnimation:enabled"/>
   <int value="-565368004" label="AutofillCenterAlignedSuggestions:disabled"/>
+  <int value="-565155800" label="ImprovedScreenCaptureSettings:disabled"/>
   <int value="-563980787" label="disable-webrtc"/>
   <int value="-563600258" label="PhotoPickerVideoSupport:disabled"/>
   <int value="-562771426" label="InstantStart:disabled"/>
