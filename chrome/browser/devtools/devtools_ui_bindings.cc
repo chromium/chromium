@@ -975,8 +975,15 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
     content::WebContents* target_tab =
         DevToolsWindow::AsDevToolsWindow(web_contents_)
             ->GetInspectedWebContents();
-    auto* partition = target_tab->GetMainFrame()->GetStoragePartition();
-    url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
+    if (target_tab) {
+      auto* partition = target_tab->GetMainFrame()->GetStoragePartition();
+      url_loader_factory = partition->GetURLLoaderFactoryForBrowserProcess();
+    } else {
+      base::DictionaryValue response;
+      response.SetInteger("statusCode", 409);
+      std::move(callback).Run(&response);
+      return;
+    }
   }
 
   NetworkResourceLoader::Create(
