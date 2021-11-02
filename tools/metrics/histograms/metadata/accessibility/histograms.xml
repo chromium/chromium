@@ -733,9 +733,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
-    units="pixels" expires_after="2021-12-12">
-  <owner>dmazzoni@chromium.org</owner>
+    units="pixels" expires_after="2022-06-12">
+  <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Counts the number of images that got a certain result from automatic image
     labeling (empty, error, or success), as a function of the function of one of
@@ -753,9 +754,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.{Result}By{Length}"
-    units="characters" expires_after="2021-12-12">
-  <owner>dmazzoni@chromium.org</owner>
+    units="characters" expires_after="2022-06-12">
+  <owner>dtseng@chromium.org</owner>
   <owner>mschillaci@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Counts the number of images that got a certain result from automatic image
     labeling (empty, error, or success), as a function of the function of the
