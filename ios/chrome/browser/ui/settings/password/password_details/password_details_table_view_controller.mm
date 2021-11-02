@@ -378,8 +378,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     item.identifyingIcon = [[UIImage imageNamed:image]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     item.identifyingIconEnabled = YES;
-    item.identifyingIconAccessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
+    item.identifyingIconAccessibilityLabel = l10n_util::GetNSString(
+        [self isPasswordShown] ? IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON
+                               : IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
   }
   return item;
 }
@@ -889,6 +890,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       self.passwordTextItem.identifyingIcon =
           [[UIImage imageNamed:@"infobar_hide_password_icon"]
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      self.passwordTextItem.identifyingIconAccessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
       [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
       if (self.password.compromised) {
         UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
@@ -1078,6 +1081,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     self.passwordTextItem.identifyingIcon =
         [[UIImage imageNamed:@"infobar_reveal_password_icon"]
             imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.passwordTextItem.identifyingIconAccessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);
     [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
   } else {
     if (self.credentialType == CredentialTypeNew) {
@@ -1086,6 +1091,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       self.passwordTextItem.identifyingIcon =
           [[UIImage imageNamed:@"infobar_hide_password_icon"]
               imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      self.passwordTextItem.identifyingIconAccessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
       [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
     } else {
       [self attemptToShowPasswordFor:ReauthenticationReasonShow];
