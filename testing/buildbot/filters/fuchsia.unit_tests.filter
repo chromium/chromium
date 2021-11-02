@@ -5,7 +5,6 @@
 -BrowserUnitTest.DisablePrint*
 -CB*
 -ChromeDownloadManagerDelegateTest.Maybe*
--ComponentLoaderTest.AddOr*
 -Crash*
 -DeepScanningUtilsCrashKeysTest.*
 -DevToolsFile*

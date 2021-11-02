@@ -214,6 +214,10 @@ TEST_F(ComponentLoaderTest, AddOrReplace) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(&profile_);
   ExtensionUnloadedObserver unload_observer(registry);
   EXPECT_EQ(0u, component_loader_.registered_extensions_count());
+
+  // Allow the Feedback extension, which has a background page, to be loaded.
+  component_loader_.EnableBackgroundExtensionsForTesting();
+
   component_loader_.AddDefaultComponentExtensions(false);
   size_t const default_count = component_loader_.registered_extensions_count();
   base::FilePath known_extension = GetBasePath()
