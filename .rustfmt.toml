@@ -16,3 +16,8 @@ newline_style = "Unix"
 # * https://github.com/rust-lang/rustfmt/issues/3119
 # * https://github.com/rust-lang/rustfmt/issues/3120
 use_small_heuristics = "Max"
+
+# Third party code is formatted upstream.
+ignore = [
+  "third_party/rust",
+]
