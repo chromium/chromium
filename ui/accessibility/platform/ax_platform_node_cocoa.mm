@@ -760,9 +760,7 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityARIACurrentAttribute];
 
   // Focusable element or a control element.
-  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
-      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
-      _node->HasState(ax::mojom::State::kFocusable)) {
+  if (ui::IsControl(role)) {
     [axAttributes addObjectsFromArray:@[
       NSAccessibilityAccessKeyAttribute,
     ]];
