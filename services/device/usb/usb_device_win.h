@@ -60,7 +60,9 @@ class UsbDeviceWin : public UsbDevice {
 
   // Opens the device's parent hub in order to read the device, configuration
   // and string descriptors.
-  void ReadDescriptors(base::OnceCallback<void(bool)> callback);
+  void ReadDescriptors(
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      base::OnceCallback<void(bool)> callback);
 
   void UpdateFunction(int interface_number, const FunctionInfo& function_info);
 

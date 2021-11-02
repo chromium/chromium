@@ -83,9 +83,13 @@ class UsbDeviceHandleWin : public UsbDeviceHandle {
   // Constructor used to build a connection to the device.
   UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device);
 
-  // Constructor used to build a connection to the device's parent hub.
-  UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device,
-                     base::win::ScopedHandle handle);
+  // Constructor used to build a connection to the device's parent hub. To avoid
+  // bugs in USB hub drivers a single global sequenced task runner is used for
+  // all calls to the driver.
+  UsbDeviceHandleWin(
+      scoped_refptr<UsbDeviceWin> device,
+      base::win::ScopedHandle handle,
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
   ~UsbDeviceHandleWin() override;
 
