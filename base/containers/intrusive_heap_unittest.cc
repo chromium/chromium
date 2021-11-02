@@ -4,13 +4,11 @@
 
 #include "base/containers/intrusive_heap.h"
 
-#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1065,83 +1063,6 @@ TEST(IntrusiveHeapTest, At) {
     EXPECT_EQ(heap.at(index[i]).key, i ^ (i + 1));
     EXPECT_EQ(heap.at(index[i]).handle, &index[i]);
   }
-}
-
-bool IsEven(int i) {
-  return i % 2 == 0;
-}
-
-TEST(IntrusiveHeapTest, EraseIf) {
-  HeapHandle index[10];
-  IntrusiveHeap<TestElement> heap;
-
-  for (int i = 0; i < 10; i++)
-    heap.insert({i, &index[i]});
-  ASSERT_EQ(heap.size(), 10u);
-
-  // Remove all even elements.
-  heap.EraseIf([](const TestElement& element) { return IsEven(element.key); });
-  ASSERT_EQ(heap.size(), 5u);
-
-  // Handles were correctly updated.
-  for (int i = 0; i < 10; i++)
-    EXPECT_EQ(IsEven(i), !index[i].IsValid());
-
-  // Now iterate over all elements of the heap and check their handles.
-  for (size_t i = 0; i < heap.size(); i++) {
-    auto it = heap.begin();
-    std::advance(it, i);
-
-    // Retrieve the value of the element at this position.
-    int value = it->key;
-
-    // Its handle should have the correct index.
-    EXPECT_EQ(index[value].index(), i);
-  }
-
-  std::vector<int> results;
-  while (!heap.empty()) {
-    results.push_back(heap.top().key);
-    heap.pop();
-  }
-
-  EXPECT_THAT(results, testing::ElementsAre(1, 3, 5, 7, 9));
-}
-
-// A comparator class whose sole purpose is to allow the insertion of a
-// ScopedClosureRunner inside the heap. The ordering does not matter.
-class Comparator {
- public:
-  bool operator()(const WithHeapHandle<ScopedClosureRunner>& lhs,
-                  const WithHeapHandle<ScopedClosureRunner>& rhs) {
-    // Treat all closures as equal.
-    return true;
-  }
-};
-
-// Tests that inserting another element from the destructor of an object removed
-// during EraseIf() doesn't crash.
-TEST(IntrusiveHeapTest, EraseIf_Reentrancy) {
-  IntrusiveHeap<WithHeapHandle<ScopedClosureRunner>, Comparator> heap;
-
-  // The task that will post a new element inside the heap upon destruction of
-  // the first.
-  OnceClosure insert_task = BindLambdaForTesting([&]() {
-    // Insert a null callback so it can be differentiated.
-    heap.insert(OnceClosure());
-  });
-  heap.insert(ScopedClosureRunner(std::move(insert_task)));
-
-  // The heap contains the non-null closure.
-  EXPECT_EQ(heap.size(), 1u);
-  EXPECT_TRUE(heap.top().value());
-
-  // Erase the only element using EraseIf().
-  heap.EraseIf([](const auto& element) { return true; });
-
-  // Now the heap contains the null closure.
-  EXPECT_EQ(heap.size(), 1u);
-  EXPECT_FALSE(heap.top().value());
 }
 
 }  // namespace base
