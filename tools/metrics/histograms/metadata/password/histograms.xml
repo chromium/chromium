@@ -966,8 +966,22 @@ chromium-metrics-reviews@google.com.
   <owner>vsemeniuk@google.com</owner>
   <summary>
     Count of credentials analyzed when the password bulk check completed
-    successfully. Note that this counts unique username+password pairs, so in
-    the case of password reuse, this does not correspond to the number of
+    successfully (see '.CheckedCredentialsOnErrorOrCanceled' for non-success
+    cases). Note that this counts unique username+password pairs, so in the case
+    of password reuse, this does not correspond to the number of user-visible
+    credentials.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.CheckedCredentialsOnErrorOrCanceled"
+    units="credentials" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of credentials that were supposed to be analyzed if the password bulk
+    check encountered an error or was canceled (see '.CheckedCredentials' for
+    the success case). Note that this counts unique username+password pairs, so
+    in the case of password reuse, this does not correspond to the number of
     user-visible credentials.
   </summary>
 </histogram>
@@ -984,10 +998,23 @@ chromium-metrics-reviews@google.com.
   <owner>vasilii@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
-    Count of leaked credentials found when the password bulk check completed.
+    Count of leaked credentials found when the password bulk check completed
+    successfully (see '.LeaksFoundOnErrorOrCanceled' for non-success cases).
     Note that this counts unique username+password pairs, so in the case of
     password reuse, this does not correspond to the number of user-visible
     credentials.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.LeaksFoundOnErrorOrCanceled"
+    units="credentials" expires_after="2022-04-24">
+  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Count of leaked credentials found when the password bulk check encountered
+    an error or was canceled (see '.LeaksFound' for the success case). Note that
+    this counts unique username+password pairs, so in the case of password
+    reuse, this does not correspond to the number of user-visible credentials.
   </summary>
 </histogram>
 
