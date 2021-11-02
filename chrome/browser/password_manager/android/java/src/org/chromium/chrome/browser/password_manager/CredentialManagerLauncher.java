@@ -10,17 +10,7 @@ public interface CredentialManagerLauncher {
     /**
      * Launches the UI surface allowing users to manage their saved passwords.
      *
-     * @param referrer the place that requested the launch*
-     *
-     * TODO(crbug.com/1255038): Make abstract once its implemented everywhere.
+     * @param referrer the place that requested the launch
      */
-    default void launchCredentialManager(@ManagePasswordsReferrer int referrer) {}
-
-    /**
-     * Launches the UI surface allowing users to manage their saved passwords.
-     *
-     * TODO(crbug.com/1255038): Remove once the downstream class no longer implements it.
-     */
-    @Deprecated
-    default void launchCredentialManager() {}
+    void launchCredentialManager(@ManagePasswordsReferrer int referrer);
 }
