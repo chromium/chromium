@@ -321,7 +321,8 @@ bool BrowserAccessibilityAndroid::IsMultiselectable() const {
 
 bool BrowserAccessibilityAndroid::IsRangeControlWithoutAriaValueText() const {
   return GetData().IsRangeValueSupported() &&
-         !HasStringAttribute(ax::mojom::StringAttribute::kValue);
+         !HasStringAttribute(ax::mojom::StringAttribute::kValue) &&
+         HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
 }
 
 bool BrowserAccessibilityAndroid::IsReportingCheckable() const {
@@ -611,14 +612,26 @@ std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   }
 
   std::u16string text = GetNameAsString16();
-  if (text.empty()) {
-    // When a node does not have a name (e.g. a label), use its value instead.
-    text = value;
-  } else if (ui::IsRangeValueSupported(GetRole()) && !value.empty()) {
+  if (ui::IsRangeValueSupported(GetRole())) {
     // For controls that support range values such as sliders, when a non-empty
     // name is present (e.g. a label), append this to the value so both the
     // valuetext and label are included, rather than replacing the value.
-    text = value + u", " + text;
+    // If the value itself is empty on a progress indicator, then this would
+    // suggest it is indeterminate, so add that keyword.
+    if (value.empty() && GetRole() == ax::mojom::Role::kProgressIndicator) {
+      content::ContentClient* content_client = content::GetContentClient();
+      value = content_client->GetLocalizedString(IDS_AX_INDETERMINATE_VALUE);
+    }
+
+    // To prevent extra commas, only add if the text is non-empty
+    if (!text.empty() && !value.empty()) {
+      text = value + u", " + text;
+    } else if (!value.empty()) {
+      text = value;
+    }
+  } else if (text.empty()) {
+    // When a node does not have a name (e.g. a label), use its value instead.
+    text = value;
   }
 
   // For almost all focusable nodes we try to get text from contents, but for
