@@ -402,8 +402,7 @@ inline bool ShouldBreakShapingBeforeText(const NGInlineItem& item,
 }
 
 // Returns whether the start of this box should break shaping.
-inline bool ShouldBreakShapingBeforeBox(const NGInlineItem& item,
-                                        const Font& start_font) {
+inline bool ShouldBreakShapingBeforeBox(const NGInlineItem& item) {
   DCHECK_EQ(item.Type(), NGInlineItem::kOpenTag);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();
@@ -420,8 +419,7 @@ inline bool ShouldBreakShapingBeforeBox(const NGInlineItem& item,
 }
 
 // Returns whether the end of this box should break shaping.
-inline bool ShouldBreakShapingAfterBox(const NGInlineItem& item,
-                                       const Font& start_font) {
+inline bool ShouldBreakShapingAfterBox(const NGInlineItem& item) {
   DCHECK_EQ(item.Type(), NGInlineItem::kCloseTag);
   DCHECK(item.Style());
   const ComputedStyle& style = *item.Style();
@@ -1360,15 +1358,13 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
         end_offset = item.EndOffset();
         num_text_items++;
       } else if (item.Type() == NGInlineItem::kOpenTag) {
-        if (ShouldBreakShapingBeforeBox(item, font)) {
+        if (ShouldBreakShapingBeforeBox(item))
           break;
-        }
         // Should not have any characters to be opaque to shaping.
         DCHECK_EQ(0u, item.Length());
       } else if (item.Type() == NGInlineItem::kCloseTag) {
-        if (ShouldBreakShapingAfterBox(item, font)) {
+        if (ShouldBreakShapingAfterBox(item))
           break;
-        }
         // Should not have any characters to be opaque to shaping.
         DCHECK_EQ(0u, item.Length());
       } else {
