@@ -34,6 +34,8 @@ namespace web_launch {
 // Note: The lifetime of this class is tied to the WebContents it is attached
 // to. However, in general it will be destroyed before the WebContents, when the
 // helper sends the FileSystemAccessEntries to the renderer.
+//
+// TODO(crbug.com/1250225): Rename this to WebLaunchParamsHelper.
 class WebLaunchFilesHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<WebLaunchFilesHelper> {
@@ -62,6 +64,11 @@ class WebLaunchFilesHelper
       base::FilePath launch_dir,
       std::vector<base::FilePath> launch_paths);
 
+  static void EnqueueLaunchParams(content::WebContents* web_contents,
+                                  const GURL& launch_url,
+                                  base::FilePath launch_dir,
+                                  std::vector<base::FilePath> launch_paths);
+
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
@@ -73,11 +80,7 @@ class WebLaunchFilesHelper
                        base::FilePath launch_dir,
                        std::vector<base::FilePath> launch_paths);
 
-  static void SetLaunchPathsIfPermitted(
-      content::WebContents* web_contents,
-      const GURL& launch_url,
-      base::FilePath launch_dir,
-      std::vector<base::FilePath> launch_paths);
+  bool SendingFileHandles() const;
 
   // Sends the launch entries to the renderer if they have been created and the
   // renderer is ready to receive them.

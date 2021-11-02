@@ -4955,6 +4955,7 @@ interface LargestContentfulPaint : PerformanceEntry
 interface LaunchParams
     attribute @@toStringTag
     getter files
+    getter targetURL
     method constructor
 interface LaunchQueue
     attribute @@toStringTag

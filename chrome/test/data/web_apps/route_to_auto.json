@@ -1,6 +1,6 @@
 {
   "name": "route_to: auto",
-  "start_url": ".",
+  "start_url": "basic.html?route_to=auto",
   "display": "standalone",
   "launch_handler": {
     "route_to": "auto"

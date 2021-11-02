@@ -125,8 +125,8 @@ void WebLaunchFilesHelper::SetLaunchPaths(
   if (launch_paths.empty())
     return;
 
-  SetLaunchPathsIfPermitted(web_contents, launch_url, /*launch_dir=*/{},
-                            std::move(launch_paths));
+  EnqueueLaunchParams(web_contents, launch_url, /*launch_dir=*/{},
+                      std::move(launch_paths));
 }
 
 // static
@@ -138,45 +138,23 @@ void WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
   if (launch_dir.empty() || launch_paths.empty())
     return;
 
-  SetLaunchPathsIfPermitted(web_contents, launch_url, launch_dir,
-                            std::move(launch_paths));
-}
-
-void WebLaunchFilesHelper::DidFinishNavigation(
-    content::NavigationHandle* handle) {
-  // Currently, launch data is only sent for the main frame.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!handle->IsInPrimaryMainFrame())
-    return;
-
-  MaybeSendLaunchEntries();
-}
-
-WebLaunchFilesHelper::WebLaunchFilesHelper(
-    content::WebContents* web_contents,
-    const GURL& launch_url,
-    base::FilePath launch_dir,
-    std::vector<base::FilePath> launch_paths)
-    : content::WebContentsObserver(web_contents),
-      launch_paths_(launch_paths),
-      launch_dir_(launch_dir),
-      launch_url_(launch_url) {
-  DCHECK(launch_paths.size());
+  EnqueueLaunchParams(web_contents, launch_url, launch_dir,
+                      std::move(launch_paths));
 }
 
 // static
-void WebLaunchFilesHelper::SetLaunchPathsIfPermitted(
+void WebLaunchFilesHelper::EnqueueLaunchParams(
     content::WebContents* web_contents,
     const GURL& launch_url,
     base::FilePath launch_dir,
     std::vector<base::FilePath> launch_paths) {
-  const bool using_settings = base::FeatureList::IsEnabled(
-      features::kDesktopPWAsFileHandlingSettingsGated);
+  const bool needs_permission_check =
+      !base::FeatureList::IsEnabled(
+          features::kDesktopPWAsFileHandlingSettingsGated) &&
+      (!launch_paths.empty() || !launch_dir.empty());
 
   // Don't even bother creating the object if the permission is blocked.
-  if (!using_settings &&
+  if (needs_permission_check &&
       PermissionManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))
               ->GetPermissionStatus(ContentSettingsType::FILE_HANDLING,
@@ -190,12 +168,16 @@ void WebLaunchFilesHelper::SetLaunchPathsIfPermitted(
                                std::move(launch_paths)));
   // When using settings instead of permissions, the setting should have
   // been checked/prompt shown by this point.
-  if (using_settings)
+  if (!needs_permission_check)
     helper->passed_permission_check_ = true;
 
   WebLaunchFilesHelper* helper_ptr = helper.get();
   web_contents->SetUserData(UserDataKey(), std::move(helper));
   helper_ptr->MaybeSendLaunchEntries();
+}
+
+bool WebLaunchFilesHelper::SendingFileHandles() const {
+  return !launch_paths_.empty() || !launch_dir_.empty();
 }
 
 void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
@@ -238,25 +220,52 @@ void WebLaunchFilesHelper::OnPermissionRequestResponse(ContentSetting setting) {
   }
 }
 
+void WebLaunchFilesHelper::DidFinishNavigation(
+    content::NavigationHandle* handle) {
+  // Currently, launch data is only sent for the main frame.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!handle->IsInPrimaryMainFrame())
+    return;
+
+  MaybeSendLaunchEntries();
+}
+
+WebLaunchFilesHelper::WebLaunchFilesHelper(
+    content::WebContents* web_contents,
+    const GURL& launch_url,
+    base::FilePath launch_dir,
+    std::vector<base::FilePath> launch_paths)
+    : content::WebContentsObserver(web_contents),
+      launch_paths_(launch_paths),
+      launch_dir_(launch_dir),
+      launch_url_(launch_url) {}
+
 void WebLaunchFilesHelper::CloseApp() {
   web_contents()->Close();
   // `this` is deleted.
 }
 
 void WebLaunchFilesHelper::SendLaunchEntries() {
-  EntriesBuilder entries_builder(web_contents(), launch_url_,
-                                 launch_paths_.size() + 1);
-  if (!launch_dir_.empty())
-    entries_builder.AddDirectoryEntry(launch_dir_);
-
-  for (const auto& path : launch_paths_)
-    entries_builder.AddFileEntry(path);
-
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
       &launch_service);
   DCHECK(launch_service);
-  launch_service->SetLaunchFiles(entries_builder.Build());
+
+  if (SendingFileHandles()) {
+    EntriesBuilder entries_builder(web_contents(), launch_url_,
+                                   launch_paths_.size() + 1);
+    if (!launch_dir_.empty())
+      entries_builder.AddDirectoryEntry(launch_dir_);
+
+    for (const auto& path : launch_paths_)
+      entries_builder.AddFileEntry(path);
+
+    launch_service->SetLaunchFiles(entries_builder.Build());
+  } else {
+    launch_service->EnqueueLaunchParams(launch_url_);
+  }
 }
 
 }  // namespace web_launch

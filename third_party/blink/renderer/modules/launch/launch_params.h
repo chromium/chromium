@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -17,15 +18,18 @@ class LaunchParams final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  explicit LaunchParams(KURL target_url);
   explicit LaunchParams(HeapVector<Member<FileSystemHandle>> files);
   ~LaunchParams() override;
 
   // LaunchParams IDL interface.
   const HeapVector<Member<FileSystemHandle>>& files() { return files_; }
+  const String& targetURL() { return target_url_.GetString(); }
 
   void Trace(Visitor*) const override;
 
  private:
+  KURL target_url_;
   HeapVector<Member<FileSystemHandle>> files_;
 };
 

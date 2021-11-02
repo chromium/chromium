@@ -39,11 +39,23 @@ class WebAppLaunchHanderBrowserTest : public InProcessBrowserTest {
  protected:
   Profile* profile() { return browser()->profile(); }
 
+  const WebApp* GetWebApp(const AppId& app_id) {
+    return WebAppProvider::GetForTest(profile())->registrar().GetAppById(
+        app_id);
+  }
+
   absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
-    return WebAppProvider::GetForTest(profile())
-        ->registrar()
-        .GetAppById(app_id)
-        ->launch_handler();
+    return GetWebApp(app_id)->launch_handler();
+  }
+
+  std::string AwaitNextLaunchParamsTargetUrl(Browser* browser) {
+    const char* script = R"(
+      new Promise(resolve => {
+        window.launchQueue.setConsumer(resolve);
+      }).then(params => params.targetURL);
+    )";
+    return EvalJs(browser->tab_strip_model()->GetActiveWebContents(), script)
+        .ExtractString();
   }
 
  private:
@@ -70,8 +82,14 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, RouteToAuto) {
   EXPECT_EQ(GetLaunchHandler(app_id),
             (LaunchHandler{RouteTo::kAuto, NavigateExistingClient::kAlways}));
 
-  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+  std::string start_url = GetWebApp(app_id)->start_url().spec();
+
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url);
+
+  Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url);
+
   EXPECT_NE(browser_1, browser_2);
 }
 
@@ -83,8 +101,14 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, RouteToNewClient) {
       GetLaunchHandler(app_id),
       (LaunchHandler{RouteTo::kNewClient, NavigateExistingClient::kAlways}));
 
-  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+  std::string start_url = GetWebApp(app_id)->start_url().spec();
+
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url);
+
+  Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url);
+
   EXPECT_NE(browser_1, browser_2);
 }
 
@@ -98,11 +122,13 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, RouteToExistingClient) {
             (LaunchHandler{RouteTo::kExistingClient,
                            NavigateExistingClient::kAlways}));
 
-  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
   content::WebContents* web_contents =
       browser_1->tab_strip_model()->GetActiveWebContents();
-  GURL start_url = embedded_test_server()->GetURL("/web_apps/");
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/basic.html?route_to=existing-client&navigate=empty");
   EXPECT_EQ(web_contents->GetVisibleURL(), start_url);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url.spec());
 
   // Navigate window away from start_url to check that the next launch navs to
   // start_url again.
@@ -111,9 +137,11 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, RouteToExistingClient) {
   ASSERT_TRUE(Navigate(&navigate_params));
   EXPECT_EQ(web_contents->GetVisibleURL(), GURL("about:blank"));
 
-  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
-  EXPECT_EQ(browser_1, browser_2);
+  Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
   EXPECT_EQ(web_contents->GetVisibleURL(), start_url);
+  EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url.spec());
+
+  EXPECT_EQ(browser_1, browser_2);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, GlobalLaunchQueue) {
@@ -126,6 +154,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderBrowserTest, GlobalLaunchQueue) {
 
   EXPECT_TRUE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
   EXPECT_TRUE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
+  EXPECT_TRUE(EvalJs(web_contents, "!!window.LaunchParams").ExtractBool());
 }
 
 class WebAppLaunchHanderDisabledBrowserTest : public InProcessBrowserTest {
@@ -162,6 +191,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHanderDisabledBrowserTest, NoLaunchQueue) {
 
   EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchQueue").ExtractBool());
   EXPECT_FALSE(EvalJs(web_contents, "!!window.launchQueue").ExtractBool());
+  EXPECT_FALSE(EvalJs(web_contents, "!!window.LaunchParams").ExtractBool());
 }
 
 }  // namespace web_app
