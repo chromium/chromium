@@ -18,6 +18,7 @@
 #include "ash/webui/diagnostics_ui/backend/session_log_handler.h"
 #include "ash/webui/diagnostics_ui/backend/system_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/system_routine_controller.h"
+#include "ash/webui/diagnostics_ui/diagnostics_metrics.h"
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
@@ -359,11 +360,18 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());
 
+  // Configure SFUL metrics.
+  diagnostics_metrics_ =
+      std::make_unique<diagnostics::metrics::DiagnosticsMetrics>();
+  diagnostics_metrics_->RecordUsage(true);
+  // TODO(ashleydp): Clean up timestamp when EmitAppOpenDuration is deprecated
   open_timestamp_ = base::Time::Now();
 }
 
 DiagnosticsDialogUI::~DiagnosticsDialogUI() {
   const base::TimeDelta time_open = base::Time::Now() - open_timestamp_;
+  diagnostics_metrics_->StopSuccessfulUsage();
+  // TODO(ashleydp): Clean up when EmitAppOpenDuration is deprecated.
   diagnostics::metrics::EmitAppOpenDuration(time_open);
 }
 
