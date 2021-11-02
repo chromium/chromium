@@ -9,6 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"
@@ -154,7 +155,7 @@ class GM2TabStyle : public TabStyleViews {
                                         float scale,
                                         int stroke_thickness);
 
-  const Tab* const tab_;
+  const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
   gfx::FontList normal_font_;
@@ -588,8 +589,8 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
   const Tab* adjacent_tab =
       tab_->controller()->GetAdjacentTab(tab_, leading ? -1 : 1);
 
-  const Tab* left_tab = leading ? adjacent_tab : tab_;
-  const Tab* right_tab = leading ? tab_ : adjacent_tab;
+  const Tab* left_tab = leading ? adjacent_tab : tab_.get();
+  const Tab* right_tab = leading ? tab_.get() : adjacent_tab;
   const bool adjacent_to_header =
       right_tab && right_tab->group().has_value() &&
       (!left_tab || left_tab->group() != right_tab->group());

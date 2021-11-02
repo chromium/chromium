@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/container_util.h"
 #include "components/viz/service/display/resource_fence.h"
@@ -103,7 +104,7 @@ class SyncQuery {
     base::WeakPtr<SyncQuery> query_;
   };
 
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
   unsigned query_id_;
   bool is_pending_;
   base::WeakPtrFactory<SyncQuery> weak_ptr_factory_{this};

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 class WebContents;
@@ -33,7 +34,7 @@ class ChromeExtensionChooserDialog {
   void ShowDialogImpl(
       std::unique_ptr<permissions::ChooserController> chooser_controller) const;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_CHOOSER_DIALOG_H_

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/query_tiles/internal/image_loader.h"
 #include "components/query_tiles/internal/tile_group.h"
@@ -92,16 +93,17 @@ class ImagePrefetcherTest : public testing::Test {
     DCHECK(image_prefetcher_);
     TileGroup group;
     ResetImageUrls(&group);
-    prefetcher()->Prefetch(std::move(group), is_from_reduced_mode,
-                           base::BindOnce(&MockImageLoader::DoneCallbackStub,
-                                          base::Unretained(image_loader_)));
+    prefetcher()->Prefetch(
+        std::move(group), is_from_reduced_mode,
+        base::BindOnce(&MockImageLoader::DoneCallbackStub,
+                       base::Unretained(image_loader_.get())));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  MockImageLoader* image_loader_;
+  raw_ptr<MockImageLoader> image_loader_;
   std::unique_ptr<ImagePrefetcher> image_prefetcher_;
 };
 

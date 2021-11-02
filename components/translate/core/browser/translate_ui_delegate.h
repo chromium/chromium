@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
@@ -165,7 +166,7 @@ class TranslateUIDelegate {
   // associated with the current page.
   std::string GetPageHost() const;
 
-  TranslateDriver* translate_driver_;
+  raw_ptr<TranslateDriver> translate_driver_;
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // ISO code (en, fr...) -> displayable name in the current locale

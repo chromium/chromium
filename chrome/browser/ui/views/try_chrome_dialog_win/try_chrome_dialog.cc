@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -409,15 +410,15 @@ class TryChromeDialog::Context {
     static const PopupProperties kBottomTaskbarProperties_;
     static const PopupProperties kRightTaskbarProperties_;
 
-    const PopupProperties* const properties_;
+    const raw_ptr<const PopupProperties> properties_;
 
     // A horizontal (for top/bottom taskbars) or vertical (for left/right)
     // displacement, in DIP, for the arrow to keep it centered with respect to
     // the taskbar icon.
     gfx::Vector2d arrow_adjustment_;
 
-    views::View* contents_view_;
-    ArrowBorder* border_;
+    raw_ptr<views::View> contents_view_;
+    raw_ptr<ArrowBorder> border_;
 
     // The last size, in pixels, for the popup's window for which its region was
     // calculated.

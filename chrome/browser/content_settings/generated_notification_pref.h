@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_GENERATED_NOTIFICATION_PREF_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_GENERATED_NOTIFICATION_PREF_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
 #include "base/scoped_observation.h"
@@ -54,8 +55,8 @@ class GeneratedNotificationPref
       Profile* profile,
       extensions::api::settings_private::PrefObject* pref_object);
 
-  Profile* const profile_;
-  HostContentSettingsMap* host_content_settings_map_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_setting_observation_{this};
   PrefChangeRegistrar user_prefs_registrar_;

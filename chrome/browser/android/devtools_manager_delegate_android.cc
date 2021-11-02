@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -48,7 +49,7 @@ class ClientProxy : public content::DevToolsAgentHostClient {
   }
 
  private:
-  content::DevToolsExternalAgentProxy* proxy_;
+  raw_ptr<content::DevToolsExternalAgentProxy> proxy_;
 };
 
 class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {

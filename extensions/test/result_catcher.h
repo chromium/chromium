@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/api/test/test_api_observer.h"
 #include "extensions/browser/api/test/test_api_observer_registry.h"
@@ -54,7 +55,7 @@ class ResultCatcher : public TestApiObserver {
   std::string message_;
 
   // If non-NULL, we will listen to events from this BrowserContext only.
-  content::BrowserContext* browser_context_restriction_;
+  raw_ptr<content::BrowserContext> browser_context_restriction_;
 
   // Only set if we're in a nested run loop waiting for results from
   // the extension.

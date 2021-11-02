@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
@@ -54,8 +55,8 @@ class ActivityLogAPI : public BrowserContextKeyedAPI,
 
   void StartOrStopListeningForExtensionActivities();
 
-  content::BrowserContext* browser_context_;
-  ActivityLog* activity_log_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<ActivityLog> activity_log_;
   bool initialized_ = false;
 };
 

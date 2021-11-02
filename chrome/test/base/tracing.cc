@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
@@ -49,7 +50,7 @@ class StringTraceEndpoint
  private:
   ~StringTraceEndpoint() override {}
 
-  std::string* result_;
+  raw_ptr<std::string> result_;
   base::RepeatingClosure completion_callback_;
 };
 

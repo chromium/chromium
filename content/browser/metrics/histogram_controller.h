@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/common/histogram_fetcher.mojom.h"
@@ -69,7 +70,7 @@ class HistogramController {
  private:
   friend struct base::LeakySingletonTraits<HistogramController>;
 
-  HistogramSubscriber* subscriber_;
+  raw_ptr<HistogramSubscriber> subscriber_;
 
   template <class T>
   using ChildHistogramFetcherMap =

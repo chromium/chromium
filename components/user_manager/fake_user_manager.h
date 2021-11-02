@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager_base.h"
@@ -159,10 +160,10 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void OnUserRemoved(const AccountId& account_id) override {}
 
  protected:
-  User* primary_user_;
+  raw_ptr<User> primary_user_;
 
   // Can be set by set_local_state().
-  PrefService* local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.

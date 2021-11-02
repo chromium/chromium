@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -49,7 +50,7 @@ class GPU_GLES2_EXPORT Logger {
 
  private:
   // Uses the current marker to add information to logs.
-  const DebugMarkerManager* debug_marker_manager_;
+  raw_ptr<const DebugMarkerManager> debug_marker_manager_;
   const LogMessageCallback log_message_callback_;
   std::string this_in_hex_;
 

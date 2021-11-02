@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -169,8 +170,8 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
 
  private:
   TestGuestViewManagerFactory factory_;
-  content::WebContents* guest_web_contents_;
-  content::WebContents* embedder_web_contents_;
+  raw_ptr<content::WebContents> guest_web_contents_;
+  raw_ptr<content::WebContents> embedder_web_contents_;
 
   ChromeMimeHandlerViewTest(const ChromeMimeHandlerViewTest&) = delete;
   ChromeMimeHandlerViewTest& operator=(const ChromeMimeHandlerViewTest&) =

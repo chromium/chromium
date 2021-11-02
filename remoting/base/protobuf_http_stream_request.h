@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -83,7 +84,7 @@ class ProtobufHttpStreamRequest final
   void OnStreamReadyTimeout();
 
   // Used to create new response message instances.
-  const google::protobuf::MessageLite* default_message_;
+  raw_ptr<const google::protobuf::MessageLite> default_message_;
 
   std::unique_ptr<ProtobufHttpStreamParser> stream_parser_;
 

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_CAPACITY_ALLOCATION_HOST_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -85,7 +86,7 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
 
   // Raw pointer use is safe, since the manager owns the
   // FileSystemAccessAccessHandleHostImpl which owns this class.
-  FileSystemAccessManagerImpl* const manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_;
 
   // URL of the file whose capacity is managed through this host.
   const storage::FileSystemURL url_;

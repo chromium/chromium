@@ -18,6 +18,8 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include "base/memory/raw_ptr.h"
+
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
 #define __user
@@ -112,7 +114,7 @@ class VerboseAPITestingPolicy : public Policy {
   }
 
  private:
-  int* counter_ptr_;
+  raw_ptr<int> counter_ptr_;
 };
 
 SANDBOX_TEST(SandboxBPF, DISABLE_ON_TSAN(VerboseAPITesting)) {
@@ -250,7 +252,7 @@ class DenylistNanosleepTrapPolicy : public Policy {
   }
 
  private:
-  int* aux_;
+  raw_ptr<int> aux_;
 };
 
 BPF_TEST(SandboxBPF,
@@ -566,7 +568,7 @@ class GreyListedPolicy : public Policy {
   }
 
  private:
-  int* aux_;
+  raw_ptr<int> aux_;
 };
 
 BPF_TEST(SandboxBPF, GreyListedPolicy, GreyListedPolicy, int /* (*BPF_AUX) */) {
@@ -921,10 +923,12 @@ class EqualityStressTest {
     struct Tests {
       uint32_t k_value;            // Value to compare syscall arg against.
       int err;                     // If non-zero, errno value to return.
-      struct ArgValue* arg_value;  // Otherwise, more args needs inspecting.
+      raw_ptr<struct ArgValue>
+          arg_value;  // Otherwise, more args needs inspecting.
     }* tests;
     int err;                     // If none of the tests passed, this is what
-    struct ArgValue* arg_value;  // we'll return (this is the "else" branch).
+    raw_ptr<struct ArgValue>
+        arg_value;  // we'll return (this is the "else" branch).
   };
 
   bool IsReservedSyscall(int sysno) {
@@ -1152,7 +1156,7 @@ class EqualityStressTestPolicy : public Policy {
   }
 
  private:
-  EqualityStressTest* aux_;
+  raw_ptr<EqualityStressTest> aux_;
 };
 
 BPF_TEST(SandboxBPF,

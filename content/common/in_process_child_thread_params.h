@@ -5,6 +5,7 @@
 #ifndef CONTENT_COMMON_IN_PROCESS_CHILD_THREAD_PARAMS_H_
 #define CONTENT_COMMON_IN_PROCESS_CHILD_THREAD_PARAMS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
@@ -31,7 +32,7 @@ class CONTENT_EXPORT InProcessChildThreadParams {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> io_runner_;
-  mojo::OutgoingInvitation* const mojo_invitation_;
+  const raw_ptr<mojo::OutgoingInvitation> mojo_invitation_;
 };
 
 }  // namespace content

@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
@@ -102,7 +103,7 @@ class PolicySchemaAvailableWaiter : public policy::SchemaRegistry::Observer {
       run_loop_.Quit();
   }
 
-  policy::SchemaRegistry* const registry_;
+  const raw_ptr<policy::SchemaRegistry> registry_;
   const policy::PolicyNamespace policy_namespace_;
   base::RunLoop run_loop_;
 };

@@ -4,6 +4,7 @@
 
 #include "components/viz/service/display_embedder/gl_output_surface_buffer_queue.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "components/viz/service/display_embedder/buffer_queue.h"
@@ -115,8 +116,8 @@ class GLOutputSurfaceBufferQueueTest : public ::testing::Test,
 
  protected:
   std::unique_ptr<OutputSurface> surface_;
-  StrictMock<MockGLES2Interface>* gles2_interface_;
-  StrictMock<MockBufferQueue>* buffer_queue_;
+  raw_ptr<StrictMock<MockGLES2Interface>> gles2_interface_;
+  raw_ptr<StrictMock<MockBufferQueue>> buffer_queue_;
 };
 
 MATCHER_P(SyncTokenEqualTo, expected_sync_token, "") {

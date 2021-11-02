@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_MODAL_DIALOG_MANAGER_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
@@ -56,7 +57,7 @@ class PaymentHandlerModalDialogManagerDelegate
   base::WeakPtr<content::WebContents> host_web_contents_;
 
   // A not-owned pointer to the WebContents behind the modal dialogs.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 }  // namespace payments

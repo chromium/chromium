@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
@@ -140,14 +141,14 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
     void OnDynamicScriptsReadFromStorage(DynamicScriptsReadCallback callback,
                                          std::unique_ptr<base::Value> value);
 
-    content::BrowserContext* browser_context_;
+    raw_ptr<content::BrowserContext> browser_context_;
 
     ExtensionId extension_id_;
 
     // A non-owning pointer to the StateStore which contains metadata of
     // persistent dynamic scripts owned by this extension. Outlives this
     // instance and the owning ExtensionUserScriptLoader.
-    StateStore* state_store_;
+    raw_ptr<StateStore> state_store_;
 
     base::WeakPtrFactory<DynamicScriptsStorageHelper> weak_factory_{this};
   };

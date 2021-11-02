@@ -14,6 +14,7 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
@@ -93,7 +94,7 @@ class AwBrowserProcess {
   // If non-null, this object holds a pref store that will be taken by
   // AwBrowserProcess to create the |local_state_|.
   // The AwFeatureListCreator is owned by AwMainDelegate.
-  AwFeatureListCreator* aw_feature_list_creator_;
+  raw_ptr<AwFeatureListCreator> aw_feature_list_creator_;
 
   std::unique_ptr<PrefService> local_state_;
 

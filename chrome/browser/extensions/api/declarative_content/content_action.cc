@@ -302,7 +302,7 @@ RequestContentScript::RequestContentScript(
   script_loader_ = ExtensionSystem::Get(browser_context)
                        ->user_script_manager()
                        ->GetUserScriptLoaderForExtension(extension->id());
-  scoped_observation_.Observe(script_loader_);
+  scoped_observation_.Observe(script_loader_.get());
   AddScript();
 }
 

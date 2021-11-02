@@ -5,6 +5,7 @@
 #ifndef CHROME_SERVICES_SPEECH_AUDIO_SOURCE_FETCHER_IMPL_H_
 #define CHROME_SERVICES_SPEECH_AUDIO_SOURCE_FETCHER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/mojo/common/audio_data_s16_converter.h"
@@ -83,7 +84,8 @@ class AudioSourceFetcherImpl
 
   // Audio capturer source for microphone recording.
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
-  media::AudioCapturerSource* audio_capturer_source_for_tests_ = nullptr;
+  raw_ptr<media::AudioCapturerSource> audio_capturer_source_for_tests_ =
+      nullptr;
 
   // Audio parameters will be used when recording audio.
   media::AudioParameters audio_parameters_;

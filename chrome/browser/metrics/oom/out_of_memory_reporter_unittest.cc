@@ -15,6 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/run_loop.h"
@@ -199,7 +200,7 @@ class OutOfMemoryReporterTest : public ChromeRenderViewHostTestHarness,
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 
  private:
-  base::SimpleTestTickClock* test_tick_clock_;
+  raw_ptr<base::SimpleTestTickClock> test_tick_clock_;
 };
 
 TEST_F(OutOfMemoryReporterTest, SimpleOOM) {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MOJO_MEDIA_ROUTER_DESKTOP_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
@@ -96,7 +97,7 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   std::unique_ptr<DialMediaRouteProvider, base::OnTaskRunnerDeleter>
       dial_provider_;
 
-  DualMediaSinkService* media_sink_service_;
+  raw_ptr<DualMediaSinkService> media_sink_service_;
   base::CallbackListSubscription media_sink_service_subscription_;
 
   // A status object that keeps track of sinks discovered by media sink

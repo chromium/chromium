@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "ui/gfx/native_widget_types.h"
@@ -76,9 +77,9 @@ class NativeWebContentsModalDialogManagerViews
  private:
   void WidgetClosing(views::Widget* widget);
 
-  web_modal::SingleWebContentsDialogManagerDelegate* native_delegate_;
+  raw_ptr<web_modal::SingleWebContentsDialogManagerDelegate> native_delegate_;
   gfx::NativeWindow dialog_;
-  web_modal::WebContentsModalDialogHost* host_ = nullptr;
+  raw_ptr<web_modal::WebContentsModalDialogHost> host_ = nullptr;
   bool within_show_ = false;
   bool host_destroying_ = false;
   std::set<views::Widget*> observed_widgets_;

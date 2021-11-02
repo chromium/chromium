@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_FETCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -64,9 +65,9 @@ class AccountCapabilitiesFetcher : public OAuth2AccessTokenManager::Consumer,
  private:
   void RecordFetchResultAndDuration(FetchResult result);
 
-  ProfileOAuth2TokenService* token_service_;
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  AccountFetcherService* service_;
+  raw_ptr<AccountFetcherService> service_;
   const CoreAccountId account_id_;
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> login_token_request_;

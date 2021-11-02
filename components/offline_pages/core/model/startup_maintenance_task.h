@@ -6,6 +6,7 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_MODEL_STARTUP_MAINTENANCE_TASK_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -34,9 +35,9 @@ class StartupMaintenanceTask : public Task {
   void OnStartupMaintenanceDone(bool result);
 
   // The store containing the offline pages. Not owned.
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   // The archive manager storing archive directories. Not owned.
-  ArchiveManager* archive_manager_;
+  raw_ptr<ArchiveManager> archive_manager_;
 
   base::WeakPtrFactory<StartupMaintenanceTask> weak_ptr_factory_{this};
 };

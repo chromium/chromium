@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/net_export.h"
@@ -96,7 +97,7 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
   explicit NetworkChangeNotifierAndroid(
       NetworkChangeNotifierDelegateAndroid* delegate);
 
-  NetworkChangeNotifierDelegateAndroid* const delegate_;
+  const raw_ptr<NetworkChangeNotifierDelegateAndroid> delegate_;
   // A collection of objects that must live on blocking sequences. These objects
   // listen for notifications and relay the notifications to the registered
   // observers without posting back to the thread the object was created on.

@@ -5,6 +5,7 @@
 #ifndef CC_TREES_SWAP_PROMISE_MONITOR_H_
 #define CC_TREES_SWAP_PROMISE_MONITOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 
 namespace cc {
@@ -40,8 +41,8 @@ class CC_EXPORT SwapPromiseMonitor {
   virtual void OnSetNeedsRedrawOnImpl() = 0;
 
  protected:
-  SwapPromiseManager* swap_promise_manager_;
-  LayerTreeHostImpl* host_impl_;
+  raw_ptr<SwapPromiseManager> swap_promise_manager_;
+  raw_ptr<LayerTreeHostImpl> host_impl_;
 };
 
 }  // namespace cc

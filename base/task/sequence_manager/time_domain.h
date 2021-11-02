@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/intrusive_heap.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/time/tick_clock.h"
@@ -132,7 +133,8 @@ class BASE_EXPORT TimeDomain : public TickClock {
     HeapHandle GetHeapHandle() const { return queue->heap_handle(); }
   };
 
-  internal::SequenceManagerImpl* sequence_manager_ = nullptr;  // Not owned.
+  raw_ptr<internal::SequenceManagerImpl> sequence_manager_ =
+      nullptr;  // Not owned.
   IntrusiveHeap<ScheduledDelayedWakeUp, std::greater<>> delayed_wake_up_queue_;
   int pending_high_res_wake_up_count_ = 0;
 

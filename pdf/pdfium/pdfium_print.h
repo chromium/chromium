@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -73,7 +74,7 @@ class PDFiumPrint {
   ScopedFPDFDocument CreateSinglePageRasterPdf(FPDF_PAGE page_to_print,
                                                int dpi);
 
-  PDFiumEngine* const engine_;
+  const raw_ptr<PDFiumEngine> engine_;
 };
 
 }  // namespace chrome_pdf

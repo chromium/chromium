@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/background/offliner_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,7 +39,7 @@ class OfflinerClientTest : public testing::Test {
   base::ThreadTaskRunnerHandle task_runner_handle_{task_runner_};
 
   MockProgressCallback progress_callback_;
-  OfflinerStub* offliner_ = new OfflinerStub;
+  raw_ptr<OfflinerStub> offliner_ = new OfflinerStub;
   OfflinerClient client_{std::unique_ptr<OfflinerStub>(offliner_),
                          progress_callback_.Get()};
 };

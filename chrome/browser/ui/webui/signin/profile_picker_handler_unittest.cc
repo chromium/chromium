@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
@@ -158,7 +159,7 @@ class ProfilePickerHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
-  Profile* system_profile_ = nullptr;
+  raw_ptr<Profile> system_profile_ = nullptr;
   content::TestWebUI web_ui_;
   ProfilePickerHandler handler_;
 };

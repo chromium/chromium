@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/demuxer_stream.h"
 #include "media/mojo/mojom/demuxer_stream.mojom.h"
@@ -58,7 +59,7 @@ class MojoDemuxerStreamImpl : public mojom::DemuxerStream {
   mojo::Receiver<mojom::DemuxerStream> receiver_;
 
   // See constructor.  We do not own |stream_|.
-  media::DemuxerStream* stream_;
+  raw_ptr<media::DemuxerStream> stream_;
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_;
 

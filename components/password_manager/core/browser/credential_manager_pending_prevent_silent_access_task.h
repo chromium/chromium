@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 
@@ -50,7 +51,7 @@ class CredentialManagerPendingPreventSilentAccessTask
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
  private:
-  CredentialManagerPendingPreventSilentAccessTaskDelegate* const
+  const raw_ptr<CredentialManagerPendingPreventSilentAccessTaskDelegate>
       delegate_;  // Weak.
 
   // Number of password store requests to be resolved.

@@ -6,6 +6,7 @@
 #define UI_VIEWS_TEST_DESKTOP_WINDOW_TREE_HOST_WIN_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -39,7 +40,7 @@ class DesktopWindowTreeHostWinTestApi {
   void SetMockCursorPositionForTesting(const gfx::Point& position);
 
  private:
-  DesktopWindowTreeHostWin* host_;
+  raw_ptr<DesktopWindowTreeHostWin> host_;
 };
 
 }  // namespace test

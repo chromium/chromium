@@ -5,6 +5,7 @@
 #include "chrome/browser/serial/serial_chooser_context.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -118,8 +119,8 @@ class SerialChooserContextTestBase {
 
     context_ = SerialChooserContextFactory::GetForProfile(profile_);
     context_->SetPortManagerForTesting(std::move(port_manager));
-    scoped_permission_observation_.Observe(context_);
-    scoped_port_observation_.Observe(context_);
+    scoped_permission_observation_.Observe(context_.get());
+    scoped_port_observation_.Observe(context_.get());
 
     // Ensure |context_| is ready to receive SerialPortManagerClient messages.
     context_->FlushPortManagerConnectionForTesting();
@@ -159,13 +160,13 @@ class SerialChooserContextTestBase {
   base::test::ScopedFeatureList feature_list_;
   device::FakeSerialPortManager port_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 #endif
 
-  SerialChooserContext* context_;
+  raw_ptr<SerialChooserContext> context_;
   NiceMock<permissions::MockPermissionObserver> permission_observer_;
   base::ScopedObservation<
       permissions::ObjectPermissionContextBase,

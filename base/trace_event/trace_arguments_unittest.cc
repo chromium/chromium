@@ -8,6 +8,8 @@
 #include <limits>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace base {
 namespace trace_event {
 
@@ -28,7 +30,7 @@ class MyConvertable : public ConvertableToTraceFormat {
 
  private:
   const char* text_;
-  bool* destroy_flag_;
+  raw_ptr<bool> destroy_flag_;
 };
 
 }  // namespace
@@ -215,7 +217,7 @@ TEST(TraceArguments, ConstructorSinglePointer) {
       }
 
      private:
-      bool* destroy_flag_;
+      raw_ptr<bool> destroy_flag_;
     };
     auto foo = std::make_unique<Foo>(&destroy_flag);
     EXPECT_FALSE(destroy_flag);

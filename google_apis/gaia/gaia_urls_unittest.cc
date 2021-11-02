@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
@@ -58,7 +59,7 @@ class GaiaUrlsTest : public ::testing::Test {
   // GaiaUrls must be constructed after command line parameters are overridden.
   // GaiaUrls cannot be put into std::unique_ptr<> because ~GaiaUrls() is
   // private. Thus, the owning raw pointer is used.
-  GaiaUrls* gaia_urls_ = nullptr;
+  raw_ptr<GaiaUrls> gaia_urls_ = nullptr;
 };
 
 TEST_F(GaiaUrlsTest, InitializeDefault_AllUrls) {

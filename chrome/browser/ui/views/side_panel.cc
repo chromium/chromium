@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -123,7 +124,7 @@ class SidePanelBorder : public views::Border {
   }
 
  private:
-  BrowserView* const browser_view_;
+  const raw_ptr<BrowserView> browser_view_;
 };
 
 class BorderView : public views::View {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VR_ELEMENTS_CONTENT_ELEMENT_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/platform_ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 
@@ -61,7 +62,7 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
   }
 
  private:
-  TextInputDelegate* text_input_delegate_ = nullptr;
+  raw_ptr<TextInputDelegate> text_input_delegate_ = nullptr;
   ScreenBoundsChangedCallback bounds_changed_callback_;
   unsigned int overlay_texture_id_ = 0;
   bool overlay_texture_non_empty_ = false;
@@ -71,7 +72,7 @@ class VR_UI_EXPORT ContentElement : public PlatformUiElement {
   gfx::Transform projection_matrix_;
   bool focused_ = false;
   bool uses_quad_layer_ = false;
-  ContentInputDelegate* content_delegate_ = nullptr;
+  raw_ptr<ContentInputDelegate> content_delegate_ = nullptr;
   base::RepeatingCallback<void(const gfx::SizeF& size)>
       on_size_changed_callback_;
 };

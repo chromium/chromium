@@ -4,6 +4,7 @@
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
@@ -45,7 +46,7 @@ class BroadcastChannelService::Connection
   // Note: We use a raw pointer here because each Connection is owned by
   // BroadcastChannelService, so the lifetime of each Connection object
   // should not exceed the lifetime of `service_`.
-  BroadcastChannelService* service_;
+  raw_ptr<BroadcastChannelService> service_;
   const url::Origin origin_;
   const std::string name_;
 };

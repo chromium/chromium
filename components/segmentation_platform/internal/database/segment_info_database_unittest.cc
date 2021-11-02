@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -111,7 +112,7 @@ class SegmentInfoDatabaseTest : public testing::Test {
       get_all_segment_result_;
   absl::optional<proto::SegmentInfo> get_segment_result_;
   std::map<std::string, proto::SegmentInfo> db_entries_;
-  leveldb_proto::test::FakeDB<proto::SegmentInfo>* db_{nullptr};
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> db_{nullptr};
   std::unique_ptr<SegmentInfoDatabase> segment_db_;
 };
 

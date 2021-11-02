@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
@@ -89,7 +90,7 @@ class ByteCounterPipe : public media::cast::test::PacketPipe {
     pipe_->Send(std::move(packet));
   }
  private:
-  ByteCounter* counter_;
+  raw_ptr<ByteCounter> counter_;
 };
 
 void SetupByteCounters(std::unique_ptr<media::cast::test::PacketPipe>* pipe,

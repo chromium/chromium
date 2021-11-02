@@ -204,7 +204,7 @@ void CardUnmaskOtpInputDialogViews::CreateOtpInputView() {
                  footer_text.link_offset_in_text + link_text.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &CardUnmaskOtpInputDialogController::OnNewCodeLinkClicked,
-          base::Unretained(controller_))));
+          base::Unretained(controller_.get()))));
   footer_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 }
 

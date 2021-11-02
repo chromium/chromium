@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -73,7 +74,7 @@ class IconWrapper : public views::View {
   views::View* icon() { return icon_; }
 
  private:
-  views::View* icon_;
+  raw_ptr<views::View> icon_;
 };
 
 BEGIN_METADATA(IconWrapper, views::View)
@@ -177,7 +178,7 @@ HoverButton::HoverButton(PressedCallback callback,
   label_wrapper_ = AddChildView(std::move(label_wrapper));
   // Observe |label_wrapper_| bounds changes to ensure the HoverButton tooltip
   // is kept in sync with the size.
-  label_observation_.Observe(label_wrapper_);
+  label_observation_.Observe(label_wrapper_.get());
 
   if (secondary_view) {
     secondary_view->SetCanProcessEventsWithinSubtree(

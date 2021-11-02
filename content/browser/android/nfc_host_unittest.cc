@@ -4,6 +4,7 @@
 
 #include "content/browser/android/nfc_host.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -44,7 +45,7 @@ class NFCHostTest : public RenderViewHostImplTestHarness {
   }
 
  private:
-  MockPermissionManager* mock_permission_manager_;
+  raw_ptr<MockPermissionManager> mock_permission_manager_;
 };
 
 TEST_F(NFCHostTest, GetNFCTwice) {

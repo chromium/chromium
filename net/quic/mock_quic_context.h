@@ -5,6 +5,7 @@
 #ifndef NET_QUIC_MOCK_QUIC_CONTEXT_H_
 #define NET_QUIC_MOCK_QUIC_CONTEXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "net/quic/quic_context.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
 
@@ -19,7 +20,7 @@ class MockQuicContext : public QuicContext {
   quic::MockClock* mock_clock();
 
  private:
-  quic::test::MockQuicConnectionHelper* mock_helper_;
+  raw_ptr<quic::test::MockQuicConnectionHelper> mock_helper_;
 };
 
 }  // namespace net

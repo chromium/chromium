@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command_factory.h"
@@ -41,7 +42,7 @@ class KeyRotationLauncherTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  testing::StrictMock<test::MockKeyRotationCommand>* mock_command_;
+  raw_ptr<testing::StrictMock<test::MockKeyRotationCommand>> mock_command_;
   ScopedKeyRotationCommandFactory scoped_command_factory_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;

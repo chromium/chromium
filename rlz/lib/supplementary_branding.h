@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace rlz_lib {
 
 class ScopedRlzValueStoreLock;
@@ -48,7 +50,7 @@ class SupplementaryBranding {
   static const std::string& GetBrand();
 
  private:
-  ScopedRlzValueStoreLock* lock_;
+  raw_ptr<ScopedRlzValueStoreLock> lock_;
 };
 
 }  // namespace rlz_lib

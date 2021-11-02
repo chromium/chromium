@@ -15,6 +15,7 @@
 #include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
@@ -861,7 +862,7 @@ class ProxyResolverV8::Context {
 
   mutable base::Lock lock_;
   ProxyResolverV8::JSBindings* js_bindings_;
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   v8::Persistent<v8::External> v8_this_;
   v8::Persistent<v8::Context> v8_context_;
 };

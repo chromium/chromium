@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/model/metadata_batch.h"
 
 namespace syncer {
@@ -92,7 +93,7 @@ class ForwardingModelTypeChangeProcessor : public ModelTypeChangeProcessor {
   }
 
  private:
-  ModelTypeChangeProcessor* other_;
+  raw_ptr<ModelTypeChangeProcessor> other_;
 };
 
 }  // namespace

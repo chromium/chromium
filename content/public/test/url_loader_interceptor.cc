@@ -11,6 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -141,7 +142,7 @@ class URLLoaderInterceptor::IOState
   // This lock guarantees that when URLLoaderInterceptor is destroyed,
   // no intercept callbacks will be called.
   base::Lock intercept_lock_;
-  URLLoaderInterceptor* parent_ GUARDED_BY(intercept_lock_);
+  raw_ptr<URLLoaderInterceptor> parent_ GUARDED_BY(intercept_lock_);
 
   URLLoaderCompletionStatusCallback completion_status_callback_;
 
@@ -294,7 +295,7 @@ class URLLoaderInterceptor::Interceptor
       std::move(error_handler_).Run();
   }
 
-  URLLoaderInterceptor::IOState* parent_;
+  raw_ptr<URLLoaderInterceptor::IOState> parent_;
   ProcessIdGetter process_id_getter_;
   OriginalFactoryGetter original_factory_getter_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;

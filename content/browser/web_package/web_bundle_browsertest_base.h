@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_BROWSERTEST_BASE_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
@@ -77,7 +78,7 @@ class DownloadObserver : public DownloadManager::Observer {
                          download::DownloadItem* item) override;
 
  private:
-  DownloadManager* manager_;
+  raw_ptr<DownloadManager> manager_;
   base::RunLoop run_loop_;
   GURL url_;
 };
@@ -108,7 +109,7 @@ class MockParser final : public web_package::mojom::WebBundleParser {
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
 
-  MockParserFactory* factory_;
+  raw_ptr<MockParserFactory> factory_;
   mojo::Receiver<web_package::mojom::WebBundleParser> receiver_;
   const Index& index_;
   const GURL primary_url_;
@@ -205,7 +206,7 @@ class WebBundleBrowserTestBase : public ContentBrowserTest {
                                     base::FilePath* file_path);
 
  private:
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient browser_client_;
   base::ScopedTempDir temp_dir_;
 };

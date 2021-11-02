@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -183,7 +184,7 @@ class RequestImpl : public TailoredSecurityService::Request {
     // members below here.
   }
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // The URL of the API endpoint.

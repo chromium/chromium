@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
@@ -324,7 +325,7 @@ class GPU_EXPORT GpuControlList {
   static OsType GetOsType();
 
   size_t entry_count_;
-  const Entry* entries_;
+  raw_ptr<const Entry> entries_;
   // This records all the entries that are appliable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used
   // later by GetDecisionEntries().
@@ -343,7 +344,7 @@ class GPU_EXPORT GpuControlList {
 
 struct GPU_EXPORT GpuControlListData {
   size_t entry_count;
-  const GpuControlList::Entry* entries;
+  raw_ptr<const GpuControlList::Entry> entries;
 
   GpuControlListData() : entry_count(0u), entries(nullptr) {}
 

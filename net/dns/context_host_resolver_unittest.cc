@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -93,7 +94,7 @@ class ContextHostResolverTest : public ::testing::Test,
     manager_->set_proc_params_for_test(ProcTaskParams(proc.get(), 1u));
   }
 
-  MockDnsClient* dns_client_;
+  raw_ptr<MockDnsClient> dns_client_;
   std::unique_ptr<HostResolverManager> manager_;
 };
 

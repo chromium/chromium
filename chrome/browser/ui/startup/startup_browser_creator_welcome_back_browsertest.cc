@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -96,7 +97,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   }
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> scoped_profile_keep_alive_;
   StartupBrowserCreator browser_creator_;

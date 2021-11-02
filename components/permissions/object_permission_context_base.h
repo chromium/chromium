@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"
@@ -182,7 +183,7 @@ class ObjectPermissionContextBase : public KeyedService {
   // Never use the `objects_` member directly outside of this function.
   ObjectMap& objects();
 
-  HostContentSettingsMap* const host_content_settings_map_;
+  const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
   // In-memory cache that holds the granted objects. Lazy-initialized by first
   // call to `objects()`.

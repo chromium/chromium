@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_REMOVAL_WATCHER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -33,7 +34,7 @@ class ExtensionRemovalWatcher : public BrowserListObserver,
   // BrowserListObserver:
   void OnBrowserClosing(Browser* browser) override;
 
-  const Browser* browser_;
+  raw_ptr<const Browser> browser_;
   const scoped_refptr<const extensions::Extension> extension_;
   base::OnceClosure callback_;
 

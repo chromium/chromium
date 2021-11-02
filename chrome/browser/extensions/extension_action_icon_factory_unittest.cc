@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -172,7 +173,7 @@ class ExtensionActionIconFactoryTest
   content::BrowserTaskEnvironment task_environment_;
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;

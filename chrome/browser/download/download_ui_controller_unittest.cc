@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -153,7 +154,7 @@ class DownloadUIControllerTest : public ChromeRenderViewHostTestHarness {
   download::DownloadItem* notified_item_;
   base::WeakPtrFactory<download::DownloadItem*> notified_item_receiver_factory_;
 
-  HistoryAdapter* history_adapter_;
+  raw_ptr<HistoryAdapter> history_adapter_;
 };
 
 // static

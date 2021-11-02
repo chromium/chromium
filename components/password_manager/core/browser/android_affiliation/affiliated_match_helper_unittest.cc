@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -348,7 +349,7 @@ class AffiliatedMatchHelperTest : public testing::Test,
 
   scoped_refptr<TestPasswordStore> password_store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  AffiliatedMatchHelper* match_helper_;
+  raw_ptr<AffiliatedMatchHelper> match_helper_;
 
   std::unique_ptr<OverloadedMockAffiliationService> mock_affiliation_service_;
 };

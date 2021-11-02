@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/media_stream_request.h"
@@ -138,7 +139,7 @@ class WebViewPermissionHelper
   std::unique_ptr<WebViewPermissionHelperDelegate>
       web_view_permission_helper_delegate_;
 
-  WebViewGuest* const web_view_guest_;
+  const raw_ptr<WebViewGuest> web_view_guest_;
 
   bool default_media_access_permission_;
 

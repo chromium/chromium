@@ -16,6 +16,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -129,7 +130,7 @@ class ChromeCleanerFetcher {
   ChromeCleanerFetchedCallback fetched_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
 
   // Used for file operations such as creating a new temporary directory.
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;

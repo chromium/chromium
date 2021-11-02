@@ -6,6 +6,7 @@
 #define UI_GL_SCOPED_BINDERS_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -23,7 +24,7 @@ class GL_EXPORT ScopedFramebufferBinder {
  private:
   // Whenever possible we prefer to use the current GLContext's
   // GLStateRestorer to maximize driver compabitility.
-  GLStateRestorer* state_restorer_;
+  raw_ptr<GLStateRestorer> state_restorer_;
 
   // Failing that we use GL calls to save and restore state.
   int old_fbo_;
@@ -41,7 +42,7 @@ class GL_EXPORT ScopedActiveTexture {
  private:
   // Whenever possible we prefer to use the current GLContext's
   // GLStateRestorer to maximize driver compabitility.
-  GLStateRestorer* state_restorer_;
+  raw_ptr<GLStateRestorer> state_restorer_;
 
   // Failing that we use GL calls to save and restore state.
   int old_texture_;
@@ -59,7 +60,7 @@ class GL_EXPORT ScopedTextureBinder {
  private:
   // Whenever possible we prefer to use the current GLContext's
   // GLStateRestorer to maximize driver compabitility.
-  GLStateRestorer* state_restorer_;
+  raw_ptr<GLStateRestorer> state_restorer_;
 
   // Failing that we use GL calls to save and restore state.
   int target_;
@@ -78,7 +79,7 @@ class GL_EXPORT ScopedUseProgram {
  private:
   // Whenever possible we prefer to use the current GLContext's
   // GLStateRestorer to maximize driver compabitility.
-  GLStateRestorer* state_restorer_;
+  raw_ptr<GLStateRestorer> state_restorer_;
 
   // Failing that we use GL calls to save and restore state.
   int old_program_;
@@ -101,7 +102,7 @@ class GL_EXPORT ScopedVertexAttribArray {
  private:
   // Whenever possible we prefer to use the current GLContext's
   // GLStateRestorer to maximize driver compabitility.
-  GLStateRestorer* state_restorer_;
+  raw_ptr<GLStateRestorer> state_restorer_;
 
   // Failing that we use GL calls to save and restore state.
   int buffer_;
@@ -126,7 +127,7 @@ class GL_EXPORT ScopedBufferBinder {
  private:
   // Whenever possible we prefer to use the current GLContext's
   // GLStateRestorer to maximize driver compabitility.
-  GLStateRestorer* state_restorer_;
+  raw_ptr<GLStateRestorer> state_restorer_;
 
   // Failing that we use GL calls to save and restore state.
   int target_;

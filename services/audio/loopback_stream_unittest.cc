@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -257,7 +258,7 @@ class LoopbackStreamTest : public testing::Test {
   std::vector<std::unique_ptr<FakeLoopbackGroupMember>> sources_;
   NiceMock<MockClientAndObserver> client_;
   std::unique_ptr<LoopbackStream> stream_;
-  FakeSyncWriter* consumer_ = nullptr;  // Owned by |stream_|.
+  raw_ptr<FakeSyncWriter> consumer_ = nullptr;  // Owned by |stream_|.
 
   mojo::Remote<media::mojom::AudioInputStream> remote_input_stream_;
 };

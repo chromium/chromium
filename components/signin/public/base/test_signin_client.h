@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
@@ -109,9 +110,9 @@ class TestSigninClient : public SigninClient {
  private:
   std::unique_ptr<network::TestURLLoaderFactory>
       default_test_url_loader_factory_;
-  network::TestURLLoaderFactory* test_url_loader_factory_;
+  raw_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<network::mojom::CookieManager> cookie_manager_;
   bool are_signin_cookies_allowed_;
   bool network_calls_delayed_;

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPTS_SENDER_H_
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/service_worker/service_worker_installed_script_reader.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -91,7 +92,7 @@ class CONTENT_EXPORT ServiceWorkerInstalledScriptsSender
 
   bool IsSendingMainScript() const;
 
-  ServiceWorkerVersion* owner_;
+  raw_ptr<ServiceWorkerVersion> owner_;
   const GURL main_script_url_;
   const int64_t main_script_id_;
   bool sent_main_script_;

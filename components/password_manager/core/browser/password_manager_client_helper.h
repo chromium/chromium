@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_CLIENT_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_CLIENT_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 
 namespace password_manager {
@@ -53,7 +54,7 @@ class PasswordManagerClientHelper {
   bool ShouldPromptToMovePasswordToAccount(
       const PasswordFormManagerForUI& submitted_manager) const;
 
-  PasswordManagerClient* delegate_;
+  raw_ptr<PasswordManagerClient> delegate_;
 
   // Set during 'NotifyUserCouldBeAutoSignedIn' in order to store the
   // form for potential use during 'NotifySuccessfulLoginWithExistingPassword'.

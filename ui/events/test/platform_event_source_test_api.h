@@ -6,6 +6,7 @@
 #define UI_EVENTS_TEST_PLATFORM_EVENT_SOURCE_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/platform_event.h"
 
 namespace ui {
@@ -27,7 +28,7 @@ class PlatformEventSourceTestAPI {
   void Dispatch(PlatformEvent platform_event);
 
  private:
-  PlatformEventSource* event_source_;
+  raw_ptr<PlatformEventSource> event_source_;
 };
 
 }  // namespace test

@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -30,7 +31,7 @@ struct MainParams {
   MainParams(const MainParams& other);
   ~MainParams();
 
-  MainDelegate* delegate;
+  raw_ptr<MainDelegate> delegate;
 
   // If set, logging will redirect to this file.
   base::FilePath log_filename;

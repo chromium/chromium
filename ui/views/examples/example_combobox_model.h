@@ -6,6 +6,7 @@
 #define UI_VIEWS_EXAMPLES_EXAMPLE_COMBOBOX_MODEL_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace views {
@@ -25,7 +26,7 @@ class ExampleComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(int index) const override;
 
  private:
-  const char* const* const strings_;
+  const raw_ptr<const char* const> strings_;
   const int count_;
 };
 

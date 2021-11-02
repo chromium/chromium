@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/browsing_data/content/local_storage_helper.h"
 
@@ -120,7 +121,7 @@ class StopTestOnCallback {
   }
 
  private:
-  LocalStorageHelper* local_storage_helper_;
+  raw_ptr<LocalStorageHelper> local_storage_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, CallbackCompletes) {

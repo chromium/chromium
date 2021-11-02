@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -47,7 +48,7 @@ class ExtensionRequestObserverFactory : public ProfileManagerObserver,
   int GetNumberOfObserversForTesting();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::map<Profile*, std::unique_ptr<ExtensionRequestObserver>, ProfileCompare>
       observers_;
   ExtensionRequestObserver::ReportTrigger report_trigger_;

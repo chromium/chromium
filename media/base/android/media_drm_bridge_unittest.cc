@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "media/base/android/media_drm_bridge.h"
@@ -74,7 +75,7 @@ class ProvisionFetcherWrapper : public ProvisionFetcher {
   }
 
  private:
-  ProvisionFetcher* provision_fetcher_;
+  raw_ptr<ProvisionFetcher> provision_fetcher_;
 };
 
 }  // namespace

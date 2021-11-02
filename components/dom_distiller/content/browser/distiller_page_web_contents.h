@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -26,7 +27,7 @@ class SourcePageHandleWebContents : public SourcePageHandle {
 
  private:
   // The WebContents this class holds.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   // Whether this owns |web_contents_|.
   bool owned_;
 };
@@ -44,7 +45,7 @@ class DistillerPageWebContentsFactory : public DistillerPageFactory {
       std::unique_ptr<SourcePageHandle> handle) const override;
 
  private:
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 class DistillerPageWebContents : public DistillerPage,
@@ -113,7 +114,7 @@ class DistillerPageWebContents : public DistillerPage,
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   gfx::Size render_view_size_;
   base::WeakPtrFactory<DistillerPageWebContents> weak_factory_{this};
 };

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -174,7 +175,7 @@ class BLINK_COMMON_EXPORT WebMessagePort : public mojo::MessageReceiver {
   bool is_closed_ = true;
   bool is_errored_ = false;
   bool is_transferable_ = false;
-  MessageReceiver* receiver_ = nullptr;
+  raw_ptr<MessageReceiver> receiver_ = nullptr;
 };
 
 // A very simple message format. This is a subset of a TransferableMessage, as

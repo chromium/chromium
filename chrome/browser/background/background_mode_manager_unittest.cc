@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -221,7 +222,7 @@ class BackgroundModeManagerTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 class BackgroundModeManagerWithExtensionsTest : public testing::Test {
@@ -293,7 +294,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
  private:
   // Required for extension service.

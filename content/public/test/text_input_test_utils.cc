@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/public/test/text_input_test_utils.h"
+#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <unordered_set>
@@ -137,8 +138,8 @@ class TextInputManagerTester::InternalObserver
   }
 
  private:
-  TextInputManager* text_input_manager_;
-  RenderWidgetHostViewBase* updated_view_;
+  raw_ptr<TextInputManager> text_input_manager_;
+  raw_ptr<RenderWidgetHostViewBase> updated_view_;
   bool text_input_state_changed_;
   std::unique_ptr<gfx::Range> last_composition_range_;
   base::RepeatingClosure update_text_input_state_callback_;
@@ -184,7 +185,7 @@ class TestRenderWidgetHostViewDestructionObserver::InternalObserver
       message_loop_runner_->Quit();
   }
 
-  RenderWidgetHostViewBase* view_;
+  raw_ptr<RenderWidgetHostViewBase> view_;
   bool destroyed_;
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
 };
@@ -230,8 +231,8 @@ class InputMethodObserverAura : public TestInputMethodObserver,
     on_show_ime_if_needed_callback_.Run();
   }
 
-  ui::InputMethod* input_method_;
-  const ui::TextInputClient* text_input_client_;
+  raw_ptr<ui::InputMethod> input_method_;
+  raw_ptr<const ui::TextInputClient> text_input_client_;
   base::RepeatingClosure on_show_ime_if_needed_callback_;
 };
 #endif

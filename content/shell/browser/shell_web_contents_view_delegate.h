@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
@@ -42,7 +43,7 @@ class ShellWebContentsViewDelegate : public WebContentsViewDelegate {
 #endif
 
  private:
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
 #if defined(OS_MAC)
   ContextMenuParams params_;
 #endif

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 #include "ui/views/views_export.h"
 
@@ -46,7 +47,7 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   ~MenuRunnerImplAdapter() override;
 
   std::unique_ptr<MenuModelAdapter> menu_model_adapter_;
-  MenuRunnerImpl* impl_;
+  raw_ptr<MenuRunnerImpl> impl_;
 };
 
 }  // namespace internal

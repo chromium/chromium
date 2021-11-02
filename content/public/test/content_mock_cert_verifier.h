@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -67,7 +68,7 @@ class ContentMockCertVerifier {
    private:
     void EnsureNetworkServiceTestInitialized();
 
-    net::MockCertVerifier* verifier_;
+    raw_ptr<net::MockCertVerifier> verifier_;
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test_;
   };
 

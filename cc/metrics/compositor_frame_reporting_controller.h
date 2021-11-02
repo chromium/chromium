@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
@@ -189,7 +190,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   base::TimeTicks begin_main_frame_start_time_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
   GlobalMetricsTrackers global_trackers_;
 

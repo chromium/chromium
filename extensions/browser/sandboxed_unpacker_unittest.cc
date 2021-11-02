@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -72,7 +73,7 @@ class IllegalImagePathInserter
   }
 
  private:
-  TestExtensionsClient* client_;
+  raw_ptr<TestExtensionsClient> client_;
 };
 
 }  // namespace
@@ -145,7 +146,7 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
   absl::optional<CrxInstallError> error_;
   base::OnceClosure quit_closure_;
   base::FilePath temp_dir_;
-  bool* deleted_tracker_ = nullptr;
+  raw_ptr<bool> deleted_tracker_ = nullptr;
   bool should_compute_hashes_ = false;
 };
 
@@ -278,7 +279,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
 
  protected:
   base::ScopedTempDir extensions_dir_;
-  MockSandboxedUnpackerClient* client_;
+  raw_ptr<MockSandboxedUnpackerClient> client_;
   scoped_refptr<SandboxedUnpacker> sandboxed_unpacker_;
   std::unique_ptr<content::InProcessUtilityThreadHelper>
       in_process_utility_thread_helper_;

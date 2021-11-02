@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_UDP_SOCKET_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_UDP_SOCKET_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -56,7 +57,7 @@ class UdpSocket final : public openscreen::UdpSocket,
   void JoinGroupCallback(int32_t result);
   void SendCallback(int32_t result);
 
-  Client* const client_ = nullptr;
+  const raw_ptr<Client> client_ = nullptr;
 
   // The local endpoint can change as a result of bind calls.
   openscreen::IPEndpoint local_endpoint_;

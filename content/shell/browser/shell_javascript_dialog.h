@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
@@ -44,7 +45,7 @@ class ShellJavaScriptDialog {
   ShellJavaScriptDialogHelper* helper_;  // owned
 #elif defined(OS_WIN)
   JavaScriptDialogManager::DialogClosedCallback callback_;
-  ShellJavaScriptDialogManager* manager_;
+  raw_ptr<ShellJavaScriptDialogManager> manager_;
   JavaScriptDialogType dialog_type_;
   HWND dialog_win_;
   std::u16string message_text_;

@@ -6,6 +6,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
@@ -42,7 +43,7 @@ class MinidumpUpdater {
                        size_t data_len,
                        FilePosition* position);
 
-  base::File* file_;
+  raw_ptr<base::File> file_;
   std::vector<MINIDUMP_DIRECTORY> directory_;
 };
 

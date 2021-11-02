@@ -36,6 +36,6 @@ void SameOriginObserver::DidFinishNavigation(
       url::IsSameOriginWith(reference_origin_, new_origin);
   if (is_same_origin_ != is_now_same_origin) {
     is_same_origin_ = is_now_same_origin;
-    on_same_origin_state_changed_.Run(observed_contents_);
+    on_same_origin_state_changed_.Run(observed_contents_.get());
   }
 }

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/models/combobox_model.h"
@@ -88,9 +89,9 @@ class RecentlyUsedFoldersComboModel : public ui::ComboboxModel,
   struct Item;
   std::vector<Item> items_;
 
-  bookmarks::BookmarkModel* const bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
-  const bookmarks::BookmarkNode* const parent_node_;
+  const raw_ptr<const bookmarks::BookmarkNode> parent_node_;
 
   base::ObserverList<ui::ComboboxModelObserver> observers_;
 };

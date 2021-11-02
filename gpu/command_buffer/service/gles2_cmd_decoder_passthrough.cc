@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
@@ -78,7 +79,7 @@ class ScopedFramebufferBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   bool supports_separate_fbo_bindings_;
   GLint draw_framebuffer_;
   GLint read_framebuffer_;
@@ -96,7 +97,7 @@ class ScopedRenderbufferBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLint renderbuffer_;
 };
 
@@ -114,7 +115,7 @@ class ScopedTextureBindingReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLenum texture_target_;
   GLint texture_;
 };
@@ -130,7 +131,7 @@ class ScopedClearColorReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLfloat clear_color_[4];
 };
 
@@ -145,7 +146,7 @@ class ScopedColorMaskReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLboolean color_mask_[4];
 };
 
@@ -162,7 +163,7 @@ class ScopedScissorTestReset {
   }
 
  private:
-  gl::GLApi* api_;
+  raw_ptr<gl::GLApi> api_;
   GLboolean scissor_test_;
 };
 

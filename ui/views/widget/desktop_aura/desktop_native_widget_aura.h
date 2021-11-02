@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -277,7 +278,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void NotifyAccessibilityEvent(ax::mojom::Event event_type);
 
   std::unique_ptr<aura::WindowTreeHost> host_;
-  DesktopWindowTreeHost* desktop_window_tree_host_;
+  raw_ptr<DesktopWindowTreeHost> desktop_window_tree_host_;
 
   // See class documentation for Widget in widget.h for a note about ownership.
   Widget::InitParams::Ownership ownership_;
@@ -289,9 +290,9 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   // This is the return value from GetNativeView().
   // WARNING: this may be NULL, in particular during shutdown it becomes NULL.
-  aura::Window* content_window_;
+  raw_ptr<aura::Window> content_window_;
 
-  internal::NativeWidgetDelegate* native_widget_delegate_;
+  raw_ptr<internal::NativeWidgetDelegate> native_widget_delegate_;
 
   std::unique_ptr<wm::FocusController> focus_client_;
   std::unique_ptr<aura::client::ScreenPositionClient> position_client_;

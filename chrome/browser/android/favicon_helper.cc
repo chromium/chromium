@@ -15,6 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/compose_bitmaps_helper.h"
@@ -71,8 +72,8 @@ class FaviconHelper::Job {
  private:
   void OnFaviconAvailable(int favicon_index,
                           const favicon_base::FaviconRawBitmapResult& result);
-  FaviconHelper* favicon_helper_;
-  favicon::FaviconService* favicon_service_;
+  raw_ptr<FaviconHelper> favicon_helper_;
+  raw_ptr<favicon::FaviconService> favicon_service_;
   std::vector<GURL> urls_;
   int desire_size_in_pixel_;
   JobFinishedCallback job_finished_callback_;

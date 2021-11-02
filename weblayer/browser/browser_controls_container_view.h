@@ -7,6 +7,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -94,7 +95,7 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
 
   base::android::ScopedJavaGlobalRef<jobject>
       java_browser_controls_container_view_;
-  ContentViewRenderView* content_view_render_view_;
+  raw_ptr<ContentViewRenderView> content_view_render_view_;
   const bool is_top_;
   int controls_resource_id_ = -1;
 

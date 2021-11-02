@@ -4,6 +4,7 @@
 
 #include "services/device/generic_sensor/orientation_euler_angles_fusion_algorithm_using_quaternion.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/fake_platform_sensor_fusion.h"
@@ -29,7 +30,8 @@ class OrientationEulerAnglesFusionAlgorithmUsingQuaternionTest
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FakePlatformSensorFusion> fake_fusion_sensor_;
-  OrientationEulerAnglesFusionAlgorithmUsingQuaternion* fusion_algorithm_;
+  raw_ptr<OrientationEulerAnglesFusionAlgorithmUsingQuaternion>
+      fusion_algorithm_;
 };
 
 TEST_F(OrientationEulerAnglesFusionAlgorithmUsingQuaternionTest,

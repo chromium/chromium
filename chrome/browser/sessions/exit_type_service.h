@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,7 +61,7 @@ class ExitTypeService : public KeyedService {
 
     explicit CrashedLock(ExitTypeService* service);
 
-    ExitTypeService* service_;
+    raw_ptr<ExitTypeService> service_;
   };
 
   ExitTypeService(const ExitTypeService&) = delete;
@@ -140,7 +141,7 @@ class ExitTypeService : public KeyedService {
   // Called once session restore completes.
   void OnSessionRestoreDone(Profile* profile, int tabs_restored);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   ExitType last_session_exit_type_;
   ExitType current_session_exit_type_;
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -61,7 +62,7 @@ class TestNavigationURLLoader
   ~TestNavigationURLLoader() override;
 
   std::unique_ptr<NavigationRequestInfo> request_info_;
-  NavigationURLLoaderDelegate* delegate_;
+  raw_ptr<NavigationURLLoaderDelegate> delegate_;
   int redirect_count_;
 
   const NavigationURLLoader::LoaderType loader_type_;

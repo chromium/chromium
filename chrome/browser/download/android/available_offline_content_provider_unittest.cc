@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -159,7 +160,7 @@ class AvailableOfflineContentTest : public ChromeRenderViewHostTestHarness {
 
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_ =
       std::make_unique<base::test::ScopedFeatureList>();
-  OfflineContentAggregator* aggregator_;
+  raw_ptr<OfflineContentAggregator> aggregator_;
   std::unique_ptr<offline_items_collection::MockOfflineContentProvider>
       content_provider_;
   std::unique_ptr<AvailableOfflineContentProvider> provider_;

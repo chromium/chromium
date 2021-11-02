@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -81,7 +82,7 @@ class CONTENT_EXPORT SyntheticGestureController {
   void GestureCompleted(SyntheticGesture::Result result);
   void ResolveCompletionCallback();
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<SyntheticGestureTarget> gesture_target_;
 
   // A queue of gesture/callback/bool tuples.  Implemented as multiple queues to

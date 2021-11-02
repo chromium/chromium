@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -152,18 +153,18 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // Image button in the zoom bubble that will show the |extension_icon_| image
   // if an extension initiated the zoom change, and links to that extension at
   // "chrome://extensions".
-  views::ImageButton* image_button_ = nullptr;
+  raw_ptr<views::ImageButton> image_button_ = nullptr;
 
   // Label displaying the zoom percentage.
-  views::Label* label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
   // Action buttons that can change zoom.
-  views::Button* zoom_out_button_ = nullptr;
-  views::Button* zoom_in_button_ = nullptr;
-  views::Button* reset_button_ = nullptr;
+  raw_ptr<views::Button> zoom_out_button_ = nullptr;
+  raw_ptr<views::Button> zoom_in_button_ = nullptr;
+  raw_ptr<views::Button> reset_button_ = nullptr;
 
   // Virtual view used to announce zoom level changes.
-  views::AXVirtualView* zoom_level_alert_ = nullptr;
+  raw_ptr<views::AXVirtualView> zoom_level_alert_ = nullptr;
 
   // Whether the currently displayed bubble will automatically close.
   bool auto_close_;
@@ -176,7 +177,7 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // The immersive mode controller for the BrowserView containing
   // |web_contents_|.
   // Not owned.
-  ImmersiveModeController* immersive_mode_controller_;
+  raw_ptr<ImmersiveModeController> immersive_mode_controller_;
 
   // The session of the Browser that triggered the bubble. This allows the zoom
   // icon to be updated even if the WebContents is destroyed.

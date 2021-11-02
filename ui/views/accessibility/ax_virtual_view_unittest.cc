@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,12 +61,12 @@ class AXVirtualViewTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     button_ = new TestButton;
     button_->SetSize(gfx::Size(20, 20));
-    widget_->GetContentsView()->AddChildView(button_);
+    widget_->GetContentsView()->AddChildView(button_.get());
     virtual_label_ = new AXVirtualView;
     virtual_label_->GetCustomData().role = ax::mojom::Role::kStaticText;
     virtual_label_->GetCustomData().SetName("Label");
     button_->GetViewAccessibility().AddVirtualChildView(
-        base::WrapUnique(virtual_label_));
+        base::WrapUnique(virtual_label_.get()));
     widget_->Show();
 
     ViewAccessibility::AccessibilityEventsCallback
@@ -102,10 +103,10 @@ class AXVirtualViewTest : public ViewsTestBase {
     accessibility_events_.clear();
   }
 
-  Widget* widget_;
-  Button* button_;
+  raw_ptr<Widget> widget_;
+  raw_ptr<Button> button_;
   // Weak, |button_| owns this.
-  AXVirtualView* virtual_label_;
+  raw_ptr<AXVirtualView> virtual_label_;
 
  private:
   std::vector<

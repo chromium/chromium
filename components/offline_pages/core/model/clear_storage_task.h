@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/archive_manager.h"
 #include "components/offline_pages/core/offline_page_types.h"
@@ -63,10 +64,10 @@ class ClearStorageTask : public Task {
   void InformClearStorageDone(size_t pages_cleared, ClearStorageResult result);
 
   // The store containing the pages to be cleared. Not owned.
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   // The archive manager owning the archive directories to delete pages from.
   // Not owned.
-  ArchiveManager* archive_manager_;
+  raw_ptr<ArchiveManager> archive_manager_;
   ClearStorageCallback callback_;
   base::Time clearup_time_;
 

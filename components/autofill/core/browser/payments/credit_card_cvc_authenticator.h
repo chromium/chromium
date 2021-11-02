@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -53,7 +54,7 @@ class CreditCardCVCAuthenticator
       return *this;
     }
     bool did_succeed = false;
-    const CreditCard* card = nullptr;
+    raw_ptr<const CreditCard> card = nullptr;
     std::u16string cvc = std::u16string();
     absl::optional<base::Value> creation_options;
     absl::optional<base::Value> request_options;
@@ -126,7 +127,7 @@ class CreditCardCVCAuthenticator
   friend class CreditCardCVCAuthenticatorTest;
 
   // The associated autofill client. Weak reference.
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
 
   // Responsible for getting the full card details, including the PAN and the
   // CVC.

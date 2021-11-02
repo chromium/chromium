@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -124,7 +125,7 @@ class BackgroundSyncLauncherTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserClient browser_client_;
-  ContentBrowserClient* original_client_;
+  raw_ptr<ContentBrowserClient> original_client_;
   TestBrowserContext test_browser_context_;
   int num_invocations_fire_background_sync_events_ = 0;
 };

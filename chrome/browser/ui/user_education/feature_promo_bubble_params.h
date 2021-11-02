@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -45,7 +46,7 @@ struct FeaturePromoBubbleParams {
   absl::optional<int> screenreader_string_specifier;
 
   // The icon to display in the bubble next to the text.
-  const gfx::VectorIcon* body_icon = nullptr;
+  raw_ptr<const gfx::VectorIcon> body_icon = nullptr;
 
   // A keyboard accelerator to access the feature. If
   // |screenreader_string_specifier| is set and contains a placeholder,

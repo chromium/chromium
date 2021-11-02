@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -230,7 +231,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   base::TimeDelta scheduled_start_offset_;
   base::TimeDelta scheduled_duration_;
 
-  AnimationObserver* observer_ = nullptr;
+  raw_ptr<AnimationObserver> observer_ = nullptr;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
 };

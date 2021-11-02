@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/sms/webotp_service.h"
 
 #include <string>
@@ -151,7 +152,7 @@ class SmsProviderGmsBaseTest : public RenderViewHostTestHarness {
   NiceMock<MockObserver> observer_;
   base::android::ScopedJavaGlobalRef<jobject> j_fake_sms_retriever_client_;
   base::test::ScopedFeatureList feature_list_;
-  ui::WindowAndroid* test_window_;
+  raw_ptr<ui::WindowAndroid> test_window_;
 };
 
 class SmsProviderGmsTest : public ::testing::WithParamInterface<std::string>,

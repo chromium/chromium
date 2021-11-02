@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -249,7 +250,7 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
     // ExtensionActionRunner::TestObserver:
     void OnBlockedActionAdded() override { run_loop_.Quit(); }
 
-    ExtensionActionRunner* runner_;
+    raw_ptr<ExtensionActionRunner> runner_;
     base::RunLoop run_loop_;
   };
 

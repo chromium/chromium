@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -58,7 +59,7 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 RequestCoordinatorFactory::RequestCoordinatorFactory()

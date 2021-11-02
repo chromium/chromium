@@ -84,7 +84,7 @@ Portal* PortalCreatedObserver::WaitUntilPortalCreated() {
 void PortalCreatedObserver::DidCreatePortal() {
   DCHECK(portal_);
   if (!created_cb_.is_null())
-    std::move(created_cb_).Run(portal_);
+    std::move(created_cb_).Run(portal_.get());
   if (run_loop_)
     run_loop_->Quit();
 }

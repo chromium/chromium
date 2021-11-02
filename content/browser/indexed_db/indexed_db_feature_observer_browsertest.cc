@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -52,7 +53,7 @@ class TestBrowserClient : public ContentBrowserClient {
   TestBrowserClient& operator=(const TestBrowserClient&) = delete;
 
  private:
-  FeatureObserverClient* feature_observer_client_;
+  raw_ptr<FeatureObserverClient> feature_observer_client_;
 };
 
 class MockObserverClient : public FeatureObserverClient {
@@ -136,7 +137,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
 
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient test_browser_client_{&mock_observer_client_};
 
   IndexedDBFeatureObserverBrowserTest(

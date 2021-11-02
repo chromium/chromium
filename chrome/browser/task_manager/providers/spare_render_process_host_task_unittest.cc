@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/providers/spare_render_process_host_task_provider.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,7 +34,7 @@ class SpareRenderProcessHostTaskTest : public testing::Test,
   }
 
  protected:
-  Task* provided_task_ = nullptr;
+  raw_ptr<Task> provided_task_ = nullptr;
 
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -41,7 +42,7 @@ class SpareRenderProcessHostTaskTest : public testing::Test,
 TEST_F(SpareRenderProcessHostTaskTest, Basic) {
   SpareRenderProcessHostTaskProvider provider;
   provider.SetObserver(this);
-  EXPECT_EQ(nullptr, provided_task_);
+  EXPECT_EQ(nullptr, provided_task_.get());
 
   auto browser_context = std::make_unique<TestingProfile>();
   auto render_process =
@@ -51,7 +52,7 @@ TEST_F(SpareRenderProcessHostTaskTest, Basic) {
   EXPECT_NE(nullptr, provided_task_);
 
   SpareRenderProcessHostTaskChanged(&provider, nullptr);
-  EXPECT_EQ(nullptr, provided_task_);
+  EXPECT_EQ(nullptr, provided_task_.get());
 
   provider.ClearObserver();
 }

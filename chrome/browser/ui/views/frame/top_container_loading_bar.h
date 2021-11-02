@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_LOADING_BAR_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTAINER_LOADING_BAR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -62,7 +63,7 @@ class TopContainerLoadingBar : public LoadingBarView,
   // content::WebContentsObserver:
   void LoadProgressChanged(double progress) override;
 
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   TabNetworkState network_state_ = TabNetworkState::kNone;
 };
 

@@ -5,6 +5,7 @@
 #ifndef CC_RESOURCES_SCOPED_UI_RESOURCE_H_
 #define CC_RESOURCES_SCOPED_UI_RESOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -42,7 +43,7 @@ class CC_EXPORT ScopedUIResource : public UIResourceClient {
                    const UIResourceBitmap& bitmap);
 
   UIResourceBitmap bitmap_;
-  UIResourceManager* ui_resource_manager_;
+  raw_ptr<UIResourceManager> ui_resource_manager_;
   UIResourceId id_;
 };
 

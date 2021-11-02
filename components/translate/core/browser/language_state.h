@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace translate {
 
@@ -126,7 +127,7 @@ class LanguageState {
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  TranslateDriver* translate_driver_;
+  raw_ptr<TranslateDriver> translate_driver_;
 
   // Whether it is OK to offer to translate the page. Translation is not offered
   // if we cannot determine the source language. In addition, some pages

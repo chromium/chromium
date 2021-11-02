@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_metrics.h"
 #include "build/chromeos_buildflags.h"
@@ -151,7 +152,8 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
   }
 
  private:
-  TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit_ = nullptr;
+  raw_ptr<TabLifecycleUnitSource::TabLifecycleUnit> tab_lifecycle_unit_ =
+      nullptr;
 };
 
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -87,13 +88,13 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
                     const AppId& app_id,
                     ManifestUpdateResult result);
 
-  WebAppRegistrar* registrar_ = nullptr;
-  WebAppIconManager* icon_manager_ = nullptr;
-  WebAppUiManager* ui_manager_ = nullptr;
-  WebAppInstallFinalizer* install_finalizer_ = nullptr;
-  SystemWebAppManager* system_web_app_manager_ = nullptr;
-  OsIntegrationManager* os_integration_manager_ = nullptr;
-  WebAppSyncBridge* sync_bridge_ = nullptr;
+  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
+  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_ = nullptr;
+  raw_ptr<SystemWebAppManager> system_web_app_manager_ = nullptr;
+  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

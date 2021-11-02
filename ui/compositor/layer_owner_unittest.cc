@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/null_task_runner.h"
 #include "cc/animation/animation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,7 +42,7 @@ class TestLayerAnimationObserver : public ImplicitAnimationObserver {
   }
 
  private:
-  Layer* layer_;
+  raw_ptr<Layer> layer_;
 };
 
 class LayerOwnerForTesting : public LayerOwner {
@@ -238,7 +239,7 @@ class TestLayerDelegate : public LayerDelegate {
   }
 
  private:
-  ui::LayerOwner* owner_;
+  raw_ptr<ui::LayerOwner> owner_;
 };
 
 }  // namespace

@@ -5,8 +5,8 @@
 #ifndef UI_WM_CORE_WINDOW_ANIMATIONS_H_
 #define UI_WM_CORE_WINDOW_ANIMATIONS_H_
 
-
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/core/wm_core_export.h"
@@ -87,7 +87,7 @@ class WM_CORE_EXPORT ScopedHidingAnimationSettings {
 
  private:
   ui::ScopedLayerAnimationSettings layer_animation_settings_;
-  ImplicitHidingWindowAnimationObserver* observer_;
+  raw_ptr<ImplicitHidingWindowAnimationObserver> observer_;
 };
 
 // Returns false if the |window| didn't animate.

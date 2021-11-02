@@ -9,6 +9,7 @@
 
 #include "base/android/android_image_reader_compat.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/texture_owner.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_fence_egl.h"
@@ -110,7 +111,7 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   mutable base::Lock lock_;
 
   // AImageReader instance.
-  AImageReader* image_reader_ GUARDED_BY(lock_);
+  raw_ptr<AImageReader> image_reader_ GUARDED_BY(lock_);
 
   // Most recently acquired image using image reader. This works like a cached
   // image until next new image is acquired which overwrites this.

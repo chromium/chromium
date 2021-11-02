@@ -6,6 +6,7 @@
 #define MEDIA_MOJO_CLIENTS_MOJO_CDM_FACTORY_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/cdm_factory.h"
 
 namespace media {
@@ -33,7 +34,7 @@ class MojoCdmFactory final : public CdmFactory {
               CdmCreatedCB cdm_created_cb) final;
 
  private:
-  media::mojom::InterfaceFactory* interface_factory_;
+  raw_ptr<media::mojom::InterfaceFactory> interface_factory_;
 };
 
 }  // namespace media

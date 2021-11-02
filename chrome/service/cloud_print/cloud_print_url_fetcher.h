@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_fetcher_delegate.h"
@@ -139,7 +140,7 @@ class CloudPrintURLFetcher
   void SetupRequestHeaders();
 
   std::unique_ptr<net::URLFetcher> request_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
   int num_retries_;
   std::string additional_accept_header_;
   std::string post_data_mime_type_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "headless/lib/browser/protocol/forward.h"
@@ -52,7 +53,7 @@ class HeadlessDevToolsSession : public FrontendChannel {
   std::vector<std::unique_ptr<DomainHandler>> handlers_;
   base::flat_map<int, content::DevToolsManagerDelegate::NotHandledCallback>
       pending_commands_;
-  content::DevToolsAgentHostClientChannel* client_channel_;
+  raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;
 };
 
 }  // namespace protocol

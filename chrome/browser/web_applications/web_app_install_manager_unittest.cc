@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -438,7 +439,7 @@ class WebAppInstallManagerTest
       externally_installed_app_prefs_;
 
   // A weak ptr. The original is owned by install_manager_.
-  TestWebAppUrlLoader* test_url_loader_ = nullptr;
+  raw_ptr<TestWebAppUrlLoader> test_url_loader_ = nullptr;
   scoped_refptr<TestFileUtils> file_utils_;
 };
 

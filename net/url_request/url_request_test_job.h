@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/load_timing_info.h"
 #include "net/url_request/url_request.h"
@@ -172,7 +173,7 @@ class URLRequestTestJob : public URLRequestJob {
   int offset_;
 
   // Holds the buffer for an asynchronous ReadRawData call
-  IOBuffer* async_buf_;
+  raw_ptr<IOBuffer> async_buf_;
   int async_buf_size_;
 
   LoadTimingInfo load_timing_info_;

@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -56,7 +57,7 @@ class RefCounter {
   ~RefCounter() { (*counter_)--; }
 
  private:
-  size_t* counter_;
+  raw_ptr<size_t> counter_;
 };
 
 // Empty callback for implementation of ErrorCallbackSetHelper().

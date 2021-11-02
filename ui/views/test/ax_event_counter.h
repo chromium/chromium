@@ -6,6 +6,7 @@
 #define UI_VIEWS_TEST_AX_EVENT_COUNTER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -38,7 +39,7 @@ class AXEventCounter : public views::AXEventObserver {
  private:
   base::flat_map<ax::mojom::Event, int> event_counts_;
   ax::mojom::Event wait_for_event_type_ = ax::mojom::Event::kNone;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
   base::ScopedObservation<views::AXEventManager, views::AXEventObserver>
       tree_observation_{this};
 };

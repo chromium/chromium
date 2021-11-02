@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -72,7 +73,7 @@ class PresentationRequestNotificationProducer::
     notification_producer_->DeleteItemForPresentationRequest("Dialog closed.");
   }
 
-  PresentationRequestNotificationProducer* const notification_producer_;
+  const raw_ptr<PresentationRequestNotificationProducer> notification_producer_;
 };
 
 PresentationRequestNotificationProducer::

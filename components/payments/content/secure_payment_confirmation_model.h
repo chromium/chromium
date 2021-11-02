@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -127,7 +128,7 @@ class SecurePaymentConfirmationModel {
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;
-  const SkBitmap* instrument_icon_ = nullptr;
+  raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
 
   std::u16string total_label_;
   std::u16string total_value_;

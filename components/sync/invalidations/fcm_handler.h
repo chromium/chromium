@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -98,8 +99,8 @@ class FCMHandler : public gcm::GCMAppHandler {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  gcm::GCMDriver* gcm_driver_ = nullptr;
-  instance_id::InstanceIDDriver* instance_id_driver_ = nullptr;
+  raw_ptr<gcm::GCMDriver> gcm_driver_ = nullptr;
+  raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_ = nullptr;
   const std::string sender_id_;
   const std::string app_id_;
 

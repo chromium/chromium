@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
 
@@ -44,8 +45,8 @@ class NET_EXPORT_PRIVATE DnsSocketAllocator {
                                                 const NetLogSource& source);
 
  private:
-  ClientSocketFactory* const socket_factory_;
-  NetLog* const net_log_;
+  const raw_ptr<ClientSocketFactory> socket_factory_;
+  const raw_ptr<NetLog> net_log_;
   const std::vector<IPEndPoint> nameservers_;
 };
 

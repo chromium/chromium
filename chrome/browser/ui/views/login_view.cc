@@ -24,7 +24,8 @@
 LoginView::LoginView(const std::u16string& authority,
                      const std::u16string& explanation,
                      LoginHandler::LoginModelData* login_model_data)
-    : http_auth_manager_(login_model_data ? login_model_data->model : nullptr) {
+    : http_auth_manager_(login_model_data ? login_model_data->model.get()
+                                          : nullptr) {
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,

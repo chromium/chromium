@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_item.h"
 #include "components/global_media_controls/public/media_item_producer.h"
@@ -68,9 +69,9 @@ class CastMediaNotificationProducer
  private:
   bool HasActiveItems() const;
 
-  Profile* const profile_;
-  media_router::MediaRouter* const router_;
-  global_media_controls::MediaItemManager* const item_manager_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<media_router::MediaRouter> router_;
+  const raw_ptr<global_media_controls::MediaItemManager> item_manager_;
 
   // Maps from notification item IDs to items.
   std::map<std::string, CastMediaNotificationItem> items_;

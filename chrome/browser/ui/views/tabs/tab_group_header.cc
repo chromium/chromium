@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -76,8 +77,8 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  const views::View* const chip_;
-  const views::View* const title_;
+  const raw_ptr<const views::View> chip_;
+  const raw_ptr<const views::View> title_;
 };
 
 }  // namespace

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CART_DISCOUNT_URL_LOADER_H_
 #define CHROME_BROWSER_CART_DISCOUNT_URL_LOADER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,7 +42,7 @@ class DiscountURLLoader : public BrowserListObserver,
   void NavigateToDiscountURL(content::WebContents* contents,
                              const GURL& discount_url);
   absl::optional<GURL> last_interacted_url_;
-  CartService* cart_service_;
+  raw_ptr<CartService> cart_service_;
   base::WeakPtrFactory<DiscountURLLoader> weak_ptr_factory_{this};
 };
 

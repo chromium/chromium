@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 #define CHROME_BROWSER_BREADCRUMBS_BREADCRUMB_MANAGER_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_tab_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -49,7 +50,7 @@ class BreadcrumbManagerTabHelper
   void WebContentsDestroyed() override;
 
   // The WebContents associated with this tab helper.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

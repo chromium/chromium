@@ -80,7 +80,7 @@ class WebViewMediaAccessAPITest : public WebViewAPITest {
     ExtensionTestMessageListener test_run_listener("TEST_PASSED", false);
     test_run_listener.set_failure_message("TEST_FAILED");
     EXPECT_TRUE(content::ExecuteScript(
-        embedder_web_contents_,
+        embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s');", test_name.c_str())));
     ASSERT_TRUE(test_run_listener.WaitUntilSatisfied());
   }

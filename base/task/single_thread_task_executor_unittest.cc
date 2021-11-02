@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_type.h"
@@ -757,7 +758,7 @@ class RecordDeletionProbe : public RefCounted<RecordDeletionProbe> {
   }
 
   scoped_refptr<RecordDeletionProbe> post_on_delete_;
-  bool* was_deleted_;
+  raw_ptr<bool> was_deleted_;
 };
 
 }  // namespace
@@ -1920,8 +1921,8 @@ class DestructionObserverProbe : public RefCounted<DestructionObserverProbe> {
     *task_destroyed_ = true;
   }
 
-  bool* task_destroyed_;
-  bool* destruction_observer_called_;
+  raw_ptr<bool> task_destroyed_;
+  raw_ptr<bool> destruction_observer_called_;
 };
 
 class MLDestructionObserver : public CurrentThread::DestructionObserver {
@@ -1939,8 +1940,8 @@ class MLDestructionObserver : public CurrentThread::DestructionObserver {
   }
 
  private:
-  bool* task_destroyed_;
-  bool* destruction_observer_called_;
+  raw_ptr<bool> task_destroyed_;
+  raw_ptr<bool> destruction_observer_called_;
   bool task_destroyed_before_message_loop_;
 };
 

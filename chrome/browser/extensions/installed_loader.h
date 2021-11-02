@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 
 namespace extensions {
 
@@ -56,10 +57,10 @@ class InstalledLoader {
   // Record metrics related to the loaded extensions.
   void RecordExtensionsMetrics();
 
-  ExtensionService* extension_service_;
-  ExtensionRegistry* extension_registry_;
+  raw_ptr<ExtensionService> extension_service_;
+  raw_ptr<ExtensionRegistry> extension_registry_;
 
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 
   // Paths to invalid extension manifests, which should not be loaded.
   std::set<base::FilePath> invalid_extensions_;

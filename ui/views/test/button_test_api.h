@@ -6,6 +6,7 @@
 #define UI_VIEWS_TEST_BUTTON_TEST_API_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 class Event;
@@ -27,7 +28,7 @@ class ButtonTestApi {
   void NotifyClick(const ui::Event& event);
 
  private:
-  Button* button_;
+  raw_ptr<Button> button_;
 };
 
 }  // namespace test

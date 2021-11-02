@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -30,7 +31,7 @@ class TestTask {
   base::RunLoop& run_loop() { return run_loop_; }
 
  protected:
-  BackgroundSyncOpScheduler* scheduler_;
+  raw_ptr<BackgroundSyncOpScheduler> scheduler_;
   base::RunLoop run_loop_;
   int callback_count_;
 };

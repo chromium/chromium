@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -213,7 +214,7 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
 
   // Owned by the profile.
-  SubresourceFilterProfileContext* profile_context_;
+  raw_ptr<SubresourceFilterProfileContext> profile_context_;
 };
 
 // This class automatically syncs the SubresourceFilter SafeBrowsing list

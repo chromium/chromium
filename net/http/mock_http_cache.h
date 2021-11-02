@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/request_priority.h"
@@ -389,7 +390,7 @@ class MockBlockingBackendFactory : public HttpCache::BackendFactory {
  private:
   int Result() { return fail_ ? ERR_FAILED : OK; }
 
-  std::unique_ptr<disk_cache::Backend>* backend_;
+  raw_ptr<std::unique_ptr<disk_cache::Backend>> backend_;
   CompletionOnceCallback callback_;
   bool block_;
   bool fail_;

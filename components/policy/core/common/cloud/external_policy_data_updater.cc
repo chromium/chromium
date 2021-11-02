@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "crypto/sha2.h"
@@ -139,7 +140,7 @@ class ExternalPolicyDataUpdater::FetchJob
   void Reschedule();
 
   // Always valid as long as |this| is alive.
-  ExternalPolicyDataUpdater* const updater_;
+  const raw_ptr<ExternalPolicyDataUpdater> updater_;
 
   const std::string key_;
   const ExternalPolicyDataUpdater::Request request_;
@@ -150,7 +151,7 @@ class ExternalPolicyDataUpdater::FetchJob
   // |updater_|'s OnJobSucceeded() or OnJobFailed() method in this case.
   // If the job is currently not running, |fetch_job_| is NULL and no callbacks
   // should be invoked.
-  ExternalPolicyDataFetcher::Job* fetch_job_ = nullptr;  // Not owned.
+  raw_ptr<ExternalPolicyDataFetcher::Job> fetch_job_ = nullptr;  // Not owned.
 
   // Some errors should trigger a limited number of retries, even with backoff.
   // This counts down the number of such retries to stop retrying once the limit

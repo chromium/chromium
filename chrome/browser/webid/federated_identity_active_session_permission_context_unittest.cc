@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/webid/federated_identity_active_session_permission_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -36,7 +37,7 @@ class FederatedIdentityActiveSessionPermissionContextTest
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  FederatedIdentityActiveSessionPermissionContext* context_;
+  raw_ptr<FederatedIdentityActiveSessionPermissionContext> context_;
   TestingProfile profile_;
 };
 

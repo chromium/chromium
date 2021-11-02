@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -39,7 +40,7 @@ class TabsWindowsAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<TabsWindowsAPI>;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {

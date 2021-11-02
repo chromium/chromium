@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -114,13 +115,13 @@ class CC_EXPORT ImageController {
 
   base::WeakPtr<ImageController> weak_ptr_;
 
-  ImageDecodeCache* cache_ = nullptr;
+  raw_ptr<ImageDecodeCache> cache_ = nullptr;
   std::vector<DrawImage> predecode_locked_images_;
 
   static ImageDecodeRequestId s_next_image_decode_queue_id_;
   base::flat_map<ImageDecodeRequestId, DrawImage> requested_locked_images_;
 
-  base::SequencedTaskRunner* origin_task_runner_ = nullptr;
+  raw_ptr<base::SequencedTaskRunner> origin_task_runner_ = nullptr;
   size_t image_cache_max_limit_bytes_ = 0u;
 
   // The variables defined below this lock (aside from weak_ptr_factory_) can

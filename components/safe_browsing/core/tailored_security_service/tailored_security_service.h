@@ -14,6 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -129,7 +130,7 @@ class TailoredSecurityService : public KeyedService {
  private:
   // Stores pointer to IdentityManager instance. It must outlive the
   // TailoredSecurityService and can be null during tests.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Request context getter to use.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

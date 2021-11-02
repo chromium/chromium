@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/values.h"
@@ -196,7 +197,7 @@ class InspectMessageHandler : public WebUIMessageHandler {
   void CreateNativeUIInspectionSession(const std::string& url);
   void OnFrontEndFinished();
 
-  InspectUI* const inspect_ui_;
+  const raw_ptr<InspectUI> inspect_ui_;
 
   base::WeakPtrFactory<InspectMessageHandler> weak_factory_{this};
 };

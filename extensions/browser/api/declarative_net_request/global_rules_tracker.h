@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_GLOBAL_RULES_TRACKER_H_
 #define EXTENSIONS_BROWSER_API_DECLARATIVE_NET_REQUEST_GLOBAL_RULES_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -54,8 +55,8 @@ class GlobalRulesTracker {
   // exceed |kMaxStaticRulesPerProfile|.
   size_t allocated_global_rule_count_ = 0;
 
-  ExtensionPrefs* const extension_prefs_;
-  ExtensionRegistry* const extension_registry_;
+  const raw_ptr<ExtensionPrefs> extension_prefs_;
+  const raw_ptr<ExtensionRegistry> extension_registry_;
 };
 
 }  // namespace declarative_net_request

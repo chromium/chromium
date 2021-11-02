@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLER_JAVASCRIPT_SERVICE_IMPL_H_
 #define COMPONENTS_DOM_DISTILLER_CONTENT_BROWSER_DISTILLER_JAVASCRIPT_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
@@ -38,8 +39,8 @@ class DistillerJavaScriptServiceImpl
       const DistillerJavaScriptServiceImpl&) = delete;
 
  private:
-  DistillerUIHandle* distiller_ui_handle_;
-  DistilledPagePrefs* distilled_page_prefs_;
+  raw_ptr<DistillerUIHandle> distiller_ui_handle_;
+  raw_ptr<DistilledPagePrefs> distilled_page_prefs_;
 };
 
 // static

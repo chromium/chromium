@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/leveldb_proto/public/proto_database.h"
@@ -67,7 +68,7 @@ class TutorialStoreTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::map<std::string, proto::VideoTutorialGroups> db_entries_;
   std::unique_ptr<proto::VideoTutorialGroups> last_load_result_;
-  FakeDB<proto::VideoTutorialGroups>* db_{nullptr};
+  raw_ptr<FakeDB<proto::VideoTutorialGroups>> db_{nullptr};
   std::unique_ptr<TutorialStore> store_;
 };
 

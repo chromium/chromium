@@ -6,6 +6,7 @@
 #define CC_TREES_LATENCY_INFO_SWAP_PROMISE_MONITOR_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/trees/swap_promise_monitor.h"
 
 namespace ui {
@@ -29,7 +30,7 @@ class CC_EXPORT LatencyInfoSwapPromiseMonitor : public SwapPromiseMonitor {
   void OnSetNeedsRedrawOnImpl() override;
 
  private:
-  ui::LatencyInfo* latency_;
+  raw_ptr<ui::LatencyInfo> latency_;
 };
 
 }  // namespace cc

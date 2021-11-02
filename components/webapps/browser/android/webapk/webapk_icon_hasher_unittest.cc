@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -119,7 +120,8 @@ class WebApkIconHasherTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   content::TestBrowserContext browser_context_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
+  raw_ptr<content::WebContents>
+      web_contents_;  // Owned by `web_contents_factory_`.
 };
 
 TEST_F(WebApkIconHasherTest, Success) {

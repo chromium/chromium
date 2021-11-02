@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 
 namespace ui {
@@ -45,7 +46,7 @@ class CredentialLeakDialogViewAndroid {
 
  private:
   // The controller which owns this dialog and handles the dialog events.
-  CredentialLeakControllerAndroid* controller_;
+  raw_ptr<CredentialLeakControllerAndroid> controller_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

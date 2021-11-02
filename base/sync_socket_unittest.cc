@@ -4,6 +4,7 @@
 
 #include "base/sync_socket.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -57,7 +58,7 @@ class HangingReceiveThread : public DelegateSimpleThread::Delegate {
   WaitableEvent* done_event() { return &done_event_; }
 
  private:
-  SyncSocket* socket_;
+  raw_ptr<SyncSocket> socket_;
   DelegateSimpleThread thread_;
   bool with_timeout_;
   WaitableEvent started_event_;

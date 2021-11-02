@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_RANKER_LOGGER_IMPL_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -95,7 +96,7 @@ class ContextualSearchRankerLoggerImpl {
 
   // The |BrowserContext| currently associated with the above predictor.
   // The object not owned by ContextualSearchRankerLoggerImpl.
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   // The current RankerExample or null.
   // Set of features from one example of a Tap to predict a suppression

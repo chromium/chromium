@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -108,7 +109,7 @@ struct PrefetchInfo {
   bool was_canceled = false;
   std::unique_ptr<PrefetchStats> stats;
   // Owns |this|.
-  PrefetchManager* const manager;
+  const raw_ptr<PrefetchManager> manager;
 
   base::WeakPtrFactory<PrefetchInfo> weak_factory{this};
 };

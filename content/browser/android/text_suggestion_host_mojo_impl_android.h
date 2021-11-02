@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 #define CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
@@ -46,7 +47,7 @@ class TextSuggestionHostMojoImplAndroid final
       std::vector<blink::mojom::TextSuggestionPtr> suggestions) final;
 
  private:
-  TextSuggestionHostAndroid* const text_suggestion_host_;
+  const raw_ptr<TextSuggestionHostAndroid> text_suggestion_host_;
   mojo::Receiver<blink::mojom::TextSuggestionHost> receiver_;
 };
 

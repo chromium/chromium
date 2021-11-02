@@ -18,6 +18,7 @@
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -451,9 +452,9 @@ class NET_EXPORT HostCache {
   // RestoreFromListValue(). Used in histograms.
   size_t restore_size_;
 
-  PersistenceDelegate* delegate_;
+  raw_ptr<PersistenceDelegate> delegate_;
   // Shared tick clock, overridden for testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   THREAD_CHECKER(thread_checker_);
 };

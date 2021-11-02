@@ -14,6 +14,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -58,7 +59,7 @@ class ScopedCompletionEvent {
   ScopedCompletionEvent& operator=(const ScopedCompletionEvent&) = delete;
 
  private:
-  CompletionEvent* const event_;
+  const raw_ptr<CompletionEvent> event_;
 };
 
 ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,

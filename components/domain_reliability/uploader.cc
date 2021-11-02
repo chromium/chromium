@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/domain_reliability/util.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -192,8 +193,8 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
   }
 
  private:
-  MockableTime* time_;
-  net::URLRequestContext* url_request_context_;
+  raw_ptr<MockableTime> time_;
+  raw_ptr<net::URLRequestContext> url_request_context_;
   // Stores each in-flight upload request with the callback to notify its
   // initiating DRContext of its completion.
   using UploadMap = std::map<std::unique_ptr<net::URLRequest>,

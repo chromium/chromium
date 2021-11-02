@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
@@ -56,10 +57,10 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
   void OnErrorChanged() override;
 
   // The Profile this service belongs to.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The SigninErrorController that provides auth status.
-  SigninErrorController* error_controller_;
+  raw_ptr<SigninErrorController> error_controller_;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_GLOBAL_ERROR_H_

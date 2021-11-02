@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/combobox_model.h"
@@ -147,7 +148,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   friend class DialogModel;
   FRIEND_TEST_ALL_PREFIXES(DialogModelButtonTest, UsesParamsUniqueId);
 
-  DialogModel* const model_;
+  const raw_ptr<DialogModel> model_;
   const Type type_;
   const int unique_id_;
 

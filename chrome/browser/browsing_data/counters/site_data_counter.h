@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_COUNTERS_SITE_DATA_COUNTER_H_
 #define CHROME_BROWSER_BROWSING_DATA_COUNTERS_SITE_DATA_COUNTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
 #include "components/browsing_data/core/counters/sync_tracker.h"
@@ -23,7 +24,7 @@ class SiteDataCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
   void Done(int origin_count);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   browsing_data::SyncTracker sync_tracker_;
   base::WeakPtrFactory<SiteDataCounter> weak_ptr_factory_{this};
 };

@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -66,8 +67,8 @@ class DisableExtensionBrowserTest : public ExtensionBrowserTest {
   scoped_refptr<const Extension> extension_;
   std::string extension_id_;
   GURL extension_resource_url_;
-  ExtensionRegistry* registry_;
-  ExtensionPrefs* prefs_;
+  raw_ptr<ExtensionRegistry> registry_;
+  raw_ptr<ExtensionPrefs> prefs_;
 };
 
 // Test that visiting an url associated with a disabled extension offers to

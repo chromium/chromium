@@ -5,6 +5,7 @@
 #include "cc/metrics/compositor_timing_history.h"
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +29,7 @@ class TestCompositorTimingHistory : public CompositorTimingHistory {
  protected:
   base::TimeTicks Now() const override;
 
-  CompositorTimingHistoryTest* test_;
+  raw_ptr<CompositorTimingHistoryTest> test_;
 };
 
 class CompositorTimingHistoryTest : public testing::Test {

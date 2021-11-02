@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -67,7 +68,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
                       blink::ServiceWorkerStatusCode status);
 
   // The ServiceWorkerContextCore object must outlive this.
-  ServiceWorkerContextCore* const context_;
+  const raw_ptr<ServiceWorkerContextCore> context_;
   const GURL scope_;
   const blink::StorageKey key_;
   const bool is_immediate_;

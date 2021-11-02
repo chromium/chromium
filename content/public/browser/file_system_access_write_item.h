@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -47,8 +48,8 @@ struct CONTENT_EXPORT FileSystemAccessWriteItem {
   // can be nullptr when calling
   // FileSystemAccessPermissionContext::PerformAfterWriteChecks(), in which
   // case they will be filled by that method.
-  WebContents* web_contents = nullptr;
-  BrowserContext* browser_context = nullptr;
+  raw_ptr<WebContents> web_contents = nullptr;
+  raw_ptr<BrowserContext> browser_context = nullptr;
 };
 
 }  // namespace content

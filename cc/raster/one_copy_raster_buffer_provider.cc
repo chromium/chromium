@@ -12,6 +12,7 @@
 
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -80,7 +81,7 @@ class OneCopyRasterBufferProvider::OneCopyGpuBacking
   }
 
   // The ContextProvider used to clean up the mailbox
-  viz::RasterContextProvider* worker_context_provider = nullptr;
+  raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
 };
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(

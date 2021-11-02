@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_RESOURCE_SCHEDULER_RESOURCE_SCHEDULER_CLIENT_H_
 #define SERVICES_NETWORK_RESOURCE_SCHEDULER_RESOURCE_SCHEDULER_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/request_priority.h"
 #include "services/network/resource_scheduler/resource_scheduler.h"
@@ -48,7 +49,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceSchedulerClient final
 
   const int child_id_;
   const int route_id_;
-  ResourceScheduler* const resource_scheduler_;
+  const raw_ptr<ResourceScheduler> resource_scheduler_;
 };
 }  // namespace network
 

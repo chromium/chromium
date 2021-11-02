@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_BASE_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_INVALIDATION_SERVICE_BASE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -127,11 +128,11 @@ class FCMInvalidationServiceBase : public InvalidationService,
   PerUserTopicSubscriptionManagerCallback
       per_user_topic_subscription_manager_callback_;
 
-  instance_id::InstanceIDDriver* const instance_id_driver_;
+  const raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
   // The invalidator client ID, aka instance ID.
   std::string client_id_;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   bool update_was_requested_ = false;
   Diagnostics diagnostic_info_;

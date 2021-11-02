@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 
@@ -234,7 +235,7 @@ class PermissionsUpdater {
                              base::OnceClosure completion_callback);
 
   // The associated BrowserContext.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Initialization flag that determines whether prefs is consulted about the
   // extension. Transient extensions should not have entries in prefs.

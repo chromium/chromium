@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -62,7 +63,7 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT Connector {
     }
 
    private:
-    Connector* connector_;
+    raw_ptr<Connector> connector_;
   };
 
   explicit Connector(mojo::PendingRemote<mojom::Connector> unbound_state);

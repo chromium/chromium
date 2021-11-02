@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_SELECTION_CONTROLLER_H_
 #define UI_VIEWS_SELECTION_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
@@ -108,7 +109,7 @@ class VIEWS_EXPORT SelectionController {
   gfx::Range double_click_word_;
 
   // Weak pointer.
-  SelectionControllerDelegate* delegate_;
+  raw_ptr<SelectionControllerDelegate> delegate_;
 
   // Whether the selection clipboard is handled.
   bool handles_selection_clipboard_;

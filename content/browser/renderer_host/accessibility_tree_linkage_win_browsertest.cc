@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -66,7 +67,7 @@ class AccessibilityTreeLinkageWinBrowserTest
 
  protected:
   ui::AXPlatformNodeDelegateBase dummy_ax_node_;
-  ui::AXPlatformNode* dummy_ax_platform_node_;
+  raw_ptr<ui::AXPlatformNode> dummy_ax_platform_node_;
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {

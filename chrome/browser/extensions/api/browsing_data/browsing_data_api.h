@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -84,7 +85,7 @@ class BrowsingDataSettingsFunction : public ExtensionFunction {
   bool isDataTypeSelected(browsing_data::BrowsingDataType data_type,
                           browsing_data::ClearBrowsingDataTab tab);
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 };
 
 // This serves as a base class from which the browsing data API removal

@@ -18,6 +18,7 @@
 #include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_scoped_refptr_mismatch_checker.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -91,7 +92,7 @@ class UnretainedWrapper {
   T* get() const { return ptr_; }
 
  private:
-  T* ptr_;
+  raw_ptr<T> ptr_;
 };
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -144,7 +145,7 @@ class UnretainedRefWrapper {
  private:
   // This is intentionally a pointer to ensure the Big Rewrite will change this
   // to raw_ptr.
-  T* const ptr_;
+  const raw_ptr<T> ptr_;
 };
 
 template <typename T>

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
@@ -108,8 +109,8 @@ class TrustTokenRequestHelperFactory {
       base::OnceCallback<void(TrustTokenStatusOrRequestHelper)> done,
       TrustTokenStore* store);
 
-  PendingTrustTokenStore* store_;
-  const TrustTokenKeyCommitmentGetter* key_commitment_getter_;
+  raw_ptr<PendingTrustTokenStore> store_;
+  raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
   base::RepeatingCallback<mojom::NetworkContextClient*(void)>
       context_client_provider_;
   base::RepeatingCallback<bool(void)> authorizer_;

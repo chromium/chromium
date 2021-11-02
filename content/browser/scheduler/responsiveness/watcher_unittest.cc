@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -122,7 +123,7 @@ class FakeWatcher : public Watcher {
 
  private:
   ~FakeWatcher() override {}
-  FakeCalculator* calculator_ = nullptr;
+  raw_ptr<FakeCalculator> calculator_ = nullptr;
   bool register_message_loop_observer_ = false;
 };
 

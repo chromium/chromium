@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class AuthenticatorRequestDialogModel;
@@ -31,7 +32,7 @@ class OtherMechanismsMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
 
-  AuthenticatorRequestDialogModel* const dialog_model_;
+  const raw_ptr<AuthenticatorRequestDialogModel> dialog_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_OTHER_MECHANISMS_MENU_MODEL_H_

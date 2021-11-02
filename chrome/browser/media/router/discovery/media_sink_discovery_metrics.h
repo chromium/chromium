@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MEDIA_SINK_DISCOVERY_METRICS_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 
@@ -55,7 +56,7 @@ class DeviceCountMetrics {
  private:
   base::Time device_count_metrics_record_time_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 // Metrics for DIAL device counts.

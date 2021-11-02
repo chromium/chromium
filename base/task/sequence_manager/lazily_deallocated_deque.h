@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -243,7 +244,7 @@ class LazilyDeallocatedDeque {
       while (!empty()) {
         pop_front();
       }
-      delete[] reinterpret_cast<char*>(data_);
+      delete[] reinterpret_cast<char*>(data_.get());
     }
 
     bool empty() const { return back_index_ == front_index_; }
@@ -312,7 +313,7 @@ class LazilyDeallocatedDeque {
     size_t capacity_;
     size_t front_index_;
     size_t back_index_;
-    T* data_;
+    raw_ptr<T> data_;
     std::unique_ptr<Ring> next_;
   };
 
@@ -350,7 +351,7 @@ class LazilyDeallocatedDeque {
       index_ = ring_->CircularIncrement(ring->front_index_);
     }
 
-    const Ring* ring_;
+    raw_ptr<const Ring> ring_;
     size_t index_;
 
     friend class LazilyDeallocatedDeque;

@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
@@ -233,7 +234,7 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
   // The WorkerThread that has |this| as a delegate. Must be set before
   // starting or posting a task to the WorkerThread, because it's used in
   // OnMainEntry() and PostTaskNow().
-  WorkerThread* worker_ = nullptr;
+  raw_ptr<WorkerThread> worker_ = nullptr;
 
   PriorityQueue priority_queue_ GUARDED_BY(lock_);
 
@@ -473,8 +474,8 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     return static_cast<WorkerThreadDelegate*>(worker_->delegate());
   }
 
-  PooledSingleThreadTaskRunnerManager* const outer_;
-  WorkerThread* const worker_;
+  const raw_ptr<PooledSingleThreadTaskRunnerManager> outer_;
+  const raw_ptr<WorkerThread> worker_;
   const SingleThreadTaskRunnerThreadMode thread_mode_;
   const scoped_refptr<Sequence> sequence_;
 };

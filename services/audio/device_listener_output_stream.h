@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_DEVICE_LISTENER_OUTPUT_STREAM_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 
@@ -57,15 +58,16 @@ class DeviceListenerOutputStream final
 
   void ReportError(ErrorType type);
 
-  media::AudioManager* const audio_manager_;
+  const raw_ptr<media::AudioManager> audio_manager_;
 
-  media::AudioOutputStream* const stream_;
+  const raw_ptr<media::AudioOutputStream> stream_;
 
   // Callback to process the device change.
   base::OnceClosure on_device_change_callback_;
 
   // Actual producer of the audio.
-  media::AudioOutputStream::AudioSourceCallback* source_callback_ = nullptr;
+  raw_ptr<media::AudioOutputStream::AudioSourceCallback> source_callback_ =
+      nullptr;
 
   // The task runner for the audio manager. The main task runner for the object.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

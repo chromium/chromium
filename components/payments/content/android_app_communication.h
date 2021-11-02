@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
@@ -114,7 +115,7 @@ class AndroidAppCommunication : public base::SupportsUserData::Data {
       content::BrowserContext* context);
 
   // Owns this object, so always valid.
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
   base::WeakPtrFactory<AndroidAppCommunication> weak_ptr_factory_{this};
 };

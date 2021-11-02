@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_DIALOG_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_DIALOG_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webid/webid_dialog.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -85,9 +86,9 @@ class WebIdDialogViews : public WebIdDialog,
   // Dialog widget that shows the content. It is created and shown on the first
   // step. It remains shown until user reaches the end of the flow or explicitly
   // closes it.
-  views::Widget* dialog_{nullptr};
+  raw_ptr<views::Widget> dialog_{nullptr};
   // The content that is currently shown.
-  views::View* content_{nullptr};
+  raw_ptr<views::View> content_{nullptr};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_DIALOG_VIEWS_H_

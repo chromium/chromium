@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/syslog_logging.h"
 #include "base/win/win_util.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -415,7 +416,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   // through the dialog.
   mutable HandleGcpwSigninCompleteResult signin_callback_;
 
-  mutable CredentialProviderWebUIMessageHandler* handler_ = nullptr;
+  mutable raw_ptr<CredentialProviderWebUIMessageHandler> handler_ = nullptr;
 };
 
 bool ValidateSigninCompleteResult(const std::string& access_token,

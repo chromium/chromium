@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -141,7 +142,7 @@ class DirectOutputSurface : public viz::OutputSurface {
     client_->DidReceivePresentationFeedback(gfx::PresentationFeedback());
   }
 
-  viz::OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<viz::OutputSurfaceClient> client_ = nullptr;
   base::WeakPtrFactory<DirectOutputSurface> weak_ptr_factory_{this};
 };
 

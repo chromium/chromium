@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_WINDOW_CLIENT_VIEW_H_
 #define UI_VIEWS_WINDOW_CLIENT_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -71,7 +72,7 @@ class VIEWS_EXPORT ClientView : public View {
 
  private:
   // The View that this ClientView contains.
-  View* contents_view_;
+  raw_ptr<View> contents_view_;
 };
 
 }  // namespace views

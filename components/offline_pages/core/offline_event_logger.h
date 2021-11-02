@@ -10,6 +10,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace offline_pages {
 
@@ -67,7 +68,7 @@ class OfflineEventLogger {
   bool is_logging_;
 
   // Not owned.
-  Client* client_;
+  raw_ptr<Client> client_;
 };
 }  // namespace offline_pages
 

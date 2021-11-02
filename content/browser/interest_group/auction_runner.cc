@@ -244,7 +244,7 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
   seller_url_loader_factory_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
       url_loader_factory.InitWithNewPipeAndPassReceiver(),
       base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
-                          base::Unretained(delegate_)),
+                          base::Unretained(delegate_.get())),
       frame_origin_, /*is_for_seller_=*/true, /*client_security_state=*/nullptr,
       seller_url);
   bool should_pause_on_start = false;
@@ -326,7 +326,7 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
       std::make_unique<AuctionURLLoaderFactoryProxy>(
           url_loader_factory.InitWithNewPipeAndPassReceiver(),
           base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
-                              base::Unretained(delegate_)),
+                              base::Unretained(delegate_.get())),
           frame_origin_, /*is_for_seller=*/false,
           delegate_->GetClientSecurityState(), bidding_url,
           trusted_bidding_signals_full_url);

@@ -17,6 +17,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
@@ -190,7 +191,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
       for (int i = 0; i < outer_->TasksPerSequence(); ++i) {
         Task task(FROM_HERE,
                   BindOnce(&ThreadPoolWorkerTest::RunTaskCallback,
-                           Unretained(outer_)),
+                           Unretained(outer_.get())),
                   TimeTicks::Now(), TimeDelta());
         EXPECT_TRUE(outer_->task_tracker_.WillPostTask(
             &task, sequence->shutdown_behavior()));
@@ -264,7 +265,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
       return expect_did_run_task_;
     }
 
-    ThreadPoolWorkerTest* outer_;
+    raw_ptr<ThreadPoolWorkerTest> outer_;
 
     // Synchronizes access to |expect_did_run_task_|.
     mutable CheckedLock expect_did_run_task_lock_;
@@ -508,7 +509,7 @@ class ControllableCleanupDelegate : public WorkerThreadDefaultDelegate {
 
  private:
   scoped_refptr<Sequence> work_sequence_;
-  TaskTracker* const task_tracker_;
+  const raw_ptr<TaskTracker> task_tracker_;
   scoped_refptr<Controls> controls_;
 };
 
@@ -667,7 +668,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  WorkerThread* const worker_to_join_;
+  const raw_ptr<WorkerThread> worker_to_join_;
   TestWaitableEvent run_started_event_;
 };
 
@@ -813,7 +814,7 @@ class VerifyCallsToObserverDelegate : public WorkerThreadDefaultDelegate {
   }
 
  private:
-  test::MockWorkerThreadObserver* const observer_;
+  const raw_ptr<test::MockWorkerThreadObserver> observer_;
 };
 
 }  // namespace

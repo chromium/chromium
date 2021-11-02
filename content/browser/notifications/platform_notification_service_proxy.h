@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
@@ -117,8 +118,8 @@ class CONTENT_EXPORT PlatformNotificationServiceProxy {
       scoped_refptr<ServiceWorkerRegistration> registration);
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
-  BrowserContext* browser_context_;
-  PlatformNotificationService* notification_service_;
+  raw_ptr<BrowserContext> browser_context_;
+  raw_ptr<PlatformNotificationService> notification_service_;
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_ui_{
       this};
   base::WeakPtrFactory<PlatformNotificationServiceProxy> weak_ptr_factory_io_{

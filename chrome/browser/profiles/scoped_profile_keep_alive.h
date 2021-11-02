@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_PROFILES_SCOPED_PROFILE_KEEP_ALIVE_H_
 #define CHROME_BROWSER_PROFILES_SCOPED_PROFILE_KEEP_ALIVE_H_
 
+#include "base/memory/raw_ptr.h"
+
 class Profile;
 enum class ProfileKeepAliveOrigin;
 
@@ -38,7 +40,7 @@ class ScopedProfileKeepAlive {
   static void RemoveKeepAliveOnUIThread(const Profile* profile,
                                         ProfileKeepAliveOrigin origin);
 
-  const Profile* const profile_;
+  const raw_ptr<const Profile> profile_;
   const ProfileKeepAliveOrigin origin_;
 };
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -72,7 +73,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  ui::TestClipboard* test_clipboard_;
+  raw_ptr<ui::TestClipboard> test_clipboard_;
 };
 
 TEST_F(ClipboardRecentContentGenericTest, RecognizesURLs) {

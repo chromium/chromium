@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info_ui.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,7 +61,7 @@ class PageInfoControllerAndroid : public PageInfoUI {
 
   GURL url_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // COMPONENTS_PAGE_INFO_ANDROID_PAGE_INFO_CONTROLLER_ANDROID_H_

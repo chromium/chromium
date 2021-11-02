@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_FOOTER_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_observer.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "ui/gfx/color_palette.h"
@@ -50,9 +51,9 @@ class MediaItemUIFooterView : public global_media_controls::MediaItemUIFooter,
 
   SkColor foreground_color_ = gfx::kPlaceholderColor;
 
-  DeviceEntryButton* overflow_button_ = nullptr;
+  raw_ptr<DeviceEntryButton> overflow_button_ = nullptr;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_FOOTER_VIEW_H_

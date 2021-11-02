@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "components/domain_reliability/uploader.h"
@@ -91,7 +92,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityScheduler {
                                      base::TimeTicks* upload_time_out,
                                      size_t* collector_index_out);
 
-  const MockableTime* time_;
+  raw_ptr<const MockableTime> time_;
   Params params_;
   ScheduleUploadCallback callback_;
   net::BackoffEntry::Policy backoff_policy_;

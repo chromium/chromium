@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
+#include "base/memory/raw_ptr.h"
 
 #include "ui/shell_dialogs/selected_file_info.h"
 
@@ -48,7 +49,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
 
  private:
   ~CancellingSelectFileDialog() override = default;
-  SelectFileDialogParams* out_params_;
+  raw_ptr<SelectFileDialogParams> out_params_;
 };
 
 class FakeSelectFileDialog : public ui::SelectFileDialog {
@@ -99,7 +100,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~FakeSelectFileDialog() override = default;
   std::vector<ui::SelectedFileInfo> result_;
-  SelectFileDialogParams* out_params_;
+  raw_ptr<SelectFileDialogParams> out_params_;
 };
 
 }  // namespace

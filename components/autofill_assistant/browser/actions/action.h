@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/stopwatch.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -76,7 +77,7 @@ class Action {
   // during a run of ProcessAction.
   std::unique_ptr<ProcessedActionProto> processed_action_proto_;
   // Reference to the delegate that owns this action.
-  ActionDelegate* delegate_;
+  raw_ptr<ActionDelegate> delegate_;
   // Used to record active and wait times in the action execution.
   ActionStopwatch action_stopwatch_;
 

@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -208,7 +209,7 @@ class BrowserTestBase : public ::testing::Test {
   bool use_software_compositing_ = false;
 
   // Initial WebContents to watch for navigations during SetUpOnMainThread.
-  WebContents* initial_web_contents_ = nullptr;
+  raw_ptr<WebContents> initial_web_contents_ = nullptr;
 
   // Whether SetUp was called. This value is checked in the destructor of this
   // class to ensure that SetUp was called. If it's not called, the test will
@@ -227,7 +228,7 @@ class BrowserTestBase : public ::testing::Test {
 
   bool allow_network_access_to_host_resolutions_ = false;
 
-  BrowserMainParts* browser_main_parts_ = nullptr;
+  raw_ptr<BrowserMainParts> browser_main_parts_ = nullptr;
 
 #if defined(OS_POSIX)
   bool handle_sigterm_;

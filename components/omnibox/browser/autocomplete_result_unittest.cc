@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
@@ -1467,7 +1468,7 @@ TEST_F(AutocompleteResultTest, SortAndCullPromoteUnconsecutiveMatches) {
 
 struct EntityTestData {
   AutocompleteMatchType::Type type;
-  FakeAutocompleteProvider* provider;
+  raw_ptr<FakeAutocompleteProvider> provider;
   std::string destination_url;
   int relevance;
   bool allowed_to_be_default_match;

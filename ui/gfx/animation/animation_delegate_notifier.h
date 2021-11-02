@@ -6,6 +6,7 @@
 #define UI_GFX_ANIMATION_ANIMATION_DELEGATE_NOTIFIER_H_
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
 namespace gfx {
@@ -47,7 +48,7 @@ class AnimationDelegateNotifier : public AnimationDelegateType {
   }
 
  private:
-  gfx::AnimationDelegate* const owner_;
+  const raw_ptr<gfx::AnimationDelegate> owner_;
 };
 
 }  // namespace gfx

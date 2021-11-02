@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
@@ -155,8 +156,8 @@ class ContentPasswordManagerDriver
   const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
   GetPasswordGenerationAgent();
 
-  content::RenderFrameHost* render_frame_host_;
-  PasswordManagerClient* client_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
+  raw_ptr<PasswordManagerClient> client_;
   PasswordGenerationFrameHelper password_generation_helper_;
   PasswordAutofillManager password_autofill_manager_;
 

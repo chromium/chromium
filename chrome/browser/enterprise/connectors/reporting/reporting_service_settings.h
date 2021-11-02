@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
@@ -38,7 +39,8 @@ class ReportingServiceSettings {
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
-  const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
+  raw_ptr<const ServiceProviderConfig::ServiceProvider> service_provider_ =
+      nullptr;
 
   std::string service_provider_name_;
 

@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -105,7 +106,7 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // https://crbug.com/959572).
   base::flat_map<int32_t, base::WeakPtr<MimeHandlerViewGuest>> pending_guests_;
 
-  content::RenderProcessHost* const render_process_host_;
+  const raw_ptr<content::RenderProcessHost> render_process_host_;
 
   base::WeakPtrFactory<MimeHandlerViewAttachHelper> weak_factory_{this};
 };

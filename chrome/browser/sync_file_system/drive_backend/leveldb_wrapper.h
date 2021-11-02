@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
 namespace leveldb {
@@ -70,7 +71,7 @@ class LevelDBWrapper {
     // Advances internal iterators to be valid.
     void AdvanceIterators();
 
-    LevelDBWrapper* db_;  // do not own
+    raw_ptr<LevelDBWrapper> db_;  // do not own
     std::unique_ptr<leveldb::Iterator> db_iterator_;
     PendingOperationMap::iterator map_iterator_;
   };

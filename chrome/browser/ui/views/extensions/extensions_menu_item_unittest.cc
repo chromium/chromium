@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
@@ -65,8 +66,8 @@ class ExtensionsMenuItemViewTest : public BrowserWithTestWindowTest {
   const std::u16string initial_extension_name_;
   const std::u16string initial_tooltip_;
   std::unique_ptr<views::Widget> widget_;
-  ExtensionsMenuButton* primary_button_on_menu_ = nullptr;
-  TestToolbarActionViewController* controller_ = nullptr;
+  raw_ptr<ExtensionsMenuButton> primary_button_on_menu_ = nullptr;
+  raw_ptr<TestToolbarActionViewController> controller_ = nullptr;
 };
 
 TEST_F(ExtensionsMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {

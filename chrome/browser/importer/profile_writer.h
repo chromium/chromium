@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_usage_data.h"
@@ -94,7 +95,7 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   virtual ~ProfileWriter();
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_

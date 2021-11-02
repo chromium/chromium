@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/prefs/in_memory_pref_store.h"
 
@@ -31,7 +32,7 @@ class OverlayUserPrefStore::ObserverAdapter : public PrefStore::Observer {
  private:
   // Is the update for the ephemeral?
   const bool ephemeral_user_pref_store_;
-  OverlayUserPrefStore* const parent_;
+  const raw_ptr<OverlayUserPrefStore> parent_;
 };
 
 OverlayUserPrefStore::OverlayUserPrefStore(PersistentPrefStore* persistent)

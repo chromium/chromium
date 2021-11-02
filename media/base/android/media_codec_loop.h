@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -302,7 +303,7 @@ class MEDIA_EXPORT MediaCodecLoop {
   State state_;
 
   // The client that we notify about MediaCodec events.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // The MediaCodec instance that we're using.
   std::unique_ptr<MediaCodecBridge> media_codec_;
@@ -324,7 +325,7 @@ class MEDIA_EXPORT MediaCodecLoop {
 
   // Optional clock for use during testing.  It may be null.  We do not maintain
   // ownership of it.
-  const base::TickClock* test_tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> test_tick_clock_ = nullptr;
 
   // Has the value of BuildInfo::sdk_int(), except in tests where it
   // might be set to other values. Will not be needed when there is a

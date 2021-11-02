@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -35,7 +36,7 @@ class InstalledAppProviderImpl : public blink::mojom::InstalledAppProvider,
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
  private:
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace content

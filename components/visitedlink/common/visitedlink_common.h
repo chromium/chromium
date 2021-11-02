@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class GURL;
 
@@ -129,7 +130,7 @@ class VisitedLinkCommon {
   }
 
   // pointer to the first item
-  VisitedLinkCommon::Fingerprint* hash_table_;
+  raw_ptr<VisitedLinkCommon::Fingerprint> hash_table_;
 
   // the number of items in the hash table
   int32_t table_length_;

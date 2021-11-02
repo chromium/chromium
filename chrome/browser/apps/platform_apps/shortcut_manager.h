@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -61,7 +62,7 @@ class AppShortcutManager : public KeyedService,
   void SetCurrentAppShortcutsVersion();
   void DeleteApplicationShortcuts(const extensions::Extension* extension);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_storage_observation_{this};

@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/media_router/common/media_route.h"
@@ -216,7 +217,7 @@ class LocalPresentationManager : public KeyedService {
 
     const blink::mojom::PresentationInfo presentation_info_;
     absl::optional<MediaRoute> route_;
-    content::WebContents* receiver_web_contents_ = nullptr;
+    raw_ptr<content::WebContents> receiver_web_contents_ = nullptr;
 
     // Callback to invoke whenever a receiver connection is available.
     content::ReceiverConnectionAvailableCallback receiver_callback_;

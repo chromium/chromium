@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPENSCREEN_PLATFORM_TLS_CONNECTION_FACTORY_H_
 #define COMPONENTS_OPENSCREEN_PLATFORM_TLS_CONNECTION_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -100,8 +101,8 @@ class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
                     mojo::ScopedDataPipeProducerHandle send_stream,
                     const absl::optional<net::SSLInfo>& ssl_info);
 
-  openscreen::TlsConnectionFactory::Client* client_;
-  openscreen::TaskRunner* const task_runner_;
+  raw_ptr<openscreen::TlsConnectionFactory::Client> client_;
+  const raw_ptr<openscreen::TaskRunner> task_runner_;
   base::WeakPtrFactory<TlsConnectionFactory> weak_factory_{this};
 };
 

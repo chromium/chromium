@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -49,7 +50,7 @@ class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
   }
 
  private:
-  network::TestURLLoaderFactory* const factory_;
+  const raw_ptr<network::TestURLLoaderFactory> factory_;
 };
 
 class DeviceDescriptionFetcherTest : public testing::Test {

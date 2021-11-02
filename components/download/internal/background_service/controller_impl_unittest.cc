@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -227,18 +228,18 @@ class DownloadServiceControllerImplTest : public testing::Test {
   base::ThreadTaskRunnerHandle handle_;
 
   std::unique_ptr<ControllerImpl> controller_;
-  Configuration* config_;
+  raw_ptr<Configuration> config_;
   std::unique_ptr<LogSink> log_sink_;
   NavigationMonitorImpl navigation_monitor;
-  test::MockClient* client_;
-  UploadClient* client3_;
-  test::TestDownloadDriver* driver_;
-  test::TestStore* store_;
-  ModelImpl* model_;
-  test::TestDeviceStatusListener* device_status_listener_;
-  MockScheduler* scheduler_;
-  MockTaskScheduler* task_scheduler_;
-  MockFileMonitor* file_monitor_;
+  raw_ptr<test::MockClient> client_;
+  raw_ptr<UploadClient> client3_;
+  raw_ptr<test::TestDownloadDriver> driver_;
+  raw_ptr<test::TestStore> store_;
+  raw_ptr<ModelImpl> model_;
+  raw_ptr<test::TestDeviceStatusListener> device_status_listener_;
+  raw_ptr<MockScheduler> scheduler_;
+  raw_ptr<MockTaskScheduler> task_scheduler_;
+  raw_ptr<MockFileMonitor> file_monitor_;
 
   // A repeatable DownloadParams::StartCallback.
   base::RepeatingCallback<void(const std::string&, DownloadParams::StartResult)>

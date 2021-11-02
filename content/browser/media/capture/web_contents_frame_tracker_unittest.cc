@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/media/capture/web_contents_frame_tracker.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
@@ -174,7 +175,7 @@ class WebContentsFrameTrackerTest : public RenderViewHostTestHarness {
   std::unique_ptr<WebContentsFrameTracker> tracker_;
 
   // Save because the pointed-to location should not change during testing.
-  SimpleContext* raw_context_;
+  raw_ptr<SimpleContext> raw_context_;
 };
 
 TEST_F(WebContentsFrameTrackerTest, CalculatesPreferredSizeClampsToView) {

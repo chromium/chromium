@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ZOOM_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ZOOM_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -38,7 +39,7 @@ class ZoomView : public PageActionIconView {
   bool ShouldBeVisible(bool can_show_bubble) const;
   bool HasAssociatedBubble() const;
 
-  const gfx::VectorIcon* icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
 
   int current_zoom_percent_ = 100;
 };
