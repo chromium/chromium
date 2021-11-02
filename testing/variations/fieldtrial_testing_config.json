@@ -8035,6 +8035,28 @@
             ]
         }
     ],
+    "URLLoaderSyncClient": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20211102",
+                    "enable_features": [
+                        "URLLoaderSyncClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
