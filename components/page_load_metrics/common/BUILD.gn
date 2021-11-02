@@ -8,7 +8,6 @@ import("//testing/test.gni")
 source_set("common") {
   sources = [
     "page_end_reason.h",
-    "page_load_metrics_constants.h",
     "page_load_metrics_util.cc",
     "page_load_metrics_util.h",
     "page_load_timing.cc",
