@@ -2692,11 +2692,6 @@ void AutofillMetrics::LogServerCardLinkClicked(
                             AutofillSyncSigninState::kNumSyncStates);
 }
 
-void AutofillMetrics::LogWalletSyncTransportCardsOptIn(bool is_opted_in) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards", is_opted_in);
-}
-
 void AutofillMetrics::LogCardUploadEnabledMetric(
     CardUploadEnabledMetric metric_value,
     AutofillSyncSigninState sync_state) {

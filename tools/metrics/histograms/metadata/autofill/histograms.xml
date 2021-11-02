@@ -1411,6 +1411,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards"
     enum="BooleanOptedIn" expires_after="2021-11-30">
+  <obsolete>
+    Removed 10/2021 as it is no longer needed for analysis.
+  </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>

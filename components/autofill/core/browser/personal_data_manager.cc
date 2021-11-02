@@ -2104,8 +2104,6 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
   bool is_opted_in = prefs::IsUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id);
 
-  AutofillMetrics::LogWalletSyncTransportCardsOptIn(is_opted_in);
-
   // The option should only be shown if the user has not already opted-in.
   return !is_opted_in;
 #else

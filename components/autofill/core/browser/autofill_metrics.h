@@ -1665,11 +1665,6 @@ class AutofillMetrics {
   // about the current sync state.
   static void LogServerCardLinkClicked(AutofillSyncSigninState sync_state);
 
-  // Records whether the user had opted-in to seeing their server card when in
-  // sync transport mode for Wallet. This should only be logged if the user had
-  // server cards to be shown.
-  static void LogWalletSyncTransportCardsOptIn(bool is_opted_in);
-
   // Records the reason for why (or why not) card upload was enabled for the
   // user.
   static void LogCardUploadEnabledMetric(CardUploadEnabledMetric metric,
