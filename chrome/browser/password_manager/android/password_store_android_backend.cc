@@ -211,7 +211,10 @@ void PasswordStoreAndroidBackend::AddLoginAsync(
 void PasswordStoreAndroidBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId job_id = bridge_->UpdateLogin(form);
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          JobReturnHandler::MetricInfix("UpdateLoginAsync")));
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
