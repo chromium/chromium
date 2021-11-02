@@ -704,7 +704,7 @@
 <translation id="1719312230114180055">Athugaðu: Fingrafar kann að vera ótraustari aðferð en sterkt aðgangsorð eða PIN-númer.</translation>
 <translation id="1720318856472900922">Auðkenning TLS WWW-þjóns</translation>
 <translation id="1720941539803966190">Loka leiðsögn</translation>
-<translation id="172123215662733643">Leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Leita að myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264"><ph name="NAME" /> þarf að veita þér heimild til að fara á þetta vefsvæði</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> <ph name="BEGIN_LINK" />hefur umsjón með <ph name="DEVICE_TYPE" /><ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Nýr gluggi</translation>
@@ -1549,7 +1549,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2602501489742255173">Strjúktu upp til að hefjast handa</translation>
 <translation id="2603115962224169880">Hreinsa tölvu</translation>
 <translation id="2603355571917519942">Voice Match er tilbúið</translation>
-<translation id="2604138917550693049">Leita í mynd með Google linsu</translation>
+<translation id="2604138917550693049">Leita að mynd með Google linsu</translation>
 <translation id="2604255671529671813">Villa í nettengingu</translation>
 <translation id="2605668923777146443">Farðu í <ph name="LINK_BEGIN" />stillingar<ph name="LINK_END" /> til að sjá valkosti þína fyrir Better Together.</translation>
 <translation id="2606246518223360146">Tengja gögn</translation>
@@ -3827,7 +3827,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5051836348807686060">Villuleit er ekki studd á þeim tungumálum sem þú valdir</translation>
 <translation id="5052499409147950210">Breyta vefsvæði</translation>
 <translation id="505347685865235222">Ónefndur hópur – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Leita í mynd með Google linsu</translation>
+<translation id="5053962746715621840">Leita að mynd með Google linsu</translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="5057403786441168405">Stjórnaðu innskráðum reikningum þínum. Vefsvæði, forrit og viðbætur í Chrome og Google Play geta notað þessa reikninga til að sérsníða upplifun þína, eftir því hvaða heimildir eru veittar. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -5797,7 +5797,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7230222852462421043">&amp;Endurheimta glugga</translation>
 <translation id="7230787553283372882">Sérsníða textastærð</translation>
 <translation id="7232750842195536390">Breyting á heiti mistókst</translation>
-<translation id="723343421145275488">Leita í myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Leita að myndum með <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Hættir við Linux-endurheimt</translation>
 <translation id="7235716375204803342">Sækir aðgerðir...</translation>
 <translation id="7235737137505019098">Ekki er nægilegt pláss á öryggislyklinum fyrir fleiri reikninga.</translation>

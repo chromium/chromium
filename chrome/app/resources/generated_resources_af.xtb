@@ -703,7 +703,7 @@
 <translation id="1719312230114180055">Let wel: Jou vingerafdruk kan minder veilig as 'n sterk wagwoord of PIN wees.</translation>
 <translation id="1720318856472900922">TLS WWW-bedienerstawing</translation>
 <translation id="1720941539803966190">Maak tutoriaal toe</translation>
-<translation id="172123215662733643">Deursoek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Soek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Jy het <ph name="NAME" /> se toestemming nodig om hierdie werf te besoek</translation>
 <translation id="1722460139690167654">Jou <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> word bestuur<ph name="END_LINK" /> deur <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">Nuwe venster</translation>
@@ -5798,7 +5798,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7230222852462421043">&amp;Laai venster terug</translation>
 <translation id="7230787553283372882">Pasmaak jou teksgrootte</translation>
 <translation id="7232750842195536390">Kon nie hernoem nie</translation>
-<translation id="723343421145275488">Deursoek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Soek prente met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Kanselleer tans Linux-terugstelling</translation>
 <translation id="7235716375204803342">Gaan haal tans aktiwiteite …</translation>
 <translation id="7235737137505019098">Jou sekuriteitsleutel het nie genoeg berging vir nog rekeninge nie.</translation>
