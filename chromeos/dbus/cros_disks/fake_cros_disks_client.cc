@@ -100,8 +100,8 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
       break;
     case MOUNT_TYPE_NETWORK_STORAGE:
       // Call all registered callbacks until mounted_path is non-empty.
-      for (auto const& callback : custom_mount_point_callbacks_) {
-        mounted_path = callback.Run(source_path, mount_options);
+      for (auto const& mount_point_callback : custom_mount_point_callbacks_) {
+        mounted_path = mount_point_callback.Run(source_path, mount_options);
         if (!mounted_path.empty()) {
           break;
         }

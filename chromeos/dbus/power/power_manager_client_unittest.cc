@@ -214,17 +214,17 @@ class PowerMonitorTestObserverLocal
 
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
-    ASSERT_TRUE(cb);
+    ASSERT_TRUE(cb_);
     base::test::PowerMonitorTestObserver::OnThermalStateChange(new_state);
-    std::move(cb).Run();
+    std::move(cb_).Run();
   }
 
   void set_cb_for_testing(base::OnceCallback<void()> cb) {
-    this->cb = std::move(cb);
+    cb_ = std::move(cb);
   }
 
  private:
-  base::OnceCallback<void()> cb;
+  base::OnceCallback<void()> cb_;
 };
 
 }  // namespace
