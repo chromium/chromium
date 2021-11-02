@@ -45,54 +45,6 @@ const char* kUnsupportedDisplay =
     "Element has unsupported display type (display: contents).";
 }  // namespace rejection_names
 
-void RecordActivationReason(Document* document,
-                            DisplayLockActivationReason reason) {
-  int ordered_reason = -1;
-
-  // IMPORTANT: This number needs to be bumped up when adding
-  // new reasons.
-  static const int number_of_reasons = 9;
-
-  switch (reason) {
-    case DisplayLockActivationReason::kAccessibility:
-      ordered_reason = 0;
-      break;
-    case DisplayLockActivationReason::kFindInPage:
-      ordered_reason = 1;
-      break;
-    case DisplayLockActivationReason::kFragmentNavigation:
-      ordered_reason = 2;
-      break;
-    case DisplayLockActivationReason::kScriptFocus:
-      ordered_reason = 3;
-      break;
-    case DisplayLockActivationReason::kScrollIntoView:
-      ordered_reason = 4;
-      break;
-    case DisplayLockActivationReason::kSelection:
-      ordered_reason = 5;
-      break;
-    case DisplayLockActivationReason::kSimulatedClick:
-      ordered_reason = 6;
-      break;
-    case DisplayLockActivationReason::kUserFocus:
-      ordered_reason = 7;
-      break;
-    case DisplayLockActivationReason::kViewportIntersection:
-      ordered_reason = 8;
-      break;
-    case DisplayLockActivationReason::kViewport:
-    case DisplayLockActivationReason::kAny:
-      NOTREACHED();
-      break;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Blink.Render.DisplayLockActivationReason",
-                            ordered_reason, number_of_reasons);
-
-  if (document && reason == DisplayLockActivationReason::kFindInPage)
-    document->MarkHasFindInPageContentVisibilityActiveMatch();
-}
-
 ScrollableArea* GetScrollableArea(Node* node) {
   if (!node)
     return nullptr;
@@ -444,7 +396,8 @@ void DisplayLockContext::CommitForActivationWithSignal(
     SetKeepUnlockedUntilLifecycleCount(2);
   }
 
-  RecordActivationReason(document_, reason);
+  if (reason == DisplayLockActivationReason::kFindInPage)
+    document_->MarkHasFindInPageContentVisibilityActiveMatch();
 }
 
 void DisplayLockContext::SetKeepUnlockedUntilLifecycleCount(int count) {

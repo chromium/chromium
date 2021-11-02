@@ -2672,6 +2672,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.Render.DisplayLockActivationReason"
     enum="DisplayLockActivationReason" expires_after="2021-12-12">
+  <obsolete>
+    Removed 11/2021.
+  </obsolete>
   <owner>vmpstr@chromium.org</owner>
   <owner>chrishtr@chromium.org</owner>
   <summary>This indicates the reason for display-locking activation</summary>
