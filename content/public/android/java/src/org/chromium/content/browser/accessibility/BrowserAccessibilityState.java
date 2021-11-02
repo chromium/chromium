@@ -202,6 +202,8 @@ public class BrowserAccessibilityState {
         if (serviceNamesString != null && !serviceNamesString.isEmpty()) {
             String[] serviceNames = serviceNamesString.split(":");
             for (String name : serviceNames) {
+                // null or empty names can be skipped
+                if (name == null || name.isEmpty()) continue;
                 // Try to canonicalize the component name if possible.
                 ComponentName componentName = ComponentName.unflattenFromString(name);
                 if (componentName != null) {
