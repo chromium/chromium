@@ -26,6 +26,7 @@ using ::testing::ElementsAre;
 using ::testing::Invoke;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::ReturnRef;
 using ::testing::WithArgs;
 
 class WaitForDomActionTest : public testing::Test {
@@ -34,8 +35,10 @@ class WaitForDomActionTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_web_controller_, FindElement(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(
-            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
+          std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
 
     EXPECT_CALL(mock_action_delegate_, WaitForDomWithSlowWarning(_, _, _, _, _))
         .WillRepeatedly(Invoke(this, &WaitForDomActionTest::FakeWaitForDom));
@@ -157,12 +160,16 @@ TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
       }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(Selector({"#element2"}), /* strict= */ false, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(Selector({"#element3"}), /* strict= */ false, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   EXPECT_CALL(mock_web_controller_,
               FindElement(Selector({"#element4"}), /* strict= */ false, _))
       .WillRepeatedly(WithArgs<2>([](auto&& callback) {
@@ -248,7 +255,10 @@ TEST_F(WaitForDomActionTest, StrictMatchFailsForMultipleElements) {
   Selector expected_selector({"#element"});
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_selector, /* strict= */ true, _))
-      .WillOnce(RunOnceCallback<2>(ClientStatus(TOO_MANY_ELEMENTS), nullptr));
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(TOO_MANY_ELEMENTS),
+                                std::make_unique<ElementFinder::Result>());
+      }));
 
   auto* condition = proto_.mutable_wait_condition();
   *condition->mutable_match() = ToSelectorProto("#element");
@@ -268,8 +278,10 @@ TEST_F(WaitForDomActionTest, RemoveElementsNoLongerFound) {
   test_util::MockFindElement(mock_web_controller_, expected_found_selector);
   EXPECT_CALL(mock_web_controller_,
               FindElement(expected_not_found_selector, _, _))
-      .WillOnce(
-          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
 
   // A previous run found this element.
   mock_action_delegate_.GetElementStore()->AddElement("element2",
@@ -288,6 +300,95 @@ TEST_F(WaitForDomActionTest, RemoveElementsNoLongerFound) {
 
   EXPECT_TRUE(mock_action_delegate_.GetElementStore()->HasElement("element1"));
   EXPECT_FALSE(mock_action_delegate_.GetElementStore()->HasElement("element2"));
+}
+
+TEST_F(WaitForDomActionTest, ReturnsRolledUpErrorInformation) {
+  ProcessedActionStatusDetailsProto log_info;
+
+  Selector selector_1({"#element-1"});
+  ElementFinderInfoProto* info_1 = log_info.add_element_finder_info();
+  info_1->set_tracking_id(1);
+  info_1->set_failed_filter_index_range_start(0);
+  info_1->set_failed_filter_index_range_end(2);
+  info_1->set_status(INVALID_SELECTOR);
+  EXPECT_CALL(mock_web_controller_, FindElement(selector_1, _, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  Selector selector_2({"#element-2"});
+  ElementFinderInfoProto* info_2 = log_info.add_element_finder_info();
+  info_2->set_tracking_id(2);
+  info_2->set_failed_filter_index_range_start(1);
+  info_2->set_failed_filter_index_range_end(3);
+  info_2->set_get_document_failed(true);
+  info_2->set_status(ELEMENT_RESOLUTION_FAILED);
+  EXPECT_CALL(mock_web_controller_, FindElement(selector_2, _, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  Selector selector_3({"#element-3"});
+  ElementFinderInfoProto* info_3 = log_info.add_element_finder_info();
+  info_3->set_tracking_id(3);
+  info_3->set_status(ACTION_APPLIED);
+  EXPECT_CALL(mock_web_controller_, FindElement(selector_3, _, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ACTION_APPLIED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
+  ProcessedActionStatusDetailsProto clear_log_info;
+  EXPECT_CALL(mock_action_delegate_, GetLogInfo)
+      .WillOnce(ReturnRef(clear_log_info))  // Once to clear at the start.
+      .WillOnce(ReturnRef(log_info));       // Once to fill at the end.
+
+  auto* condition = proto_.mutable_wait_condition()->mutable_all_of();
+  auto* condition_1 = condition->add_conditions();
+  *condition_1->mutable_match() = ToSelectorProto("#element-1");
+  condition_1->mutable_match()->set_tracking_id(1);
+  condition_1->mutable_client_id()->set_identifier("element-1");
+  auto* condition_2 = condition->add_conditions();
+  *condition_2->mutable_match() = ToSelectorProto("#element-2");
+  condition_2->mutable_client_id()->set_identifier("element-2");
+  condition_2->mutable_match()->set_tracking_id(2);
+  auto* condition_3 = condition->add_conditions();
+  *condition_3->mutable_match() = ToSelectorProto("#element-3");
+  condition_3->mutable_client_id()->set_identifier("element-3");
+  condition_3->mutable_match()->set_tracking_id(3);
+
+  ProcessedActionProto capture;
+  EXPECT_CALL(callback_, Run(_)).WillOnce(testing::SaveArgPointee<0>(&capture));
+  Run();
+
+  EXPECT_EQ(capture.status(), ELEMENT_RESOLUTION_FAILED);
+  ASSERT_EQ(capture.status_details().element_finder_info_size(), 3);
+  EXPECT_EQ(capture.status_details().element_finder_info(0).status(),
+            INVALID_SELECTOR);
+  EXPECT_EQ(capture.status_details().element_finder_info(0).tracking_id(), 1);
+  EXPECT_EQ(capture.status_details()
+                .element_finder_info(0)
+                .failed_filter_index_range_start(),
+            0);
+  EXPECT_EQ(capture.status_details()
+                .element_finder_info(0)
+                .failed_filter_index_range_end(),
+            2);
+  EXPECT_EQ(capture.status_details().element_finder_info(1).status(),
+            ELEMENT_RESOLUTION_FAILED);
+  EXPECT_EQ(capture.status_details().element_finder_info(1).tracking_id(), 2);
+  EXPECT_EQ(capture.status_details()
+                .element_finder_info(1)
+                .failed_filter_index_range_start(),
+            1);
+  EXPECT_EQ(capture.status_details()
+                .element_finder_info(1)
+                .failed_filter_index_range_end(),
+            3);
+  EXPECT_TRUE(
+      capture.status_details().element_finder_info(1).get_document_failed());
+  EXPECT_EQ(capture.status_details().element_finder_info(2).status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(capture.status_details().element_finder_info(2).tracking_id(), 3);
 }
 
 }  // namespace

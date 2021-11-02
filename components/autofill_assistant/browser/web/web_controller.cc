@@ -427,20 +427,23 @@ void DecorateControllerStatusWithValue(
 // static
 std::unique_ptr<WebController> WebController::CreateForWebContents(
     content::WebContents* web_contents,
-    const UserData* user_data) {
+    const UserData* user_data,
+    ProcessedActionStatusDetailsProto* log_info) {
   return std::make_unique<WebController>(
       web_contents,
       std::make_unique<DevtoolsClient>(
           content::DevToolsAgentHost::GetOrCreateFor(web_contents)),
-      user_data);
+      user_data, log_info);
 }
 
 WebController::WebController(content::WebContents* web_contents,
                              std::unique_ptr<DevtoolsClient> devtools_client,
-                             const UserData* user_data)
+                             const UserData* user_data,
+                             ProcessedActionStatusDetailsProto* log_info)
     : web_contents_(web_contents),
       devtools_client_(std::move(devtools_client)),
-      user_data_(user_data) {}
+      user_data_(user_data),
+      log_info_(log_info) {}
 
 WebController::~WebController() {}
 
@@ -860,7 +863,8 @@ void WebController::RunElementFinder(const Selector& selector,
                                      ElementFinder::ResultType result_type,
                                      ElementFinder::Callback callback) {
   auto finder = std::make_unique<ElementFinder>(
-      web_contents_, devtools_client_.get(), user_data_, selector, result_type);
+      web_contents_, devtools_client_.get(), user_data_, log_info_, selector,
+      result_type);
 
   auto* ptr = finder.get();
   pending_workers_.emplace_back(std::move(finder));

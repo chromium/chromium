@@ -252,6 +252,7 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(bool)> callback) override;
   void MaybeShowSlowConnectionWarning() override;
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override;
+  ProcessedActionStatusDetailsProto& GetLogInfo() override;
 
  private:
   // Helper for WaitForElementVisible that keeps track of the state required to
