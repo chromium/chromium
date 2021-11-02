@@ -120,6 +120,11 @@ class AppBrowserController : public TabStripModelObserver,
   // Gets the short name of the app.
   virtual std::u16string GetAppShortName() const = 0;
 
+  // Returns the human-readable name for title in Media Controls.
+  // If the returned value is an empty string, it means that there is no
+  // human-readable name.
+  std::string GetTitleForMediaControls() const;
+
   // Gets the origin of the app start url suitable for display (e.g
   // example.com.au).
   virtual std::u16string GetFormattedUrlOrigin() const = 0;
