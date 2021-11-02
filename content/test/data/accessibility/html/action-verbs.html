@@ -25,7 +25,7 @@
   <input type=checkbox>
   <input type=checkbox checked>
   <input type=radio>
-  <div tabIndex=0 role="switch">ARIA Switch</div>
+  <div tabIndex=0 role="switch" onclick="console.log('hi')" >ARIA Switch</div>
   <details><summary>Summary</summary>Details</details>
   <select><option>Pop-up button</select>
   <div onclick="alert('success');">Div with click handler</div>
@@ -33,14 +33,14 @@
     <p>Paragraph with click handler on parent</p>
   </div>
   <div role="menu">
-    <div role="menuitem">Menu item 1</div>
-    <div role="menuitemcheckbox" aria-checked="true">Menu item 2</div>
-    <div role="menuitemradio">Menu item 3</div>
+    <div role="menuitem" onclick="console.log('hi')">Menu item 1</div>
+    <div role="menuitemcheckbox" aria-checked="true" onclick="console.log('hi')">Menu item 2</div>
+    <div role="menuitemradio" onclick="console.log('hi')">Menu item 3</div>
   </div>
-  <div role="button">ARIA Button</div>
-  <div role="button" tabindex="1">ARIA button with tab index</div>
-  <div role="button" tabindex="-1">ARIA button with negative tab index</div>
-  <div aria-activedescendant="active-descendant-button">
+  <div role="button" onclick="console.log('hi')">ARIA Button</div>
+  <div role="button" tabindex="1" onclick="console.log('hi')">ARIA button with tab index</div>
+  <div role="button" tabindex="-1" onclick="console.log('hi')">ARIA button with negative tab index</div>
+  <div aria-activedescendant="active-descendant-button" onclick="console.log('hi')">
     <div role="button" id="active-descendant-button">ARIA button that is an active descendant</div>
   </div>
 </body>

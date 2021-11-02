@@ -1379,7 +1379,7 @@ bool WebAXObjectProxy::IsAttributeSettable(const std::string& attribute) {
 
 bool WebAXObjectProxy::IsPressActionSupported() {
   UpdateLayout();
-  return accessibility_object_.CanPress();
+  return accessibility_object_.Action() == ax::mojom::DefaultActionVerb::kPress;
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ParentElement() {

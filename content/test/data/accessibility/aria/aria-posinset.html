@@ -15,11 +15,11 @@
 <body onload="loaded()">
 <div role="article"> This is an ARIA article 1. </div>
 <div role="article"> This is an ARIA article 2. </div>
-<div role="listbox">
+<div role="listbox" onclick="console.log('hi')">
   <div tabIndex="0" aria-setsize="2" aria-posinset="1" role="option">Item 1</div>
   <div tabIndex="0" aria-setsize="2" aria-posinset="2" role="option">Item 2</div>
 </div>
-<div role="listbox">
+<div role="listbox" onclick="console.log('hi')">
   <div tabIndex="0" role="option">Item 1</div>
   <div tabIndex="0" role="option">Item 2</div>
 </div>

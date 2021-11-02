@@ -431,6 +431,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Check object state.
   virtual bool IsAutofillAvailable() const;
   virtual bool IsClickable() const;
+  // Is |this| disabled for any of the follow reasons:
+  // * aria-disabled
+  // * disabled form control
+  // * a focusable descendant of a disabled container
+  bool IsDisabled() const;
   virtual AccessibilityExpanded IsExpanded() const;
   virtual bool IsFocused() const;
   // aria-grabbed is deprecated in WAI-ARIA 1.1.
