@@ -144,7 +144,7 @@
         android:exported="false"
         android:launchMode="singleInstance"
         android:process=":browser_restart_process"
-        android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
     </activity>  # DIFF-ANCHOR: 93d41352
     <activity  # DIFF-ANCHOR: 61b2c776
         android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
@@ -185,7 +185,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:taskAffinity=""
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
     </activity>  # DIFF-ANCHOR: 76686af9
     <activity  # DIFF-ANCHOR: 3d32d400
         android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
@@ -210,7 +210,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:taskAffinity=""
-        android:theme="@android:style/Theme.Translucent">
+        android:theme="@style/Theme.BrowserUI.Translucent">
     </activity>  # DIFF-ANCHOR: 50c7105b
     <activity  # DIFF-ANCHOR: aeab60ac
         android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
@@ -237,7 +237,7 @@
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
         android:excludeFromRecents="true"
         android:exported="true"
-        android:theme="@android:style/Theme.NoDisplay"
+        android:theme="@style/Theme.BrowserUI.NoDisplay"
         android:windowSoftInputMode="stateHidden">
       <intent-filter>  # DIFF-ANCHOR: 47a8059b
         <action android:name="$PACKAGE.ADDBOOKMARK"/>
@@ -373,7 +373,7 @@
         android:excludeFromRecents="true"
         android:exported="true"
         android:taskAffinity=""
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: 8f811d02
         <action android:name="org.chromium.chrome.browser.incognito.OPEN_PRIVATE_TAB"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -384,14 +384,14 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
     </activity>  # DIFF-ANCHOR: 349d8ca5
     <activity  # DIFF-ANCHOR: ecd48344
         android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
         android:enabled="false"
         android:excludeFromRecents="true"
         android:exported="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -426,7 +426,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
     </activity>  # DIFF-ANCHOR: e86e2b49
     <activity  # DIFF-ANCHOR: 24aedc77
         android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager$TrampolineActivity"
@@ -435,7 +435,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
     </activity>  # DIFF-ANCHOR: 24aedc77
     <activity  # DIFF-ANCHOR: bec48e1f
         android:name="org.chromium.chrome.browser.printing.PrintShareActivity"
@@ -446,7 +446,7 @@
         android:icon="@drawable/sharing_print_baseline"
         android:label="@string/print_share_activity_title"
         android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: 4ee601b7
         <action android:name="android.intent.action.SEND"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -477,7 +477,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/send_tab_to_self_share_activity_title"
         android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: 4ee601b7
         <action android:name="android.intent.action.SEND"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -545,7 +545,7 @@
         android:excludeFromRecents="true"
         android:exported="false"
         android:noHistory="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: dea53031
         <action android:name="org.chromium.chrome.browser.dummy.action"/>
         <category android:name="com.google.intent.category.CARDBOARD"/>
@@ -569,7 +569,7 @@
     <activity  # DIFF-ANCHOR: 9bb1f409
         android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
         android:exported="true"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: 0d72b7f0
         <action android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -616,7 +616,7 @@
         android:excludeFromRecents="true"
         android:exported="true"
         android:taskAffinity=""
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: faf519ad
         <action android:name="com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -864,7 +864,7 @@
         android:excludeFromRecents="true"
         android:exported="true"
         android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-        android:theme="@android:style/Theme.NoDisplay">
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
       <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
