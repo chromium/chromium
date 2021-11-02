@@ -61,7 +61,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
             }
 
             ReactionGifDrawable drawable =
-                    new ReactionGifDrawable(baseGifImage, Bitmap.Config.ARGB_8888);
+                    new ReactionGifDrawable(reaction, baseGifImage, Bitmap.Config.ARGB_8888);
 
             ReactionLayout reactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
                     mActivity, R.layout.reaction_layout, null);
@@ -78,14 +78,6 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
             addReactionLayoutToScene(reactionLayout, lp);
         });
-    }
-
-    private void replaceActiveReaction(ReactionMetadata reaction) {
-        assert mActiveReaction != null;
-        mMediator.getGifForUrl(reaction.assetUrl,
-                (baseGifImage)
-                        -> mActiveReaction.setDrawable(
-                                new ReactionGifDrawable(baseGifImage, Bitmap.Config.ARGB_8888)));
     }
 
     /**
@@ -105,6 +97,14 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 }
             });
         }
+    }
+
+    private void replaceActiveReaction(ReactionMetadata reaction) {
+        assert mActiveReaction != null;
+        mMediator.getGifForUrl(reaction.assetUrl,
+                (baseGifImage)
+                        -> mActiveReaction.setDrawable(new ReactionGifDrawable(
+                                reaction, baseGifImage, Bitmap.Config.ARGB_8888)));
     }
 
     private void addReactionLayoutToScene(
