@@ -356,7 +356,7 @@ void BaseRenderingContext2D::ResetInternal() {
 
 void BaseRenderingContext2D::reset() {
   UseCounter::Count(GetCanvasRenderingContextHost()->GetTopExecutionContext(),
-                    WebFeature::kCanvasRenderingContext2DRoundRect);
+                    WebFeature::kCanvasRenderingContext2DReset);
   ResetInternal();
 }
 
