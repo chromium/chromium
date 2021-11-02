@@ -26,6 +26,8 @@
 #include "storage/browser/file_system/file_system_file_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -45,8 +47,15 @@ class SandboxFileStreamReaderTest : public FileStreamReaderTest {
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
 
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get(),
+        /*special_storage_policy=*/nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+
     file_system_context_ = CreateFileSystemContextForTesting(
-        /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+        quota_manager_proxy_.get(), dir_.GetPath());
 
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kURLOrigin),
@@ -109,6 +118,8 @@ class SandboxFileStreamReaderTest : public FileStreamReaderTest {
  private:
   base::ScopedTempDir dir_;
   scoped_refptr<FileSystemContext> file_system_context_;
+  scoped_refptr<MockQuotaManager> quota_manager_;
+  scoped_refptr<MockQuotaManagerProxy> quota_manager_proxy_;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(FileSystem,

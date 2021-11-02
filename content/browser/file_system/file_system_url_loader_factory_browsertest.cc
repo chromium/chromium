@@ -42,6 +42,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_backend.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -182,8 +184,15 @@ class FileSystemURLLoaderFactoryTest
     blocking_task_runner_ =
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
     special_storage_policy_ =
         base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        IsIncognito(), temp_dir_.GetPath(), io_task_runner_,
+        special_storage_policy_);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), io_task_runner_);
 
     // Support multiple sites on the test server.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -192,9 +201,7 @@ class FileSystemURLLoaderFactoryTest
 
     // We use a test FileSystemContext which runs on the main thread, so we
     // can work with it synchronously.
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    file_system_context_ =
-        CreateFileSystemContext(nullptr, temp_dir_.GetPath());
+    file_system_context_ = CreateFileSystemContext(temp_dir_.GetPath());
     file_util_ = file_system_context_->sandbox_delegate()->sync_file_util();
 
     // The filesystem must be opened on the IO sequence.
@@ -419,6 +426,10 @@ class FileSystemURLLoaderFactoryTest
     return blocking_task_runner_;
   }
 
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy() {
+    return quota_manager_proxy_;
+  }
+
   // |temp_dir_| must be deleted last.
   base::ScopedTempDir temp_dir_;
   mojo::Remote<network::mojom::URLLoader> loader_;
@@ -433,7 +444,6 @@ class FileSystemURLLoaderFactoryTest
   }
 
   scoped_refptr<storage::FileSystemContext> CreateFileSystemContext(
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       const base::FilePath& base_path) {
     std::vector<std::unique_ptr<storage::FileSystemBackend>>
         additional_providers;
@@ -442,14 +452,12 @@ class FileSystemURLLoaderFactoryTest
             blocking_task_runner_.get(), base_path));
     if (IsIncognito()) {
       return CreateIncognitoFileSystemContextWithAdditionalProvidersForTesting(
-          io_task_runner_, blocking_task_runner_,
-          std::move(quota_manager_proxy), std::move(additional_providers),
-          base_path);
+          io_task_runner_, blocking_task_runner_, quota_manager_proxy(),
+          std::move(additional_providers), base_path);
     } else {
       return CreateFileSystemContextWithAdditionalProvidersForTesting(
-          io_task_runner_, blocking_task_runner_,
-          std::move(quota_manager_proxy), std::move(additional_providers),
-          base_path);
+          io_task_runner_, blocking_task_runner_, quota_manager_proxy(),
+          std::move(additional_providers), base_path);
     }
   }
 
@@ -494,6 +502,8 @@ class FileSystemURLLoaderFactoryTest
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   scoped_refptr<FileSystemContext> file_system_context_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   // Owned by |file_system_context_| and only usable on |blocking_task_runner_|.
   storage::FileSystemFileUtil* file_util_;
 };
