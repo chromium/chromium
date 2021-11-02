@@ -27,7 +27,6 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
@@ -55,12 +54,62 @@ using base::StringPrintf;
 using content::BrowserChildProcessHostIterator;
 using content::BrowserThread;
 using content::NavigationEntry;
-using content::RenderViewHost;
 using content::RenderWidgetHost;
 using content::WebContents;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using extensions::Extension;
 #endif
+
+namespace {
+
+void UpdateProcessTypeAndTitles(
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    const extensions::ExtensionSet* extension_set,
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+    ProcessMemoryInformation& process,
+    content::RenderFrameHost* rfh) {
+  // We check the title and the renderer type only of the primary main
+  // RenderFrameHost, not subframes or non-primary main RenderFrameHosts. It is
+  // OK because this logic is used to get the title and the renderer type only
+  // for chrome://system and for printing the details to the error log when the
+  // tab is oom-killed.
+  if (!rfh->IsInPrimaryMainFrame())
+    return;
+
+  WebContents* contents = WebContents::FromRenderFrameHost(rfh);
+  DCHECK(contents);
+
+  // The rest of this block will happen only once per WebContents.
+  GURL page_url = contents->GetLastCommittedURL();
+  bool is_webui = rfh->GetEnabledBindings() & content::BINDINGS_POLICY_WEB_UI;
+
+  if (is_webui) {
+    process.renderer_type = ProcessMemoryInformation::RENDERER_CHROME;
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (!is_webui && extension_set) {
+    const Extension* extension = extension_set->GetByID(page_url.host());
+    process.titles.push_back(base::UTF8ToUTF16(extension->name()));
+    process.renderer_type = ProcessMemoryInformation::RENDERER_EXTENSION;
+    return;
+  }
+
+  extensions::mojom::ViewType type = extensions::GetViewType(contents);
+  if (type == extensions::mojom::ViewType::kBackgroundContents) {
+    process.titles.push_back(base::UTF8ToUTF16(page_url.spec()));
+    process.renderer_type = ProcessMemoryInformation::RENDERER_BACKGROUND_APP;
+    return;
+  }
+#endif
+
+  std::u16string title = contents->GetTitle();
+  if (!title.length())
+    title = l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
+  process.titles.push_back(title);
+}
+
+}  // namespace
 
 // static
 std::string ProcessMemoryInformation::GetRendererTypeNameInEnglish(
@@ -235,11 +284,13 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     // Determine if this is an extension process.
     bool process_is_for_extensions = false;
+    const extensions::ExtensionSet* extension_set = nullptr;
     if (render_process_host) {
       content::BrowserContext* context =
           render_process_host->GetBrowserContext();
       extensions::ExtensionRegistry* extension_registry =
           extensions::ExtensionRegistry::Get(context);
+      extension_set = &extension_registry->enabled_extensions();
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(context);
       int rph_id = render_process_host->GetID();
@@ -248,8 +299,7 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
       // For our purposes, don't count processes containing only hosted apps
       // as extension processes. See also: crbug.com/102533.
       for (auto& extension_id : process_map->GetExtensionsInProcess(rph_id)) {
-        const Extension* extension =
-            extension_registry->enabled_extensions().GetByID(extension_id);
+        const Extension* extension = extension_set->GetByID(extension_id);
         if (extension && !extension->is_hosted_app()) {
           process.renderer_type = ProcessMemoryInformation::RENDERER_EXTENSION;
           break;
@@ -258,72 +308,19 @@ void MemoryDetails::CollectChildInfoOnUIThread() {
     }
 #endif
 
-    // Use the list of widgets to iterate over the WebContents instances whose
-    // primary main RenderFrameHosts are in |process|. Refine our determination
-    // of the |process.renderer_type|, and record the page titles.
-    for (content::RenderWidgetHost* widget : widgets_by_pid[process.pid]) {
-      DCHECK_EQ(render_process_host, widget->GetProcess());
-
-      RenderViewHost* rvh = RenderViewHost::From(widget);
-      if (!rvh)
-        continue;
-
-      WebContents* contents = WebContents::FromRenderViewHost(rvh);
-
-      // Assume that an RVH without a web contents is an interstitial.
-      if (!contents) {
-        process.renderer_type = ProcessMemoryInformation::RENDERER_INTERSTITIAL;
-        continue;
-      }
-
-      // We check the title and the renderer type only of the primary main
-      // frame, not subframes or non-primary main frames. It is OK because this
-      // logic is used to get the title and the renderer type only for
-      // chrome://system and for printing the details to the error log when
-      // the tab is oom-killed.
-      if (rvh !=
-          contents->GetPrimaryPage().GetMainDocument().GetRenderViewHost()) {
-        continue;
-      }
-
-      // The rest of this block will happen only once per WebContents.
-      GURL page_url = contents->GetLastCommittedURL();
-      bool is_webui = contents->GetMainFrame()->GetEnabledBindings() &
-                      content::BINDINGS_POLICY_WEB_UI;
-
-      if (is_webui) {
-        process.renderer_type = ProcessMemoryInformation::RENDERER_CHROME;
-      }
-
+    if (render_process_host) {
+      // Use the list of RenderFrameHosts to iterate over the WebContents
+      // instances whose primary main RenderFrameHosts are in `process`. Refine
+      // our determination of the `process.renderer_type`, and record the page
+      // titles.
+      render_process_host->ForEachRenderFrameHost(base::BindRepeating(
+          &UpdateProcessTypeAndTitles,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      if (!is_webui && process_is_for_extensions) {
-        const Extension* extension =
-            extensions::ExtensionRegistry::Get(
-                render_process_host->GetBrowserContext())
-                ->enabled_extensions()
-                .GetByID(page_url.host());
-        if (extension) {
-          std::u16string title = base::UTF8ToUTF16(extension->name());
-          process.titles.push_back(title);
-          process.renderer_type =
-              ProcessMemoryInformation::RENDERER_EXTENSION;
-          continue;
-        }
-      }
-
-      extensions::mojom::ViewType type = extensions::GetViewType(contents);
-      if (type == extensions::mojom::ViewType::kBackgroundContents) {
-        process.titles.push_back(base::UTF8ToUTF16(page_url.spec()));
-        process.renderer_type =
-            ProcessMemoryInformation::RENDERER_BACKGROUND_APP;
-        continue;
-      }
+          process_is_for_extensions ? extension_set : nullptr,
 #endif
-
-      std::u16string title = contents->GetTitle();
-      if (!title.length())
-        title = l10n_util::GetStringUTF16(IDS_DEFAULT_TAB_TITLE);
-      process.titles.push_back(title);
+          // It is safe to use `std::ref` here, since `process` outlives this
+          // callback.
+          std::ref(process)));
     }
 
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)

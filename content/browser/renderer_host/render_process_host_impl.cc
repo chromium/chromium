@@ -104,6 +104,7 @@
 #include "content/browser/renderer_host/p2p/socket_dispatcher_host.h"
 #include "content/browser/renderer_host/plugin_registry_impl.h"
 #include "content/browser/renderer_host/recently_destroyed_hosts.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_message_filter.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -126,6 +127,7 @@
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -1668,7 +1670,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       keep_alive_ref_count_(0),
       worker_ref_count_(0),
       shutdown_delay_ref_count_(0),
-      render_frame_host_count_(0),
       are_ref_counts_disabled_(false),
       visible_clients_(0),
       priority_(!blink::kLaunchingProcessIsBackgrounded,
@@ -2810,14 +2811,35 @@ size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
   return shutdown_delay_ref_count_;
 }
 
-void RenderProcessHostImpl::IncrementRfhCount() {
-  render_frame_host_count_++;
+int RenderProcessHostImpl::GetRenderFrameHostCount() const {
+  return render_frame_host_id_set_.size();
 }
-void RenderProcessHostImpl::DecrementRfhCount() {
-  render_frame_host_count_--;
+
+void RenderProcessHostImpl::ForEachRenderFrameHost(
+    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {
+  for (auto rfh_id : render_frame_host_id_set_) {
+    RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(rfh_id);
+    CHECK(rfh);
+    // Speculative RFHs are not exposed to //content embedders, so we have to
+    // explicitly check them here to avoid leaks.
+    if (rfh->lifecycle_state() ==
+        RenderFrameHostImpl::LifecycleStateImpl::kSpeculative) {
+      continue;
+    }
+    on_render_frame_host.Run(rfh);
+  }
 }
-int RenderProcessHostImpl::GetRfhCount() const {
-  return render_frame_host_count_;
+
+void RenderProcessHostImpl::RegisterRenderFrameHost(
+    const GlobalRenderFrameHostId& render_frame_host_id) {
+  DCHECK(!base::Contains(render_frame_host_id_set_, render_frame_host_id));
+  render_frame_host_id_set_.insert(render_frame_host_id);
+}
+
+void RenderProcessHostImpl::UnregisterRenderFrameHost(
+    const GlobalRenderFrameHostId& render_frame_host_id) {
+  DCHECK(base::Contains(render_frame_host_id_set_, render_frame_host_id));
+  render_frame_host_id_set_.erase(render_frame_host_id);
 }
 
 void RenderProcessHostImpl::IncrementWorkerRefCount() {

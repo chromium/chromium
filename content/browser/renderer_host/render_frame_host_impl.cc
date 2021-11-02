@@ -1395,7 +1395,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
   site_instance_->AddObserver(this);
   auto* process = GetProcess();
-  process->IncrementRfhCount();
+  process->RegisterRenderFrameHost(GetGlobalId());
   process->AddObserver(this);
   GetSiteInstance()->IncrementActiveFrameCount();
 
@@ -1529,8 +1529,8 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   g_token_frame_map.Get().erase(frame_token_);
 
   auto* process = GetProcess();
-  process->DecrementRfhCount();
   site_instance_->RemoveObserver(this);
+  process->UnregisterRenderFrameHost(GetGlobalId());
   process->RemoveObserver(this);
 
   const bool was_created = is_render_frame_created();
