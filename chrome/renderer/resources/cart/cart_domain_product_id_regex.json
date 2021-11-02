@@ -4,5 +4,6 @@
 {"www.wish.com": "(\\w+)-\\d+-medium",
 "www.homesquare.com": "(images.cymax.com/Images/\\d+/(\\w+)-)"},
 "product_element":
-{"www.electronicexpress.com": "<a href=\"#modal-(\\w+)"}
+{"www.electronicexpress.com": "<a href=\"#modal-(\\w+)",
+"checkout.iherb.com": "product id: ([\\w|-]+)"}
 }
