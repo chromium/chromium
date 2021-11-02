@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -33,11 +33,11 @@ ScriptPromise WindowScreens::getScreenDetails(ScriptState* script_state,
 }
 
 void WindowScreens::ContextDestroyed() {
-  screens_.Clear();
+  screen_details_.Clear();
 }
 
 void WindowScreens::Trace(Visitor* visitor) const {
-  visitor->Trace(screens_);
+  visitor->Trace(screen_details_);
   visitor->Trace(permission_service_);
   ExecutionContextLifecycleObserver::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
@@ -108,9 +108,9 @@ void WindowScreens::OnPermissionRequestComplete(
     return;
   }
 
-  if (!screens_)
-    screens_ = MakeGarbageCollected<Screens>(GetSupplementable());
-  resolver->Resolve(screens_);
+  if (!screen_details_)
+    screen_details_ = MakeGarbageCollected<ScreenDetails>(GetSupplementable());
+  resolver->Resolve(screen_details_);
 }
 
 }  // namespace blink

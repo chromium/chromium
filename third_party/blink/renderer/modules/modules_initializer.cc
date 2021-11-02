@@ -79,7 +79,7 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
-#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 #include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
@@ -390,9 +390,9 @@ void ModulesInitializer::DidUpdateScreens(
   auto* window = frame.DomWindow();
   if (auto* supplement =
           Supplement<LocalDOMWindow>::From<WindowScreens>(window)) {
-    // screens() may be null if permission has not been granted.
-    if (auto* screens = supplement->screens()) {
-      screens->UpdateScreenInfos(window, screen_infos);
+    // screen_details() may be null if permission has not been granted.
+    if (auto* screen_details = supplement->screen_details()) {
+      screen_details->UpdateScreenInfos(window, screen_infos);
     }
   }
 }

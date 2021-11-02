@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREENS_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREENS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREEN_DETAILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_SCREEN_ENUMERATION_SCREEN_DETAILS_H_
 
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -19,12 +19,13 @@ class ScreenAdvanced;
 
 // Interface exposing multi-screen information.
 // https://github.com/webscreens/window-placement
-class MODULES_EXPORT Screens final : public EventTargetWithInlineData,
-                                     public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT ScreenDetails final
+    : public EventTargetWithInlineData,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit Screens(LocalDOMWindow* window);
+  explicit ScreenDetails(LocalDOMWindow* window);
 
   // Web-exposed interface:
   const HeapVector<Member<ScreenAdvanced>>& screens() const;

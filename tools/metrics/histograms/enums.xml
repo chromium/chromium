@@ -34978,10 +34978,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3902" label="WebAppWindowControlsOverlay"/>
   <int value="3903" label="PaymentRequestShowWithoutGestureOrToken"/>
   <int value="3904" label="V8Navigator_UpdateAdInterestGroups_Method"/>
-  <int value="3905" label="V8Screens_Onscreenschange_AttributeGetter"/>
-  <int value="3906" label="V8Screens_Onscreenschange_AttributeSetter"/>
-  <int value="3907" label="V8Screens_Oncurrentscreenchange_AttributeGetter"/>
-  <int value="3908" label="V8Screens_Oncurrentscreenchange_AttributeSetter"/>
+  <int value="3905" label="V8ScreenDetails_Onscreenschange_AttributeGetter"/>
+  <int value="3906" label="V8ScreenDetails_Onscreenschange_AttributeSetter"/>
+  <int value="3907"
+      label="V8ScreenDetails_Oncurrentscreenchange_AttributeGetter"/>
+  <int value="3908"
+      label="V8ScreenDetails_Oncurrentscreenchange_AttributeSetter"/>
   <int value="3909" label="RTCOfferAnswerOptionsVoiceActivityDetection"/>
   <int value="3910" label="MultiColAndListItem"/>
   <int value="3911" label="CaptureHandle"/>

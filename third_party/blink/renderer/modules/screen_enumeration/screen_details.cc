@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/screen_enumeration/screens.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
 
 #include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -15,18 +15,18 @@
 
 namespace blink {
 
-Screens::Screens(LocalDOMWindow* window)
+ScreenDetails::ScreenDetails(LocalDOMWindow* window)
     : ExecutionContextLifecycleObserver(window) {
   LocalFrame* frame = window->GetFrame();
   const auto& screen_infos = frame->GetChromeClient().GetScreenInfos(*frame);
   UpdateScreenInfos(window, screen_infos);
 }
 
-const HeapVector<Member<ScreenAdvanced>>& Screens::screens() const {
+const HeapVector<Member<ScreenAdvanced>>& ScreenDetails::screens() const {
   return screens_;
 }
 
-ScreenAdvanced* Screens::currentScreen() const {
+ScreenAdvanced* ScreenDetails::currentScreen() const {
   if (!DomWindow())
     return nullptr;
 
@@ -39,26 +39,26 @@ ScreenAdvanced* Screens::currentScreen() const {
   return *it;
 }
 
-const AtomicString& Screens::InterfaceName() const {
-  return event_target_names::kScreens;
+const AtomicString& ScreenDetails::InterfaceName() const {
+  return event_target_names::kScreenDetails;
 }
 
-ExecutionContext* Screens::GetExecutionContext() const {
+ExecutionContext* ScreenDetails::GetExecutionContext() const {
   return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
-void Screens::ContextDestroyed() {
+void ScreenDetails::ContextDestroyed() {
   screens_.clear();
 }
 
-void Screens::Trace(Visitor* visitor) const {
+void ScreenDetails::Trace(Visitor* visitor) const {
   visitor->Trace(screens_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void Screens::UpdateScreenInfos(LocalDOMWindow* window,
-                                const display::ScreenInfos& new_infos) {
+void ScreenDetails::UpdateScreenInfos(LocalDOMWindow* window,
+                                      const display::ScreenInfos& new_infos) {
   // Expect that all updates contain a non-zero set of screens.
   DCHECK(!new_infos.screen_infos.empty());
 

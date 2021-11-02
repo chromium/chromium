@@ -8,7 +8,7 @@
   Exposed=Window,
   SecureContext,
   RuntimeEnabled=WindowPlacement
-] interface Screens : EventTarget {
+] interface ScreenDetails : EventTarget {
   // The set of available screens with additional per-screen info.
   readonly attribute FrozenArray<ScreenAdvanced> screens;
 
