@@ -414,6 +414,20 @@ ProposedLayout TableLayout::CalculateProposedLayout(
   return layout;
 }
 
+#if DCHECK_IS_ON()
+bool TableLayout::OnViewAdded(View* host, View* view) {
+  const size_t num_solid_rows =
+      std::count_if(rows_.begin(), rows_.end(),
+                    [](const Row& row) { return !row.is_padding(); });
+  const size_t num_solid_cols =
+      std::count_if(columns_.begin(), columns_.end(),
+                    [](const Column& col) { return !col.is_padding(); });
+  DCHECK_LE(host->children().size(), num_solid_rows * num_solid_cols)
+      << "Did you forget to call AddRows()?";
+  return LayoutManagerBase::OnViewAdded(host, view);
+}
+#endif
+
 void TableLayout::SetViewStates() const {
   view_states_by_row_span_.clear();
   view_states_by_col_span_.clear();
