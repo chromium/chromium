@@ -86,12 +86,6 @@ class SelectToSpeakOptionsPage {
           this.setElementVisible(elem, checked);
         });
     this.syncCheckboxControlToPref_('navigationControls', 'navigationControls');
-    // Hide navigation control setting if feature is not enabled
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        AccessibilityFeature.SELECT_TO_SPEAK_NAVIGATION_CONTROL, (result) => {
-          const elem = document.getElementById('navigationControlsOption');
-          this.setElementVisible(elem, result);
-        });
 
     this.setUpHighlightListener_();
     this.setUpTtsButtonClickListener_();

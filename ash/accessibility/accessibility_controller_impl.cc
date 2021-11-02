@@ -60,7 +60,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/aura/window.h"
@@ -1093,9 +1092,6 @@ void AccessibilityControllerImpl::ShowSelectToSpeakPanel(
     const gfx::Rect& anchor,
     bool is_paused,
     double speech_rate) {
-  if (!features::IsSelectToSpeakNavigationControlEnabled()) {
-    return;
-  }
   if (!select_to_speak_bubble_controller_) {
     select_to_speak_bubble_controller_ =
         std::make_unique<SelectToSpeakMenuBubbleController>();
@@ -1104,8 +1100,7 @@ void AccessibilityControllerImpl::ShowSelectToSpeakPanel(
 }
 
 void AccessibilityControllerImpl::HideSelectToSpeakPanel() {
-  if (!features::IsSelectToSpeakNavigationControlEnabled() ||
-      !select_to_speak_bubble_controller_) {
+  if (!select_to_speak_bubble_controller_) {
     return;
   }
   select_to_speak_bubble_controller_->Hide();
@@ -1114,7 +1109,7 @@ void AccessibilityControllerImpl::HideSelectToSpeakPanel() {
 void AccessibilityControllerImpl::OnSelectToSpeakPanelAction(
     SelectToSpeakPanelAction action,
     double value) {
-  if (!features::IsSelectToSpeakNavigationControlEnabled() || !client_) {
+  if (!client_) {
     return;
   }
   client_->OnSelectToSpeakPanelAction(action, value);

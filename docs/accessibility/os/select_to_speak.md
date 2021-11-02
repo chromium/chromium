@@ -194,10 +194,9 @@ for STS state.
 
 ### Navigation features
 
-When `select-to-speak-navigation-control` flag is enabled, STS will display a
-floating control panel when activated. The control panel hosts controls for
-pause/resume, updating reading speed, navigating by sentence or paragraph,
-and deactivating STS. 
+STS will display a floating control panel when activated. The control panel
+hosts controls for pause/resume, updating reading speed, navigating by sentence
+or paragraph, and deactivating STS.
 
 #### Floating control panel
 

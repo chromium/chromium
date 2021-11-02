@@ -5832,11 +5832,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebuiDarkModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebUIDarkMode)},
 
-    {"select-to-speak-navigation-control",
-     flag_descriptions::kSelectToSpeakNavigationControlName,
-     flag_descriptions::kSelectToSpeakNavigationControlDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kSelectToSpeakNavigationControl)},
-
     {"enable-networking-in-diagnostics-app",
      flag_descriptions::kEnableNetworkingInDiagnosticsAppName,
      flag_descriptions::kEnableNetworkingInDiagnosticsAppDescription, kOsCrOS,

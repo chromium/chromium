@@ -153,15 +153,6 @@ AX_BASE_EXPORT extern const base::Feature kEnableAriaElementReflection;
 // Returns true if ARIA element reflection is enabled.
 AX_BASE_EXPORT bool IsAriaElementReflectionEnabled();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables enhanced Select-to-speak features that allow users broader control
-// of TTS (pause, resume, skip between sentences and paragraphs).
-AX_BASE_EXPORT extern const base::Feature kSelectToSpeakNavigationControl;
-
-// Returns true if enhanced Select-to-speak features are enabled.
-AX_BASE_EXPORT bool IsSelectToSpeakNavigationControlEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_ANDROID)
 // Compute the AXMode based on AccessibilityServiceInfo. If disabled,
 // the AXMode is either entirely on or entirely off.

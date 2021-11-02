@@ -42,11 +42,6 @@ SelectToSpeakNavigationControlTest = class extends SelectToSpeakE2ETest {
     })();
   }
 
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kSelectToSpeakNavigationControl']};
-  }
-
   generateHtmlWithSelectedElement(elementId, bodyHtml) {
     return `
     <script type="text/javascript">

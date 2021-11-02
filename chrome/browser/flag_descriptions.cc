@@ -4995,11 +4995,6 @@ const char kSchedulerConfigurationConservative[] =
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
-const char kSelectToSpeakNavigationControlName[] =
-    "Select-to-speak navigation control";
-const char kSelectToSpeakNavigationControlDescription[] =
-    "Enables enhanced Select-to-speak navigation features.";
-
 const char kChromeOSSharingHubName[] = "Chrome OS Sharing Hub";
 const char kChromeOSSharingHubDescription[] =
     "Enables the Sharing Hub (share sheet) on ChromeOS via the Omnibox.";
