@@ -193,6 +193,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"application/postscript", "ps,eps,ai"},
     {"application/rdf+xml", "rdf"},
     {"application/rss+xml", "rss"},
+    {"application/rtf", "rtf"},
     {"application/vnd.android.package-archive", "apk"},
     {"application/vnd.mozilla.xul+xml", "xul"},
     {"application/vnd.ms-excel", "xls"},
