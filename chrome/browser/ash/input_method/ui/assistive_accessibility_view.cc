@@ -34,6 +34,8 @@ AssistiveAccessibilityView::~AssistiveAccessibilityView() = default;
 
 void AssistiveAccessibilityView::Announce(const std::u16string& message) {
   DCHECK(accessibility_label_);
+  if (message.empty())
+    return;
   accessibility_label_->Announce(message);
 }
 

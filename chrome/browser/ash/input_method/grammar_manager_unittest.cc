@@ -290,11 +290,10 @@ TEST_F(GrammarManagerTest, ShowsAndDismissesGrammarSuggestion) {
   expected_properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
   expected_properties.candidates = {u"correct"};
   expected_properties.visible = true;
+  expected_properties.announce_string = kShowGrammarSuggestionMessage;
 
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(1, expected_properties, _));
-  EXPECT_CALL(mock_suggestion_handler,
-              Announce(std::u16string(kShowGrammarSuggestionMessage)));
 
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
@@ -349,11 +348,10 @@ TEST_F(GrammarManagerTest, DismissesSuggestionWhenSelectingARange) {
   expected_properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
   expected_properties.candidates = {u"correct"};
   expected_properties.visible = true;
+  expected_properties.announce_string = kShowGrammarSuggestionMessage;
 
   EXPECT_CALL(mock_suggestion_handler,
               SetAssistiveWindowProperties(1, expected_properties, _));
-  EXPECT_CALL(mock_suggestion_handler,
-              Announce(std::u16string(kShowGrammarSuggestionMessage)));
 
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
@@ -377,8 +375,6 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithTab) {
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
-  EXPECT_CALL(mock_suggestion_handler,
-              Announce(std::u16string(kShowGrammarSuggestionMessage)));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   ui::ime::AssistiveWindowButton suggestion_button{
@@ -423,8 +419,6 @@ TEST_F(GrammarManagerTest, HighlightsAndCommitsGrammarSuggestionWithUpArrow) {
   task_environment_.FastForwardBy(base::Milliseconds(2500));
 
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
-  EXPECT_CALL(mock_suggestion_handler,
-              Announce(std::u16string(kShowGrammarSuggestionMessage)));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   ui::ime::AssistiveWindowButton suggestion_button{
@@ -470,8 +464,6 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
 
   EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 1);
   EXPECT_CALL(mock_suggestion_handler, SetAssistiveWindowProperties(1, _, _));
-  EXPECT_CALL(mock_suggestion_handler,
-              Announce(std::u16string(kShowGrammarSuggestionMessage)));
   manager.OnSurroundingTextChanged(u"There is error.", 10, 10);
 
   ui::ime::AssistiveWindowButton suggestion_button{
