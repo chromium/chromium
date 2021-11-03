@@ -98,6 +98,13 @@ chromium-metrics-reviews@google.com.
       summary="Snackbar shown after virtual card is autofilled."/>
 </variants>
 
+<variants name="Autofill.VirtualCardUnmaskFlowType">
+  <variant name="Fido" summary="FIDO authentication only"/>
+  <variant name="Otp" summary="OTP auth only"/>
+  <variant name="OtpFallbackFromFido"
+      summary="OTP fallback from FIDO authentication"/>
+</variants>
+
 <variants name="AutofillCreditCardWebauthnOptInOrigin">
   <variant name=".FromCheckoutFlow" summary="Opt-in from a checkout flow"/>
   <variant name=".FromSettingsPage" summary="Opt-in from settings page"/>
@@ -2566,6 +2573,42 @@ chromium-metrics-reviews@google.com.
     Logged when the user clicks on the server credit card link in the settings
     page.
   </summary>
+</histogram>
+
+<histogram name="Autofill.ServerCardUnmask.{CardType}.Attempt"
+    enum="BooleanAttempted" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a server card unmasking process starts and does not emit any
+    value otherwise.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram name="Autofill.ServerCardUnmask.{CardType}.FormSubmission"
+    enum="BooleanSubmitted" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a form is submitted with information fetched in a server
+    card unmasking process, and does not emit any value otherwise.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram name="Autofill.ServerCardUnmask.{CardType}.Result.{FlowType}"
+    enum="AutofillServerCardUnmaskResult" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of a server card unmasking process when the unmasking is
+    finished (whether it succeeded or otherwise reason of the failure). It
+    includes the type of the card to be unmasked and the flow type (what
+    authentication used) in the unmasking.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="FlowType" variants="Autofill.VirtualCardUnmaskFlowType"/>
 </histogram>
 
 <histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"
