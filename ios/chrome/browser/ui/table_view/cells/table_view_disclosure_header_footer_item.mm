@@ -21,6 +21,8 @@
 namespace {
 // Identity rotation angle that positions disclosure pointing down.
 constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
+
+static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 }
 
 @implementation TableViewDisclosureHeaderFooterItem
@@ -185,14 +187,14 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 #pragma mark - properties
 
 - (void)setDisabled:(BOOL)disabled {
-  // TODO(crbug.com/1262170): Change back the disabled color to
-  // kTextQuaternaryColor once the color is fixed to get a
-  // contrast ratio > 4.5.
-  _titleLabel.textColor = disabled ? [UIColor colorNamed:kTextSecondaryColor]
-                                   : [UIColor colorNamed:kTextPrimaryColor];
-  _subtitleLabel.textColor = disabled
-                                 ? [UIColor colorNamed:kTextSecondaryColor]
-                                 : [UIColor colorNamed:kTextSecondaryColor];
+  _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  if (disabled) {
+    _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _subtitleLabel.alpha = kDisabledOpacity;
+  } else {
+    _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  }
+
   _disclosureImageView.image =
       disabled ? nil : [UIImage imageNamed:@"table_view_cell_chevron"];
   _disabled = disabled;
