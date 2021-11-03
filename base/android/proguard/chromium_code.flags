@@ -92,6 +92,13 @@
 # names of just those ones. For now, we'll just keep them all.
 -keepnames,allowaccessmodification class org.chromium.** implements android.os.Parcelable {}
 
+# Keep all enum values and valueOf methods. See
+# http://proguard.sourceforge.net/index.html#manual/examples.html
+# for the reason for this. Also, see http://crbug.com/248037.
+-keepclassmembers enum org.chromium.** {
+    public static **[] values();
+}
+
 # Mark members annotated with IdentifierNameString as identifier name strings
 -identifiernamestring class * {
     @org.chromium.base.annotations.IdentifierNameString *;
