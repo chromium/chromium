@@ -199,19 +199,6 @@ void SharingHubBubbleController::OnActionSelected(
 
 void SharingHubBubbleController::OnBubbleClosed() {
   sharing_hub_bubble_view_ = nullptr;
-
-  // Ensure the icon remains highlighted if a first party action dialog was
-  // opened using the sharing hub.
-  UpdateIcon();
-}
-
-void SharingHubBubbleController::UpdateIcon() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  // UpdateIcon() can be called during browser teardown.
-  if (!browser)
-    return;
-
-  browser->window()->UpdatePageActionIcon(PageActionIconType::kSharingHub);
 }
 
 SharingHubModel* SharingHubBubbleController::GetSharingHubModel() {
