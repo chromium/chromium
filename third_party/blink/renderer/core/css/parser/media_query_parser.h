@@ -114,7 +114,6 @@ class CORE_EXPORT MediaQueryParser {
   void ReadRestrictor(CSSParserTokenRange&);
   void ReadMediaNot(CSSParserTokenRange&);
   void ReadMediaType(CSSParserTokenRange&);
-  void ReadFeatureStart(CSSParserTokenRange&);
   void SkipUntilComma(CSSParserTokenRange&);
   void Done(CSSParserTokenRange&);
 
@@ -135,7 +134,6 @@ class CORE_EXPORT MediaQueryParser {
   const static State kReadRestrictor;
   const static State kReadMediaNot;
   const static State kReadMediaType;
-  const static State kReadFeatureStart;
   const static State kSkipUntilComma;
   const static State kDone;
 };

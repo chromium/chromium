@@ -52,8 +52,6 @@ const MediaQueryParser::State MediaQueryParser::kReadMediaNot =
     &MediaQueryParser::ReadMediaNot;
 const MediaQueryParser::State MediaQueryParser::kReadMediaType =
     &MediaQueryParser::ReadMediaType;
-const MediaQueryParser::State MediaQueryParser::kReadFeatureStart =
-    &MediaQueryParser::ReadFeatureStart;
 const MediaQueryParser::State MediaQueryParser::kSkipUntilComma =
     &MediaQueryParser::SkipUntilComma;
 const MediaQueryParser::State MediaQueryParser::kDone = &MediaQueryParser::Done;
@@ -174,10 +172,12 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
   DCHECK_EQ(state_, kReadRestrictor);
 
   if (range.Peek().GetType() == kLeftParenthesisToken) {
-    if (media_query_data_.Restrictor() != MediaQuery::kNone)
+    if (media_query_data_.Restrictor() != MediaQuery::kNone) {
       state_ = kSkipUntilComma;
-    else
-      state_ = kReadFeatureStart;
+    } else {
+      FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range),
+                                 range);
+    }
   } else if (range.Peek().GetType() == kIdentToken) {
     SetStateAndRestrict(kReadMediaType, ConsumeRestrictor(range));
   } else if (range.AtEnd() && !query_set_->QueryVector().size()) {
@@ -188,13 +188,9 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
 }
 
 void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() == kIdentToken &&
-      EqualIgnoringASCIICase(range.Peek().Value(), "not")) {
-    ConsumeToken(range);
-    SetStateAndRestrict(kReadFeatureStart, MediaQuery::kNot);
-  } else {
-    ReadFeatureStart(range);
-  }
+  if (ConsumeIfIdent(range, "not"))
+    media_query_data_.SetRestrictor(MediaQuery::kNot);
+  FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range), range);
 }
 
 void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
@@ -214,10 +210,6 @@ void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
     else
       range.ConsumeComponentValue();
   }
-}
-
-void MediaQueryParser::ReadFeatureStart(CSSParserTokenRange& range) {
-  FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range), range);
 }
 
 void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
