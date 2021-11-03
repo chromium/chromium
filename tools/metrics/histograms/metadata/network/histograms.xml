@@ -1657,7 +1657,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Vpn.Driver" enum="VPNDriver"
     expires_after="2022-04-10">
-  <owner>akhouderchah@chromium.org</owner>
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric sampled on each successful VPN connection
@@ -1739,7 +1739,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Vpn.RemoteAuthenticationType"
     enum="VPNRemoteAuthenticationType" expires_after="2022-05-01">
-  <owner>akhouderchah@chromium.org</owner>
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric sampled on each successful VPN connection
@@ -1749,7 +1749,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Vpn.TimeOnline" units="seconds"
     expires_after="2022-04-24">
-  <owner>akhouderchah@chromium.org</owner>
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network metric sampling the time spent using VPN to transport
@@ -1762,8 +1762,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.TimeToConfig" units="ms"
-    expires_after="2021-12-01">
-  <owner>akhouderchah@chromium.org</owner>
+    expires_after="2022-04-24">
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to configure Layer 3
@@ -1772,8 +1772,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.TimeToOnline" units="ms"
-    expires_after="2021-12-01">
-  <owner>akhouderchah@chromium.org</owner>
+    expires_after="2022-04-24">
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network performance metric sampling the time to determine that a
@@ -1783,7 +1783,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Vpn.UserAuthenticationType"
     enum="VPNUserAuthenticationType" expires_after="2022-04-24">
-  <owner>akhouderchah@chromium.org</owner>
+  <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
     Chrome OS network usage metric sampled on each successful VPN connection
