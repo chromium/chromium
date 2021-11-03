@@ -537,8 +537,9 @@ class PredictionManagerModelDownloadingBrowserTest
   std::unique_ptr<ModelFileObserver> model_file_observer_;
 };
 
+// Flaky on various bots. See https://crbug.com/1266318
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestIncognitoUsesModelFromRegularProfile) {
+                       DISABLED_TestIncognitoUsesModelFromRegularProfile) {
   SetResponseType(
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
 
@@ -603,9 +604,15 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
         "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   }
 }
-
+// Flaky on multiple ASAN bots. See https://crbug.com/1266318
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_TestIncognitoDoesntFetchModels \
+  DISABLED_TestIncognitoDoesntFetchModels
+#else
+#define MAYBE_TestIncognitoDoesntFetchModels TestIncognitoDoesntFetchModels
+#endif
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestIncognitoDoesntFetchModels) {
+                       MAYBE_TestIncognitoDoesntFetchModels) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
