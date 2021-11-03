@@ -67,7 +67,9 @@ void OtpVerificationDialogViewAndroid::Dismiss(
   // TODO(crbug.com/1243475): Update the throbber and show the checkmark if
   // |show_confirmation_before_closing| is true.
   if (controller_) {
-    controller_->OnDialogClosed(/*user_closed_dialog=*/user_closed_dialog);
+    controller_->OnDialogClosed(
+        user_closed_dialog,
+        /*server_request_succeeded=*/show_confirmation_before_closing);
     controller_ = nullptr;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -81,7 +83,8 @@ void OtpVerificationDialogViewAndroid::Dismiss(
 void OtpVerificationDialogViewAndroid::OnDialogDismissed(JNIEnv* env) {
   // Inform |controller_| of the dialog's destruction.
   if (controller_) {
-    controller_->OnDialogClosed(/*user_closed_dialog=*/true);
+    controller_->OnDialogClosed(/*user_closed_dialog=*/true,
+                                /*server_request_succeeded=*/false);
     controller_ = nullptr;
   }
   delete this;

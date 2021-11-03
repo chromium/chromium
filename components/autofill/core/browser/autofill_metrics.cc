@@ -3101,4 +3101,39 @@ void AutofillMetrics::LogOtpAuthSelectChallengeOptionRequestLatency(
       duration);
 }
 
+// static
+void AutofillMetrics::LogOtpInputDialogShown() {
+  base::UmaHistogramBoolean("Autofill.OtpInputDialog.SmsOtp.Shown", true);
+}
+
+// static
+void AutofillMetrics::LogOtpInputDialogResult(OtpInputDialogResult result,
+                                              bool temporary_error_shown) {
+  DCHECK_GT(result, OtpInputDialogResult::kUnknown);
+  DCHECK_LE(result, OtpInputDialogResult::kMaxValue);
+  std::string temporary_error_shown_suffix = temporary_error_shown
+                                                 ? ".WithPreviousTemporaryError"
+                                                 : ".WithNoTemporaryError";
+  base::UmaHistogramEnumeration("Autofill.OtpInputDialog.SmsOtp.Result",
+                                result);
+  base::UmaHistogramEnumeration(
+      "Autofill.OtpInputDialog.SmsOtp.Result" + temporary_error_shown_suffix,
+      result);
+}
+
+// static
+void AutofillMetrics::LogOtpInputDialogErrorMessageShown(
+    OtpInputDialogError error) {
+  DCHECK_GT(error, OtpInputDialogError::kUnknown);
+  DCHECK_LE(error, OtpInputDialogError::kMaxValue);
+  base::UmaHistogramEnumeration(
+      "Autofill.OtpInputDialog.SmsOtp.ErrorMessageShown", error);
+}
+
+// static
+void AutofillMetrics::LogOtpInputDialogNewOtpRequested() {
+  base::UmaHistogramBoolean("Autofill.OtpInputDialog.SmsOtp.NewOtpRequested",
+                            true);
+}
+
 }  // namespace autofill

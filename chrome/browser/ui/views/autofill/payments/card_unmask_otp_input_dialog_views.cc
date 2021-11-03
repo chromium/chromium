@@ -48,7 +48,8 @@ CardUnmaskOtpInputDialogViews::CardUnmaskOtpInputDialogViews(
 CardUnmaskOtpInputDialogViews::~CardUnmaskOtpInputDialogViews() {
   // Inform |controller_| of the dialog's destruction.
   if (controller_) {
-    controller_->OnDialogClosed(/*user_closed_dialog=*/true);
+    controller_->OnDialogClosed(/*user_closed_dialog=*/true,
+                                /*server_request_succeeded=*/false);
     controller_ = nullptr;
   }
 }
@@ -94,13 +95,14 @@ void CardUnmaskOtpInputDialogViews::Dismiss(
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CardUnmaskOtpInputDialogViews::CloseWidget,
-                       weak_ptr_factory_.GetWeakPtr(), user_closed_dialog),
+                       weak_ptr_factory_.GetWeakPtr(), user_closed_dialog,
+                       /*server_request_succeeded=*/true),
         kDelayBeforeDismissingProgressDialog);
     return;
   }
 
   // Otherwise close the widget directly.
-  CloseWidget(user_closed_dialog);
+  CloseWidget(user_closed_dialog, /*server_request_succeeded=*/false);
 }
 
 std::u16string CardUnmaskOtpInputDialogViews::GetWindowTitle() const {
@@ -238,9 +240,10 @@ void CardUnmaskOtpInputDialogViews::HideInvalidState() {
   otp_input_textfield_invalid_label_padding_->SetVisible(true);
 }
 
-void CardUnmaskOtpInputDialogViews::CloseWidget(bool user_closed_dialog) {
+void CardUnmaskOtpInputDialogViews::CloseWidget(bool user_closed_dialog,
+                                                bool server_request_succeeded) {
   if (controller_) {
-    controller_->OnDialogClosed(user_closed_dialog);
+    controller_->OnDialogClosed(user_closed_dialog, server_request_succeeded);
     controller_ = nullptr;
   }
   GetWidget()->Close();

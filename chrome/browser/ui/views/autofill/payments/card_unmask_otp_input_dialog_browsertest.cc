@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/autofill/payments/card_unmask_otp_input_dialog_views.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
@@ -35,7 +37,7 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
     controller()->ShowDialog(kDefaultOtpLength, /*delegate=*/nullptr);
   }
 
-  CardUnmaskOtpInputDialogView* GetDialog() {
+  CardUnmaskOtpInputDialogViews* GetDialogViews() {
     if (!controller())
       return nullptr;
 
@@ -44,7 +46,7 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
     if (!dialog_view)
       return nullptr;
 
-    return static_cast<CardUnmaskOtpInputDialogView*>(dialog_view);
+    return static_cast<CardUnmaskOtpInputDialogViews*>(dialog_view);
   }
 
   CardUnmaskOtpInputDialogControllerImpl* controller() {
@@ -68,7 +70,15 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
                        MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays) {
+  base::HistogramTester histogram_tester;
+
   ShowAndVerifyUi();
+
+  // TODO(crbug.com/1243475): Move this logging to controller unittest as well.
+  // Right now the view is created but not injected. Need to change this when
+  // moving this logging.
+  histogram_tester.ExpectUniqueSample("Autofill.OtpInputDialog.SmsOtp.Shown",
+                                      true, 1);
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.

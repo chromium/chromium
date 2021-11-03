@@ -1103,6 +1103,40 @@ class AutofillMetrics {
     kMaxValue = kUnexpectedError,
   };
 
+  // The result of how the OTP input dialog was closed. This dialog is used for
+  // users to type in the received OTP value for card verification.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class OtpInputDialogResult {
+    // Unknown event, should not happen.
+    kUnknown = 0,
+    // The dialog was closed before the user entered any OTP and clicked the OK
+    // button. This includes closing the dialog in an error state after a failed
+    // unmask attempt.
+    kDialogCancelledByUserBeforeConfirmation = 1,
+    // The dialog was closed after the user entered a valid OTP and clicked the
+    // OK button, and when the dialog was in a pending state.
+    kDialogCancelledByUserAfterConfirmation = 2,
+    // The dialog closed automatically after the OTP verification succeeded.
+    kDialogClosedAfterVerificationSucceeded = 3,
+    // The dialog closed automatically after a server failure response.
+    kDialogClosedAfterVerificationFailed = 4,
+    kMaxValue = kDialogClosedAfterVerificationFailed,
+  };
+
+  // The type of error message shown in the card unmask OTP input dialog.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class OtpInputDialogError {
+    // Unknown type, should not be used.
+    kUnknown = 0,
+    // The error indicating that the OTP is expired.
+    kOtpExpiredError = 1,
+    // The error indicating that the OTP is incorrect.
+    kOtpMismatchError = 2,
+    kMaxValue = kOtpMismatchError,
+  };
+
   // Utility to log URL keyed form interaction events.
   class FormInteractionsUkmLogger {
    public:
@@ -1847,6 +1881,17 @@ class AutofillMetrics {
   // authentication.
   static void LogOtpAuthSelectChallengeOptionRequestLatency(
       const base::TimeDelta& latency);
+
+  // Logs whenever the OTP input dialog is triggered and it is shown.
+  static void LogOtpInputDialogShown();
+  // Logs the result of how the dialog is dismissed.
+  static void LogOtpInputDialogResult(OtpInputDialogResult result,
+                                      bool temporary_error_shown);
+  // Logs when the temporary error shown in the dialog.
+  static void LogOtpInputDialogErrorMessageShown(OtpInputDialogError error);
+  // Logs when the "Get New Code" button in the dialog is clicked and user is
+  // requesting a new OTP.
+  static void LogOtpInputDialogNewOtpRequested();
 
   // The total number of values in the |CardUploadDecisionMetric| enum. Must be
   // updated each time a new value is added.
