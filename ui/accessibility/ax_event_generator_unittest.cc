@@ -17,7 +17,7 @@ namespace ui {
 
 // Required by gmock to print TargetedEvent in a human-readable way.
 void PrintTo(const AXEventGenerator::TargetedEvent& event, std::ostream* os) {
-  *os << event.event_params.event << " on " << event.node->id();
+  *os << event.event_params.event << " on " << event.node_id;
 }
 
 namespace {
@@ -38,7 +38,7 @@ MATCHER_P2(HasEventAtNode,
                PrintToString(expected_node_id)) {
   const auto& event = arg;
   return Matches(expected_event_type)(event.event_params.event) &&
-         Matches(expected_node_id)(event.node->id());
+         Matches(expected_node_id)(event.node_id);
 }
 
 }  // namespace
@@ -129,15 +129,15 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
   // Node9 contains no event.
   std::set<AXEventGenerator::EventParams> node9_events;
 
-  event_generator.AddEventsForTesting(node1, node1_events);
-  event_generator.AddEventsForTesting(node2, node2_events);
-  event_generator.AddEventsForTesting(node3, node3_events);
-  event_generator.AddEventsForTesting(node4, node4_events);
-  event_generator.AddEventsForTesting(node5, node5_events);
-  event_generator.AddEventsForTesting(node6, node6_events);
-  event_generator.AddEventsForTesting(node7, node7_events);
-  event_generator.AddEventsForTesting(node8, node8_events);
-  event_generator.AddEventsForTesting(node9, node9_events);
+  event_generator.AddEventsForTesting(*node1, node1_events);
+  event_generator.AddEventsForTesting(*node2, node2_events);
+  event_generator.AddEventsForTesting(*node3, node3_events);
+  event_generator.AddEventsForTesting(*node4, node4_events);
+  event_generator.AddEventsForTesting(*node5, node5_events);
+  event_generator.AddEventsForTesting(*node6, node6_events);
+  event_generator.AddEventsForTesting(*node7, node7_events);
+  event_generator.AddEventsForTesting(*node8, node8_events);
+  event_generator.AddEventsForTesting(*node9, node9_events);
 
   std::map<AXNode*, std::set<AXEventGenerator::Event>> expected_event_map;
   expected_event_map[node3] = {AXEventGenerator::Event::IGNORED_CHANGED,
@@ -146,10 +146,12 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
   expected_event_map[node7] = {AXEventGenerator::Event::IGNORED_CHANGED};
 
   for (const auto& targeted_event : event_generator) {
-    auto map_iter = expected_event_map.find(targeted_event.node);
+    AXNode* node = tree.GetFromId(targeted_event.node_id);
+    ASSERT_NE(nullptr, node);
+    auto map_iter = expected_event_map.find(node);
 
     ASSERT_NE(map_iter, expected_event_map.end())
-        << "|expected_event_map| contains node.id=" << targeted_event.node->id()
+        << "|expected_event_map| contains node_id=" << targeted_event.node_id
         << "\nExpected: true"
         << "\nActual: " << std::boolalpha
         << (map_iter != expected_event_map.end());
@@ -159,7 +161,7 @@ TEST(AXEventGeneratorTest, IterateThroughEmptyEventSets) {
 
     ASSERT_NE(event_iter, node_events.end())
         << "Event=" << targeted_event.event_params.event
-        << ", on node.id=" << targeted_event.node->id()
+        << ", on node_id=" << targeted_event.node_id
         << " NOT found in |expected_event_map|";
 
     // If the event from |event_generator| is found in |expected_event_map|,

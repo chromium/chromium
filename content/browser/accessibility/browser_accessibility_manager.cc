@@ -502,7 +502,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   std::vector<ui::AXEventGenerator::TargetedEvent> deferred_events;
   bool received_load_complete_event = false;
   for (const auto& targeted_event : event_generator()) {
-    BrowserAccessibility* event_target = GetFromAXNode(targeted_event.node);
+    BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     if (!event_target)
       continue;
 
@@ -539,7 +539,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
   // Now fire all of the rest of the generated events we previously deferred.
   for (const auto& targeted_event : deferred_events) {
-    BrowserAccessibility* event_target = GetFromAXNode(targeted_event.node);
+    BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
     if (!event_target)
       continue;
 
