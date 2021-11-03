@@ -50,6 +50,7 @@ class AssistantTextSearchResult : public ChromeSearchResult {
       : action_url_(ash::assistant::util::CreateAssistantQueryDeepLink(
             base::UTF16ToUTF8(text))) {
     set_id(kIdPrefix + base::UTF16ToUTF8(text));
+    SetCategory(Category::kSearchAndAssistant);
     SetDisplayType(ash::SearchResultDisplayType::kList);
     SetResultType(ash::AppListSearchResultType::kAssistantText);
     SetMetricsType(ash::SearchResultType::ASSISTANT_OMNIBOX_RESULT);

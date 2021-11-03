@@ -211,6 +211,26 @@ OmniboxResult::OmniboxResult(Profile* profile,
                        "-");
   set_id(id);
 
+  // Omnibox results are categorized as Search and Assistant if they are search
+  // suggestions, and Web otherwise.
+  switch (match_.type) {
+    case AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED:
+    case AutocompleteMatchType::SEARCH_SUGGEST:
+    case AutocompleteMatchType::SEARCH_SUGGEST_ENTITY:
+    case AutocompleteMatchType::SEARCH_SUGGEST_TAIL:
+    case AutocompleteMatchType::SEARCH_SUGGEST_PROFILE:
+    case AutocompleteMatchType::SEARCH_OTHER_ENGINE:
+    case AutocompleteMatchType::CONTACT_DEPRECATED:
+    case AutocompleteMatchType::VOICE_SUGGEST:
+    case AutocompleteMatchType::CLIPBOARD_TEXT:
+    case AutocompleteMatchType::CLIPBOARD_IMAGE:
+      SetCategory(Category::kSearchAndAssistant);
+      break;
+    default:
+      SetCategory(Category::kWeb);
+      break;
+  }
+
   // MetricsType needs to be set after OmniboxType.
   SetMetricsType(GetSearchResultType());
 

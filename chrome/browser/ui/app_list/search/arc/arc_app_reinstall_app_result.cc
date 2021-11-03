@@ -52,6 +52,7 @@ ArcAppReinstallAppResult::ArcAppReinstallAppResult(
     : observer_(observer), package_name_(mojom_data->package_name) {
   DCHECK(observer_);
   set_id(kPlayStoreAppUrlPrefix + mojom_data->package_name);
+  SetCategory(Category::kPlayStore);
   SetResultType(ash::AppListSearchResultType::kPlayStoreReinstallApp);
   SetTitle(base::UTF8ToUTF16(mojom_data->title));
   SetDisplayType(ash::SearchResultDisplayType::kTile);

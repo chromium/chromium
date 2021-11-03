@@ -105,6 +105,7 @@ HelpAppResult::HelpAppResult(Profile* profile,
     : profile_(profile) {
   DCHECK(profile_);
   set_id(id);
+  SetCategory(Category::kHelp);
   SetTitle(title);
   // Show this in the first position, in front of any other chips that may be
   // also claiming the first slot.

@@ -20,6 +20,7 @@ AppResult::AppResult(Profile* profile,
   SetResultType(ash::AppListSearchResultType::kInstalledApp);
   SetMetricsType(ash::SEARCH_RESULT_TYPE_BOUNDARY);
   SetIsRecommendation(is_recommendation);
+  SetCategory(Category::kApps);
 }
 
 AppResult::~AppResult() {

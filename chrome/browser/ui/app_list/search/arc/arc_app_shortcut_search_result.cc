@@ -44,6 +44,7 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
   if (!query.empty())
     SetTitleTags(CalculateTags(query, title));
   set_id(kAppShortcutSearchPrefix + GetAppId() + "/" + data_->shortcut_id);
+  SetCategory(Category::kAppShortcuts);
   SetAccessibleName(ComputeAccessibleName());
   SetResultType(ash::AppListSearchResultType::kArcAppShortcut);
   SetDisplayType(ash::SearchResultDisplayType::kTile);

@@ -72,6 +72,7 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
   }
 
   SetMetricsType(GetSearchResultType());
+  SetCategory(Category::kApps);
 
   switch (app_type_) {
     case apps::mojom::AppType::kBuiltIn:

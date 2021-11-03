@@ -120,6 +120,7 @@ OsSettingsResult::OsSettingsResult(
     const std::u16string& query)
     : profile_(profile), url_path_(result->url_path_with_parameters) {
   set_id(kOsSettingsResultPrefix + url_path_);
+  SetCategory(Category::kSettings);
   set_relevance(relevance_score);
   SetTitle(result->canonical_result_text);
   SetTitleTags(CalculateTags(query, result->canonical_result_text));

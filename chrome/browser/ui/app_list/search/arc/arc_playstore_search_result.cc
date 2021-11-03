@@ -115,6 +115,7 @@ ArcPlayStoreSearchResult::ArcPlayStoreSearchResult(
   SetTitleTags(CalculateTags(query, title));
   set_id(kPlayAppPrefix +
          crx_file::id_util::GenerateId(install_intent_uri().value()));
+  SetCategory(Category::kPlayStore);
   SetDisplayType(ash::SearchResultDisplayType::kTile);
   // TODO: The badge icon should be updated to pass through a vector icon and
   // color id rather than hardcoding the colors here.

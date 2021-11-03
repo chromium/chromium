@@ -93,6 +93,7 @@ FileResult::FileResult(const std::string& schema,
     : filepath_(filepath), type_(type), profile_(profile) {
   DCHECK(profile);
   set_id(schema + filepath.value());
+  SetCategory(Category::kFiles);
 
   SetResultType(result_type);
   switch (result_type) {
