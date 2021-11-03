@@ -68,6 +68,23 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
                                    public display::DisplayObserver,
                                    public ui::CompositorObserver {
  public:
+  // VideoCaptureLock ensures state necessary for capturing video remains in
+  // effect. For example, this may force keeping the compositor visible when
+  // it normally would not be.
+  class AURA_EXPORT VideoCaptureLock {
+   public:
+    VideoCaptureLock(const VideoCaptureLock&) = delete;
+    VideoCaptureLock& operator=(const VideoCaptureLock&) = delete;
+    ~VideoCaptureLock();
+
+   private:
+    friend class WindowTreeHost;
+
+    explicit VideoCaptureLock(WindowTreeHost* host);
+
+    base::WeakPtr<WindowTreeHost> host_;
+  };
+
   WindowTreeHost(const WindowTreeHost&) = delete;
   WindowTreeHost& operator=(const WindowTreeHost&) = delete;
 
@@ -274,6 +291,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual void LockMouse(Window* window);
   virtual void UnlockMouse(Window* window);
 
+  // See VideoCaptureLock for details. This may return null.
+  std::unique_ptr<VideoCaptureLock> CreateVideoCaptureLock();
+
   bool holding_pointer_moves() const { return holding_pointer_moves_; }
 
  protected:
@@ -364,6 +384,10 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
  private:
   friend class test::WindowTreeHostTestApi;
 
+  void DecrementVideoCaptureCount();
+  void MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+  bool CalculateCompositorVisibilityFromOcclusionState() const;
+
   // Moves the cursor to the specified location. This method is internally used
   // by MoveCursorToLocationInDIP() and MoveCursorToLocationInPixels().
   void MoveCursorToInternal(const gfx::Point& root_location,
@@ -425,6 +449,9 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   bool native_window_occlusion_enabled_ = false;
 
   bool accelerated_widget_made_visible_ = false;
+
+  // Number of VideoCaptureLocks that have been created and not destroyed.
+  int video_capture_count_ = 0;
 
   base::WeakPtrFactory<WindowTreeHost> weak_factory_{this};
 };

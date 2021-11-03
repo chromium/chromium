@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -98,20 +99,15 @@ class ScopedLocalSurfaceIdValidator {
 };
 #endif
 
-bool ShouldOcclusionStateBeConsideredVisible(Window::OcclusionState state) {
-  switch (state) {
-    case Window::OcclusionState::UNKNOWN:
-      return true;
-    case Window::OcclusionState::VISIBLE:
-      return true;
-    case Window::OcclusionState::OCCLUDED:
-      return false;
-    case Window::OcclusionState::HIDDEN:
-      return false;
-  }
+}  // namespace
+
+WindowTreeHost::VideoCaptureLock::~VideoCaptureLock() {
+  if (host_)
+    host_->DecrementVideoCaptureCount();
 }
 
-}  // namespace
+WindowTreeHost::VideoCaptureLock::VideoCaptureLock(WindowTreeHost* host)
+    : host_(host->GetWeakPtr()) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // WindowTreeHost, public:
@@ -379,8 +375,7 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
   if (compositor() && accelerated_widget_made_visible_ &&
       NativeWindowOcclusionTracker::
           IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
-    const bool visible =
-        ShouldOcclusionStateBeConsideredVisible(occlusion_state_);
+    const bool visible = CalculateCompositorVisibilityFromOcclusionState();
     if (visible != compositor()->IsVisible())
       UpdateCompositorVisibility(visible);
   }
@@ -422,6 +417,18 @@ void WindowTreeHost::UnlockMouse(Window* window) {
     cursor_client->UnlockCursor();
     cursor_client->ShowCursor();
   }
+}
+
+std::unique_ptr<WindowTreeHost::VideoCaptureLock>
+WindowTreeHost::CreateVideoCaptureLock() {
+  if (!NativeWindowOcclusionTracker::
+          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
+    return nullptr;
+  }
+  ++video_capture_count_;
+  MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+  // WrapUnique() is used as constructor is private.
+  return base::WrapUnique(new VideoCaptureLock(this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -637,6 +644,41 @@ void WindowTreeHost::SetNativeWindowOcclusionEnabled(bool enable) {
 
 ////////////////////////////////////////////////////////////////////////////////
 // WindowTreeHost, private:
+
+void WindowTreeHost::DecrementVideoCaptureCount() {
+  DCHECK_GT(video_capture_count_, 0);
+  --video_capture_count_;
+  MaybeUpdateComposibleVisibilityForVideoLockCountChange();
+}
+
+void WindowTreeHost::MaybeUpdateComposibleVisibilityForVideoLockCountChange() {
+  // Only need to check for changes when transitioning between lock and no lock.
+  if (video_capture_count_ > 1 || !compositor() ||
+      !accelerated_widget_made_visible_) {
+    return;
+  }
+  const bool visible = CalculateCompositorVisibilityFromOcclusionState();
+  if (visible != compositor()->IsVisible())
+    UpdateCompositorVisibility(visible);
+}
+
+bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
+  switch (occlusion_state_) {
+    case Window::OcclusionState::UNKNOWN:
+      return true;
+    case Window::OcclusionState::VISIBLE:
+      return true;
+    case Window::OcclusionState::OCCLUDED: {
+      // The compositor needs to be visible when capturing video.
+      return video_capture_count_ != 0;
+    }
+    case Window::OcclusionState::HIDDEN:
+      // TODO: this should really return true if `video_capture_count_` is
+      // not zero, but this likely needs other changes to really work (such
+      // as on windows when an HWND is iconified it is sized to 0x0).
+      return false;
+  }
+}
 
 void WindowTreeHost::MoveCursorToInternal(const gfx::Point& root_location,
                                           const gfx::Point& host_location) {
