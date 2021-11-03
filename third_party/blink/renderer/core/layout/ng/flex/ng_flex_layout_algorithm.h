@@ -66,7 +66,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
           absl::nullopt) const;
   void ConstructAndAppendFlexItems();
   void ApplyStretchAlignmentToChild(FlexItem& flex_item);
-  bool GiveLinesAndItemsFinalPositionAndSize();
+  void ApplyFinalAlignmentAndReversals();
+  bool GiveItemsFinalPositionAndSize();
   void LayoutColumnReverse(LayoutUnit main_axis_content_size);
 
   // This is same method as FlexItem but we need that logic before FlexItem is

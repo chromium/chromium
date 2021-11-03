@@ -408,7 +408,7 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForLayout(
   // For a button child, we need the baseline type same as the container's
   // baseline type for UseCounter. For example, if the container's display
   // property is 'inline-block', we need the last-line baseline of the
-  // child. See the bottom of GiveLinesAndItemsFinalPositionAndSize().
+  // child. See the bottom of GiveItemsFinalPositionAndSize().
   if (Node().IsButton()) {
     space_builder.SetBaselineAlgorithmType(
         ConstraintSpace().BaselineAlgorithmType());
@@ -911,7 +911,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
       ConstraintSpace(), Style(), BorderPadding(), total_intrinsic_block_size,
       container_builder_.InlineSize());
 
-  bool success = GiveLinesAndItemsFinalPositionAndSize();
+  ApplyFinalAlignmentAndReversals();
+  bool success = GiveItemsFinalPositionAndSize();
   if (!success)
     return nullptr;
 
@@ -993,7 +994,7 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
       flex_item.ng_input_node_.Layout(child_space, /* break_token */ nullptr);
 }
 
-bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
+void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals() {
   Vector<FlexLine>& line_contexts = algorithm_.FlexLines();
   const LayoutUnit cross_axis_start_edge =
       line_contexts.IsEmpty() ? LayoutUnit()
@@ -1025,9 +1026,21 @@ bool NGFlexLayoutAlgorithm::GiveLinesAndItemsFinalPositionAndSize() {
     algorithm_.LayoutColumnReverse(final_content_main_size,
                                    BorderScrollbarPadding().block_start);
   }
+}
+
+bool NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize() {
+  Vector<FlexLine>& line_contexts = algorithm_.FlexLines();
+  LayoutUnit final_content_cross_size;
+  if (is_column_) {
+    final_content_cross_size =
+        container_builder_.InlineSize() - BorderScrollbarPadding().InlineSum();
+  } else {
+    final_content_cross_size =
+        total_block_size_ - BorderScrollbarPadding().BlockSum();
+  }
 
   absl::optional<LayoutUnit> fallback_baseline;
-  NGFlexItemIterator item_iterator(algorithm_.FlexLines(), BreakToken());
+  NGFlexItemIterator item_iterator(line_contexts, BreakToken());
 
   bool success = true;
   for (auto entry = item_iterator.NextItem();
