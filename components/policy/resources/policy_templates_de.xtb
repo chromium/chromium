@@ -1066,6 +1066,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2266422599396179941">Zulassen, dass Nutzer Feedback geben</translation>
 <translation id="2269319728625047531">Einwilligung zur Synchronisierung beim Anmelden anzeigen</translation>
 <translation id="2270747976331889601">Mit dieser Richtlinie kann eine Sicherheitsfunktion von TLS 1.3 für lokale Vertrauensanker aktiviert werden.</translation>
+<translation id="22754818344448444">Nutzern dürfen eine Vorlage für Desktoplayouts zum Laden auswählen</translation>
 <translation id="2281496157391382819"> Kontrolliert die Datenschutzwarnung der verwalteten Gastsitzung unter <ph name="PRODUCT_OS_NAME" />.
 
       Wenn diese Richtlinie auf "False" gesetzt ist, werden Datenschutzwarnungen auf dem Anmeldebildschirm und die Benachrichtigung zum automatischen Start der verwalteten Gastsitzung deaktiviert.
@@ -2615,6 +2616,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
       Wenn die Richtlinie aktiviert ist, kann die Funktion „Schnelle Antworten“ auf ausgewählte Inhalte zugreifen.
       Wenn die Richtlinie deaktiviert ist, kann sie dies nicht.
       Wenn die Richtlinie nicht konfiguriert ist, können Nutzer entscheiden, ob die Funktion „Schnelle Antworten“ auf ausgewählte Inhalte zugreifen darf oder nicht.</translation>
+<translation id="4016700865356669962">Wenn diese Richtlinie aktiviert ist, dürfen Nutzer Vorlagen für Desktoplayouts verwenden.  Ist diese Richtlinie deaktiviert oder nicht konfiguriert, sind diese Vorlagen nicht verfügbar.</translation>
 <translation id="4020682745012723568">In das Nutzerprofil übertragene Cookies sind für Android-Apps nicht zugänglich.</translation>
 <translation id="4025500273782820766">Zulassen, dass Nutzer „Immer öffnen“ auswählen, wenn ein Dialog für ein externes Protokoll angezeigt wird, sodass das Protokoll in Zukunft ohne die Bestätigung geöffnet wird</translation>
 <translation id="402759845255257575">Ausführung von JavaScript für keine Website zulassen</translation>
@@ -4441,6 +4443,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6371561334154580937">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters anzeigen.</translation>
 <translation id="6372105930898423193">Ermöglicht die Aktivierung der AppCache-Funktion, selbst wenn sie standardmäßig deaktiviert ist.</translation>
 <translation id="6376659517206731212">Kann verbindlich sein</translation>
+<translation id="6377031865393559909">Nutzer dürfen Desktopvorlagen verwenden</translation>
 <translation id="6378076389057087301">Angaben zum Einfluss von Audioaktivitäten auf den Energiesparmodus</translation>
 <translation id="6378393933102834628">Wenn die Richtlinie auf "True" gesetzt ist, wird die Apps-Verknüpfung eingeblendet. Ist sie auf "False" gesetzt, wird die Verknüpfung nie eingeblendet.
 
@@ -4939,6 +4942,7 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
       Ist die Richtlinie deaktiviert, zeichnen angemeldete Geräte den Audiostatus nicht auf und melden diesen nicht.</translation>
 <translation id="6929746927224321095">„Automatisches Ausfüllen“ deaktivieren</translation>
 <translation id="6931242315485576290">Synchronisierung der Daten mit Google deaktivieren</translation>
+<translation id="6940243892299228102">Nutzer dürfen keine Desktopvorlagen verwenden</translation>
 <translation id="6943577887654905793">Bevorzugter Mac-/Linux-Name:</translation>
 <translation id="6946652757373377924">
       Diese Richtlinie wurde in M77 entfernt.

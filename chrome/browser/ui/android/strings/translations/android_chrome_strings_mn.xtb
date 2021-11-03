@@ -234,6 +234,7 @@
 <translation id="2450907520913474542">Хуудаснаас гаралгүйгээр веб сайтууд дээрх сэдвүүдийн талаар мэдээлэл аваарай. Хайхын тулд товших онцлог нь үг болон тухайн үгийн хам сэдвийг Google Хайлт руу илгээснээр тодорхойлолт, зураг, хайлтын илэрц болон бусад дэлгэрэнгүйг гаргаж ирнэ.
 
 Хайлт үүсгэхийн тулд дурын үгийг удаан дарна уу. Хайлтаа боловсронгуй болгохын тулд илүү олон эсвэл цөөн үг сонгоно уу. Хайлтаа засахын тулд түр зуурын самбарыг нээж, дүрс тэмдгийг товшин шинэ табд нээгээд хайх хэсэгт өөрчлөлтөө хийнэ үү.</translation>
+<translation id="2451607499823206582">Хянаж байна</translation>
 <translation id="2459390580524506445">Сайжруулсан дуут хайлт</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="247737702124049222">Зургийн тайлбар асаалттай байна</translation>
@@ -253,6 +254,7 @@
 <translation id="2527779675047087889">Түр санах ойн контентыг нуух</translation>
 <translation id="2532336938189706096">Веб харах</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгасан</translation>
+<translation id="2534582914273493287">Таны зочилсон URL-г Google-д илгээдэг</translation>
 <translation id="2536728043171574184">Энэ хуудсын офлайн хуулбарыг харж байна</translation>
 <translation id="2546283357679194313">Cookies болон сайтын дата</translation>
 <translation id="2561519700418191927">Видеоны урьдчилан үзэлтүүд</translation>
@@ -372,6 +374,7 @@
 <translation id="3234978181857588512">Төхөөрөмжид хадгалах</translation>
 <translation id="3236059992281584593">1 минут үлдсэн</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Хэрэв та мөн Chrome-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
 <translation id="3250563604907490871">Таныг Wi-Fi-д холбогдох үед зургийн тайлбарыг үргэлжлүүлнэ</translation>
 <translation id="3254409185687681395">Энэ хуудсыг хадгал</translation>
 <translation id="3259831549858767975">Хуудасны бүх зүйлийг жижиг болгох</translation>
@@ -423,6 +426,7 @@
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> килобайт боломжтой</translation>
 <translation id="3549657413697417275">Түүхээ хайх</translation>
+<translation id="3557272988124495906">Үнийн бууралтын талаар мэдэгдэл аваарай</translation>
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
 <translation id="3563767357928833671">Түр санах ойн контентуудыг харуулсан</translation>
 <translation id="3566923219790363270">Chrome Виртуал бодит байдлыг бэлтгэсээр байна. Chrome-г дараа дахин эхлүүлнэ үү.</translation>
@@ -458,6 +462,7 @@
 <translation id="3775705724665058594">Төхөөрөмжүүддээ илгээх</translation>
 <translation id="3778956594442850293">Үндсэн нүүрэнд нэмсэн</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 таб}other{# таб}}</translation>
+<translation id="3803783897442799486">Үргэлжлүүлснээр та <ph name="BEGIN_LINK1" />Үйлчилгээний нөхцөлийг<ph name="END_LINK1" /> зөвшөөрч байна.\nТухайн аппыг сайжруулахад туслахын тулд Chrome ашиглалт болон гэмтлийн өгөгдлийг Google-д илгээнэ. <ph name="BEGIN_LINK2" />Удирдах<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Автоматаар тоглуулахыг удирдах</translation>
 <translation id="3810838688059735925">Видео</translation>
 <translation id="3810973564298564668">удирдах</translation>
@@ -606,6 +611,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="47217992755561375">Шилдэг сайтуудаа харах</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4738836084190194332">Хамгийн сүүлд синк хийсэн: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Та хаяг оруулах хэсэгт сайжруулсан зөвлөмжүүд авна</translation>
 <translation id="4742970037960872810">Тодруулгыг хасах</translation>
 <translation id="4749960740855309258">Шинэ таб нээх</translation>
 <translation id="4758061975920522644">Зөвхөн зураг хуваалцана уу</translation>
@@ -1172,6 +1178,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Хурдан хөтлөх болон хайхын тулд хуудсыг урьдчилан ачаалах</translation>
 <translation id="7986497153528221272">Нууц үг харах бол, эхлээд төхөөрөмж дээрээ дэлгэцийн түгжээг тохируулна уу</translation>
+<translation id="799576009106109668">Контентыг таны одоогийн веб хуудасны зочилсон байдалд тулгуурлан идэвхтэй ачаалсан тул та илүү хурдан үзнэ</translation>
 <translation id="7998918019931843664">Хаагдсан цонхыг дахин нээх</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8013372441983637696">Энэ төхөөрөмжөөс Chrome-н өгөгдлийг мөн адил устгах</translation>
@@ -1219,6 +1226,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8218052821161047641">Шуурхай хуудас</translation>
 <translation id="8218622182176210845">Бүртгэлээ удирдах</translation>
 <translation id="8223642481677794647">Сувгийн картын цэс</translation>
+<translation id="8242868071038398515">Аль нэг сайт дээр үнэ буурсан тохиолдолд танд мэдэгдэнэ</translation>
 <translation id="8250920743982581267">Документ</translation>
 <translation id="825412236959742607">Энэ хуудас хэт их санах ой ашиглаж байгаа тул Chrome зарим агуулгыг устгасан болно.</translation>
 <translation id="8260126382462817229">Дахин нэвтрэхээр оролдоно уу.</translation>
@@ -1237,6 +1245,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8354977102499939946">Дуу хоолойгоороо шуурхай хайгаарай. Энэ товчлолыг засахын тулд Тохиргоо руу очно уу.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> татаж авсан файлыг сэргээсэн</translation>
 <translation id="8364299278605033898">Түгээмэл хэрэглэгддэг веб сайтыг харах</translation>
+<translation id="8368001212524806591">Үнэ хянах</translation>
 <translation id="8387617938027387193">Өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="8393700583063109961">Мессеж илгээх</translation>
 <translation id="8410695015584479363">Үнэ хянах</translation>

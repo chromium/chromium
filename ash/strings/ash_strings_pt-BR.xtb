@@ -48,6 +48,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1239161794459865856">O recurso <ph name="FEATURE_NAME" /> está conectado.</translation>
 <translation id="1246890715821376239">Apps sem suporte</translation>
 <translation id="1247372569136754018">Microfone (interno)</translation>
+<translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">Carregando a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
 <translation id="1266097335951928626">Iniciar câmera para selfies</translation>
@@ -79,6 +80,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para executar a ação de notificação</translation>
 <translation id="1420408895951708260">Alternar Modo noturno. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Sim</translation>
+<translation id="1438357537418863713">Você configurou o espelhamento de app. Quando ele for iniciado, os apps abertos recentemente vão aparecer aqui.</translation>
 <translation id="144853431011121127">Receba notificações do seu smartphone no <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Mostrar configurações de idioma</translation>
 <translation id="1460620680449458626">O som está desativado.</translation>
@@ -590,6 +592,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
 <translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
+<translation id="5166007464919321363">Salvar espaço de trabalho como modelo</translation>
 <translation id="5166918508782100047">Configurações das Respostas rápidas</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
@@ -799,6 +802,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6777216307882431711">Carregando dispositivos USB-C conectados</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="6803622936009808957">Não foi possível espelhar os displays porque não foram encontradas resoluções suportadas. Em vez disso, foi ativada a área de trabalho estendida.</translation>
+<translation id="6811454077060061666">O Google Drive para computador está indisponível</translation>
 <translation id="6816797338148849397">Informações relacionadas à sua seleção disponíveis. Use a tecla de seta para cima para acessar.</translation>
 <translation id="6818242057446442178">Voltar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
@@ -997,6 +1001,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />, bateria do smartphone em <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409">Pressione "Enter" para desbloquear para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Excluir</translation>
+<translation id="8281279285293265212">Falha ao salvar o screencast</translation>
 <translation id="8284362522226889623">Deslize para a esquerda com quatro dedos para acessar o espaço de trabalho anterior</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraco</translation>
@@ -1101,6 +1106,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="9070640332319875144">Configurações do Google Assistente</translation>
 <translation id="9072519059834302790">Tempo restante de bateria: <ph name="TIME_LEFT" />.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Modelos</translation>
 <translation id="9077515519330855811">Controles de mídia. Tocando <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Deslize para cima para ir para a tela inicial</translation>

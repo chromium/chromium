@@ -1062,6 +1062,7 @@
 <translation id="2266422599396179941">允许用户提交反馈</translation>
 <translation id="2269319728625047531">在登录期间允许显示同步同意声明</translation>
 <translation id="2270747976331889601">为本地信任锚启用 TLS 1.3 安全功能。</translation>
+<translation id="22754818344448444">允许用户选择要加载的桌面布局模板</translation>
 <translation id="2281496157391382819"> 控制 <ph name="PRODUCT_OS_NAME" />上受管理访客会话的隐私权警告。
 
       如果此政策设为 False，系统会停用登录屏幕上的隐私权警告和受管理访客会话中的自动启动通知。
@@ -2596,6 +2597,7 @@
       如果此政策已启用，“快速解答”功能将能够访问所选内容。
       如果此政策已停用，“快速解答”功能将无法访问所选内容。
       如果此政策未设置，用户可以自行决定是否允许“快速解答”功能访问所选内容。</translation>
+<translation id="4016700865356669962">如果此政策已启用，用户便能使用桌面布局模板。如果此政策已停用或未设置，则意味着这些模板不可用。</translation>
 <translation id="4020682745012723568">Android 应用无法访问已转移到用户个人资料中的 Cookie。</translation>
 <translation id="4025500273782820766">允许用户在系统显示外部协议对话框时选择“始终允许”，以跳过后续的确认提示</translation>
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
@@ -4402,6 +4404,7 @@
 <translation id="6371561334154580937">在用户关闭最后一个窗口时显示让用户确认退出登录的对话框。</translation>
 <translation id="6372105930898423193">允许重新启用 AppCache 功能，即使此功能默认处于关闭状态。</translation>
 <translation id="6376659517206731212">可强制执行</translation>
+<translation id="6377031865393559909">允许用户使用桌面模板</translation>
 <translation id="6378076389057087301">指定音频活动是否影响电源管理</translation>
 <translation id="6378393933102834628">如果此政策设为 True，系统会显示应用快捷方式。如果此政策设为 False，系统一律不会显示此类快捷方式。
 
@@ -4898,6 +4901,7 @@
       如果此政策已停用，已注册的设备将不会记录或报告音频状态。</translation>
 <translation id="6929746927224321095">停用“自动填充”功能</translation>
 <translation id="6931242315485576290">停用与 Google 同步数据的功能</translation>
+<translation id="6940243892299228102">不允许用户使用桌面模板</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
 <translation id="6946652757373377924">
       此政策已从 M77 中移除。

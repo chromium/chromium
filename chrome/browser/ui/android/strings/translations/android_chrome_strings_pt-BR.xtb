@@ -234,6 +234,7 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 <translation id="2450907520913474542">Saiba mais sobre assuntos específicos em sites sem sair da página. Com o recurso "Pesquisa por toque", a palavra tocada e o contexto relacionado são enviados para a Pesquisa Google, que mostra definições, imagens, resultados da pesquisa e outros detalhes.
 
 Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar a pesquisa, selecione mais ou menos palavras. Para editar a pesquisa, abra o painel, toque no ícone que abre uma nova guia e faça mudanças na caixa de pesquisa.</translation>
+<translation id="2451607499823206582">Monitoramento</translation>
 <translation id="2459390580524506445">Pesquisa por voz aprimorada</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="247737702124049222">As descrições de imagens estão ativadas</translation>
@@ -253,6 +254,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2527779675047087889">Ocultar conteúdo da área de transferência</translation>
 <translation id="2532336938189706096">Visualização na Web</translation>
 <translation id="2534155362429831547">Itens excluídos: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2534582914273493287">Os URLs que você acessa são enviados ao Google</translation>
 <translation id="2536728043171574184">Vendo uma cópia off-line desta página</translation>
 <translation id="2546283357679194313">Cookies e dados do site</translation>
 <translation id="2561519700418191927">Visualizações de vídeo</translation>
@@ -372,6 +374,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3234978181857588512">Salvar no dispositivo</translation>
 <translation id="3236059992281584593">Um minuto restante</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245429137663807393">Se você também compartilhar os relatórios de uso do Chrome, eles vão incluir os URLs acessados</translation>
 <translation id="3250563604907490871">As descrições de imagens serão retomadas quando você se conectar ao Wi-Fi</translation>
 <translation id="3254409185687681395">Adicionar esta página aos favoritos</translation>
 <translation id="3259831549858767975">Diminuir tudo na página.</translation>
@@ -423,6 +426,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3527085408025491307">Pasta</translation>
 <translation id="3542235761944717775">Disponíveis: <ph name="KILOBYTES" /> KB</translation>
 <translation id="3549657413697417275">Pesquise o seu histórico</translation>
+<translation id="3557272988124495906">Receber notificações de redução no preço</translation>
 <translation id="3557336313807607643">Adicionar aos contatos</translation>
 <translation id="3563767357928833671">Conteúdo da área de transferência exibido</translation>
 <translation id="3566923219790363270">O Chrome ainda está se preparando para a RV. Reinicie-o mais tarde.</translation>
@@ -458,6 +462,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3775705724665058594">Enviar para seus dispositivos</translation>
 <translation id="3778956594442850293">Adicionado à tela inicial</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 guia}one{# guia}other{# guias}}</translation>
+<translation id="3803783897442799486">Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" />.\nPara ajudar a melhorar o app, o Chrome envia dados de uso e de falha ao Google. <ph name="BEGIN_LINK2" />Gerenciar<ph name="END_LINK2" /></translation>
 <translation id="3803784507854318295">Gerenciar a reprodução automática</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
@@ -607,6 +612,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="47217992755561375">Veja seus principais sites</translation>
 <translation id="4732120983431207637">Recuperador de pilha</translation>
 <translation id="4738836084190194332">Última sincronização: <ph name="WHEN" /></translation>
+<translation id="4741753828624614066">Você vai receber sugestões melhores na barra de endereço</translation>
 <translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4749960740855309258">Abrir uma nova guia</translation>
 <translation id="4758061975920522644">Compartilhar apenas a imagem</translation>
@@ -1174,6 +1180,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Pré-carregar páginas para possibilitar navegação e pesquisa mais rápidas</translation>
 <translation id="7986497153528221272">Para poder ver as senhas, configure um bloqueio de tela no dispositivo</translation>
+<translation id="799576009106109668">Como o conteúdo é carregado proativamente com base na página da Web acessada, você vai navegar com mais rapidez</translation>
 <translation id="7998918019931843664">Reabrir guia fechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Limpar também seus dados do Chrome deste dispositivo</translation>
@@ -1221,6 +1228,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8218052821161047641">Página de carregamento rápido</translation>
 <translation id="8218622182176210845">Gerenciar sua conta</translation>
 <translation id="8223642481677794647">Menu do card do feed</translation>
+<translation id="8242868071038398515">Você vai receber uma notificação se houver uma redução no preço em algum site</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Como esta página usa muita memória, o Chrome removeu parte do conteúdo.</translation>
 <translation id="8260126382462817229">Tente fazer login novamente</translation>
@@ -1239,6 +1247,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8354977102499939946">Pesquisar rapidamente usando sua voz. Para editar esse atalho, acesse as Configurações.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restaurados</translation>
 <translation id="8364299278605033898">Ver sites conhecidos</translation>
+<translation id="8368001212524806591">Monitorar preço</translation>
 <translation id="8387617938027387193">Confirme que é você</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8410695015584479363">Monitorar preços</translation>

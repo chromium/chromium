@@ -1146,7 +1146,7 @@
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
 <translation id="2157875535253991059">هذه الصفحة في وضع ملء الشاشة الآن.</translation>
-<translation id="2158475082070321257">نسخ الرابط المؤدي إلى النصوص التي تم تمييزها</translation>
+<translation id="2158475082070321257">نسخ الرابط المؤدي إلى نص محدد</translation>
 <translation id="2159488579268505102">USB-C</translation>
 <translation id="216169395504480358">‏إضافة Wi-Fi...</translation>
 <translation id="2162155940152307086">ستبدأ المزامنة بعد مغادرتك إعدادات المزامنة</translation>
@@ -2932,7 +2932,7 @@
 <translation id="3984135167056005094">عدم تضمين عنوان البريد الإلكتروني</translation>
 <translation id="3984159763196946143">تعذَّر بدء الوضع التجريبي</translation>
 <translation id="3984431586879874039">هل تريد السماح لهذا الموقع الإلكتروني بالاطّلاع على مفتاح الأمان؟</translation>
-<translation id="398477389655464998">نسخ الرابط المؤدي إلى النصوص التي تم تمييزها</translation>
+<translation id="398477389655464998">نسخ الرابط المؤدي إلى نص محدد</translation>
 <translation id="3984862166739904574">تعريف المصطلحات باستخدام ميزة "معلومات سريعة"</translation>
 <translation id="3987544746655539083">مواصلة حظر هذا الموقع الإلكتروني من الوصول إلى موقعك الجغرافي</translation>
 <translation id="3987938432087324095">عذرًا، لم يتم التعرف على ذلك.</translation>
@@ -5813,7 +5813,6 @@
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7149839598364933473">تحويل هذا الجهاز إلى جهاز متوافق مع نظام التشغيل <ph name="DEVICE_OS" /></translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
-<translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
 <translation id="7154130902455071009">تغيير الصفحة الرئيسية إلى: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">صورة حالية من الكاميرا أو الملف</translation>
 <translation id="7163202347044721291">جارٍ التحقّق من رمز التفعيل...</translation>

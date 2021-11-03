@@ -1999,6 +1999,13 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Use o caractere curinga "*" para fazer a correspondência com zero ou mais caracteres arbitrários. O caractere de escape é "\". Portanto, para fazer a correspondência real de caracteres "*" ou "\", você pode adicionar um "\" antes deles.
 
       Se esta política não for definida, todas as Contas do Google no dispositivo ficarão visíveis no <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3243793808000947475">Se esta política for desativada, o host de suporte remoto não poderá ser iniciado ou configurado para aceitar novas conexões.
+
+          Esta política não afeta situações de acesso remoto.
+
+          Esta política não impede que administradores corporativos se conectem a dispositivos Chrome OS gerenciados.
+
+          Esta política não terá efeito se for ativada, deixada vazia ou não for definida.</translation>
 <translation id="3251500716404598358">Configura políticas para alternar entre navegadores.
 
       Os sites configurados serão abertos automaticamente em um navegador diferente de <ph name="PRODUCT_NAME" />.</translation>
@@ -2220,6 +2227,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="3540935459049973317">Limites de tempo por app</translation>
 <translation id="3547954654003013442">Configurações de proxy</translation>
+<translation id="3548642468619496972">Bloquear downloads maliciosos, incomuns ou indesejados e tipos de arquivo perigosos.</translation>
 <translation id="3550122827225052130">Esta política está obsoleta e será removida na versão 85 do <ph name="PRODUCT_OS_NAME" />. Por isso, passe a usar <ph name="SCREEN_LOCK_DELAYS_POLICY_NAME" />.
 
           Especifica o tempo sem entrada do usuário para que a tela seja bloqueada quando o dispositivo estiver funcionando com energia CA.
@@ -2943,6 +2951,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4494132853995232608">DTC wilco</translation>
 <translation id="449423975179525290">Configura políticas relacionadas ao <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="449784980858429908">Permitir automaticamente que os sites se conectem a todas as portas seriais.</translation>
+<translation id="450080746522343150">Bloquear todos os downloads.</translation>
 <translation id="4510923771103268849">O usuário tem permissão de acesso root aos contêineres do Crostini</translation>
 <translation id="4513691822411041977">Não forçar o uso do SafeSearch na Pesquisa Google nem o Modo restrito do YouTube</translation>
 <translation id="4515404363392014383">Ativar a Navegação segura para fontes confiáveis</translation>
@@ -3057,6 +3066,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se esta política for definida como verdadeira, o usuário poderá capturar pacotes de rede no dispositivo.
       Se ela for definida como falsa, não será possível fazer isso.</translation>
 <translation id="4600786265870346112">Ativar cursor grande</translation>
+<translation id="4602988345256038309">Permitir conexões de suporte remoto a esta máquina</translation>
 <translation id="4607416370554533118">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para que o Chrome possa selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro utilizado, apenas os certificados correspondentes à solicitação do servidor serão selecionados.
 
       Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:
@@ -3702,6 +3712,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
           Se ela for definida como "Desativada", o recurso será desativado à força.
           </translation>
 <translation id="5435888298115339571">Ativar o compartilhamento da área de trabalho na omnibox e no menu de três pontos</translation>
+<translation id="5441508088704391614">Nenhuma restrição especial (padrão).</translation>
 <translation id="5442026853063570579">Esta política também controla o acesso às Opções do desenvolvedor Android. Se esta política for definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar as Opções do desenvolvedor. Se for definida como falsa ou se não for definida, os usuários poderão acessar as Opções do desenvolvedor tocando sete vezes no número da versão no app de configurações do Android.</translation>
 <translation id="5443582909255996887">Se a política for ativada, todos os sites serão isolados no Android e cada um executará um processo próprio. Os usuários não poderão escolher outra opção. Um site é um esquema + eTLD+1 (por exemplo, https://example.com). Desde a versão 77 do <ph name="PRODUCT_NAME" />, determinados sites confidenciais são isolados por padrão no Android. Esta política amplia esse modo de isolamento para todos os sites.
 
@@ -4269,6 +4280,27 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6102449843040973938">Não evitar que a <ph name="BOREALIS_NAME" /> seja executada em um dispositivo</translation>
 <translation id="6107642964266628393">Controla como e quando as atualizações do Chrome OS são aplicadas.</translation>
 <translation id="6111936128861357925">Permitir jogo easter egg de dinossauro</translation>
+<translation id="6112524153927257380">Se a política for definida, o usuário não poderá ignorar as decisões de segurança de downloads.
+
+      Há muitos tipos de alertas de download no Chrome, que os divide nas categorias a seguir. Saiba mais sobre os vereditos do Navegação segura (https://support.google.com/chrome/?p=ib_download_blocked).
+
+      * Malicioso, conforme sinalizado pelo servidor do Navegação segura
+      * Incomum ou indesejado, conforme sinalizado pelo servidor do Navegação segura
+      * Perigoso (por exemplo, todos os downloads de arquivos SWF e muitos downloads de arquivos EXE)
+
+      Se a política for definida, vários subconjuntos dessas categorias serão bloqueados, dependendo do valor:
+
+      0: nenhuma restrição especial (padrão).
+
+      1: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura E bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
+
+      2: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, bloqueia arquivos incomuns ou indesejados sinalizados pelo servidor do Navegação segura E bloqueia todos os tipos de arquivo perigosos. Recomendado apenas para UOs/navegadores/usuários com alta tolerância a falsos positivos.
+
+      3: bloqueia todos os downloads. Não recomendado, exceto em casos de uso especiais.
+
+      4: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, não bloqueia tipos de arquivo perigosos (recomendado).
+
+      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Elas não se aplicam à opção de fazer o download da página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre o Navegação segura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6123052603197028610">Não permitir consultas aos servidores do Google para recuperar carimbos de data/hora</translation>
 <translation id="6132506775968708399">Bloquear cookies de terceiros</translation>
 <translation id="6133088669883929098">Permitir que todos os sites usem a geração de chaves</translation>
@@ -4388,6 +4420,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se for definida como falsa ou for deixada sem definição, os sites só poderão enviar módulos WebAssembly para
       janelas e workers na mesma origem.</translation>
+<translation id="627672037430076089">Impedir conexões de suporte remoto a esta máquina</translation>
 <translation id="6277314550042130537">Usar a aprovação da política de KDC durante a autenticação do HTTP</translation>
 <translation id="6279722058145292462">A definição da política especifica, em dias, com que frequência um cliente muda a senha da conta da máquina. A senha é gerada aleatoriamente pelo cliente e não fica visível para o usuário. Se a política for desativada ou definida com um número alto de dias, poderá haver um impacto negativo na segurança, porque possíveis invasores terão mais tempo para descobrir a senha da conta da máquina e usá-la.
 
@@ -6010,6 +6043,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
           Se a ação for de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
 <translation id="8214600119442850823">Configura o gerenciador de senhas.</translation>
 <translation id="8217664958939773083">Se esta política for definida como <ph name="ENABLED" /> ou for deixada sem definição, o modo headless poderá ser usado. Se ela for definida como <ph name="DISABLED" />, o uso do modo headless será negado.</translation>
+<translation id="8219813789911069300">Bloquear downloads maliciosos (recomendado).</translation>
 <translation id="8220023426952118761">Velocidade de download desejada, em kbits/s.</translation>
 <translation id="8220156281401380422">Configurar a lista de permissões de mensagens nativas</translation>
 <translation id="8229912067600517877">Ativar as Ferramentas para desenvolvedores</translation>
@@ -6310,6 +6344,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8524334245528364388">URL para um arquivo JSON com uma lista de servidores de impressão.</translation>
 <translation id="8525526490824335042">Contêiner Linux</translation>
 <translation id="8528951285051082869">Não permitir que nenhum app da Web acesse tipos de arquivo pela API File Handling</translation>
+<translation id="8533145294731270627">Bloquear downloads maliciosos e tipos de arquivo perigosos.</translation>
 <translation id="8537051350735478658">Se a política for definida como verdadeira, as sugestões de pesquisa na barra de endereço do <ph name="PRODUCT_NAME" /> serão ativadas. Se ela for definida como falsa, essas sugestões serão desativadas.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, as sugestões de pesquisa ficarão inicialmente ativadas, mas os usuários poderão desativá-las quando quiserem.</translation>

@@ -1487,6 +1487,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2489686758589235262">Atribuir mais dois interruptores</translation>
 <translation id="2489829450872380594">Na próxima vez, um novo smartphone desbloqueará este <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações.</translation>
 <translation id="2489918096470125693">Adicionar &amp;pasta...</translation>
+<translation id="2489931062851778802">Informe estes dígitos no <ph name="DEVICE_NAME" /></translation>
 <translation id="2490481887078769936">O arquivo "<ph name="FILE_NAME" />" foi removido da lista</translation>
 <translation id="249113932447298600">O dispositivo <ph name="DEVICE_LABEL" /> não é atualmente suportado.</translation>
 <translation id="2492461744635776704">Preparando a solicitação de assinatura de certificado</translation>
@@ -2242,11 +2243,13 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3288047731229977326">Extensões executadas no modo de desenvolvedor podem prejudicar o computador. Se você não for desenvolvedor, para sua segurança, desative essas extensões que estão sendo executadas no modo de desenvolvedor.</translation>
 <translation id="3289668031376215426">Capitalização automática</translation>
 <translation id="3289856944988573801">Para verificar se há atualizações, utilize Ethernet ou Wi-Fi.</translation>
+<translation id="3290249595466894471">Envia também uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças</translation>
 <translation id="3291436823898732747">Navegação aprimorada: por exemplo, sugestões na omnibox antes de você começar a digitar</translation>
 <translation id="3293644607209440645">Enviar esta página</translation>
 <translation id="32939749466444286">O contêiner Linux não foi iniciado. Tente novamente.</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3294686910656423119">Estatísticas de uso e relatórios de erros</translation>
+<translation id="3297536526040732495">Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google</translation>
 <translation id="329838636886466101">Reparo</translation>
 <translation id="3298789223962368867">URL inválido digitado.</translation>
 <translation id="32991397311664836">Dispositivos:</translation>
@@ -2333,7 +2336,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="339178315942519818">Veja notificações dos seus apps de chat no <ph name="DEVICE_TYPE" /></translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3394850431319394743">Com permissão para usar identificadores para abrir conteúdo protegido</translation>
-<translation id="3396744558790608201">Clique com o botão direito do mouse e selecione "Pesquisar imagens usando o Google Lens" para pesquisar em qualquer região do site e saber mais sobre o conteúdo visual exibido enquanto você navega e faz compras na Internet.</translation>
+<translation id="3396744558790608201">Clique com o botão direito do mouse e selecione "Pesquisar imagens usando o Google Lens" para pesquisar em qualquer área do site e saber mais sobre o conteúdo visual exibido, enquanto você navega e faz compras na Internet.</translation>
 <translation id="3396800784455899911">Ao clicar no botão "Aceitar e concluir", você aceita o processo descrito acima para esses serviços do Google.</translation>
 <translation id="339722927132407568">Congela</translation>
 <translation id="3399432415385675819">As notificações serão desativadas</translation>
@@ -4357,6 +4360,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5554489410841842733">Este ícone ficará visível quando a extensão puder agir na página atual.</translation>
 <translation id="5554720593229208774">Autoridade de certificação de e-mail</translation>
 <translation id="5555363196923735206">Virar câmera</translation>
+<translation id="5555525474779371165">Escolha sua proteção no Navegação segura</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5558125320634132440">Este site foi bloqueado porque pode apresentar conteúdo para maiores</translation>
 <translation id="5558129378926964177">Aumentar z&amp;oom</translation>
@@ -5724,6 +5728,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7027258625819743915">{COUNT,plural, =0{Abrir tudo em &amp;uma janela anônima}=1{Abrir em &amp;uma janela anônima}one{Abrir tudo ({COUNT}) em &amp;uma janela anônima}other{Abrir tudo ({COUNT}) em &amp;uma janela anônima}}</translation>
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029809446516969842">Senhas</translation>
+<translation id="7030304022046916278">Envia URLs para a verificação do Navegação segura</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: porta serial conectada</translation>
 <translation id="7034692021407794547">Um administrador com privilégios para gerenciar faturamento precisa aceitar os Termos de Serviço do hardware do Google Meet na seção "Hardware do Google Meet" do Admin Console.</translation>
 <translation id="7036706669646341689">Recomenda-se ter pelo menos <ph name="DISK_SIZE" /> de espaço livre para o Linux. Para liberar espaço, exclua arquivos do dispositivo.</translation>
@@ -5829,7 +5834,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7149839598364933473">Converter este dispositivo para usar o <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
-<translation id="7152478047064750137">Esta extensão não requer permissões especiais</translation>
 <translation id="7154130902455071009">Alterar sua página inicial para: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">Foto existente na câmera ou em arquivo</translation>
 <translation id="7163202347044721291">Verificando código de ativação…</translation>

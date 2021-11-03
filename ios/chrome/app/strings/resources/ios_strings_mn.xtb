@@ -114,6 +114,7 @@
 <translation id="1973912524893600642">Өгөгдлийг хадгалах</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
+<translation id="199425419756152024">Нууц үгийг харах</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="2021670401941426298">Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу.</translation>
 <translation id="2073572773299281212"><ph name="DAYS" /> өдрийн өмнөөс идэвхтэй</translation>
@@ -152,7 +153,9 @@
 <translation id="2386793615875593361">1 сонгогдсон</translation>
 <translation id="2421004566762153674">Гуравдагч талын күүкиг блоклож байна</translation>
 <translation id="2421044535038393232">Үргэлжлүүлэн засах</translation>
+<translation id="2434405374328098816">Та <ph name="WEBSITE" />-д аль хэдийн "<ph name="USERNAME" />"-н нууц үгийг хадгалсан</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
+<translation id="2473876017985765807">Та <ph name="WEBSITE" />-н нууц үгийг аль хэдийн хадгалсан</translation>
 <translation id="2476359652512522418">Сонгоогүй</translation>
 <translation id="2497852260688568942">Таны админ синкийг идэвхгүй болгосон байна.</translation>
 <translation id="2500374554657206846">Нууц үг хадгалах сонголтууд</translation>
@@ -282,10 +285,12 @@
 <translation id="3603009562372709545">Холбоосын URL-ыг хуулах</translation>
 <translation id="3607167657931203000">Автоматаар бөглөх хэсгийн өгөгдөл</translation>
 <translation id="3609785682760573515">Sync хийж байна ...</translation>
+<translation id="3631443864840848029">Та энэ сайтын одоогийн нууц үгийг хадгалж байгаа эсэхээ шалгана уу.</translation>
 <translation id="3638472932233958418">Веб хуудсуудыг урьдчилан ачаалах</translation>
 <translation id="3661160521073045932">Тохируулгын профайл боломжтой</translation>
 <translation id="3670030362669914947">Тоо</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />-д хавчуулсан</translation>
+<translation id="369349502275246497">Нууц үг хадгалахыг санал болгох</translation>
 <translation id="3709582977625132201">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="3740397331642243698">Оруулсан URL-г Google Chrome дээр нууцлалтайгаар нээдэг.</translation>
 <translation id="3762232513783804601">Таны iPad-д зориулан бүтээсэн</translation>
@@ -508,6 +513,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5988851877894965432">URL-г Chrome-д нээх</translation>
 <translation id="6012140227487808125">Шифрлэж байна...</translation>
 <translation id="6021332621416007159">-д нээх...</translation>
+<translation id="6027945736510816438">Та <ph name="WEBSITE" />-г хэлж байна уу?</translation>
 <translation id="6036514205982097558">Таны бүх таб нэг хөтчид</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -582,6 +588,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 Сайт бүрд өвөрмөц нууц үг ашиглахыг хичээгээрэй.</translation>
 <translation id="651505212789431520">Синк хийхийг цуцлах уу? Та синкийг хүссэн үедээ Тохиргоонд асааж болно.</translation>
 <translation id="6524918542306337007">Нууцлалын горим боломжгүй байна</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Томруулах</translation>
 <translation id="6585618849026997638">Та хавчуурга нэмснээр чухал хуудас руугаа буцан очих боломжтой</translation>
 <translation id="6603393121510733479">Танай байгууллага хувийн хөтчийг унтраасан.
@@ -749,6 +756,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8080028325999236607">Бүх цонхнуудыг хаах</translation>
 <translation id="8105368624971345109">Унтраах</translation>
 <translation id="8114753159095730575">Файл татаж авах боломжтой. Дэлгэцийн доод хэсгийн сонголтууд боломжтой.</translation>
+<translation id="8132598642024322408">Одоо <ph name="PRICE" /> болсон бөгөөд өмнө нь <ph name="PREVIOUS_PRICE" /> байсан.</translation>
 <translation id="8156478151976189188">Нууц үг синк хийх ажиллахгүй байна</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Хуудсыг орчуулах</translation>
@@ -821,6 +829,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8881801611828450202">Энэ зургийг <ph name="SEARCH_ENGINE" />-с хайх</translation>
 <translation id="8909135823018751308">Мэдээллийг хуваалцах ...</translation>
 <translation id="8917490105272468696">Тийм, би зөвшөөрч байна</translation>
+<translation id="8952559610785099500">Нууц үг нэмэх</translation>
 <translation id="895541991026785598">Асуудлыг мэдэгдэх…</translation>
 <translation id="8976382372951310360">Тусламж</translation>
 <translation id="8976414606286374109">Картыг таны Google Бүртгэлд хадгалсан.</translation>

@@ -191,6 +191,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="5686916850681061684">Google Chrome-г өөрчилж, хянана уу. Та ямар нэг зүйлд анхаарлаа хандуулах шаардлагатай байна. Дэлгэрэнгүй мэдээлэл авахын тулд товшино уу.</translation>
 <translation id="5690427481109656848">Google ХХК</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome 1 секундийн дараа дахин эхэлнэ}other{Google Chrome # секундийн дараа дахин эхэлнэ}}</translation>
+<translation id="5736850870166430177">Хэрэв сайт таны нууц үгийг хулгайлахаар оролдох эсвэл таныг аюултай файл татах үед Chrome URL-г хуудасны бага зэрэг контентын хамт Аюулгүй үзэх рүү мөн илгээж болзошгүй</translation>
 <translation id="573759479754913123">Chrome үйлдлийн системийн тухай</translation>
 <translation id="5756509061973259733">Энэ бүртгэлтэй Chrome-н профайл аль хэдийн энэ төхөөрөмж дээр байна</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Канари</translation>
@@ -278,6 +279,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8290100596633877290">Өө! Google Chrome гэмтсэн байна. Дахин эхлүүлэх үү?</translation>
 <translation id="8342675569599923794">Энэ файл аюултай тул Chrome блоклосон байна.</translation>
 <translation id="8370517070665726704">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
+<translation id="8394720698884623075">Chrome-д хадгалсан аюултай сайтын жагсаалттай URL-г шалгана</translation>
 <translation id="840084489713044809">Google Chrome таны нууц үгийг экспортлох хүсэлтэй байна.</translation>
 <translation id="8433638294851456451">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chrome-д нэвтэрнэ үү.</translation>
 <translation id="8498858610309223613">Google Chrome-н аюулгүй байдлын тусгай шинэчлэлтийг хийж дууслаа. Одоо дахин эхлүүлнэ үү. Бид таны табыг сэргээх болно.</translation>

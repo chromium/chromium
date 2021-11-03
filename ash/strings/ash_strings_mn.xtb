@@ -48,6 +48,7 @@
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
 <translation id="1246890715821376239">Дэмжигдээгүй аппууд</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
+<translation id="1247519845643687288">Саяхны аппууд</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />-с цэнэглэж байна</translation>
 <translation id="1255033239764210633">Цаг агаар ямар байна вэ?</translation>
 <translation id="1266097335951928626">Сельфи камерыг эхлүүлэх</translation>
@@ -79,6 +80,7 @@
 <translation id="1419738280318246476">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг тайлна уу</translation>
 <translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Тийм</translation>
+<translation id="1438357537418863713">Аппын стримингийг одоо тохируулсан. Таныг эхлүүлсний дараа саяхан эхлүүлсэн аппууд энд харагдана.</translation>
 <translation id="144853431011121127">Утасныхаа мэдэгдлийг <ph name="DEVICE_TYPE" /> дээрээ аваарай</translation>
 <translation id="1455242230282523554">Хэлний тохиргоог харуулах</translation>
 <translation id="1460620680449458626">Дууг хаасан.</translation>
@@ -591,6 +593,7 @@
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
 <translation id="5147567197700016471">Түгжээг тайлсан</translation>
 <translation id="5155897006997040331">Унших хурд</translation>
+<translation id="5166007464919321363">Дэлгэцийг загвараар хадгалах</translation>
 <translation id="5166918508782100047">Шуурхай хариултын тохиргоо</translation>
 <translation id="5168181903108465623">Бэлэн төхөөрөмжийг каст хийх</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
@@ -800,6 +803,7 @@
 <translation id="6777216307882431711">Холбогдсон USB-C төхөөрөмжүүдийг цэнэглэж байна</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6803622936009808957">Ямар нэг холбогдох шийдэл олдоогүй учраас дэлгэцүүдийг ойлгож чадахгүй байна. Оронд нь сунгасан десктопыг орууллаа.</translation>
+<translation id="6811454077060061666">Компьютерт зориулсан Google Драйв боломжгүй байна</translation>
 <translation id="6816797338148849397">Таны сонголттой холбоотой мэдээлэл боломжтой байна. Хандахын тулд Дээш суман товчийг ашиглана уу.</translation>
 <translation id="6818242057446442178">Нэг үгээр буцаах</translation>
 <translation id="6820676911989879663">Завсарлага аваарай!</translation>
@@ -998,6 +1002,7 @@
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, утасны батарей <ph name="BATTERY_STATUS" /></translation>
 <translation id="826107067893790409"><ph name="USER_EMAIL_ADDRESS" />-д зориулж түгжээг тайлахын тулд Enter дээр дарна уу</translation>
 <translation id="8261506727792406068">Устгах</translation>
+<translation id="8281279285293265212">Дэлгэцийн видео бичлэгийг хадгалж чадсангүй</translation>
 <translation id="8284362522226889623">Өмнөх дэлгэц рүү сэлгэхийн тулд дөрвөн хуруугаараа зүүн тийш шударна уу</translation>
 <translation id="828708037801473432">Унтраалттай</translation>
 <translation id="8297006494302853456">Сул</translation>
@@ -1103,6 +1108,7 @@
 <translation id="9070640332319875144">Туслагчийн тохиргоо</translation>
 <translation id="9072519059834302790">Батарей дуусахад <ph name="TIME_LEFT" /> үлдлээ.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077404278023321866">Загварууд</translation>
 <translation id="9077515519330855811">Медиа хяналт, одоо <ph name="MEDIA_TITLE" />-г тоглуулж байна</translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Нүүр хуудас руу очихын тулд дээш шударна уу</translation>

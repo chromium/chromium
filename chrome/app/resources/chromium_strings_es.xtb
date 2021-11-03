@@ -32,7 +32,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2185166961232948079">Chromium, inicio de sesión en la red, <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chromium a su gusto.</translation>
 <translation id="2294245788148774212">Opcional: Envía datos de uso y diagnóstico automáticamente a Google para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS.</translation>
-<translation id="2313870531055795960">Comprueba las URLs con una lista de sitios que no son seguros guardadas en Chromium. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
+<translation id="2313870531055795960">Comprueba las URLs guardadas en Chromium con una lista de sitios que no son seguros. Si un sitio intenta robarte tu contraseña o si te descargas un archivo dañino, puede que Chromium también envíe URLs, así como fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="2343156876103232566">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chromium con ambos dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensión ha cambiado la página que se muestra al iniciar Chromium.</translation>
 <translation id="2396765026452590966">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al iniciar Chromium.</translation>
