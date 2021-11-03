@@ -169,8 +169,7 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
         DisplayLockContext::ForcedPhase::kLayout);
   } else {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
-        base.ComputeContainerNode(),
-        DisplayLockContext::ForcedPhase::kLayout);
+        base.AnchorNode(), DisplayLockContext::ForcedPhase::kLayout);
   }
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   return ComputeVisibleSelectionInDOMTree();
