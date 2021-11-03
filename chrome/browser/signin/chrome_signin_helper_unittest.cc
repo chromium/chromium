@@ -26,7 +26,8 @@
 
 namespace {
 
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kChromeManageAccountsHeader[] = "X-Chrome-Manage-Accounts";
 const char kMirrorAction[] = "action=ADDSESSION";
 #endif
@@ -108,7 +109,7 @@ class ChromeSigninHelperTest : public testing::Test {
   ChromeSigninHelperTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
-  ~ChromeSigninHelperTest() override {}
+  ~ChromeSigninHelperTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<net::TestDelegate> test_request_delegate_;
@@ -128,7 +129,8 @@ TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that user data is set on Mirror requests.
 TEST_F(ChromeSigninHelperTest, MirrorMainFrame) {
   // Process the header.
@@ -157,7 +159,8 @@ TEST_F(ChromeSigninHelperTest, MirrorSubFrame) {
   EXPECT_FALSE(response_adapter.GetUserData(
       signin::kManageAccountsHeaderReceivedUserDataKey));
 }
-#endif  // BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH) ||
+        // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(ChromeSigninHelperTest,
        ParseGaiaIdFromRemoveLocalAccountResponseHeader) {

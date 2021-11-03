@@ -58,6 +58,9 @@ class ActiveHostTest : public testing::Test {
   ActiveHostTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(4)) {}
 
+  ActiveHostTest(const ActiveHostTest&) = delete;
+  ActiveHostTest& operator=(const ActiveHostTest&) = delete;
+
   void SetUp() override {
     get_active_host_results_.clear();
 
@@ -110,9 +113,6 @@ class ActiveHostTest : public testing::Test {
   std::vector<GetActiveHostResult> get_active_host_results_;
 
   std::unique_ptr<ActiveHost> active_host_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveHostTest);
 };
 
 TEST_F(ActiveHostTest, TestDefaultValues) {

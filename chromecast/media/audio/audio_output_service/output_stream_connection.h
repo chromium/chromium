@@ -39,11 +39,15 @@ class OutputStreamConnection : public OutputConnection,
     virtual void OnBackendInitialized(
         const BackendInitializationStatus& status) = 0;
 
-    // Called when the current media pts potentially changes because:
-    //   1. A new buffer is pushed or
-    //   2. Playback state has changed (start/pause/resume).
-    virtual void UpdateMediaTime(int64_t media_timestamp_microseconds,
-                                 int64_t reference_timestamp_microseconds) = 0;
+    // Called when the audio pipeline backend is ready to receive the next
+    // buffer.
+    // TODO(b/173250111): Remove `media_timestamp_microseconds` and
+    // `reference_timestamp_microseconds` once all the implementations switched
+    // to using delay information.
+    virtual void OnNextBuffer(int64_t media_timestamp_microseconds,
+                              int64_t reference_timestamp_microseconds,
+                              int64_t delay_microseconds,
+                              int64_t delay_timestamp_microseconds) = 0;
 
    protected:
     virtual ~Delegate() = default;

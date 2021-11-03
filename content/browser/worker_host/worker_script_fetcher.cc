@@ -151,6 +151,8 @@ bool ShouldCreateWebUILoader(RenderFrameHost* creator_render_frame_host) {
     return true;
   if (requesting_scheme == kChromeUIUntrustedScheme)
     return true;
+  if (requesting_scheme == kChromeDevToolsScheme)
+    return true;
   return false;
 }
 
@@ -462,8 +464,8 @@ WorkerScriptFetcher::CreateFactoryBundle(
       break;
   }
 
-  // Create WebUI loader for chrome:// or chrome-untrusted:// workers from WebUI
-  // frames of the same scheme.
+  // Create WebUI loader for chrome://, chrome-untrusted://, or devtools://
+  // workers from WebUI frames of the same scheme.
   if (ShouldCreateWebUILoader(creator_render_frame_host)) {
     auto requesting_scheme =
         creator_render_frame_host->GetLastCommittedOrigin().scheme();

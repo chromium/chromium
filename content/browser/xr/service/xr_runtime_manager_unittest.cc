@@ -25,6 +25,10 @@
 namespace content {
 
 class XRRuntimeManagerTest : public testing::Test {
+ public:
+  XRRuntimeManagerTest(const XRRuntimeManagerTest&) = delete;
+  XRRuntimeManagerTest& operator=(const XRRuntimeManagerTest&) = delete;
+
  protected:
   XRRuntimeManagerTest() = default;
   ~XRRuntimeManagerTest() override = default;
@@ -82,8 +86,6 @@ class XRRuntimeManagerTest : public testing::Test {
  private:
   device::FakeVRDeviceProvider* provider_ = nullptr;
   scoped_refptr<XRRuntimeManagerImpl> xr_runtime_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(XRRuntimeManagerTest);
 };
 
 TEST_F(XRRuntimeManagerTest, InitializationTest) {

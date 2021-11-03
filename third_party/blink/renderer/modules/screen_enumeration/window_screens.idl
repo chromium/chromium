@@ -9,5 +9,5 @@
     ImplementedAs=WindowScreens,
     RuntimeEnabled=WindowPlacement
 ] partial interface Window {
-  [CallWith=ScriptState, Measure, RaisesException] Promise<Screens> getScreens();
+  [CallWith=ScriptState, Measure, RaisesException] Promise<ScreenDetails> getScreenDetails();
 };

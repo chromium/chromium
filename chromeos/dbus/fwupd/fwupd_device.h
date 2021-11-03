@@ -14,12 +14,12 @@ namespace chromeos {
 // Structure to hold FwupdDevice data received from fwupd.
 struct COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdDevice {
   FwupdDevice();
-  FwupdDevice(const std::string& id, const std::u16string& device_name);
+  FwupdDevice(const std::string& id, const std::string& device_name);
   FwupdDevice(const FwupdDevice& other);
   ~FwupdDevice();
 
   std::string id;
-  std::u16string device_name;
+  std::string device_name;
 };
 
 typedef std::vector<FwupdDevice> FwupdDeviceList;

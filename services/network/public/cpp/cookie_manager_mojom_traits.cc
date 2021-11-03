@@ -467,6 +467,10 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
                   net::CookiePartitionKey>::
     Read(network::mojom::CookiePartitionKeyDataView partition_key,
          net::CookiePartitionKey* out) {
+  if (partition_key.from_script()) {
+    *out = net::CookiePartitionKey::FromScript().value();
+    return true;
+  }
   net::SchemefulSite site;
   if (!partition_key.ReadSite(&site))
     return false;

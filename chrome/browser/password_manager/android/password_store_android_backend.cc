@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/sparse_histogram.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -193,24 +194,36 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
   // TODO(https://crbug.com/1229654): Implement.
+  // Run callback with an empty forms list to facilitate testing of other
+  // backend methods while this method is not implemented.
+  std::move(callback).Run({});
 }
 
 void PasswordStoreAndroidBackend::AddLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId job_id = bridge_->AddLogin(form);
+  QueueNewJob(job_id,
+              JobReturnHandler(std::move(callback),
+                               JobReturnHandler::MetricInfix("AddLoginAsync")));
 }
 
 void PasswordStoreAndroidBackend::UpdateLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId job_id = bridge_->UpdateLogin(form);
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          JobReturnHandler::MetricInfix("UpdateLoginAsync")));
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  // TODO(https://crbug.com/1229655):Implement.
+  JobId job_id = bridge_->RemoveLogin(form);
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          JobReturnHandler::MetricInfix("RemoveLoginAsync")));
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeAsync(
@@ -270,10 +283,32 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
                      WrapPasswordsIntoPointers(std::move(passwords))));
 }
 
-void PasswordStoreAndroidBackend::OnError(JobId job_id) {
+void PasswordStoreAndroidBackend::OnLoginsChanged(
+    JobId job_id,
+    const PasswordStoreChangeList& changes) {
+  JobReturnHandler reply = GetAndEraseJob(job_id);
+  DCHECK(reply.Holds<PasswordStoreChangeListReply>());
+
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(reply).Get<PasswordStoreChangeListReply>(),
+                     changes));
+}
+
+void PasswordStoreAndroidBackend::OnError(JobId job_id,
+                                          AndroidBackendError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(JobReturnHandler::WasSuccess(false));
+  base::UmaHistogramEnumeration(
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode", error.type);
+  if (error.type == AndroidBackendErrorType::kExternalError) {
+    DCHECK(error.api_error_code.has_value());
+    base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
+        "PasswordManager.PasswordStoreAndroidBackend.APIErros",
+        base::HistogramBase::kUmaTargetedHistogramFlag);
+    histogram->Add(error.api_error_code.value());
+  }
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

@@ -996,10 +996,9 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
   }
 
   void SetUpForSyncTransportModeTest() {
-    // Signing in (without making the account Chrome's primary one or explicitly
-    // setting up Sync) causes the Sync machinery to start up in standalone
-    // transport mode.
-    secondary_account_helper::SignInSecondaryAccount(
+    // Signing in (without granting sync consent or explicitly setting up Sync)
+    // should trigger starting the Sync machinery in standalone transport mode.
+    secondary_account_helper::SignInUnconsentedAccount(
         browser()->profile(), test_url_loader_factory(), "user@gmail.com");
     ASSERT_NE(syncer::SyncService::TransportState::DISABLED,
               harness_->service()->GetTransportState());
@@ -1088,10 +1087,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
     Upload_TransportMode_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
-  // Signing in (without making the account Chrome's primary one or explicitly
-  // setting up Sync) causes the Sync machinery to start up in standalone
-  // transport mode.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Signing in (without granting sync consent or explicitly setting up Sync)
+  // should trigger starting the Sync machinery in standalone transport mode.
+  secondary_account_helper::SignInUnconsentedAccount(
       browser()->profile(), test_url_loader_factory(), "user@gmail.com");
   SetAccountFullName("John Smith");
 

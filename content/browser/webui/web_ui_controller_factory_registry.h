@@ -18,6 +18,11 @@ class CONTENT_EXPORT WebUIControllerFactoryRegistry
  public:
   static WebUIControllerFactoryRegistry* GetInstance();
 
+  WebUIControllerFactoryRegistry(const WebUIControllerFactoryRegistry&) =
+      delete;
+  WebUIControllerFactoryRegistry& operator=(
+      const WebUIControllerFactoryRegistry&) = delete;
+
   // WebUIControllerFactory implementation. Each method loops through the same
   // method on all the factories.
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
@@ -39,8 +44,6 @@ class CONTENT_EXPORT WebUIControllerFactoryRegistry
 
   WebUIControllerFactoryRegistry();
   ~WebUIControllerFactoryRegistry() override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIControllerFactoryRegistry);
 };
 
 }  // namespace content

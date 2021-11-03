@@ -10,6 +10,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/zucchini/crc32.h"
+#include "components/zucchini/element_detection.h"
 
 namespace zucchini {
 
@@ -30,6 +31,7 @@ bool SerializeElementMatch(const ElementMatch& element_match,
   element_header.new_length =
       base::checked_cast<uint32_t>(element_match.new_element.size);
   element_header.exe_type = element_match.exe_type();
+  element_header.version = DisassemblerVersionOfType(element_match.exe_type());
 
   return sink->PutValue<PatchElementHeader>(element_header);
 }
@@ -248,11 +250,15 @@ EnsemblePatchWriter::~EnsemblePatchWriter() = default;
 EnsemblePatchWriter::EnsemblePatchWriter(const PatchHeader& header)
     : header_(header) {
   DCHECK_EQ(header_.magic, PatchHeader::kMagic);
+  DCHECK_EQ(header_.major_version, kMajorVersion);
+  DCHECK_EQ(header_.minor_version, kMinorVersion);
 }
 
 EnsemblePatchWriter::EnsemblePatchWriter(ConstBufferView old_image,
                                          ConstBufferView new_image) {
   header_.magic = PatchHeader::kMagic;
+  header_.major_version = kMajorVersion;
+  header_.minor_version = kMinorVersion;
   header_.old_size = base::checked_cast<uint32_t>(old_image.size());
   header_.old_crc = CalculateCrc32(old_image.begin(), old_image.end());
   header_.new_size = base::checked_cast<uint32_t>(new_image.size());

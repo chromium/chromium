@@ -130,6 +130,10 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
   // The owner of ConsumerHost should make sure to destroy
   // |service| after destroying this.
   explicit ConsumerHost(PerfettoService* service);
+
+  ConsumerHost(const ConsumerHost&) = delete;
+  ConsumerHost& operator=(const ConsumerHost&) = delete;
+
   ~ConsumerHost() override;
 
   PerfettoService* service() const { return service_; }
@@ -176,7 +180,6 @@ class ConsumerHost : public perfetto::Consumer, public mojom::ConsumerHost {
       consumer_endpoint_;
 
   base::WeakPtrFactory<ConsumerHost> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ConsumerHost);
 };
 
 }  // namespace tracing

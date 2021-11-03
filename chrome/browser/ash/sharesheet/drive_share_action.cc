@@ -33,8 +33,7 @@ const std::u16string DriveShareAction::GetActionName() {
 }
 
 const gfx::VectorIcon& DriveShareAction::GetActionIcon() {
-  // TODO(crbug.com/1212806): Update to CrOS icon.
-  return kPersonAddIcon;
+  return kSharesheetShareWithOthersIcon;
 }
 
 void DriveShareAction::LaunchAction(

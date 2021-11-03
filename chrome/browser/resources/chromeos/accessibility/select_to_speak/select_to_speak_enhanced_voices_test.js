@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN_INCLUDE(['../../../../../../ui/webui/resources/js/cr.js']);
-GEN_INCLUDE(['../../../../../test/data/webui/fake_chrome_event.js']);
+GEN_INCLUDE(['fake_chrome_event.js']);
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 GEN_INCLUDE(['mock_tts.js']);
 GEN_INCLUDE(['fake_settings_private.js']);

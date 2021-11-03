@@ -251,6 +251,9 @@ class StatisticsProviderImpl : public StatisticsProvider {
 
   static StatisticsProviderImpl* GetInstance();
 
+  StatisticsProviderImpl(const StatisticsProviderImpl&) = delete;
+  StatisticsProviderImpl& operator=(const StatisticsProviderImpl&) = delete;
+
  private:
   typedef std::map<std::string, bool> MachineFlags;
   typedef bool (*RegionDataExtractor)(const base::Value&, std::string*);
@@ -306,8 +309,6 @@ class StatisticsProviderImpl : public StatisticsProvider {
   std::vector<
       std::pair<base::OnceClosure, scoped_refptr<base::SequencedTaskRunner>>>
       statistics_loaded_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatisticsProviderImpl);
 };
 
 void StatisticsProviderImpl::SignalStatisticsLoaded() {

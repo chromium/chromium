@@ -345,6 +345,11 @@ FrameTree::NodeRange FrameTree::SubtreeNodes(FrameTreeNode* subtree_root) {
                    /* should_descend_into_inner_trees */ false);
 }
 
+FrameTree::NodeRange FrameTree::NodesIncludingInnerTreeNodes() {
+  return NodeRange({root_}, nullptr,
+                   /* should_descend_into_inner_trees */ true);
+}
+
 FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
     RenderFrameHostImpl* parent) {
   std::vector<FrameTreeNode*> starting_nodes;
@@ -636,7 +641,8 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
 
 scoped_refptr<RenderViewHostImpl> FrameTree::GetRenderViewHost(
     SiteInstance* site_instance) {
-  auto it = render_view_host_map_.find(GetRenderViewHostMapId(site_instance));
+  auto it = render_view_host_map_.find(GetRenderViewHostMapId(
+      static_cast<SiteInstanceImpl*>(site_instance)->group()));
   if (it == render_view_host_map_.end())
     return nullptr;
 
@@ -644,11 +650,9 @@ scoped_refptr<RenderViewHostImpl> FrameTree::GetRenderViewHost(
 }
 
 FrameTree::RenderViewHostMapId FrameTree::GetRenderViewHostMapId(
-    SiteInstance* site_instance) const {
-  // TODO(acolwell): Change this to use a SiteInstanceGroup ID once
-  // SiteInstanceGroups are implemented so that all SiteInstances within a
-  // group can use the same RenderViewHost.
-  return RenderViewHostMapId::FromUnsafeValue(site_instance->GetId().value());
+    SiteInstanceGroup* site_instance_group) const {
+  return RenderViewHostMapId::FromUnsafeValue(
+      site_instance_group->GetId().value());
 }
 
 void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,

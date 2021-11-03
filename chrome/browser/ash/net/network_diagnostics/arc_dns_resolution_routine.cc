@@ -8,10 +8,10 @@
 #include "base/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/arc_dns_resolution_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
-#include "components/arc/arc_service_manager.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "net/dns/public/dns_protocol.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -126,4 +126,4 @@ void ArcDnsResolutionRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

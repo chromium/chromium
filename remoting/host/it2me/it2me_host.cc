@@ -102,6 +102,15 @@ void It2MeHost::set_terminate_upon_input(bool terminate_upon_input) {
 #endif
 }
 
+void It2MeHost::set_is_enterprise_session(bool is_enterprise_session) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || !defined(NDEBUG)
+  is_enterprise_session_ = is_enterprise_session;
+#else
+  NOTREACHED()
+      << "It2MeHost::set_is_enterprise_session is only supported on ChromeOS";
+#endif
+}
+
 void It2MeHost::Connect(
     std::unique_ptr<ChromotingHostContext> host_context,
     std::unique_ptr<base::DictionaryValue> policies,
@@ -144,6 +153,11 @@ void It2MeHost::ConnectOnNetworkThread(
     CreateDeferredConnectContext create_context) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(It2MeHostState::kDisconnected, state_);
+
+  if (!remote_support_connections_allowed_) {
+    SetState(It2MeHostState::kError, ErrorCode::DISALLOWED_BY_POLICY);
+    return;
+  }
 
   SetState(It2MeHostState::kStarting, ErrorCode::OK);
 
@@ -243,9 +257,9 @@ void It2MeHost::ConnectOnNetworkThread(
   options.set_enable_user_interface(enable_dialogs_);
   options.set_enable_notifications(enable_notifications_);
   options.set_terminate_upon_input(terminate_upon_input_);
-  // TODO(joedow): Init |clipboard_size_| via a Chrome policy.
-  if (clipboard_size_.has_value()) {
-    options.set_clipboard_size(clipboard_size_.value());
+
+  if (max_clipboard_size_.has_value()) {
+    options.set_clipboard_size(max_clipboard_size_.value());
   }
 
   // Create the host.
@@ -327,6 +341,20 @@ void It2MeHost::OnPolicyUpdate(
     return;
   }
 
+  // The policy to disallow remote support connections should not apply to
+  // support sessions initiated by the enterprise admin via a RemoteCommand.
+  if (!is_enterprise_session_) {
+    // Retrieve the policy value on whether to allow connections but don't apply
+    // it until after we've finished reading the rest of the policies and
+    // started the connection process.
+    bool remote_support_connections_allowed = true;
+    if (policies->GetBoolean(
+            policy::key::kRemoteAccessHostAllowRemoteSupportConnections,
+            &remote_support_connections_allowed)) {
+      remote_support_connections_allowed_ = remote_support_connections_allowed;
+    }
+  }
+
   bool nat_policy_value = false;
   if (!policies->GetBoolean(policy::key::kRemoteAccessHostFirewallTraversal,
                             &nat_policy_value)) {
@@ -366,6 +394,14 @@ void It2MeHost::OnPolicyUpdate(
   if (policies->GetString(policy::key::kRemoteAccessHostUdpPortRange,
                           &port_range_string)) {
     UpdateHostUdpPortRangePolicy(port_range_string);
+  }
+
+  int max_clipboard_size;
+  if (policies->GetInteger(policy::key::kRemoteAccessHostClipboardSizeBytes,
+                           &max_clipboard_size)) {
+    if (max_clipboard_size >= 0) {
+      max_clipboard_size_ = max_clipboard_size;
+    }
   }
 }
 

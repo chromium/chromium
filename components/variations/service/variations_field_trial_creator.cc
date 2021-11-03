@@ -19,7 +19,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
@@ -41,6 +43,7 @@
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -500,6 +503,30 @@ bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
   return has_seed_expired;
 }
 
+bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
+  const std::string milestone_pref = is_safe_seed
+                                         ? prefs::kVariationsSafeSeedMilestone
+                                         : prefs::kVariationsSeedMilestone;
+
+  // The regular and safe seed milestone prefs were added in M97, so the prefs
+  // are not populated for seeds stored before then.
+  int seed_milestone = local_state()->GetInteger(milestone_pref);
+  if (!seed_milestone)
+    return false;
+
+  int client_milestone;
+  if (base::StringToInt(version_info::GetMajorVersionNumber(),
+                        &client_milestone)) {
+    return seed_milestone > client_milestone;
+  }
+
+  // There shouldn't be an issue parsing the major version (aka milestone) to
+  // an int because GetMajorVersionNumber() parses the milestone from a number
+  // to a string.
+  NOTREACHED();
+  return false;
+}
+
 bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
     const base::FieldTrial::EntropyProvider* low_entropy_provider,
     base::FeatureList* feature_list,
@@ -529,8 +556,15 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
     LoadSeedResult result =
         GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get());
     if (result == LoadSeedResult::kSuccess) {
+      // TODO(crbug/1261685): The expiry and milestone checks are repeated below
+      // for regular seeds. Refactor this.
       if (HasSeedExpired(/*is_safe_seed=*/true)) {
         RecordVariationsSeedUsage(SeedUsage::kExpiredSafeSeedNotUsed);
+        return false;
+      }
+      if (IsSeedForFutureMilestone(/*is_safe_seed=*/true)) {
+        RecordVariationsSeedUsage(
+            SeedUsage::kSafeSeedForFutureMilestoneNotUsed);
         return false;
       }
       RecordVariationsSeedUsage(SeedUsage::kSafeSeedUsed);
@@ -558,6 +592,11 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
                 ? SeedUsage::kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded
                 : SeedUsage::kExpiredRegularSeedNotUsed;
         RecordVariationsSeedUsage(seed_usage);
+        return false;
+      }
+      if (IsSeedForFutureMilestone(/*is_safe_seed=*/false)) {
+        RecordVariationsSeedUsage(
+            SeedUsage::kRegularSeedForFutureMilestoneNotUsed);
         return false;
       }
       seed_usage = should_run_in_safe_mode
@@ -590,9 +629,10 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   // running in safe mode – once running in safe mode, there can never be a need
   // to save the active state to the safe seed prefs.
   if (!run_in_safe_mode) {
-    safe_seed_manager->SetActiveSeedState(seed_data, base64_seed_signature,
-                                          std::move(client_filterable_state),
-                                          seed_store_->GetLastFetchTime());
+    safe_seed_manager->SetActiveSeedState(
+        seed_data, base64_seed_signature,
+        local_state()->GetInteger(prefs::kVariationsSeedMilestone),
+        std::move(client_filterable_state), seed_store_->GetLastFetchTime());
   }
 
   UMA_HISTOGRAM_TIMES("Variations.SeedProcessingTime",

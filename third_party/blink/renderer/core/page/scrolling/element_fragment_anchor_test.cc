@@ -150,7 +150,7 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentNoLayoutUntilLoad) {
 
   IntRect fragment_rect_in_frame(
       fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(IntPoint(),
+  IntRect viewport_rect(gfx::Point(),
                         child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
@@ -211,7 +211,7 @@ TEST_F(ElementFragmentAnchorTest, IframeFragmentDirtyLayoutAfterLoad) {
 
   IntRect fragment_rect_in_frame(
       fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(IntPoint(),
+  IntRect viewport_rect(gfx::Point(),
                         child_viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
@@ -340,7 +340,7 @@ TEST_F(ElementFragmentAnchorTest, HasURLEncodedCharacters) {
 
   IntRect fragment_rect_in_frame(
       fragment->GetLayoutObject()->AbsoluteBoundingBoxRect());
-  IntRect viewport_rect(IntPoint(), viewport->VisibleContentRect().size());
+  IntRect viewport_rect(gfx::Point(), viewport->VisibleContentRect().size());
 
   EXPECT_TRUE(viewport_rect.Contains(fragment_rect_in_frame))
       << "Fragment element at [" << fragment_rect_in_frame.ToString()

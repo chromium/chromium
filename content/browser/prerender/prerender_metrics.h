@@ -7,9 +7,9 @@
 
 #include <string>
 
-namespace content {
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
-class RenderFrameHostImpl;
+namespace content {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -25,7 +25,7 @@ enum class PrerenderCancelledInterface {
 
 void RecordPrerenderCancelledInterface(const std::string& interface_name);
 
-void RecordPrerenderTriggered(RenderFrameHostImpl& initiator_render_frame_host);
+void RecordPrerenderTriggered(ukm::SourceId ukm_id);
 
 }  // namespace content
 

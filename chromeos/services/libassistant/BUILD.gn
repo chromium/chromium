@@ -121,6 +121,7 @@ source_set("internal") {
     ":callback_utils",
     ":constants",
     "./grpc:assistant_client",
+    "./grpc:grpc_service",
     "./grpc/external_services:grpc_services_initializer",
     "./grpc/external_services:grpc_services_observer",
     "//build/util:chromium_git_revision",

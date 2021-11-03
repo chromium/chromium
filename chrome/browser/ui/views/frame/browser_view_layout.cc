@@ -298,10 +298,18 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   web_app::AppBrowserController* controller =
       browser_view_->browser()->app_controller();
   if (browser_view_->IsWindowControlsOverlayEnabled() && controller &&
-      controller->draggable_region().has_value() &&
-      controller->draggable_region()->contains(
-          point_in_browser_view_coords.x(), point_in_browser_view_coords.y())) {
-    return HTCAPTION;
+      controller->draggable_region().has_value()) {
+    // Draggable regions are defined relative to the web contents.
+    gfx::Point point_in_contents_web_view_coords(point_in_browser_view_coords);
+    views::View::ConvertPointToTarget(browser_view_,
+                                      browser_view_->contents_web_view(),
+                                      &point_in_contents_web_view_coords);
+
+    if (controller->draggable_region()->contains(
+            point_in_contents_web_view_coords.x(),
+            point_in_contents_web_view_coords.y())) {
+      return HTCAPTION;
+    }
   }
 
   // If the point's y coordinate is below the top of the topmost view and

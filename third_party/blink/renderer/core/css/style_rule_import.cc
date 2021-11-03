@@ -169,4 +169,8 @@ void StyleRuleImport::RequestStyleSheet() {
   }
 }
 
+String StyleRuleImport::GetLayerNameAsString() const {
+  return LayerNameAsString(layer_);
+}
+
 }  // namespace blink

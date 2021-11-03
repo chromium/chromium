@@ -8,8 +8,6 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/gesture_router.h"
 #include "chromecast/browser/mojom/cast_content_window.mojom.h"
@@ -32,29 +30,7 @@ namespace chromecast {
 class CastContentWindow : public mojom::CastContentWindow,
                           public mojom::ActivityWindow {
  public:
-  class Delegate {
-   public:
-    // Notify window destruction.
-    virtual void OnWindowDestroyed() {}
-
-    // Notify visibility change for this window.
-    virtual void OnVisibilityChange(VisibilityType visibility_type) {}
-
-   protected:
-    virtual ~Delegate() {}
-  };
-
-  class Observer : public base::CheckedObserver {
-   public:
-    // Notify visibility change for this window.
-    virtual void OnVisibilityChange(VisibilityType visibility_type) {}
-
-   protected:
-    ~Observer() override {}
-  };
-
-  CastContentWindow(base::WeakPtr<Delegate> delegate,
-                    mojom::CastWebViewParamsPtr params);
+  explicit CastContentWindow(mojom::CastWebViewParamsPtr params);
   ~CastContentWindow() override;
 
   // |cast_web_contents| must outlive the CastContentWindow.
@@ -66,6 +42,8 @@ class CastContentWindow : public mojom::CastContentWindow,
   // mojom::CastContentWindow implementation:
   void CreateWindow(mojom::ZOrder z_order,
                     VisibilityPriority visibility_priority) override = 0;
+  void AddObserver(
+      mojo::PendingRemote<mojom::CastContentWindowObserver> observer) override;
   void GrantScreenAccess() override = 0;
   void RevokeScreenAccess() override = 0;
   void RequestVisibility(VisibilityPriority visibility_priority) override = 0;
@@ -93,10 +71,6 @@ class CastContentWindow : public mojom::CastContentWindow,
   virtual void RegisterBackGestureRouter(
       ::chromecast::BackGestureRouter* gesture_router) {}
 
-  // Observer interface:
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
   // Binds a receiver for remote control of CastContentWindow.
   void BindReceiver(mojo::PendingReceiver<mojom::CastContentWindow> receiver);
 
@@ -110,13 +84,12 @@ class CastContentWindow : public mojom::CastContentWindow,
   }
 
   CastWebContents* cast_web_contents_ = nullptr;
-  base::WeakPtr<Delegate> delegate_;
   mojom::CastWebViewParamsPtr params_;
 
   GestureRouter gesture_router_;
   mojo::Receiver<mojom::CastContentWindow> receiver_{this};
   mojo::Receiver<mojom::ActivityWindow> activity_window_receiver_{this};
-  base::ObserverList<Observer> observer_list_;
+  mojo::RemoteSet<mojom::CastContentWindowObserver> observers_;
   base::WeakPtrFactory<CastContentWindow> weak_factory_{this};
 };
 

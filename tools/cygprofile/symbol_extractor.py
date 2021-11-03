@@ -17,23 +17,13 @@ START_OF_TEXT_SYMBOL = 'linker_script_start_of_text'
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir))
-
-sys.path.insert(0, os.path.join(_SRC_PATH, 'build', 'android'))
-from pylib.constants import host_paths
+_TOOL_PREFIX = os.path.join(_SRC_PATH, 'third_party', 'llvm-build',
+                            'Release+Asserts', 'bin', 'llvm-')
 
 _MAX_WARNINGS_TO_PRINT = 200
 
 SymbolInfo = collections.namedtuple('SymbolInfo', ('name', 'offset', 'size',
                                                    'section'))
-
-# Unfortunate global variable :-/
-_arch = 'arm'
-
-
-def SetArchitecture(arch):
-  """Set the architecture for binaries to be symbolized."""
-  global _arch
-  _arch = arch
 
 
 # Regular expression to match lines printed by 'objdump -t -w'. An example of
@@ -44,7 +34,8 @@ def SetArchitecture(arch):
 # more protection against potentially incorrectly silently ignoring unmatched
 # input lines. Instead a few assertions early in _FromObjdumpLine() check the
 # validity of a few parts matched as groups.
-_OBJDUMP_LINE_RE = re.compile(r'''
+_OBJDUMP_LINE_RE = re.compile(
+    r'''
   # The offset of the function, as hex.
   (?P<offset>^[0-9a-f]+)
 
@@ -72,9 +63,7 @@ _OBJDUMP_LINE_RE = re.compile(r'''
   # The size of the symbol, as hex.
   (?P<size>[0-9a-f]+)
 
-  # Normally separated out by 14 spaces, but some bits in ELF may theoretically
-  # affect this length.
-  (?P<assert_14spaces>[ ]+)
+  [ ]+
 
   # Hidden symbols should be treated as usual.
   (.hidden [ ])?
@@ -105,7 +94,6 @@ def _FromObjdumpLine(line):
   assert m.group('assert_weak_or_strong') in set(['w', ' ']), line
   assert m.group('assert_tab') == '\t', line
   assert m.group('assert_4spaces') == ' ' * 4, line
-  assert m.group('assert_14spaces') == ' ' * 14, line
   name = m.group('name')
   offset = int(m.group('offset'), 16)
 
@@ -198,11 +186,16 @@ def SymbolInfosFromBinary(binary_filename):
   Returns:
     A list of SymbolInfo from the binary.
   """
-  command = (host_paths.ToolPath('objdump', _arch), '-t', '-w', binary_filename)
-  p = subprocess.Popen(command, shell=False, stdout=subprocess.PIPE)
+  command = [_TOOL_PREFIX + 'objdump', '-t', '-w', binary_filename]
   try:
-    result = _SymbolInfosFromStream(p.stdout)
-    return result
+    p = subprocess.Popen(command, stdout=subprocess.PIPE)
+  except OSError as error:
+    logging.error("Failed to execute the command: path=%s, binary_filename=%s",
+                  command[0], binary_filename)
+    raise error
+
+  try:
+    return _SymbolInfosFromStream(p.stdout)
   finally:
     p.stdout.close()
     p.wait()
@@ -332,8 +325,5 @@ def CreateNameToSymbolInfo(symbol_infos):
 
 def DemangleSymbol(mangled_symbol):
   """Return the demangled form of mangled_symbol."""
-  cmd = [host_paths.ToolPath('c++filt', _arch)]
-  process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-  demangled_symbol, _ = process.communicate(
-      (mangled_symbol + '\n').encode('utf-8'))
-  return demangled_symbol
+  cmd = [_TOOL_PREFIX + 'cxxfilt', mangled_symbol]
+  return subprocess.check_output(cmd, universal_newlines=True).rstrip()

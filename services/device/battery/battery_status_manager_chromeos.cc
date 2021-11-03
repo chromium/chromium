@@ -23,6 +23,9 @@ class PowerManagerObserver
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : callback_(callback), currently_listening_(false) {}
 
+  PowerManagerObserver(const PowerManagerObserver&) = delete;
+  PowerManagerObserver& operator=(const PowerManagerObserver&) = delete;
+
   // Starts listening for updates.
   void Start() {
     if (currently_listening_)
@@ -115,8 +118,6 @@ class PowerManagerObserver
 
   BatteryStatusService::BatteryUpdateCallback callback_;
   bool currently_listening_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerManagerObserver);
 };
 
 class BatteryStatusManagerChromeOS

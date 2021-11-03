@@ -148,6 +148,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               phone_model_.get())),
       camera_roll_manager_(features::IsPhoneHubCameraRollEnabled()
                                ? std::make_unique<CameraRollManagerImpl>(
+                                     pref_service,
                                      message_receiver_.get(),
                                      message_sender_.get(),
                                      multidevice_setup_client,

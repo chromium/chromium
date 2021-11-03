@@ -9,6 +9,8 @@ package org.chromium.chrome.browser.password_manager;
 public interface CredentialManagerLauncher {
     /**
      * Launches the UI surface allowing users to manage their saved passwords.
+     *
+     * @param referrer the place that requested the launch
      */
-    void launchCredentialManager();
+    void launchCredentialManager(@ManagePasswordsReferrer int referrer);
 }

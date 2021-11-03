@@ -26,6 +26,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventAgent : public BaseAgent {
  public:
   static TraceEventAgent* GetInstance();
 
+  TraceEventAgent(const TraceEventAgent&) = delete;
+  TraceEventAgent& operator=(const TraceEventAgent&) = delete;
+
   void GetCategories(std::set<std::string>* category_set) override;
 
   using MetadataGeneratorFunction =
@@ -44,7 +47,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventAgent : public BaseAgent {
   std::vector<MetadataGeneratorFunction> metadata_generator_functions_;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(TraceEventAgent);
 };
 
 }  // namespace tracing

@@ -348,6 +348,11 @@ std::u16string AppBrowserController::GetTitle() const {
   return entry ? entry->GetTitle() : std::u16string();
 }
 
+std::string AppBrowserController::GetTitleForMediaControls() const {
+  // Only return the app name if we're a System Web App.
+  return system_app() ? base::UTF16ToUTF8(GetAppShortName()) : std::string();
+}
+
 void AppBrowserController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

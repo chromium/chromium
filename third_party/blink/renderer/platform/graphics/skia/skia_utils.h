@@ -39,7 +39,9 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
@@ -199,5 +201,28 @@ PLATFORM_EXPORT sk_sp<SkData> TryAllocateSkData(size_t size);
 //     paint.setShader(shader);
 
 }  // namespace blink
+
+namespace WTF {
+
+// We define CrossThreadCopier<SKBitMap> here because we cannot include skia
+// headers in platform/wtf.
+template <>
+struct CrossThreadCopier<SkBitmap> {
+  STATIC_ONLY(CrossThreadCopier);
+
+  using Type = SkBitmap;
+  static SkBitmap Copy(const SkBitmap& bitmap) {
+    CHECK(bitmap.isImmutable() || bitmap.isNull())
+        << "Only immutable bitmaps can be transferred.";
+    return bitmap;
+  }
+  static SkBitmap Copy(SkBitmap&& bitmap) {
+    CHECK(bitmap.isImmutable() || bitmap.isNull())
+        << "Only immutable bitmaps can be transferred.";
+    return std::move(bitmap);
+  }
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SKIA_UTILS_H_

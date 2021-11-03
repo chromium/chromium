@@ -63,6 +63,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   // vector. Note that this may not be the full layer name if the rule is nested
   // in another @layer rule or in a layered @import.
   using LayerName = Vector<AtomicString, 1>;
+  static String LayerNameAsString(const LayerName&);
 
   RuleType GetType() const { return static_cast<RuleType>(type_); }
 

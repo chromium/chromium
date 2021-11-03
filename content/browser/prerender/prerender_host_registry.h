@@ -51,8 +51,10 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   class Observer : public base::CheckedObserver {
    public:
-    // Called once per CreateAndStartHost() call. Does not necessarily
-    // mean a host was created.
+    // Called once per CreateAndStartHost() call. Indicates the registry
+    // received a request to create a prerender but does not necessarily mean a
+    // host was created. If a host was created, it is guaranteed to be in the
+    // registry at the time this is called.
     virtual void OnTrigger(const GURL& url) {}
 
     // Called from the registry's destructor. The observer
@@ -67,7 +69,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // Creates and starts a host. Returns the root frame tree node id of the
   // prerendered page, which can be used as the id of the host.
   int CreateAndStartHost(const PrerenderAttributes& attributes,
-                         RenderFrameHostImpl& initiator_render_frame_host);
+                         WebContents* web_contents);
 
   // Cancels the host registered for `frame_tree_node_id`. The host is
   // immediately removed from the map of non-reserved or reserved hosts but
@@ -131,9 +133,8 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // does not match any reserved host.
   PrerenderHost* FindReservedHostById(int frame_tree_node_id);
 
-  // Returns the main frames of FrameTrees owned by this registry's prerender
-  // hosts.
-  std::vector<RenderFrameHostImpl*> GetPrerenderedMainFrames();
+  // Returns the FrameTrees owned by this registry's prerender hosts.
+  std::vector<FrameTree*> GetPrerenderFrameTrees();
 
   // Returns the non-reserved host for `prerendering_url`. Returns nullptr if
   // the URL doesn't match any non-reserved host.

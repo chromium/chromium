@@ -51,6 +51,8 @@ class LayerTreeHostCommon;
 class LayerTreeImpl;
 class PictureLayer;
 
+struct CommitState;
+
 // For tracing and debugging. The info will be attached to this layer's tracing
 // output.
 struct CC_EXPORT LayerDebugInfo {
@@ -132,7 +134,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // A layer is attached to a LayerTreeHost if it or an ancestor layer is set as
   // the root layer of a LayerTreeHost (while noting only a layer without a
   // parent may be set as the root layer).
-  LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
+  LayerTreeHost* layer_tree_host() { return layer_tree_host_; }
+  const LayerTreeHost* layer_tree_host() const { return layer_tree_host_; }
 
   // This requests the layer and its subtree be rendered and given to the
   // callback. If the copy is unable to be produced (the layer is destroyed
@@ -161,11 +164,15 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // If the layer says contents_opaque() is true, in layer tree mode, this
   // returns the value set by SetSafeOpaqueBackgroundColor() which should be an
   // opaque color, and in layer list mode, returns an opaque color calculated
-  // from background_color() and layer_tree_host()->background_color().
+  // from background_color() and the argument host_background_color.
   // Otherwise, it returns something non-opaque. It prefers to return the
   // background_color(), but if the background_color() is opaque (and this layer
   // claims to not be), then SK_ColorTRANSPARENT is returned to avoid intrusive
   // checkerboard where the layer is not covered by the background_color().
+  SkColor SafeOpaqueBackgroundColor(SkColor host_background_color) const;
+
+  // Same as the one-argument version, except that host_background_color is
+  // layer_tree_host()->pending_commit_state()->background_color.
   SkColor SafeOpaqueBackgroundColor() const;
 
   // For layer tree mode only.
@@ -603,13 +610,13 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // Captures text content within the given |rect| and returns the associated
   // NodeInfo in |content|.
   virtual void CaptureContent(const gfx::Rect& rect,
-                              std::vector<NodeInfo>* content);
+                              std::vector<NodeInfo>* content) const;
 
   // For tracing. Gets a recorded rasterization of this layer's contents that
   // can be displayed inside representations of this layer. May return null, in
   // which case the layer won't be shown with any content in the tracing
   // display.
-  virtual sk_sp<SkPicture> GetPicture() const;
+  virtual sk_sp<const SkPicture> GetPicture() const;
 
   const LayerDebugInfo* debug_info() const { return debug_info_.get(); }
   LayerDebugInfo& EnsureDebugInfo();
@@ -632,7 +639,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   // that state as well. The |layer| passed in will be of the type created by
   // CreateLayerImpl(), so can be safely down-casted if the subclass uses a
   // different type for the compositor thread.
-  virtual void PushPropertiesTo(LayerImpl* layer);
+  virtual void PushPropertiesTo(LayerImpl* layer,
+                                const CommitState& commit_state);
 
   // Internal method to be overridden by Layer subclasses that need to do work
   // during a main frame. The method should compute any state that will need to
@@ -869,6 +877,8 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
 
     SkColor background_color;
 
+    // TODO(crbug.com/1264177): properties that are rarely set should be
+    // moved to a separate sub-struct.
     Region non_fast_scrollable_region;
     TouchActionRegion touch_action_region;
     RegionCaptureBounds capture_bounds;

@@ -76,7 +76,8 @@ AppListItem* AppListTestModel::AddItem(AppListItem* item) {
 
 void AppListTestModel::RequestPositionUpdate(
     std::string id,
-    const syncer::StringOrdinal& new_position) {
+    const syncer::StringOrdinal& new_position,
+    RequestPositionUpdateReason reason) {
   // Copy the logic of `ChromeAppListModelUpdater::HandleSetPosition()`.
   auto metadata = FindItem(id)->CloneMetadata();
   metadata->position = new_position;
@@ -138,6 +139,7 @@ void AppListTestModel::MoveItemToFolder(AppListItem* item,
   AppListModel::MoveItemToFolder(item, folder_id);
 }
 
+// static
 std::string AppListTestModel::GetItemName(int id) {
   return base::StringPrintf("Item %d", id);
 }

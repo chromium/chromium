@@ -151,8 +151,8 @@ bool InputMethodContextImplGtk::DispatchKeyEvent(
       gdk_display_get_default_seat(gdk_display_get_default()));
   auto time = (key_event.time_stamp() - base::TimeTicks()).InMilliseconds();
   auto keycode = GetKeyEventProperty(key_event, ui::kPropertyKeyboardHwKeyCode);
-  auto state = GetGdkKeyEventState(key_event);
-  auto group = GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
+  auto state = GtkUi::GetPlatform()->GetGdkKeyEventState(key_event);
+  auto group = GtkUi::GetPlatform()->GetGdkKeyEventGroup(key_event);
   return gtk_im_context_filter_key(gtk_context_, press, surface, device, time,
                                    keycode, state, group);
 }

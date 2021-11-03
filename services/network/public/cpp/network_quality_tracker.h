@@ -26,6 +26,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
  public:
   class COMPONENT_EXPORT(NETWORK_CPP) EffectiveConnectionTypeObserver {
    public:
+    EffectiveConnectionTypeObserver(const EffectiveConnectionTypeObserver&) =
+        delete;
+    EffectiveConnectionTypeObserver& operator=(
+        const EffectiveConnectionTypeObserver&) = delete;
+
     // Called when there is a change in the effective connection type. The
     // |observer| is notified of the current effective connection type on the
     // same thread on which it was added.
@@ -35,9 +40,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
    protected:
     EffectiveConnectionTypeObserver() {}
     virtual ~EffectiveConnectionTypeObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(EffectiveConnectionTypeObserver);
   };
 
   // Observes changes in the HTTP RTT, transport RTT or downstream throughput
@@ -71,6 +73,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
   // service.
   explicit NetworkQualityTracker(
       base::RepeatingCallback<network::mojom::NetworkService*()> callback);
+
+  NetworkQualityTracker(const NetworkQualityTracker&) = delete;
+  NetworkQualityTracker& operator=(const NetworkQualityTracker&) = delete;
 
   ~NetworkQualityTracker() override;
 
@@ -182,8 +187,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
       receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityTracker);
 };
 
 }  // namespace network

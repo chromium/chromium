@@ -4263,9 +4263,10 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
       g_browser_process->safe_browsing_service()
           ? g_browser_process->safe_browsing_service()->ui_manager().get()
           : nullptr;
-  throttles.push_back(
-      std::make_unique<safe_browsing::SafeBrowsingNavigationThrottle>(
-          handle, ui_manager));
+  MaybeAddThrottle(
+      safe_browsing::SafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+          handle, ui_manager),
+      &throttles);
 
   if (base::FeatureList::IsEnabled(safe_browsing::kDelayedWarnings)) {
     throttles.push_back(
@@ -5467,14 +5468,13 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
     const content::GlobalRequestID& request_id,
-    bool is_request_for_main_frame,
+    bool is_request_for_primary_main_frame,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
     LoginAuthRequiredCallback auth_required_callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::SystemProxyManager* system_proxy_manager =
-      chromeos::SystemProxyManager::Get();
+  auto* system_proxy_manager = ash::SystemProxyManager::Get();
   // For Managed Guest Session and Kiosk devices, the credentials configured
   // via the policy SystemProxySettings may be used for proxy authentication.
   // Note: |system_proxy_manager| may be missing in tests.
@@ -5489,7 +5489,7 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   // prompt to the user. Main frame resources go through LoginTabHelper, which
   // manages a more complicated flow to avoid confusion about which website is
   // showing the prompt.
-  if (is_request_for_main_frame) {
+  if (is_request_for_primary_main_frame) {
     LoginTabHelper::CreateForWebContents(web_contents);
     return LoginTabHelper::FromWebContents(web_contents)
         ->CreateAndStartMainFrameLoginDelegate(
@@ -5799,7 +5799,8 @@ std::string ChromeContentBrowserClient::GetReducedUserAgent() {
 }
 
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata();
+  return embedder_support::GetUserAgentMetadata(
+      g_browser_process->local_state());
 }
 
 absl::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {

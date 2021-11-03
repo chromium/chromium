@@ -26,7 +26,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/copy_io_task.h"
+#include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
+#include "chrome/browser/ash/file_manager/delete_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -1419,22 +1420,49 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
   std::unique_ptr<file_manager::io_task::IOTask> task;
   switch (type.value()) {
     case file_manager::io_task::OperationType::kCopy:
-      task = std::make_unique<file_manager::io_task::CopyIOTask>(
-          std::move(source_urls), std::move(destination_folder_url), profile,
-          file_system_context);
+    case file_manager::io_task::OperationType::kMove:
+      task = std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
+          type.value(), std::move(source_urls),
+          std::move(destination_folder_url), profile, file_system_context);
       break;
     case file_manager::io_task::OperationType::kZip:
       task = std::make_unique<file_manager::io_task::ZipIOTask>(
           std::move(source_urls), std::move(destination_folder_url),
           file_system_context);
       break;
+    case file_manager::io_task::OperationType::kDelete:
+      task = std::make_unique<file_manager::io_task::DeleteIOTask>(
+          std::move(source_urls), file_system_context);
+      break;
     default:
-      // TODO(b/199804935): Replace with {Move/Delete}IOTask when implemented.
+      // TODO(b/199804935): Replace with MoveIOTask when implemented.
       task = std::make_unique<file_manager::io_task::DummyIOTask>(
           std::move(source_urls), std::move(destination_folder_url), *type);
       break;
   }
   volume_manager->io_task_controller()->Add(std::move(task));
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateCancelIOTaskFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private::CancelIOTask::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  auto* const volume_manager = file_manager::VolumeManager::Get(
+      Profile::FromBrowserContext(browser_context()));
+  if (!volume_manager || !volume_manager->io_task_controller()) {
+    return RespondNow(Error("Invalid state"));
+  }
+
+  if (params->task_id <= 0) {
+    return RespondNow(Error("Invalid task id"));
+  }
+
+  volume_manager->io_task_controller()->Cancel(params->task_id);
   return RespondNow(NoArguments());
 }
 

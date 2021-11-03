@@ -441,8 +441,9 @@ void TracingUnitTest::SetUp() {
   setup_called_ = true;
 
   // Also tell PerfettoTracedProcess to use the current task environment.
-  test_handle_ = PerfettoTracedProcess::SetupForTesting(
+  PerfettoTracedProcess::ResetTaskRunnerForTesting(
       base::ThreadTaskRunnerHandle::Get());
+  PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
   PerfettoTracedProcess::Get()->OnThreadPoolAvailable();
 
   // Wait for any posted construction tasks to execute.
@@ -463,7 +464,7 @@ void TracingUnitTest::TearDown() {
   PerfettoTracedProcess::Get()->GetTaskRunner()->ResetTaskRunnerForTesting(
       nullptr);
   PerfettoTracedProcess::Get()->ClearDataSourcesForTesting();
-  test_handle_.reset();
+  PerfettoTracedProcess::TearDownForTesting();
 }
 
 }  // namespace tracing

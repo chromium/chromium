@@ -14,6 +14,11 @@ class RenderWidgetHostViewBase;
 
 class CONTENT_EXPORT RenderWidgetHostViewBaseObserver {
  public:
+  RenderWidgetHostViewBaseObserver(const RenderWidgetHostViewBaseObserver&) =
+      delete;
+  RenderWidgetHostViewBaseObserver& operator=(
+      const RenderWidgetHostViewBaseObserver&) = delete;
+
   // All derived classes must de-register as observers when receiving this
   // notification.
   virtual void OnRenderWidgetHostViewBaseDestroyed(
@@ -22,9 +27,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBaseObserver {
  protected:
   RenderWidgetHostViewBaseObserver() = default;
   virtual ~RenderWidgetHostViewBaseObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewBaseObserver);
 };
 
 }  // namespace content

@@ -76,7 +76,7 @@ class SearchResultTileItemListViewTest
     widget_->SetBounds(gfx::Rect(0, 0, 300, 200));
     widget_->GetContentsView()->AddChildView(view_.get());
     widget_->Show();
-    view_->SetResults(view_delegate_.GetSearchModel()->results());
+    view_->SetResults(GetResults());
   }
 
   bool IsReinstallAppRecommendationEnabled() const { return GetParam().first; }
@@ -84,7 +84,7 @@ class SearchResultTileItemListViewTest
   SearchResultTileItemListView* view() { return view_.get(); }
 
   SearchModel::SearchResults* GetResults() {
-    return view_delegate_.GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
   void SetUpSearchResults() {

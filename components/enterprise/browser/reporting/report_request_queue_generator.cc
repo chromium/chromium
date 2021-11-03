@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 
 namespace enterprise_reporting {
 
@@ -88,7 +89,8 @@ void ReportRequestQueueGenerator::GenerateProfileReportWithIndex(
   auto basic_profile =
       basic_request.browser_report().chrome_user_profile_infos(profile_index);
   auto profile_report = profile_report_generator_.MaybeGenerate(
-      base::FilePath::FromUTF8Unsafe(basic_profile.id()), basic_profile.name());
+      base::FilePath::FromUTF8Unsafe(basic_profile.id()), basic_profile.name(),
+      ReportType::kFull);
 
   // Return if Profile is not loaded and there is no full report.
   if (!profile_report)

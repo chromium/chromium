@@ -91,6 +91,11 @@ class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
  public:
   explicit AllowlistedOriginContentBrowserClient() = default;
 
+  AllowlistedOriginContentBrowserClient(
+      const AllowlistedOriginContentBrowserClient&) = delete;
+  AllowlistedOriginContentBrowserClient& operator=(
+      const AllowlistedOriginContentBrowserClient&) = delete;
+
   void SetAllowList(base::flat_set<url::Origin>&& allow_list) {
     allow_list_ = allow_list;
   }
@@ -109,8 +114,6 @@ class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
 
  private:
   base::flat_set<url::Origin> allow_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllowlistedOriginContentBrowserClient);
 };
 
 // Allows registering responses to network requests.

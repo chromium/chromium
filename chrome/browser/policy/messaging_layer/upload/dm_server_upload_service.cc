@@ -113,9 +113,9 @@ void DmServerUploader::ProcessRecords() {
   Status process_status;
 
   const int64_t expected_generation_id =
-      encrypted_records_->front().sequencing_information().generation_id();
+      encrypted_records_->front().sequence_information().generation_id();
   int64_t expected_sequencing_id =
-      encrypted_records_->front().sequencing_information().sequencing_id();
+      encrypted_records_->front().sequence_information().sequencing_id();
 
   // Will stop processing records on the first record that fails to pass.
   size_t records_added = 0;
@@ -151,7 +151,7 @@ void DmServerUploader::Finalize(CompletionResponse upload_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (upload_result.ok()) {
     std::move(report_success_upload_cb_)
-        .Run(upload_result.ValueOrDie().sequencing_information,
+        .Run(upload_result.ValueOrDie().sequence_information,
              upload_result.ValueOrDie().force_confirm);
   } else {
     LOG(WARNING) << upload_result.status();
@@ -168,13 +168,13 @@ Status DmServerUploader::IsRecordValid(
     const int64_t expected_generation_id,
     const int64_t expected_sequencing_id) const {
   // Test to ensure all records are in the same generation.
-  if (encrypted_record.sequencing_information().generation_id() !=
+  if (encrypted_record.sequence_information().generation_id() !=
       expected_generation_id) {
     return Status(error::INVALID_ARGUMENT,
                   "Record does not have the correct generation");
   }
 
-  if (encrypted_record.sequencing_information().sequencing_id() !=
+  if (encrypted_record.sequence_information().sequencing_id() !=
       expected_sequencing_id) {
     return Status(error::INVALID_ARGUMENT, "Out of order sequencing_id");
   }

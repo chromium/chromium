@@ -130,6 +130,11 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
   ServiceWorkerContextWatcherTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  ServiceWorkerContextWatcherTest(const ServiceWorkerContextWatcherTest&) =
+      delete;
+  ServiceWorkerContextWatcherTest& operator=(
+      const ServiceWorkerContextWatcherTest&) = delete;
+
   void SetUp() override {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     base::RunLoop().RunUntilIdle();
@@ -183,8 +188,6 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
  private:
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
   BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWatcherTest);
 };
 
 TEST_F(ServiceWorkerContextWatcherTest, NoServiceWorker) {

@@ -1,8 +1,15 @@
 # ![Logo](resources/icons/Icon_resource.png) Blitz browser
+Blitz is a simple browser designed to be easy to use.
+## Change Log
+* Assistant 1.0
+* Up to date fork
 
-Blitz is a simple browser based on chromium.
-## why I relaunched it
-because I needed some time to develop a name, 
-i gone with cursemium first but changed it- just to be original
+
+
 ## LTS
-Because I adopted a SaaS software model, I made LTS version
+Because I adopted a SaaS software model, I made the support times longer
+=======
+Blitz is a simple browser designed to be easy to use.
+## Change Log
+* Assistant 1.0
+* Up to date fork

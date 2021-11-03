@@ -290,7 +290,9 @@ SpdySessionDependencies::SpdySessionDependencies()
 
 SpdySessionDependencies::SpdySessionDependencies(
     std::unique_ptr<ProxyResolutionService> proxy_resolution_service)
-    : host_resolver(std::make_unique<MockCachingHostResolver>()),
+    : host_resolver(std::make_unique<MockCachingHostResolver>(
+          /*cache_invalidation_num=*/0,
+          MockHostResolverBase::RuleResolver::GetLocalhostResult())),
       cert_verifier(std::make_unique<MockCertVerifier>()),
       transport_security_state(std::make_unique<TransportSecurityState>()),
       ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>()),
@@ -310,6 +312,7 @@ SpdySessionDependencies::SpdySessionDependencies(
       time_func(&base::TimeTicks::Now),
       enable_http2_alternative_service(false),
       enable_websocket_over_http2(false),
+      enable_http2_settings_grease(false),
       http2_end_stream_with_data_frame(false),
       net_log(nullptr),
       disable_idle_sockets_close_on_memory_pressure(false),
@@ -370,6 +373,8 @@ HttpNetworkSessionParams SpdySessionDependencies::CreateSessionParams(
       session_deps->enable_http2_alternative_service;
   params.enable_websocket_over_http2 =
       session_deps->enable_websocket_over_http2;
+  params.enable_http2_settings_grease =
+      session_deps->enable_http2_settings_grease;
   params.greased_http2_frame = session_deps->greased_http2_frame;
   params.http2_end_stream_with_data_frame =
       session_deps->http2_end_stream_with_data_frame;
@@ -411,7 +416,9 @@ HttpNetworkSessionContext SpdySessionDependencies::CreateSessionContext(
 }
 
 SpdyURLRequestContext::SpdyURLRequestContext() : storage_(this) {
-  storage_.set_host_resolver(std::make_unique<MockHostResolver>());
+  storage_.set_host_resolver(std::make_unique<MockHostResolver>(
+      /*default_result=*/MockHostResolverBase::RuleResolver::
+          GetLocalhostResult()));
   storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
   storage_.set_transport_security_state(
       std::make_unique<TransportSecurityState>());

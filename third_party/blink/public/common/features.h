@@ -17,6 +17,7 @@ namespace features {
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbeds;
+BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
 BLINK_COMMON_EXPORT extern const base::Feature kCOEPForSharedWorker;
@@ -514,11 +515,26 @@ BLINK_COMMON_EXPORT extern const base::Feature kCSSCascadeLayers;
 BLINK_COMMON_EXPORT extern const base::Feature kSetTimeoutWithoutClamp;
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 
+// If enabled, ContentToVisibleTimeReporter logs
+// Browser.Tabs.TotalSwitchDuration2.* instead of
+// Browser.Tabs.TotalSwitchDuration.*.
+BLINK_COMMON_EXPORT extern const base::Feature kTabSwitchMetrics2;
+
 BLINK_COMMON_EXPORT extern const base::Feature kDeprecationWillLogToConsole;
 BLINK_COMMON_EXPORT extern const base::Feature
     kDeprecationWillLogToDevToolsIssue;
 
 BLINK_COMMON_EXPORT extern const base::Feature kLCPAnimatedImagesReporting;
+
+BLINK_COMMON_EXPORT extern const base::Feature
+    kWebSQLInThirdPartyContextThrowsWhenDisabled;
+
+// https://blog.whatwg.org/newline-normalizations-in-form-submission
+BLINK_COMMON_EXPORT extern const base::Feature kLateFormNewlineNormalization;
+
+// TODO(crbug.com/1185950): Remove this flag when the feature is fully launched
+// and released to stable with no issues.
+BLINK_COMMON_EXPORT extern const base::Feature kAutoExpandDetailsElement;
 
 }  // namespace features
 }  // namespace blink

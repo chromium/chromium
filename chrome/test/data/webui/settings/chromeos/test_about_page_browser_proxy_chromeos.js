@@ -25,6 +25,7 @@
       'openOsHelpPage',
       'openDiagnostics',
       'refreshTPMFirmwareUpdateStatus',
+      'requestUpdate',
       'setChannel',
     ]);
 
@@ -193,6 +194,13 @@
     this.methodCalled('refreshTPMFirmwareUpdateStatus');
     cr.webUIListenerCallback(
         'tpm-firmware-update-status-changed', this.tpmFirmwareUpdateStatus_);
+  }
+
+  /** @override */
+  requestUpdate() {
+    this.setUpdateStatus(UpdateStatus.UPDATING);
+    this.refreshUpdateStatus();
+    this.methodCalled('requestUpdate');
   }
 
   /** @override */

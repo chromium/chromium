@@ -596,16 +596,14 @@ void WaylandConnection::Global(void* data,
     }
   } else if (!connection->xdg_output_manager_ &&
              strcmp(interface, "zxdg_output_manager_v1") == 0) {
-    if (IsXdgOutputProtocolSupportEnabled()) {
-      connection->xdg_output_manager_ = wl::Bind<struct zxdg_output_manager_v1>(
-          registry, name, std::min(version, kMaxXdgOutputManagerVersion));
-      if (!connection->xdg_output_manager_) {
-        LOG(ERROR) << "Failed to bind zxdg_outout_manager_v1";
-        return;
-      }
-      if (connection->wayland_output_manager_)
-        connection->wayland_output_manager_->InitializeAllXdgOutputs();
+    connection->xdg_output_manager_ = wl::Bind<struct zxdg_output_manager_v1>(
+        registry, name, std::min(version, kMaxXdgOutputManagerVersion));
+    if (!connection->xdg_output_manager_) {
+      LOG(ERROR) << "Failed to bind zxdg_outout_manager_v1";
+      return;
     }
+    if (connection->wayland_output_manager_)
+      connection->wayland_output_manager_->InitializeAllXdgOutputs();
   } else if (strcmp(interface, "org_kde_plasma_shell") == 0) {
     NOTIMPLEMENTED_LOG_ONCE()
         << interface << " is recognized but not yet supported";

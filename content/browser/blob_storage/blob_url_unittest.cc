@@ -46,6 +46,8 @@
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/mock_blob_registry_delegate.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -111,16 +113,23 @@ class BlobURLTest : public testing::Test {
   }
 
   void SetUpFileSystem() {
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, temp_dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get(),
+        /*special_storage_policy=*/nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
     // Prepare file system.
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        /*quota_manager_proxy=*/nullptr, temp_dir_.GetPath());
+        quota_manager_proxy_.get(), temp_dir_.GetPath());
 
+    base::RunLoop run_loop;
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kFileSystemURLOrigin),
         kFileSystemType, storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce(&BlobURLTest::OnValidateFileSystem,
-                       base::Unretained(this)));
-    base::RunLoop().RunUntilIdle();
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
     ASSERT_TRUE(file_system_root_url_.is_valid());
 
     // Prepare files on file system.
@@ -161,12 +170,14 @@ class BlobURLTest : public testing::Test {
       *modification_time = file_info.last_modified;
   }
 
-  void OnValidateFileSystem(const GURL& root,
+  void OnValidateFileSystem(base::OnceClosure quit_closure,
+                            const GURL& root,
                             const std::string& name,
                             base::File::Error result) {
     ASSERT_EQ(base::File::FILE_OK, result);
     ASSERT_TRUE(root.is_valid());
     file_system_root_url_ = root;
+    std::move(quit_closure).Run();
   }
 
   void TestSuccessNonrangeRequest(const std::string& expected_response,
@@ -323,6 +334,8 @@ class BlobURLTest : public testing::Test {
 
   BrowserTaskEnvironment task_environment_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
   storage::BlobStorageContext blob_context_;
   storage::BlobUrlRegistry blob_url_registry_;

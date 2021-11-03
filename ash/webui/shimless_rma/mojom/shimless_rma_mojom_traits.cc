@@ -29,8 +29,8 @@ using MojomComponentRepairState =
 using ProtoComponentRepairState =
     rmad::ComponentsRepairState_ComponentRepairStatus_RepairStatus;
 
-using MojomProvisioningStep = ash::shimless_rma::mojom::ProvisioningStep;
-using ProtoProvisioningStep = rmad::ProvisionDeviceState::ProvisioningStep;
+using MojomProvisioningStatus = ash::shimless_rma::mojom::ProvisioningStatus;
+using ProtoProvisioningStatus = rmad::ProvisionStatus::Status;
 
 using MojomCalibrationInstruction =
     ash::shimless_rma::mojom::CalibrationSetupInstruction;
@@ -43,6 +43,9 @@ using ProtoCalibrationOverallStatus = rmad::CalibrationOverallStatus;
 using MojomCalibrationStatus = ash::shimless_rma::mojom::CalibrationStatus;
 using ProtoCalibrationStatus =
     rmad::CalibrationComponentStatus_CalibrationStatus;
+
+using MojomFinalizationStatus = ash::shimless_rma::mojom::FinalizationStatus;
+using ProtoFinalizationStatus = rmad::FinalizeStatus_Status;
 }  // namespace
 
 // The rmad state does not map 1:1 with UI app state, the UI handles more states
@@ -597,39 +600,45 @@ bool EnumTraits<MojomComponentRepairState, ProtoComponentRepairState>::
 }
 
 // static
-MojomProvisioningStep
-EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::ToMojom(
-    ProtoProvisioningStep step) {
-  switch (step) {
-    case rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS:
-      return MojomProvisioningStep::kInProgress;
-    case rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE:
-      return MojomProvisioningStep::kProvisioningComplete;
+MojomProvisioningStatus
+EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::ToMojom(
+    ProtoProvisioningStatus status) {
+  switch (status) {
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS:
+      return MojomProvisioningStatus::kInProgress;
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_COMPLETE:
+      return MojomProvisioningStatus::kComplete;
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING:
+      return MojomProvisioningStatus::kFailedBlocking;
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_NON_BLOCKING:
+      return MojomProvisioningStatus::kFailedNonBlocking;
 
-    case rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_UNKNOWN:
+    case rmad::ProvisionStatus::RMAD_PROVISION_STATUS_UNKNOWN:
     default:
       NOTREACHED();
-      return MojomProvisioningStep::kProvisioningUnknown;
+      return MojomProvisioningStatus::kInProgress;
   }
   NOTREACHED();
-  return MojomProvisioningStep::kProvisioningUnknown;
+  return MojomProvisioningStatus::kInProgress;
 }
 
 // static
-bool EnumTraits<MojomProvisioningStep, ProtoProvisioningStep>::FromMojom(
-    MojomProvisioningStep step,
-    ProtoProvisioningStep* out) {
-  switch (step) {
-    case MojomProvisioningStep::kInProgress:
-      *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS;
+bool EnumTraits<MojomProvisioningStatus, ProtoProvisioningStatus>::FromMojom(
+    MojomProvisioningStatus status,
+    ProtoProvisioningStatus* out) {
+  switch (status) {
+    case MojomProvisioningStatus::kInProgress:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS;
       return true;
-    case MojomProvisioningStep::kProvisioningComplete:
-      *out = rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_COMPLETE;
+    case MojomProvisioningStatus::kComplete:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_COMPLETE;
       return true;
-
-    case MojomProvisioningStep::kProvisioningUnknown:
-      NOTREACHED();
-      return false;
+    case MojomProvisioningStatus::kFailedBlocking:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_BLOCKING;
+      return true;
+    case MojomProvisioningStatus::kFailedNonBlocking:
+      *out = rmad::ProvisionStatus::RMAD_PROVISION_STATUS_FAILED_NON_BLOCKING;
+      return true;
   }
   NOTREACHED();
   return false;
@@ -797,6 +806,50 @@ bool EnumTraits<MojomCalibrationStatus, ProtoCalibrationStatus>::FromMojom(
       return true;
     case MojomCalibrationStatus::kCalibrationSkip:
       *out = rmad::CalibrationComponentStatus::RMAD_CALIBRATION_SKIP;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+// static// static
+MojomFinalizationStatus
+EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::ToMojom(
+    ProtoFinalizationStatus step) {
+  switch (step) {
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS:
+      return MojomFinalizationStatus::kInProgress;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE:
+      return MojomFinalizationStatus::kComplete;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING:
+      return MojomFinalizationStatus::kFailedBlocking;
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING:
+      return MojomFinalizationStatus::kFailedNonBlocking;
+
+    case rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_UNKNOWN:
+    default:
+      NOTREACHED();
+      return MojomFinalizationStatus::kInProgress;
+  }
+  NOTREACHED();
+  return MojomFinalizationStatus::kInProgress;
+}
+
+bool EnumTraits<MojomFinalizationStatus, ProtoFinalizationStatus>::FromMojom(
+    MojomFinalizationStatus step,
+    ProtoFinalizationStatus* out) {
+  switch (step) {
+    case MojomFinalizationStatus::kInProgress:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS;
+      return true;
+    case MojomFinalizationStatus::kComplete:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_COMPLETE;
+      return true;
+    case MojomFinalizationStatus::kFailedBlocking:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING;
+      return true;
+    case MojomFinalizationStatus::kFailedNonBlocking:
+      *out = rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_NON_BLOCKING;
       return true;
   }
   NOTREACHED();

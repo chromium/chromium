@@ -23,38 +23,38 @@
 # which we want to keep.
 -keep @interface androidx.annotation.Keep
 -keep @androidx.annotation.Keep class *
--keepclasseswithmembers class * {
+-keepclasseswithmembers,allowaccessmodification class * {
   @androidx.annotation.Keep <fields>;
 }
--keepclasseswithmembers class * {
+-keepclasseswithmembers,allowaccessmodification class * {
   @androidx.annotation.Keep <methods>;
 }
 
 # Keeps for class level annotations.
--keep @org.chromium.base.annotations.UsedByReflection class ** {}
+-keep,allowaccessmodification @org.chromium.base.annotations.UsedByReflection class ** {}
 
 # Keeps for method level annotations.
--keepclasseswithmembers class ** {
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.AccessedByNative <fields>;
 }
--keepclasseswithmembers,includedescriptorclasses class ** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
   @org.chromium.base.annotations.CalledByNative <methods>;
 }
--keepclasseswithmembers,includedescriptorclasses class ** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
   @org.chromium.base.annotations.CalledByNativeUnchecked <methods>;
 }
--keepclasseswithmembers class ** {
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.UsedByReflection <methods>;
 }
--keepclasseswithmembers class ** {
+-keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.base.annotations.UsedByReflection <fields>;
 }
 # Even unused methods kept due to explicit jni registration:
 # https://crbug.com/688465.
--keepclasseswithmembers,includedescriptorclasses class !org.chromium.base.library_loader.**,** {
+-keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class !org.chromium.base.library_loader.**,** {
   native <methods>;
 }
--keepclasseswithmembernames,includedescriptorclasses class org.chromium.base.library_loader.** {
+-keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class org.chromium.base.library_loader.** {
   native <methods>;
 }
 
@@ -71,13 +71,13 @@
 -if @org.chromium.base.annotations.DoNotInline class * {
     *** *(...);
 }
--keep,allowobfuscation class <1> {
+-keep,allowobfuscation,allowaccessmodification class <1> {
     *** <2>(...);
 }
--keepclassmembers,allowobfuscation class * {
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <methods>;
 }
--keepclassmembers,allowobfuscation class * {
+-keepclassmembers,allowobfuscation,allowaccessmodification class * {
    @org.chromium.base.annotations.DoNotInline <fields>;
 }
 
@@ -90,7 +90,7 @@
 # If we annotated all Parcelables that get put into Bundles other than
 # for saveInstanceState (e.g. PendingIntents), then we could actually keep the
 # names of just those ones. For now, we'll just keep them all.
--keepnames class org.chromium.** implements android.os.Parcelable {}
+-keepnames,allowaccessmodification class org.chromium.** implements android.os.Parcelable {}
 
 # Keep all enum values and valueOf methods. See
 # http://proguard.sourceforge.net/index.html#manual/examples.html

@@ -168,8 +168,8 @@ FakeChromeIdentityService::PresentAccountDetailsController(
   [viewController presentViewController:accountDetailsViewController
                                animated:animated
                              completion:nil];
-  return ^(BOOL animated) {
-    [accountDetailsViewController dismissViewControllerAnimated:animated
+  return ^(BOOL dismissAnimated) {
+    [accountDetailsViewController dismissViewControllerAnimated:dismissAnimated
                                                      completion:nil];
   };
 }

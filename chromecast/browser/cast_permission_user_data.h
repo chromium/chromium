@@ -52,7 +52,7 @@ class CastPermissionUserData : public base::SupportsUserData::Data {
   const std::string app_id_;
   const GURL app_web_url_;
   const bool enforce_feature_permissions_;
-  const base::flat_set<int32_t> feature_permissions_;
+  base::flat_set<int32_t> feature_permissions_;
   const std::vector<std::string> additional_feature_permission_origins_;
 };
 

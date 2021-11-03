@@ -688,13 +688,23 @@ void SafeBrowsingNavigationObserverManager::AppendRecentNavigations(
   UMA_HISTOGRAM_COUNTS_1000(
       "SafeBrowsing.NavigationObserver.NavigationEventsRecordedLength",
       navigation_event_list_.navigation_events().size());
+  size_t user_gesture_cnt = 0;
   while (it != navigation_event_list_.navigation_events().rend()) {
     // Skip navigations that happened after |last_navigation_time_msec|.
     if (it->get()->last_updated.ToJavaTime() < last_navigation_time_msec) {
       AddToReferrerChain(&navigation_chain, it->get(), GURL(),
                          ReferrerChainEntry::RECENT_NAVIGATION);
       allowed_entries--;
+      if (it->get()->IsUserInitiated()) {
+        user_gesture_cnt++;
+      }
       if (allowed_entries == 0 && !omit_non_user_gestures_is_enabled) {
+        break;
+      }
+      // If the number of user gesture entries has reached the upper bound, stop
+      // adding new entries, since we can only omit non user gesture entries.
+      if (omit_non_user_gestures_is_enabled &&
+          user_gesture_cnt >= recent_navigation_count) {
         break;
       }
     }

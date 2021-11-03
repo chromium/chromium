@@ -41,13 +41,14 @@ class CC_EXPORT PictureLayer : public Layer {
   // Layer interface.
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect) override;
-  sk_sp<SkPicture> GetPicture() const override;
+  sk_sp<const SkPicture> GetPicture() const override;
   bool Update() override;
   void RunMicroBenchmark(MicroBenchmark* benchmark) override;
   void CaptureContent(const gfx::Rect& rect,
-                      std::vector<NodeInfo>* content) override;
+                      std::vector<NodeInfo>* content) const override;
 
   ContentLayerClient* client() { return picture_layer_inputs_.client; }
 
@@ -55,7 +56,7 @@ class CC_EXPORT PictureLayer : public Layer {
     return recording_source_.get();
   }
 
-  const DisplayItemList* GetDisplayItemList();
+  const DisplayItemList* GetDisplayItemList() const;
 
  protected:
   // Encapsulates all data, callbacks or interfaces received from the embedder.

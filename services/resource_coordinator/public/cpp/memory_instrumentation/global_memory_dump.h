@@ -79,6 +79,9 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
     const mojom::AggregatedMetricsPtr aggregated_metrics_;
   };
 
+  GlobalMemoryDump(const GlobalMemoryDump&) = delete;
+  GlobalMemoryDump& operator=(const GlobalMemoryDump&) = delete;
+
   ~GlobalMemoryDump();
 
   // Creates an owned instance of this class wrapping the given mojo struct.
@@ -97,8 +100,6 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   std::forward_list<ProcessDump> process_dumps_;
   AggregatedMetrics aggregated_metrics_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalMemoryDump);
 };
 
 }  // namespace memory_instrumentation

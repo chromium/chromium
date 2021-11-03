@@ -124,9 +124,16 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
         function.get(), args_string, browser(), api_test_utils::NONE);
     EXPECT_TRUE(run_result) << function->GetError();
 
-    bool has_permission;
-    EXPECT_TRUE(function->GetResultList()->GetBoolean(0u, &has_permission));
-    return has_permission;
+    const auto args_list = function->GetResultList()->GetList();
+    if (args_list.empty()) {
+      ADD_FAILURE() << "Result unexpectedly empty.";
+      return false;
+    }
+    if (!args_list[0].is_bool()) {
+      ADD_FAILURE() << "Result is not a boolean.";
+      return false;
+    }
+    return args_list[0].GetBool();
   }
 
   // Adds the extension to the ExtensionService, and grants any inital

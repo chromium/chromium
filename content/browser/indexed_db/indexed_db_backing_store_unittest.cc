@@ -296,6 +296,10 @@ class IndexedDBBackingStoreTest : public testing::Test {
                 nullptr,
                 base::ThreadTaskRunnerHandle::Get())) {}
 
+  IndexedDBBackingStoreTest(const IndexedDBBackingStoreTest&) = delete;
+  IndexedDBBackingStoreTest& operator=(const IndexedDBBackingStoreTest&) =
+      delete;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -464,9 +468,6 @@ class IndexedDBBackingStoreTest : public testing::Test {
   IndexedDBKey key2_;
   IndexedDBValue value1_;
   IndexedDBValue value2_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBackingStoreTest);
 };
 
 enum class ExternalObjectTestType {
@@ -480,6 +481,11 @@ class IndexedDBBackingStoreTestWithExternalObjects
       public IndexedDBBackingStoreTest {
  public:
   IndexedDBBackingStoreTestWithExternalObjects() = default;
+
+  IndexedDBBackingStoreTestWithExternalObjects(
+      const IndexedDBBackingStoreTestWithExternalObjects&) = delete;
+  IndexedDBBackingStoreTestWithExternalObjects& operator=(
+      const IndexedDBBackingStoreTestWithExternalObjects&) = delete;
 
   virtual ExternalObjectTestType TestType() { return GetParam(); }
 
@@ -756,8 +762,6 @@ class IndexedDBBackingStoreTestWithExternalObjects
   std::vector<IndexedDBExternalObject> external_objects_;
 
   std::vector<std::string> blob_remote_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBBackingStoreTestWithExternalObjects);
 };
 
 INSTANTIATE_TEST_SUITE_P(

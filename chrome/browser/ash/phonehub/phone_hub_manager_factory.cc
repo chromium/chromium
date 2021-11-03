@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chromeos/components/phonehub/camera_roll_manager_impl.h"
 #include "chromeos/components/phonehub/multidevice_setup_state_updater.h"
 #include "chromeos/components/phonehub/notification_access_manager_impl.h"
 #include "chromeos/components/phonehub/onboarding_ui_tracker_impl.h"
@@ -37,6 +38,7 @@ namespace {
 
 // TODO(https://crbug.com/1164001): remove after chromeos/components/phonehub is
 // migrated.
+using ::chromeos::phonehub::CameraRollManagerImpl;
 using ::chromeos::phonehub::MultideviceSetupStateUpdater;
 using ::chromeos::phonehub::NotificationAccessManagerImpl;
 using ::chromeos::phonehub::OnboardingUiTrackerImpl;
@@ -171,6 +173,7 @@ void PhoneHubManagerFactory::BrowserContextShutdown(
 void PhoneHubManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   MultideviceSetupStateUpdater::RegisterPrefs(registry);
+  CameraRollManagerImpl::RegisterPrefs(registry);
   NotificationAccessManagerImpl::RegisterPrefs(registry);
   OnboardingUiTrackerImpl::RegisterPrefs(registry);
   ScreenLockManagerImpl::RegisterPrefs(registry);

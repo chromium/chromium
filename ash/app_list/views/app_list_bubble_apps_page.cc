@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/continue_section_view.h"
@@ -67,6 +68,8 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   DCHECK(a11y_announcer);
   DCHECK(folder_controller);
 
+  AppListModelProvider::Get()->AddObserver(this);
+
   SetUseDefaultFillLayout(true);
 
   // The entire page scrolls.
@@ -99,16 +102,17 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   // Continue section row.
-  continue_section_ = scroll_contents->AddChildView(
-      std::make_unique<ContinueSectionView>(view_delegate, kContinueColumnCount,
-                                            /*tablet_mode=*/false));
+  continue_section_ =
+      scroll_contents->AddChildView(std::make_unique<ContinueSectionView>(
+          view_delegate, kContinueColumnCount, /*tablet_mode=*/false));
 
   // Recent apps row.
+  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
+  AppListModel* const model = AppListModelProvider::Get()->model();
   recent_apps_ = scroll_contents->AddChildView(
       std::make_unique<RecentAppsView>(this, view_delegate));
   recent_apps_->UpdateAppListConfig(app_list_config);
-  recent_apps_->ShowResults(view_delegate->GetSearchModel(),
-                            view_delegate->GetModel());
+  recent_apps_->ShowResults(search_model, model);
 
   // Horizontal separator.
   auto* separator =
@@ -128,7 +132,6 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scrollable_apps_grid_view_->Init();
   scrollable_apps_grid_view_->UpdateAppListConfig(app_list_config);
   scrollable_apps_grid_view_->SetMaxColumns(5);
-  AppListModel* model = view_delegate->GetModel();
   scrollable_apps_grid_view_->SetModel(model);
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
   scrollable_apps_grid_view_->ResetForShowApps();
@@ -141,7 +144,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   continue_section_->UpdateSuggestionTasks();
 }
 
-AppListBubbleAppsPage::~AppListBubbleAppsPage() = default;
+AppListBubbleAppsPage::~AppListBubbleAppsPage() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
 
 void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
   continue_section_->DisableFocusForShowingActiveFolder(disabled);
@@ -152,6 +157,15 @@ void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
 void AppListBubbleAppsPage::Layout() {
   views::View::Layout();
   gradient_helper_->UpdateGradientZone();
+}
+
+void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  scrollable_apps_grid_view_->SetModel(model);
+  scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
+
+  recent_apps_->ShowResults(search_model, model);
 }
 
 void AppListBubbleAppsPage::MoveFocusUpFromRecents() {

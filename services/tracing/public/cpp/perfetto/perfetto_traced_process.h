@@ -166,6 +166,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Returns the process-wide instance of the PerfettoTracedProcess.
   static PerfettoTracedProcess* Get();
 
+  PerfettoTracedProcess(const PerfettoTracedProcess&) = delete;
+  PerfettoTracedProcess& operator=(const PerfettoTracedProcess&) = delete;
+
   // Provide a factory for lazily creating mojo consumer connections to the
   // tracing service. Allows using Perfetto's Client API for recording traces.
   using ConsumerConnectionFactory = mojom::TracingService& (*)();
@@ -235,23 +238,17 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Can be called on any thread, but only after OnThreadPoolAvailable().
   void ActivateSystemTriggers(const std::vector<std::string>& triggers);
 
-  // Sets the task runner used by the tracing infrastructure in this process.
-  // The returned handle will automatically tear down tracing when destroyed, so
-  // it should be kept valid until the test terminates.
+  // Sets the task runner used by the tracing infrastructure in this process. Be
+  // sure to call TearDownForTesting to clean up at the end of the test.
   //
-  // Be careful when using SetupForTesting. There is a PostTask in the
+  // Be careful when using ResetTaskRunnerForTesting. There is a PostTask in the
   // constructor of PerfettoTracedProcess, so before this class is constructed
   // is the only safe time to call this.
-  struct COMPONENT_EXPORT(TRACING_CPP) TestHandle {
-    TestHandle() = default;
-    ~TestHandle();
-    TestHandle(const TestHandle&) = delete;
-    TestHandle(TestHandle&&) = default;
-    TestHandle& operator=(const TestHandle&) = delete;
-    TestHandle& operator=(TestHandle&&) = default;
-  };
-  static std::unique_ptr<TestHandle> SetupForTesting(
+  static void ResetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
+
+  // Clean up tracing state at the end of a test.
+  static void TearDownForTesting();
 
   // Sets the ProducerClient (or SystemProducer) and returns the old pointer. If
   // tests want to restore the state of the world they should store the pointer
@@ -326,7 +323,6 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
       pending_producer_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(PerfettoTracedProcess);
 };
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

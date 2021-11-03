@@ -44,6 +44,12 @@ std::vector<cryptauth::BeaconSeed> CreateBeaconSeedsForDevice(
 }  // namespace
 
 class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
+ public:
+  SecureChannelBleAdvertisementGeneratorTest(
+      const SecureChannelBleAdvertisementGeneratorTest&) = delete;
+  SecureChannelBleAdvertisementGeneratorTest& operator=(
+      const SecureChannelBleAdvertisementGeneratorTest&) = delete;
+
  protected:
   SecureChannelBleAdvertisementGeneratorTest()
       : test_remote_device_(
@@ -76,9 +82,6 @@ class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
   MockForegroundEidGenerator* mock_eid_generator_;
 
   std::unique_ptr<BleAdvertisementGenerator> generator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleAdvertisementGeneratorTest);
 };
 
 TEST_F(SecureChannelBleAdvertisementGeneratorTest, EmptyPublicKey) {

@@ -22,6 +22,8 @@ buildflag_header("history_clusters_buildflags") {
 
 static_library("core") {
   sources = [
+    "history_clusters_db_tasks.cc",
+    "history_clusters_db_tasks.h",
     "history_clusters_prefs.cc",
     "history_clusters_prefs.h",
     "history_clusters_service.cc",
@@ -67,6 +69,7 @@ source_set("clustering_backend") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "history_clusters_db_tasks_unittest.cc",
     "history_clusters_service_unittest.cc",
     "remote_clustering_backend_unittest.cc",
   ]

@@ -20,8 +20,6 @@ class NGGridPlacement;
 struct GridItemOffsets;
 struct NGGridProperties;
 
-using SetOffsetData = NGGridData::SetData;
-
 enum class AxisEdge : uint8_t { kStart, kCenter, kEnd, kBaseline };
 enum class ItemType : uint8_t { kInGridFlow, kOutOfFlow };
 
@@ -224,14 +222,15 @@ struct GridItemIndices {
     MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) override;
 
     // Computes the containing block rect of out of flow items from stored data
-    // in |NGGridData|.
+    // in |NGGridLayoutData|.
     static absl::optional<LogicalRect> ComputeContainingBlockRect(
         const NGBlockNode& node,
-        const NGGridData& grid_data,
-        const ComputedStyle& grid_style,
-        const WritingMode container_writing_mode,
+        const ComputedStyle& container_style,
+        const NGGridPlacementData& placement_data,
+        const NGGridLayoutData& layout_data,
         const NGBoxStrut& borders,
         const LogicalSize& border_box_size,
+        const WritingMode container_writing_mode,
         const LayoutUnit block_size);
 
     // Helper that computes tracks sizes in a given range.
@@ -274,6 +273,7 @@ struct GridItemIndices {
 
     void ConstructAndAppendGridItems(
         GridItems* grid_items,
+        NGGridPlacement* grid_placement,
         NGGridProperties* grid_properties,
         GridItemStorageVector* out_of_flow_items = nullptr) const;
 
@@ -283,10 +283,10 @@ struct GridItemIndices {
         const WritingMode container_writing_mode);
 
     void BuildBlockTrackCollections(
+        const NGGridPlacement& grid_placement,
         GridItems* grid_items,
         NGGridBlockTrackCollection* column_track_collection,
-        NGGridBlockTrackCollection* row_track_collection,
-        NGGridPlacement* grid_placement) const;
+        NGGridBlockTrackCollection* row_track_collection) const;
 
     // Ensure coverage in block collection after grid items have been placed.
     void EnsureTrackCoverageForGridItems(
@@ -447,7 +447,7 @@ struct GridItemIndices {
         LayoutUnit* start_offset,
         LayoutUnit* size);
 
-    NGGridData::TrackCollectionGeometry ConvertSetGeometry(
+    NGGridLayoutData::TrackCollectionGeometry ConvertSetGeometry(
         const SetGeometry& set_geometry,
         const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
 

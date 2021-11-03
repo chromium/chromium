@@ -40,13 +40,13 @@ promise_test(async () => {
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic1.wbn');
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b1.wbn');
+  const new_element = removeAndAppendNewElementWithUpdatedRule(element, {url: '../resources/wbn/dynamic2-b1.wbn'});
   // Loading the classic script should not reuse the previously loaded
   // script. So in this case, the script must be loaded from dynamic2-b1.wbn.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic2.wbn');
-  document.body.removeChild(element);
+  document.body.removeChild(new_element);
   // And in this case, the script must be loaded from network.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
@@ -66,7 +66,7 @@ promise_test(async () => {
   const module = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource1.js');
   assert_equals(module.result, 'resource1 from dynamic1.wbn');
 
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b1.wbn');
+  const new_element = removeAndAppendNewElementWithUpdatedRule(element, {url: '../resources/wbn/dynamic2-b1.wbn'});
   const module2 = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource2.js');
   assert_equals(module2.result, 'resource2 from dynamic2.wbn');
 
@@ -74,7 +74,7 @@ promise_test(async () => {
   const module3 = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource3.js');
   assert_equals(module3.result, 'resource3 from network');
 
-  document.body.removeChild(element);
+  document.body.removeChild(new_element);
   const module4 = await import('https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/dynamic/resource4.js');
   assert_equals(module4.result, 'resource4 from network');
 
@@ -94,13 +94,13 @@ promise_test(async () => {
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic1.wbn');
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2-b1.wbn');
+  const new_element = removeAndAppendNewElementWithUpdatedRule(element, {url: '../resources/wbn/dynamic2-b1.wbn'});
   // Loading the classic script should not reuse the previously loaded
   // script. So in this case, the script must be loaded from dynamic2.wbn.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic2.wbn');
-  document.body.removeChild(element);
+  document.body.removeChild(new_element);
   // And in this case, the script must be loaded from network.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
@@ -166,24 +166,24 @@ promise_test(async () => {
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic1.wbn');
-  changeWebBundleUrl(element, '../resources/wbn/dynamic2.wbn');
+  const new_element = removeAndAppendNewElementWithUpdatedRule(element, {url: '../resources/wbn/dynamic2.wbn'});
   // Loading the classic script should not reuse the previously loaded
   // script. So in this case, the script must be loaded from dynamic2.wbn.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic2.wbn');
   // Changes the scope not to hit the classic_script.js.
-  changeWebBundleScopes(element, [scope + 'dummy']);
+  const new_element2 = removeAndAppendNewElementWithUpdatedRule(new_element, {scopes: [scope + 'dummy']});
   // And in this case, the script must be loaded from network.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from network');
   // Adds the scope to hit the classic_script.js.
-  changeWebBundleScopes(element, [scope + 'dummy', scope + 'classic_']);
+  const new_element3 = removeAndAppendNewElementWithUpdatedRule(new_element2, {scopes: [scope + 'dummy', scope + 'classic_']});
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
     'classic script from dynamic2.wbn');
-  document.body.removeChild(element);
+  document.body.removeChild(new_element3);
   // And in this case, the script must be loaded from network.
   assert_equals(
     await loadScriptAndWaitReport(classic_script_url),
@@ -287,18 +287,6 @@ promise_test(async () => {
   document.body.removeChild(element);
 }, 'Subresource loading with uuid-in-package: URL with scopes attribute');
 
-
-promise_test(async () => {
-  const wbn_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/subresource.wbn?test-resources-update';
-  const resource_url = 'https://{{domains[]}}:{{ports[https][0]}}/web-bundle/resources/wbn/submodule.js';
-  const element = await addWebBundleElementAndWaitForLoad(wbn_url, /*resources=*/[]);
-  changeWebBundleResources(element, [resource_url]);
-  const resp = await fetch(resource_url, { cache: 'no-store' });
-  assert_true(resp.ok);
-  assert_equals(performance.getEntriesByName(wbn_url).length, 1);
-  document.body.removeChild(element);
-}, 'Updating resource attribute should not reload the bundle');
-
 async function loadScriptAndWaitReport(script_url) {
   const result_promise = new Promise((resolve) => {
     // This function will be called from script.js
@@ -309,4 +297,11 @@ async function loadScriptAndWaitReport(script_url) {
   script.src = script_url;
   document.body.appendChild(script);
   return result_promise;
+}
+
+function removeAndAppendNewElementWithUpdatedRule(element, new_rule) {
+  const new_element = createNewWebBundleElementWithUpdatedRule(element, new_rule);
+  element.remove();
+  document.body.appendChild(new_element);
+  return new_element;
 }

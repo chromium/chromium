@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -121,11 +122,17 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
            (selection.width() % 2 == 0 && selection.height() % 2 == 0))
         << "CopyOutputRequest supports odd-sized result_selection() only for "
            "RGBA!";
-
     result_selection_ = selection;
   }
   bool has_result_selection() const { return result_selection_.has_value(); }
   const gfx::Rect& result_selection() const { return *result_selection_; }
+
+  // Requests that the region copied by the CopyOutputRequest be blitted into
+  // the caller's textures. Can be called only for CopyOutputRequests that
+  // target native textures.
+  void set_blit_request(const BlitRequest& blit_request);
+  bool has_blit_request() const { return blit_request_.has_value(); }
+  const BlitRequest& blit_request() const { return *blit_request_; }
 
   // Sends the result from executing this request. Called by the internal
   // implementation, usually a DirectRenderer.
@@ -157,6 +164,8 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   absl::optional<base::UnguessableToken> source_;
   absl::optional<gfx::Rect> area_;
   absl::optional<gfx::Rect> result_selection_;
+
+  absl::optional<BlitRequest> blit_request_;
 };
 
 }  // namespace viz

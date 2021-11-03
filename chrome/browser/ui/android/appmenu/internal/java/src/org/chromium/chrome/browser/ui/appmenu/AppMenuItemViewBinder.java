@@ -47,7 +47,6 @@ class AppMenuItemViewBinder {
             setContentDescription(view.findViewById(R.id.menu_item_text), model);
         } else if (key == AppMenuItemProperties.ENABLED) {
             boolean enabled = model.get(AppMenuItemProperties.ENABLED);
-            ((TextView) view.findViewById(R.id.menu_item_text)).setEnabled(enabled);
             view.setEnabled(enabled);
         } else if (key == AppMenuItemProperties.HIGHLIGHTED) {
             if (model.get(AppMenuItemProperties.HIGHLIGHTED)) {

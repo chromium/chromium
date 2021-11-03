@@ -10,17 +10,14 @@
 
 namespace chromeos {
 
-// TODO(b/202273191) Remove |host| from this struct.
 struct ChromeOSSystemExtensionInfo {
   ChromeOSSystemExtensionInfo(const std::string& manufacturer,
-                              const std::string& pwa_origin,
-                              const std::string& host);
+                              const std::string& pwa_origin);
   ChromeOSSystemExtensionInfo(const ChromeOSSystemExtensionInfo& other);
   ~ChromeOSSystemExtensionInfo();
 
   const std::string manufacturer;
   const std::string pwa_origin;
-  const std::string host;
 };
 
 size_t GetChromeOSSystemExtensionInfosSize();

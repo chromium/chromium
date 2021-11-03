@@ -32,11 +32,20 @@ export function isNonEmptyArray(maybeArray) {
 
 /**
  * Checks if argument is null or is an array.
- * @param {?Object} maybeNullOrArray
+ * @param {?Array} maybeNullOrArray
  * @return {boolean}
  */
 export function isNullOrArray(maybeNullOrArray) {
   return maybeNullOrArray === null || Array.isArray(maybeNullOrArray);
+}
+
+/**
+ * Checks if argument is null or is a number.
+ * @param {?number} maybeNullOrNumber
+ * @return {boolean}
+ */
+export function isNullOrNumber(maybeNullOrNumber) {
+  return maybeNullOrNumber === null || typeof maybeNullOrNumber === 'number';
 }
 
 /**

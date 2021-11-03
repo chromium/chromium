@@ -10,6 +10,10 @@
 
 namespace page_info {
 namespace about_this_site_validation {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Keep in sync with AboutThisSiteStatus in enums.xml
 enum class ProtoValidation {
   kValid = 0,
   kNoResult = 1,
@@ -20,6 +24,9 @@ enum class ProtoValidation {
   kInvalidSource = 6,
   kIncompleteTimeStamp = 7,
   kInvalidTimeStamp = 8,
+  kUnknown = 9,
+
+  kMaxValue = kUnknown,
 };
 
 ProtoValidation ValidateMetadata(

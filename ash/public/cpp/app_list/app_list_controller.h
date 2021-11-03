@@ -19,6 +19,8 @@ namespace ash {
 
 class AppListClient;
 class AppListControllerObserver;
+class AppListModel;
+class SearchModel;
 
 // An interface implemented in Ash to handle calls from Chrome.
 // These include:
@@ -90,10 +92,21 @@ class ASH_PUBLIC_EXPORT AppListController {
                                              const SkColor color) = 0;
 
   // Update the whole model, usually when profile changes happen in Chrome.
+  // DEPRECATED: Usages of `SetModelData()` will be replaced with
+  // `SetActiveModel()` - https://crbug.com/1263604.
   virtual void SetModelData(
       int profile_id,
       std::vector<std::unique_ptr<AppListItemMetadata>> apps,
       bool is_search_engine_google) = 0;
+
+  // Updates the app list model and search model that should be used by the
+  // controller.
+  // This can be used to update the models represented in the app list UI when
+  // the active user profile changes in Chrome, and is intended to replace
+  // `SetModelData()`. Additionally, it can be used in tests to instantiate
+  // testing models.
+  virtual void SetActiveModel(AppListModel* model,
+                              SearchModel* search_model) = 0;
 
   // Updates a search rresult's metadata.
   virtual void SetSearchResultMetadata(

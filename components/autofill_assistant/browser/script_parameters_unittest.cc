@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/script_parameters.h"
 
+#include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,9 +17,10 @@ using ::testing::UnorderedElementsAreArray;
 
 TEST(ScriptParametersTest, Create) {
   ScriptParameters parameters = {{{"key_a", "value_a"}, {"key_b", "value_b"}}};
-  EXPECT_THAT(parameters.ToProto(),
-              UnorderedElementsAreArray(std::map<std::string, std::string>(
-                  {{"key_a", "value_a"}, {"key_b", "value_b"}})));
+  EXPECT_THAT(
+      parameters.ToProto(),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
+          {{"key_a", "value_a"}, {"key_b", "value_b"}})));
 }
 
 TEST(ScriptParametersTest, MergeEmpty) {
@@ -31,17 +33,19 @@ TEST(ScriptParametersTest, MergeEmpty) {
 TEST(ScriptParametersTest, MergeEmptyWithNonEmpty) {
   ScriptParameters empty;
   empty.MergeWith({{{"key_a", "value_a"}}});
-  EXPECT_THAT(empty.ToProto(),
-              UnorderedElementsAreArray(
-                  std::map<std::string, std::string>({{"key_a", "value_a"}})));
+  EXPECT_THAT(
+      empty.ToProto(),
+      UnorderedElementsAreArray(
+          base::flat_map<std::string, std::string>({{"key_a", "value_a"}})));
 }
 
 TEST(ScriptParametersTest, MergeNonEmptyWithEmpty) {
   ScriptParameters parameters = {{{"key_a", "value_a"}}};
   parameters.MergeWith(ScriptParameters());
-  EXPECT_THAT(parameters.ToProto(),
-              UnorderedElementsAreArray(
-                  std::map<std::string, std::string>({{"key_a", "value_a"}})));
+  EXPECT_THAT(
+      parameters.ToProto(),
+      UnorderedElementsAreArray(
+          base::flat_map<std::string, std::string>({{"key_a", "value_a"}})));
 }
 
 TEST(ScriptParametersTest, MergeNonEmptyWithNonEmpty) {
@@ -50,9 +54,10 @@ TEST(ScriptParametersTest, MergeNonEmptyWithNonEmpty) {
       {{"key_a", "value_a_changed"}, {"key_b", "value_b"}}};
 
   parameters_a.MergeWith(parameters_b);
-  EXPECT_THAT(parameters_a.ToProto(),
-              UnorderedElementsAreArray(std::map<std::string, std::string>(
-                  {{"key_a", "value_a"}, {"key_b", "value_b"}})));
+  EXPECT_THAT(
+      parameters_a.ToProto(),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
+          {{"key_a", "value_a"}, {"key_b", "value_b"}})));
 }
 
 TEST(ScriptParametersTest, TriggerScriptAllowList) {
@@ -65,25 +70,27 @@ TEST(ScriptParametersTest, TriggerScriptAllowList) {
                                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
                                   {"INTENT", "FAKE_INTENT"}}};
 
-  EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
-              UnorderedElementsAreArray(std::map<std::string, std::string>(
-                  {{"DEBUG_BUNDLE_ID", "12345"},
-                   {"key_a", "value_a"},
-                   {"DEBUG_BUNDLE_VERSION", "version"},
-                   {"DEBUG_SOCKET_ID", "678"},
-                   {"FALLBACK_BUNDLE_ID", "fallback_id"},
-                   {"key_b", "value_b"},
-                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-                   {"INTENT", "FAKE_INTENT"}})));
+  EXPECT_THAT(
+      parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
+          {{"DEBUG_BUNDLE_ID", "12345"},
+           {"key_a", "value_a"},
+           {"DEBUG_BUNDLE_VERSION", "version"},
+           {"DEBUG_SOCKET_ID", "678"},
+           {"FALLBACK_BUNDLE_ID", "fallback_id"},
+           {"key_b", "value_b"},
+           {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
+           {"INTENT", "FAKE_INTENT"}})));
 
-  EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
-              UnorderedElementsAreArray(std::map<std::string, std::string>(
-                  {{"DEBUG_BUNDLE_ID", "12345"},
-                   {"DEBUG_BUNDLE_VERSION", "version"},
-                   {"DEBUG_SOCKET_ID", "678"},
-                   {"FALLBACK_BUNDLE_ID", "fallback_id"},
-                   {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
-                   {"INTENT", "FAKE_INTENT"}})));
+  EXPECT_THAT(
+      parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
+      UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
+          {{"DEBUG_BUNDLE_ID", "12345"},
+           {"DEBUG_BUNDLE_VERSION", "version"},
+           {"DEBUG_SOCKET_ID", "678"},
+           {"FALLBACK_BUNDLE_ID", "fallback_id"},
+           {"FALLBACK_BUNDLE_VERSION", "fallback_ver"},
+           {"INTENT", "FAKE_INTENT"}})));
 }
 
 TEST(ScriptParametersTest, SpecialScriptParameters) {
@@ -179,9 +186,10 @@ TEST(ScriptParametersTest, ScriptParameterMatch) {
 TEST(ScriptParametersTest, ToProtoRemovesEnabled) {
   ScriptParameters parameters = {{{"key_a", "value_a"}, {"ENABLED", "true"}}};
 
-  EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
-              UnorderedElementsAreArray(
-                  std::map<std::string, std::string>({{"key_a", "value_a"}})));
+  EXPECT_THAT(
+      parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
+      UnorderedElementsAreArray(
+          base::flat_map<std::string, std::string>({{"key_a", "value_a"}})));
 
   EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ true),
               IsEmpty());
@@ -191,7 +199,7 @@ TEST(ScriptParametersTest, ToProtoDoesNotAddDeviceOnlyParameters) {
   ScriptParameters parameters = {};
 
   parameters.UpdateDeviceOnlyParameters(
-      std::map<std::string, std::string>({{"device_only", "secret"}}));
+      base::flat_map<std::string, std::string>({{"device_only", "secret"}}));
 
   EXPECT_THAT(parameters.ToProto(/* only_trigger_script_allowlisted = */ false),
               IsEmpty());
@@ -201,7 +209,7 @@ TEST(ScriptParametersTest, WriteToUserDataAddsAllParameters) {
   UserData user_data;
   ScriptParameters parameters = {{{"key_a", "a"}}};
   parameters.UpdateDeviceOnlyParameters(
-      std::map<std::string, std::string>({{"key_b", "b"}}));
+      base::flat_map<std::string, std::string>({{"key_b", "b"}}));
 
   parameters.WriteToUserData(&user_data);
   EXPECT_EQ(user_data.GetAdditionalValue("param:key_a")->strings().values(0),
@@ -221,7 +229,8 @@ TEST(ScriptParametersTest,
   ScriptParameters parameters;
 
   parameters.UpdateDeviceOnlyParameters(
-      std::map<std::string, std::string>({{"key_a", "a"}, {"key_b", "b"}}));
+      base::flat_map<std::string, std::string>(
+          {{"key_a", "a"}, {"key_b", "b"}}));
   parameters.WriteToUserData(&user_data);
   EXPECT_EQ(user_data.GetAdditionalValue("param:key_a")->strings().values(0),
             "a");
@@ -229,7 +238,8 @@ TEST(ScriptParametersTest,
             "b");
 
   parameters.UpdateDeviceOnlyParameters(
-      std::map<std::string, std::string>({{"key_a", "new"}, {"key_c", "c"}}));
+      base::flat_map<std::string, std::string>(
+          {{"key_a", "new"}, {"key_c", "c"}}));
   parameters.WriteToUserData(&user_data);
   EXPECT_EQ(user_data.GetAdditionalValue("param:key_a")->strings().values(0),
             "new");

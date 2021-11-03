@@ -30,6 +30,12 @@ multidevice::RemoteDeviceRef CreateRemoteDeviceRef(
 }  // namespace
 
 class HostScanDevicePrioritizerImplTest : public testing::Test {
+ public:
+  HostScanDevicePrioritizerImplTest(const HostScanDevicePrioritizerImplTest&) =
+      delete;
+  HostScanDevicePrioritizerImplTest& operator=(
+      const HostScanDevicePrioritizerImplTest&) = delete;
+
  protected:
   HostScanDevicePrioritizerImplTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(10)) {}
@@ -51,9 +57,6 @@ class HostScanDevicePrioritizerImplTest : public testing::Test {
   std::unique_ptr<TetherHostResponseRecorder> recorder_;
 
   std::unique_ptr<HostScanDevicePrioritizerImpl> prioritizer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScanDevicePrioritizerImplTest);
 };
 
 TEST_F(HostScanDevicePrioritizerImplTest,

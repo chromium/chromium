@@ -100,7 +100,7 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     private boolean mIsInternalPage;
 
     // The security level of the page (a valid ConnectionSecurityLevel).
-    private int mSecurityLevel;
+    private @ConnectionSecurityLevel int mSecurityLevel;
 
     // Observer for dismissing dialog if web contents get destroyed, navigate etc.
     private WebContentsObserver mWebContentsObserver;
@@ -150,8 +150,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
      *                                 NO_HIGHLIGHTED_PERMISSION for no highlight.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public PageInfoController(WebContents webContents, int securityLevel, String publisher,
-            PageInfoControllerDelegate delegate,
+    public PageInfoController(WebContents webContents, @ConnectionSecurityLevel int securityLevel,
+            String publisher, PageInfoControllerDelegate delegate,
             @ContentSettingsType int highlightedPermission) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
@@ -322,12 +322,6 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         mDialog.show();
     }
 
-    private void dismiss() {
-        if (mDialog != null) {
-            mDialog.dismiss(true);
-        }
-    }
-
     private void destroy() {
         if (mDialog != null) {
             mDialog.destroy();
@@ -468,6 +462,11 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
         }
     }
 
+    @Override
+    public @ConnectionSecurityLevel int getSecurityLevel() {
+        return mSecurityLevel;
+    }
+
     private boolean isSheet(Context context) {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && (mDelegate.getVrHandler() == null || !mDelegate.getVrHandler().isInVr());
@@ -580,5 +579,13 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
     @Override
     public GURL getURL() {
         return mFullUrl;
+    }
+
+    /** Dismiss the page info dialog. */
+    @Override
+    public void dismiss() {
+        if (mDialog != null) {
+            mDialog.dismiss(true);
+        }
     }
 }

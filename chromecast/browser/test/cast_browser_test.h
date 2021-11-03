@@ -28,8 +28,7 @@ namespace shell {
 // case, then shuts down the entire shell.
 // Note that this process takes 7-10 seconds per test case on Chromecast, so
 // fewer test cases with more assertions are preferable.
-class CastBrowserTest : public content::BrowserTestBase,
-                        public CastWebView::Delegate {
+class CastBrowserTest : public content::BrowserTestBase {
  public:
   CastBrowserTest(const CastBrowserTest&) = delete;
   CastBrowserTest& operator=(const CastBrowserTest&) = delete;
@@ -50,10 +49,6 @@ class CastBrowserTest : public content::BrowserTestBase,
   content::WebContents* NavigateToURL(const GURL& url);
 
  private:
-  // CastWebView::Delegate implementation:
-  void OnWindowDestroyed() override;
-  void OnVisibilityChange(VisibilityType visibility_type) override;
-
   std::unique_ptr<CastWebViewFactory> web_view_factory_;
   std::unique_ptr<CastWebService> web_service_;
   CastWebView::Scoped cast_web_view_;

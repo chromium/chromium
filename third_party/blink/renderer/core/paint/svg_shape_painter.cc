@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -159,11 +160,11 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
       layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     default: {
@@ -185,11 +186,11 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
-      context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawRect(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     case kEllipseGeometryFastPath:
-      context.DrawOval(layout_svg_shape_.ObjectBoundingBox(), flags,
+      context.DrawOval(FloatRect(layout_svg_shape_.ObjectBoundingBox()), flags,
                        auto_dark_mode);
       break;
     default:
@@ -246,7 +247,7 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   canvas->save();
   canvas->concat(AffineTransformToSkMatrix(transform));
   if (SVGLayoutSupport::IsOverflowHidden(marker))
-    canvas->clipRect(marker.Viewport());
+    canvas->clipRect(gfx::RectFToSkRect(marker.Viewport()));
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>(paint_info.context);
   PaintInfo marker_paint_info(builder->Context(), paint_info);
   // It's expensive to track the transformed paint cull rect for each

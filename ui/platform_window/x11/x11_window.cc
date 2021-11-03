@@ -21,7 +21,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/wm_role_names_linux.h"
 #include "ui/base/x/x11_cursor.h"
-#include "ui/base/x/x11_menu_registrar.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
 #include "ui/base/x/x11_pointer_grab.h"
 #include "ui/base/x/x11_topmost_window_finder.h"
@@ -675,6 +674,13 @@ void X11Window::Maximize() {
   // Some WMs do not respect maximization hints on unmapped windows, so we
   // save this one for later too.
   should_maximize_after_map_ = !window_mapped_in_client_;
+
+  // Some WMs keep respecting the frame extents even if the window is maximised.
+  // Remove the insets when maximising.  The extents will be set again when the
+  // window is restored to normal state.
+  // See https://crbug.com/1260821
+  if (CanSetDecorationInsets())
+    SetDecorationInsets(nullptr);
 
   SetWMSpecState(true, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
                  x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
@@ -1603,10 +1609,6 @@ void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties) {
 
   workspace_extension_delegate_ = properties.workspace_extension_delegate;
   x11_extension_delegate_ = properties.x11_extension_delegate;
-
-  // Ensure that the X11MenuRegistrar exists. The X11MenuRegistrar is
-  // necessary to properly track menu windows.
-  X11MenuRegistrar::Get();
 
   activatable_ = properties.activatable;
 

@@ -20,6 +20,7 @@
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_navigation_ui_data.h"
 #include "chromecast/browser/cast_permission_user_data.h"
+#include "chromecast/browser/cast_session_id_map.h"
 #include "chromecast/browser/devtools/remote_debugging_server.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
 #include "chromecast/common/mojom/identification_settings.mojom.h"
@@ -40,7 +41,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -182,7 +182,8 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
       switches::kCastAppBackgroundColor, SK_ColorBLACK));
 
   if (params_->enable_webui_bindings_permission) {
-    AllowWebAndMojoWebUiBindings();
+    web_contents_->GetMainFrame()->AllowBindings(
+        content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
   }
 }
 
@@ -318,27 +319,6 @@ void CastWebContentsImpl::EnableBackgroundVideoPlayback(bool enabled) {
     media_blocker_->EnableBackgroundVideoPlayback(enabled);
 }
 
-void CastWebContentsImpl::AllowWebAndMojoWebUiBindings() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  web_contents_->GetMainFrame()->AllowBindings(
-      content::BINDINGS_POLICY_WEB_UI | content::BINDINGS_POLICY_MOJO_WEB_UI);
-}
-
-// Set background to transparent before making the view visible. This is in
-// case Chrome dev tools was opened and caused background color to be reset.
-// Note: we also have to set color to black first, because
-// RenderWidgetHostViewBase::SetBackgroundColor ignores setting color to
-// current color, and it isn't aware that dev tools has changed the color.
-void CastWebContentsImpl::ClearRenderWidgetHostView() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::RenderWidgetHostView* view =
-      web_contents_->GetRenderWidgetHostView();
-  if (view) {
-    view->SetBackgroundColor(SK_ColorBLACK);
-    view->SetBackgroundColor(SK_ColorTRANSPARENT);
-  }
-}
-
 void CastWebContentsImpl::SetAppProperties(
     const std::string& app_id,
     const std::string& session_id,
@@ -354,6 +334,12 @@ void CastWebContentsImpl::SetAppProperties(
   new shell::CastPermissionUserData(
       web_contents_, app_id, app_web_url, enforce_feature_permissions,
       feature_permissions, additional_feature_permission_origins);
+}
+
+void CastWebContentsImpl::SetGroupInfo(const std::string& session_id,
+                                       bool is_multizone_launch) {
+  shell::CastSessionIdMap::GetInstance()->SetGroupInfo(session_id,
+                                                       is_multizone_launch);
 }
 
 void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
@@ -452,17 +438,6 @@ bool CastWebContentsImpl::TryBindReceiver(
   const std::string interface_name = *receiver.interface_name();
   mojo::ScopedMessagePipeHandle interface_pipe = receiver.PassPipe();
 
-  for (auto& entry : interface_providers_map_) {
-    auto const& interface_set = entry.first;
-    // Interface is provided by this InterfaceProvider.
-    if (interface_set.find(interface_name) != interface_set.end()) {
-      auto* interface_provider = entry.second;
-      interface_provider->GetInterfaceByName(interface_name,
-                                             std::move(interface_pipe));
-      return true;
-    }
-  }
-
   receiver =
       mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe));
   remote_interfaces_.Bind(std::move(receiver));
@@ -475,13 +450,6 @@ bool CastWebContentsImpl::TryBindReceiver(
 
 InterfaceBundle* CastWebContentsImpl::local_interfaces() {
   return &local_interfaces_;
-}
-
-void CastWebContentsImpl::RegisterInterfaceProvider(
-    const InterfaceSet& interface_set,
-    service_manager::InterfaceProvider* interface_provider) {
-  DCHECK(interface_provider);
-  interface_providers_map_.emplace(interface_set, interface_provider);
 }
 
 bool CastWebContentsImpl::is_websql_enabled() {

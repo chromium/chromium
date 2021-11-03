@@ -253,7 +253,7 @@ static bool ExtractImageData(Image* image,
   ImageObserverDisabler disabler(image);
   PaintFlags flags;
   FloatRect image_source_rect(FloatPoint(), FloatSize(image->Size()));
-  IntRect image_dest_rect(IntPoint(), image_size);
+  IntRect image_dest_rect(gfx::Point(), image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());
   canvas.clear(SK_ColorTRANSPARENT);
   ImageDrawOptions draw_options;

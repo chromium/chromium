@@ -751,8 +751,8 @@ TEST_F(DisplayTest, BackdropFilterTest) {
           render_pass_id_generator.GenerateNextId(), sub_surface_rect,
           no_damage, gfx::Transform(), cc::FilterOperations(), backdrop_filters,
           gfx::RRectF(gfx::RectF(sub_surface_rect), 0), SubtreeCaptureId(),
-          sub_surface_rect.size(), nullptr, SharedElementResourceId(), false,
-          false, false, false, false);
+          sub_surface_rect.size(), SharedElementResourceId(), false, false,
+          false, false, false);
       pass_list.push_back(std::move(bd_pass));
 
       CompositorFrame frame = CompositorFrameBuilder()

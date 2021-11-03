@@ -1308,7 +1308,7 @@ class SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest
 
   // SetupClients() must have been already called.
   void SetupSyncTransport() {
-    secondary_account_helper::SignInSecondaryAccount(
+    secondary_account_helper::SignInUnconsentedAccount(
         GetProfile(0), &test_url_loader_factory_, kAccountEmail);
     ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
     ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());

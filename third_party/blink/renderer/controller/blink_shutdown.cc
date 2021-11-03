@@ -5,7 +5,6 @@
 #include "third_party/blink/public/web/blink.h"
 
 #include "base/command_line.h"
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -15,6 +14,8 @@ namespace blink {
 
 // Function defined in third_party/blink/public/web/blink.h.
 void LogStatsDuringShutdown() {
+  // WARNING: this code path is *not* hit during fast shutdown.
+
   // Give the V8 isolate a chance to dump internal stats useful for performance
   // evaluation and debugging.
   blink::MainThreadIsolate()->DumpAndResetStats();
@@ -23,9 +24,6 @@ void LogStatsDuringShutdown() {
           switches::kDumpRuntimeCallStats)) {
     LogRuntimeCallStats();
   }
-
-  base::UmaHistogramCounts100("Blink.V8.NumberContextsCreatedOfWindow",
-                              TotalNumberV8ContextsCreatedOfWindow());
 }
 
 }  // namespace blink

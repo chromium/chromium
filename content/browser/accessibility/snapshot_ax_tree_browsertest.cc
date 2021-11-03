@@ -29,6 +29,9 @@ class AXTreeSnapshotWaiter {
  public:
   AXTreeSnapshotWaiter() : loop_runner_(new MessageLoopRunner()) {}
 
+  AXTreeSnapshotWaiter(const AXTreeSnapshotWaiter&) = delete;
+  AXTreeSnapshotWaiter& operator=(const AXTreeSnapshotWaiter&) = delete;
+
   void Wait() { loop_runner_->Run(); }
 
   const ui::AXTreeUpdate& snapshot() const { return snapshot_; }
@@ -41,8 +44,6 @@ class AXTreeSnapshotWaiter {
  private:
   ui::AXTreeUpdate snapshot_;
   scoped_refptr<MessageLoopRunner> loop_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSnapshotWaiter);
 };
 
 void DumpRolesAndNamesAsText(const ui::AXNode* node,

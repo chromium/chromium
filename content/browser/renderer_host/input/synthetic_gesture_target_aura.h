@@ -22,6 +22,10 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
  public:
   explicit SyntheticGestureTargetAura(RenderWidgetHostImpl* host);
 
+  SyntheticGestureTargetAura(const SyntheticGestureTargetAura&) = delete;
+  SyntheticGestureTargetAura& operator=(const SyntheticGestureTargetAura&) =
+      delete;
+
   // SyntheticGestureTargetBase:
   void DispatchWebTouchEventToPlatform(
       const blink::WebTouchEvent& web_touch,
@@ -61,8 +65,6 @@ class SyntheticGestureTargetAura : public SyntheticGestureTargetBase {
   float wheel_precision_y_ = 0.f;
 
   aura::EventInjector event_injector_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetAura);
 };
 
 }  // namespace content

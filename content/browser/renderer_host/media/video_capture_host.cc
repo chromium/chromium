@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/token.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
@@ -298,10 +300,19 @@ void VideoCaptureHost::Crop(const base::UnguessableToken& device_id,
         media::mojom::CropRequestResult::kErrorUnknownDeviceId);
     return;
   }
+  VideoCaptureController* const controller = it->second.get();
+  DCHECK(controller);  // Verified above.
 
-  // TODO(crbug.com/1247761): Implement by forwarding this message to
-  // media_stream_manager_->video_capture_manager()->CropCaptureForClient().
-  std::move(callback).Run(media::mojom::CropRequestResult::kNotImplemented);
+  if (!controller->IsDeviceAlive()) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
+
+  // TODO(crbug.com/1247761): Validate that the crop-ID was produced
+  // by produceCropId(), and that this was done for this specific tab,
+  // thereby rejecting (a) unknown crop-IDs and (b) other-tab-crops.
+
+  controller->Crop(crop_id, std::move(callback));
 }
 
 void VideoCaptureHost::RequestRefreshFrame(

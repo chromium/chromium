@@ -11,7 +11,7 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.eche_app.mojom.ScreenBacklightState"
+          mojom = "ash.eche_app.mojom.ScreenBacklightState"
           cpp = "ash::ScreenBacklightState"
         },
       ]

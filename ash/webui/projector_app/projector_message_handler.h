@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_PROJECTOR_APP_PROJECTOR_MESSAGE_HANDLER_H_
 #define ASH_WEBUI_PROJECTOR_APP_PROJECTOR_MESSAGE_HANDLER_H_
 
+#include <set>
+
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
@@ -17,7 +19,7 @@ namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
 
-namespace chromeos {
+namespace ash {
 
 // Enum to record the different errors that may occur in the Projector app.
 enum class ProjectorError {
@@ -51,14 +53,13 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
- private:
   // ProjectorAppClient::Observer:
   // Notifies the Projector SWA the pending screencasts' state change and
   // updates the pending list in Projector SWA.
-  // TODO(b/201468756): Add a list of PendingScreencast as argument. Implement
-  // this method.
-  void OnScreencastsStateChange() override;
+  void OnScreencastsPendingStatusChanged(
+      const std::set<PendingScreencast>& pending_screencast) override;
 
+ private:
   // Requested by the Projector SWA to list the available accounts (primary and
   // secondary accounts) in the current session. The list of accounts will be
   // used in the account picker in the SWA.
@@ -109,12 +110,16 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
                              const std::string& response_body,
                              const std::string& error);
 
+  // Requested by the Projector SWA to fetch a list of screencasts pending to
+  // upload or failed to upload.
+  void GetPendingScreencasts(const base::Value::ConstListView args);
+
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   std::unique_ptr<ProjectorXhrSender> xhr_sender_;
 
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PROJECTOR_MESSAGE_HANDLER_H_

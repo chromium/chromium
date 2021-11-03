@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -61,8 +62,15 @@ public class FirstRunActivitySigninAndSyncTest {
     @Mock
     private ExternalAuthUtils mExternalAuthUtilsMock;
 
+    @Mock
+    private DataReductionProxySettings mDataReductionProxySettingsMock;
+
     @Before
     public void setUp() {
+        when(mDataReductionProxySettingsMock.isDataReductionProxyManaged()).thenReturn(false);
+        when(mDataReductionProxySettingsMock.isDataReductionProxyFREPromoAllowed())
+                .thenReturn(true);
+        DataReductionProxySettings.setInstanceForTesting(mDataReductionProxySettingsMock);
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
     }

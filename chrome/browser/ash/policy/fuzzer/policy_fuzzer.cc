@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
+#include "base/syslog_logging.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
@@ -41,9 +42,26 @@ namespace policy {
 
 namespace {
 
+constexpr logging::LogSeverity kLogSeverity = logging::LOG_FATAL;
+
+// A log handler that discards messages whose severity is lower than the
+// threshold. It's needed in order to suppress unneeded syslog logging (which by
+// default is exempt from the level set by `logging::SetMinLogLevel()`).
+bool VoidifyingLogHandler(int severity,
+                          const char* /*file*/,
+                          int /*line*/,
+                          size_t /*message_start*/,
+                          const std::string& /*str*/) {
+  return severity < kLogSeverity;
+}
+
 struct Environment {
   Environment() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    // Discard all log messages, including the syslog ones, below the threshold.
+    logging::SetMinLogLevel(kLogSeverity);
+    logging::SetSyslogLoggingForTesting(/*logging_enabled=*/false);
+    logging::SetLogMessageHandler(&VoidifyingLogHandler);
+
     base::CommandLine::Init(0, nullptr);
     CHECK(scoped_temp_dir.CreateUniqueTempDir());
     CHECK(base::PathService::Override(chrome::DIR_USER_DATA,

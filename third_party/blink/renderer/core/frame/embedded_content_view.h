@@ -52,7 +52,7 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   virtual void PropagateFrameRects() = 0;
 
   IntRect FrameRect() const { return IntRect(Location(), Size()); }
-  IntPoint Location() const;
+  gfx::Point Location() const;
   int X() const { return Location().x(); }
   int Y() const { return Location().y(); }
   int Width() const { return Size().width(); }

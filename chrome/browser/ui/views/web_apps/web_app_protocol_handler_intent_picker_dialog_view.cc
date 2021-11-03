@@ -176,7 +176,7 @@ void WebAppProtocolHandlerIntentPickerView::InitChildViews() {
       views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  open_app_label->SetElideBehavior(gfx::ELIDE_TAIL);
+  open_app_label->SetMultiLine(true);
   AddChildView(std::move(open_app_label));
 
   // Add the app info, which will look like:
@@ -233,7 +233,11 @@ void WebAppProtocolHandlerIntentPickerView::RunCloseCallback(
     bool allowed,
     bool remember_user_choice) {
   if (close_callback_) {
-    std::move(close_callback_).Run(allowed, remember_user_choice);
+    // Give the stack a chance to unwind in case `close_callback_` deletes
+    // `this`.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(close_callback_), allowed,
+                                  remember_user_choice));
   }
 }
 

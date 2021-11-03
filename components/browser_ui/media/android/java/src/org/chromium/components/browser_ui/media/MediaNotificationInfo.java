@@ -55,7 +55,7 @@ public class MediaNotificationInfo {
         private Bitmap mNotificationLargeIcon;
         private int mDefaultNotificationLargeIcon;
         private Bitmap mMediaSessionImage;
-        private int mActions = ACTION_PLAY_PAUSE | ACTION_SWIPEAWAY;
+        private int mActions = ACTION_PLAY_PAUSE | ACTION_SWIPEAWAY | ACTION_STOP;
         private int mId = INVALID_ID;
         private Intent mContentIntent;
         private MediaNotificationListener mListener;

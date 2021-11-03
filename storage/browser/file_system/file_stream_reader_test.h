@@ -53,8 +53,11 @@ class FileStreamReaderTest : public testing::Test {
   static void NeverCalled(int unused) { ADD_FAILURE(); }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
+  // FileSystemContext queries QuotaDatabase, and even with MockQuotaManager
+  // (which really fakes parts of QuotaManagerImpl), a thread pool is created
+  // that requires TaskEnvironment.
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   base::Time test_file_modification_time_;
 };
 

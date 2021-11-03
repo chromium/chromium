@@ -40,6 +40,9 @@ class SecureChannelClientImpl : public SecureChannelClient {
     static Factory* test_factory_;
   };
 
+  SecureChannelClientImpl(const SecureChannelClientImpl&) = delete;
+  SecureChannelClientImpl& operator=(const SecureChannelClientImpl&) = delete;
+
   ~SecureChannelClientImpl() override;
 
  private:
@@ -87,8 +90,6 @@ class SecureChannelClientImpl : public SecureChannelClient {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<SecureChannelClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientImpl);
 };
 
 }  // namespace secure_channel

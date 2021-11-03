@@ -220,15 +220,15 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // typically from a pre-sandbox hook, that will serve requests to access
   // files over an IPC channel. The client  of this runs from a SIGSYS handler
   // triggered by the seccomp-bpf sandbox.
-  // |client_sandbox_policy| is the policy being run by the client, and is
-  // used to derive the equivalent broker-side policy.
+  //
+  // |policy| is the policy being run by the client, and is used to derive the
+  // equivalent broker-side policy.
+  //
   // |broker_side_hook| is an alternate pre-sandbox hook to be run before the
-  // broker itself gets sandboxed, to which the broker side policy and
-  // |options| are passed.
-  // Crashes the process if the broker can not be started since continuation
-  // is impossible (and presumably unsafe).
-  // This should never be destroyed, as after the sandbox is started it is
-  // vital to the process.
+  // broker itself gets sandboxed, to which the broker side policy and |options|
+  // are passed. Crashes the process if the broker can not be started since
+  // continuation is impossible (and presumably unsafe). This should never be
+  // destroyed, as after the sandbox is started it is vital to the process.
   void StartBrokerProcess(
       const syscall_broker::BrokerCommandSet& allowed_command_set,
       std::vector<syscall_broker::BrokerFilePermission> permissions,

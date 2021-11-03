@@ -76,6 +76,9 @@ const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 }
 
+const base::Feature kAsyncFontAccess{"AsyncFontAccess",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 const char kColorEmojiLocale[] = "und-Zsye";
 
 #if defined(OS_ANDROID)

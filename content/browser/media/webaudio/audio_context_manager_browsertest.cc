@@ -25,6 +25,10 @@ class WaitForAudioContextAudible : WebContentsObserver {
     run_loop_.Run();
   }
 
+  WaitForAudioContextAudible(const WaitForAudioContextAudible&) = delete;
+  WaitForAudioContextAudible& operator=(const WaitForAudioContextAudible&) =
+      delete;
+
   void AudioContextPlaybackStarted(const AudioContextId&) final {
     // Stop the run loop when we get the message
     run_loop_.Quit();
@@ -32,8 +36,6 @@ class WaitForAudioContextAudible : WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForAudioContextAudible);
 };
 
 // Test for silent playback started (audible playback stopped).
@@ -44,6 +46,10 @@ class WaitForAudioContextSilent : WebContentsObserver {
     run_loop_.Run();
   }
 
+  WaitForAudioContextSilent(const WaitForAudioContextSilent&) = delete;
+  WaitForAudioContextSilent& operator=(const WaitForAudioContextSilent&) =
+      delete;
+
   void AudioContextPlaybackStopped(const AudioContextId&) final {
     // Stop the run loop when we get the message
     run_loop_.Quit();
@@ -51,8 +57,6 @@ class WaitForAudioContextSilent : WebContentsObserver {
 
  private:
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitForAudioContextSilent);
 };
 
 }  // namespace

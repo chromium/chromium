@@ -31,6 +31,7 @@ source_set("unit_tests") {
 
   deps = [
     ":elevated_rotation",
+    "//base/test:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network:test_support",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",

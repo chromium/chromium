@@ -134,6 +134,9 @@ class FinishNavigationObserver : public WebContentsObserver {
                            base::OnceClosure done_closure)
       : WebContentsObserver(contents), done_closure_(std::move(done_closure)) {}
 
+  FinishNavigationObserver(const FinishNavigationObserver&) = delete;
+  FinishNavigationObserver& operator=(const FinishNavigationObserver&) = delete;
+
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     error_code_ = navigation_handle->GetNetErrorCode();
     std::move(done_closure_).Run();
@@ -144,8 +147,6 @@ class FinishNavigationObserver : public WebContentsObserver {
  private:
   base::OnceClosure done_closure_;
   absl::optional<net::Error> error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(FinishNavigationObserver);
 };
 
 class MockContentBrowserClient final : public ContentBrowserClient {
@@ -172,6 +173,11 @@ class SignedExchangeRequestHandlerBrowserTestBase
     net::EmbeddedTestServer::RegisterTestCerts();
     feature_list_.InitWithFeatures({features::kSignedHTTPExchange}, {});
   }
+
+  SignedExchangeRequestHandlerBrowserTestBase(
+      const SignedExchangeRequestHandlerBrowserTestBase&) = delete;
+  SignedExchangeRequestHandlerBrowserTestBase& operator=(
+      const SignedExchangeRequestHandlerBrowserTestBase&) = delete;
 
   void SetUp() override {
     sxg_test_helper_.SetUp();
@@ -227,8 +233,6 @@ class SignedExchangeRequestHandlerBrowserTestBase
 
   base::test::ScopedFeatureList feature_list_;
   SignedExchangeBrowserTestHelper sxg_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeRequestHandlerBrowserTestBase);
 };
 
 class SignedExchangeRequestHandlerBrowserTest

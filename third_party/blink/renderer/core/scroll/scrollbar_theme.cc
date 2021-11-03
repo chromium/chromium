@@ -48,33 +48,33 @@ namespace blink {
 
 void ScrollbarTheme::Paint(const Scrollbar& scrollbar,
                            GraphicsContext& graphics_context,
-                           const IntPoint& paint_offset) {
+                           const gfx::Vector2d& paint_offset) {
   PaintTrackButtonsTickmarks(graphics_context, scrollbar, paint_offset);
 
   if (HasThumb(scrollbar)) {
     IntRect thumb_rect = ThumbRect(scrollbar);
-    thumb_rect.MoveBy(paint_offset);
+    thumb_rect.Offset(paint_offset);
     PaintThumbWithOpacity(graphics_context, scrollbar, thumb_rect);
   }
 }
 
 ScrollbarPart ScrollbarTheme::HitTestRootFramePosition(
     const Scrollbar& scrollbar,
-    const IntPoint& position_in_root_frame) {
+    const gfx::Point& position_in_root_frame) {
   if (!AllowsHitTest())
     return kNoPart;
 
   if (!scrollbar.Enabled())
     return kNoPart;
 
-  IntPoint test_position =
+  gfx::Point test_position =
       scrollbar.ConvertFromRootFrame(position_in_root_frame);
   test_position.Offset(scrollbar.X(), scrollbar.Y());
   return HitTest(scrollbar, test_position);
 }
 
 ScrollbarPart ScrollbarTheme::HitTest(const Scrollbar& scrollbar,
-                                      const IntPoint& test_position) {
+                                      const gfx::Point& test_position) {
   if (!scrollbar.FrameRect().Contains(test_position))
     return kNoPart;
 
@@ -295,7 +295,7 @@ ScrollbarTheme& ScrollbarTheme::GetTheme() {
 
 void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
                                           const Scrollbar& scrollbar,
-                                          const IntPoint& offset) {
+                                          const gfx::Vector2d& offset) {
   // CustomScrollbarTheme must override this method.
   DCHECK(!scrollbar.IsCustomScrollbar());
 
@@ -303,33 +303,33 @@ void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
           context, scrollbar, DisplayItem::kScrollbarTrackAndButtons))
     return;
   IntRect visual_rect = scrollbar.FrameRect();
-  visual_rect.MoveBy(offset);
+  visual_rect.Offset(offset);
   DrawingRecorder recorder(context, scrollbar,
                            DisplayItem::kScrollbarTrackAndButtons,
                            ToGfxRect(visual_rect));
 
   if (HasButtons(scrollbar)) {
     IntRect back_button_rect = BackButtonRect(scrollbar);
-    back_button_rect.MoveBy(offset);
+    back_button_rect.Offset(offset);
     PaintButton(context, scrollbar, back_button_rect, kBackButtonStartPart);
 
     IntRect forward_button_rect = ForwardButtonRect(scrollbar);
-    forward_button_rect.MoveBy(offset);
+    forward_button_rect.Offset(offset);
     PaintButton(context, scrollbar, forward_button_rect, kForwardButtonEndPart);
   }
 
   IntRect track_rect = TrackRect(scrollbar);
-  track_rect.MoveBy(offset);
+  track_rect.Offset(offset);
   PaintTrack(context, scrollbar, track_rect);
 }
 
 void ScrollbarTheme::PaintTrackButtonsTickmarks(GraphicsContext& context,
                                                 const Scrollbar& scrollbar,
-                                                const IntPoint& offset) {
+                                                const gfx::Vector2d& offset) {
   PaintTrackAndButtons(context, scrollbar, offset);
   if (scrollbar.HasTickmarks()) {
     IntRect track_rect = TrackRect(scrollbar);
-    track_rect.MoveBy(offset);
+    track_rect.Offset(offset);
     PaintTickmarks(context, scrollbar, track_rect);
   }
 }

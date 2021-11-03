@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 namespace prefs {
 // The last provided apps access status provided by the phone. This pref
@@ -13,4 +13,4 @@ namespace prefs {
 const char kAppsAccessStatus[] = "cros.echeapps.apps_access_status";
 }  // namespace prefs
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

@@ -10,54 +10,110 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:padding="24dp"
-      android:orientation="horizontal">
-
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/bookmark_select_folder"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_gravity="center_vertical|start"
-        android:background="@drawable/bookmark_save_flow_background"
-        android:foreground="@drawable/bookmark_save_flow_ripple"
-        android:scaleType="centerInside" />
+      android:orientation="vertical"
+      android:paddingVertical="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:paddingStart="12dp"
         android:orientation="horizontal">
 
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/bookmark_select_folder"
+          android:layout_width="72dp"
+          android:layout_height="72dp"
+          android:layout_marginHorizontal="16dp"
+          android:layout_gravity="center_vertical|start"
+          android:background="@drawable/bookmark_save_flow_background"
+          android:foreground="@drawable/bookmark_save_flow_ripple"
+          android:scaleType="centerInside" />
+
       <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical|start"
+          android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+          <TextView
+              android:id="@+id/title_text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:ellipsize="end"
+              android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+
+          <TextView
+              android:id="@+id/subtitle_text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:ellipsize="end"
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/bookmark_edit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:gravity="end"
+            android:text="@string/bookmark_item_edit"
+            android:paddingHorizontal="24dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+      </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/notification_switch_divider"
+        style="@style/HorizontalDivider"
+        android:visibility="gone"
+        android:layout_margin="16dp"/>
+
+    <LinearLayout
+        android:id="@+id/notification_switch_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:visibility="gone">
+
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/notification_switch_start_icon"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:orientation="vertical">
+          android:layout_marginEnd="16dp"
+          android:layout_gravity="center_vertical" />
 
-        <TextView
-            android:id="@+id/title_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.HeadlineThick" />
-
-        <TextView
-            android:id="@+id/subtitle_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-      </LinearLayout>
-
-      <TextView
-          android:id="@+id/bookmark_edit"
+      <LinearLayout
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
-          android:layout_gravity="center_vertical"
-          android:gravity="end"
-          android:text="@string/bookmark_item_edit"
-          android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+          android:layout_gravity="center_vertical" 
+          android:orientation="vertical">
+        <TextView
+            android:id="@+id/notification_switch_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <TextView
+            android:id="@+id/notification_switch_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+      </LinearLayout>
+
+      <androidx.appcompat.widget.SwitchCompat
+          android:id="@+id/notification_switch"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical" />
     </LinearLayout>
   </LinearLayout>
 </org.chromium.ui.widget.ViewLookupCachingFrameLayout>

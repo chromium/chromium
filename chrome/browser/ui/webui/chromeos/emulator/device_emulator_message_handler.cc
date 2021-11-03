@@ -333,8 +333,9 @@ void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
 
 void DeviceEmulatorMessageHandler::HandleSetHasTouchpad(
     const base::ListValue* args) {
-  bool has_touchpad;
-  CHECK(args->GetBoolean(0, &has_touchpad));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool has_touchpad = list[0].GetBool();
 
   system::InputDeviceSettings::Get()->GetFakeInterface()->set_touchpad_exists(
       has_touchpad);
@@ -342,8 +343,9 @@ void DeviceEmulatorMessageHandler::HandleSetHasTouchpad(
 
 void DeviceEmulatorMessageHandler::HandleSetHasMouse(
     const base::ListValue* args) {
-  bool has_mouse;
-  CHECK(args->GetBoolean(0, &has_mouse));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool has_mouse = list[0].GetBool();
 
   system::InputDeviceSettings::Get()->GetFakeInterface()->set_mouse_exists(
       has_mouse);

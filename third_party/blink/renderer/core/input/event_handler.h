@@ -133,7 +133,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   FloatPoint LastKnownMousePositionInRootFrame() const;
   FloatPoint LastKnownMouseScreenPosition() const;
 
-  IntPoint DragDataTransferLocationForTesting();
+  gfx::Point DragDataTransferLocationForTesting();
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
@@ -199,11 +199,11 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
 
   bool BestClickableNodeForHitTestResult(const HitTestLocation& location,
                                          const HitTestResult&,
-                                         IntPoint& target_point,
+                                         gfx::Point& target_point,
                                          Node*& target_node);
   bool BestContextMenuNodeForHitTestResult(const HitTestLocation& location,
                                            const HitTestResult&,
-                                           IntPoint& target_point,
+                                           gfx::Point& target_point,
                                            Node*& target_node);
   void CacheTouchAdjustmentResult(uint32_t, FloatPoint);
 

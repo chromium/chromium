@@ -444,14 +444,10 @@ GraphicsLayer* PaintLayerCompositor::RootGraphicsLayer() const {
 }
 
 GraphicsLayer* PaintLayerCompositor::PaintRootGraphicsLayer() const {
-  // Shortcut: skip the fullscreen checks for popups, and for not-main-frame
-  // ordinary fullscreen mode. Don't use the shortcut for WebXR DOM overlay mode
-  // since that requires ancestor frames to be rendered as transparent.
+  // Shortcut: skip the fullscreen checks for popups.
   Document& doc = layout_view_->GetDocument();
-  if (doc.GetPage()->GetChromeClient().IsPopup() ||
-      (!IsMainFrame() && !doc.IsXrOverlay())) {
+  if (doc.GetPage()->GetChromeClient().IsPopup())
     return RootGraphicsLayer();
-  }
 
   // Start from the full screen overlay layer if exists. Other layers will be
   // skipped during painting.

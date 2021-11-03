@@ -116,7 +116,12 @@ message WebAppProto {
   optional string scope = 6;
   required SourcesProto sources = 7;
   required bool is_locally_installed = 8;
+
+  // Installation state:
+  // Specifies if this web app is from sync and has not completed installation.
+  // If true, this entity will be re-installed on startup.
   optional bool is_from_sync_and_pending_installation = 9;
+
   repeated sync_pb.WebAppIconInfo manifest_icons = 10;
 
   // A list of icon sizes we successfully downloaded to store on disk, for icons
@@ -254,4 +259,8 @@ message WebAppProto {
   // A background color to be used when the app is opened in dark mode.
   optional uint32 dark_mode_background_color = 44;
 
+  // Specifies if this web app is currently being uninstalled. If true on
+  // startup, it's assumed there was a crash or other error during
+  // uninstallation, and the uninstallation will be tried again.
+  optional bool is_uninstalling = 45;
 }

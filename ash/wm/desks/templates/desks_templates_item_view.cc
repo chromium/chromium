@@ -9,14 +9,16 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/desk_template.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
-#include "ash/wm/desks/templates/desks_templates_icon_view.h"
+#include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
-#include "ui/views/border.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -25,10 +27,18 @@ namespace ash {
 
 namespace {
 
+// The padding values of the DesksTemplatesItemView.
+constexpr int kHorizontalPaddingDp = 24;
+constexpr int kVerticalPaddingDp = 16;
+
+// The preferred size of the whole DesksTemplatesItemView.
+constexpr gfx::Size kPreferredSize(220, 120);
+
+// The corner radius for the DesksTemplatesItemView.
+constexpr int kCornerRadius = 16;
+
 // TODO(richui): Replace these temporary values once specs come out.
-constexpr gfx::Size kViewSize(250, 40);
-constexpr gfx::Size kPreferredSize(250, 150);
-constexpr int kIconSpacingDp = 10;
+constexpr gfx::Size kViewSize(250, 20);
 constexpr int kDeleteButtonMargin = 8;
 constexpr int kDeleteButtonSize = 24;
 
@@ -56,9 +66,6 @@ std::u16string GetTimeStr(base::Time timestamp) {
 
 DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
     : uuid_(desk_template->uuid()) {
-  // TODO(richui): Remove all the borders. It is only used for visualizing
-  // bounds while it is a placeholder.
-
   auto delete_button_callback = base::BindRepeating(
       &DesksTemplatesItemView::OnDeleteButtonPressed, base::Unretained(this));
   auto launch_template_callback = base::BindRepeating(
@@ -71,13 +78,19 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
       .SetUseDefaultFillLayout(true)
       .SetAccessibleName(desk_template->template_name())
       .SetCallback(std::move(launch_template_callback))
-      .SetBorder(views::CreateSolidBorder(/*thickness=*/2, SK_ColorDKGRAY))
+      .SetBackground(views::CreateRoundedRectBackground(
+          AshColorProvider::Get()->GetControlsLayerColor(
+              AshColorProvider::ControlsLayerType::
+                  kControlBackgroundColorInactive),
+          kCornerRadius))
       .AddChildren(
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&container)
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .SetCrossAxisAlignment(
                   views::BoxLayout::CrossAxisAlignment::kStart)
+              .SetInsideBorderInsets(
+                  gfx::Insets(kVerticalPaddingDp, kHorizontalPaddingDp))
               .AddChildren(
                   views::Builder<views::Textfield>()
                       .CopyAddressTo(&name_view_)
@@ -90,19 +103,16 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                       .SetText(GetTimeStr(desk_template->created_time()))
                       .SetPreferredSize(kViewSize),
                   views::Builder<views::View>().CopyAddressTo(&spacer),
-                  views::Builder<views::BoxLayoutView>()
-                      .CopyAddressTo(&preview_view_)
-                      .SetOrientation(
-                          views::BoxLayout::Orientation::kHorizontal)
-                      .SetBetweenChildSpacing(kIconSpacingDp)),
+                  views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
+                      &icon_container_view_)),
           views::Builder<DesksTemplatesDeleteButton>()
               .CopyAddressTo(&delete_button_)
               .SetCallback(std::move(delete_button_callback)))
       .BuildChildren();
 
+  icon_container_view_->PopulateIconContainerFromTemplate(desk_template);
   container->SetFlexForView(spacer, 1);
   UpdateDeleteButtonVisibility();
-  SetIcons();
 }
 
 DesksTemplatesItemView::~DesksTemplatesItemView() = default;
@@ -122,28 +132,6 @@ void DesksTemplatesItemView::Layout() {
   delete_button_->SetBoundsRect(
       gfx::Rect(width() - kDeleteButtonSize - kDeleteButtonMargin,
                 kDeleteButtonMargin, kDeleteButtonSize, kDeleteButtonSize));
-}
-
-void DesksTemplatesItemView::SetIcons() {
-  // TODO(chinsenj): Currently the desk templates backend isn't hooked up so we
-  // can't retrieve the urls/app. For now hardcode some values.
-  const std::vector<std::string> kIdentifiers{
-      "https://www.google.com", "https://www.facebook.com",
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", "hhaomjibdihmijegdhdafkllkbggdgoj"};
-  constexpr size_t kNumUrls = 2;
-
-  for (size_t i = 0; i < kIdentifiers.size(); ++i) {
-    DesksTemplatesIconView* icon_view = preview_view_->AddChildView(
-        views::Builder<DesksTemplatesIconView>()
-            .SetIconIdentifier(kIdentifiers[i])
-            .SetIsUrl(i < kNumUrls)
-            .SetPreferredSize(gfx::Size(DesksTemplatesIconView::kIconSize,
-                                        DesksTemplatesIconView::kIconSize))
-            .SetBorder(views::CreateSolidBorder(
-                /*thickness=*/2, SK_ColorLTGRAY))
-            .Build());
-    icon_view->LoadIcon();
-  }
 }
 
 void DesksTemplatesItemView::OnDeleteButtonPressed() {

@@ -35,9 +35,8 @@ class FakeMissiveClient : public MissiveClient,
       base::OnceCallback<void(reporting::Status)> completion_callback) override;
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) override;
-  void ReportSuccess(
-      const reporting::SequencingInformation& sequencing_information,
-      bool force_confirm) override;
+  void ReportSuccess(const reporting::SequenceInformation& sequence_information,
+                     bool force_confirm) override;
   TestInterface* GetTestInterface() override;
   base::WeakPtr<MissiveClient> GetWeakPtr() override;
 

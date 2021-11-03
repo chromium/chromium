@@ -107,6 +107,7 @@ class TrustSafetySentimentServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfile profile_;
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
@@ -259,7 +260,6 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PrivacySettings) {
   SetupFeatureParameters(params);
 
   // Create and navigate a test web contents to settings.
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   auto web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   content::WebContentsTester::For(web_contents.get())
@@ -309,7 +309,6 @@ TEST_F(TrustSafetySentimentServiceTest, SettingsWatcher_PasswordManager) {
   // Check that after being informed of a visit to the password manager page,
   // the service correctly watches the provided WebContents to check if the
   // user stays on settings.
-  content::RenderViewHostTestEnabler rvh_test_enabler;
   auto web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   content::WebContentsTester::For(web_contents.get())

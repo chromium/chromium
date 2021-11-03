@@ -16,11 +16,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/compat_mode/arc_splash_screen_dialog_view.h"
 #include "components/arc/compat_mode/arc_window_property_util.h"
 #include "components/arc/compat_mode/compat_mode_button_controller.h"
 #include "components/arc/compat_mode/metrics.h"
+#include "components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace arc {
@@ -177,7 +180,11 @@ ArcResizeLockManager::ArcResizeLockManager(
     content::BrowserContext* browser_context,
     ArcBridgeService* arc_bridge_service)
     : compat_mode_button_controller_(
-          std::make_unique<CompatModeButtonController>()) {
+          std::make_unique<CompatModeButtonController>()),
+      touch_mode_mouse_rewriter_(
+          base::FeatureList::IsEnabled(arc::kTouchModeMouse)
+              ? std::make_unique<TouchModeMouseRewriter>()
+              : nullptr) {
   if (aura::Env::HasInstance())
     env_observation.Observe(aura::Env::GetInstance());
 }
@@ -216,6 +223,32 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   if (key != ash::kArcResizeLockTypeKey)
     return;
 
+  const auto new_value = window->GetProperty(ash::kArcResizeLockTypeKey);
+  const auto old_value = static_cast<ash::ArcResizeLockType>(old);
+
+  if (new_value != old_value) {
+    AppIdObserver::RunOnReady(
+        window, base::BindOnce(
+                    [](base::WeakPtr<ArcResizeLockManager> manager,
+                       aura::Window* window) {
+                      if (!manager)
+                        return;
+                      if (ShouldEnableResizeLock(window->GetProperty(
+                              ash::kArcResizeLockTypeKey))) {
+                        manager->EnableResizeLock(window);
+                      } else {
+                        manager->DisableResizeLock(window);
+                      }
+                      // EnableResizeLock() and DisableResizeLock() are supposed
+                      // to be called only when resizability is toggled while
+                      // resize lock state may need to be updated even when
+                      // resizability doesn't change (e.g.NONE ->
+                      // RESIZE_ENABLED_TOGGLABLE)
+                      manager->UpdateResizeLockState(window);
+                    },
+                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // We need to always trigger UpdateCompatModeButton regardless of value
   // change because it need to be called even when the property is set to
   // ArcResizeLockType::NONE, which is the the default value of
@@ -224,27 +257,6 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
       window, base::BindOnce(&CompatModeButtonController::Update,
                              compat_mode_button_controller_->GetWeakPtr(),
                              pref_delegate_));
-
-  const auto new_value = window->GetProperty(ash::kArcResizeLockTypeKey);
-  const auto old_value = static_cast<ash::ArcResizeLockType>(old);
-
-  if (new_value == old_value)
-    return;
-
-  AppIdObserver::RunOnReady(
-      window, base::BindOnce(
-                  [](base::WeakPtr<ArcResizeLockManager> manager,
-                     aura::Window* window) {
-                    if (!manager)
-                      return;
-                    if (ShouldEnableResizeLock(
-                            window->GetProperty(ash::kArcResizeLockTypeKey))) {
-                      manager->EnableResizeLock(window);
-                    } else {
-                      manager->DisableResizeLock(window);
-                    }
-                  },
-                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcResizeLockManager::OnWindowBoundsChanged(
@@ -266,31 +278,19 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   if (!inserted)
     return;
 
+  if (base::FeatureList::IsEnabled(arc::kTouchModeMouse)) {
+    // TODO(tetsui): Reconsider the trigger condition after experimenting i.e.
+    // whether it is reasonable to have it enabled when ResizeLock is enabled.
+    window->GetHost()->GetEventSource()->AddEventRewriter(
+        touch_mode_mouse_rewriter_.get());
+  }
+
   const auto app_id = GetAppId(window);
   DCHECK(app_id);
   // The state is |ArcResizeLockState::READY| only when we enable the resize
   // lock for an app for the first time.
   if (pref_delegate_->GetResizeLockState(*app_id) ==
       mojom::ArcResizeLockState::READY) {
-    const ash::ArcResizeLockType resize_lock_value =
-        window->GetProperty(ash::kArcResizeLockTypeKey);
-    switch (resize_lock_value) {
-      case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
-        pref_delegate_->SetResizeLockState(*app_id,
-                                           mojom::ArcResizeLockState::ON);
-        break;
-      case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
-        pref_delegate_->SetResizeLockState(
-            *app_id, mojom::ArcResizeLockState::FULLY_LOCKED);
-        break;
-      case ash::ArcResizeLockType::NONE:
-      case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
-        NOTREACHED();
-    }
-    // As we updated the resize lock state above, we need to update compat mode
-    // button.
-    compat_mode_button_controller_->Update(pref_delegate_, window);
-
     if (ShouldShowSplashScreenDialog(pref_delegate_)) {
       const bool is_for_unresizable =
           window->GetProperty(ash::kArcResizeLockTypeKey) ==
@@ -300,6 +300,8 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
                                  is_for_unresizable));
     }
   }
+
+  UpdateResizeLockState(window);
 
   window->SetProperty(ash::kResizeShadowTypeKey, ash::ResizeShadowType::kLock);
   // Show lock shadow effect on window. ash::Shell may not exist in tests.
@@ -311,17 +313,45 @@ void ArcResizeLockManager::DisableResizeLock(aura::Window* window) {
   const bool erased = resize_lock_enabled_windows_.erase(window);
   if (!erased)
     return;
-  const auto app_id = GetAppId(window);
-  DCHECK(app_id);
-  if (window->GetProperty(ash::kArcResizeLockTypeKey) ==
-      ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
-    pref_delegate_->SetResizeLockState(*app_id, mojom::ArcResizeLockState::OFF);
-  }
   window->SetProperty(ash::kResizeShadowTypeKey,
                       ash::ResizeShadowType::kUnlock);
   // Hide shadow effect on window. ash::Shell may not exist in tests.
   if (ash::Shell::HasInstance())
     ash::Shell::Get()->resize_shadow_controller()->HideShadow(window);
+
+  if (base::FeatureList::IsEnabled(arc::kTouchModeMouse)) {
+    window->GetHost()->GetEventSource()->RemoveEventRewriter(
+        touch_mode_mouse_rewriter_.get());
+  }
+}
+
+void ArcResizeLockManager::UpdateResizeLockState(aura::Window* window) {
+  const auto app_id = GetAppId(window);
+  DCHECK(app_id);
+  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
+  switch (resize_lock_type) {
+    case ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE:
+      pref_delegate_->SetResizeLockState(*app_id,
+                                         mojom::ArcResizeLockState::ON);
+      break;
+    case ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE:
+      pref_delegate_->SetResizeLockState(
+          *app_id, mojom::ArcResizeLockState::FULLY_LOCKED);
+      break;
+    case ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE:
+      pref_delegate_->SetResizeLockState(*app_id,
+                                         mojom::ArcResizeLockState::OFF);
+      break;
+    case ash::ArcResizeLockType::NONE:
+      // Maximizing an app with RESIZE_ENABLED_TOGGLABLE can lead to this case.
+      // Resize lock state shouldn't be updated as the pre-maximized state
+      // needs to be restored later.
+      break;
+  }
+
+  // As we updated the resize lock state above, we need to update compat mode
+  // button.
+  compat_mode_button_controller_->Update(pref_delegate_, window);
 }
 
 }  // namespace arc

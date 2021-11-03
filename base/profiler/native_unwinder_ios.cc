@@ -42,7 +42,7 @@ UnwindResult NativeUnwinderIOS::TryUnwind(RegisterContext* thread_context,
   };
 
   if (!is_fp_valid(next_frame)) {
-    return UnwindResult::ABORTED;
+    return UnwindResult::kAborted;
   }
 
   for (;;) {
@@ -51,14 +51,14 @@ UnwindResult NativeUnwinderIOS::TryUnwind(RegisterContext* thread_context,
     next_frame = pthread_stack_frame_decode_np(frame, &retaddr);
 
     if (!is_fp_valid(frame) || next_frame <= frame) {
-      return UnwindResult::COMPLETED;
+      return UnwindResult::kCompleted;
     }
 
     stack->emplace_back(retaddr, module_cache()->GetModuleForAddress(retaddr));
   }
 
   NOTREACHED();
-  return UnwindResult::COMPLETED;
+  return UnwindResult::kCompleted;
 }
 
 std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {

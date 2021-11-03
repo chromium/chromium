@@ -16,6 +16,9 @@ class MediaCaptureDevicesImpl : public MediaCaptureDevices {
  public:
   static MediaCaptureDevicesImpl* GetInstance();
 
+  MediaCaptureDevicesImpl(const MediaCaptureDevicesImpl&) = delete;
+  MediaCaptureDevicesImpl& operator=(const MediaCaptureDevicesImpl&) = delete;
+
   // Overriden from MediaCaptureDevices
   const blink::MediaStreamDevices& GetAudioCaptureDevices() override;
   const blink::MediaStreamDevices& GetVideoCaptureDevices() override;
@@ -44,8 +47,6 @@ class MediaCaptureDevicesImpl : public MediaCaptureDevices {
 
   // A list of cached video capture devices.
   blink::MediaStreamDevices video_devices_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaCaptureDevicesImpl);
 };
 
 }  // namespace content

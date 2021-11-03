@@ -7,6 +7,7 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
+#include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -16,6 +17,9 @@
 namespace {
 
 const char kTestUserEmail[] = "testuser1@gmail.com";
+const char kTestScreencastName[] = "test_pending_screecast";
+const char kTestScreencastPath[] =
+    "/root/projector_data/test_pending_screecast";
 
 const char kTestXhrUrl[] = "https://www.googleapis.com/drive/v3/files/fileID";
 const char kTestXhrUnsupportedUrl[] = "https://www.example.com";
@@ -43,10 +47,11 @@ const char kShouldShowNewScreencastButtonCallback[] =
     "shouldShowNewScreencastButtonCallback";
 const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
 const char kInstallSodaCallback[] = "installSodaCallback";
+const char kGetPendingScreencastsCallback[] = "getPendingScreencastsCallback";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class ProjectorMessageHandlerUnitTest : public testing::Test {
  public:
@@ -66,16 +71,25 @@ class ProjectorMessageHandlerUnitTest : public testing::Test {
 
   void TearDown() override { message_handler_.reset(); }
 
+  void ExpectCallToWebUI(const std::string& type,
+                         const std::string& func_name,
+                         size_t count) {
+    EXPECT_EQ(web_ui().call_data().size(), count);
+    const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+    EXPECT_EQ(call_data.function_name(), type);
+    EXPECT_EQ(call_data.arg1()->GetString(), func_name);
+  }
+
   ProjectorMessageHandler* message_handler() { return message_handler_.get(); }
   content::TestWebUI& web_ui() { return web_ui_; }
-  ash::MockProjectorController& controller() { return mock_controller_; }
+  MockProjectorController& controller() { return mock_controller_; }
   MockAppClient& mock_app_client() { return mock_app_client_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<ProjectorMessageHandler> message_handler_;
-  ash::MockProjectorController mock_controller_;
+  MockProjectorController mock_controller_;
   MockAppClient mock_app_client_;
   content::TestWebUI web_ui_;
 };
@@ -295,6 +309,46 @@ TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
   EXPECT_EQ(call_data.arg3()->GetBool(), false);
 }
 
+TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
+  const std::set<ash::PendingScreencast> expectedScreencasts{
+      ash::PendingScreencast{
+          /*container_dir*/ base::FilePath(kTestScreencastPath),
+          /*name*/ kTestScreencastName}};
+  ON_CALL(mock_app_client(), GetPendingScreencasts())
+      .WillByDefault(testing::ReturnRef(expectedScreencasts));
+
+  base::ListValue list_args;
+  list_args.Append(kGetPendingScreencastsCallback);
+
+  web_ui().HandleReceivedMessage("getPendingScreencasts", &list_args);
+
+  // We expect that there was only one callback to the WebUI.
+  EXPECT_EQ(web_ui().call_data().size(), 1u);
+
+  const content::TestWebUI::CallData& call_data = *(web_ui().call_data()[0]);
+
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kGetPendingScreencastsCallback);
+
+  // Whether the callback was rejected or not.
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+  ASSERT_TRUE(call_data.arg3()->is_list());
+
+  const auto& list_view = call_data.arg3()->GetList();
+  // There is only one screencast.
+  EXPECT_EQ(list_view.size(), 1u);
+
+  const auto& screencast = list_view[0];
+  EXPECT_EQ(*(screencast.FindStringPath("name")), kTestScreencastName);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {
+  message_handler()->OnScreencastsPendingStatusChanged(
+      std::set<ash::PendingScreencast>());
+  ExpectCallToWebUI(kWebUIListenerCall, "onScreencastsStateChange",
+                    /*call_count=*/1u);
+}
+
 class ProjectorSessionStartUnitTest
     : public ::testing::WithParamInterface<bool>,
       public ProjectorMessageHandlerUnitTest {
@@ -337,4 +391,4 @@ INSTANTIATE_TEST_CASE_P(SessionStartSuccessFailTest,
                         ProjectorSessionStartUnitTest,
                         ::testing::Values(true, false));
 
-}  // namespace chromeos
+}  // namespace ash

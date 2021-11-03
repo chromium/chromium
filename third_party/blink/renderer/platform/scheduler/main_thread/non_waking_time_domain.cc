@@ -12,11 +12,7 @@ NonWakingTimeDomain::NonWakingTimeDomain(const base::TickClock* tick_clock)
 
 NonWakingTimeDomain::~NonWakingTimeDomain() = default;
 
-base::sequence_manager::LazyNow NonWakingTimeDomain::CreateLazyNow() const {
-  return base::sequence_manager::LazyNow(tick_clock_);
-}
-
-base::TimeTicks NonWakingTimeDomain::Now() const {
+base::TimeTicks NonWakingTimeDomain::NowTicks() const {
   return tick_clock_->NowTicks();
 }
 

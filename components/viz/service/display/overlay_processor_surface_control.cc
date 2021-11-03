@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "cc/base/math_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
@@ -57,10 +57,14 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
   for (auto& candidate : *candidates) {
     // If we're going to use real color space from media codec, we should check
     // if it's supported.
-    if (use_real_color_space_ &&
-        !gfx::SurfaceControl::SupportsColorSpace(candidate.color_space)) {
-      candidate.overlay_handled = false;
-      return;
+    if (use_real_color_space_) {
+      if (!gfx::SurfaceControl::SupportsColorSpace(candidate.color_space)) {
+        candidate.overlay_handled = false;
+        return;
+      }
+    } else {
+      candidate.color_space = gfx::ColorSpace::CreateSRGB();
+      candidate.hdr_metadata.reset();
     }
 
     // Check if screen rotation matches.

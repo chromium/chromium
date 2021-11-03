@@ -4,11 +4,14 @@
 
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 
-#include "url/gurl.h"
-
 namespace autofill_assistant {
 
-MockActionDelegate::MockActionDelegate() = default;
+using ::testing::ReturnRef;
+
+MockActionDelegate::MockActionDelegate() {
+  ON_CALL(*this, GetLogInfo).WillByDefault(ReturnRef(log_info_));
+}
+
 MockActionDelegate::~MockActionDelegate() = default;
 
 }  // namespace autofill_assistant

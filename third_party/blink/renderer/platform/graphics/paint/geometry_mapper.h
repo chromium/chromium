@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_GEOMETRY_MAPPER_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
@@ -104,7 +105,7 @@ class PLATFORM_EXPORT GeometryMapper {
 
     void MapFloatClipRect(FloatClipRect& rect) const {
       if (LIKELY(IsIdentityOr2DTranslation()))
-        rect.MoveBy(FloatPoint(Translation2D()));
+        rect.Move(Translation2D());
       else
         rect.Map(Matrix());
     }

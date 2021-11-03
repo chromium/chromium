@@ -33,6 +33,10 @@ class SecureChannelDisconnectorImpl : public SecureChannelDisconnector,
     static Factory* test_factory_;
   };
 
+  SecureChannelDisconnectorImpl(const SecureChannelDisconnectorImpl&) = delete;
+  SecureChannelDisconnectorImpl& operator=(
+      const SecureChannelDisconnectorImpl&) = delete;
+
   ~SecureChannelDisconnectorImpl() override;
 
  private:
@@ -49,8 +53,6 @@ class SecureChannelDisconnectorImpl : public SecureChannelDisconnector,
       const SecureChannel::Status& new_status) override;
 
   base::flat_set<std::unique_ptr<SecureChannel>> disconnecting_channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDisconnectorImpl);
 };
 
 }  // namespace secure_channel

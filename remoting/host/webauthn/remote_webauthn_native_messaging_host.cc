@@ -93,8 +93,7 @@ void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
 void RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  // Unbinds the remote so that EnsureIpcConnection() knows that the connection
-  // has been disconnected.
+  // TODO(yuweih): Feed pending callbacks with error responses.
   remote_.reset();
 }
 
@@ -111,25 +110,11 @@ bool RemoteWebAuthnNativeMessagingHost::EnsureIpcConnection() {
     return true;
   }
 
-  auto endpoint = mojo::NamedPlatformChannel::ConnectToServer(
-      GetRemoteWebAuthnChannelName());
-  if (!endpoint.is_valid()) {
-    // TODO(yuweih): The NMH lasts longer than individual remote sessions.
-    // Detect remote session state and maintain the IPC connection by
-    // periodically attempting to connect to the IPC server.
-    LOG(WARNING) << "Can't make IPC connection. The desktop session is "
-                 << "probably not remoted.";
+  auto* api = host_service_api_client_.Get();
+  if (!api) {
     return false;
   }
-  connection_ = std::make_unique<mojo::IsolatedConnection>();
-  mojo::PendingRemote<mojom::WebAuthnProxy> pending_remote(
-      connection_->Connect(std::move(endpoint)), /* version= */ 0);
-  if (!pending_remote.is_valid()) {
-    LOG(WARNING) << "Invalid message pipe.";
-    connection_.reset();
-    return false;
-  }
-  remote_.Bind(std::move(pending_remote));
+  api->BindWebAuthnProxy(remote_.BindNewPipeAndPassReceiver());
   remote_.set_disconnect_handler(
       base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnIpcDisconnected,
                      base::Unretained(this)));

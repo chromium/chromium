@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Избришете ги постоечките податоци.</translation>
 <translation id="1146678959555564648">Влези во VR</translation>
 <translation id="114825011539563458">Најважните контроли за приватност и безбедност на едно место</translation>
+<translation id="1149401351239820326">Месец на истекување</translation>
 <translation id="1154704303112745282">Страницата е недостапна офлајн: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Искористено</translation>
 <translation id="1171770572613082465">Допрете го копчето „Популарни“ за да ги разгледате популарните веб-сајтови</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Кратенки за функциите на Google Chrome</translation>
 <translation id="1344653310988386453">Вклучи линк до нагласената ставка</translation>
 <translation id="1347468774581902829">Управувајте со активноста</translation>
-<translation id="1353372385686746892">За да се подобри апликацијата, Chrome испраќа дијагностички податоци на Google. <ph name="BEGIN_LINK" />Изменете<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Одјавете се и исклучете синхронизација?</translation>
 <translation id="1373696734384179344">Недоволно меморија за да се преземе избраната содржина.</translation>
 <translation id="1376578503827013741">Се пресметува…</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">Отвори „Центар за помош на Chrome“ во нова картичка</translation>
 <translation id="5957442310066583693">За да ги гледате најдобрите сајтови, допрете го копчето за почетен екран</translation>
 <translation id="5958275228015807058">Вашите датотеки и страници ќе ги најдете во „Преземања“</translation>
-<translation id="5962272973076519240">Потврдете дека сте вие за да го отклучите режимот „Инкогнито“</translation>
 <translation id="5962718611393537961">Допрете за да се собере</translation>
 <translation id="5964805880140440652">За да ја споделите страницава со друг уред, вклучете ја синхронизацијата во поставките за Chrome</translation>
 <translation id="5964869237734432770">Сопри описи на слики</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">SD-картичката не е најдена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка „Инкогнито“}one{<ph name="TAB_COUNT_NORMAL" /> картичка „Инкогнито“}other{<ph name="TAB_COUNT_NORMAL" /> картички „Инкогнито“}}</translation>
 <translation id="8051695050440594747">Достапни се <ph name="MEGABYTES" /> MB</translation>
+<translation id="8058655154417507695">Година на истекување</translation>
 <translation id="8058746566562539958">Отвори во нова Chrome картичка</translation>
 <translation id="8063895661287329888">Не успеа да се додаде обележувачот.</translation>
 <translation id="806745655614357130">Не поврзувај ги податоците</translation>

@@ -20,6 +20,9 @@ class WifiDataProviderLinux : public WifiDataProviderCommon {
  public:
   WifiDataProviderLinux();
 
+  WifiDataProviderLinux(const WifiDataProviderLinux&) = delete;
+  WifiDataProviderLinux& operator=(const WifiDataProviderLinux&) = delete;
+
  private:
   friend class GeolocationWifiDataProviderLinuxTest;
 
@@ -31,8 +34,6 @@ class WifiDataProviderLinux : public WifiDataProviderCommon {
 
   std::unique_ptr<WlanApiInterface> CreateWlanApiForTesting(
       scoped_refptr<dbus::Bus> bus);
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderLinux);
 };
 
 }  // namespace device

@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/x11_atom_cache.h"
@@ -16,6 +17,7 @@
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_util.h"
 #include "ui/gtk/gtk_compat.h"
+#include "ui/gtk/gtk_util.h"
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 #include "ui/platform_window/x11/x11_window.h"
 #include "ui/platform_window/x11/x11_window_manager.h"
@@ -46,6 +48,15 @@ void GtkUiPlatformX11::OnInitialized(GtkWidget* widget) {
 GdkKeymap* GtkUiPlatformX11::GetGdkKeymap() {
   DCHECK(!gtk::GtkCheckVersion(4));
   return gdk_keymap_get_for_display(GetGdkDisplay());
+}
+
+GdkModifierType GtkUiPlatformX11::GetGdkKeyEventState(
+    const ui::KeyEvent& key_event) {
+  return gtk::GetGdkKeyEventState(key_event);
+}
+
+int GtkUiPlatformX11::GetGdkKeyEventGroup(const ui::KeyEvent& key_event) {
+  return GetKeyEventProperty(key_event, ui::kPropertyKeyboardGroup);
 }
 
 GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
@@ -108,6 +119,10 @@ void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
   gtk_window_present_with_time(
       window,
       static_cast<uint32_t>(ui::X11EventSource::GetInstance()->GetTimestamp()));
+}
+
+bool GtkUiPlatformX11::PreferGtkIme() {
+  return true;
 }
 
 }  // namespace gtk

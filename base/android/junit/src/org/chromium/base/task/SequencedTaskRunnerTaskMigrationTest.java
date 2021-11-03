@@ -23,6 +23,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Unit tests for {@link SequencedTaskRunnerImpl} that focuses on the transition/migration that
+ * happens as native initializes.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SequencedTaskRunnerTaskMigrationTest {

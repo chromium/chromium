@@ -275,7 +275,11 @@
           'win10',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_sizes',
+          'isolated_scripts': 'chrome_isolated_script_tests',
+          # TODO(crbug.com/1233603): This is a fake finch smoke test for
+          # prototyping purpose, remove and switch to use the real one once the
+          # pipeline is ready for production integration.
+          'gtest_tests': 'finch_smoke_tests',
         },
       },
       'win64-chrome': {
@@ -1105,7 +1109,7 @@
       'android-12-x64-fyi-rel': {
         'mixins': [
           '12-x64-emulator',
-          'emulator-4-cores',
+          'emulator-8-cores',
           'has_native_resultdb_integration',
           'linux-xenial-or-bionic',
           'x86-64',
@@ -1703,6 +1707,16 @@
         'test_suites': {
           'isolated_scripts': 'chrome_sizes_android',
         },
+      },
+      'ToTChromeOS': {
+        'additional_compile_targets': [
+          'all',
+        ],
+      },
+      'ToTChromeOS (dbg)': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
       'ToTFuchsia x64': {
         'additional_compile_targets': [
@@ -2738,6 +2752,9 @@
           'walleye',
         ],
         'os_type': 'android',
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
+        ],
       },
       'android-backuprefptr-arm64-fyi-rel': {
         'test_suites': {
@@ -2749,6 +2766,9 @@
           'walleye',
         ],
         'os_type': 'android',
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
+        ],
       },
       'android-code-coverage': {
         'mixins': [
@@ -2804,22 +2824,6 @@
         'os_type': 'chromeos',
       },
       'chromeos-amd64-generic-rel (reclient)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-amd64-generic',
-          'has_native_resultdb_integration',
-        ],
-        'os_type': 'chromeos',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
-          'gtest_tests': 'chromeos_vm_gtests',
-          'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-      },
-      'chromeos-amd64-generic-rel-dchecks': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
@@ -3134,6 +3138,9 @@
         'mixins': [
           'linux-bionic',
           'x86-64',
+        ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
         ],
       },
       'linux-blink-animation-use-time-delta': {
@@ -3506,6 +3513,9 @@
           'win10',
           'x86-64',
         ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
+        ],
       },
       'win-backuprefptr-x86-fyi-rel': {
         'test_suites': {
@@ -3514,6 +3524,9 @@
         'mixins': [
           'win10',
           'x86-64',
+        ],
+        'gtest_args': [
+          '--enable-features=PartitionAllocBackupRefPtr',
         ],
       },
       'win-pixel-tester-rel': {
@@ -4022,7 +4035,7 @@
           'has_native_resultdb_integration',
           'gpu-swarming-pool',
           'hammerhead',
-          'lollipop_generic',
+          'marshmallow_generic',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
@@ -6443,26 +6456,6 @@
         }
       },
     }
-  },
-  {
-    'project': 'chrome',
-    'bucket': 'ci',
-    'name': 'internal.chrome.fyi',
-    'mixins': ['chrome-tester-service-account'],
-    'machines': {
-      'win-chrome-finch-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-          'win10-1703',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'variations_smoke_tests',
-        },
-      },
-    },
   },
   {
     'project': 'chrome',

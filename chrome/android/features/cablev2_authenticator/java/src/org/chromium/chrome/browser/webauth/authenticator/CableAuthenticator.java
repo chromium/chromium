@@ -99,7 +99,7 @@ class CableAuthenticator {
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
-            byte[] serverLink, byte[] fcmEvent, String qrURI) {
+            byte[] serverLink, byte[] fcmEvent, String qrURI, boolean metricsEnabled) {
         mContext = context;
         mUi = ui;
         mFCMEvent = fcmEvent;
@@ -111,7 +111,7 @@ class CableAuthenticator {
         mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
-        CableAuthenticatorJni.get().setup(registration, networkContext, secret);
+        CableAuthenticatorJni.get().setup(registration, networkContext, secret, metricsEnabled);
 
         if (accessory != null) {
             // USB mode can start immediately.
@@ -129,6 +129,12 @@ class CableAuthenticator {
     @CalledByNative
     public void onStatus(int code) {
         mUi.onStatus(code);
+    }
+
+    // Called when the native code wishes to log a protobuf event.
+    @CalledByNative
+    public static void logEvent(byte[] event) {
+        CableEventLogger.log(event);
     }
 
     @CalledByNative
@@ -492,7 +498,7 @@ class CableAuthenticator {
          * one-time setup operations. It may be called several times, but subsequent calls are
          * ignored.
          */
-        void setup(long registration, long networkContext, byte[] secret);
+        void setup(long registration, long networkContext, byte[] secret, boolean metricsEnabled);
 
         /**
          * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an

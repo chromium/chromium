@@ -43,6 +43,10 @@ class BackgroundSyncNetworkObserverAndroid
    public:
     static scoped_refptr<BackgroundSyncNetworkObserverAndroid::Observer> Create(
         base::RepeatingCallback<void(network::mojom::ConnectionType)> callback);
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     void Init();
 
     // Called from BackgroundSyncNetworkObserver.java over JNI whenever the
@@ -65,8 +69,6 @@ class BackgroundSyncNetworkObserverAndroid
     // This callback is run whenever the connection type changes.
     base::RepeatingCallback<void(network::mojom::ConnectionType)> callback_;
     base::android::ScopedJavaGlobalRef<jobject> j_observer_;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
  private:

@@ -293,7 +293,7 @@ const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
 // marked.
 const base::Feature kIntranetRedirectBehaviorPolicyRollout{
     "OmniboxDNSInterceptionChecksPolicyRollout",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.

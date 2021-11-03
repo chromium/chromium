@@ -44,10 +44,10 @@
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/arc/arc_features.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_dlc_installer.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/session/arc_session.h"
 #include "components/arc/session/file_system_status.h"
 #include "components/arc/test/connection_holder_util.h"
@@ -2181,7 +2181,7 @@ struct DalvikMemoryProfileTestParam {
 };
 
 constexpr DalvikMemoryProfileTestParam kDalvikMemoryProfileTestCases[] = {
-    {StartParams::DalvikMemoryProfile::DEFAULT, nullptr},
+    {StartParams::DalvikMemoryProfile::DEFAULT, "4G"},
     {StartParams::DalvikMemoryProfile::M4G, "4G"},
     {StartParams::DalvikMemoryProfile::M8G, "8G"},
     {StartParams::DalvikMemoryProfile::M16G, "16G"}};
@@ -2196,7 +2196,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ArcVmClientAdapterDalvikMemoryProfileTest, Profile) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(arc::kUseHighMemoryDalvikProfile,
+  feature_list.InitWithFeatureState(arc::kUseDalvikMemoryProfile,
                                     true /* use */);
 
   const auto& test_param = GetParam();

@@ -65,6 +65,8 @@ views::BubbleBorder::Arrow MapToBubbleBorderArrow(
       return views::BubbleBorder::Arrow::LEFT_CENTER;
     case Arrow::RIGHT_CENTER:
       return views::BubbleBorder::Arrow::RIGHT_CENTER;
+    case Arrow::NONE:
+      return views::BubbleBorder::Arrow::NONE;
   }
 }
 

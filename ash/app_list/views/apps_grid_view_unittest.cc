@@ -215,6 +215,29 @@ class TestSuggestedSearchResult : public TestSearchResult {
   ~TestSuggestedSearchResult() override = default;
 };
 
+// Counts when the observed view's bounds change.
+class BoundsChangeCounter : public views::ViewObserver {
+ public:
+  explicit BoundsChangeCounter(views::View* observed_view)
+      : observed_view_(observed_view) {
+    observed_view->AddObserver(this);
+  }
+  BoundsChangeCounter(const BoundsChangeCounter&) = delete;
+  BoundsChangeCounter& operator=(const BoundsChangeCounter&) = delete;
+  ~BoundsChangeCounter() override { observed_view_->RemoveObserver(this); }
+
+  //  views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override {
+    ++bounds_change_count_;
+  }
+
+  int bounds_change_count() const { return bounds_change_count_; }
+
+ private:
+  views::View* const observed_view_;
+  int bounds_change_count_ = 0;
+};
+
 }  // namespace
 
 // Subclasses should set `is_rtl_`, `create_as_tablet_mode_`, etc. in their
@@ -228,7 +251,6 @@ class AppsGridViewTest : public AshTestBase {
 
   // testing::Test overrides:
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     if (is_rtl_)
       base::i18n::SetICUDefaultLocale("he");
     feature_list_.InitWithFeatureState(features::kProductivityLauncher,
@@ -238,19 +260,18 @@ class AppsGridViewTest : public AshTestBase {
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
 
-    // Replace the model before the app list views are created, because some
-    // views cache pointers to the model.
-    auto model = std::make_unique<test::AppListTestModel>();
-    model_ = model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(model));
-
     // Populate some suggested apps.
-    search_model_ = Shell::Get()->app_list_controller()->GetSearchModel();
+    search_model_ = std::make_unique<SearchModel>();
     for (size_t i = 0; i < kNumOfSuggestedApps; ++i) {
       search_model_->results()->Add(
           std::make_unique<TestSuggestedSearchResult>());
     }
+
+    // Replace the model before the app list views are created, because some
+    // views cache pointers to the model.
+    model_ = std::make_unique<test::AppListTestModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(model_.get(),
+                                                        search_model_.get());
 
     // Show the app list.
     auto* helper = GetAppListTestHelper();
@@ -302,7 +323,6 @@ class AppsGridViewTest : public AshTestBase {
     PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
  protected:
@@ -591,8 +611,8 @@ class AppsGridViewTest : public AshTestBase {
       nullptr;                                    // Owned by |apps_grid_view_|.
   ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by |apps_grid_view_|.
 
-  AppListTestModel* model_ = nullptr;
-  SearchModel* search_model_ = nullptr;
+  std::unique_ptr<AppListTestModel> model_;
+  std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<AppsGridViewTestApi> test_api_;
 
   // True if the test screen is configured to work with RTL locale.
@@ -630,6 +650,21 @@ class AppsGridViewClamshellTest : public AppsGridViewTest,
   }
 };
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewClamshellTest, testing::Bool());
+
+// Tests suite to test both tablet and clamshell mode behavior, additionally
+// parameterized by feature ProductivityLauncher.
+class AppsGridViewClamshellAndTabletTest
+    : public AppsGridViewTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AppsGridViewClamshellAndTabletTest() {
+    create_as_tablet_mode_ = std::get<0>(GetParam());
+    is_productivity_launcher_enabled_ = std::get<1>(GetParam());
+  }
+};
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewClamshellAndTabletTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests suite parameterized by RTL locale.
 class AppsGridViewRTLTest : public AppsGridViewTest,
@@ -759,6 +794,7 @@ TEST_P(AppsGridViewClamshellTest, RemoveSelectedLastApp) {
 TEST_F(AppsGridViewNonBubbleTest, UMATestForLaunchingApps) {
   base::HistogramTester histogram_tester;
   model_->PopulateApps(5);
+  UpdateLayout();
 
   // Select the first app in grid and launch it.
   SimulateLeftClickOnView(GetItemViewInTopLevelGrid(0));
@@ -832,6 +868,7 @@ TEST_F(AppsGridViewTest, MoveItemAcrossRowDoesNotCauseAnimation) {
 // Productivity launcher does not use suggestion chips.
 TEST_F(AppsGridViewNonBubbleTest, ControlArrowOnSuggestedChip) {
   model_->PopulateApps(5);
+  UpdateLayout();
   suggestions_container_->children().front()->RequestFocus();
 
   SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN);
@@ -875,6 +912,7 @@ TEST_P(AppsGridViewRTLTest, ScrollSequenceHandledByAppListView) {
   base::HistogramTester histogram_tester;
 
   model_->PopulateApps(GetTilesPerPage(0) + 1);
+  UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -926,6 +964,7 @@ TEST_P(AppsGridViewRTLTest, MouseScrollSequenceHandledByAppListView) {
   base::HistogramTester histogram_tester;
 
   model_->PopulateApps(GetTilesPerPage(0) + 1);
+  UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   const gfx::Point apps_grid_view_origin =
@@ -995,6 +1034,7 @@ TEST_P(AppsGridViewRTLTest,
   base::HistogramTester histogram_tester;
 
   model_->PopulateApps(GetTilesPerPage(0) + 1);
+  UpdateLayout();
   EXPECT_EQ(2, GetPaginationModel()->total_pages());
 
   gfx::Point apps_grid_view_origin =
@@ -1041,6 +1081,7 @@ TEST_P(AppsGridViewRTLTest,
 // AppList closing.
 TEST_F(AppsGridViewTest, TapsBetweenAppsWontCloseAppList) {
   model_->PopulateApps(2);
+  UpdateLayout();
   gfx::Point between_apps = GetItemRectOnCurrentPageAt(0, 0).right_center();
   gfx::Point empty_space = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
 
@@ -1237,6 +1278,7 @@ TEST_P(AppsGridViewRTLTest, ScrollDownShouldNotExitFolder) {
 // TODO(jamescook): Investigate why this is broken with AppListBubble.
 TEST_F(AppsGridViewTest, AppIconSelectedWhenMenuIsShown) {
   model_->PopulateApps(1);
+  UpdateLayout();
   ASSERT_EQ(1u, model_->top_level_item_list()->item_count());
   AppListItemView* app = GetItemViewInTopLevelGrid(0);
   EXPECT_FALSE(apps_grid_view_->IsSelectedView(app));
@@ -1260,6 +1302,7 @@ TEST_P(AppsGridViewRTLTest, MenuAtRightPosition) {
   const size_t kItemsInPage = GetTilesPerPage(0);
   const size_t kPages = 2;
   model_->PopulateApps(kItemsInPage * kPages);
+  UpdateLayout();
 
   auto* root = apps_grid_view_->GetWidget()->GetNativeWindow()->GetRootWindow();
   gfx::Rect root_bounds = root->GetBoundsInScreen();
@@ -1304,6 +1347,7 @@ TEST_P(AppsGridViewRTLTest, MenuAtRightPosition) {
 TEST_P(AppsGridViewClamshellTest, ItemViewsDontHaveLayer) {
   size_t kTotalItems = 3;
   model_->PopulateApps(kTotalItems);
+  UpdateLayout();
 
   // Normally individual item-view does not have a layer.
   for (size_t i = 0; i < model_->top_level_item_list()->item_count(); ++i)
@@ -2535,6 +2579,8 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   // Create 3 full pages of apps.
   model_->PopulateApps(GetTilesPerPage(0) + GetTilesPerPage(1) +
                        GetTilesPerPage(2));
+  UpdateLayout();
+
   const gfx::Rect apps_grid_bounds = paged_apps_grid_view_->GetLocalBounds();
   // Drag an item to the bottom to start flipping pages.
   page_flip_waiter_->Reset();
@@ -2747,8 +2793,11 @@ TEST_P(AppsGridViewDragTest, FocusOfDraggedViewAfterDrag) {
 TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   // Creates a folder item with two items.
   model_->CreateAndPopulateFolderWithApps(2);
+  model_->PopulateApps(1);
   test_api_->Update();
-  EXPECT_EQ(1, apps_grid_view_->view_model()->view_size());
+
+  // One folder and one app. Therefore the top level view count is 2.
+  EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
 
   // Open the folder.
   test_api_->PressItemAt(0);
@@ -2766,27 +2815,36 @@ TEST_P(AppsGridViewDragTest, FocusOfReparentedDragViewWithFolderDeleted) {
   // of folder bounds.
   ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
 
-  // Drop the item in (0,1) spot is the root apps grid. The spot is expected to
+  // Drop the item in (0,2) spot is the root apps grid. The spot is expected to
   // be empty.
-  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
   views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
                                     &drop_point);
   UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
              /*steps=*/5);
+  BoundsChangeCounter counter(GetItemViewInTopLevelGrid(1));
   EndDrag(folder_apps_grid_view(), /*cancel=*/false);
 
-  // The folder should be deleted. The first item should be Item 1 while the
-  // second item should be Item 2.
-  EXPECT_EQ(2, apps_grid_view_->view_model()->view_size());
-  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(1);
-  EXPECT_EQ("Item 0", dragged_view->item()->id());
+  // The folder should be deleted. The first item should be Item 1, the second
+  // item should be Item 2 and the last item should be Item 0.
+  EXPECT_EQ(3, apps_grid_view_->view_model()->view_size());
   EXPECT_EQ("Item 1", GetItemViewInTopLevelGrid(0)->item()->id());
+  EXPECT_EQ("Item 2", GetItemViewInTopLevelGrid(1)->item()->id());
+  EXPECT_EQ("Item 0", GetItemViewInTopLevelGrid(2)->item()->id());
 
+  AppListItemView* const dragged_view = GetItemViewInTopLevelGrid(2);
   if (features::IsProductivityLauncherEnabled()) {
+    // Verify that Item 2's bounds do not change after calling `EndDrag()`.
+    EXPECT_EQ(0, counter.bounds_change_count());
+
     // ProductivityLauncher keeps focus on the search box after drags.
     EXPECT_TRUE(search_box_view_->search_box()->HasFocus());
     EXPECT_FALSE(dragged_view->HasFocus());
   } else {
+    // Verify that Item 2's bounds change once after calling `EndDrag()` due to
+    // ending the cardified state.
+    EXPECT_EQ(1, counter.bounds_change_count());
+
     // The dragged item is focused but is not selected.
     EXPECT_TRUE(dragged_view->HasFocus());
     EXPECT_FALSE(apps_grid_view_->has_selected_view());
@@ -3387,6 +3445,60 @@ TEST_F(AppsGridViewTest, NoPageBreakItemWithFullGrid) {
     model_content.append(",Item " + base::NumberToString(i));
 
   EXPECT_EQ(model_content, model_->GetModelContent());
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
+  model_->PopulateApps(2);
+  UpdateLayout();
+
+  const views::ViewModelT<AppListItemView>* view_model =
+      apps_grid_view_->view_model();
+  EXPECT_EQ(2, view_model->view_size());
+  TestAppListItemViewIndice();
+
+  // Update the model, and verify the apps grid gets updated.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  model_override->PopulateApps(3);
+  model_override->CreateAndPopulateFolderWithApps(5);
+  model_override->PopulateApps(3);
+
+  auto search_model_override = std::make_unique<SearchModel>();
+
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+  UpdateLayout();
+
+  // Verify that the view model size matches the new model.
+  EXPECT_EQ(7, view_model->view_size());
+  TestAppListItemViewIndice();
+
+  // Verify that clicking an item activates it.
+  SimulateLeftClickOnView(view_model->view_at(0));
+  EXPECT_EQ("Item 0", GetTestAppListClient()->activate_item_last_id());
+
+  // Clicking on the folder item transitions to folder view.
+  SimulateLeftClickOnView(view_model->view_at(3));
+  EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  ASSERT_EQ(5, folder_apps_grid_view()->view_model()->view_size());
+
+  // Click on an item within the folder.
+  SimulateLeftClickOnView(folder_apps_grid_view()->view_model()->view_at(1));
+  EXPECT_EQ("Item 4", GetTestAppListClient()->activate_item_last_id());
+
+  // Switch model to original one, and verify the folder view gets closed.
+  Shell::Get()->app_list_controller()->SetActiveModel(model_.get(),
+                                                      search_model_.get());
+  UpdateLayout();
+  EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  EXPECT_EQ(2, view_model->view_size());
+  TestAppListItemViewIndice();
+
+  SimulateLeftClickOnView(view_model->view_at(1));
+  EXPECT_EQ("Item 1", GetTestAppListClient()->activate_item_last_id());
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  EXPECT_EQ(0, view_model->view_size());
 }
 
 // This is a NonBubble test because page breaks are ignored with the

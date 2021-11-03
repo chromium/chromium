@@ -29,13 +29,14 @@
 //
 // For Blink developers, the backing list object looks the primary object.
 // However, when exposing an observable array to web developers, the exotic
-// object must be exposed instead of the backing list object.
+// object must be exposed instead of the backing list object.  This is done in
+// auto-generated bindings (generated bindings automatically call
+// GetExoticObject()).
 //
 //   class MyIdlInterface : public ScriptWrappable {
 //    public:
-//     ObservableArrayExoticObject* myAttr() const {
-//       // Expose the exotic object to web developers.
-//       return my_observable_array_->GetExoticObject();
+//     V8ObservableArrayNode* myAttr() const {
+//       return my_observable_array_;
 //     }
 //    private:
 //     // my_observable_array_ is a backing list object.

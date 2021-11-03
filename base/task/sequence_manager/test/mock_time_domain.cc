@@ -14,11 +14,7 @@ MockTimeDomain::MockTimeDomain(TimeTicks initial_now_ticks)
 
 MockTimeDomain::~MockTimeDomain() = default;
 
-LazyNow MockTimeDomain::CreateLazyNow() const {
-  return LazyNow(now_ticks_);
-}
-
-TimeTicks MockTimeDomain::Now() const {
+TimeTicks MockTimeDomain::NowTicks() const {
   return now_ticks_;
 }
 

@@ -84,7 +84,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                                             AXObject::AXObjectVector&) const;
 
   Element* MenuItemElementForMenu() const;
-  Element* MouseButtonListener() const;
   HTMLElement* CorrespondingControlForLabelElement() const;
 
   //
@@ -167,8 +166,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Properties of interactive elements.
   ax::mojom::blink::AriaCurrentState GetAriaCurrentState() const final;
   ax::mojom::blink::InvalidState GetInvalidState() const final;
-  // Only used when invalidState() returns InvalidStateOther.
-  String AriaInvalidValue() const final;
   bool ValueForRange(float* out_value) const override;
   bool MaxValueForRange(float* out_value) const override;
   bool MinValueForRange(float* out_value) const override;

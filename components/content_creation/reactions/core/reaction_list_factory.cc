@@ -33,21 +33,21 @@ std::vector<ReactionMetadata> BuildReactionMetadata() {
   // other assets have been uploaded to the server.
   return {
       ReactionMetadata(ReactionType::CLAP, "Clap", MakeThumbnailUrl("clap"),
-                       MakeReactionUrl("clap")),
+                       MakeReactionUrl("clap"), 24),
       ReactionMetadata(ReactionType::GRIN, "Grin", MakeThumbnailUrl("clap"),
-                       MakeReactionUrl("clap")),
+                       MakeReactionUrl("clap"), 48),
       ReactionMetadata(ReactionType::FIRE, "Fire", MakeThumbnailUrl("clap"),
-                       MakeReactionUrl("clap")),
+                       MakeReactionUrl("clap"), 48),
       ReactionMetadata(ReactionType::EYES, "Eyes", MakeThumbnailUrl("clap"),
-                       MakeReactionUrl("clap")),
+                       MakeReactionUrl("clap"), 48),
       ReactionMetadata(ReactionType::EMOTIONAL, "Emotional",
-                       MakeThumbnailUrl("clap"), MakeReactionUrl("clap")),
+                       MakeThumbnailUrl("clap"), MakeReactionUrl("clap"), 48),
       ReactionMetadata(ReactionType::SURPRISE, "Surprise",
-                       MakeThumbnailUrl("clap"), MakeReactionUrl("clap")),
+                       MakeThumbnailUrl("clap"), MakeReactionUrl("clap"), 48),
       ReactionMetadata(ReactionType::THANKS, "Thanks", MakeThumbnailUrl("clap"),
-                       MakeReactionUrl("clap")),
+                       MakeReactionUrl("clap"), 24),
       ReactionMetadata(ReactionType::UNSURE, "Unsure", MakeThumbnailUrl("clap"),
-                       MakeReactionUrl("clap")),
+                       MakeReactionUrl("clap"), 48),
   };
 }
 

@@ -405,13 +405,18 @@ size_t MockRenderProcessHost::GetShutdownDelayRefCount() const {
   return 0;
 }
 
-void MockRenderProcessHost::IncrementRfhCount() {}
-
-void MockRenderProcessHost::DecrementRfhCount() {}
-
-int MockRenderProcessHost::GetRfhCount() const {
+int MockRenderProcessHost::GetRenderFrameHostCount() const {
   return 0;
 }
+
+void MockRenderProcessHost::RegisterRenderFrameHost(
+    const GlobalRenderFrameHostId& render_frame_host_id) {}
+
+void MockRenderProcessHost::UnregisterRenderFrameHost(
+    const GlobalRenderFrameHostId& render_frame_host_id) {}
+
+void MockRenderProcessHost::ForEachRenderFrameHost(
+    base::RepeatingCallback<void(RenderFrameHost*)> on_render_frame_host) {}
 
 void MockRenderProcessHost::IncrementWorkerRefCount() {
   ++worker_ref_count_;

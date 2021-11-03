@@ -41,6 +41,9 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
 
   ProcessProxy();
 
+  ProcessProxy(const ProcessProxy&) = delete;
+  ProcessProxy& operator=(const ProcessProxy&) = delete;
+
   // Opens a process using command |command| for the user with hash
   // |user_id_hash|.  Returns process ID on success, -1 on failure.
   bool Open(const base::CommandLine& cmdline,
@@ -122,8 +125,6 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
   base::Process process_;
 
   int pt_pair_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessProxy);
 };
 
 }  // namespace chromeos

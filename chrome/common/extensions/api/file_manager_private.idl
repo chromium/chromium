@@ -929,6 +929,44 @@ dictionary IOTaskParams {
   [instanceof=DirectoryEntry] object? destinationFolder;
 };
 
+// IO Task Progress status, see file_manager::io_task::ProgressStatus.
+dictionary ProgressStatus {
+
+  // Type of the task sending the progress.
+  IOTaskType type;
+
+  // Current state of the task sending the progress.
+  IOTaskState state;
+
+  // Name of the first source entry.
+  DOMString sourceName;
+
+  // Number of remaining entries to be processed.
+  long numRemainingItems;
+
+  // Total number of entries to be processed.
+  long itemCount;
+
+  // Name of the destination folder for operations that transfer files to a
+  // directory (e.g. copy or move).
+  DOMString destinationName;
+
+  // ProgressStatus over all |sources|.
+  long bytesTransferred;
+
+  // Total size of all |sources|.
+  long totalBytes;
+
+  // The task id for this progress status.
+  long taskId;
+
+  // The estimate time to finish the operation.
+  double remainingSeconds;
+
+  // The name of the last error that happened.
+  DOMString errorName;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -1557,6 +1595,10 @@ interface Functions {
       IOTaskType type,
       [instanceof=Entry] object[] entries,
       IOTaskParams params);
+
+  // Cancels an I/O task by id. Task ids are communicated to the Files App in
+  // each I/O task's progress status.
+  static void cancelIOTask(long taskId);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
@@ -1588,5 +1630,7 @@ interface Events {
   static void onCrostiniChanged(CrostiniEvent event);
 
   static void onTabletModeChanged(boolean enabled);
+
+  static void onIOTaskProgressStatus(ProgressStatus status);
 };
 };

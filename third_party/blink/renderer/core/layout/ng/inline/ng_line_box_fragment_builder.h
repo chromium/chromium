@@ -67,6 +67,10 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
     line_box_bfc_block_offset_ = offset;
   }
 
+  void SetAnnotationBlockOffsetAdjustment(LayoutUnit adjustment) {
+    annotation_block_offset_adjustment_ = adjustment;
+  }
+
   const FontHeight& Metrics() const { return metrics_; }
   void SetMetrics(const FontHeight& metrics) { metrics_ = metrics; }
 
@@ -94,6 +98,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
 
  private:
   absl::optional<LayoutUnit> line_box_bfc_block_offset_;
+  LayoutUnit annotation_block_offset_adjustment_;
   FontHeight metrics_ = FontHeight::Empty();
   LayoutUnit hang_inline_size_;
   LayoutUnit clearance_after_line_;

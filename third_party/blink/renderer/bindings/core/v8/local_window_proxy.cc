@@ -32,6 +32,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
@@ -70,6 +71,11 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+namespace {
+
+base::SingleSampleMetric* g_v8_context_count_logger = nullptr;
+
+}  // namespace
 
 // static
 int LocalWindowProxy::v8_context_count_ = 0;
@@ -124,11 +130,11 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
       next_status == Lifecycle::kGlobalObjectIsDetached) {
     // Clean up state on the global proxy, which will be reused.
     if (!global_proxy_.IsEmpty()) {
-      CHECK(global_proxy_.Get() == context->Global());
+      CHECK(global_proxy_ == context->Global());
       CHECK_EQ(ToScriptWrappable(context->Global()),
                ToScriptWrappable(
                    context->Global()->GetPrototype().As<v8::Object>()));
-      global_proxy_.Get().SetWrapperClassId(0);
+      global_proxy_.SetWrapperClassId(0);
     }
     V8DOMWrapper::ClearNativeInfo(GetIsolate(), context->Global());
     script_state_->DetachGlobalObject();
@@ -162,7 +168,7 @@ void LocalWindowProxy::Initialize() {
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();
   if (global_proxy_.IsEmpty()) {
-    global_proxy_.Set(GetIsolate(), context->Global());
+    global_proxy_.Reset(GetIsolate(), context->Global());
     CHECK(!global_proxy_.IsEmpty());
   }
 
@@ -223,6 +229,15 @@ void LocalWindowProxy::CreateContext() {
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
   ++v8_context_count_;
+  if (!g_v8_context_count_logger) {
+    g_v8_context_count_logger =
+        base::SingleSampleMetricsFactory::Get()
+            ->CreateCustomCountsMetric("Blink.V8.NumberContextsCreatedOfWindow",
+                                       1, 100, 50)
+            .release();
+  }
+  g_v8_context_count_logger->SetSample(v8_context_count_);
+
   v8::Local<v8::Context> context;
   {
     DEFINE_STATIC_LOCAL(
@@ -238,7 +253,7 @@ void LocalWindowProxy::CreateContext() {
         V8PerIsolateData::From(isolate));
     Document* document = GetFrame()->GetDocument();
 
-    v8::Local<v8::Object> global_proxy = global_proxy_.NewLocal(isolate);
+    v8::Local<v8::Object> global_proxy = global_proxy_.Get(isolate);
     context = V8ContextSnapshot::CreateContextFromSnapshot(
         isolate, World(), &extension_configuration, global_proxy, document);
     context_was_created_from_snapshot_ = !context.IsEmpty();
@@ -303,12 +318,12 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
 
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = context->Global();
-  CHECK(global_proxy_.Get() == global_proxy);
+  CHECK(global_proxy_ == global_proxy);
   V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
                               window);
   // Mark the handle to be traced by Oilpan, since the global proxy has a
   // reference to the DOMWindow.
-  global_proxy_.Get().SetWrapperClassId(wrapper_type_info->wrapper_class_id);
+  global_proxy_.SetWrapperClassId(wrapper_type_info->wrapper_class_id);
 
   // The global object, aka window wrapper object.
   v8::Local<v8::Object> window_wrapper =

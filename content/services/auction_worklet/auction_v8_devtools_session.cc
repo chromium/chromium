@@ -5,6 +5,8 @@
 #include "content/services/auction_worklet/auction_v8_devtools_session.h"
 
 #include <stdint.h>
+
+#include <set>
 #include <string>
 #include <vector>
 
@@ -13,18 +15,70 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_inspector_util.h"
 #include "content/services/auction_worklet/debug_command_queue.h"
+#include "content/services/auction_worklet/protocol/event_breakpoints.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
 #include "third_party/inspector_protocol/crdtp/dispatch.h"
 #include "third_party/inspector_protocol/crdtp/frontend_channel.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
+#include "third_party/inspector_protocol/crdtp/protocol_core.h"
 #include "third_party/inspector_protocol/crdtp/span.h"
 
 namespace auction_worklet {
+
+// BreakpointHandler implements the
+// EventBreakpoints.setInstrumentationBreakpoint and
+// EventBreakpoints.removeInstrumentationBreakpoint messages.
+class AuctionV8DevToolsSession::BreakpointHandler
+    : public auction_worklet::protocol::EventBreakpoints::Backend {
+ public:
+  // `v8_session` is expected to outlast invocation of any methods other than
+  // the destructor on `this`.
+  explicit BreakpointHandler(v8_inspector::V8InspectorSession* v8_session)
+      : v8_session_(v8_session) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  }
+
+  ~BreakpointHandler() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  }
+
+  void MaybeTriggerInstrumentationBreakpoint(const std::string& name) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+    if (instrumentation_breakpoints_.find(name) !=
+        instrumentation_breakpoints_.end()) {
+      std::string category("EventListener");
+      std::string aux_json = base::StringPrintf(
+          R"({"eventName":"instrumentation:%s"})", name.c_str());
+      v8_session_->schedulePauseOnNextStatement(ToStringView(category),
+                                                ToStringView(aux_json));
+    }
+  }
+
+ private:
+  crdtp::DispatchResponse SetInstrumentationBreakpoint(
+      const std::string& event_name) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+    instrumentation_breakpoints_.insert(event_name);
+    return crdtp::DispatchResponse::Success();
+  }
+
+  crdtp::DispatchResponse RemoveInstrumentationBreakpoint(
+      const std::string& event_name) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+    instrumentation_breakpoints_.erase(event_name);
+    return crdtp::DispatchResponse::Success();
+  }
+
+  v8_inspector::V8InspectorSession* const v8_session_;
+  std::set<std::string> instrumentation_breakpoints_;
+  SEQUENCE_CHECKER(v8_sequence_checker_);
+};
 
 // IOSession, which handles the pipe passed to the `io_session` parameter of
 // DevToolsAgent::AttachDevToolsSession(), runs on a non-V8 sequence (except
@@ -123,6 +177,10 @@ AuctionV8DevToolsSession::AuctionV8DevToolsSession(
       base::BindRepeating(
           &AuctionV8DevToolsSession::DispatchProtocolCommandFromIO,
           weak_ptr_factory_.GetWeakPtr()));
+
+  breakpoint_handler_ = std::make_unique<BreakpointHandler>(v8_session_.get());
+  auction_worklet::protocol::EventBreakpoints::Dispatcher::wire(
+      &fallback_dispatcher_, breakpoint_handler_.get());
 }
 
 AuctionV8DevToolsSession::~AuctionV8DevToolsSession() {
@@ -130,6 +188,12 @@ AuctionV8DevToolsSession::~AuctionV8DevToolsSession() {
   std::move(on_delete_callback_).Run(this);
   v8::Locker locker(v8_helper_->isolate());
   v8_session_.reset();
+}
+
+void AuctionV8DevToolsSession::MaybeTriggerInstrumentationBreakpoint(
+    const std::string& name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  breakpoint_handler_->MaybeTriggerInstrumentationBreakpoint(name);
 }
 
 void AuctionV8DevToolsSession::DispatchProtocolCommandFromIO(
@@ -171,7 +235,6 @@ void AuctionV8DevToolsSession::DispatchProtocolCommand(
   } else {
     crdtp::Dispatchable dispatchable(crdtp::span<uint8_t>(
         cbor_message.characters8(), cbor_message.length()));
-    // For now, this should just produce the proper error.
     fallback_dispatcher_.Dispatch(dispatchable).Run();
   }
 }

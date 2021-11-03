@@ -35,10 +35,10 @@ class MEDIA_EXPORT MockMediaCryptoContext
   MOCK_METHOD1(SetMediaCryptoReadyCB_,
                void(MediaCryptoReadyCB& media_crypto_ready_cb));
 
-  MediaCryptoReadyCB media_crypto_ready_cb;
+  MediaCryptoReadyCB media_crypto_ready_cb_;
 
-  // To be set to true when |media_crypto_ready_cb| is consumed and run.
-  bool ran_media_crypto_ready_cb = false;
+  // To be set to true when |media_crypto_ready_cb_| is consumed and run.
+  bool ran_media_crypto_ready_cb_ = false;
 
  private:
   bool has_media_crypto_context_;

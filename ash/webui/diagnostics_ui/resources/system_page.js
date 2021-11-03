@@ -200,6 +200,9 @@ Polymer({
     if (isActive) {
       // Focus the topmost system page element.
       this.$$('#overviewCard').$$('#overviewCardContainer').focus();
+      // TODO(ashleydp): Remove when a call can be made at a higher component
+      // to avoid duplicate code in all navigatable pages.
+      this.browserProxy_.recordNavigation('system');
     }
   },
 

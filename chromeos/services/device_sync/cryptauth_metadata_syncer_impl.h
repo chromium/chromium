@@ -66,6 +66,10 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
   // Registers the prefs used by this class to the given |registry|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  CryptAuthMetadataSyncerImpl(const CryptAuthMetadataSyncerImpl&) = delete;
+  CryptAuthMetadataSyncerImpl& operator=(const CryptAuthMetadataSyncerImpl&) =
+      delete;
+
   ~CryptAuthMetadataSyncerImpl() override;
 
  private:
@@ -187,8 +191,6 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
   CryptAuthClientFactory* client_factory_ = nullptr;
   PrefService* pref_service_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthMetadataSyncerImpl);
 };
 
 }  // namespace device_sync

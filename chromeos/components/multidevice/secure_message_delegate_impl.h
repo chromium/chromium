@@ -33,6 +33,10 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
     static Factory* test_factory_instance_;
   };
 
+  SecureMessageDelegateImpl(const SecureMessageDelegateImpl&) = delete;
+  SecureMessageDelegateImpl& operator=(const SecureMessageDelegateImpl&) =
+      delete;
+
   ~SecureMessageDelegateImpl() override;
 
   // SecureMessageDelegate:
@@ -71,8 +75,6 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
   chromeos::EasyUnlockClient* dbus_client_;
 
   base::WeakPtrFactory<SecureMessageDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureMessageDelegateImpl);
 };
 
 }  // namespace multidevice

@@ -14,12 +14,13 @@ include_rules = [
   # Second, add what we want to allow.
   # Anything included from sandbox/linux must be declared after this line or in
   # a more specific DEPS file.
-  # base/, build/ and testing/ are already included in the global DEPS file,
-  # but be explicit.
+  # base/, build/, testing/, and optional.h are already included in the global
+  # DEPS file, but be explicit.
   "+base",
   "+build",
   "+testing",
   "+sandbox/sandbox_export.h",
   # Everyone can use tests/
   "+sandbox/linux/tests",
+  '+third_party/abseil-cpp/absl/types/optional.h',
 ]

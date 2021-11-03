@@ -18,17 +18,17 @@ FencedFrame::FencedFrame(
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
-      frame_tree_(std::make_unique<FrameTree>(
-          web_contents_->GetBrowserContext(),
-          /*delegate=*/this,
-          /*navigation_controller_delegate=*/web_contents_,
-          /*navigator_delegate=*/web_contents_,
-          /*render_frame_delegate=*/web_contents_,
-          /*render_view_delegate=*/web_contents_,
-          /*render_widget_delegate=*/web_contents_,
-          /*manager_delegate=*/web_contents_,
-          /*page_delegate=*/web_contents_,
-          FrameTree::Type::kFencedFrame)) {
+      frame_tree_(
+          std::make_unique<FrameTree>(web_contents_->GetBrowserContext(),
+                                      /*delegate=*/this,
+                                      /*navigation_controller_delegate=*/this,
+                                      /*navigator_delegate=*/web_contents_,
+                                      /*render_frame_delegate=*/web_contents_,
+                                      /*render_view_delegate=*/web_contents_,
+                                      /*render_widget_delegate=*/web_contents_,
+                                      /*manager_delegate=*/web_contents_,
+                                      /*page_delegate=*/web_contents_,
+                                      FrameTree::Type::kFencedFrame)) {
   scoped_refptr<SiteInstance> site_instance =
       SiteInstance::Create(web_contents_->GetBrowserContext());
   // Note that even though this is happening in response to an event in the
@@ -184,5 +184,38 @@ void FencedFrame::WaitForDidStopLoadingForTesting() {
   on_did_finish_loading_callback_for_testing_ = run_loop.QuitClosure();
   run_loop.Run();
 }
+
+void FencedFrame::NotifyNavigationStateChanged(InvalidateTypes changed_flags) {}
+
+void FencedFrame::NotifyBeforeFormRepostWarningShow() {
+  // TODO(https://crbug.com/1263557): Should we call
+  // web_contents_->NotifyBeforeFormRepostWarningShow()?
+}
+
+void FencedFrame::NotifyNavigationEntryCommitted(
+    const LoadCommittedDetails& load_details) {}
+
+void FencedFrame::NotifyNavigationEntryChanged(
+    const EntryChangedDetails& change_details) {}
+
+void FencedFrame::NotifyNavigationListPruned(
+    const PrunedDetails& pruned_details) {}
+
+void FencedFrame::NotifyNavigationEntriesDeleted() {}
+
+void FencedFrame::ActivateAndShowRepostFormWarningDialog() {
+  // TODO(https://crbug.com/1263557): The continuation callback would goto the
+  // wrong NavigationController so perhaps we need to pass a callback in?
+}
+
+bool FencedFrame::ShouldPreserveAbortedURLs() {
+  return false;
+}
+
+WebContents* FencedFrame::DeprecatedGetWebContents() {
+  return web_contents_;
+}
+
+void FencedFrame::UpdateOverridingUserAgent() {}
 
 }  // namespace content

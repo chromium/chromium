@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_H_
 
 #include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -20,6 +21,8 @@ namespace blink {
 class SegmentReader;
 class ParkableImageManager;
 
+PLATFORM_EXPORT extern const base::Feature kDelayParkingImages;
+
 // Implementation of ParkableImage. See ParkableImage below.
 // We split ParkableImage like this because we want to avoid destroying the
 // content of the ParkableImage on anything besides the main thread.
@@ -32,6 +35,8 @@ class PLATFORM_EXPORT ParkableImageImpl final
 
   // Smallest encoded size that will actually be parked.
   static constexpr size_t kMinSizeToPark = 1024;  // 1 KiB
+  // How long to wait before parking an image.
+  static constexpr base::TimeDelta kParkingDelay = base::Seconds(30);
 
  private:
   friend class ThreadSafeRefCounted<ParkableImageImpl>;
@@ -63,7 +68,12 @@ class PLATFORM_EXPORT ParkableImageImpl final
   // Returns a ROBufferSegmentReader, wrapping the internal RWBuffer.
   scoped_refptr<SegmentReader> GetROBufferSegmentReader() LOCKS_EXCLUDED(lock_);
 
-  bool is_frozen() const { return frozen_; }
+  bool is_frozen() const { return !frozen_time_.is_null(); }
+
+  bool ShouldReschedule() const LOCKS_EXCLUDED(lock_) {
+    MutexLocker lock(lock_);
+    return TransientlyUnableToPark();
+  }
 
   // Attempt to park to disk. Returns false if it cannot be parked right now for
   // whatever reason, true if we will _attempt_ to park it to disk.
@@ -105,6 +115,10 @@ class PLATFORM_EXPORT ParkableImageImpl final
   bool is_on_disk() const EXCLUSIVE_LOCKS_REQUIRED(lock_) {
     return !rw_buffer_ && on_disk_metadata_;
   }
+  // Whether or not a failure of trying to park the image now would be
+  // transient (e.g. due to not being frozen) or not.
+  bool TransientlyUnableToPark() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   bool CanParkNow() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   mutable Mutex lock_;
@@ -115,13 +129,16 @@ class PLATFORM_EXPORT ParkableImageImpl final
   std::unique_ptr<DiskDataMetadata> on_disk_metadata_ GUARDED_BY(lock_);
   // |size_| is only modified on the main thread.
   size_t size_ = 0;
-  // |frozen_| is only modified on the main thread.
-  bool frozen_ = false;
+  // |frozen_time_| is only modified on the main thread. |frozen_time_| is the
+  // time we've frozen the ParkableImage, or a null value if it's not yet
+  // frozen.
+  base::TimeTicks frozen_time_;
   // Counts the number of Lock/Unlock calls. Incremented by Lock, decremented by
   // Unlock. The ParkableImageImpl is unlocked iff |lock_depth_| is 0, i.e.
   // we've called Lock and Unlock the same number of times.
   size_t lock_depth_ GUARDED_BY(lock_) = 0;
   bool background_task_in_progress_ GUARDED_BY(lock_) = false;
+  bool used_ GUARDED_BY(lock_) = false;
 
   THREAD_CHECKER(thread_checker_);
 };

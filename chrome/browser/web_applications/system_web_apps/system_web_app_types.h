@@ -94,6 +94,13 @@ enum class SystemAppType {
   // Source: //ash/webui/firmware_update/
   // Contact: cros-peripherals@google.com
   FIRMWARE_UPDATE = 22,
+
+  // OsFlags is called by Lacros to show the chrome://flags page as
+  // applications to the user. Note that this page is accessible to the user
+  // as os://flags through search.
+  // contact: skuhne@google.com
+  OS_FLAGS = 23,
+
   // When adding a new System App, remember to:
   //
   // 1. Add a corresponding histogram suffix in WebAppSystemAppInternalName
@@ -128,8 +135,8 @@ enum class SystemAppType {
   // 6. Update kMaxValue.
   //
   // 7. Have one of System Web App Platform owners review the CL.
-  //    See: //chromeos/components/system_apps/PLATFORM_OWNERS
-  kMaxValue = FIRMWARE_UPDATE,
+  //    See: //ash/webui/system_apps/PLATFORM_OWNERS
+  kMaxValue = OS_FLAGS,
 };
 
 }  // namespace web_app

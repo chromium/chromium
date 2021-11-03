@@ -74,7 +74,7 @@
         </template>
         <!-- Audio -->
         <template is="dom-if" if="[[isAudio_(type)]]">
-          <template is="dom-if" if="[[audioArtwork]]">
+          <template is="dom-if" if="[[hasContent_(audioArtwork)]]">
             <files-safe-media type="image" id="audio-artwork" class="no-close-on-click" src="[[audioArtwork]]"></files-safe-media>
           </template>
         </template>

@@ -34,26 +34,22 @@
 namespace blink {
 
 LayoutSVGEllipse::LayoutSVGEllipse(SVGGeometryElement* node)
-    : LayoutSVGShape(node, kSimple), use_path_fallback_(false) {}
+    : LayoutSVGShape(node, kSimple) {}
 
 LayoutSVGEllipse::~LayoutSVGEllipse() = default;
 
 void LayoutSVGEllipse::UpdateShapeFromElement() {
   NOT_DESTROYED();
-  // Before creating a new object we need to clear the cached bounding box
-  // to avoid using garbage.
-  fill_bounding_box_ = FloatRect();
-  stroke_bounding_box_ = FloatRect();
-  center_ = gfx::PointF();
-  radius_x_ = radius_y_ = 0;
+
+  stroke_bounding_box_ = gfx::RectF();
   use_path_fallback_ = false;
 
   CalculateRadiiAndCenter();
+  DCHECK_GE(radius_x_, 0);
+  DCHECK_GE(radius_y_, 0);
 
-  // Spec: "A negative value is an error. A value of zero disables rendering of
-  // the element."
-  if (radius_x_ < 0 || radius_y_ < 0)
-    return;
+  fill_bounding_box_.SetRect(center_.x() - radius_x_, center_.y() - radius_y_,
+                             radius_x_ * 2, radius_y_ * 2);
 
   if (radius_x_ && radius_y_) {
     // Fall back to LayoutSVGShape and path-based hit detection if the ellipse
@@ -75,9 +71,6 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  fill_bounding_box_ =
-      FloatRect(center_.x() - radius_x_, center_.y() - radius_y_, radius_x_ * 2,
-                radius_y_ * 2);
   stroke_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
@@ -102,12 +95,19 @@ void LayoutSVGEllipse::CalculateRadiiAndCenter() {
     else if (style.Ry().IsAuto())
       radius_y_ = radius_x_;
   }
+
+  // Spec: "A negative value is an error. A value of zero disables rendering of
+  // the element."
+  radius_x_ = std::max(radius_x_, 0.f);
+  radius_y_ = std::max(radius_y_, 0.f);
 }
 
 bool LayoutSVGEllipse::ShapeDependentStrokeContains(
     const HitTestLocation& location) {
   NOT_DESTROYED();
-  if (radius_x_ < 0 || radius_y_ < 0)
+  DCHECK_GE(radius_x_, 0);
+  DCHECK_GE(radius_y_, 0);
+  if (!radius_x_ || !radius_y_)
     return false;
 
   // The optimized check below for circles does not support non-circular and
@@ -126,6 +126,11 @@ bool LayoutSVGEllipse::ShapeDependentFillContains(
     const HitTestLocation& location,
     const WindRule fill_rule) const {
   NOT_DESTROYED();
+  DCHECK_GE(radius_x_, 0);
+  DCHECK_GE(radius_y_, 0);
+  if (!radius_x_ || !radius_y_)
+    return false;
+
   const FloatPoint& point = location.TransformedPoint();
   const FloatPoint center =
       FloatPoint(center_.x() - point.x(), center_.y() - point.y());

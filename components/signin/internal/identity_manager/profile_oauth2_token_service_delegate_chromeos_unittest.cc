@@ -345,7 +345,8 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
         remote.BindNewPipeAndPassReceiver());
     return std::make_unique<account_manager::AccountManagerFacadeImpl>(
         std::move(remote),
-        std::numeric_limits<uint32_t>::max() /* remote_version */);
+        /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+        /*account_manager_for_tests=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_;

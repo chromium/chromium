@@ -3,29 +3,37 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/auth_icon_view.h"
 
 namespace ash {
-
-int operator|(int types, AuthFactorType type) {
-  return types | static_cast<int>(type);
-}
-
-int operator|(AuthFactorType type1, AuthFactorType type2) {
-  return static_cast<int>(type1) | static_cast<int>(type2);
-}
 
 AuthFactorModel::AuthFactorModel() = default;
 
 AuthFactorModel::~AuthFactorModel() = default;
 
-void AuthFactorModel::SetOnStateChangedCallback(
-    base::RepeatingClosure on_state_changed) {
-  on_state_changed_callback_ = on_state_changed;
+void AuthFactorModel::Init(AuthIconView* icon,
+                           base::RepeatingClosure on_state_changed_callback) {
+  DCHECK(!icon_) << "Init should only be called once.";
+  icon_ = icon;
+  on_state_changed_callback_ = on_state_changed_callback;
+}
+
+void AuthFactorModel::SetVisible(bool visible) {
+  DCHECK(icon_);
+  icon_->SetVisible(visible);
+}
+
+void AuthFactorModel::OnThemeChanged() {
+  if (icon_)
+    UpdateIcon(icon_);
 }
 
 void AuthFactorModel::NotifyOnStateChanged() {
-  if (on_state_changed_callback_)
+  DCHECK(icon_);
+  if (on_state_changed_callback_) {
     on_state_changed_callback_.Run();
+  }
+  UpdateIcon(icon_);
 }
 
 }  // namespace ash

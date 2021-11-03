@@ -19,16 +19,13 @@ class WebContents;
 
 namespace apps {
 
-// Allows navigation to be routed to an installed app on Chrome OS, and provides
-// a static method for showing an intent picker for the current URL to display
-// any handling apps.
+// Allows canceling a navigation to instead be routed to an installed app.
 class AppsNavigationThrottle : public content::NavigationThrottle {
  public:
   using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 
   // Possibly creates a navigation throttle that checks if any installed apps
-  // can handle the URL being navigated to. The user is prompted if they wish to
-  // open the app or remain in the browser.
+  // can handle the URL being navigated to.
   static std::unique_ptr<content::NavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
 

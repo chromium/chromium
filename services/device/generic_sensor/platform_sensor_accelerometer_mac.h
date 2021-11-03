@@ -27,6 +27,11 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
   PlatformSensorAccelerometerMac(SensorReadingSharedBuffer* reading_buffer,
                                  PlatformSensorProvider* provider);
 
+  PlatformSensorAccelerometerMac(const PlatformSensorAccelerometerMac&) =
+      delete;
+  PlatformSensorAccelerometerMac& operator=(
+      const PlatformSensorAccelerometerMac&) = delete;
+
   mojom::ReportingMode GetReportingMode() override;
   // Can only be called once, the first time or after a StopSensor call.
   bool StartSensor(const PlatformSensorConfiguration& configuration) override;
@@ -52,8 +57,6 @@ class PlatformSensorAccelerometerMac : public PlatformSensor {
   bool is_reading_active_ = false;
 
   base::WeakPtrFactory<PlatformSensorAccelerometerMac> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorAccelerometerMac);
 };
 
 }  // namespace device

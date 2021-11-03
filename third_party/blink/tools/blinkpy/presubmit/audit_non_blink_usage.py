@@ -112,7 +112,7 @@ _CONFIG = [
             # //base/allocator/partition_allocator/partition_alloc_constants.h
             'base::kAlignment',
 
-            # //base/bind_post_task.h
+            # //base/task/bind_post_task.h
             'base::BindPostTask',
 
             # //base/bits.h
@@ -312,15 +312,23 @@ _CONFIG = [
             'gfx::BoundingRect',
             'gfx::ComputeApproximateMaxScale',
             'gfx::ComputeTransform2dScaleComponents',
+            'gfx::Determinant',
             'gfx::IntersectRects',
             'gfx::PointAtOffsetFromOrigin',
+            'gfx::MaximumCoveredRect',
+            'gfx::RectFToSkRect',
             'gfx::RectToSkIRect',
             'gfx::RectToSkRect',
             'gfx::ScalePoint',
             'gfx::ScaleToCeiledSize',
             'gfx::ScaleToEnclosingRectSafe',
             'gfx::ScaleToFlooredSize',
+            'gfx::ScaleSize',
+            'gfx::ScalePoint',
+            'gfx::ScaleToRoundedPoint',
             'gfx::ScaleVector2d',
+            'gfx::SkIRectToRect',
+            'gfx::SkRectToRectF',
             'gfx::SubtractRects',
             'gfx::ToCeiledPoint',
             'gfx::ToCeiledSize',
@@ -331,7 +339,10 @@ _CONFIG = [
             'gfx::ToRoundedPoint',
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',
+            'gfx::ToRoundedVector2d',
             'gfx::TransposePoint',
+            'gfx::TransposeRect',
+            'gfx::TransposeSize',
             'gfx::UnionRects',
 
             # Range type.
@@ -570,6 +581,7 @@ _CONFIG = [
             # serialization. Please keep alphabetized.
             'ui::CanHaveInlineTextBoxChildren',
             'ui::IsCellOrTableHeader',
+            'ui::IsClickable',
             'ui::IsComboBox',
             'ui::IsContainerWithSelectableChildren',
             'ui::IsDialog',
@@ -1557,6 +1569,14 @@ _CONFIG = [
             'base::CommandLine',
             'switches::kDumpRuntimeCallStats',
         ]
+    },
+    {
+        'paths':
+        ['third_party/blink/renderer/bindings/core/v8/local_window_proxy.cc'],
+        'allowed': [
+            'base::SingleSampleMetric',
+            'base::SingleSampleMetricsFactory',
+        ],
     },
 ]
 

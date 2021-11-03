@@ -53,14 +53,15 @@ class CreateDCTraits {
  public:
   typedef HDC Handle;
 
+  CreateDCTraits() = delete;
+  CreateDCTraits(const CreateDCTraits&) = delete;
+  CreateDCTraits& operator=(const CreateDCTraits&) = delete;
+
   static bool CloseHandle(HDC handle) { return ::DeleteDC(handle) != FALSE; }
 
   static bool IsHandleValid(HDC handle) { return handle != NULL; }
 
   static HDC NullHandle() { return NULL; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CreateDCTraits);
 };
 
 typedef GenericScopedHandle<CreateDCTraits, DummyVerifierTraits> ScopedCreateDC;

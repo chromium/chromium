@@ -67,10 +67,10 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    auto model = std::make_unique<test::AppListTestModel>();
-    app_list_test_model_ = model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(model));
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        app_list_test_model_.get(), search_model_.get());
 
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
     ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
@@ -152,7 +152,8 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AppListTestModel* app_list_test_model_ = nullptr;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
 
   // Cache some view pointers to make the tests more concise.
@@ -211,8 +212,7 @@ TEST_F(ScrollableAppsGridViewTest, DragApp) {
   EXPECT_EQ(0, GetTestAppListClient()->activate_item_count());
 
   // Items were reordered.
-  AppListItemList* item_list =
-      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
   ASSERT_EQ(2u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id1", item_list->item_at(1)->id());
@@ -292,8 +292,7 @@ TEST_F(ScrollableAppsGridViewTest, DragAppAfterScrollingDown) {
   ShowAppList();
 
   // "aaa" and "bbb" are the last two items.
-  AppListItemList* item_list =
-      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
   ASSERT_EQ(23u, item_list->item_count());
   ASSERT_EQ("aaa", item_list->item_at(21)->id());
   ASSERT_EQ("bbb", item_list->item_at(22)->id());
@@ -475,8 +474,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemIntoEmptySpaceWillReorderToEnd) {
   generator->ReleaseLeftButton();
 
   // The first item was reordered to the end.
-  AppListItemList* item_list =
-      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
   ASSERT_EQ(3u, item_list->item_count());
   EXPECT_EQ("id2", item_list->item_at(0)->id());
   EXPECT_EQ("id3", item_list->item_at(1)->id());
@@ -602,8 +600,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
 
   // The dragged item is now in the top level item list and the reordering is
   // recorded.
-  AppListItemList* item_list =
-      Shell::Get()->app_list_controller()->GetModel()->top_level_item_list();
+  AppListItemList* item_list = app_list_test_model_->top_level_item_list();
   EXPECT_EQ(2u, item_list->item_count());
   EXPECT_EQ(item_list->item_at(1)->id(), item_id);
   EXPECT_EQ(2u, folder_item->item_list()->item_count());

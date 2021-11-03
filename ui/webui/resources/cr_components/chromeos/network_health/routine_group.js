@@ -79,12 +79,12 @@ Polymer({
       }
 
       switch (routine.result.verdict) {
-        case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
+        case ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
           continue;
-        case chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem:
+        case ash.networkDiagnostics.mojom.RoutineVerdict.kProblem:
           failed = true;
           break;
-        case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
+        case ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
           complete = false;
           break;
       }
@@ -111,7 +111,7 @@ Polymer({
 
   /**
    * Helper function to get the icon for a routine based on the result.
-   * @param {!chromeos.networkDiagnostics.mojom.RoutineResult} result
+   * @param {!ash.networkDiagnostics.mojom.RoutineResult} result
    * @return {string}
    * @private
    */
@@ -121,11 +121,11 @@ Polymer({
     }
 
     switch (result.verdict) {
-      case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
+      case ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem:
         return Icons.TEST_PASSED;
-      case chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem:
+      case ash.networkDiagnostics.mojom.RoutineVerdict.kProblem:
         return Icons.TEST_FAILED;
-      case chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
+      case ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun:
         return Icons.TEST_NOT_RUN;
     }
 

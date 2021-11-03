@@ -42,5 +42,3 @@ void TutorialRegistry::AddTutorial(TutorialIdentifier id,
                                    TutorialDescription description) {
   tutorial_registry_.insert(std::make_pair(id, description));
 }
-
-void TutorialRegistry::RegisterTutorials() {}

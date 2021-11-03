@@ -647,6 +647,59 @@ TEST_F(NativeWidgetAuraTest,
       parent.GetNativeWindow()->GetEventHandlerForPoint(gfx::Point(20, 20)));
 }
 
+// Verifies views with layers that have SetCanProcessEventWithinSubtree(false)
+// set are ignored for event targeting (i.e. the underlying child window can
+// still be the target of those events).
+TEST_F(
+    NativeWidgetAuraTest,
+    ShouldDescendIntoChildForEventHandlingIgnoresViewsThatDoNotProcessEvents) {
+  // Create two widgets: `parent` and `child`. `child` is a child of `parent`.
+  Widget parent;
+  Widget::InitParams parent_params(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  parent_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  parent_params.context = root_window();
+  parent.Init(std::move(parent_params));
+  View* const parent_root_view =
+      parent.SetContentsView(std::make_unique<View>());
+  parent.SetBounds(gfx::Rect(0, 0, 400, 400));
+  parent.Show();
+
+  Widget child;
+  Widget::InitParams child_params(Widget::InitParams::TYPE_CONTROL);
+  child_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  child_params.parent = parent.GetNativeWindow();
+  child.Init(std::move(child_params));
+  child.SetBounds(gfx::Rect(0, 0, 200, 200));
+  child.Show();
+
+  // Point is over `child`.
+  EXPECT_EQ(
+      child.GetNativeWindow(),
+      parent.GetNativeWindow()->GetEventHandlerForPoint(gfx::Point(50, 50)));
+
+  View* const view_overlapping_child =
+      parent_root_view->AddChildView(std::make_unique<View>());
+  view_overlapping_child->SetBoundsRect(gfx::Rect(0, 0, 200, 200));
+  view_overlapping_child->SetPaintToLayer();
+  view_overlapping_child->layer()->parent()->StackAtTop(
+      view_overlapping_child->layer());
+
+  // While `view_overlapping_child` receives events, parent should be the event
+  // handler as the view is on top of the child widget. This basically is used
+  // to verify that the test setup is working (view with layer overlapping child
+  // window receives events).
+  EXPECT_EQ(
+      parent.GetNativeWindow(),
+      parent.GetNativeWindow()->GetEventHandlerForPoint(gfx::Point(50, 50)));
+
+  // Events should not be routed to `parent` if the view overlapping `child`
+  // does not process events.
+  view_overlapping_child->SetCanProcessEventsWithinSubtree(false);
+  EXPECT_EQ(
+      child.GetNativeWindow(),
+      parent.GetNativeWindow()->GetEventHandlerForPoint(gfx::Point(50, 50)));
+}
+
 // Verifies that widget->FlashFrame() sets aura::client::kDrawAttentionKey,
 // and activating the window clears it.
 TEST_F(NativeWidgetAuraTest, FlashFrame) {

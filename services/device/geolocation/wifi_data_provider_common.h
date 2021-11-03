@@ -39,6 +39,9 @@ class WifiDataProviderCommon : public WifiDataProvider {
 
   WifiDataProviderCommon();
 
+  WifiDataProviderCommon(const WifiDataProviderCommon&) = delete;
+  WifiDataProviderCommon& operator=(const WifiDataProviderCommon&) = delete;
+
   // WifiDataProvider implementation
   void StartDataProvider() override;
   void StopDataProvider() override;
@@ -74,8 +77,6 @@ class WifiDataProviderCommon : public WifiDataProvider {
 
   // Holder for delayed tasks; takes care of cleanup.
   base::WeakPtrFactory<WifiDataProviderCommon> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WifiDataProviderCommon);
 };
 
 }  // namespace device

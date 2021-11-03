@@ -29,6 +29,9 @@ namespace content {
 class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
                                            public WebUIDataSource {
  public:
+  WebUIDataSourceImpl(const WebUIDataSourceImpl&) = delete;
+  WebUIDataSourceImpl& operator=(const WebUIDataSourceImpl&) = delete;
+
   // WebUIDataSource:
   void AddString(base::StringPiece name, const std::u16string& value) override;
   void AddString(base::StringPiece name, const std::string& value) override;
@@ -129,8 +132,6 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   bool replace_existing_source_ = true;
   bool should_replace_i18n_in_js_ = false;
   std::set<GURL> frame_ancestors_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUIDataSourceImpl);
 };
 
 }  // namespace content

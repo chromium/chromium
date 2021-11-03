@@ -46,6 +46,7 @@ config("grpc_config") {
 
   cflags = [
     "-Wno-implicit-fallthrough",
+    "-Wno-shadow",
     "-Wno-thread-safety-analysis",
   ]
 
@@ -80,6 +81,7 @@ config("grpc_config_private") {
   cflags = [
     "-Wno-c++98-compat-extra-semi",
     "-Wno-extra-semi",
+    "-Wno-shadow",
     "-Wno-sign-compare",
     "-Wno-sometimes-uninitialized",
     "-Wno-string-concatenation",

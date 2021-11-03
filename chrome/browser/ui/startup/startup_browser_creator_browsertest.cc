@@ -10,6 +10,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
@@ -48,6 +49,8 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
+#include "chrome/browser/signin/identity_browser_test_base.h"
+#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -2706,6 +2709,7 @@ IN_PROC_BROWSER_TEST_F(
   // The waiter will get the dialog when it shows up and accepts it.
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kCancelButtonClicked);
+  base::RunLoop().RunUntilIdle();
 
   WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
       false);
@@ -3037,10 +3041,20 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
 
   // Ensure that the standard Welcome page appears on second run on Win 10, and
   // on first run on all other platforms.
-  // On Lacros Welcome page appears in the new (non-main) profile.
   ASSERT_EQ(1, tab_strip1->count());
-  EXPECT_EQ(chrome::kChromeUIWelcomeURL,
-            tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+  bool should_show_welcome = true;
+  std::string new_tab_url1 =
+      tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros Welcome page appears in the new (non-main) profile only if
+  // account consistency is not enabled.
+  should_show_welcome =
+      !base::FeatureList::IsEnabled(kMultiProfileAccountConsistency);
+#endif
+  if (should_show_welcome)
+    EXPECT_EQ(chrome::kChromeUIWelcomeURL, new_tab_url1);
+  else
+    EXPECT_NE(chrome::kChromeUIWelcomeURL, new_tab_url1);
 
   // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose.
   ScopedProfileKeepAlive profile1_keep_alive(
@@ -3367,9 +3381,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorInfobarsKioskTest,
   }
 }
 
-// Checks the correct behavior of the profile picker on startup. This feature is
-// not available on ChromeOS.
-class StartupBrowserCreatorPickerTestBase : public InProcessBrowserTest {
+// Checks the correct behavior of the profile picker on startup.
+class StartupBrowserCreatorPickerTestBase : public IdentityPlatformBrowserTest {
  public:
   StartupBrowserCreatorPickerTestBase() {
     // This test configures command line params carefully. Make sure
@@ -3514,7 +3527,7 @@ INSTANTIATE_TEST_SUITE_P(
         // profile specific desktop shortcuts on Win).
         ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/switches::kProfileDirectory,
-                           /*switch_value_ascii=*/"Custom Profile"},
+                           /*switch_value_ascii=*/"Default"},
         // Skip the picker when a specific profile is requested by email.
         ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/switches::kProfileEmail,

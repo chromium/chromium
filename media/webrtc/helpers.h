@@ -21,6 +21,11 @@ class TaskQueue;
 namespace media {
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
+constexpr int MaxWebRtcAnalogGainLevel() {
+  return 255;
+}
+
+COMPONENT_EXPORT(MEDIA_WEBRTC)
 webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 
 // Tests whether the audio bus data can be treated as upmixed mono audio:

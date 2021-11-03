@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_EXECUTOR_DELEGATE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -208,6 +207,10 @@ class ScriptExecutorDelegate {
   // Whether the slow connection or website warning should be shown. Depends on
   // the state at the moment of the invocation.
   virtual bool ShouldShowWarning() = 0;
+
+  // Get modifiable log information gathered while executing the action. This
+  // gets attached to the action's response if non empty.
+  virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
 
  protected:
   virtual ~ScriptExecutorDelegate() {}

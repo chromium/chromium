@@ -572,7 +572,7 @@ bool EventDeviceInfo::UseLibinput() const {
       useLibinput = overridden_state.value();
     } else {
       useLibinput = !HasMultitouch() || !HasValidMTAbsXY() ||
-                    !IsSemiMultitouch() || IsForceLibinput(*this);
+                    IsSemiMultitouch() || IsForceLibinput(*this);
     }
   }
 #endif

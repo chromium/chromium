@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class TestableLaunchAppHelper : public LaunchAppHelper {
@@ -111,7 +111,7 @@ class EcheNotificationClickHandlerTest : public testing::Test {
  private:
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  eche_app::FakeFeatureStatusProvider fake_feature_status_provider_;
+  FakeFeatureStatusProvider fake_feature_status_provider_;
   std::unique_ptr<LaunchAppHelper> launch_app_helper_;
   std::unique_ptr<EcheNotificationClickHandler> handler_;
   bool close_eche_is_called_;
@@ -165,4 +165,4 @@ TEST_F(EcheNotificationClickHandlerTest,
   EXPECT_EQ(false, getCloseEcheAppFlag());
 }
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

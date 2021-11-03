@@ -23,11 +23,19 @@ namespace content {
 
 namespace attribution_host_utils {
 
+namespace {
+bool IsOriginTrustworthyForAttributions(const url::Origin& origin) {
+  return IsAndroidAppOrigin(origin) ||
+         network::IsOriginPotentiallyTrustworthy(origin);
+}
+}  // namespace
+
 VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,
-                                      AttributionManager& attribution_manager) {
+                                      AttributionManager& attribution_manager,
+                                      base::Time impression_time) {
   // Convert |impression| into a StorableImpression that can be forwarded to
   // storage. If a reporting origin was not provided, default to the conversion
   // destination for reporting.
@@ -43,18 +51,12 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
   if (!allowed)
     return VerifyResult{.allowed = false, .stored = false};
 
-  const bool impression_origin_trustworthy =
-      network::IsOriginPotentiallyTrustworthy(impression_origin) ||
-      IsAndroidAppOrigin(impression_origin);
   // Conversion measurement is only allowed in secure contexts.
-  if (!impression_origin_trustworthy ||
-      !network::IsOriginPotentiallyTrustworthy(reporting_origin) ||
-      !network::IsOriginPotentiallyTrustworthy(
-          impression.conversion_destination)) {
+  if (!IsOriginTrustworthyForAttributions(impression_origin) ||
+      !IsOriginTrustworthyForAttributions(reporting_origin) ||
+      !IsOriginTrustworthyForAttributions(impression.conversion_destination)) {
     return VerifyResult{.allowed = true, .stored = false};
   }
-
-  base::Time impression_time = base::Time::Now();
 
   const AttributionPolicy& policy = attribution_manager.GetAttributionPolicy();
   StorableSource storable_impression(

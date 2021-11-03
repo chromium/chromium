@@ -39,7 +39,7 @@ class TestAppListClient : public AppListClient {
                         int suggestion_index,
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
-                                int action_index) override;
+                                SearchResultActionType action) override;
   void GetSearchResultContextMenuModel(
       const std::string& result_id,
       GetContextMenuModelCallback callback) override;
@@ -64,10 +64,11 @@ class TestAppListClient : public AppListClient {
                                        bool visibility) override {}
   void OnAppListSortRequested(int profile_id, AppListSortOrder order) override {
   }
-  void OnSetPositionRequested(
-      int profile_id,
-      std::string id,
-      const syncer::StringOrdinal& new_position) override;
+  void OnAppListSortRevertRequested(int profile_id) override {}
+  void OnSetPositionRequested(int profile_id,
+                              std::string id,
+                              const syncer::StringOrdinal& new_position,
+                              ash::RequestPositionUpdateReason reason) override;
   void OnMoveItemToFolderRequested(int profile_id,
                                    std::string id,
                                    const std::string& folder_id) override {}

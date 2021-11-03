@@ -439,13 +439,13 @@ void WebrtcVideoEncoderWrapper::OnFrameEncoded(
   }
 
   if (!frame || frame->data.empty()) {
-    SetTopOffActive(false);
+    top_off_active_ = false;
     NotifyFrameDropped();
     return;
   }
 
   // Top-off until the best quantizer value is reached.
-  SetTopOffActive(frame->quantizer > kMinQuantizer);
+  top_off_active_ = (frame->quantizer > kMinQuantizer);
 
   // Non-null, because WebRTC registers a callback before calling Encode().
   DCHECK(encoded_callback_);
@@ -467,17 +467,6 @@ void WebrtcVideoEncoderWrapper::NotifyFrameDropped() {
   DCHECK(encoded_callback_);
   encoded_callback_->OnDroppedFrame(
       webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
-}
-
-void WebrtcVideoEncoderWrapper::SetTopOffActive(bool active) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (top_off_active_ != active) {
-    top_off_active_ = active;
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VideoChannelStateObserver::OnTopOffActive,
-                                  video_channel_state_observer_, active));
-  }
 }
 
 bool WebrtcVideoEncoderWrapper::ShouldDropQualityForLargeFrame(

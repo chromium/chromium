@@ -10,18 +10,13 @@
 #include <vector>
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "ui/gfx/image/image_skia.h"
 
 class Profile;
 
 namespace apps {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class AppServiceProxyLacros;
-#else
-class AppServiceProxyBase;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Helper class to initialize AppService in unit tests.
 class AppServiceTest {
@@ -52,13 +47,7 @@ class AppServiceTest {
   void FlushMojoCalls();
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  AppServiceProxyLacros* app_service_proxy_ = nullptr;
-#else
-  AppServiceProxyBase* app_service_proxy_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  Profile* profile_ = nullptr;
+  AppServiceProxy* app_service_proxy_ = nullptr;
 };
 
 }  // namespace apps

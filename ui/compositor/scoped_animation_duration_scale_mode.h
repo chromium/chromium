@@ -32,6 +32,8 @@ class COMPOSITOR_EXPORT ScopedAnimationDurationScaleMode {
 
   static float duration_multiplier() { return duration_multiplier_; }
 
+  static bool is_zero() { return duration_multiplier_ == ZERO_DURATION; }
+
  private:
   // This is stored previous multiplier version to restore after scoped scale
   // destruction.

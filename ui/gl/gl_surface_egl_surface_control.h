@@ -31,7 +31,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
  public:
   explicit GLSurfaceEGLSurfaceControl(
       ANativeWindow* window,
-      bool use_real_color_space,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // GLSurface implementation.
@@ -263,7 +262,6 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   const bool using_on_commit_callback_;
-  const bool use_real_color_space_;
 
   base::WeakPtrFactory<GLSurfaceEGLSurfaceControl> weak_factory_{this};
 };

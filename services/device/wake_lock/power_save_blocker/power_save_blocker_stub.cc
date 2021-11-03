@@ -14,11 +14,12 @@ class PowerSaveBlocker::Delegate
  public:
   Delegate() {}
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
  private:
   friend class base::RefCountedThreadSafe<Delegate>;
   virtual ~Delegate() {}
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::PowerSaveBlocker(

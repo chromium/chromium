@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 
 class ArcAppIcon;
 class Profile;
@@ -48,7 +48,7 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
   // loaded.
   void LoadIcon(const std::string& app_id,
                 int32_t size_in_dip,
-                apps::mojom::IconType icon_type,
+                apps::IconType icon_type,
                 base::OnceCallback<void(ArcAppIcon*)> callback);
 
   // ArcAppListPrefs::Observer overrides.
@@ -66,7 +66,7 @@ class ArcIconOnceLoader : public ArcAppListPrefs::Observer {
  private:
   class SizeSpecificLoader;
 
-  using SizeAndType = std::pair<int32_t, apps::mojom::IconType>;
+  using SizeAndType = std::pair<int32_t, apps::IconType>;
 
   // When loading many app icons, there could be many icon files opened at the
   // same time, which might cause the system crash. So checking the current icon

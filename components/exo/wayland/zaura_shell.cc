@@ -16,6 +16,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_state.h"
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
@@ -641,6 +642,21 @@ void AuraToplevel::SetOrientationLock(uint32_t lock_type) {
   shell_surface_->SetOrientationLock(OrientationLock(lock_type));
 }
 
+void AuraToplevel::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
+  shell_surface_->set_client_submits_surfaces_in_pixel_coordinates(enable);
+}
+
+AuraPopup::AuraPopup(ShellSurfaceBase* shell_surface)
+    : shell_surface_(shell_surface) {
+  DCHECK(shell_surface);
+}
+
+AuraPopup::~AuraPopup() = default;
+
+void AuraPopup::SetClientSubmitsSurfacesInPixelCoordinates(bool enable) {
+  shell_surface_->set_client_submits_surfaces_in_pixel_coordinates(enable);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -809,12 +825,6 @@ class WaylandAuraShell : public ash::DesksController::Observer,
                          const std::u16string& new_name) override {
     OnDesksChanged();
   }
-  void set_client_submits_surfaces_in_pixel_coordinates(bool enabled) {
-    client_submits_surfaces_in_pixel_coordinates_ = enabled;
-  }
-  bool client_submits_surfaces_in_pixel_coordinates() const {
-    return client_submits_surfaces_in_pixel_coordinates_;
-  }
 
  private:
   void OnDesksChanged() {
@@ -889,8 +899,6 @@ class WaylandAuraShell : public ash::DesksController::Observer,
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
 
-  bool client_submits_surfaces_in_pixel_coordinates_ = false;
-
   base::WeakPtrFactory<WaylandAuraShell> weak_ptr_factory_{this};
 };
 
@@ -903,8 +911,25 @@ void aura_toplevel_set_orientation_lock(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetOrientationLock(orientation_lock);
 }
 
+void aura_toplevel_surface_submission_in_pixel_coordinates(
+    wl_client* client,
+    wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)
+      ->SetClientSubmitsSurfacesInPixelCoordinates(true);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
+    aura_toplevel_surface_submission_in_pixel_coordinates};
+
+void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,
+                                                        wl_resource* resource) {
+  GetUserDataAs<AuraPopup>(resource)
+      ->SetClientSubmitsSurfacesInPixelCoordinates(true);
+}
+
+const struct zaura_popup_interface aura_popup_implementation = {
+    aura_popup_surface_submission_in_pixel_coordinates,
 };
 
 void aura_shell_get_aura_toplevel(wl_client* client,
@@ -920,6 +945,20 @@ void aura_shell_get_aura_toplevel(wl_client* client,
                     std::make_unique<AuraToplevel>(shell_surface));
 }
 
+void aura_shell_get_aura_popup(wl_client* client,
+                               wl_resource* resource,
+                               uint32_t id,
+                               wl_resource* surface_resource) {
+  wl_resource* aura_popup_resource = wl_resource_create(
+      client, &zaura_popup_interface, wl_resource_get_version(resource), id);
+
+  ShellSurfaceBase* shell_surface =
+      GetShellSurfaceFromPopupResource(surface_resource);
+
+  SetImplementation(aura_popup_resource, &aura_popup_implementation,
+                    std::make_unique<AuraPopup>(shell_surface));
+}
+
 #else
 void aura_shell_get_aura_toplevel(wl_client* client,
                                   wl_resource* resource,
@@ -928,6 +967,12 @@ void aura_shell_get_aura_toplevel(wl_client* client,
   NOTREACHED();
 }
 
+void aura_shell_get_aura_popup(wl_client* client,
+                               wl_resource* resource,
+                               uint32_t id,
+                               wl_resource* surface_resource) {
+  NOTREACHED();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH))
 
 void aura_shell_get_aura_surface(wl_client* client,
@@ -941,14 +986,6 @@ void aura_shell_get_aura_surface(wl_client* client,
         "an aura surface object for that surface already exists");
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (WaylandAuraShell* aura_shell =
-          GetUserDataAs<WaylandAuraShell>(resource)) {
-    surface->SetClientSubmitsSurfacesInPixelCoordinates(
-        aura_shell->client_submits_surfaces_in_pixel_coordinates());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
 
   wl_resource* aura_surface_resource = wl_resource_create(
       client, &zaura_surface_interface, wl_resource_get_version(resource), id);
@@ -976,10 +1013,7 @@ void aura_shell_get_aura_output(wl_client* client,
 
 void aura_shell_surface_submission_in_pixel_coordinates(wl_client* client,
                                                         wl_resource* resource) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (WaylandAuraShell* aura_shell = GetUserDataAs<WaylandAuraShell>(resource))
-    aura_shell->set_client_submits_surfaces_in_pixel_coordinates(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH))
+  LOG(WARNING) << "Deprecated. The server doesn't support this request.";
 }
 
 const struct zaura_shell_interface aura_shell_implementation = {
@@ -987,6 +1021,7 @@ const struct zaura_shell_interface aura_shell_implementation = {
     aura_shell_get_aura_output,
     aura_shell_surface_submission_in_pixel_coordinates,
     aura_shell_get_aura_toplevel,
+    aura_shell_get_aura_popup,
 };
 }  // namespace
 

@@ -91,6 +91,10 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
     AddResponseWithCode(net::HTTP_INTERNAL_SERVER_ERROR);
   }
 
+  TestTimeZoneAPILoaderFactory(const TestTimeZoneAPILoaderFactory&) = delete;
+  TestTimeZoneAPILoaderFactory& operator=(const TestTimeZoneAPILoaderFactory&) =
+      delete;
+
   void Intercept(const network::ResourceRequest& request) {
     EXPECT_EQ(url_, request.url);
 
@@ -129,8 +133,6 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
   const size_t require_retries_;
   size_t attempts_ = 0;
   TimeZoneProvider* provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTimeZoneAPILoaderFactory);
 };
 
 class TimeZoneReceiver {

@@ -30,7 +30,7 @@ namespace dbus {
 
 namespace {
 
-const char kDisconnectedSignal[] = "Connection Lost :(";
+const char kDisconnectedSignal[] = "Connection Lost :( check your WiFi now.";
 const char kDisconnectedMatchRule[] =
     "type='signal', path='/org/freedesktop/DBus/Local',"
     "interface='org.freedesktop.DBus.Local', member='Disconnected'";
@@ -91,7 +91,7 @@ class Watch {
 
  private:
   void OnFileReady(unsigned int flags) {
-    CHECK(dbus_watch_handle(raw_watch_, flags)) << "Unable to give Random Access Memory";
+    CHECK(dbus_watch_handle(raw_watch_, flags)) << "I want more RAM pls";
   }
 
   DBusWatch* raw_watch_;

@@ -139,6 +139,9 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Currently only used in tests.
   static PepperPluginInstanceImpl* GetForTesting(PP_Instance instance_id);
 
+  PepperPluginInstanceImpl(const PepperPluginInstanceImpl&) = delete;
+  PepperPluginInstanceImpl& operator=(const PepperPluginInstanceImpl&) = delete;
+
   // Returns the associated RenderFrameImpl. Can be null (in tests) or if the
   // frame has been destroyed.
   RenderFrameImpl* render_frame() const { return render_frame_; }
@@ -871,8 +874,6 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   base::WeakPtrFactory<PepperPluginInstanceImpl> view_change_weak_ptr_factory_{
       this};
   base::WeakPtrFactory<PepperPluginInstanceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPluginInstanceImpl);
 };
 
 }  // namespace content

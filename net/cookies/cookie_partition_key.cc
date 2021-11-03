@@ -13,10 +13,13 @@ namespace net {
 CookiePartitionKey::CookiePartitionKey() = default;
 
 CookiePartitionKey::CookiePartitionKey(const SchemefulSite& site)
-    : site_(site) {}
+    : site_(site), from_script_(false) {}
 
 CookiePartitionKey::CookiePartitionKey(const GURL& url)
-    : site_(SchemefulSite(url)) {}
+    : site_(SchemefulSite(url)), from_script_(false) {}
+
+CookiePartitionKey::CookiePartitionKey(bool from_script)
+    : from_script_(from_script) {}
 
 CookiePartitionKey::CookiePartitionKey(const CookiePartitionKey& other) =
     default;
@@ -52,6 +55,10 @@ bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
   }
   if (!base::FeatureList::IsEnabled(features::kPartitionedCookies))
     return false;
+
+  // We should not try to serialize a partition key created by a renderer.
+  DCHECK(!in->from_script_);
+
   if (in->site_.GetURL().SchemeIsFile()) {
     out = in->site_.SerializeFileSiteWithHost();
     return true;

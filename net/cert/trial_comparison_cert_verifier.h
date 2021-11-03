@@ -28,23 +28,6 @@ class CertVerifyProc;
 // examine the differences.
 class NET_EXPORT TrialComparisonCertVerifier : public CertVerifier {
  public:
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum TrialComparisonResult {
-    kInvalid = 0,
-    kEqual = 1,
-    kPrimaryValidSecondaryError = 2,
-    kPrimaryErrorSecondaryValid = 3,
-    kBothValidDifferentDetails = 4,
-    kBothErrorDifferentDetails = 5,
-    kIgnoredMacUndesiredRevocationChecking = 6,
-    kIgnoredMultipleEVPoliciesAndOneMatchesRoot = 7,
-    kIgnoredDifferentPathReVerifiesEquivalent = 8,
-    kIgnoredLocallyTrustedLeaf = 9,
-    kIgnoredConfigurationChanged = 10,
-    kMaxValue = kIgnoredConfigurationChanged
-  };
-
   using ReportCallback = base::RepeatingCallback<void(
       const std::string& hostname,
       const scoped_refptr<X509Certificate>& unverified_cert,

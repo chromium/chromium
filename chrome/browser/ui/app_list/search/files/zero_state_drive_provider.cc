@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -51,6 +52,33 @@ enum class Status {
   kAllFilesErrored = 4,
   kMaxValue = kAllFilesErrored,
 };
+
+// The minimum time between hypothetical queries.
+// These values persist to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class ThrottleInterval {
+  kUnknown = 0,
+  kFiveMinutes = 1,
+  kTenMinutes = 2,
+  kFifteenMinutes = 3,
+  kThirtyMinutes = 4,
+  kMaxValue = kThirtyMinutes,
+};
+
+ThrottleInterval MinutesToThrottleInterval(const int minutes) {
+  switch (minutes) {
+    case 5:
+      return ThrottleInterval::kFiveMinutes;
+    case 10:
+      return ThrottleInterval::kTenMinutes;
+    case 15:
+      return ThrottleInterval::kFifteenMinutes;
+    case 30:
+      return ThrottleInterval::kThirtyMinutes;
+    default:
+      return ThrottleInterval::kUnknown;
+  }
+}
 
 void LogStatus(Status status) {
   base::UmaHistogramEnumeration("Apps.AppList.DriveZeroStateProvider.Status",
@@ -98,6 +126,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     : profile_(profile),
       drive_service_(
           drive::DriveIntegrationServiceFactory::GetForProfile(profile)),
+      session_manager_(session_manager::SessionManager::Get()),
       item_suggest_cache_(profile, std::move(url_loader_factory)),
       suggested_files_enabled_(app_list_features::IsSuggestedFilesEnabled()) {
   DCHECK(profile_);
@@ -106,29 +135,19 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
-  // Warm the results cache if or when drivefs is mounted by fetching from the
-  // Drive QuickAccess API. This is necessary only if the suggested files
-  // experiment is enabled, so that results are ready for display in the
-  // suggested chips on the first launcher open after login. To prevent
-  // unnecessary queries to ItemSuggest, only warm the cache if the launcher has
-  // been used before.
-  const bool launcher_used = profile->GetPrefs()->GetBoolean(
-      chromeos::prefs::kLauncherResultEverLaunched);
-  const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
-      app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
-      true);
-  const bool should_warm = !gate_on_use || launcher_used;
-  LogShouldWarm(should_warm);
-  if (suggested_files_enabled_ && drive_service_ && should_warm) {
+  if (drive_service_) {
     if (drive_service_->IsMounted()) {
-      // Drivefs is mounted, so we can fetch results immediately.
+      // DriveFS is mounted, so we can fetch results immediately.
       OnFileSystemMounted();
     } else {
       // Wait for DriveFS to be mounted, then fetch results. This happens in
       // OnFileSystemMounted.
-      drive_service_->AddObserver(this);
+      drive_observation_.Observe(drive_service_);
     }
   }
+
+  session_observation_.Observe(session_manager_);
+  power_observation_.Observe(chromeos::PowerManagerClient::Get());
 
   // Normalize scores if the launcher search normalization experiment is
   // enabled, but don't if the categorical search experiment is also enabled.
@@ -143,23 +162,51 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
   }
 }
 
-ZeroStateDriveProvider::~ZeroStateDriveProvider() {
-  if (suggested_files_enabled_ && drive_service_)
-    drive_service_->RemoveObserver(this);
-}
+ZeroStateDriveProvider::~ZeroStateDriveProvider() = default;
 
 void ZeroStateDriveProvider::OnFileSystemMounted() {
-  // This method is called on login, and each time the device wakes from sleep.
-  // We only want to warm the cache once.
-  if (have_warmed_up_cache_)
+  MaybeLogHypotheticalQuery();
+
+  // Warm the results cache if or when drivefs is mounted by fetching from the
+  // Drive QuickAccess API. This is necessary only if the suggested files
+  // experiment is enabled, so that results are ready for display in the
+  // suggested chips on the first launcher open after login. To prevent
+  // unnecessary queries to ItemSuggest, only warm the cache if the launcher has
+  // been used before.
+  const bool launcher_used = profile_->GetPrefs()->GetBoolean(
+      chromeos::prefs::kLauncherResultEverLaunched);
+  const bool gate_on_use = base::GetFieldTrialParamByFeatureAsBool(
+      app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
+      true);
+  const bool should_warm = !gate_on_use || launcher_used;
+  LogShouldWarm(should_warm);
+
+  if (have_warmed_up_cache_ || !suggested_files_enabled_ || !should_warm)
     return;
   have_warmed_up_cache_ = true;
-
   item_suggest_cache_.UpdateCache();
+}
+
+void ZeroStateDriveProvider::OnSessionStateChanged() {
+  // Perform a hypothetical query if the user has logged in.
+  if (session_manager_->session_state() ==
+      session_manager::SessionState::ACTIVE) {
+    MaybeLogHypotheticalQuery();
+  }
+}
+
+void ZeroStateDriveProvider::ScreenIdleStateChanged(
+    const power_manager::ScreenIdleState& proto) {
+  // Perform a hypothetical query if the screen changed from off to on.
+  if (screen_off_ && !proto.dimmed() && !proto.off()) {
+    MaybeLogHypotheticalQuery();
+  }
+  screen_off_ = proto.off();
 }
 
 void ZeroStateDriveProvider::AppListShown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeLogHypotheticalQuery();
   item_suggest_cache_.UpdateCache();
 }
 
@@ -282,6 +329,23 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeChipResult(
       kChipSchema, ReparentToDriveMount(filepath, drive_service_),
       ash::AppListSearchResultType::kDriveChip,
       ash::SearchResultDisplayType::kChip, relevance, profile_);
+}
+
+void ZeroStateDriveProvider::MaybeLogHypotheticalQuery() {
+  const auto now = base::TimeTicks::Now();
+  const std::vector<int> throttle_intervals({5, 10, 15, 30});
+
+  for (const int interval : throttle_intervals) {
+    const bool is_first_query = last_hypothetical_query_.find(interval) ==
+                                last_hypothetical_query_.end();
+    if (is_first_query ||
+        now - last_hypothetical_query_[interval] >= base::Minutes(interval)) {
+      base::UmaHistogramEnumeration(
+          "Apps.AppList.DriveZeroStateProvider.HypotheticalQuery",
+          MinutesToThrottleInterval(interval));
+      last_hypothetical_query_[interval] = now;
+    }
+  }
 }
 
 }  // namespace app_list

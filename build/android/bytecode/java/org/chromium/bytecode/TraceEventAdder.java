@@ -33,15 +33,20 @@ public class TraceEventAdder extends ByteCodeRewriter {
         String[] inputJars = args[0].split(":");
         String[] outputJars = args[1].split(":");
 
-        assert inputJars.length == outputJars.length;
+        assert inputJars.length
+                == outputJars.length : "Input and output lists are not the same length. Inputs: "
+                        + inputJars.length + " Outputs: " + outputJars.length;
 
         // outputJars[n] must be the same as inputJars[n] but with a suffix, validate this.
         for (int i = 0; i < inputJars.length; i++) {
-            String inputJarPath = inputJars[i];
-            String inputPathNoExtension =
-                    inputJarPath.substring(0, inputJarPath.lastIndexOf(".jar"));
+            File inputJarPath = new File(inputJars[i]);
+            String inputJarFilename = inputJarPath.getName();
+            File outputJarPath = new File(outputJars[i]);
 
-            assert outputJars[i].startsWith(inputPathNoExtension);
+            String inputFilenameNoExtension =
+                    inputJarFilename.substring(0, inputJarFilename.lastIndexOf(".jar"));
+
+            assert outputJarPath.getName().startsWith(inputFilenameNoExtension);
         }
 
         ArrayList<String> classPathJarsPaths = new ArrayList<>();

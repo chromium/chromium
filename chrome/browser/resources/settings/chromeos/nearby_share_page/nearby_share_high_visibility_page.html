@@ -12,22 +12,13 @@
   <template>
     <style>
       #content {
-        --background-gradient-start-color: var(--google-blue-50);
-
         background: linear-gradient(to top,
-            var(--background-gradient-start-color) 5%, transparent 50%);
+            var(--nearby-page-linear-gradient-color-start) 5%, transparent 50%);
         display: flex;
         flex-direction: column-reverse;
         height: 100%;
         position: relative;
         width: 100%;
-      }
-
-      @media (prefers-color-scheme: dark) {
-        #content {
-          --background-gradient-start-color:
-              rgba(var(--google-blue-300-rgb), 0.2);
-        }
       }
 
       #help {

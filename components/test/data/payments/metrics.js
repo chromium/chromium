@@ -8,10 +8,36 @@
 
 var request;
 
+const bobPayMethod = Object.freeze({
+  supportedMethods: 'https://bobpay.com',
+});
+
+const kylePayMethod = Object.freeze({
+  supportedMethods: 'https://kylepay.com/webpay',
+});
+
+/**
+ * Launches the PaymentRequest UI that accepts url payment methods.
+ */
+function buyWithUrlMethods() { // eslint-disable-line no-unused-vars
+  buyWithMethods([bobPayMethod, kylePayMethod]);
+}
+
 /**
  * Launches the PaymentRequest UI that accepts credit cards.
  */
 function ccBuy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([{
+    supportedMethods: 'basic-card',
+    data: {supportedNetworks: ['visa']},
+  }]);
+}
+
+/**
+ * Launches the PaymentRequest UI that accepts the given methods.
+ * @param {Array<Object>} methods An array of payment method objects.
+ */
+ function buyWithMethods(methods) {
   try {
     var details = {
       total: {
@@ -32,10 +58,7 @@ function ccBuy() { // eslint-disable-line no-unused-vars
       }],
     };
     request = new PaymentRequest(
-        [{
-          supportedMethods: 'basic-card',
-          data: {supportedNetworks: ['visa']},
-        }],
+        methods,
         {
           total: {
             label: 'Total',

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 const callbackPass = chrome.test.callbackPass;
-const hasFrame = !('isSharedWorkerTest' in self);
+const hasFrame =
+    !('isSharedWorkerTest' in self) && !('isServiceWorkerTest' in self);
 
 chrome.tabs.getCurrent(function(tab) {
   runTestsForTab(
@@ -24,8 +25,7 @@ chrome.tabs.getCurrent(function(tab) {
                     method: 'CONNECT',
                     url: url,
                     type: 'webtransport',
-                    // TODO(crbug.com/1243196): Return valid frame URL.
-                    frameUrl: 'unknown frame URL',
+                    frameUrl: url,
                     frameId: frameId,
                     tabId: tabId,
                     initiator: getDomain(initiators.WEB_INITIATED)
@@ -134,7 +134,7 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    frameUrl: 'unknown frame URL',
+                    frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                   retval: {cancel: true}
@@ -182,7 +182,7 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    frameUrl: 'unknown frame URL',
+                    frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -296,7 +296,7 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    frameUrl: 'unknown frame URL',
+                    frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },
@@ -374,7 +374,7 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'webtransport',
                     frameId: frameId,
                     tabId: tabId,
-                    frameUrl: 'unknown frame URL',
+                    frameUrl: url,
                     initiator: getDomain(initiators.WEB_INITIATED)
                   },
                 },

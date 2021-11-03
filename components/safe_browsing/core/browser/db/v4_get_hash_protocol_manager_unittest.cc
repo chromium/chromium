@@ -361,13 +361,8 @@ TEST_F(V4GetHashProtocolManagerTest, TestGetHashRequest) {
   ThreatInfo* info = req.mutable_threat_info();
 
   const std::set<PlatformType> platform_types = {
-    GetCurrentPlatformType(),
-    CHROME_PLATFORM,
-  // TODO(crbug.com/1030487): This special case for Android will no longer be
-  // needed once GetCurrentPlatformType() returns ANDROID_PLATFORM on Android.
-#if defined(OS_ANDROID)
-    ANDROID_PLATFORM,
-#endif
+      GetCurrentPlatformType(),
+      CHROME_PLATFORM,
   };
 
   for (const PlatformType& p : platform_types) {
@@ -417,13 +412,7 @@ TEST_F(V4GetHashProtocolManagerTest, TestParseHashResponse) {
   res.mutable_minimum_wait_duration()->set_seconds(400);
   ThreatMatch* m = res.add_matches();
   m->set_threat_type(API_ABUSE);
-  // TODO(crbug.com/1030487): This special case for Android will no longer be
-  // needed once GetCurrentPlatformType() returns ANDROID_PLATFORM on Android.
-#if defined(OS_ANDROID)
-  m->set_platform_type(ANDROID_PLATFORM);
-#else
   m->set_platform_type(GetCurrentPlatformType());
-#endif
   m->set_threat_entry_type(URL);
   m->mutable_cache_duration()->set_seconds(300);
   m->mutable_threat()->set_hash(full_hash);

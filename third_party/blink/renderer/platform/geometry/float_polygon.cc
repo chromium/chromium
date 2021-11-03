@@ -84,7 +84,7 @@ FloatPolygon::FloatPolygon(Vector<gfx::PointF> vertices)
   empty_ = n_vertices < 3;
 
   if (n_vertices)
-    bounding_box_.set_origin(FloatPoint(VertexAt(0)));
+    bounding_box_.set_origin(VertexAt(0));
 
   if (empty_)
     return;
@@ -106,7 +106,8 @@ FloatPolygon::FloatPolygon(Vector<gfx::PointF> vertices)
   unsigned edge_index = 0;
   unsigned vertex_index1 = 0;
   do {
-    bounding_box_.Extend(FloatPoint(VertexAt(vertex_index1)));
+    bounding_box_.UnionEvenIfEmpty(
+        gfx::RectF(VertexAt(vertex_index1), gfx::SizeF()));
     unsigned vertex_index2 =
         FindNextEdgeVertexIndex(*this, vertex_index1, clockwise);
     edges_[edge_index].polygon_ = this;

@@ -26,7 +26,7 @@ static const int kViewportToNodeMaxRelativeArea = 2;
 Node* FindNonEmptyAnchorNode(const FloatPoint& absolute_point,
                              const IntRect& view_rect,
                              EventHandler& event_handler) {
-  IntPoint point = FlooredIntPoint(absolute_point);
+  gfx::Point point = FlooredIntPoint(absolute_point);
   HitTestLocation location(point);
   Node* node =
       event_handler
@@ -49,7 +49,7 @@ Node* FindNonEmptyAnchorNode(const FloatPoint& absolute_point,
   if (node_size.width() * node_size.height() > max_node_area) {
     IntSize point_offset = view_rect.size();
     point_offset.Scale(kViewportAnchorRelativeEpsilon);
-    HitTestLocation alternative_location(point + point_offset);
+    HitTestLocation alternative_location(point + ToGfxVector2d(point_offset));
     node = event_handler
                .HitTestResultAtLocation(
                    alternative_location,
@@ -67,13 +67,13 @@ Node* FindNonEmptyAnchorNode(const FloatPoint& absolute_point,
 }
 
 void MoveToEncloseRect(IntRect& outer, const FloatRect& inner) {
-  IntPoint minimum_position =
+  gfx::Point minimum_position =
       CeiledIntPoint(inner.origin() + inner.size() - FloatSize(outer.size()));
-  IntPoint maximum_position = FlooredIntPoint(inner.origin());
+  gfx::Point maximum_position = FlooredIntPoint(inner.origin());
 
-  IntPoint outer_origin = outer.origin();
-  outer_origin = outer_origin.ExpandedTo(minimum_position);
-  outer_origin = outer_origin.ShrunkTo(maximum_position);
+  gfx::Point outer_origin = outer.origin();
+  outer_origin.SetToMax(minimum_position);
+  outer_origin.SetToMin(maximum_position);
 
   outer.set_origin(outer_origin);
 }
@@ -136,7 +136,7 @@ void RotationViewportAnchor::SetAnchor() {
   IntRect inner_view_rect = root_frame_viewport->VisibleContentRect();
 
   // Preserve origins at the absolute screen origin.
-  if (inner_view_rect.origin() == IntPoint::Zero() || inner_view_rect.IsEmpty())
+  if (inner_view_rect.origin().IsOrigin() || inner_view_rect.IsEmpty())
     return;
 
   IntRect outer_view_rect =
@@ -187,7 +187,7 @@ void RotationViewportAnchor::RestoreToAnchor() {
   FloatSize visual_viewport_size(visual_viewport_->Size());
   visual_viewport_size.Scale(1 / new_page_scale_factor);
 
-  IntPoint main_frame_origin;
+  gfx::Point main_frame_origin;
   FloatPoint visual_viewport_origin;
 
   ComputeOrigins(visual_viewport_size, main_frame_origin,
@@ -211,7 +211,7 @@ ScrollableArea& RotationViewportAnchor::LayoutViewport() const {
 
 void RotationViewportAnchor::ComputeOrigins(
     const FloatSize& inner_size,
-    IntPoint& main_frame_offset,
+    gfx::Point& main_frame_offset,
     FloatPoint& visual_viewport_offset) const {
   IntSize outer_size = LayoutViewport().VisibleContentRect().size();
 
@@ -227,7 +227,7 @@ void RotationViewportAnchor::ComputeOrigins(
 
   MoveToEncloseRect(outer_rect, inner_rect);
 
-  outer_rect.set_origin(IntPoint(
+  outer_rect.set_origin(ToGfxPoint(
       LayoutViewport().ClampScrollOffset(ToIntSize(outer_rect.origin()))));
 
   MoveIntoRect(inner_rect, outer_rect);

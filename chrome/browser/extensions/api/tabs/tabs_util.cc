@@ -8,11 +8,7 @@
 namespace extensions {
 namespace tabs_util {
 
-void SetLockedFullscreenState(Browser* browser, chromeos::WindowPinType style) {
-}
-
-void SetLockedFullscreenStateFromExo(aura::Window* window,
-                                     chromeos::WindowPinType type) {}
+void SetLockedFullscreenState(Browser* browser, bool pinned) {}
 
 bool IsScreenshotRestricted(content::WebContents* web_contents) {
   return false;

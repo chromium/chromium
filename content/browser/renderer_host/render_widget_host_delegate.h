@@ -38,10 +38,12 @@ class Size;
 namespace content {
 
 class BrowserAccessibilityManager;
+class RenderFrameProxyHost;
 class RenderWidgetHostImpl;
 class RenderWidgetHostInputEventRouter;
 class RenderViewHostDelegateView;
 class TextInputManager;
+class VisibleTimeRequestTrigger;
 enum class KeyboardEventProcessingResult;
 struct NativeWebKeyboardEvent;
 
@@ -231,12 +233,15 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the widget that holds the keyboard lock or nullptr if not locked.
   virtual RenderWidgetHostImpl* GetKeyboardLockWidget();
 
-  // Called when the visibility of the RenderFrameProxyHost in outer
-  // WebContents changes. This method is only called on an inner WebContents and
+  // Called when the visibility of the RenderFrameProxyHost changes.
+  // This method should only handle visibility for inner WebContents and
   // will eventually notify all the RenderWidgetHostViews belonging to that
-  // WebContents.
-  virtual void OnRenderFrameProxyVisibilityChanged(
-      blink::mojom::FrameVisibility visibility) {}
+  // WebContents. If this is not an inner WebContents or the inner WebContents
+  // FrameTree root does not match `render_frame_proxy_host` FrameTreeNode it
+  // should return false.
+  virtual bool OnRenderFrameProxyVisibilityChanged(
+      RenderFrameProxyHost* render_frame_proxy_host,
+      blink::mojom::FrameVisibility visibility);
 
   // Update the renderer's cache of the screen rect of the view and window.
   virtual void SendScreenRects() {}
@@ -250,6 +255,10 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns true if the provided RenderWidgetHostImpl matches the current
   // RenderWidgetHost on the primary main frame, and false otherwise.
   virtual bool IsWidgetForPrimaryMainFrame(RenderWidgetHostImpl*);
+
+  // Returns the object that tracks the start of content to visible events for
+  // the WebContents. May return nullptr if there is no RenderWidgetHostView.
+  virtual VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
 
   // Inner WebContents Helpers -------------------------------------------------
   //

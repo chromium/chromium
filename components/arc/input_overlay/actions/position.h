@@ -23,6 +23,7 @@ class Position {
 
   // Json value format:
   // {
+  //   "type": "position",
   //   "anchor_to_target": [
   //     0.1796875,
   //     0.25

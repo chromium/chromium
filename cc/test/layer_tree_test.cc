@@ -456,7 +456,9 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
     RequestNewLayerTreeFrameSink();
   }
 
-  void WillCommit() override { test_hooks_->WillCommit(); }
+  void WillCommit(CommitState* commit_state) override {
+    test_hooks_->WillCommit(commit_state);
+  }
 
   void DidCommit(const base::TimeTicks, const base::TimeTicks) override {
     test_hooks_->DidCommit();

@@ -1,7 +1,3 @@
--NetworkServiceRestartBrowserTest.SyncCallDuringRestart
--PepperDeviceEnumerationHostHelperTest.EnumerateDevices
--PepperDeviceEnumerationHostHelperTest.MonitorDeviceChange
--PepperGraphics2DHostTest.ConvertToLogicalPixels
 -All/PrerenderBrowserTest.Activation_PageWithPopUpWindow/MPArch
 -All/PrerenderBrowserTest.Activation_PageWithPopUpWindow/WebContents
 -All/PrerenderBrowserTest.Activation_PopUpWindow/WebContents
@@ -41,3 +37,7 @@
 -All/StartupTracingTest.ContinueAtShutdown/7
 -All/StartupTracingTest.ContinueAtShutdown/8
 -All/StartupTracingTest.ContinueAtShutdown/9
+-NetworkServiceRestartBrowserTest.SyncCallDuringRestart
+-PepperDeviceEnumerationHostHelperTest.EnumerateDevices
+-PepperDeviceEnumerationHostHelperTest.MonitorDeviceChange
+-PepperGraphics2DHostTest.ConvertToLogicalPixels

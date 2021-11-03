@@ -351,7 +351,7 @@ bool MediaValues::ComputeLengthImpl(double value,
   // MediaValues::ComputeLength() needs nearly identical logic, but we haven't
   // found a way to make CSSToLengthConversionData::ZoomedComputedPixels() more
   // generic (to solve both cases) without hurting performance.
-  // FIXME - Unite the logic here with CSSToLengthConversionData in a performant
+  // TODO: Unite the logic here with CSSToLengthConversionData in a performant
   // way.
   switch (type) {
     case CSSPrimitiveValue::UnitType::kEms:
@@ -363,12 +363,10 @@ bool MediaValues::ComputeLengthImpl(double value,
       result = value;
       return true;
     case CSSPrimitiveValue::UnitType::kExs:
-    // FIXME: We have a bug right now where the zoom will be applied twice to EX
-    // units.
     case CSSPrimitiveValue::UnitType::kChs:
-      // FIXME: We don't seem to be able to cache fontMetrics related values.
-      // Trying to access them is triggering some sort of microtask. Serving the
-      // spec's default instead.
+      // TODO(crbug.com/1264962): We don't seem to be able to cache FontMetrics
+      // related values. Trying to access them is triggering some sort of
+      // microtask. Serving the spec's default instead.
       result = (value * default_font_size) / 2.0;
       return true;
     case CSSPrimitiveValue::UnitType::kViewportWidth:

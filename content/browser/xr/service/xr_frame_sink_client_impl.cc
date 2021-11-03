@@ -115,6 +115,12 @@ void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
   // the render_frame_host for an early return, it is in fact used.
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  // If this is a cross-process iframe (OOPIF), its RenderWidgetHostView is a
+  // RenderWidgetHostViewChildFrame. Use the main frame instead which uses a
+  // RenderWidgetHostViewAndroid so that we can subscribe to surface ID changes.
+  if (render_frame_host->IsCrossProcessSubframe()) {
+    render_frame_host = render_frame_host->GetMainFrame();
+  }
   if (!render_frame_host)
     return;
 

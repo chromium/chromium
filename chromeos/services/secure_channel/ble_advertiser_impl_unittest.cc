@@ -103,6 +103,12 @@ const int64_t kDefaultEndTimestamp = 13337;
 }  // namespace
 
 class SecureChannelBleAdvertiserImplTest : public testing::Test {
+ public:
+  SecureChannelBleAdvertiserImplTest(
+      const SecureChannelBleAdvertiserImplTest&) = delete;
+  SecureChannelBleAdvertiserImplTest& operator=(
+      const SecureChannelBleAdvertiserImplTest&) = delete;
+
  protected:
   SecureChannelBleAdvertiserImplTest() = default;
   ~SecureChannelBleAdvertiserImplTest() override = default;
@@ -283,8 +289,6 @@ class SecureChannelBleAdvertiserImplTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> test_runner_;
 
   std::unique_ptr<BleAdvertiser> advertiser_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleAdvertiserImplTest);
 };
 
 TEST_F(SecureChannelBleAdvertiserImplTest, OneAdvertisement_TimerFires) {

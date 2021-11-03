@@ -7,8 +7,7 @@
 #include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
-#include "ash/public/cpp/assistant/assistant_interface_binder.h"
-#include "ash/public/cpp/assistant/assistant_web_view_factory.h"
+#include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 #include "ash/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -453,18 +452,14 @@ void QuickAnswersView::AddSettingsButton() {
 
 void QuickAnswersView::AddPhoneticsAudioButton(const GURL& phonetics_audio,
                                                View* container) {
-  // TODO(b/198811694): Refactor AssistantWebViewFactory.
-  if (!AssistantWebViewFactory::Get())
-    return;
-
   auto* phonetics_audio_view =
       container->AddChildView(std::make_unique<views::View>());
 
   // Setup an invisible web view to play phonetics audio.
-  AssistantWebView::InitParams contents_params;
+  AshWebView::InitParams contents_params;
   contents_params.suppress_navigation = true;
   phonetics_audio_web_view_ = container->AddChildView(
-      AssistantWebViewFactory::Get()->Create(contents_params));
+      AshWebViewFactory::Get()->Create(contents_params));
   phonetics_audio_web_view_->SetVisible(false);
 
   auto* layout = phonetics_audio_view->SetLayoutManager(

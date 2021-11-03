@@ -80,6 +80,9 @@ class BASE_EXPORT SequenceManagerImpl
  public:
   using Observer = SequenceManager::Observer;
 
+  // This feature controls whether wake ups are possible for canceled tasks.
+  static const Feature kNoWakeUpsForCanceledTasks;
+
   SequenceManagerImpl(const SequenceManagerImpl&) = delete;
   SequenceManagerImpl& operator=(const SequenceManagerImpl&) = delete;
   ~SequenceManagerImpl() override;
@@ -97,6 +100,14 @@ class BASE_EXPORT SequenceManagerImpl
   // methods.
   static std::unique_ptr<SequenceManagerImpl> CreateUnbound(
       SequenceManager::Settings settings);
+
+  // Sets state to eliminate wake ups for canceled tasks, if the
+  // kNoWakeUpsForCanceledTasks feature is enabled. Must be invoked after
+  // FeatureList initialization.
+  static void MaybeSetNoWakeUpsForCanceledTasks();
+
+  // Resets state that eliminates wake ups for canceled tasks.
+  static void ResetNoWakeUpsForCanceledTasksForTesting();
 
   // SequenceManager implementation:
   void BindToCurrentThread() override;
@@ -129,9 +140,10 @@ class BASE_EXPORT SequenceManagerImpl
   void RemoveTaskObserver(TaskObserver* task_observer) override;
 
   // SequencedTaskSource implementation:
-  Task* SelectNextTask(
+  absl::optional<SelectedTask> SelectNextTask(
       SelectTaskOption option = SelectTaskOption::kDefault) override;
   void DidRunTask() override;
+  void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) override;
   TimeTicks GetNextTaskTime(
       LazyNow* lazy_now,
       SelectTaskOption option = SelectTaskOption::kDefault) const override;
@@ -384,7 +396,7 @@ class BASE_EXPORT SequenceManagerImpl
 
   // Helper to terminate all scoped trace events to allow starting new ones
   // in SelectNextTask().
-  Task* SelectNextTaskImpl(SelectTaskOption option);
+  absl::optional<SelectedTask> SelectNextTaskImpl(SelectTaskOption option);
 
   // Check if a task of priority |priority| should run given the pending set of
   // native work.

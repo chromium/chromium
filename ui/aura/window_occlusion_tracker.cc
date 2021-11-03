@@ -308,7 +308,7 @@ void WindowOcclusionTracker::MaybeComputeOcclusion() {
             SetWindowAndDescendantsAreOccluded(
                 root_window, /* is_occluded */ true, root_window->IsVisible());
           } else {
-            SkRegion occluded_region;
+            SkRegion occluded_region = root_window_pair.second.occluded_region;
             RecomputeOcclusionImpl(root_window, gfx::Transform(), nullptr,
                                    &occluded_region);
           }
@@ -980,12 +980,18 @@ void WindowOcclusionTracker::OnWindowOpaqueRegionsForOcclusionChanged(
 
 void WindowOcclusionTracker::OnOcclusionStateChanged(
     WindowTreeHost* host,
-    Window::OcclusionState new_state) {
+    Window::OcclusionState new_state,
+    const SkRegion& occluded_region) {
+  // TODO: the meaning of this histogram is different if
+  // `kApplyNativeOccludedRegionToWindowTracker` is true. Remove the histogram.
   UMA_HISTOGRAM_ENUMERATION("WindowOcclusionChanged", new_state);
   Window* root_window = host->window();
   auto root_window_state_it = root_windows_.find(root_window);
-  if (root_window_state_it != root_windows_.end())
-    root_window_state_it->second.occlusion_state = new_state;
+  if (root_window_state_it == root_windows_.end())
+    return;
+
+  root_window_state_it->second.occlusion_state = new_state;
+  root_window_state_it->second.occluded_region = occluded_region;
 
   MarkRootWindowAsDirty(root_window);
   MaybeComputeOcclusion();

@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -50,7 +51,11 @@ struct VisibilityFlags {
 
 class SystemFeaturesPolicyTest : public PolicyTest {
  public:
-  SystemFeaturesPolicyTest() = default;
+  SystemFeaturesPolicyTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kEcheSWA},
+        /*disabled_features=*/{});
+  }
 
  protected:
   std::u16string GetWebUITitle(const GURL& url,
@@ -219,6 +224,10 @@ class SystemFeaturesPolicyTest : public PolicyTest {
     const GURL& app_url = GURL(url);
     EXPECT_EQ(base::UTF8ToUTF16(app_title), GetWebUITitle(app_url, true));
   }
+
+  // TODO(b/204827405): remove this when we resolve multidevice_handler check
+  // failed or Eche be enabled.
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, DisableWebStoreBeforeInstall) {

@@ -30,7 +30,7 @@ namespace cssvalue {
 
 CSSCursorImageValue::CSSCursorImageValue(const CSSValue& image_value,
                                          bool hot_spot_specified,
-                                         const IntPoint& hot_spot)
+                                         const gfx::Point& hot_spot)
     : CSSValue(kCursorImageClass),
       image_value_(&image_value),
       hot_spot_(hot_spot),

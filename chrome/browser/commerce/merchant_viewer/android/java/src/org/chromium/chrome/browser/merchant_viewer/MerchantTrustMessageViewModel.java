@@ -80,8 +80,11 @@ class MerchantTrustMessageViewModel {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         numberFormatter.setMaximumFractionDigits(1);
+        NumberFormat ratingValueFormatter = NumberFormat.getIntegerInstance();
+        ratingValueFormatter.setMaximumFractionDigits(1);
+        ratingValueFormatter.setMinimumFractionDigits(1);
         if (MerchantViewerConfig.doesTrustSignalsMessageUseRatingBar()) {
-            builder.append(numberFormatter.format(ratingValue));
+            builder.append(ratingValueFormatter.format(ratingValue));
             builder.append(" ");
             builder.append(getRatingBarSpan(context, ratingValue));
         } else {

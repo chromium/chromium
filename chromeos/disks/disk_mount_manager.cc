@@ -491,9 +491,9 @@ class DiskMountManagerImpl : public DiskMountManager,
         mount_info.mount_type == MOUNT_TYPE_DEVICE &&
         !mount_info.source_path.empty() &&
         !mount_info.mount_path.empty()) {
-      DiskMap::iterator iter = disks_.find(mount_info.source_path);
-      if (iter != disks_.end()) {  // disk might have been removed by now?
-        disk = iter->second.get();
+      DiskMap::iterator disk_map_iter = disks_.find(mount_info.source_path);
+      if (disk_map_iter != disks_.end()) {  // disk might have been removed?
+        disk = disk_map_iter->second.get();
         DCHECK(disk);
         // Currently the MountCompleted signal doesn't tell whether the device
         // is mounted in read-only mode or not. Instead use the mount option

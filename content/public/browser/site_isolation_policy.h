@@ -26,6 +26,9 @@ namespace content {
 // These methods can be called from any thread.
 class CONTENT_EXPORT SiteIsolationPolicy {
  public:
+  SiteIsolationPolicy(const SiteIsolationPolicy&) = delete;
+  SiteIsolationPolicy& operator=(const SiteIsolationPolicy&) = delete;
+
   // Returns true if every site should be placed in a dedicated process.
   static bool UseDedicatedProcessesForAllSites();
 
@@ -82,8 +85,6 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // Gets isolated origins from cmdline and/or from field trial param.
   static std::string GetIsolatedOriginsFromCommandLine();
   static std::string GetIsolatedOriginsFromFieldTrial();
-
-  DISALLOW_COPY_AND_ASSIGN(SiteIsolationPolicy);
 };
 
 }  // namespace content

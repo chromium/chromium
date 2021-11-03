@@ -42,6 +42,7 @@ message DownloadFileType {
     PLATFORM_LINUX = 3;
     PLATFORM_MAC = 4;
     PLATFORM_WINDOWS = 5;
+    PLATFORM_FUCHSIA = 6;
   }
 
   // Next id: 5

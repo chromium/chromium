@@ -74,8 +74,9 @@ class SkTypeface;
 namespace base {
 namespace trace_event {
 class ProcessMemoryDump;
-}
-}
+}  // namespace trace_event
+struct Feature;
+}  // namespace base
 
 namespace blink {
 
@@ -85,6 +86,8 @@ class FontFallbackMap;
 class FontGlobalContext;
 class SimpleFontData;
 class WebFontPrewarmer;
+
+PLATFORM_EXPORT extern const base::Feature kAsyncFontAccess;
 
 enum class AlternateFontName {
   kAllowAlternate,
@@ -180,12 +183,14 @@ class PLATFORM_EXPORT FontCache {
   static void SetFontManager(sk_sp<SkFontMgr>);
 
 #if defined(OS_WIN)
+  static WebFontPrewarmer* GetFontPrewarmer() { return prewarmer_; }
   static void SetFontPrewarmer(WebFontPrewarmer* prewarmer) {
-    DCHECK(!prewarmer_);
     prewarmer_ = prewarmer;
   }
+  static void InitializeFontPrewarmer();
   static void PrewarmFamily(const AtomicString& family_name);
 #else
+  static void InitializeFontPrewarmer() {}
   static void PrewarmFamily(const AtomicString& family_name) {}
 #endif
 

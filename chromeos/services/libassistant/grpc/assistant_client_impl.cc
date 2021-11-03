@@ -16,6 +16,8 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/query_interface.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/callback_utils.h"
@@ -42,7 +44,7 @@ const chromeos::libassistant::StateConfig kDefaultStateConfig =
 // we need or is empty.
 template <typename Response>
 base::OnceCallback<void(const grpc::Status& status, const Response&)>
-PrintLogCallback(const std::string& request_name) {
+GetLoggingCallback(const std::string& request_name) {
   return base::BindOnce(
       [](const std::string& request_name, const grpc::Status& status,
          const Response& ignored) {
@@ -67,27 +69,39 @@ AssistantClientImpl::AssistantClientImpl(
     : AssistantClientV1(std::move(assistant_manager),
                         assistant_manager_internal),
       grpc_services_(libassistant_service_address, assistant_service_address),
-      libassistant_client_(grpc_services_.GrpcLibassistantClient()) {
-  services_status_observation_.Observe(
-      &grpc_services_.GetServicesStatusProvider());
-}
+      libassistant_client_(grpc_services_.GrpcLibassistantClient()) {}
 
 AssistantClientImpl::~AssistantClientImpl() = default;
 
 void AssistantClientImpl::StartServices(
-    base::OnceClosure services_ready_callback) {
-  DCHECK(services_ready_callback);
-  services_ready_callback_ = std::move(services_ready_callback);
+    ServicesStatusObserver* services_status_observer) {
+  grpc_services_.GetServicesStatusProvider().AddObserver(
+      services_status_observer);
 
   StartGrpcServices();
 
-  // Passes a no-op callback as we will not use the ready signal of v1.
-  AssistantClientV1::StartServices(
-      /*services_ready_callback=*/base::DoNothing());
+  AssistantClientV1::StartServices(services_status_observer);
 }
 
 bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
+}
+
+void AssistantClientImpl::ResetAllDataAndShutdown() {
+  libassistant_client_.CallServiceMethod(
+      ::assistant::api::ResetAllDataAndShutdownRequest(),
+      GetLoggingCallback<::assistant::api::ResetAllDataAndShutdownResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
+}
+
+void AssistantClientImpl::SendDisplayRequest(
+    const OnDisplayRequestRequest& request) {
+  libassistant_client_.CallServiceMethod(
+      request,
+      GetLoggingCallback<::assistant::api::OnDisplayRequestResponse>(
+          /*request_name=*/__func__),
+      kDefaultStateConfig);
 }
 
 void AssistantClientImpl::AddDeviceStateEventObserver(
@@ -130,7 +144,7 @@ void AssistantClientImpl::SetAuthenticationInfo(const AuthTokens& tokens) {
 
   libassistant_client_.CallServiceMethod(
       request,
-      PrintLogCallback<::assistant::api::SetAuthInfoResponse>(
+      GetLoggingCallback<::assistant::api::SetAuthInfoResponse>(
           /*request_name=*/__func__),
       kDefaultStateConfig);
 }
@@ -145,27 +159,9 @@ void AssistantClientImpl::SetInternalOptions(const std::string& locale,
 
   libassistant_client_.CallServiceMethod(
       request,
-      PrintLogCallback<::assistant::api::SetInternalOptionsResponse>(
+      GetLoggingCallback<::assistant::api::SetInternalOptionsResponse>(
           /*request_name=*/__func__),
       kDefaultStateConfig);
-}
-
-void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {
-  switch (status) {
-    case ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE:
-      DVLOG(1) << "All Libassistant services are available.";
-
-      std::move(services_ready_callback_).Run();
-      break;
-    case ServicesStatus::ONLINE_BOOTING_UP:
-      DVLOG(3) << "Libassistant services are booting up.";
-      // Configing internal options or other essential services that are allowed
-      // to query during bootup should happen here.
-      break;
-    case ServicesStatus::OFFLINE:
-      // No action needed.
-      break;
-  }
 }
 
 // static

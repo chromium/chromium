@@ -807,7 +807,7 @@ static CullRect LegacyCullRect(const PaintLayerFragment& fragment,
   // |fragment.root_fragment_data|. Adjust it to the containing transform node's
   // space in which we will paint.
   new_cull_rect.Move(PhysicalOffset(
-      RoundedIntPoint(fragment.root_fragment_data->PaintOffset())));
+      ToRoundedPoint(fragment.root_fragment_data->PaintOffset())));
   return CullRect(ToGfxRect(PixelSnappedIntRect(new_cull_rect)));
 }
 

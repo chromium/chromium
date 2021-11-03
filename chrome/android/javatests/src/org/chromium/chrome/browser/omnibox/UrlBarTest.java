@@ -46,10 +46,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,7 +65,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class UrlBarTest extends DummyUiChromeActivityTestCase {
+public class UrlBarTest extends DummyUiActivityTestCase {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             Arrays.asList(new ParameterSet().value(false).name("DisableSpannableInline"),

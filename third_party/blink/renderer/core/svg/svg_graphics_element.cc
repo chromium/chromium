@@ -177,7 +177,7 @@ SVGElement* SVGGraphicsElement::farthestViewportElement() const {
   return farthest;
 }
 
-FloatRect SVGGraphicsElement::GetBBox() {
+gfx::RectF SVGGraphicsElement::GetBBox() {
   DCHECK(GetLayoutObject());
   return GetLayoutObject()->ObjectBoundingBox();
 }
@@ -187,14 +187,14 @@ SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
                                             DocumentUpdateReason::kJavaScript);
 
   // FIXME: Eventually we should support getBBox for detached elements.
-  FloatRect boundingBox;
+  gfx::RectF bounding_box;
   if (const auto* layout_object = GetLayoutObject()) {
-    boundingBox = GetBBox();
+    bounding_box = GetBBox();
 
     if (layout_object->IsSVGText() || layout_object->IsSVGInline())
       UseCounter::Count(GetDocument(), WebFeature::kGetBBoxForText);
   }
-  return SVGRectTearOff::CreateDetached(boundingBox);
+  return SVGRectTearOff::CreateDetached(bounding_box);
 }
 
 }  // namespace blink

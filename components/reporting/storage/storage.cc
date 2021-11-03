@@ -152,7 +152,7 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
     storage->async_start_upload_cb_.Run(
         (/*need_encryption_key=*/EncryptionModuleInterface::is_enabled() &&
          storage->encryption_module_->need_encryption_key())
-            ? UploaderInterface::KEY_DELIVERY
+            ? UploaderInterface::UploadReason::KEY_DELIVERY
             : reason,
         base::BindOnce(&QueueUploaderInterface::WrapInstantiatedUploader,
                        priority, std::move(start_uploader_cb)));
@@ -161,14 +161,14 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
   void ProcessRecord(EncryptedRecord encrypted_record,
                      base::OnceCallback<void(bool)> processed_cb) override {
     // Update sequencing information: add Priority.
-    SequencingInformation* const sequencing_info =
-        encrypted_record.mutable_sequencing_information();
+    SequenceInformation* const sequencing_info =
+        encrypted_record.mutable_sequence_information();
     sequencing_info->set_priority(priority_);
     storage_interface_->ProcessRecord(std::move(encrypted_record),
                                       std::move(processed_cb));
   }
 
-  void ProcessGap(SequencingInformation start,
+  void ProcessGap(SequenceInformation start,
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
     // Update sequencing information: add Priority.
@@ -240,7 +240,7 @@ class Storage::KeyDelivery {
         base::BindOnce(&KeyDelivery::EncryptionKeyReceiverReady,
                        base::Unretained(this));
     async_start_upload_cb_.Run(
-        UploaderInterface::KEY_DELIVERY,
+        UploaderInterface::UploadReason::KEY_DELIVERY,
         base::BindOnce(&KeyDelivery::WrapInstantiatedKeyUploader,
                        /*priority=*/MANUAL_BATCH,
                        std::move(start_uploader_cb)));

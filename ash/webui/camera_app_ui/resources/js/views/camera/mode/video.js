@@ -20,6 +20,7 @@ import {
   GifSaver,
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
+import {DeviceOperator} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import * as sound from '../../../sound.js';
 import * as state from '../../../state.js';
@@ -224,11 +225,14 @@ export class Video extends ModeBase {
   /**
    * @param {!MediaStream} stream Preview stream.
    * @param {?StreamConstraints} captureConstraints
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
+   * @param {!Resolution} snapshotResolution
    * @param {!Facing} facing
    * @param {!VideoHandler} handler
    */
-  constructor(stream, captureConstraints, captureResolution, facing, handler) {
+  constructor(
+      stream, captureConstraints, captureResolution, snapshotResolution, facing,
+      handler) {
     super(stream, facing);
 
     /**
@@ -248,6 +252,12 @@ export class Video extends ModeBase {
       const {width, height} = stream.getVideoTracks()[0].getSettings();
       return new Resolution(width, height);
     })();
+
+    /**
+     * @const {!Resolution}
+     * @private
+     */
+    this.snapshotResolution_ = snapshotResolution;
 
     /**
      * @const {!VideoHandler}
@@ -354,12 +364,33 @@ export class Video extends ModeBase {
   }
 
   /**
+   * @return {!Promise<boolean>} Returns whether taking video sanpshot via Blob
+   *     stream is enabled.
+   */
+  async isBlobVideoSnapshotEnabled() {
+    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
+    return deviceOperator !== null &&
+        (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId));
+  }
+
+  /**
    * Takes a video snapshot during recording.
    * @return {!Promise} Promise resolved when video snapshot is finished.
    */
   takeSnapshot() {
     const doSnapshot = async () => {
-      const blob = await this.crosImageCapture_.grabJpegFrame();
+      let blob;
+      if (await this.isBlobVideoSnapshotEnabled()) {
+        const photoSettings = /** @type {!PhotoSettings} */ ({
+          imageWidth: this.snapshotResolution_.width,
+          imageHeight: this.snapshotResolution_.height,
+        });
+        const results = await this.crosImageCapture_.takePhoto(photoSettings);
+        blob = await results[0];
+      } else {
+        blob = await this.crosImageCapture_.grabJpegFrame();
+      }
 
       this.handler_.playShutterEffect();
       const imageName = (new Filenamer()).newImageName();
@@ -484,7 +515,14 @@ export class Video extends ModeBase {
           this.captureConstraints_);
     }
     if (this.crosImageCapture_ === null) {
-      this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
+      if (await this.isBlobVideoSnapshotEnabled()) {
+        // Blob stream is configured on the original device rather than the
+        // virtual one when multi-stream is enabled.
+        this.crosImageCapture_ =
+            new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+      } else {
+        this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
+      }
     }
 
     try {
@@ -715,11 +753,18 @@ export class VideoFactory extends ModeFactory {
   /**
    * @param {!StreamConstraints} constraints Constraints for preview
    *     stream.
-   * @param {?Resolution} captureResolution
+   * @param {!Resolution} captureResolution
+   * @param {!Resolution} snapshotResolution
    * @param {!VideoHandler} handler
    */
-  constructor(constraints, captureResolution, handler) {
+  constructor(constraints, captureResolution, snapshotResolution, handler) {
     super(constraints, captureResolution);
+
+    /**
+     * @const {!Resolution}
+     * @private
+     */
+    this.snapshotResolution_ = snapshotResolution;
 
     /**
      * @const {!VideoHandler}
@@ -748,6 +793,6 @@ export class VideoFactory extends ModeFactory {
     }
     return new Video(
         this.previewStream_, captureConstraints, this.captureResolution_,
-        this.facing_, this.handler_);
+        this.snapshotResolution_, this.facing_, this.handler_);
   }
 }

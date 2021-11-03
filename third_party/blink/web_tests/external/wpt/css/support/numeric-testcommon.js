@@ -126,7 +126,7 @@ function test_math_specified(testString, expectedString, {approx, msg, msgExtra,
         const expectedValue = testEl.style[prop];
         assert_not_equals(expectedValue, '', `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
-    }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
+    }, msg);
 }
 
 /*
@@ -177,13 +177,14 @@ function _test_math({stage, testEl, testString, expectedString, type, approx, ms
     }
     test(()=>{
         testEl.style[prop] = '';
+        const defaultValue = getComputedStyle(testEl)[prop];
         testEl.style[prop] = t;
         const usedValue = getComputedStyle(testEl)[prop];
-        assert_not_equals(usedValue, '', `${testString} isn't valid in '${prop}'; got the default value instead.`);
+        assert_not_equals(usedValue, defaultValue, `${testString} isn't valid in '${prop}'; got the default value instead.`);
         testEl.style[prop] = '';
         testEl.style[prop] = e;
         const expectedValue = getComputedStyle(testEl)[prop];
-        assert_not_equals(expectedValue, '', `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
+        assert_not_equals(expectedValue, defaultValue, `${expectedString} isn't valid in '${prop}'; got the default value instead.`)
         if(approx && (type == "number" || type == "angle")){
             let parsedUsed = usedValue.split('(')[1].split(')')[0].split(',').map(parseFloat);
             let parsedExpected = expectedValue.split('(')[1].split(')')[0].split(',').map(parseFloat);
@@ -191,5 +192,5 @@ function _test_math({stage, testEl, testString, expectedString, type, approx, ms
         } else {
             assert_equals(usedValue, expectedValue, `${testString} and ${expectedString} serialize to the same thing in ${stage} values.`);
         }
-    }, msg || `${testString} should be ${stage}-value-equivalent to ${expectedString}`);
+    }, msg);
 }

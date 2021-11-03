@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 
+#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -36,9 +38,12 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       feature_handle_for_scheduler_(
-          execution_context->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
-              {SchedulingPolicy::DisableBackForwardCache()})),
+          base::FeatureList::IsEnabled(
+              features::kBackForwardCacheDedicatedWorker)
+              ? FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()
+              : execution_context->GetScheduler()->RegisterFeature(
+                    SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
+                    {SchedulingPolicy::DisableBackForwardCache()})),
       keep_alive_(PERSISTENT_FROM_HERE, this) {
   DCHECK(IsParentContextThread());
   g_live_messaging_proxy_count++;

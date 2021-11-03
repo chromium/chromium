@@ -43,6 +43,11 @@ std::string CreateConfigurationJsonString(bool is_connected) {
 }  // namespace
 
 class CrashRecoveryManagerImplTest : public testing::Test {
+ public:
+  CrashRecoveryManagerImplTest(const CrashRecoveryManagerImplTest&) = delete;
+  CrashRecoveryManagerImplTest& operator=(const CrashRecoveryManagerImplTest&) =
+      delete;
+
  protected:
   CrashRecoveryManagerImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefListForTest(1u)[0]) {}
@@ -127,9 +132,6 @@ class CrashRecoveryManagerImplTest : public testing::Test {
   bool is_restoration_finished_;
 
   std::unique_ptr<CrashRecoveryManager> crash_recovery_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashRecoveryManagerImplTest);
 };
 
 TEST_F(CrashRecoveryManagerImplTest, ActiveHostDisconnected) {

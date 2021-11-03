@@ -16,19 +16,21 @@ class LayoutUnit;
 // to avoid forking behavior elsewhere.
 class LayoutNGGridInterface {
  public:
-  virtual wtf_size_t ExplicitGridStartForDirection(
-      GridTrackSizingDirection direction) const = 0;
-  virtual wtf_size_t ExplicitGridEndForDirection(
-      GridTrackSizingDirection direction) const = 0;
-
   virtual wtf_size_t AutoRepeatCountForDirection(
-      GridTrackSizingDirection direction) const = 0;
+      const GridTrackSizingDirection track_direction) const = 0;
+  virtual wtf_size_t ExplicitGridStartForDirection(
+      const GridTrackSizingDirection track_direction) const = 0;
+  virtual wtf_size_t ExplicitGridEndForDirection(
+      const GridTrackSizingDirection track_direction) const = 0;
+  virtual LayoutUnit GridGap(
+      const GridTrackSizingDirection track_direction) const = 0;
+  virtual LayoutUnit GridItemOffset(
+      const GridTrackSizingDirection track_direction) const = 0;
   virtual Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
-      GridTrackSizingDirection direction) const = 0;
+      const GridTrackSizingDirection track_direction) const = 0;
+
   virtual Vector<LayoutUnit> RowPositions() const = 0;
   virtual Vector<LayoutUnit> ColumnPositions() const = 0;
-  virtual LayoutUnit GridGap(GridTrackSizingDirection) const = 0;
-  virtual LayoutUnit GridItemOffset(GridTrackSizingDirection) const = 0;
 };
 
 template <>

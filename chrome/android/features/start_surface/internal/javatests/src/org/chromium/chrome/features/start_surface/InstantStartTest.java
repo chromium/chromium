@@ -602,6 +602,7 @@ public class InstantStartTest {
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
 
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Feed placeholder should be shown from cold start with Instant Start on.
         onView(withId(R.id.placeholders_layout)).check(matches(isDisplayed()));
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
@@ -610,6 +611,13 @@ public class InstantStartTest {
         // Feed background should be non-transparent finally.
         ViewUtils.onViewWaiting(
                 AllOf.allOf(withId(R.id.feed_stream_recycler_view), matchesBackgroundAlpha(255)));
+
+        StartSurfaceCoordinator startSurfaceCoordinator =
+                StartSurfaceTestUtils.getStartSurfaceFromUIThread(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertFalse(((StartSurfaceMediator) startSurfaceCoordinator.getController())
+                                       .shouldShowFeedPlaceholder());
+        });
 
         // TODO(spdonghao): Add a test for Feed placeholder from warm start. It's tested in
         // StartSurfaceMediatorUnitTest#feedPlaceholderFromWarmStart currently because warm start is
@@ -704,9 +712,10 @@ public class InstantStartTest {
         Assert.assertTrue(
                 TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(cta));
+
         Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
         Layout activeLayout = cta.getLayoutManager().getActiveLayout();
         Assert.assertTrue(activeLayout instanceof StaticLayout);
@@ -734,9 +743,9 @@ public class InstantStartTest {
         Assert.assertFalse(
                 TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
-        Assert.assertTrue(ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled());
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Assert.assertFalse(ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(cta));
         Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
         Layout activeLayout = cta.getLayoutManager().getActiveLayout();
         Assert.assertTrue(activeLayout instanceof StaticLayout);
@@ -782,8 +791,7 @@ public class InstantStartTest {
                 NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
         ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePage(
                 mActivityTestRule.getActivity());
-        ReturnToChromeExperimentsUtil.shouldShowStartSurfaceAsTheHomePageNoTabs(
-                mActivityTestRule.getActivity());
+        ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(mActivityTestRule.getActivity());
         PseudoTab.getAllPseudoTabsFromStateFile(mActivityTestRule.getActivity());
 
         Assert.assertFalse("There should be no GURL usages triggering native library loading",

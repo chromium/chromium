@@ -20,9 +20,6 @@ namespace {
 const std::string kTestKey = "test";
 const std::string kTestKey2 = "foo";
 const std::string kTestKey3 = "hello";
-const base::TimeDelta kEnoughTime =
-    GetFeedConfig().minimum_notice_view_interval;
-const base::TimeDelta kNotEnoughTime = kEnoughTime - base::Minutes(1);
 
 class NoticeCardTrackerTest : public testing::Test {
  public:
@@ -35,6 +32,11 @@ class NoticeCardTrackerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // Note that kEnoughTime should not be declared as global vairiable since
+  // otherwise it will affect other tests that depend on the overridden
+  // GetFeedConfig().
+  base::TimeDelta kEnoughTime = GetFeedConfig().minimum_notice_view_interval;
+  const base::TimeDelta kNotEnoughTime = kEnoughTime - base::Minutes(1);
   TestingPrefServiceSimple profile_prefs_;
   NoticeCardTracker tracker1_{&profile_prefs_, kTestKey};
   NoticeCardTracker tracker2_{&profile_prefs_, kTestKey2};

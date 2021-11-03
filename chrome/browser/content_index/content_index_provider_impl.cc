@@ -143,6 +143,9 @@ void ContentIndexProviderImpl::OnContentAdded(
     content::ContentIndexEntry entry) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (!entry.is_top_level_context)
+    return;
+
   OfflineItemList items(1, EntryToOfflineItem(entry));
 
   // Delete the entry before adding it just in case the ID was overwritten.
@@ -321,8 +324,11 @@ void ContentIndexProviderImpl::DidGetAllEntries(
     return;
   }
 
-  for (const auto& entry : entries)
+  for (const auto& entry : entries) {
+    if (!entry.is_top_level_context)
+      continue;
     item_list->push_back(EntryToOfflineItem(entry));
+  }
 
   std::move(done_closure).Run();
 }

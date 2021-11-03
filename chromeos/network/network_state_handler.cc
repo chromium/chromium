@@ -792,6 +792,8 @@ bool NetworkStateHandler::UpdateTetherNetworkProperties(
   network_list_sorted_ = false;
 
   NotifyNetworkPropertiesUpdated(tether_network_state);
+  if (tether_network_state->IsConnectingOrConnected())
+    NotifyIfActiveNetworksChanged();
   return true;
 }
 

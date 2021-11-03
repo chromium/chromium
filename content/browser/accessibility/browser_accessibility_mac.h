@@ -43,6 +43,9 @@ class BrowserAccessibilityMac : public BrowserAccessibility {
   BrowserAccessibility* PlatformGetNextSibling() const override;
   BrowserAccessibility* PlatformGetPreviousSibling() const override;
 
+  gfx::NativeViewAccessible GetNativeViewAccessible() override;
+  ui::AXPlatformNode* GetAXPlatformNode() const override;
+
   // The BrowserAccessibilityCocoa associated with us.
   BrowserAccessibilityCocoa* GetNativeWrapper() const;
 

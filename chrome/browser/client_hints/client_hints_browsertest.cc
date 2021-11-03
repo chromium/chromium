@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +41,9 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/client_hints.h"
@@ -182,7 +187,7 @@ void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
 
 }  // namespace
 
-class ClientHintsBrowserTest : public InProcessBrowserTest,
+class ClientHintsBrowserTest : public policy::PolicyTest,
                                public testing::WithParamInterface<bool> {
  public:
   ClientHintsBrowserTest()
@@ -3774,4 +3779,65 @@ IN_PROC_BROWSER_TEST_F(ClientHintsCommandLineSwitchBrowserTest,
   SetClientHintExpectationsOnSubresources(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       otr_browser, without_accept_ch_without_lifetime_url()));
+}
+
+class UpdatedGreaseFeatureParamTest : public ClientHintsBrowserTest {
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("GreaseUACH:updated_algorithm/true",
+                                            "");
+    return feature_list;
+  }
+};
+
+// Checks that the updated GREASE algorithm is used when explicitly enabled.
+IN_PROC_BROWSER_TEST_F(UpdatedGreaseFeatureParamTest,
+                       UpdatedGreaseFeatureParamTest) {
+  const GURL gurl = accept_ch_without_lifetime_url();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  std::string ua_ch_result = main_frame_ua_observed();
+  // The updated GREASE algorithm should contain at least one of these
+  // characters. The equal sign, space, and semicolon are not present as they
+  // exist in the old algorithm.
+  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
+                                            '/', ')', '?', '_'};
+  bool saw_updated_grease = false;
+  for (auto i : updated_grease_chars) {
+    if (ua_ch_result.find(i) != std::string::npos) {
+      saw_updated_grease = true;
+    }
+  }
+  ASSERT_TRUE(saw_updated_grease);
+}
+
+class GreaseEnterprisePolicyTest : public ClientHintsBrowserTest {
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+    policy::PolicyMap policies;
+    SetPolicy(&policies, policy::key::kUserAgentClientHintsGREASEUpdateEnabled,
+              absl::optional<base::Value>(false));
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine("GreaseUACH:updated_algorithm/true",
+                                            "");
+    return feature_list;
+  }
+};
+
+// Makes sure that the enterprise policy is able to prevent updated GREASE.
+IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest, GreaseEnterprisePolicyTest) {
+  const GURL gurl = accept_ch_without_lifetime_url();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  std::string ua_ch_result = main_frame_ua_observed();
+  // The updated GREASE algorithm would contain at least one of these
+  // characters. The equal sign, space, and semicolon are not present as they
+  // exist in the old algorithm.
+  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
+                                            '/', ')', '?', '_'};
+  for (auto i : updated_grease_chars) {
+    ASSERT_TRUE(ua_ch_result.find(i) == std::string::npos);
+  }
 }

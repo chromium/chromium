@@ -27,6 +27,12 @@ constexpr const base::TimeDelta kTestDuration = base::Seconds(5);
 }  // namespace
 
 class HotspotUsageDurationTrackerTest : public testing::Test {
+ public:
+  HotspotUsageDurationTrackerTest(const HotspotUsageDurationTrackerTest&) =
+      delete;
+  HotspotUsageDurationTrackerTest& operator=(
+      const HotspotUsageDurationTrackerTest&) = delete;
+
  protected:
   HotspotUsageDurationTrackerTest() = default;
   ~HotspotUsageDurationTrackerTest() override = default;
@@ -48,9 +54,6 @@ class HotspotUsageDurationTrackerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<HotspotUsageDurationTracker> tracker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HotspotUsageDurationTrackerTest);
 };
 
 TEST_F(HotspotUsageDurationTrackerTest, TestNoConnection) {

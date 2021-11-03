@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 FeatureStatusProvider::FeatureStatusProvider() = default;
@@ -25,4 +25,4 @@ void FeatureStatusProvider::NotifyStatusChanged() {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

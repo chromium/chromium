@@ -447,22 +447,50 @@ void MetricsService::ClearSavedStabilityMetrics() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void MetricsService::SetUserLogStore(
     std::unique_ptr<UnsentLogStore> user_log_store) {
-  // This should only be set after the service has finished initializing.
-  DCHECK_EQ(SENDING_LOGS, state_);
+  if (log_store()->has_alternate_ongoing_log_store())
+    return;
 
-  // Closes the current log so that a new log can be opened in the user log
-  // store.
-  PushPendingLogsToPersistentStorage();
-  log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
-  OpenNewLog();
+  if (state_ >= SENDING_LOGS) {
+    // Closes the current log so that a new log can be opened in the user log
+    // store.
+    PushPendingLogsToPersistentStorage();
+    log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
+    OpenNewLog();
+  } else {
+    // Initial log has not yet been created and flushing now would result in
+    // incomplete information in the current log.
+    //
+    // Logs recorded before a user login will be appended to user logs. This
+    // should not happen frequently.
+    //
+    // TODO(crbug/1264627): Look for a way to "pause" pre-login logs and flush
+    // when INIT_TASK is done.
+    // TODO(crbug/1264625): Add histogram before launch to monitor how
+    // frequently this happens.
+    log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
+  }
 }
 
 void MetricsService::UnsetUserLogStore() {
-  DCHECK_EQ(SENDING_LOGS, state_);
-  // Pushes all the existing logs to user log store before unbound.
-  PushPendingLogsToPersistentStorage();
-  log_store()->UnsetAlternateOngoingLogStore();
-  OpenNewLog();
+  if (!log_store()->has_alternate_ongoing_log_store())
+    return;
+
+  if (state_ >= SENDING_LOGS) {
+    PushPendingLogsToPersistentStorage();
+    log_store()->UnsetAlternateOngoingLogStore();
+    OpenNewLog();
+  } else {
+    // Fast startup and logout case. A call to |RecordCurrentHistograms()| is
+    // made to flush all histograms into the current log and the log is
+    // discarded. This is to prevent histograms captured during the user session
+    // from leaking into local state logs.
+    //
+    // TODO(crbug/1264625): Add histogram before launch to monitor how
+    // frequently this happens.
+    RecordCurrentHistograms();
+    log_manager_.DiscardCurrentLog();
+    log_store()->UnsetAlternateOngoingLogStore();
+  }
 }
 
 void MetricsService::UpdateCurrentUserMetricsConsent(

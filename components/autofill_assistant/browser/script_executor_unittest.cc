@@ -4,9 +4,9 @@
 
 #include "components/autofill_assistant/browser/script_executor.h"
 
-#include <map>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -61,7 +61,7 @@ class ScriptExecutorTest : public testing::Test,
         kScriptPath,
         std::make_unique<TriggerContext>(
             std::make_unique<ScriptParameters>(
-                std::map<std::string, std::string>{
+                base::flat_map<std::string, std::string>{
                     {"additional_param", "additional_param_value"}}),
             options),
         /* global_payload= */ "initial global payload",
@@ -186,7 +186,7 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
   options.experiment_ids = "exp";
   delegate_.SetTriggerContext(std::make_unique<TriggerContext>(
       std::make_unique<ScriptParameters>(
-          std::map<std::string, std::string>{{"param", "value"}}),
+          base::flat_map<std::string, std::string>{{"param", "value"}}),
       options));
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
       .WillOnce(Invoke([](const std::string& script_path, const GURL& url,
@@ -202,7 +202,7 @@ TEST_F(ScriptExecutorTest, ForwardParameters) {
 
         EXPECT_THAT(
             trigger_context.GetScriptParameters().ToProto(),
-            UnorderedElementsAreArray(std::map<std::string, std::string>(
+            UnorderedElementsAreArray(base::flat_map<std::string, std::string>(
                 {{"additional_param", "additional_param_value"},
                  {"param", "value"}})));
 
@@ -1366,7 +1366,6 @@ TEST_F(ScriptExecutorTest, UpdateScriptListGetNext) {
       next_actions_response.mutable_update_script_list()->add_scripts();
   script->set_path("path");
   auto* presentation = script->mutable_presentation();
-  presentation->mutable_chip()->set_text("name");
   presentation->mutable_precondition();
 
   EXPECT_CALL(mock_service_, OnGetNextActions(_, _, _, _, _, _))
@@ -1382,7 +1381,6 @@ TEST_F(ScriptExecutorTest, UpdateScriptListGetNext) {
   EXPECT_THAT(scripts_update_, SizeIs(1));
   EXPECT_THAT(scripts_update_count_, Eq(1));
   EXPECT_THAT("path", scripts_update_[0]->handle.path);
-  EXPECT_THAT("name", scripts_update_[0]->handle.chip.text);
 }
 
 TEST_F(ScriptExecutorTest, UpdateScriptListShouldNotifyMultipleTimes) {
@@ -1395,7 +1393,6 @@ TEST_F(ScriptExecutorTest, UpdateScriptListShouldNotifyMultipleTimes) {
   auto* script = actions_response.mutable_update_script_list()->add_scripts();
   script->set_path("path");
   auto* presentation = script->mutable_presentation();
-  presentation->mutable_chip()->set_text("name");
   presentation->mutable_precondition();
 
   EXPECT_CALL(mock_service_, OnGetActions(StrEq(kScriptPath), _, _, _, _, _))
@@ -1433,7 +1430,6 @@ TEST_F(ScriptExecutorTest, UpdateScriptListFromInterrupt) {
   auto* script = interrupt_actions.mutable_update_script_list()->add_scripts();
   script->set_path("path");
   auto* presentation = script->mutable_presentation();
-  presentation->mutable_chip()->set_text("update_from_interrupt");
   presentation->mutable_precondition();
 
   // We expect a call from the interrupt which will update the script list and a
@@ -1452,7 +1448,6 @@ TEST_F(ScriptExecutorTest, UpdateScriptListFromInterrupt) {
   EXPECT_THAT(scripts_update_, SizeIs(1));
   EXPECT_THAT(scripts_update_count_, Eq(1));
   EXPECT_THAT("path", scripts_update_[0]->handle.path);
-  EXPECT_THAT("update_from_interrupt", scripts_update_[0]->handle.chip.text);
 }
 
 TEST_F(ScriptExecutorTest, RestorePreInterruptStatusMessage) {

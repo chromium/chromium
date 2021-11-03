@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/user_model.h"
+
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill_assistant/browser/mock_user_model_observer.h"
@@ -30,7 +32,7 @@ class UserModelTest : public testing::Test {
   void TearDown() override { model_.RemoveObserver(&mock_observer_); }
 
   // Provides direct access to the values in the model for testing.
-  const std::map<std::string, ValueProto>& GetValues() const {
+  const base::flat_map<std::string, ValueProto>& GetValues() const {
     return model_.values_;
   }
 

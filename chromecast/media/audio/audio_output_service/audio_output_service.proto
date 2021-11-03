@@ -52,10 +52,16 @@ message StreamVolume {
 // Indicates that EOS for an audio output stream has been played out.
 message EosPlayedOut {}
 
-// Current media pts and the corresponding reference timestamp.
+// Current media pts, the corresponding reference timestamp, rendering delay and
+// the timestamp when the delay was measured.
+// TODO(b/173250111): Rename this message to RenderingDelay when all users of
+// |media_timestamp_microseconds| and |reference_timestamp_microseconds| have
+// migrated to using delay information.
 message CurrentMediaTimestamp {
   optional int64 media_timestamp_microseconds = 1;
   optional int64 reference_timestamp_microseconds = 2;
+  optional int64 delay_microseconds = 3;
+  optional int64 delay_timestamp_microseconds = 4;
 }
 
 // Informs the backend to stop the playback.

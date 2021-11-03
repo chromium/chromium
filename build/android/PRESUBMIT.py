@@ -82,7 +82,7 @@ def CommonChecks(input_api, output_api):
 
   # Disabled due to http://crbug.com/410936
   #output.extend(input_api.canned_checks.RunUnitTestsInDirectory(
-  #input_api, output_api, J('buildbot', 'tests')))
+  #input_api, output_api, J('buildbot', 'tests', skip_shebang_check=True)))
 
   pylib_test_env = dict(input_api.environ)
   pylib_test_env.update({
@@ -111,9 +111,7 @@ def CommonChecks(input_api, output_api):
               J('pylib', 'output', 'noop_output_manager_test.py'),
               J('pylib', 'output', 'remote_output_manager_test.py'),
               J('pylib', 'results', 'json_results_test.py'),
-              J('pylib', 'symbols', 'apk_native_libs_unittest.py'),
               J('pylib', 'symbols', 'elf_symbolizer_unittest.py'),
-              J('pylib', 'symbols', 'symbol_utils_unittest.py'),
               J('pylib', 'utils', 'chrome_proxy_utils_test.py'),
               J('pylib', 'utils', 'decorators_test.py'),
               J('pylib', 'utils', 'device_dependencies_test.py'),

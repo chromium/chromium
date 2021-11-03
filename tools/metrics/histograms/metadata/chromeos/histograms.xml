@@ -32,6 +32,11 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>tbarzic@chromium.org</owner>
     <owner>chromeos-launcher@google.com</owner>
   </variant>
+  <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
+    <owner>jimmyxgong@chromium.org</owner>
+    <owner>zentaro@chromium.org</owner>
+    <owner>cros-peripherals@google.com</owner>
+  </variant>
   <variant name="ESim" summary="esim">
     <owner>azeemarshad@chromium.org</owner>
     <owner>cros-connectivity@google.com</owner>
@@ -474,6 +479,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     settings. This is intended to track migration progress in the field, so the
     migration code can be removed when the old approach of storing bare flags is
     no longer relevant in the field.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
+    units="CrosDiagnosticsNavigationView" expires_after="2022-06-15">
+  <owner>gavindodd@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records requested initial screen when opening the Diagnostics App.
   </summary>
 </histogram>
 

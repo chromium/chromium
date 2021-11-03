@@ -24,30 +24,25 @@
 <selectmenu id="selectMenu3">
   <div>I'm a div with no part attr</div>
   <option id="selectMenu3-child1">one</option>
-  <div part="option" id="selectMenu3-child2">two</div>
+  <option id="selectMenu3-child2">two</option>
   <option id="selectMenu3-child3">three</option>
 </selectmenu>
 
 <selectmenu id="selectMenu4">
-  <div part="option" id="selectMenu4-child1">one</div>
-  <div part="option" id="selectMenu4-child2">two</div>
+  <div slot="button" part="button">
+    <div part="selected-value" id="selectMenu4-custom-selected-value">Default custom selected-value text</div>
+  </div>
+  <option>one</option>
+  <option>two</option>
 </selectmenu>
 
 <selectmenu id="selectMenu5">
   <div slot="button" part="button">
     <div part="selected-value" id="selectMenu5-custom-selected-value">Default custom selected-value text</div>
   </div>
-  <option>one</option>
-  <option>two</option>
-</selectmenu>
-
-<selectmenu id="selectMenu6">
-  <div slot="button" part="button">
-    <div part="selected-value" id="selectMenu6-custom-selected-value">Default custom selected-value text</div>
-  </div>
   <popup slot="listbox" part="listbox">
     <option>one</option>
-    <div part="option">two</div>
+    <option>two</option>
   </popup>
 </selectmenu>
 
@@ -73,14 +68,11 @@ test(() => {
 
 test(() => {
   const selectMenu2 = document.getElementById("selectMenu2");
-  assert_equals(selectMenu2.value, "one", "value should start with the text of the first option part");
+  assert_equals(selectMenu2.value, "", "Non-HTMLOptionElements shouldn't be treated as option parts");
 
   selectMenu2.value = "three";
-  assert_equals(selectMenu2.value, "three", "value can be set to the text of an option part");
-
-  selectMenu2.value = "I'm a div with no part attr";
-  assert_equals(selectMenu2.value, "three", "Setting value should have no effect if there is no matching option");
-}, "Test value with non-HTMLOptionElement element option parts");
+  assert_equals(selectMenu2.value, "", "value can't be set when there are no option parts'");
+}, "Test value with non-HTMLOptionElement elements labeled as parts");
 
 test(() => {
   const selectMenu3 = document.getElementById("selectMenu3");
@@ -98,11 +90,13 @@ test(() => {
 
 test(() => {
   const selectMenu4 = document.getElementById("selectMenu4");
+  let customSelectedValuePart = document.getElementById("selectMenu4-custom-selected-value");
   assert_equals(selectMenu4.value, "one", "value should start with the text of the first option part");
+  assert_equals(customSelectedValuePart.innerText, "one", "Custom selected value part should be set to initial value of selectmenu");
 
-  document.getElementById("selectMenu4-child1").setAttribute("part", "notOption");
-  assert_equals(selectMenu4.value, "two", "Changing the part attribute of the selected option should remove its status as the selected option");
-}, "Test that value is updated when the part attribute is removed");
+  selectMenu4.value = "two";
+  assert_equals(customSelectedValuePart.innerText, "two", "Custom selected value part should be updated when value of selectmenu changes");
+}, "Test that slotted-in selected-value part is updated to value of selectmenu");
 
 test(() => {
   const selectMenu5 = document.getElementById("selectMenu5");
@@ -111,16 +105,6 @@ test(() => {
   assert_equals(customSelectedValuePart.innerText, "one", "Custom selected value part should be set to initial value of selectmenu");
 
   selectMenu5.value = "two";
-  assert_equals(customSelectedValuePart.innerText, "two", "Custom selected value part should be updated when value of selectmenu changes");
-}, "Test that slotted-in selected-value part is updated to value of selectmenu");
-
-test(() => {
-  const selectMenu6 = document.getElementById("selectMenu6");
-  let customSelectedValuePart = document.getElementById("selectMenu6-custom-selected-value");
-  assert_equals(selectMenu6.value, "one", "value should start with the text of the first option part");
-  assert_equals(customSelectedValuePart.innerText, "one", "Custom selected value part should be set to initial value of selectmenu");
-
-  selectMenu6.value = "two";
   assert_equals(customSelectedValuePart.innerText, "two", "Custom selected value part should be updated when value of selectmenu changes");
 }, "Test that option parts in a slotted-in listbox are reflected in the value property");
 

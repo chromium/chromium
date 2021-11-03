@@ -16,6 +16,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -52,7 +53,8 @@ BaseTelemetryExtensionApiGuardFunction::Run() {
 bool BaseTelemetryExtensionApiGuardFunction::IsPwaUiOpen() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  const auto& extension_info = GetChromeOSExtensionInfoForId(extension_id());
+  const auto* externally_connectable_info =
+      extensions::ExternallyConnectableInfo::Get(extension());
 
   for (auto* target_browser : *BrowserList::GetInstance()) {
     // Ignore incognito.
@@ -64,8 +66,8 @@ bool BaseTelemetryExtensionApiGuardFunction::IsPwaUiOpen() {
     for (int i = 0; i < target_tab_strip->count(); ++i) {
       content::WebContents* target_contents =
           target_tab_strip->GetWebContentsAt(i);
-      const GURL url = target_contents->GetLastCommittedURL();
-      if (url.host() == extension_info.host) {
+      if (externally_connectable_info->matches.MatchesURL(
+              target_contents->GetLastCommittedURL())) {
         return true;
       }
     }

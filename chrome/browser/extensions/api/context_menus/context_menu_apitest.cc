@@ -144,7 +144,7 @@ class ExtensionContextMenuVisibilityApiTest
     params.page_url = frame->GetLastCommittedURL();
 
     // Create context menu.
-    menu_ = std::make_unique<TestRenderViewContextMenu>(frame, params);
+    menu_ = std::make_unique<TestRenderViewContextMenu>(*frame, params);
     menu_->Init();
 
     // Get menu model.

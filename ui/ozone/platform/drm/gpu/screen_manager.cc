@@ -180,11 +180,11 @@ void ScreenManager::RemoveDisplayControllers(
 
   bool should_update_controllers_to_window_mapping = false;
   for (const auto& controllers_on_drm : controllers_for_drm_devices) {
-    CrtcsWithDrmList controllers_to_remove = controllers_on_drm.second;
+    CrtcsWithDrmList drm_controllers_to_remove = controllers_on_drm.second;
 
     CommitRequest commit_request;
     auto drm = controllers_on_drm.first;
-    for (const auto& controller : controllers_to_remove) {
+    for (const auto& controller : drm_controllers_to_remove) {
       uint32_t crtc_id = controller.first;
       auto it = FindDisplayController(drm, crtc_id);
       if (it == controllers_.end())
@@ -233,15 +233,16 @@ bool ScreenManager::ConfigureDisplayControllers(
   bool config_success = true;
   // Perform display configurations together for the same DRM only.
   for (const auto& configs_on_drm : displays_for_drm_devices) {
-    const ControllerConfigsList& controllers_params = configs_on_drm.second;
-    bool test_modeset = TestAndSetPreferredModifiers(controllers_params) ||
-                        TestAndSetLinearModifier(controllers_params);
+    const ControllerConfigsList& drm_controllers_params = configs_on_drm.second;
+    bool test_modeset = TestAndSetPreferredModifiers(drm_controllers_params) ||
+                        TestAndSetLinearModifier(drm_controllers_params);
     config_success &= test_modeset;
     if (!test_modeset)
       continue;
     bool can_modeset_with_overlays =
-        TestModesetWithOverlays(controllers_params);
-    config_success &= Modeset(controllers_params, can_modeset_with_overlays);
+        TestModesetWithOverlays(drm_controllers_params);
+    config_success &=
+        Modeset(drm_controllers_params, can_modeset_with_overlays);
   }
 
   if (config_success)

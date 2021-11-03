@@ -493,8 +493,11 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     open_flags |= O_RDWR;
   } else if (flags & FLAG_WRITE) {
     open_flags |= O_WRONLY;
-  } else if (!(flags & FLAG_READ) && !(flags & FLAG_WIN_WRITE_ATTRIBUTES) &&
+  } else if (!(flags & FLAG_READ) && !(flags & FLAG_WRITE_ATTRIBUTES) &&
              !(flags & FLAG_APPEND) && !(flags & FLAG_OPEN_ALWAYS)) {
+    // Note: For FLAG_WRITE_ATTRIBUTES and no other read/write flags, we'll
+    // open the file in O_RDONLY mode (== 0, see static_assert below), so that
+    // we get a fd that can be used for SetTimes().
     NOTREACHED();
   }
 

@@ -10,15 +10,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/video_frame.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
@@ -77,6 +81,9 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   void RequestRefreshFrame() final;
   void MaybeSuspend() final;
   void Resume() final;
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override;
   void StopAndDeAllocate() final;
   void OnUtilizationReport(int frame_feedback_id,
                            media::VideoCaptureFeedback feedback) final;
@@ -93,6 +100,20 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // All of the information necessary to select a target for capture.
   struct VideoCaptureTarget {
+    VideoCaptureTarget() = default;
+    VideoCaptureTarget(viz::FrameSinkId frame_sink_id,
+                       viz::SubtreeCaptureId subtree_capture_id,
+                       const base::Token& crop_id)
+        : frame_sink_id(frame_sink_id),
+          subtree_capture_id(subtree_capture_id),
+          crop_id(crop_id) {
+      // Subtree-capture and region-capture are mutually exclusive.
+      // This is trivially guaranteed by subtree-capture only being supported
+      // on Aura window-capture, and region-capture only being supported on
+      // tab-capture.
+      DCHECK(!subtree_capture_id.is_valid() || crop_id.is_zero());
+    }
+
     // The target frame sink id.
     viz::FrameSinkId frame_sink_id;
 
@@ -101,9 +122,14 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
     // captured.
     viz::SubtreeCaptureId subtree_capture_id;
 
+    // If |crop_id| is non-zero, it indicates that the video should be
+    // cropped to coordinates identified by it.
+    base::Token crop_id;
+
     inline bool operator==(const VideoCaptureTarget& other) const {
       return frame_sink_id == other.frame_sink_id &&
-             subtree_capture_id == other.subtree_capture_id;
+             subtree_capture_id == other.subtree_capture_id &&
+             crop_id == other.crop_id;
     }
 
     inline bool operator!=(const VideoCaptureTarget& other) const {

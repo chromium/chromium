@@ -49,6 +49,12 @@ class MockOperationObserver : public DisconnectTetheringOperation::Observer {
 }  // namespace
 
 class DisconnectTetheringOperationTest : public testing::Test {
+ public:
+  DisconnectTetheringOperationTest(const DisconnectTetheringOperationTest&) =
+      delete;
+  DisconnectTetheringOperationTest& operator=(
+      const DisconnectTetheringOperationTest&) = delete;
+
  protected:
   DisconnectTetheringOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -115,9 +121,6 @@ class DisconnectTetheringOperationTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<DisconnectTetheringOperation> operation_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisconnectTetheringOperationTest);
 };
 
 TEST_F(DisconnectTetheringOperationTest, TestSuccess) {

@@ -166,8 +166,9 @@ enum ChromePage {
   OSLANGUAGESINPUT = 71,
   OSLANGUAGESLANGUAGES = 72,
   // 73-76 are removed intentionally. Do not reuse them.
+  SMARTPRIVACY = 77,
 
-  // Next value to be used is 77.
+  // Next value to be used is 78.
 };
 
 // Describes an unique chrome app.
@@ -363,10 +364,6 @@ interface IntentHelperInstance {
   [MinVersion=32] AddPreferredApp@17(string package_name,
                                      IntentFilter intent_filter,
                                      IntentInfo intent_info);
-
-  // DEPRECATED. Use SetVerifiedLinks instead.
-  // TODO(crbug.com/1251026): Remove method.
-  [MinVersion=35] ResetVerifiedLinksDeprecated@18(array<string> package_names);
 
   // Set the verified link domain status to either always open (|always_open| is
   // true) or always ask (|always_open| is false) for the |package_names|.

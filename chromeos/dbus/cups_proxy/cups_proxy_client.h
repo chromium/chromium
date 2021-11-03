@@ -34,6 +34,9 @@ class COMPONENT_EXPORT(CUPS_PROXY) CupsProxyClient {
   // Returns the global instance which may be null if not initialized.
   static CupsProxyClient* Get();
 
+  CupsProxyClient(const CupsProxyClient&) = delete;
+  CupsProxyClient& operator=(const CupsProxyClient&) = delete;
+
   // Registers |callback| to run when the CupsProxyDaemon becomes available.
   // If the daemon is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.
@@ -57,9 +60,6 @@ class COMPONENT_EXPORT(CUPS_PROXY) CupsProxyClient {
   // Initialize/Shutdown should be used instead.
   CupsProxyClient();
   virtual ~CupsProxyClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CupsProxyClient);
 };
 
 }  // namespace chromeos

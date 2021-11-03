@@ -91,12 +91,12 @@ TEST_F(NeverConditionValidatorTest, ShouldNeverMeetConditions) {
   EXPECT_FALSE(validator_
                    .MeetsConditions(kNeverTestFeatureFoo, FeatureConfig(),
                                     event_model_, availability_model_,
-                                    display_lock_controller_, 0u)
+                                    display_lock_controller_, nullptr, 0u)
                    .NoErrors());
   EXPECT_FALSE(validator_
                    .MeetsConditions(kNeverTestFeatureBar, FeatureConfig(),
                                     event_model_, availability_model_,
-                                    display_lock_controller_, 0u)
+                                    display_lock_controller_, nullptr, 0u)
                    .NoErrors());
 }
 

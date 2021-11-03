@@ -393,13 +393,7 @@ TEST_F(CodecAllocatorTest, LowResolutionGetsSoftware) {
                      base::Unretained(this), run_loop.QuitClosure()),
       std::move(config));
 
-  bool lollipop = base::android::BuildInfo::GetInstance()->sdk_int() <
-                  base::android::SDK_VERSION_MARSHMALLOW;
-  if (lollipop)
-    EXPECT_CALL(*this, OnCodecCreated(CodecType::kAny));
-  else
-    EXPECT_CALL(*this, OnCodecCreated(CodecType::kSoftware));
-
+  EXPECT_CALL(*this, OnCodecCreated(CodecType::kSoftware));
   run_loop.Run();
 }
 

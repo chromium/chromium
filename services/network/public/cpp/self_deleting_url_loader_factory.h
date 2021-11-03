@@ -20,6 +20,11 @@ namespace network {
 // which should be owned by the set of its receivers.
 class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
     : public mojom::URLLoaderFactory {
+ public:
+  SelfDeletingURLLoaderFactory(const SelfDeletingURLLoaderFactory&) = delete;
+  SelfDeletingURLLoaderFactory& operator=(const SelfDeletingURLLoaderFactory&) =
+      delete;
+
  protected:
   // Constructs SelfDeletingURLLoaderFactory object that will self-delete
   // once all receivers disconnect (including |factory_receiver| below as well
@@ -51,8 +56,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SelfDeletingURLLoaderFactory
   void OnDisconnect();
 
   mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelfDeletingURLLoaderFactory);
 };
 
 }  // namespace network

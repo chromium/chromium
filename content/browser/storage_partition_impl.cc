@@ -44,7 +44,7 @@
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices_map.h"
-#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/browsing_data/storage_partition_code_cache_data_remover.h"
 #include "content/browser/buckets/bucket_context.h"
@@ -432,7 +432,7 @@ class LoginHandlerDelegate {
           auth_challenge_responder,
       WebContents::Getter web_contents_getter,
       const net::AuthChallengeInfo& auth_info,
-      bool is_request_for_main_frame,
+      bool is_request_for_primary_main_frame,
       uint32_t process_id,
       uint32_t request_id,
       const GURL& url,
@@ -441,7 +441,7 @@ class LoginHandlerDelegate {
       : auth_challenge_responder_(std::move(auth_challenge_responder)),
         auth_info_(auth_info),
         request_id_(process_id, request_id),
-        is_request_for_main_frame_(is_request_for_main_frame),
+        is_request_for_primary_main_frame_(is_request_for_primary_main_frame),
         creating_login_delegate_(false),
         url_(url),
         response_headers_(std::move(response_headers)),
@@ -484,8 +484,9 @@ class LoginHandlerDelegate {
     // WeakPtr is not strictly necessary here due to OnRequestCancelled.
     creating_login_delegate_ = true;
     login_delegate_ = GetContentClient()->browser()->CreateLoginDelegate(
-        auth_info_, web_contents, request_id_, is_request_for_main_frame_, url_,
-        response_headers_, first_auth_attempt_,
+        auth_info_, web_contents, request_id_,
+        is_request_for_primary_main_frame_, url_, response_headers_,
+        first_auth_attempt_,
         base::BindOnce(&LoginHandlerDelegate::OnAuthCredentials,
                        weak_factory_.GetWeakPtr()));
     creating_login_delegate_ = false;
@@ -509,7 +510,7 @@ class LoginHandlerDelegate {
       auth_challenge_responder_;
   net::AuthChallengeInfo auth_info_;
   const content::GlobalRequestID request_id_;
-  bool is_request_for_main_frame_;
+  bool is_request_for_primary_main_frame_;
   bool creating_login_delegate_;
   GURL url_;
   const scoped_refptr<net::HttpResponseHeaders> response_headers_;
@@ -523,7 +524,7 @@ void OnAuthRequiredContinuation(
     int32_t process_id,
     uint32_t request_id,
     const GURL& url,
-    bool is_request_for_main_frame,
+    bool is_request_for_primary_main_frame,
     bool first_auth_attempt,
     const net::AuthChallengeInfo& auth_info,
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
@@ -538,7 +539,7 @@ void OnAuthRequiredContinuation(
   }
   new LoginHandlerDelegate(
       std::move(auth_challenge_responder), std::move(web_contents_getter),
-      auth_info, is_request_for_main_frame, process_id, request_id, url,
+      auth_info, is_request_for_primary_main_frame, process_id, request_id, url,
       head_headers, first_auth_attempt);  // deletes self
 }
 
@@ -765,6 +766,11 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
       bool corb_enabled)
       : storage_partition_(storage_partition), corb_enabled_(corb_enabled) {}
 
+  URLLoaderFactoryForBrowserProcess(const URLLoaderFactoryForBrowserProcess&) =
+      delete;
+  URLLoaderFactoryForBrowserProcess& operator=(
+      const URLLoaderFactoryForBrowserProcess&) = delete;
+
   // mojom::URLLoaderFactory implementation:
 
   void CreateLoaderAndStart(
@@ -809,8 +815,6 @@ class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
 
   StoragePartitionImpl* storage_partition_;
   const bool corb_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForBrowserProcess);
 };
 
 // Static.
@@ -876,6 +880,11 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
            !storage_origin_->GetURL().is_empty());
   }
 
+  QuotaManagedDataDeletionHelper(const QuotaManagedDataDeletionHelper&) =
+      delete;
+  QuotaManagedDataDeletionHelper& operator=(
+      const QuotaManagedDataDeletionHelper&) = delete;
+
   void IncrementTaskCountOnIO();
   void DecrementTaskCountOnIO();
 
@@ -905,8 +914,6 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   absl::optional<url::Origin> storage_origin_;
   base::OnceClosure callback_;
   int task_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaManagedDataDeletionHelper);
 };
 
 // Helper for deleting all sorts of data from a partition, keeps track of
@@ -1263,8 +1270,6 @@ void StoragePartitionImpl::Initialize(
   payment_app_context_->Init(service_worker_context_);
 
   broadcast_channel_service_ = std::make_unique<BroadcastChannelService>();
-  broadcast_channel_provider_ =
-      std::make_unique<BroadcastChannelProvider>(weak_factory_.GetWeakPtr());
 
   bluetooth_allowed_devices_map_ =
       std::make_unique<BluetoothAllowedDevicesMap>();
@@ -1556,11 +1561,6 @@ PaymentAppContextImpl* StoragePartitionImpl::GetPaymentAppContext() {
 BroadcastChannelService* StoragePartitionImpl::GetBroadcastChannelService() {
   DCHECK(initialized_);
   return broadcast_channel_service_.get();
-}
-
-BroadcastChannelProvider* StoragePartitionImpl::GetBroadcastChannelProvider() {
-  DCHECK(initialized_);
-  return broadcast_channel_provider_.get();
 }
 
 BluetoothAllowedDevicesMap*

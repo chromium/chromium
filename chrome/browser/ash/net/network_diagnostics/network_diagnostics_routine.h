@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_ROUTINE_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_ROUTINE_H_
 
+#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 using RoutineResultCallback = base::OnceCallback<void(mojom::RoutineResultPtr)>;
@@ -60,6 +60,6 @@ class NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_ROUTINE_H_

@@ -26,12 +26,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+namespace ash {
+
 namespace {
+
 const char kUserId[] = "test@example.com";
 const char kNetworkId[] = "wifi1_guid";  // Matches FakeShillManagerClient
-}  // namespace
 
-namespace chromeos {
+}  // namespace
 
 class NetworkPrefStateObserverTest : public testing::Test {
  public:
@@ -117,4 +119,4 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
   EXPECT_EQ(base::Value(::onc::proxy::kPAC), *mode);
 }
 
-}  // namespace chromeos
+}  // namespace ash

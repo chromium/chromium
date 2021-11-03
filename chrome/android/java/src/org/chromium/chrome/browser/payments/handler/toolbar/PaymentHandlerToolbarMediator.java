@@ -74,7 +74,7 @@ import org.chromium.url.GURL;
     // WebContentsObserver:
     @Override
     public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
         if (rfhLifecycleState != LifecycleState.ACTIVE) return;
         // Hides the Progress Bar after a delay to make sure it is rendered for at least
         // a few frames, otherwise its completion won't be visually noticeable.
@@ -86,7 +86,7 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
             @LifecycleState int frameLifecycleState) {
         if (frameLifecycleState != LifecycleState.ACTIVE) return;
         mModel.set(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE, false);

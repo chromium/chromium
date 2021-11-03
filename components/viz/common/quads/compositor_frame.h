@@ -43,13 +43,6 @@ class VIZ_COMMON_EXPORT CompositorFrame {
     return render_pass_list.back()->output_rect.size();
   }
 
-  // The capture bounds from the root render pass, may be nullptr if
-  // no bounds are set.
-  const RegionCaptureBounds* capture_bounds() const {
-    DCHECK(!render_pass_list.empty());
-    return render_pass_list.back()->capture_bounds.get();
-  }
-
   bool HasCopyOutputRequests() const;
 
   CompositorFrameMetadata metadata;

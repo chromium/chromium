@@ -47,26 +47,25 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   void SetInstallWebAppsAfterSyncDelegate(
       InstallWebAppsAfterSyncDelegate delegate);
 
-  using UninstallFromSyncBeforeRegistryUpdateDelegate =
-      base::RepeatingCallback<void(std::vector<AppId> web_apps)>;
-  void SetUninstallFromSyncBeforeRegistryUpdateDelegate(
-      UninstallFromSyncBeforeRegistryUpdateDelegate delegate);
+  using UninstallWithoutRegistryUpdateFromSyncDelegate =
+      base::RepeatingCallback<void(const std::vector<AppId>& web_apps,
+                                   RepeatingUninstallCallback callback)>;
+  void SetUninstallWithoutRegistryUpdateFromSyncDelegate(
+      UninstallWithoutRegistryUpdateFromSyncDelegate delegate);
 
-  using UninstallFromSyncAfterRegistryUpdateDelegate =
-      base::RepeatingCallback<void(
-          std::vector<std::unique_ptr<WebApp>> web_apps,
-          RepeatingUninstallCallback callback)>;
-  void SetUninstallFromSyncAfterRegistryUpdateDelegate(
-      UninstallFromSyncAfterRegistryUpdateDelegate delegate);
+  using RetryIncompleteUninstallsDelegate = base::RepeatingCallback<void(
+      const std::vector<AppId>& apps_to_uninstall)>;
+  void SetRetryIncompleteUninstallsDelegate(
+      RetryIncompleteUninstallsDelegate delegate);
 
   // SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;
-  void UninstallFromSyncBeforeRegistryUpdate(
-      std::vector<AppId> web_apps) override;
-  void UninstallFromSyncAfterRegistryUpdate(
-      std::vector<std::unique_ptr<WebApp>> web_apps,
+  void UninstallWithoutRegistryUpdateFromSync(
+      const std::vector<AppId>& web_apps,
       RepeatingUninstallCallback callback) override;
+  void RetryIncompleteUninstalls(
+      const std::vector<AppId>& apps_to_uninstall) override;
 
   void DestroySubsystems();
 
@@ -81,10 +80,9 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
 
  private:
   InstallWebAppsAfterSyncDelegate install_web_apps_after_sync_delegate_;
-  UninstallFromSyncBeforeRegistryUpdateDelegate
+  UninstallWithoutRegistryUpdateFromSyncDelegate
       uninstall_from_sync_before_registry_update_delegate_;
-  UninstallFromSyncAfterRegistryUpdateDelegate
-      uninstall_from_sync_after_registry_update_delegate_;
+  RetryIncompleteUninstallsDelegate retry_incomplete_uninstalls_delegate_;
 
   std::unique_ptr<FakeWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> mutable_registrar_;

@@ -40,6 +40,10 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
  public:
   ScreenOrientationBrowserTest() = default;
 
+  ScreenOrientationBrowserTest(const ScreenOrientationBrowserTest&) = delete;
+  ScreenOrientationBrowserTest& operator=(const ScreenOrientationBrowserTest&) =
+      delete;
+
   // ContentBrowserTest:
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -111,14 +115,16 @@ class ScreenOrientationBrowserTest : public ContentBrowserTest  {
             .GetInt();
     return angle;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationBrowserTest);
 };
 
 class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
  public:
   ScreenOrientationOOPIFBrowserTest() {}
+
+  ScreenOrientationOOPIFBrowserTest(const ScreenOrientationOOPIFBrowserTest&) =
+      delete;
+  ScreenOrientationOOPIFBrowserTest& operator=(
+      const ScreenOrientationOOPIFBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
@@ -129,9 +135,6 @@ class ScreenOrientationOOPIFBrowserTest : public ScreenOrientationBrowserTest {
     SetupCrossSiteRedirector(embedded_test_server());
     ScreenOrientationBrowserTest::SetUpOnMainThread();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenOrientationOOPIFBrowserTest);
 };
 
 // This test doesn't work on MacOS X but the reason is mostly because it is not
@@ -346,8 +349,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationOOPIFBrowserTest,
   // Set up a fake Resize message with a screen orientation change.
   RenderWidgetHost* main_frame_rwh =
       web_contents()->GetMainFrame()->GetRenderWidgetHost();
-  display::ScreenInfo screen_info;
-  main_frame_rwh->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = main_frame_rwh->GetScreenInfo();
   int expected_angle = (screen_info.orientation_angle + 90) % 360;
 
   // Start a cross-site navigation, but don't commit yet.

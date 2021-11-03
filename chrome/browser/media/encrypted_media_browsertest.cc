@@ -622,13 +622,29 @@ IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
+#define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
+  DISABLED_Playback_VideoOnly_WebM_VP9Profile2
+#else
+#define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
+  Playback_VideoOnly_WebM_VP9Profile2
+#endif
 IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
-                       Playback_VideoOnly_WebM_VP9Profile2) {
+                       MAYBE_Playback_VideoOnly_WebM_VP9Profile2) {
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.webm");
 }
 
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1250305): Fails on dcheck-enabled builds on 11.0.
+#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
+  DISABLED_Playback_VideoOnly_MP4_VP9Profile2
+#else
+#define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
+  Playback_VideoOnly_MP4_VP9Profile2
+#endif
 IN_PROC_BROWSER_TEST_P(MseEncryptedMediaTest,
-                       Playback_VideoOnly_MP4_VP9Profile2) {
+                       MAYBE_Playback_VideoOnly_MP4_VP9Profile2) {
   TestSimplePlayback("bear-320x240-v-vp9_profile2_subsample_cenc-v.mp4");
 }
 

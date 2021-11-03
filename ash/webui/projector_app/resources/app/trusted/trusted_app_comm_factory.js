@@ -44,6 +44,14 @@ export class UntrustedAppClient extends PostMessageAPIClient {
   onSodaInstallError() {
     return this.callApiFn('onSodaInstallError', []);
   }
+
+  /**
+   * Notfies the app when screencasts' pending state have changed.
+   * @param {!Array<!projectorApp.PendingScreencast>} pendingScreencasts
+   */
+  onScreencastsStateChange(pendingScreencasts) {
+    return this.callApiFn('onScreencastsStateChange', pendingScreencasts);
+  }
 }
 
 /**
@@ -100,6 +108,9 @@ export class TrustedAppRequestHandler extends RequestHandler {
     });
     this.registerMethod('installSoda', (args) => {
       return this.browserProxy_.installSoda();
+    });
+    this.registerMethod('getPendingScreencasts', (args) => {
+      return this.browserProxy_.getPendingScreencasts();
     });
   }
 }

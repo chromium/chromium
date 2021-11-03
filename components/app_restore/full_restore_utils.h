@@ -35,12 +35,6 @@ void SaveAppLaunchInfo(
 // Saves the window information to the full restore file.
 COMPONENT_EXPORT(APP_RESTORE)
 void SaveWindowInfo(const app_restore::WindowInfo& window_info);
-
-// Fetches the restore window id from the restore data for the given |app_id|.
-// |app_id| should be a Chrome app id.
-COMPONENT_EXPORT(APP_RESTORE)
-int32_t FetchRestoreWindowId(const std::string& app_id);
-
 // Sets the current active profile path.
 COMPONENT_EXPORT(APP_RESTORE)
 void SetActiveProfilePath(const base::FilePath& profile_path);

@@ -108,7 +108,11 @@ void TestCaptureModeDelegate::StartObservingRestrictedContent(
     std::move(on_recording_started_callback_).Run();
 }
 
-void TestCaptureModeDelegate::StopObservingRestrictedContent() {}
+void TestCaptureModeDelegate::StopObservingRestrictedContent(
+    OnCaptureModeDlpRestrictionChecked callback) {
+  DCHECK(callback);
+  std::move(callback).Run(should_save_after_dlp_check_);
+}
 
 mojo::Remote<recording::mojom::RecordingService>
 TestCaptureModeDelegate::LaunchRecordingService() {
@@ -121,7 +125,10 @@ TestCaptureModeDelegate::LaunchRecordingService() {
 void TestCaptureModeDelegate::BindAudioStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {}
 
-void TestCaptureModeDelegate::OnSessionStateChanged(bool started) {}
+void TestCaptureModeDelegate::OnSessionStateChanged(bool started) {
+  if (on_session_state_changed_callback_)
+    std::move(on_session_state_changed_callback_).Run();
+}
 
 void TestCaptureModeDelegate::OnServiceRemoteReset() {
   // We simulate what the ServiceProcessHost does when the service remote is

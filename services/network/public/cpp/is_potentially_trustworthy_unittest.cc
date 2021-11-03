@@ -86,6 +86,7 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       {"http://*.foo.com", "http://bar.foo.com", false},
       {"*://foo.com", "http://foo.com", false},
       // Wildcards must be beyond eTLD+1.
+      {"foo.*", "http://foo.com", false},
       {"*.co.uk", "http://foo.co.uk", false},
       {"*.co.uk", "http://co.uk", false},
       {"*.baz", "http://foo.baz", false},
@@ -117,6 +118,7 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       {"10.*.30.40", "http://10.20.30.40", true},
       {"*.*.30.40", "http://10.20.30.40", true},
       {"10.20.*.40", "http://10.20.30.40", false},
+      {"10.20.30.*", "http://10.20.30.40", false},
       // Adjacent wildcards are not allowed.
       {"**.40", "http://10.20.30.40", false},
       {"10.**.40", "http://10.20.30.40", false},
@@ -126,9 +128,6 @@ TEST_F(SecureOriginAllowlistTest, HostnamePatterns) {
       // test cases.
       {"*.2.3.4.5", "http://2.3.4.5", false},
       {"*.1.2.3.4.5", "http://2.3.4.5", false},
-      // These are likely bugs.
-      {"10.20.30.*", "http://10.20.30.40", true},
-      {"foo.*", "http://foo.com", true},
       // *'s don't work as part of a component in IPv4 addresses - they must be
       // an entire component.
       {"10*.20.30.40", "http://10.20.30.40", false},

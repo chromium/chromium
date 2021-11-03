@@ -100,7 +100,7 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager>,
   // Clears |m_resizeScrollableArea|. if |shouldNotBeNull| is true this
   // function DCHECKs to make sure that variable is indeed not null.
   void ClearResizeScrollableArea(bool should_not_be_null);
-  void SetResizeScrollableArea(PaintLayer*, IntPoint);
+  void SetResizeScrollableArea(PaintLayer*, gfx::Point);
 
   // SnapFlingClient implementation.
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(

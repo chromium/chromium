@@ -41,11 +41,10 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
     EncryptedRecord record;
     record.set_encrypted_wrapped_record(std::string(encrypted_wrapped_record));
 
-    auto* const sequencing_information =
-        record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(GetNextSequencingId());
-    sequencing_information->set_generation_id(kGenerationId);
-    sequencing_information->set_priority(kPriority);
+    auto* const sequence_information = record.mutable_sequence_information();
+    sequence_information->set_sequencing_id(GetNextSequencingId());
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_priority(kPriority);
 
     auto* const encryption_info = record.mutable_encryption_info();
     encryption_info->set_encryption_key(kEncryptionKey);
@@ -79,8 +78,8 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   }
 
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
-  for (const auto& record : records) {
-    builder.AddRecord(record);
+  for (auto record : records) {
+    builder.AddRecord(std::move(record));
   }
   auto request_payload = builder.Build();
   ASSERT_TRUE(request_payload.has_value());
@@ -96,8 +95,9 @@ TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   EXPECT_EQ(record_list->GetList().size(), records.size());
 
   size_t counter = 0;
-  for (const auto& record : records) {
-    auto record_value_result = EncryptedRecordDictionaryBuilder(record).Build();
+  for (auto record : records) {
+    auto record_value_result =
+        EncryptedRecordDictionaryBuilder(std::move(record)).Build();
     ASSERT_TRUE(record_value_result.has_value());
     EXPECT_EQ(record_list->GetList()[counter++], record_value_result.value());
   }
@@ -114,12 +114,12 @@ TEST_P(RecordUploadRequestBuilderTest, BreakListOnSingleBadRecord) {
   }
   // Corrupt one record.
   records[kNumRecords - 2]
-      .mutable_sequencing_information()
+      .mutable_sequence_information()
       ->clear_generation_id();
 
   UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
-  for (const auto& record : records) {
-    builder.AddRecord(record);
+  for (auto record : records) {
+    builder.AddRecord((std::move(record)));
   }
   auto request_payload = builder.Build();
   ASSERT_FALSE(request_payload.has_value()) << request_payload.value();
@@ -138,15 +138,15 @@ TEST_P(RecordUploadRequestBuilderTest, DenyPoorlyFormedEncryptedRecords) {
 
   // Reject incorrectly set sequencing information by only setting sequencing
   // id.
-  auto* sequencing_information = record.mutable_sequencing_information();
-  sequencing_information->set_sequencing_id(1701);
+  auto* sequence_information = record.mutable_sequence_information();
+  sequence_information->set_sequencing_id(1701);
 
   EXPECT_FALSE(EncryptedRecordDictionaryBuilder(record).Build().has_value());
 
   // Finish correctly setting sequencing information but incorrectly set
   // encryption info.
-  sequencing_information->set_generation_id(12345678);
-  sequencing_information->set_priority(IMMEDIATE);
+  sequence_information->set_generation_id(12345678);
+  sequence_information->set_priority(IMMEDIATE);
 
   auto* encryption_info = record.mutable_encryption_info();
   encryption_info->set_encryption_key("Key");
@@ -165,7 +165,8 @@ TEST_P(RecordUploadRequestBuilderTest,
   EXPECT_FALSE(compressionless_record.has_compression_information());
 
   absl::optional<base::Value> compressionless_payload =
-      EncryptedRecordDictionaryBuilder(compressionless_record).Build();
+      EncryptedRecordDictionaryBuilder(std::move(compressionless_record))
+          .Build();
   DCHECK(compressionless_payload.has_value());
 
   EXPECT_FALSE(compressionless_payload.value().FindKey(
@@ -176,7 +177,7 @@ TEST_P(RecordUploadRequestBuilderTest,
   EXPECT_TRUE(compressed_record.has_compression_information());
 
   absl::optional<base::Value> compressed_record_payload =
-      EncryptedRecordDictionaryBuilder(compressed_record).Build();
+      EncryptedRecordDictionaryBuilder(std::move(compressed_record)).Build();
   DCHECK(compressed_record_payload.has_value());
 
   EXPECT_TRUE(compressed_record_payload.value().FindKey(

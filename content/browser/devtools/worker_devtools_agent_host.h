@@ -35,6 +35,9 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       const std::string& parent_id,
       base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback);
 
+  WorkerDevToolsAgentHost(const WorkerDevToolsAgentHost&) = delete;
+  WorkerDevToolsAgentHost& operator=(const WorkerDevToolsAgentHost&) = delete;
+
   // DevToolsAgentHost override.
   BrowserContext* GetBrowserContext() override;
   RenderProcessHost* GetProcessHost() override;
@@ -79,8 +82,6 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   std::unique_ptr<protocol::TargetAutoAttacher> auto_attacher_;
   base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback_;
   const base::UnguessableToken devtools_worker_token_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerDevToolsAgentHost);
 };
 
 }  // namespace content

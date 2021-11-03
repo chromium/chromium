@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests setting breakpoint when main thread blocks.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise('resources/blocking-main-thread.html');
 

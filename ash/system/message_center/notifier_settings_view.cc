@@ -61,7 +61,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/widget.h"
 
@@ -487,33 +487,40 @@ void NotifierSettingsView::NotifierButton::GetAccessibleNodeData(
 }
 
 void NotifierSettingsView::NotifierButton::GridChanged() {
-  using views::ColumnSet;
-  using views::GridLayout;
+  // TODO(crbug.com/1264821): Eliminate this function, set up the layout in the
+  // constructor, and replace TableLayout with BoxLayout.  Toggle the visibility
+  // of the policy icon dynamically as needed.
 
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-  ColumnSet* cs = layout->AddColumnSet(0);
-  // Add a column for the checkbox.
-  cs->AddPaddingColumn(0, kInnateCheckboxRightPadding);
-  cs->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
-                GridLayout::ColumnSize::kFixed, kComputedCheckboxSize, 0);
-  cs->AddPaddingColumn(0, kInternalHorizontalSpacing);
+  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout
+      // Add a column for the checkbox.
+      ->AddPaddingColumn(views::TableLayout::kFixedSize,
+                         kInnateCheckboxRightPadding)
+      .AddColumn(
+          views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+          views::TableLayout::kFixedSize,
+          views::TableLayout::ColumnSize::kFixed, kComputedCheckboxSize, 0)
 
-  // Add a column for the icon.
-  cs->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
-                GridLayout::ColumnSize::kFixed, kEntryIconSize, 0);
-  cs->AddPaddingColumn(0, kSmallerInternalHorizontalSpacing);
+      // Add a column for the icon.
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        kInternalHorizontalSpacing)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kFixed, kEntryIconSize, 0)
 
-  // Add a column for the name.
-  cs->AddColumn(GridLayout::LEADING, GridLayout::CENTER, 0,
-                GridLayout::ColumnSize::kUsePreferred, 0, 0);
+      // Add a column for the name.
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        kSmallerInternalHorizontalSpacing)
+      .AddColumn(views::LayoutAlignment::kStart,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
 
-  // Add a padding column which contains expandable blank space.
-  cs->AddPaddingColumn(1, 0);
+      // Add a padding column which contains expandable blank space.
+      .AddPaddingColumn(1.0f, 0)
 
-  layout->StartRow(0, 0);
-  layout->AddExistingView(checkbox_);
-  layout->AddExistingView(icon_view_);
-  layout->AddExistingView(name_view_);
+      .AddRows(1, views::TableLayout::kFixedSize);
 
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
@@ -521,9 +528,11 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
         gfx::CreateVectorIcon(kSystemMenuBusinessIcon, kEntryIconSize,
                               AshColorProvider::Get()->GetContentLayerColor(
                                   ContentLayerType::kIconColorPrimary)));
-    cs->AddColumn(GridLayout::CENTER, GridLayout::CENTER, 0,
-                  GridLayout::ColumnSize::kFixed, kEntryIconSize, 0);
-    layout->AddView(std::move(policy_enforced_icon));
+    layout->AddColumn(
+        views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
+        views::TableLayout::kFixedSize, views::TableLayout::ColumnSize::kFixed,
+        kEntryIconSize, 0);
+    AddChildView(std::move(policy_enforced_icon));
   }
 
   Layout();

@@ -1017,7 +1017,9 @@ public class WebContentsAccessibilityTest {
 
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
         Assert.assertTrue(ARIA_INVALID_ERROR, mNodeInfo.isContentInvalid());
-        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid spelling", mNodeInfo.getError());
+        // Spelling and Grammar errors via aria-invalid label on the whole text field are reported
+        // as general errors.
+        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid entry", mNodeInfo.getError());
     }
 
     /**
@@ -1034,7 +1036,9 @@ public class WebContentsAccessibilityTest {
 
         Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
         Assert.assertTrue(ARIA_INVALID_ERROR, mNodeInfo.isContentInvalid());
-        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid grammar", mNodeInfo.getError());
+        // Spelling and Grammar errors via aria-invalid label on the whole text field are reported
+        // as general errors.
+        Assert.assertEquals(ARIA_INVALID_ERROR, "Invalid entry", mNodeInfo.getError());
     }
 
     /**

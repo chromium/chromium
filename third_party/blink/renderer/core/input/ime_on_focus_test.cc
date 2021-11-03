@@ -31,11 +31,11 @@ class ImeOnFocusTest : public testing::Test {
   }
 
  protected:
-  void SendGestureTap(WebViewImpl*, IntPoint);
+  void SendGestureTap(WebViewImpl*, gfx::Point);
   void Focus(const AtomicString& element);
   void RunImeOnFocusTest(String file_name,
                          size_t,
-                         IntPoint tap_point = IntPoint(-1, -1),
+                         gfx::Point tap_point = gfx::Point(-1, -1),
                          const AtomicString& focus_element = g_null_atom,
                          String frame = "");
 
@@ -45,14 +45,14 @@ class ImeOnFocusTest : public testing::Test {
 };
 
 void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
-                                    IntPoint client_point) {
+                                    gfx::Point client_point) {
   WebGestureEvent web_gesture_event(WebInputEvent::Type::kGestureTap,
                                     WebInputEvent::kNoModifiers,
                                     WebInputEvent::GetStaticTimeStampForTests(),
                                     WebGestureDevice::kTouchscreen);
   // GestureTap is only ever from touch screens.
-  web_gesture_event.SetPositionInWidget(gfx::PointF(ToGfxPoint(client_point)));
-  web_gesture_event.SetPositionInScreen(gfx::PointF(ToGfxPoint(client_point)));
+  web_gesture_event.SetPositionInWidget(gfx::PointF(client_point));
+  web_gesture_event.SetPositionInScreen(gfx::PointF(client_point));
   web_gesture_event.data.tap.tap_count = 1;
   web_gesture_event.data.tap.width = 10;
   web_gesture_event.data.tap.height = 10;
@@ -69,7 +69,7 @@ void ImeOnFocusTest::Focus(const AtomicString& element) {
 void ImeOnFocusTest::RunImeOnFocusTest(
     String file_name,
     size_t expected_virtual_keyboard_request_count,
-    IntPoint tap_point,
+    gfx::Point tap_point,
     const AtomicString& focus_element,
     String frame) {
   RegisterMockedURLLoadFromBase(WebString(base_url_), test::CoreTestDataPath(),
@@ -122,22 +122,22 @@ TEST_F(ImeOnFocusTest, OnAutofocus) {
 }
 
 TEST_F(ImeOnFocusTest, OnUserGesture) {
-  RunImeOnFocusTest("ime-on-focus-on-user-gesture.html", 1, IntPoint(50, 50));
+  RunImeOnFocusTest("ime-on-focus-on-user-gesture.html", 1, gfx::Point(50, 50));
 }
 
 TEST_F(ImeOnFocusTest, AfterFirstGesture) {
   RunImeOnFocusTest("ime-on-focus-after-first-gesture.html", 1,
-                    IntPoint(50, 50), "input");
+                    gfx::Point(50, 50), "input");
 }
 
 TEST_F(ImeOnFocusTest, AfterNavigationWithinPage) {
   RunImeOnFocusTest("ime-on-focus-after-navigation-within-page.html", 1,
-                    IntPoint(50, 50), "input");
+                    gfx::Point(50, 50), "input");
 }
 
 TEST_F(ImeOnFocusTest, AfterFrameLoadOnGesture) {
   RunImeOnFocusTest("ime-on-focus-after-frame-load-on-gesture.html", 1,
-                    IntPoint(50, 50), "input", "frame.html");
+                    gfx::Point(50, 50), "input", "frame.html");
 }
 
 }  // namespace blink

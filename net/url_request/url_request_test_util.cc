@@ -87,7 +87,10 @@ void TestURLRequestContext::Init() {
 
   if (!host_resolver())
     context_storage_.set_host_resolver(
-        std::unique_ptr<HostResolver>(new MockCachingHostResolver()));
+        std::unique_ptr<HostResolver>(new MockCachingHostResolver(
+            /*cache_invalidation_num=*/0,
+            /*default_result=*/net::MockHostResolverBase::RuleResolver::
+                GetLocalhostResult())));
   if (!proxy_resolution_service())
     context_storage_.set_proxy_resolution_service(
         ConfiguredProxyResolutionService::CreateDirect());

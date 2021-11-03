@@ -365,6 +365,10 @@ const char kModernTabStripDescription[] =
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 
+const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
+const char kNTPViewHierarchyRepairDescription[] =
+    "Checks if NTP view hierarchy is broken and fixes it if necessary.";
+
 const char kOldSyncStringFREName[] = "Use previous sync screen strings";
 const char kOldSyncStringFREDescription[] =
     "When enabled, the strings of the previous sync screen are used in the "
@@ -564,6 +568,10 @@ const char kRecordSnapshotSizeDescription[] =
     "When enabled, the app will record UMA histograms for image and PDF "
     "snapshots. PDF snaphot will be taken just for the purpose of the "
     "histogram recording.";
+
+const char kSingleNtpName[] = "Enable Single NTP";
+const char kSingleNtpDescription[] =
+    "When enabled, uses one NTP for all tabs in a Browser";
 
 // Please insert your name/description above in alphabetical order.
 

@@ -65,8 +65,8 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
   void Start();
 
   // Obtains a fresh enrollment certificate, which contains enrollment ID, and
-  // uploads it.
-  void ObtainAndUploadCertificate();
+  // uploads it. If it fails, the manager will attempt to upload enrollment ID.
+  void ObtainAndUploadEnrollmentId();
 
   // Handles certificate upload status. If succeeded or failed to upload - does
   // nothing more. If failed to fetch - starts computed enrollment ID flow.

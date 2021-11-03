@@ -43,8 +43,10 @@ class PromptActionTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_web_controller_, FindElement(_, _, _))
-        .WillByDefault(RunOnceCallback<2>(
-            ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
+          std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                  std::make_unique<ElementFinder::Result>());
+        }));
     EXPECT_CALL(mock_action_delegate_, WaitForDom(_, _, _, _, _))
         .WillRepeatedly(Invoke(this, &PromptActionTest::FakeWaitForDom));
     ON_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
@@ -211,8 +213,10 @@ TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
 
   EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(IsEmpty()));
 }
@@ -276,8 +280,10 @@ TEST_F(PromptActionTest, DisabledUnlessElementExists) {
   EXPECT_TRUE((*user_actions_)[0].enabled());
 
   EXPECT_CALL(mock_web_controller_, FindElement(Selector({"element"}), _, _))
-      .WillRepeatedly(
-          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
+        std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                std::make_unique<ElementFinder::Result>());
+      }));
   task_env_.FastForwardBy(base::Seconds(1));
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_FALSE((*user_actions_)[0].enabled());

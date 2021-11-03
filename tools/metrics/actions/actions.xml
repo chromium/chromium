@@ -17620,7 +17620,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Accepted">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     The Safe Browsing Enhanced Protection promo is accepted.
@@ -17628,7 +17628,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Dismissed">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     The Safe Browsing Enhanced Protection promo is dismissed.
@@ -17670,7 +17670,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage_Promos_EnhancedProtection">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <description>
     Recorded when the user clicks a Enhanced Protection promotion on the New Tab
@@ -20832,7 +20832,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordProtection.Interstitial.ResetPassword">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     Reported when the user clicks on the reset password button on the
@@ -20841,7 +20841,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordProtection.ModalWarning.ChangePasswordButtonClicked">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     Reported when the user clicked on the change password button on the password
@@ -20850,7 +20850,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordProtection.ModalWarning.CloseWarning">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     Reported when the user closed the password protection modal warning.
@@ -20858,7 +20858,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordProtection.ModalWarning.IgnoreButtonClicked">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     Reported when the user clicked on the ignore button on the password
@@ -20867,7 +20867,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordProtection.PageInfo.ChangePasswordButtonClicked">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     Reported when the user clicks on the change password button on the page info
@@ -20876,7 +20876,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordProtection.PageInfo.MarkSiteAsLegitimate">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     Reported when the user clicks on the mark site as legitimate button on the
@@ -22062,7 +22062,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SafeBrowsing.Settings.ShowedFromSurfaceExplorerPromoSlinger">
-  <owner>bdea@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     The Safe Browsing setting page is shown to the user. The user reaches the

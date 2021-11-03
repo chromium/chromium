@@ -179,8 +179,7 @@
 #endif
 
 #if defined(OS_WIN)
-#include "base/win/core_winrt_util.h"
-#include "base/win/scoped_hstring.h"
+#include "base/win/windows_version.h"
 #endif
 
 #if BUILDFLAG(ENABLE_FEED_V2)
@@ -218,7 +217,6 @@
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "chrome/common/plugin_utils.h"
 #include "chrome/renderer/plugins/chrome_plugin_placeholder.h"
 #include "ppapi/shared_impl/ppapi_switches.h"  // nogncheck crbug.com/1125897
 #else
@@ -335,9 +333,8 @@ std::unique_ptr<base::Unwinder> CreateV8Unwinder(v8::Isolate* isolate) {
 // Mojo implementation (e.g. WebView).
 void MaybeEnableWebShare() {
 #if defined(OS_WIN)
-  if (!base::win::ResolveCoreWinRTDelayload() ||
-      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
-    // Web Share API is not available for Windows 7.
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    // Web Share API is not functional for non-UWP apps prior to Windows 10.
     return;
   }
 #endif
@@ -393,10 +390,19 @@ void ChromeContentRendererClient::RenderThreadStarted() {
       base::BindRepeating(&CreateV8Unwinder,
                           base::Unretained(v8::Isolate::GetCurrent())));
 
+  const bool is_extension = IsStandaloneContentExtensionProcess();
+
   thread->SetRendererProcessType(
-      IsStandaloneContentExtensionProcess()
+      is_extension
           ? blink::scheduler::WebRendererProcessType::kExtensionRenderer
           : blink::scheduler::WebRendererProcessType::kRenderer);
+
+  if (is_extension) {
+    // The process name was set to "Renderer" in RendererMain(). Update it to
+    // "Extension Renderer" to highlight that it's hosting an extension.
+    base::trace_event::TraceLog::GetInstance()->set_process_name(
+        "Extension Renderer");
+  }
 
 #if defined(OS_WIN)
   mojo::PendingRemote<mojom::ModuleEventSink> module_event_sink;
@@ -915,16 +921,6 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           render_frame, original_params);
     }
   } else {
-    // Flash is deprecated in M87 and removed in M88+. If a plugin uses flash,
-    // its status will be |PluginStatus::kNotFound|. If for some reason the
-    // status is different, we should not treat it as JavaScript plugin but
-    // return a deprecated message.
-    if (!ShouldUseJavaScriptSettingForPlugin(info)) {
-      return NonLoadablePluginPlaceholder::CreateFlashDeprecatedPlaceholder(
-                 render_frame, original_params)
-          ->plugin();
-    }
-
     // TODO(bauerb): This should be in content/.
     WebPluginParams params(original_params);
     for (const auto& mime_type : info.mime_types) {

@@ -12,6 +12,7 @@
 #include "components/federated_learning/floc_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,6 +82,7 @@ class PrivacySandboxHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_ =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);

@@ -948,6 +948,13 @@ void AccessibleNode::appendChild(AccessibleNode* child,
   child->document_ = GetAncestorDocument();
   child->parent_ = this;
 
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "Trying to access an AccessibleNode in a detached window.");
+    return;
+  }
+
   if (!GetExecutionContext()->GetSecurityOrigin()->CanAccess(
           child->GetExecutionContext()->GetSecurityOrigin())) {
     exception_state.ThrowDOMException(

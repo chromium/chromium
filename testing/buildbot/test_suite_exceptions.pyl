@@ -266,6 +266,7 @@
         },
       },
       'Mac10.15 Tests (dbg)': {
+        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
@@ -672,6 +673,21 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
         ],
       },
+      'Mac10.15 Tests (dbg)': {
+        # crbug.com/1042757
+        'swarming': {
+          'dimension_sets': [
+            {
+              # These shards are liable to time out when running on macmini7,1.
+              'cores': '8|12',
+            }
+          ],
+        },
+        # crbug.com/1196416
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel.browser_tests.filter',
+        ],
+      },
       'ToTWin(dbg)': {
         'swarming': {
           'shards': 20,
@@ -789,6 +805,11 @@
         'swarming': {
           'shards': 40,
         },
+      },
+      'win-backuprefptr-x64-fyi-rel': {
+       'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter',
+        ],
       },
     },
   },
@@ -1848,6 +1869,9 @@
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
       },
+      'Mac10.15 Tests (dbg)': { # https://crbug.com/1265051
+        'experiment_percentage': 100,
+      },
       'ToTLinuxTSan': {
         # These are slow on the TSan bots for some reason, crbug.com/794372
         'swarming': {
@@ -2674,9 +2698,6 @@
       'chromeos-amd64-generic-rel (reclient)': {
         'ci_only': True,
       },
-      'chromeos-amd64-generic-rel-dchecks': {
-        'ci_only': True,
-      },
     },
   },
   'skia_renderer_telemetry_unittests': {
@@ -2693,9 +2714,6 @@
         'ci_only': True,
       },
       'chromeos-amd64-generic-rel (reclient)': {
-        'ci_only': True,
-      },
-      'chromeos-amd64-generic-rel-dchecks': {
         'ci_only': True,
       },
     },
@@ -2985,6 +3003,11 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
         ],
+      },
+      'Mac10.15 Tests (dbg)': {
+        'swarming': {
+          'shards': 2,
+        },
       },
       'ToTLinuxASan': {
         'swarming': {

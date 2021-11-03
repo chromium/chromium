@@ -51,7 +51,9 @@ void UsbDeviceWin::Open(OpenCallback callback) {
       FROM_HERE, base::BindOnce(std::move(callback), std::move(device_handle)));
 }
 
-void UsbDeviceWin::ReadDescriptors(base::OnceCallback<void(bool)> callback) {
+void UsbDeviceWin::ReadDescriptors(
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+    base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_refptr<UsbDeviceHandle> device_handle;
@@ -59,7 +61,8 @@ void UsbDeviceWin::ReadDescriptors(base::OnceCallback<void(bool)> callback) {
       CreateFile(hub_path_.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr,
                  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr));
   if (handle.IsValid()) {
-    device_handle = new UsbDeviceHandleWin(this, std::move(handle));
+    device_handle = new UsbDeviceHandleWin(this, std::move(handle),
+                                           std::move(blocking_task_runner));
   } else {
     USB_PLOG(ERROR) << "Failed to open " << hub_path_;
     std::move(callback).Run(false);

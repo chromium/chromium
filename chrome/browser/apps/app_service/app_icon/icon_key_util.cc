@@ -14,4 +14,10 @@ apps::mojom::IconKeyPtr IncrementingIconKeyFactory::MakeIconKey(
       ++last_timeline_, apps::mojom::IconKey::kInvalidResourceId, icon_effects);
 }
 
+std::unique_ptr<apps::IconKey> IncrementingIconKeyFactory::CreateIconKey(
+    uint32_t icon_effects) {
+  return std::make_unique<apps::IconKey>(
+      ++last_timeline_, apps::IconKey::kInvalidResourceId, icon_effects);
+}
+
 }  // namespace apps_util

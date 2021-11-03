@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that jumping to previous location works as intended.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.addScriptTag('resources/example-fileset-for-test.js');

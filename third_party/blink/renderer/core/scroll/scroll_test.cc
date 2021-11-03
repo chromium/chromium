@@ -32,7 +32,7 @@
 namespace blink {
 
 namespace {
-const double kBeginFrameDelaySeconds =
+const double kScrollAnimationDuration =
     (base::FeatureList::IsEnabled(::features::kImpulseScrollAnimations) ? 1.5
                                                                         : 0.5);
 }
@@ -234,6 +234,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
       ScrollGranularity::kScrollByLine, FloatSize(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
+  // Sync time with ScrollAnimator.
+  Compositor().ResetLastFrameTime();
 
   Compositor().BeginFrame();
   ASSERT_FALSE(finished);
@@ -241,7 +243,7 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameLayoutViewportUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(kBeginFrameDelaySeconds);
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -276,6 +278,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
       ScrollGranularity::kScrollByLine, FloatSize(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
+  // Sync time with ScrollAnimator.
+  Compositor().ResetLastFrameTime();
 
   Compositor().BeginFrame();
   ASSERT_FALSE(finished);
@@ -283,23 +287,14 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameVisualViewporUserScrollCallBack) {
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(kBeginFrameDelaySeconds);
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
 // Test that the callback of user scroll will be executed when the animation
 // finishes at ScrollAnimator::TickAnimation for root frame user scroll at both
 // the layout and visual viewport.
-#if defined(THREAD_SANITIZER)
-// Flaky under thread sanitizers, see http://crbug.com/1202020
-#define MAYBE_TestRootFrameBothViewportsUserScrollCallBack \
-  DISABLED_TestRootFrameBothViewportsUserScrollCallBack
-#else
-#define MAYBE_TestRootFrameBothViewportsUserScrollCallBack \
-  TestRootFrameBothViewportsUserScrollCallBack
-#endif
-TEST_P(ScrollAnimatorSimTest,
-       MAYBE_TestRootFrameBothViewportsUserScrollCallBack) {
+TEST_P(ScrollAnimatorSimTest, TestRootFrameBothViewportsUserScrollCallBack) {
   GetDocument().GetFrame()->GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -327,6 +322,8 @@ TEST_P(ScrollAnimatorSimTest,
       ScrollGranularity::kScrollByLine, FloatSize(0, 1000),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
+  // Sync time with ScrollAnimator.
+  Compositor().ResetLastFrameTime();
 
   Compositor().BeginFrame();
   ASSERT_FALSE(finished);
@@ -334,19 +331,13 @@ TEST_P(ScrollAnimatorSimTest,
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
   Compositor().BeginFrame();
-  Compositor().BeginFrame(kBeginFrameDelaySeconds);
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
 // Test that the callback of user scroll will be executed when the animation
 // finishes at ScrollAnimator::TickAnimation for div user scroll.
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
-// Flaky under sanitizers, see http://crbug.com/1092550
-#define MAYBE_TestDivUserScrollCallBack DISABLED_TestDivUserScrollCallBack
-#else
-#define MAYBE_TestDivUserScrollCallBack TestDivUserScrollCallBack
-#endif
-TEST_P(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
+TEST_P(ScrollAnimatorSimTest, TestDivUserScrollCallBack) {
   GetDocument().GetSettings()->SetScrollAnimatorEnabled(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 500));
   SimRequest request("https://example.com/test.html", "text/html");
@@ -382,13 +373,15 @@ TEST_P(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
       ScrollGranularity::kScrollByLine, FloatSize(0, 100),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
+  // Sync time with ScrollAnimator.
+  Compositor().ResetLastFrameTime();
 
   Compositor().BeginFrame();
   ASSERT_FALSE(finished);
 
   // The callback is executed when the animation finishes at
   // ScrollAnimator::TickAnimation.
-  Compositor().BeginFrame(kBeginFrameDelaySeconds);
+  Compositor().BeginFrame(kScrollAnimationDuration);
   ASSERT_TRUE(finished);
 }
 
@@ -420,6 +413,9 @@ TEST_P(ScrollAnimatorSimTest, TestUserScrollCallBackAnimatorDisabled) {
       ScrollGranularity::kScrollByLine, FloatSize(0, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
+  // Sync time with ScrollAnimator.
+  Compositor().ResetLastFrameTime();
+
   Compositor().BeginFrame();
   ASSERT_TRUE(finished);
 }
@@ -454,6 +450,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
       ScrollGranularity::kScrollByLine, FloatSize(100, 300),
       ScrollableArea::ScrollCallback(
           base::BindLambdaForTesting([&]() { finished = true; })));
+  // Sync time with ScrollAnimator.
+  Compositor().ResetLastFrameTime();
 
   Compositor().BeginFrame();
   ASSERT_FALSE(finished);

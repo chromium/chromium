@@ -63,7 +63,7 @@ inline PhysicalRect BoxInPhysicalSpace(
     const LayoutNGTextCombine* text_combine) {
   PhysicalRect box_rect;
   if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData())
-    box_rect = PhysicalRect::FastAndLossyFromFloatRect(svg_data->rect);
+    box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
   else
     box_rect = cursor.CurrentItem()->RectInContainerFragment();
   box_rect.offset.left += paint_offset.left;
@@ -224,8 +224,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     DCHECK_EQ(text_item.Type(), NGFragmentItem::kSvgText);
     scaling_factor = svg_inline_text->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
-    visual_rect = ToGfxRect(EnclosingIntRect(
-        svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates()));
+    visual_rect = gfx::ToEnclosingRect(
+        svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
     DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();

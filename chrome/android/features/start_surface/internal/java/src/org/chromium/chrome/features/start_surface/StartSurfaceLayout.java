@@ -562,7 +562,7 @@ public class StartSurfaceLayout extends Layout {
     }
 
     private void postHiding() {
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled()) {
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(getContext())) {
             mStartSurface.onHide();
         } else {
             getGridTabListDelegate().postHiding();

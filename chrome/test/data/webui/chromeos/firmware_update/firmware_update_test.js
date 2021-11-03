@@ -28,8 +28,8 @@ export function firmwareUpdateAppTest() {
     // TODO(michaelcheco): Remove this stub test once the page has more
     // capabilities to test.
     assertEquals(
-        'Firmware Update',
-        page.shadowRoot.querySelector('#header').textContent);
+        'Firmware updates',
+        page.shadowRoot.querySelector('#header').textContent.trim());
   });
 
   test('SettingGettingTestProvider', () => {

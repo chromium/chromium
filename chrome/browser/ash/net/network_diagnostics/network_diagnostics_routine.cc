@@ -6,7 +6,7 @@
 
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine() {
@@ -36,4 +36,4 @@ void NetworkDiagnosticsRoutine::ExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

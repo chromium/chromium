@@ -5,6 +5,7 @@
 #include "ash/system/message_center/ash_notification_view.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/test/ash_test_base.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -161,7 +162,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   views::Label* message_view_in_expanded_state() {
     return notification_view_->message_view_in_expanded_state_;
   }
-  AshNotificationView::ExpandButton* expand_button() {
+  AshNotificationExpandButton* expand_button() {
     return notification_view_->expand_button_;
   }
   views::View* inline_settings_row() {

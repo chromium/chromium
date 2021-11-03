@@ -51,6 +51,7 @@ class BrowserTutorialServiceFactory : public BrowserContextKeyedServiceFactory {
       const BrowserTutorialServiceFactory&) = delete;
 
   void RegisterBubbleFactories();
+  void RegisterTutorials();
 
  private:
   friend struct base::DefaultSingletonTraits<BrowserTutorialServiceFactory>;
@@ -63,11 +64,7 @@ class BrowserTutorialServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
 
   bool registered_bubble_factories_ = false;
-};
-
-class BrowserTutorialRegistry : public TutorialRegistry {
- public:
-  void RegisterTutorials() override;
+  bool registered_tutorials_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_BROWSER_TUTORIAL_SERVICE_FACTORY_H_

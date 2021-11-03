@@ -27,14 +27,12 @@ public class AutofillAssistantTestTtsController
 
     private final Callback<SpeakRequest> mOnSpeakRequestCallback;
     private final Runnable mOnStopRequestCallback;
-    private final Callback<Integer> mOnTtsEventCallback;
     private long mNativeTtsController;
 
-    AutofillAssistantTestTtsController(Callback<SpeakRequest> onSpeakRequestCallback,
-            Runnable onStopRequestCallback, Callback<Integer> onTtsEventCallback) {
+    AutofillAssistantTestTtsController(
+            Callback<SpeakRequest> onSpeakRequestCallback, Runnable onStopRequestCallback) {
         mOnSpeakRequestCallback = onSpeakRequestCallback;
         mOnStopRequestCallback = onStopRequestCallback;
-        mOnTtsEventCallback = onTtsEventCallback;
     }
 
     /**
@@ -66,13 +64,20 @@ public class AutofillAssistantTestTtsController
         mOnStopRequestCallback.run();
     }
 
-    @CalledByNative
-    void onTtsEvent(int eventType) {
-        mOnTtsEventCallback.onResult(eventType);
+    /**
+     * Mimics receiving a content::TtsEventType for the current utterance.
+     *
+     * @param eventType An integer representing a valid content::TtsEventType value.
+     */
+    void simulateTtsEvent(int eventType) {
+        AutofillAssistantTestTtsControllerJni.get().simulateTtsEvent(
+                mNativeTtsController, AutofillAssistantTestTtsController.this, eventType);
     }
 
     @NativeMethods
     interface Natives {
         long createNative(AutofillAssistantTestTtsController caller);
+        void simulateTtsEvent(long nativeTtsControllerAndroid,
+                AutofillAssistantTestTtsController caller, int eventType);
     }
 }

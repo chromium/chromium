@@ -76,6 +76,8 @@ void IOTaskController::Cancel(IOTaskId task_id) {
     task->Cancel();
     NotifyIOTaskObservers(task->progress());
     tasks_.erase(it);
+  } else {
+    LOG(WARNING) << "Failed to cancel task: " << task_id << " not found";
   }
 }
 

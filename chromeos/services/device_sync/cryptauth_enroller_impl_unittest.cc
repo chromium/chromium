@@ -120,6 +120,11 @@ class DeviceSyncCryptAuthEnrollerTest
                        base::Unretained(this)));
   }
 
+  DeviceSyncCryptAuthEnrollerTest(const DeviceSyncCryptAuthEnrollerTest&) =
+      delete;
+  DeviceSyncCryptAuthEnrollerTest& operator=(
+      const DeviceSyncCryptAuthEnrollerTest&) = delete;
+
   // Starts the enroller.
   void StartEnroller(const cryptauth::GcmDeviceInfo& device_info) {
     secure_message_delegate_->set_next_public_key(kClientSessionPublicKey);
@@ -264,8 +269,6 @@ class DeviceSyncCryptAuthEnrollerTest
   CryptAuthClient::SetupEnrollmentCallback setup_callback_;
   CryptAuthClient::FinishEnrollmentCallback finish_callback_;
   CryptAuthClient::ErrorCallback error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthEnrollerTest);
 };
 
 TEST_F(DeviceSyncCryptAuthEnrollerTest, EnrollmentSucceeds) {

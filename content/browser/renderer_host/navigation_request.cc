@@ -3336,9 +3336,6 @@ void NavigationRequest::OnResponseStarted(
       was_redirected_ /* has_followed_redirect */,
       false /* url_upgraded_after_redirect */, true /* is_response_check */);
   DCHECK_NE(net_error, net::ERR_BLOCKED_BY_CLIENT);
-  // TODO(https://crbug.com/1090859): Remove this once the bug has been fixed.
-  if (net_error == net::ERR_BLOCKED_BY_CLIENT)
-    base::debug::DumpWithoutCrashing();
   if (net_error != net::OK) {
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error),
                             false /* skip_throttles */,
@@ -3700,7 +3697,7 @@ void NavigationRequest::OnStartChecksComplete(
       devtools_accepted_stream_types;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, begin_params_.get(), &report_raw_headers,
-      &devtools_accepted_stream_types);
+      &devtools_accepted_stream_types, &devtools_user_agent_override_);
   devtools_instrumentation::OnNavigationRequestWillBeSent(*this);
 
   // Merge headers with embedder's headers.
@@ -3915,11 +3912,14 @@ void NavigationRequest::OnRedirectChecksComplete(
         client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
         commit_params_->frame_policy.container_policy);
     modified_headers.MergeFrom(client_hints_extra_headers);
-    // On a redirect, if the Critical-CH header has Sec-CH-UA-Reduced, then we
-    // should send the reduced User-Agent string.
-    modified_headers.SetHeader(
-        net::HttpRequestHeaders::kUserAgent,
-        ComputeUserAgentValue(modified_headers, GetUserAgentOverride()));
+    // On a redirect, unless devtools has overridden the User-Agent header, if
+    // the Critical-CH header has Sec-CH-UA-Reduced, then we should send the
+    // reduced User-Agent string.
+    if (!devtools_user_agent_override_) {
+      modified_headers.SetHeader(
+          net::HttpRequestHeaders::kUserAgent,
+          ComputeUserAgentValue(modified_headers, GetUserAgentOverride()));
+    }
   }
 
   net::HttpRequestHeaders cors_exempt_headers;
@@ -4739,6 +4739,9 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
     bool is_response_check) {
   DCHECK(policy_container_navigation_bundle_.has_value());
   if (common_params_->url.SchemeIs(url::kAboutScheme))
+    return net::OK;
+
+  if (IsSameDocument())
     return net::OK;
 
   if (common_params_->should_check_main_world_csp ==
@@ -6257,9 +6260,14 @@ RenderFrameHostImpl* NavigationRequest::GetRenderFrameHost() {
   // Only allow the RenderFrameHost to be retrieved once it has been set for
   // this navigation. This will happens either at WillProcessResponse time for
   // regular navigations or at WillFailRequest time for error pages.
-  CHECK_GE(state_, WILL_PROCESS_RESPONSE)
-      << "This accessor should only be called after a RenderFrameHost has "
-         "been picked for this navigation.";
+  // NavigationRequests created for synchronous renderer commits (see
+  // documentation for |is_synchronous_renderer_commit_|) have a
+  // RenderFrameHost available from the start.
+  if (!is_synchronous_renderer_commit()) {
+    CHECK_GE(state_, WILL_PROCESS_RESPONSE)
+        << "This accessor should only be called after a RenderFrameHost has "
+           "been picked for this navigation.";
+  }
   static_assert(WILL_FAIL_REQUEST > WILL_PROCESS_RESPONSE,
                 "WillFailRequest state should come after WillProcessResponse");
   return render_frame_host_;
@@ -6964,12 +6972,8 @@ bool NavigationRequest::
     return false;
   }
 
-  if (!frame_tree_node_
-           ->is_on_initial_empty_document_or_subsequent_empty_documents()) {
-    // Return if we're not on the initial empty document (or subsequent empty
-    // documents).
-    // TODO(https://crbug.com/1215096): Only replace when we're on the initial
-    // empty document (don't replace on subsequent empty documents).
+  if (!frame_tree_node_->is_on_initial_empty_document()) {
+    // Return if we're not on the initial empty document.
     return false;
   }
 

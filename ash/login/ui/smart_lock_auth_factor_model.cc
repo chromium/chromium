@@ -16,7 +16,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kSmartLockIconSizeDp = 28;
+constexpr int kSmartLockIconSizeDp = 32;
 
 }  // namespace
 
@@ -66,6 +66,11 @@ void SmartLockAuthFactorModel::NotifySmartLockAuthResult(bool result) {
 AuthFactorModel::AuthFactorState
 SmartLockAuthFactorModel::GetAuthFactorState() {
   // TODO(crbug.com/1233614): Handle all SmartLockState values appropriately.
+  if (auth_result_.has_value()) {
+    return auth_result_.value() ? AuthFactorState::kAuthenticated
+                                : AuthFactorState::kErrorTemporary;
+  }
+
   switch (state_) {
     case SmartLockState::kDisabled:
       FALLTHROUGH;
@@ -139,18 +144,10 @@ int SmartLockAuthFactorModel::GetAccessibleNameId() {
   return GetLabelId();
 }
 
-void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
-  if (auth_result_.has_value() && auth_result_.value()) {
-    icon_view->SetImage(gfx::CreateVectorIcon(
-        kLockScreenFingerprintSuccessIcon, kSmartLockIconSizeDp,
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorPositive)));
-    return;
-  }
-
+void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorPrimary);
-  const gfx::VectorIcon* icon;
+  const gfx::VectorIcon* vector_icon;
   switch (state_) {
     case SmartLockState::kPhoneNotFound:
       FALLTHROUGH;
@@ -159,10 +156,10 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
     case SmartLockState::kPhoneFoundUnlockedAndDistant:
       FALLTHROUGH;
     case SmartLockState::kConnectingToPhone:
-      icon = &kLockScreenSmartLockBluetoothIcon;
+      vector_icon = &kLockScreenSmartLockBluetoothIcon;
       break;
     case SmartLockState::kPhoneFoundLockedAndProximate:
-      icon = &kLockScreenSmartLockPhoneIcon;
+      vector_icon = &kLockScreenSmartLockPhoneIcon;
       break;
     case SmartLockState::kPhoneAuthenticated:
       // Click to enter, icon doesn't matter.
@@ -180,11 +177,11 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
     case SmartLockState::kPasswordReentryRequired:
       FALLTHROUGH;
     case SmartLockState::kPrimaryUserAbsent:
-      icon = &kLockScreenSmartLockDisabledIcon;
+      vector_icon = &kLockScreenSmartLockDisabledIcon;
       break;
   }
-  icon_view->SetImage(
-      gfx::CreateVectorIcon(*icon, kSmartLockIconSizeDp, icon_color));
+  icon->SetImage(
+      gfx::CreateVectorIcon(*vector_icon, kSmartLockIconSizeDp, icon_color));
 }
 
 void SmartLockAuthFactorModel::OnTapOrClickEvent() {

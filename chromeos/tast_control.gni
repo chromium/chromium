@@ -42,6 +42,9 @@ tast_disabled_tests_from_chrome_all = [
   "quicksettings.SignInScreen.noaudio_nobattery",
   "quicksettings.SignInScreen.audio",
 
+  # crbug.com/1263234
+  "quicksettings.ManagedDeviceInfo",
+
   # b/201197372
   "crostini.AppEmacs",
 
@@ -59,6 +62,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1263561
   "camera.CCAUILauncher",
+
+  # crbug.com/1263233
+  "security.SharedFilesystemState",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following

@@ -606,7 +606,7 @@ export class FileTransferController {
                   return Promise.reject('ABORT');
                 }
                 // Send only the copy operation to IO Queue in the C++.
-                if (window.isSWA && !toMove) {
+                if (window.isSWA) {
                   chrome.fileManagerPrivate.startIOTask(
                       toMove ? chrome.fileManagerPrivate.IOTaskType.MOVE :
                                chrome.fileManagerPrivate.IOTaskType.COPY,

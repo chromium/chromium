@@ -24,7 +24,7 @@ class BackoffEntry;
 
 namespace extensions {
 
-class PolicyExtensionReinstaller;
+class CorruptedExtensionReinstaller;
 
 class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
  public:
@@ -111,7 +111,8 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   // reinstall in the future. See https://crbug.com/958794#c22 for details.
   std::set<std::string> would_be_reinstalled_ids_;
 
-  std::unique_ptr<PolicyExtensionReinstaller> policy_extension_reinstaller_;
+  std::unique_ptr<CorruptedExtensionReinstaller>
+      corrupted_extension_reinstaller_;
 };
 
 }  // namespace extensions

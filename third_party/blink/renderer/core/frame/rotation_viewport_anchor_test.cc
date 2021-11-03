@@ -93,7 +93,7 @@ TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
   Document& document = GetDocument();
   ScrollableArea* layout_viewport = document.View()->LayoutViewport();
 
-  IntPoint target_position(
+  gfx::Point target_position(
       5 * WebView().MainFrameViewWidget()->Size().width(),
       5 * WebView().MainFrameViewWidget()->Size().height());
 
@@ -109,10 +109,10 @@ TEST_F(RotationViewportAnchorTest, PositionRelativeToViewportSize) {
   Compositor().BeginFrame();
 
   target_position =
-      IntPoint(5 * WebView().MainFrameViewWidget()->Size().width(),
-               5 * WebView().MainFrameViewWidget()->Size().height());
+      gfx::Point(5 * WebView().MainFrameViewWidget()->Size().width(),
+                 5 * WebView().MainFrameViewWidget()->Size().height());
 
-  IntPoint expected_offset(
+  gfx::Point expected_offset(
       target_position.x() -
           WebView().MainFrameViewWidget()->Size().width() / 2 + 25,
       target_position.y());

@@ -12,11 +12,11 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<chromeos::eche_app::mojom::ScreenBacklightState,
+struct EnumTraits<ash::eche_app::mojom::ScreenBacklightState,
                   ash::ScreenBacklightState> {
-  static chromeos::eche_app::mojom::ScreenBacklightState ToMojom(
+  static ash::eche_app::mojom::ScreenBacklightState ToMojom(
       ash::ScreenBacklightState input);
-  static bool FromMojom(chromeos::eche_app::mojom::ScreenBacklightState input,
+  static bool FromMojom(ash::eche_app::mojom::ScreenBacklightState input,
                         ash::ScreenBacklightState* output);
 };
 

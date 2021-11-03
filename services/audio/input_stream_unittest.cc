@@ -48,6 +48,9 @@ class MockStreamClient : public media::mojom::AudioInputStreamClient {
  public:
   MockStreamClient() = default;
 
+  MockStreamClient(const MockStreamClient&) = delete;
+  MockStreamClient& operator=(const MockStreamClient&) = delete;
+
   mojo::PendingRemote<media::mojom::AudioInputStreamClient> MakeRemote() {
     DCHECK(!receiver_.is_bound());
     mojo::PendingRemote<media::mojom::AudioInputStreamClient> remote;
@@ -65,13 +68,14 @@ class MockStreamClient : public media::mojom::AudioInputStreamClient {
 
  private:
   mojo::Receiver<media::mojom::AudioInputStreamClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamClient);
 };
 
 class MockStreamObserver : public media::mojom::AudioInputStreamObserver {
  public:
   MockStreamObserver() = default;
+
+  MockStreamObserver(const MockStreamObserver&) = delete;
+  MockStreamObserver& operator=(const MockStreamObserver&) = delete;
 
   mojo::PendingRemote<media::mojom::AudioInputStreamObserver> MakeRemote() {
     DCHECK(!receiver_.is_bound());
@@ -90,13 +94,14 @@ class MockStreamObserver : public media::mojom::AudioInputStreamObserver {
 
  private:
   mojo::Receiver<media::mojom::AudioInputStreamObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamObserver);
 };
 
 class MockStream : public media::AudioInputStream {
  public:
   MockStream() {}
+
+  MockStream(const MockStream&) = delete;
+  MockStream& operator=(const MockStream&) = delete;
 
   double GetMaxVolume() override { return 1; }
 
@@ -110,9 +115,6 @@ class MockStream : public media::AudioInputStream {
   MOCK_METHOD0(GetAutomaticGainControl, bool());
   MOCK_METHOD0(IsMuted, bool());
   MOCK_METHOD1(SetOutputDeviceForAec, void(const std::string&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockStream);
 };
 
 }  // namespace

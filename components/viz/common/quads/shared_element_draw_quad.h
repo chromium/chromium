@@ -22,13 +22,13 @@ class VIZ_COMMON_EXPORT SharedElementDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              const SharedElementResourceId& resource_id);
+              const SharedElementResourceId& id);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              const SharedElementResourceId& resource_id);
+              const SharedElementResourceId& id);
 
   SharedElementResourceId resource_id;
 

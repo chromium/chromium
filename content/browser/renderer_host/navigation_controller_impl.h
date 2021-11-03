@@ -87,6 +87,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   NavigationControllerImpl(BrowserContext* browser_context,
                            FrameTree& frame_tree,
                            NavigationControllerDelegate* delegate);
+
+  NavigationControllerImpl(const NavigationControllerImpl&) = delete;
+  NavigationControllerImpl& operator=(const NavigationControllerImpl&) = delete;
+
   ~NavigationControllerImpl() override;
 
   // NavigationController implementation:
@@ -673,6 +677,16 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                               bool is_same_document,
                                               NavigationRequest* request);
 
+  // Adds details from a committed navigation to `entry` and the
+  // FrameNavigationEntry corresponding to `rfh`.
+  void UpdateNavigationEntryDetails(
+      NavigationEntryImpl* entry,
+      RenderFrameHostImpl* rfh,
+      const mojom::DidCommitProvisionalLoadParams& params,
+      NavigationRequest* request,
+      NavigationEntryImpl::UpdatePolicy update_policy,
+      bool is_new_entry);
+
   // Broadcasts this controller's session history offset and length to all
   // renderers involved in rendering the current page. The offset is
   // GetLastCommittedEntryIndex() and length is GetEntryCount().
@@ -839,8 +853,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<NavigationControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationControllerImpl);
 };
 
 }  // namespace content

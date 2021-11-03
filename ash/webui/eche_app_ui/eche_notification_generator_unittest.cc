@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class MockLaunchAppHelper : public LaunchAppHelper {
@@ -88,7 +88,7 @@ class EcheNotificationGeneratorTest : public testing::Test {
 
   void ShowNotification(const std::u16string& title,
                         const std::u16string& message,
-                        chromeos::eche_app::mojom::WebNotificationType type) {
+                        mojom::WebNotificationType type) {
     notification_generator_->ShowNotification(title, message, type);
   }
 
@@ -107,54 +107,48 @@ TEST_F(EcheNotificationGeneratorTest, ShowNotification) {
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
   ShowNotification(title.value(), message.value(),
-                   chromeos::eche_app::mojom::WebNotificationType::APP_CRAHSED);
+                   mojom::WebNotificationType::APP_CRAHSED);
   // AUTHORIZATION_NEEDED
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
-  ShowNotification(
-      title.value(), message.value(),
-      chromeos::eche_app::mojom::WebNotificationType::AUTHORIZATION_NEEDED);
+  ShowNotification(title.value(), message.value(),
+                   mojom::WebNotificationType::AUTHORIZATION_NEEDED);
   // CONNECTION_FAILED
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
-  ShowNotification(
-      title.value(), message.value(),
-      chromeos::eche_app::mojom::WebNotificationType::CONNECTION_FAILED);
+  ShowNotification(title.value(), message.value(),
+                   mojom::WebNotificationType::CONNECTION_FAILED);
   // CONNECTION_LOST
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
-  ShowNotification(
-      title.value(), message.value(),
-      chromeos::eche_app::mojom::WebNotificationType::CONNECTION_LOST);
+  ShowNotification(title.value(), message.value(),
+                   mojom::WebNotificationType::CONNECTION_LOST);
   // DEVICE_IDLE
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
   ShowNotification(title.value(), message.value(),
-                   chromeos::eche_app::mojom::WebNotificationType::DEVICE_IDLE);
+                   mojom::WebNotificationType::DEVICE_IDLE);
   // INITIALIZATION_ERROR
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
-  ShowNotification(
-      title.value(), message.value(),
-      chromeos::eche_app::mojom::WebNotificationType::INITIALIZATION_ERROR);
+  ShowNotification(title.value(), message.value(),
+                   mojom::WebNotificationType::INITIALIZATION_ERROR);
   // INVALID_NOTIFICATION
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
-  ShowNotification(
-      title.value(), message.value(),
-      chromeos::eche_app::mojom::WebNotificationType::INVALID_NOTIFICATION);
+  ShowNotification(title.value(), message.value(),
+                   mojom::WebNotificationType::INVALID_NOTIFICATION);
   // LAUNCH_NOTIFICATION_FAILED
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
   ShowNotification(title.value(), message.value(),
-                   chromeos::eche_app::mojom::WebNotificationType::
-                       LAUNCH_NOTIFICATION_FAILED);
+                   mojom::WebNotificationType::LAUNCH_NOTIFICATION_FAILED);
   // TABLET_MODE
   EXPECT_CALL(*launch_app_helper_,
               ShowNotification(testing::_, testing::_, testing::_));
   ShowNotification(title.value(), message.value(),
-                   chromeos::eche_app::mojom::WebNotificationType::TABLET_MODE);
+                   mojom::WebNotificationType::TABLET_MODE);
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

@@ -24,6 +24,13 @@ namespace base {
 
 namespace {
 
+#if defined(OS_ANDROID)
+// Defined in
+// //base/test/android/javatests/src/org/chromium/base/test/util/UrlUtils.java.
+constexpr char kExpectedChromiumTestsRoot[] =
+    "/storage/emulated/0/chromium_tests_root";
+#endif
+
 // Returns true if PathService::Get returns true and sets the path parameter
 // to non-empty for the given PathService key enumeration value.
 bool ReturnsValidPath(int key) {
@@ -62,7 +69,7 @@ bool ReturnsValidPath(int key) {
     LOG(INFO) << "Path (" << path << ") references parent.";
     return false;
   }
-#endif
+#endif  // defined(OS_APPLE)
   if (!result) {
     LOG(INFO) << "PathService::Get() returned false.";
     return false;
@@ -128,7 +135,7 @@ TEST_F(PathServiceTest, Get) {
       FILE_MODULE, DIR_MODULE};
 #else
   constexpr std::array<int, 0> kUnsupportedKeys = {};
-#endif
+#endif  // defined(OS_ANDROID)
   for (int key = PATH_START + 1; key < PATH_END; ++key) {
     if (std::find(kUnsupportedKeys.begin(), kUnsupportedKeys.end(), key) ==
         kUnsupportedKeys.end()) {
@@ -148,6 +155,10 @@ TEST_F(PathServiceTest, Get) {
     else
       EXPECT_PRED1(ReturnsInvalidPath, key);
   }
+#elif defined(OS_FUCHSIA)
+  for (int key = PATH_FUCHSIA_START + 1; key < PATH_FUCHSIA_END; ++key) {
+    EXPECT_PRED1(ReturnsValidPath, key);
+  }
 #elif defined(OS_APPLE)
   for (int key = PATH_MAC_START + 1; key < PATH_MAC_END; ++key) {
     EXPECT_PRED1(ReturnsValidPath, key);
@@ -162,7 +173,7 @@ TEST_F(PathServiceTest, Get) {
        ++key) {
     EXPECT_PRED1(ReturnsValidPath, key);
   }
-#endif
+#endif  // defined(OS_WIN)
 }
 
 // Tests that CheckedGet returns the same path as Get.
@@ -183,7 +194,7 @@ TEST_F(PathServiceTest, CheckedGetFailure) {
   EXPECT_DEATH(PathService::CheckedGet(kBadKey), "Failed to get the path");
 }
 
-#endif  // GTEST_HAS_DEATH_TEST
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 // Test that all versions of the Override function of PathService do what they
 // are supposed to do.
@@ -223,7 +234,7 @@ TEST_F(PathServiceTest, Override) {
                                                       non_existent,
                                                       false,
                                                       false));
-#endif
+#endif  // !defined(OS_ANDROID)
   // This works because indicating that |non_existent| is absolute skips the
   // internal MakeAbsoluteFilePath call.
   EXPECT_TRUE(PathService::OverrideAndCreateIfNeeded(my_special_key,
@@ -235,7 +246,7 @@ TEST_F(PathServiceTest, Override) {
   FilePath path;
   EXPECT_TRUE(PathService::Get(my_special_key, &path));
   EXPECT_EQ(non_existent, path);
-#endif
+#endif  // defined(OS_POSIX)
 }
 
 // Check if multiple overrides can co-exist.
@@ -330,8 +341,69 @@ TEST_F(PathServiceTest, GetProgramFiles) {
     EXPECT_EQ(programfiles_dir.value(),
         FILE_PATH_LITERAL("C:\\Program Files"));
   }
+#endif  // defined(_WIN64)
+}
+#endif  // defined(OS_WIN)
+
+// DIR_ASSETS is DIR_MODULE except on Fuchsia where it is the package root
+// and Android where it is overridden in tests by test_support_android.cc.
+TEST_F(PathServiceTest, DIR_ASSETS) {
+  FilePath path;
+  ASSERT_TRUE(PathService::Get(DIR_ASSETS, &path));
+#if defined(OS_FUCHSIA)
+  EXPECT_EQ(path.value(), "/pkg");
+#elif defined(OS_ANDROID)
+  // This key is overridden in //base/test/test_support_android.cc.
+  EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
+#else
+  EXPECT_EQ(path, PathService::CheckedGet(DIR_MODULE));
 #endif
 }
+
+// DIR_GEN_TEST_DATA_ROOT is DIR_MODULE except on Fuchsia where it is the
+// package root and Android where it is overridden in tests by
+// test_support_android.cc.
+TEST_F(PathServiceTest, DIR_GEN_TEST_DATA_ROOT) {
+  FilePath path;
+  ASSERT_TRUE(PathService::Get(DIR_GEN_TEST_DATA_ROOT, &path));
+#if defined(OS_FUCHSIA)
+  EXPECT_EQ(path.value(), "/pkg");
+#elif defined(OS_ANDROID)
+  // This key is overridden in //base/test/test_support_android.cc.
+  EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
+#else
+  // On other platforms all build output is in the same directory,
+  // so DIR_GEN_TEST_DATA_ROOT should match DIR_MODULE.
+  EXPECT_EQ(path, PathService::CheckedGet(DIR_MODULE));
 #endif
+}
+
+#if defined(OS_FUCHSIA)
+// On Fuchsia, some keys have fixed paths that are easy to test.
+
+TEST_F(PathServiceTest, DIR_APP_DATA) {
+  EXPECT_EQ(PathService::CheckedGet(DIR_APP_DATA).value(), "/data");
+}
+
+TEST_F(PathServiceTest, DIR_SRC_TEST_DATA_ROOT) {
+  FilePath test_binary_path;
+  EXPECT_EQ(PathService::CheckedGet(DIR_SRC_TEST_DATA_ROOT).value(), "/pkg");
+}
+
+#elif defined(OS_ANDROID)
+
+// These keys are overridden in //base/test/test_support_android.cc.
+TEST_F(PathServiceTest, AndroidTestOverrides) {
+  EXPECT_EQ(PathService::CheckedGet(DIR_ANDROID_APP_DATA).value(),
+            kExpectedChromiumTestsRoot);
+  EXPECT_EQ(PathService::CheckedGet(DIR_ASSETS).value(),
+            kExpectedChromiumTestsRoot);
+  EXPECT_EQ(PathService::CheckedGet(DIR_SRC_TEST_DATA_ROOT).value(),
+            kExpectedChromiumTestsRoot);
+  EXPECT_EQ(PathService::CheckedGet(DIR_GEN_TEST_DATA_ROOT).value(),
+            kExpectedChromiumTestsRoot);
+}
+
+#endif  // defined(OS_FUCHSIA)
 
 }  // namespace base

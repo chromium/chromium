@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -87,7 +87,7 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   PolicyTable label_table_;
   PolicyTable ipv4_scope_table_;
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace net

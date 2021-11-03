@@ -174,12 +174,12 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
     needs_text_metrics_update_ = false;
   }
 
-  FloatRect old_boundaries = ObjectBoundingBox();
+  gfx::RectF old_boundaries = ObjectBoundingBox();
 
   UpdateNGBlockLayout();
   needs_update_bounding_box_ = true;
 
-  FloatRect boundaries = ObjectBoundingBox();
+  gfx::RectF boundaries = ObjectBoundingBox();
   const bool bounds_changed = old_boundaries != boundaries;
   // If our bounds changed, notify the parents.
   if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
@@ -195,14 +195,14 @@ bool LayoutNGSVGText::IsObjectBoundingBoxValid() const {
   return PhysicalFragments().HasFragmentItems();
 }
 
-FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
+gfx::RectF LayoutNGSVGText::ObjectBoundingBox() const {
   NOT_DESTROYED();
   if (needs_update_bounding_box_) {
     // Compute a box containing repositioned text in the non-scaled coordinate.
     // We don't need to take into account of ink overflow here. We should
     // return a union of "advance x EM height".
     // https://svgwg.org/svg2-draft/coords.html#BoundingBoxes
-    FloatRect bbox;
+    gfx::RectF bbox;
     DCHECK_LE(PhysicalFragmentCount(), 1u);
     for (const auto& fragment : PhysicalFragments()) {
       if (!fragment.Items())
@@ -221,32 +221,32 @@ FloatRect LayoutNGSVGText::ObjectBoundingBox() const {
   return bounding_box_;
 }
 
-FloatRect LayoutNGSVGText::StrokeBoundingBox() const {
+gfx::RectF LayoutNGSVGText::StrokeBoundingBox() const {
   NOT_DESTROYED();
-  FloatRect box = ObjectBoundingBox();
+  gfx::RectF box = ObjectBoundingBox();
   if (box.IsEmpty())
-    return FloatRect();
+    return gfx::RectF();
   return SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box);
 }
 
-FloatRect LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
+gfx::RectF LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
   NOT_DESTROYED();
   // TODO(crbug.com/1179585): Just use ink overflow?
-  FloatRect box = ObjectBoundingBox();
+  gfx::RectF box = ObjectBoundingBox();
   if (box.IsEmpty())
-    return FloatRect();
+    return gfx::RectF();
   return SVGLayoutSupport::ComputeVisualRectForText(*this, box);
 }
 
 void LayoutNGSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(StrokeBoundingBox(), mode));
+  quads.push_back(LocalToAbsoluteQuad(FloatRect(StrokeBoundingBox()), mode));
 }
 
 FloatRect LayoutNGSVGText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return StrokeBoundingBox();
+  return FloatRect(StrokeBoundingBox());
 }
 
 bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,
@@ -271,7 +271,8 @@ PositionWithAffinity LayoutNGSVGText::PositionForPoint(
     const auto* text = DynamicTo<LayoutSVGInlineText>(descendant);
     if (!text)
       continue;
-    float distance = descendant->ObjectBoundingBox().SquaredDistanceTo(point);
+    float distance =
+        FloatRect(descendant->ObjectBoundingBox()).SquaredDistanceTo(point);
     if (distance >= min_distance)
       continue;
     min_distance = distance;

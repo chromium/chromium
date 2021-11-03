@@ -21,6 +21,7 @@ using RegionCaptureCropId = base::Token;
 // used for passing in region capture crop ids mapped to a gfx::Rect
 // representing the region of the viewport that should be cropped to for
 // tab capture.
+// See the design document at: https://tinyurl.com/region-capture.
 class VIZ_COMMON_EXPORT RegionCaptureBounds {
  public:
   RegionCaptureBounds();
@@ -31,6 +32,10 @@ class VIZ_COMMON_EXPORT RegionCaptureBounds {
   RegionCaptureBounds& operator=(RegionCaptureBounds&&);
   RegionCaptureBounds& operator=(const RegionCaptureBounds&);
   ~RegionCaptureBounds();
+
+  // We currently only support a single set of bounds for a given crop id.
+  // Multiple calls with the same crop id will update the bounds.
+  void Set(const RegionCaptureCropId& crop_id, const gfx::Rect& bounds);
 
   const base::flat_map<RegionCaptureCropId, gfx::Rect>& bounds() const {
     return bounds_;

@@ -638,16 +638,8 @@ class AutoPictureInPictureContentBrowserTest
 
 // Show/hide fullscreen page and check that Auto Picture-in-Picture is
 // triggered.
-// Flaky on Linux/Win only.  https://crbug.com/1244057
-#if defined(OS_WIN) || defined(OS_LINUX)
-#define MAYBE_AutoPictureInPictureTriggeredWhenFullscreen \
-  DISABLED_AutoPictureInPictureTriggeredWhenFullscreen
-#else
-#define MAYBE_AutoPictureInPictureTriggeredWhenFullscreen \
-  AutoPictureInPictureTriggeredWhenFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureContentBrowserTest,
-                       MAYBE_AutoPictureInPictureTriggeredWhenFullscreen) {
+                       AutoPictureInPictureTriggeredWhenFullscreen) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 

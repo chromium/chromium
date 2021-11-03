@@ -52,6 +52,10 @@ class CONTENT_EXPORT ServiceWorkerDevToolsManager {
   // Returns the ServiceWorkerDevToolsManager singleton.
   static ServiceWorkerDevToolsManager* GetInstance();
 
+  ServiceWorkerDevToolsManager(const ServiceWorkerDevToolsManager&) = delete;
+  ServiceWorkerDevToolsManager& operator=(const ServiceWorkerDevToolsManager&) =
+      delete;
+
   ServiceWorkerDevToolsAgentHost* GetDevToolsAgentHostForWorker(
       int worker_process_id,
       int worker_route_id);
@@ -173,8 +177,6 @@ class CONTENT_EXPORT ServiceWorkerDevToolsManager {
   // Clients may retain agent host for the terminated shared worker,
   // and we reconnect them when shared worker is restarted.
   base::flat_set<ServiceWorkerDevToolsAgentHost*> stopped_hosts_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerDevToolsManager);
 };
 
 }  // namespace content

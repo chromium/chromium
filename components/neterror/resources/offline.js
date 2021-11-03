@@ -854,7 +854,7 @@ Runner.prototype = {
    * @param {Event} e
    */
   handleCanvasKeyPress(e) {
-    if (!this.activated) {
+    if (!this.activated && !Runner.audioCues) {
       this.toggleSpeed();
       Runner.audioCues = true;
       this.generatedSoundFx.init();
@@ -892,7 +892,9 @@ Runner.prototype = {
         this.tRex.enableSlowConfig();
         this.horizon.adjustObstacleSpeed();
       }
-      this.disableSpeedToggle(true);
+      if (this.playing) {
+        this.disableSpeedToggle(true);
+      }
     }
   },
 

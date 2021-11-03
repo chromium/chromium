@@ -40,7 +40,6 @@ ProxyMain::ProxyMain(LayerTreeHost* layer_tree_host,
       current_pipeline_stage_(NO_PIPELINE_STAGE),
       final_pipeline_stage_(NO_PIPELINE_STAGE),
       deferred_final_pipeline_stage_(NO_PIPELINE_STAGE),
-      commit_waits_for_activation_(false),
       started_(false),
       defer_main_frame_update_(false) {
   TRACE_EVENT0("cc", "ProxyMain::ProxyMain");
@@ -122,6 +121,7 @@ void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
+  DCHECK(!layer_tree_host_->in_commit());
 
   base::TimeTicks begin_main_frame_start_time = base::TimeTicks::Now();
 
@@ -312,21 +312,20 @@ void ProxyMain::BeginMainFrame(
   if (updated)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
-  int source_frame_number = layer_tree_host_->SourceFrameNumber();
-
-  auto completion_event_ptr = std::make_unique<CompletionEvent>(
-      base::WaitableEvent::ResetPolicy::MANUAL);
-  auto* completion_event = completion_event_ptr.get();
-  layer_tree_host_->WillCommit(std::move(completion_event_ptr));
-
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(),
       begin_main_frame_state->begin_frame_args.frame_id.sequence_number);
 
+  auto completion_event_ptr = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  auto* completion_event = completion_event_ptr.get();
+  bool has_updates = (final_pipeline_stage_ == COMMIT_PIPELINE_STAGE);
+  layer_tree_host_->WillCommit(std::move(completion_event_ptr), has_updates);
   current_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
-  if (final_pipeline_stage_ < COMMIT_PIPELINE_STAGE) {
-    current_pipeline_stage_ = NO_PIPELINE_STAGE;
+
+  if (!has_updates) {
     completion_event->Signal();
+    current_pipeline_stage_ = NO_PIPELINE_STAGE;
     layer_tree_host_->DidBeginMainFrame();
     TRACE_EVENT_INSTANT0("cc,raf_investigation", "EarlyOut_NoUpdates",
                          TRACE_EVENT_SCOPE_THREAD);
@@ -351,7 +350,6 @@ void ProxyMain::BeginMainFrame(
     // Although the commit is internally aborted, this is because it has been
     // detected to be a no-op.  From the perspective of an embedder, this commit
     // went through, and input should no longer be throttled, etc.
-    layer_tree_host_->SetImplCommitFinishTime(base::TimeTicks::Now());
     layer_tree_host_->CommitComplete();
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
@@ -370,19 +368,12 @@ void ProxyMain::BeginMainFrame(
 
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
-    std::vector<std::unique_ptr<SwapPromise>> swap_promises =
-        layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises();
-
-    bool hold_commit_for_activation = commit_waits_for_activation_;
-    commit_waits_for_activation_ = false;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
                        base::Unretained(proxy_impl_.get()), completion_event,
                        layer_tree_host_, begin_main_frame_start_time,
-                       begin_main_frame_state->begin_frame_args,
-                       source_frame_number, std::move(swap_promises),
-                       hold_commit_for_activation));
+                       begin_main_frame_state->begin_frame_args));
     layer_tree_host_->WaitForCommitCompletion();
   }
 
@@ -391,9 +382,7 @@ void ProxyMain::BeginMainFrame(
   // but *not* script-created IntersectionObserver. See
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
-
   layer_tree_host_->CommitComplete();
-
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
@@ -484,11 +473,6 @@ void ProxyMain::SetNeedsRedraw(const gfx::Rect& damage_rect) {
       FROM_HERE,
       base::BindOnce(&ProxyImpl::SetNeedsRedrawOnImpl,
                      base::Unretained(proxy_impl_.get()), damage_rect));
-}
-
-void ProxyMain::SetNextCommitWaitsForActivation() {
-  DCHECK(IsMainThread());
-  commit_waits_for_activation_ = true;
 }
 
 void ProxyMain::SetTargetLocalSurfaceId(

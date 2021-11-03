@@ -36,13 +36,6 @@ namespace apps {
 class AppServiceProxyTest : public testing::Test {
  protected:
   using UniqueReleaser = std::unique_ptr<apps::IconLoader::Releaser>;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  using AppServiceProxy = apps::AppServiceProxyChromeOs;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  using AppServiceProxy = apps::AppServiceProxyLacros;
-#else
-  using AppServiceProxy = apps::AppServiceProxy;
-#endif
 
   class FakeIconLoader : public apps::IconLoader {
    public:

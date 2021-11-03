@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_INSTALLABILITY_ERROR_H_
 #define CONTENT_PUBLIC_BROWSER_INSTALLABILITY_ERROR_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,9 @@ struct CONTENT_EXPORT InstallabilityError {
   std::string error_id;
   std::vector<InstallabilityErrorArgument> installability_error_arguments;
 };
+
+CONTENT_EXPORT std::ostream& operator<<(std::ostream& os,
+                                        const InstallabilityError& error);
 
 }  // namespace content
 

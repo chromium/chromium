@@ -85,6 +85,10 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
     static Factory* test_factory_;
   };
 
+  CryptAuthDeviceSyncerImpl(const CryptAuthDeviceSyncerImpl&) = delete;
+  CryptAuthDeviceSyncerImpl& operator=(const CryptAuthDeviceSyncerImpl&) =
+      delete;
+
   ~CryptAuthDeviceSyncerImpl() override;
 
  private:
@@ -224,8 +228,6 @@ class CryptAuthDeviceSyncerImpl : public CryptAuthDeviceSyncer {
   std::unique_ptr<base::OneShotTimer> timer_;
 
   base::WeakPtrFactory<CryptAuthDeviceSyncerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceSyncerImpl);
 };
 
 }  // namespace device_sync

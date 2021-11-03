@@ -242,8 +242,8 @@ const CGFloat kMediumAlpha = 0.5;
           NSItemProviderPreferredImageSizeKey : [NSValue
               valueWithCGSize:CGSizeMake(kScreenShotWidth, kScreenShotHeight)]
         };
-        ItemBlock imageCompletion = ^(id item, NSError* error) {
-          self->_image = base::mac::ObjCCast<UIImage>(item);
+        ItemBlock imageCompletion = ^(id imageData, NSError* error) {
+          self->_image = base::mac::ObjCCast<UIImage>(imageData);
           if (self->_image && self.shareView) {
             dispatch_async(dispatch_get_main_queue(), ^{
               [self.shareView setScreenshot:self->_image];

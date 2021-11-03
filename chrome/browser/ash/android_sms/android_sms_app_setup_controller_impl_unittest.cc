@@ -162,8 +162,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
       return url_to_pwa_map_[install_url];
     }
 
-    network::mojom::CookieManager* GetCookieManager(const GURL& app_url,
-                                                    Profile* profile) override {
+    network::mojom::CookieManager* GetCookieManager(Profile* profile) override {
       return fake_cookie_manager_;
     }
 

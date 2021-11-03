@@ -66,6 +66,27 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(EQUAL, 0), 180, 180);
     return config;
   }
+
+  if (kIPHDesktopSharedHighlightingFeature.name == feature->name) {
+    // A config that allows the shared highlighting desktop IPH to be shown
+    // when a user receives a highlight:
+    // * Once per 7 days
+    // * Up to 5 times but only if unused in the last 7 days.
+    // * Used fewer than 2 times
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("iph_desktop_shared_highlighting_trigger",
+                                  Comparator(LESS_THAN, 5), 360, 360);
+    config->used = EventConfig("iph_desktop_shared_highlighting_used",
+                               Comparator(LESS_THAN, 2), 360, 360);
+    config->event_configs.insert(
+        EventConfig("iph_desktop_shared_highlighting_trigger",
+                    Comparator(EQUAL, 0), 7, 360));
+    return config;
+  }
 #endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS)
 

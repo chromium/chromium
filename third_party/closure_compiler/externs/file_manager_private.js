@@ -294,7 +294,7 @@ chrome.fileManagerPrivate.SharesheetLaunchSource = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.IOTaskStatus = {
+chrome.fileManagerPrivate.IOTaskState = {
   QUEUED: 'queued',
   IN_PROGRESS: 'in_progress',
   SUCCESS: 'success',
@@ -662,6 +662,23 @@ chrome.fileManagerPrivate.GetVolumeRootOptions;
  * }}
  */
 chrome.fileManagerPrivate.IOTaskParams;
+
+/**
+ * @typedef {{
+ *   type: !chrome.fileManagerPrivate.IOTaskType,
+ *   state: !chrome.fileManagerPrivate.IOTaskState,
+ *   numRemainingItems: number,
+ *   itemCount: number,
+ *   bytesTransferred: number,
+ *   sourceName: string,
+ *   destinationName: string,
+ *   totalBytes: number,
+ *   taskId: number,
+ *   remainingSeconds: number,
+ *   errorName: string,
+ * }}
+ */
+chrome.fileManagerPrivate.ProgressStatus;
 
 /**
  * Logout the current user for navigating to the re-authentication screen for
@@ -1318,6 +1335,13 @@ chrome.fileManagerPrivate.openWindow = function(params, callback) {};
  */
 chrome.fileManagerPrivate.startIOTask = function(type, entries, params) {};
 
+/**
+ * Cancels an I/O task by id. Task ids are communicated to the Files App in
+ * each I/O task's progress status.
+ * @param {number} taskId
+ */
+chrome.fileManagerPrivate.cancelIOTask = function (taskId) { };
+
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;
 
@@ -1356,3 +1380,8 @@ chrome.fileManagerPrivate.onCrostiniChanged;
 
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onTabletModeChanged;
+
+/**
+ * @type {!ChromeEvent}
+ */
+chrome.fileManagerPrivate.onIOTaskProgressStatus;

@@ -125,8 +125,17 @@ enum class ConfigParsingEvent {
   // Fails to parse the snooze parameters.
   FAILURE_SNOOZE_PARAMS_PARSE = 15,
 
+  // Fails to parse the blocked_by parameters.
+  FAILURE_BLOCKED_BY_PARSE = 16,
+
+  // Fails to parse the blocked_by feature list.
+  FAILURE_BLOCKED_BY_UNKNOWN_FEATURE = 17,
+
+  // Fails to parse the blocking parameters.
+  FAILURE_BLOCKING_PARSE = 18,
+
   // Last entry for the enum.
-  COUNT = 16,
+  COUNT = 19,
 };
 
 // Used in metrics to track database states. Each type will match to a suffix

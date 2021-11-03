@@ -802,13 +802,13 @@ void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
 
 absl::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() {
-  return ToPixelRect(gfx::Rect(native_widget_delegate()->GetMinimumSize()))
+  return ToPixelRect(gfx::Rect(native_widget_delegate_->GetMinimumSize()))
       .size();
 }
 
 absl::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
-  return ToPixelRect(gfx::Rect(native_widget_delegate()->GetMaximumSize()))
+  return ToPixelRect(gfx::Rect(native_widget_delegate_->GetMaximumSize()))
       .size();
 }
 
@@ -885,7 +885,7 @@ void DesktopWindowTreeHostPlatform::SetVisible(bool visible) {
   if (compositor())
     compositor()->SetVisible(visible);
 
-  native_widget_delegate()->OnNativeWidgetVisibilityChanged(visible);
+  native_widget_delegate_->OnNativeWidgetVisibilityChanged(visible);
 }
 
 void DesktopWindowTreeHostPlatform::AddAdditionalInitProperties(

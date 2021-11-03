@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -166,6 +167,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
                  window."/>
     <variant name="Total" summary="Should be same as BorealisTotal."/>
   </token>
+</histogram>
+
+<histogram name="Borealis.GameMode.Result" enum="BorealisGameModeResult"
+    expires_after="2022-01-02">
+  <owner>lqu@google.com</owner>
+  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
+  <summary>
+    Records when game mode is entered and when the previous game mode call timed
+    out/failed. They will only be recorded the first time we detect that game
+    mode is entered/failed for each time that game mode is initially entered.
+  </summary>
 </histogram>
 
 <histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"

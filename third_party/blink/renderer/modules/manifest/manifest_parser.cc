@@ -102,15 +102,16 @@ ManifestParser::ManifestParser(const String& data,
 
 ManifestParser::~ManifestParser() {}
 
-void ManifestParser::Parse() {
+bool ManifestParser::Parse() {
   JSONParseError error;
-  std::unique_ptr<JSONValue> root = ParseJSON(data_, &error);
+  bool has_comments = false;
+  std::unique_ptr<JSONValue> root = ParseJSON(data_, &error, &has_comments);
   manifest_ = mojom::blink::Manifest::New();
   if (!root) {
     AddErrorInfo(error.message, true, error.line, error.column);
     ManifestUmaUtil::ParseFailed();
     failed_ = true;
-    return;
+    return false;
   }
 
   std::unique_ptr<JSONObject> root_object = JSONObject::From(std::move(root));
@@ -118,7 +119,7 @@ void ManifestParser::Parse() {
     AddErrorInfo("root element must be a valid JSON object.", true);
     ManifestUmaUtil::ParseFailed();
     failed_ = true;
-    return;
+    return false;
   }
 
   manifest_->name = ParseName(root_object.get());
@@ -172,6 +173,8 @@ void ManifestParser::Parse() {
   }
 
   ManifestUmaUtil::ParseSucceeded(manifest_);
+
+  return has_comments;
 }
 
 const mojom::blink::ManifestPtr& ManifestParser::manifest() const {

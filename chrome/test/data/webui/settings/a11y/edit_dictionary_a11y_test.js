@@ -5,9 +5,10 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
-import {FakeLanguageSettingsPrivate} from 'chrome://test/settings/fake_language_settings_private.js';
-import {TestLanguagesBrowserProxy} from 'chrome://test/settings/test_languages_browser_proxy.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {FakeLanguageSettingsPrivate} from '../fake_language_settings_private.js';
+import {TestLanguagesBrowserProxy} from '../test_languages_browser_proxy.js';
 
 const fakeLanguageSettingsPrivate = new FakeLanguageSettingsPrivate();
 const fakeLanugagesProxy = new TestLanguagesBrowserProxy();

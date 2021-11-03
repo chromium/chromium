@@ -4,7 +4,7 @@
 
 #include "ash/webui/eche_app_ui/feature_status.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
@@ -36,4 +36,4 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

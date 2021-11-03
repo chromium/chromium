@@ -1475,6 +1475,14 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
     controller_->Hide(PopupHidingReason::kOverlappingWithAnotherPrompt);
     return false;
   }
+  // On Windows, due to platform-specific implementation details, the previous
+  // check isn't reliable, and fails to detect open prompts. Since the most
+  // critical bubble is the permission bubble, we check for that specifically.
+  if (BoundsOverlapWithOpenPermissionsPrompt(popup_bounds,
+                                             controller_->GetWebContents())) {
+    controller_->Hide(PopupHidingReason::kOverlappingWithAnotherPrompt);
+    return false;
+  }
 
   SetSize(preferred_size);
 

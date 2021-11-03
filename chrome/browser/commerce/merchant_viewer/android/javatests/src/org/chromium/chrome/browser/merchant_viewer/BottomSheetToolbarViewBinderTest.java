@@ -23,12 +23,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for {@link BottomSheetToolbarViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class BottomSheetToolbarViewBinderTest extends DummyUiChromeActivityTestCase {
+public class BottomSheetToolbarViewBinderTest extends DummyUiActivityTestCase {
     private final AtomicBoolean mIconClicked = new AtomicBoolean();
 
     private BottomSheetToolbarView mItemView;

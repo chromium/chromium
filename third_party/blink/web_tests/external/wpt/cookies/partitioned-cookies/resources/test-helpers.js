@@ -42,3 +42,14 @@ function testDomPartitionedCookies({cookieNames, expectsCookie}) {
     }
   }, getPartitionedCookieTestName(expectsCookie, 'DOM'));
 }
+
+function testCookieStorePartitionedCookies({cookieNames, expectsCookie}) {
+  promise_test(async () => {
+    const cookies = await cookieStore.getAll({partitioned: true});
+    for (const cookieName of cookieNames) {
+      assert_equals(
+          !!cookies.find(c => c.name === cookieName), expectsCookie,
+          getPartitionedCookieAssertDesc(expectsCookie, cookieName));
+    }
+  }, getPartitionedCookieTestName(expectsCookie, 'CookieStore'));
+}

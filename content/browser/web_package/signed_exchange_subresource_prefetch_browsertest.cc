@@ -133,6 +133,9 @@ class MockClock {
     return *mock_clock;
   }
 
+  MockClock(const MockClock&) = delete;
+  MockClock& operator=(const MockClock&) = delete;
+
   void Advance(base::TimeDelta delta) {
     DCHECK_GE(delta, base::TimeDelta());
     base::AutoLock lock(lock_);
@@ -164,8 +167,6 @@ class MockClock {
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
   base::Lock lock_;
   base::TimeDelta offset_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(MockClock);
 };
 
 MockClock* MockClock::mock_clock_ = nullptr;
@@ -174,6 +175,11 @@ class NavigationHandleSXGAttributeObserver : public WebContentsObserver {
  public:
   explicit NavigationHandleSXGAttributeObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
+
+  NavigationHandleSXGAttributeObserver(
+      const NavigationHandleSXGAttributeObserver&) = delete;
+  NavigationHandleSXGAttributeObserver& operator=(
+      const NavigationHandleSXGAttributeObserver&) = delete;
 
   // WebContentsObserver implementation.
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
@@ -187,8 +193,6 @@ class NavigationHandleSXGAttributeObserver : public WebContentsObserver {
 
  private:
   absl::optional<bool> had_prefetched_alt_sxg_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigationHandleSXGAttributeObserver);
 };
 
 }  // namespace

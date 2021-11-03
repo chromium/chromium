@@ -303,6 +303,9 @@ try_.chromium_android_builder(
     name = "android-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,
+    # TODO (kimstephanie): Change to cores = 16 and ssd = True once bots have
+    # landed
+    cores = "8|16",
     executable = "recipe:binary_size_trybot",
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
@@ -776,10 +779,6 @@ try_.chromium_chromiumos_builder(
 )
 
 try_.chromium_chromiumos_builder(
-    name = "chromeos-amd64-generic-rel-dchecks",
-)
-
-try_.chromium_chromiumos_builder(
     name = "chromeos-arm-generic-dbg",
 )
 
@@ -844,10 +843,8 @@ try_.chromium_chromiumos_orchestrator_pair(
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_builderless = not settings.is_main,
     orchestrator_cores = 2,
     orchestrator_tryjob = try_.job(),
-    compilator_builderless = not settings.is_main,
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
     compilator_name = "linux-chromeos-rel-compilator",
@@ -1080,6 +1077,23 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "fuchsia-binary-size",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = True,
+    executable = "recipe:binary_size_fuchsia_trybot",
+    properties = {
+        "$build/binary_size": {
+            "analyze_targets": [
+                "//fuchsia/release:fuchsia_sizes",
+            ],
+            "compile_targets": [
+                "fuchsia_sizes",
+            ],
+        },
+    },
+)
+
+try_.chromium_linux_builder(
     name = "fuchsia-arm64-cast",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
@@ -1292,10 +1306,8 @@ try_.chromium_linux_orchestrator_pair(
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_builderless = not settings.is_main,
     orchestrator_cores = "2|4",
     orchestrator_tryjob = try_.job(),
-    compilator_builderless = not settings.is_main,
     compilator_cores = 16,
     compilator_goma_jobs = goma.jobs.J150,
     compilator_name = "linux-rel-compilator",
@@ -1306,12 +1318,10 @@ try_.chromium_android_orchestrator_pair(
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    orchestrator_builderless = False,
     orchestrator_cores = 4,
     orchestrator_tryjob = try_.job(
         experiment_percentage = 10,
     ),
-    compilator_builderless = False,
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
     compilator_name = "android-marshmallow-x86-rel-compilator",
@@ -1382,10 +1392,8 @@ try_.chromium_linux_orchestrator_pair(
     name = "linux_chromium_asan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    orchestrator_builderless = not settings.is_main,
     orchestrator_cores = 2,
     orchestrator_tryjob = try_.job(),
-    compilator_builderless = False,
     compilator_cores = 16,
     compilator_goma_jobs = goma.jobs.J150,
     compilator_name = "linux_chromium_asan_rel_ng-compilator",
@@ -1480,10 +1488,8 @@ try_.chromium_linux_orchestrator_pair(
     name = "linux_chromium_tsan_rel_ng",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    orchestrator_builderless = not settings.is_main,
     orchestrator_cores = 2,
     orchestrator_tryjob = try_.job(),
-    compilator_builderless = False,
     compilator_cores = 16,
     compilator_goma_jobs = goma.jobs.J150,
     compilator_name = "linux_chromium_tsan_rel_ng-compilator",
@@ -1730,6 +1736,7 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
     main_list_view = "try",
     tryjob = try_.job(
         location_regexp = [
@@ -1746,6 +1753,7 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
     main_list_view = "try",
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
@@ -1768,6 +1776,11 @@ try_.chromium_mac_ios_builder(
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-noncq",
     xcode = xcode.x13main,
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/third_party/crashpad/crashpad/.+",
+        ],
+    ),
 )
 
 try_.chromium_mac_ios_builder(
@@ -1934,10 +1947,8 @@ try_.chromium_win_orchestrator_pair(
     use_clang_coverage = True,
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
-    orchestrator_builderless = False,
     orchestrator_cores = 4,
     orchestrator_tryjob = try_.job(),
-    compilator_builderless = False,
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
     compilator_name = "win10_chromium_x64_rel_ng-compilator",

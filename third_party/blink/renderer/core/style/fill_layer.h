@@ -293,8 +293,6 @@ class CORE_EXPORT FillLayer {
  private:
   friend class ComputedStyle;
 
-  FillLayer() = default;
-
   bool ImageIsOpaque(const Document&, const ComputedStyle&) const;
   bool ImageTilesLayer() const;
   bool LayerPropertiesEqual(const FillLayer&) const;

@@ -38,7 +38,7 @@ void FakeMissiveClient::Flush(
 }
 
 void FakeMissiveClient::ReportSuccess(
-    const reporting::SequencingInformation& sequencing_information,
+    const reporting::SequenceInformation& sequence_information,
     bool force_confirm) {
   return;
 }

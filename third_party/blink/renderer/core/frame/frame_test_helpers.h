@@ -137,7 +137,7 @@ void PumpPendingRequestsForFrameToLoad(WebLocalFrame*);
 
 WebMouseEvent CreateMouseEvent(WebInputEvent::Type,
                                WebMouseEvent::Button,
-                               const IntPoint&,
+                               const gfx::Point&,
                                int modifiers);
 
 // Helpers for creating frames for test purposes. All methods that accept raw

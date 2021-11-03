@@ -102,10 +102,11 @@ void SearchControllerImpl::OpenResult(ChromeSearchResult* result,
   }
 }
 
-void SearchControllerImpl::InvokeResultAction(ChromeSearchResult* result,
-                                              int action_index) {
+void SearchControllerImpl::InvokeResultAction(
+    ChromeSearchResult* result,
+    ash::SearchResultActionType action) {
   // TODO(xiyuan): Hook up with user learning.
-  result->InvokeAction(action_index);
+  result->InvokeAction(action);
 }
 
 size_t SearchControllerImpl::AddGroup(size_t max_results) {

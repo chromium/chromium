@@ -20,9 +20,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
-
-using views::GridLayout;
+#include "ui/views/layout/table_layout.h"
 
 namespace ash {
 namespace {
@@ -47,15 +45,14 @@ struct CompareByDisplayIndexAndPositionPriority {
 };
 
 std::vector<SearchResult*> GetTasksResultsForContinueSection(
-    SearchModel* search_model) {
-  SearchModel::SearchResults* results = search_model->results();
+    SearchModel::SearchResults* results) {
   auto continue_filter = [](const SearchResult& r) -> bool {
     return r.display_type() == SearchResultDisplayType::kContinue;
   };
-  std::vector<SearchResult*> continue_results =
-      SearchModel::FilterSearchResultsByFunction(
-          results, base::BindRepeating(continue_filter),
-          /*max_results=*/4);
+  std::vector<SearchResult*> continue_results;
+  continue_results = SearchModel::FilterSearchResultsByFunction(
+      results, base::BindRepeating(continue_filter),
+      /*max_results=*/4);
 
   std::sort(continue_results.begin(), continue_results.end(),
             CompareByDisplayIndexAndPositionPriority());
@@ -76,30 +73,26 @@ ContinueTaskContainerView::ContinueTaskContainerView(
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets(0, kSuggestedTasksHorizontalPadding)));
 
-  GridLayout* layout = SetLayoutManager(std::make_unique<GridLayout>());
-  const int kColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnSetId);
+  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
   for (int i = 0; i < columns; i++) {
-    if (i > 0)
-      column_set->AddPaddingColumn(
-          GridLayout::kFixedSize,
+    if (i > 0) {
+      layout->AddPaddingColumn(
+          views::TableLayout::kFixedSize,
           tablet_mode ? kColumnSpacingTablet : kColumnSpacingClamshell);
-    column_set->AddColumn(
-        GridLayout::FILL, GridLayout::CENTER, /*resize_percent=*/1.0,
-        GridLayout::ColumnSize::kUsePreferred, /*fixed_width=*/0,
-        /*min_width=*/0);
+    }
+    layout->AddColumn(
+        views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
+        /*resize_percent=*/1.0f, views::TableLayout::ColumnSize::kUsePreferred,
+        /*fixed_width=*/0, /*min_width=*/0);
   }
 
   for (size_t i = 0; i < kMaxFilesForContinueSection; ++i) {
     if (i % columns == 0) {
-      if (i > 0) {
-        layout->StartRowWithPadding(GridLayout::kFixedSize, kColumnSetId,
-                                    GridLayout::kFixedSize, kRowSpacing);
-      } else {
-        layout->StartRow(GridLayout::kFixedSize, kColumnSetId);
-      }
+      if (i > 0)
+        layout->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
+      layout->AddRows(1, views::TableLayout::kFixedSize);
     }
-    ContinueTaskView* task = layout->AddView(
+    ContinueTaskView* task = AddChildView(
         std::make_unique<ContinueTaskView>(view_delegate, tablet_mode));
     // This view has a predefined number of placeholder tasks views which toggle
     // visibility depending on the result being null or not. The container's
@@ -133,7 +126,7 @@ void ContinueTaskContainerView::Update() {
   // Invalidate this callback to cancel a scheduled update.
   update_factory_.InvalidateWeakPtrs();
   std::vector<SearchResult*> tasks =
-      GetTasksResultsForContinueSection(view_delegate_->GetSearchModel());
+      GetTasksResultsForContinueSection(results_);
 
   // Update search results here.
   for (size_t i = 0; i < suggestion_tasks_views_.size(); ++i) {

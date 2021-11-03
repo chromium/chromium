@@ -184,16 +184,6 @@ export class SelectToSpeak {
         });
 
     /**
-     * Feature flag controlling STS navigation control.
-     * @type {boolean}
-     */
-    this.navigationControlFlag_ = false;
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        AccessibilityFeature.SELECT_TO_SPEAK_NAVIGATION_CONTROL, (result) => {
-          this.navigationControlFlag_ = result;
-        });
-
-    /**
      * Feature flag controlling availability of enhanced network voices
      * @type {boolean}
      */
@@ -245,8 +235,7 @@ export class SelectToSpeak {
    * @private
    */
   shouldShowNavigationControls_() {
-    return this.navigationControlFlag_ &&
-        this.prefsManager_.navigationControlsEnabled() &&
+    return this.prefsManager_.navigationControlsEnabled() &&
         this.supportsNavigationPanel_;
   }
 

@@ -862,6 +862,9 @@ below:
         <message name="IDS_AX_DIALOG_MODAL_OPENED" desc="Accessibility utterance for when a dialog / modal has been opened.">
           dialog opened.
         </message>
+        <message name="IDS_AX_INDETERMINATE_VALUE" desc="Accessibility utterance for when a progress bar/indicator has no value and is being used as an indeterminate progress bar.">
+          indeterminate
+        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->

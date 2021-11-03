@@ -1,0 +1,21 @@
+Tests that deprecation issues are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                message : 'Range.expand()' is deprecated. Please use 'Selection.modify()' instead.
+                sourceCodeLocation : {
+                    columnNumber : 24
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+            }
+        }
+    }
+}
+

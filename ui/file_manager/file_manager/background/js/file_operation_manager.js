@@ -450,6 +450,13 @@ export class FileOperationManagerImpl {
    *     than moved to trash.
    */
   deleteEntries(entries, permanentlyDelete = false) {
+    if (permanentlyDelete) {
+      if (window.isSWA) {
+        chrome.fileManagerPrivate.startIOTask(
+            chrome.fileManagerPrivate.IOTaskType.DELETE, entries, {});
+        return;
+      }
+    }
     this.deleteOrRestore_(
         util.FileOperationType.DELETE, entries, permanentlyDelete);
   }

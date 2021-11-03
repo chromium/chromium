@@ -13,10 +13,12 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 using chromeos::network_config::mojom::ConnectionStateType;
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace network_config = ::chromeos::network_config;
 
 const char kFakeDeviceName[] = "Guanru's Chromebook";
 const char kFakeBoardName[] = "atlas";
@@ -91,7 +93,7 @@ class Callback {
   static std::string system_info_;
 };
 
-std::string chromeos::eche_app::Callback::system_info_ = "";
+std::string ash::eche_app::Callback::system_info_ = "";
 
 class SystemInfoProviderTest : public testing::Test {
  protected:
@@ -165,4 +167,4 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

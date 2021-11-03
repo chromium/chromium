@@ -140,6 +140,9 @@ class PpdCacheImpl : public PpdCache {
         fetch_task_runner_(std::move(fetch_task_runner)),
         store_task_runner_(std::move(store_task_runner)) {}
 
+  PpdCacheImpl(const PpdCacheImpl&) = delete;
+  PpdCacheImpl& operator=(const PpdCacheImpl&) = delete;
+
   // Public API functions.
   void Find(const std::string& key, FindCallback cb) override {
     base::PostTaskAndReplyWithResult(
@@ -169,8 +172,6 @@ class PpdCacheImpl : public PpdCache {
   base::FilePath cache_base_dir_;
   scoped_refptr<base::SequencedTaskRunner> fetch_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> store_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpdCacheImpl);
 };
 
 }  // namespace

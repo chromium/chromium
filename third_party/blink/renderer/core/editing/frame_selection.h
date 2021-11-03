@@ -139,10 +139,10 @@ class CORE_EXPORT FrameSelection final
   Document& GetDocument() const;
   LocalFrame* GetFrame() const { return frame_; }
   Element* RootEditableElementOrDocumentElement() const;
-  wtf_size_t CharacterIndexForPoint(const IntPoint&) const;
+  wtf_size_t CharacterIndexForPoint(const gfx::Point&) const;
 
   // An implementation of |WebFrame::moveCaretSelection()|
-  void MoveCaretSelection(const IntPoint&);
+  void MoveCaretSelection(const gfx::Point&);
 
   VisibleSelection ComputeVisibleSelectionInDOMTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
@@ -188,9 +188,9 @@ class CORE_EXPORT FrameSelection final
   // This function does not allow the selection to collapse. If the new
   // extent is resolved to the same position as the current base, this
   // function will do nothing.
-  void MoveRangeSelectionExtent(const IntPoint&);
-  void MoveRangeSelection(const IntPoint& base_point,
-                          const IntPoint& extent_point,
+  void MoveRangeSelectionExtent(const gfx::Point&);
+  void MoveRangeSelection(const gfx::Point& base_point,
+                          const gfx::Point& extent_point,
                           TextGranularity);
 
   TextGranularity Granularity() const { return granularity_; }

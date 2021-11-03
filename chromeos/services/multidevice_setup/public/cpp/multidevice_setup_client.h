@@ -49,9 +49,14 @@ class MultiDeviceSetupClient {
       base::OnceCallback<void(const multidevice::RemoteDeviceRefList&)>;
 
   static HostStatusWithDevice GenerateDefaultHostStatusWithDevice();
-  static FeatureStatesMap GenerateDefaultFeatureStatesMap();
+  static FeatureStatesMap GenerateDefaultFeatureStatesMap(
+      mojom::FeatureState default_value);
 
   MultiDeviceSetupClient();
+
+  MultiDeviceSetupClient(const MultiDeviceSetupClient&) = delete;
+  MultiDeviceSetupClient& operator=(const MultiDeviceSetupClient&) = delete;
+
   virtual ~MultiDeviceSetupClient();
 
   void AddObserver(Observer* observer);
@@ -87,8 +92,6 @@ class MultiDeviceSetupClient {
   friend class MultiDeviceSetupClientImplTest;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClient);
 };
 
 std::string FeatureStatesMapToString(

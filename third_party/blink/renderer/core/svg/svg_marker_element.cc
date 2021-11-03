@@ -99,9 +99,9 @@ void SVGMarkerElement::Trace(Visitor* visitor) const {
 }
 
 AffineTransform SVGMarkerElement::ViewBoxToViewTransform(
-    const FloatSize& viewport_size) const {
+    const gfx::SizeF& viewport_size) const {
   return SVGFitToViewBox::ViewBoxToViewTransform(
-      viewBox()->CurrentValue()->Value(), preserveAspectRatio()->CurrentValue(),
+      viewBox()->CurrentValue()->Rect(), preserveAspectRatio()->CurrentValue(),
       viewport_size);
 }
 

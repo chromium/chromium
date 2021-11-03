@@ -318,6 +318,8 @@ void BidderWorklet::V8State::ReportWin(
   // An empty return value indicates an exception was thrown. Any other return
   // value indicates no exception.
   std::vector<std::string> errors_out;
+  v8_helper_->MaybeTriggerInstrumentationBreakpoint(
+      context_group_id_, "beforeBidderWorkletReportingStart");
   if (v8_helper_
           ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
                       "reportWin", args, errors_out)
@@ -370,6 +372,7 @@ void BidderWorklet::V8State::GenerateBid() {
   if (!CreateAdVector(v8_helper_.get(), context, *interest_group.ads, ads) ||
       !v8_helper_->InsertValue("ads", std::move(ads), interest_group_object)) {
     PostErrorBidCallbackToUserThread();
+    return;
   }
 
   if (interest_group.ad_components) {
@@ -379,6 +382,7 @@ void BidderWorklet::V8State::GenerateBid() {
         !v8_helper_->InsertValue("adComponents", std::move(ad_components),
                                  interest_group_object)) {
       PostErrorBidCallbackToUserThread();
+      return;
     }
   }
 
@@ -435,6 +439,8 @@ void BidderWorklet::V8State::GenerateBid() {
 
   v8::Local<v8::Value> generate_bid_result;
   std::vector<std::string> errors_out;
+  v8_helper_->MaybeTriggerInstrumentationBreakpoint(
+      context_group_id_, "beforeBidderWorkletBiddingStart");
   if (!v8_helper_
            ->RunScript(context, worklet_script_.Get(isolate), context_group_id_,
                        "generateBid", args, errors_out)

@@ -7,7 +7,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {MultiStoreExceptionEntry, MultiStorePasswordUiEntry} from 'chrome://settings/settings.js';
 
-import {assertEquals} from '../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 // clang-format on
@@ -381,7 +381,7 @@ export class PasswordSectionElementFactory {
    * @param {Array<!MultiStorePasswordUiEntry>=} passwords
    * @return {!Object}
    */
-  createPasswordEditDialog(passwordEntry = null, passwords = []) {
+  createPasswordEditDialog(passwordEntry = null, passwords) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
     passwordDialog.existingEntry = passwordEntry;
     if (passwordEntry && !passwordEntry.federationText) {
@@ -390,7 +390,8 @@ export class PasswordSectionElementFactory {
       // edit dialog.
       passwordDialog.existingEntry.password = 'password';
     }
-    passwordDialog.savedPasswords = passwords;
+    passwordDialog.savedPasswords =
+        passwords || (passwordEntry ? [passwordEntry] : []);
     this.document.body.appendChild(passwordDialog);
     flush();
     return passwordDialog;

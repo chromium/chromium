@@ -16,6 +16,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/views/notification_background_painter.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -54,6 +56,10 @@ class ArcNotificationContentView
   ArcNotificationContentView(const ArcNotificationContentView&) = delete;
   ArcNotificationContentView& operator=(const ArcNotificationContentView&) = delete;
   ~ArcNotificationContentView() override;
+
+  // Width of scrollbar, to reduce the notification content width.
+  constexpr static int kScrollBarWidth =
+      ui::kOverlayScrollbarThumbWidthPressed + ui::kOverlayScrollbarStrokeWidth;
 
   void Update(const message_center::Notification& notification);
   message_center::NotificationControlButtonsView* GetControlButtonsView();

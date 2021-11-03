@@ -13,6 +13,7 @@
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -33,6 +34,7 @@ struct MEDIA_EXPORT VideoEncoderOutput {
   base::TimeDelta timestamp;
   bool key_frame = false;
   int temporal_id = 0;
+  gfx::ColorSpace color_space;
 };
 
 class MEDIA_EXPORT VideoEncoder {

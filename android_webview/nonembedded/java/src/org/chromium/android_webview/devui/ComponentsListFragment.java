@@ -86,6 +86,8 @@ public class ComponentsListFragment extends DevUiBaseFragment {
         mUpdatingToast = Toast.makeText(mContext, "Updating Components...", Toast.LENGTH_SHORT);
         mUpdatedToast = Toast.makeText(mContext, "Components Updated!", Toast.LENGTH_SHORT);
 
+        // On-Demand Update enabled by default
+        mOnDemandUpdate = true;
         Switch onDemandUpdateToggle = (Switch) view.findViewById(R.id.on_demand_update);
         onDemandUpdateToggle.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> { mOnDemandUpdate = isChecked; });

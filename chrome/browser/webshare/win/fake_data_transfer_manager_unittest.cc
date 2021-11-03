@@ -242,6 +242,9 @@ TEST_F(FakeDataTransferManagerTest, OutOfOrderEventInvocation) {
 }
 
 TEST_F(FakeDataTransferManagerTest, PostDataRequestedCallback) {
+  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
+    GTEST_SKIP();
+
   base::test::SingleThreadTaskEnvironment task_environment;
 
   // Create a StorageFile/Item to provide to the DataRequested event

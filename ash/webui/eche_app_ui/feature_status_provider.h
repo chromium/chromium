@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Provides the current status of the eche feature and notifies observers
@@ -43,6 +43,6 @@ class FeatureStatusProvider {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_FEATURE_STATUS_PROVIDER_H_

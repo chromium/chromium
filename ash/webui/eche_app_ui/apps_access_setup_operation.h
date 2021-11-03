@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Implements the apps access setup flow. This flow involves:
@@ -87,6 +87,6 @@ std::ostream& operator<<(std::ostream& stream,
                          AppsAccessSetupOperation::Status status);
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_APPS_ACCESS_SETUP_OPERATION_H_

@@ -31,16 +31,6 @@
       "use_real_dbus_clients": false
     }
   },
-  "chromeos-amd64-generic-rel-dchecks": {
-    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_goma": true,
-      "use_real_dbus_clients": false
-    }
-  },
   "chromeos-amd64-generic-rel-rts": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {

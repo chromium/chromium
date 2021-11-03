@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_CHROMEOS_ECHE_APP_ECHE_APP_MANAGER_FACTORY_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/webui/eche_app_ui/system_info.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -16,8 +20,6 @@ class Profile;
 namespace chromeos {
 namespace eche_app {
 
-class SystemInfo;
-class EcheAppManager;
 class EcheAppNotificationController;
 
 // Factory to create a single EcheAppManager.

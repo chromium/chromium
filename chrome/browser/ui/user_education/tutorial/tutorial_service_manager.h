@@ -28,10 +28,19 @@ class TutorialServiceManager {
     return bubble_factory_registry_.get();
   }
 
+  // Getters for the registries
+  TutorialRegistry* tutorial_registry() { return tutorial_registry_.get(); }
+
+  const TutorialRegistry* tutorial_registry() const {
+    return tutorial_registry_.get();
+  }
+
  private:
   friend struct base::DefaultSingletonTraits<TutorialServiceManager>;
 
   std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry_;
+
+  std::unique_ptr<TutorialRegistry> tutorial_registry_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_SERVICE_MANAGER_H_

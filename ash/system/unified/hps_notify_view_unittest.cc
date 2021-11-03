@@ -58,6 +58,18 @@ class HpsNotifyViewTest : public NoSessionAshTestBase {
   std::unique_ptr<HpsNotifyView> view_;
 };
 
+// Test that icon is hidden by default.
+TEST_F(HpsNotifyViewTest, Hidden) {
+  SimulateUserLogin("testuser@gmail.com");
+  SetEnabledPref(false);
+  dbus_client_->set_hps_notify_result(false);
+  InitializeView();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
+
+  EXPECT_FALSE(view_->GetVisible());
+}
+
 // Test that initial daemon state is considered.
 TEST_F(HpsNotifyViewTest, HpsState) {
   SimulateUserLogin("testuser@gmail.com");

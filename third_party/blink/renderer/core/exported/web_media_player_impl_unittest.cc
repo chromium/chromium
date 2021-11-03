@@ -292,6 +292,8 @@ class MockSurfaceLayerBridge : public WebSurfaceLayerBridge {
   MOCK_METHOD1(SetContentsOpaque, void(bool));
   MOCK_METHOD0(CreateSurfaceLayer, void());
   MOCK_METHOD0(ClearObserver, void());
+  MOCK_METHOD0(RegisterFrameSinkHierarchy, void());
+  MOCK_METHOD0(UnregisterFrameSinkHierarchy, void());
 };
 
 class MockVideoFrameCompositor : public VideoFrameCompositor {
@@ -2065,6 +2067,19 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   wmpi_->OnSurfaceIdUpdated(surface_id_);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
+}
+
+TEST_F(WebMediaPlayerImplTest, RegisterFrameSinkHierarchy) {
+  InitializeWebMediaPlayerImpl();
+  media::PipelineMetadata metadata;
+  metadata.has_video = true;
+  OnMetadata(metadata);
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, RegisterFrameSinkHierarchy());
+  wmpi_->RegisterFrameSinkHierarchy();
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, UnregisterFrameSinkHierarchy());
+  wmpi_->UnregisterFrameSinkHierarchy();
 }
 
 TEST_F(WebMediaPlayerImplTest, OnProgressClearsStale) {

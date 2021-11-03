@@ -71,6 +71,14 @@ void MojoVideoEncodeAcceleratorService::Initialize(
     return;
   }
 
+  if (gpu_workarounds_.disable_accelerated_h264_encode &&
+      config.output_profile >= H264PROFILE_MIN &&
+      config.output_profile <= H264PROFILE_MAX) {
+    LOG(ERROR) << __func__ << " H.264 encoding disabled by GPU policy";
+    std::move(success_callback).Run(false);
+    return;
+  }
+
   if (encoder_) {
     DLOG(ERROR) << __func__ << " VEA is already initialized";
     std::move(success_callback).Run(false);

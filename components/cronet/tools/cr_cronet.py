@@ -108,7 +108,7 @@ def get_default_gn_args(target_os, is_release):
       'disable_brotli_filter=false '
       'is_component_build=false '
       'use_crash_key_stubs=true '
-      'ignore_elf32_limitations=true use_partition_alloc=false '
+      'use_partition_alloc=false '
       'include_transport_security_state_preload_list=false ') + use_goma()
   if (is_release):
     gn_args += 'is_debug=false is_official_build=true '

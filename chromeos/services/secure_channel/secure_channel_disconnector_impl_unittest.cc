@@ -21,6 +21,12 @@ namespace chromeos {
 namespace secure_channel {
 
 class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
+ public:
+  SecureChannelSecureChannelDisconnectorImplTest(
+      const SecureChannelSecureChannelDisconnectorImplTest&) = delete;
+  SecureChannelSecureChannelDisconnectorImplTest& operator=(
+      const SecureChannelSecureChannelDisconnectorImplTest&) = delete;
+
  protected:
   SecureChannelSecureChannelDisconnectorImplTest() = default;
   ~SecureChannelSecureChannelDisconnectorImplTest() override = default;
@@ -64,8 +70,6 @@ class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
   base::flat_set<base::UnguessableToken> deleted_request_ids_;
 
   std::unique_ptr<SecureChannelDisconnector> disconnector_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelSecureChannelDisconnectorImplTest);
 };
 
 TEST_F(SecureChannelSecureChannelDisconnectorImplTest,

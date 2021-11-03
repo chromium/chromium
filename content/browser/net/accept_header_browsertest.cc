@@ -36,6 +36,9 @@ class AcceptHeaderTest : public ContentBrowserTest {
  public:
   AcceptHeaderTest() {}
 
+  AcceptHeaderTest(const AcceptHeaderTest&) = delete;
+  AcceptHeaderTest& operator=(const AcceptHeaderTest&) = delete;
+
   void SetUpOnMainThread() override {
     embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
         &AcceptHeaderTest::Monitor, base::Unretained(this)));
@@ -108,8 +111,6 @@ class AcceptHeaderTest : public ContentBrowserTest {
   base::Lock waiting_lock_;
   std::unique_ptr<base::RunLoop> waiting_run_loop_;
   std::string waiting_for_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(AcceptHeaderTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {

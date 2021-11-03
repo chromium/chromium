@@ -15,7 +15,6 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

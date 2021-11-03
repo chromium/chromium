@@ -8,20 +8,18 @@
 #include "base/macros.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
+#include "sandbox/linux/syscall_broker/broker_sandbox_config.h"
 
 namespace sandbox {
 
 namespace syscall_broker {
-
-class BrokerPermissionList;
 
 // The BrokerHost class should be embedded in a (presumably not sandboxed)
 // process. It will honor IPC requests from a BrokerClient sent over
 // |ipc_channel| according to |broker_permission_list|.
 class BrokerHost {
  public:
-  BrokerHost(const BrokerPermissionList& broker_permission_list,
-             const BrokerCommandSet& allowed_command_set,
+  BrokerHost(const BrokerSandboxConfig& policy,
              BrokerChannel::EndPoint ipc_channel);
 
   BrokerHost(const BrokerHost&) = delete;
@@ -33,8 +31,7 @@ class BrokerHost {
   void LoopAndHandleRequests();
 
  private:
-  const BrokerPermissionList& broker_permission_list_;
-  const BrokerCommandSet allowed_command_set_;
+  const BrokerSandboxConfig& policy_;
   const BrokerChannel::EndPoint ipc_channel_;
 };
 

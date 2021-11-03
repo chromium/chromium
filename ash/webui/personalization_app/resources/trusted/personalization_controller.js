@@ -77,6 +77,22 @@ async function getGooglePhotosAlbums(provider, store) {
 }
 
 /**
+ * Gets the count of Google Photos photos and saves it to the store.
+ * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
+ * @param {!PersonalizationStore} store
+ */
+async function getGooglePhotosCount(provider, store) {
+  store.dispatch(action.beginLoadGooglePhotosCountAction());
+
+  // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
+  // request that returns a zero count of Google Photos photos.
+  return new Promise(resolve => setTimeout(() => {
+                       store.dispatch(action.setGooglePhotosCountAction(0));
+                       resolve();
+                     }, 1000));
+}
+
+/**
  * Gets the list of Google Photos photos and saves it to the store.
  * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
@@ -158,8 +174,11 @@ async function getMissingLocalImageThumbnails(provider, store) {
  *     !mojoBase.mojom.FilePath} image
  * @param {!ash.personalizationApp.mojom.WallpaperProviderInterface} provider
  * @param {!PersonalizationStore} store
+ * @param {!ash.personalizationApp.mojom.WallpaperLayout=} layout
  */
-export async function selectWallpaper(image, provider, store) {
+export async function selectWallpaper(
+    image, provider, store,
+    layout = ash.personalizationApp.mojom.WallpaperLayout.kCenterCropped) {
   // Batch these changes together to reduce polymer churn as multiple state
   // fields change quickly.
   store.beginBatchUpdate();
@@ -179,6 +198,7 @@ export async function selectWallpaper(image, provider, store) {
     } else if (image.path) {
       return provider.selectLocalImage(
           /** @type {!mojoBase.mojom.FilePath} */ (image),
+          /** @type {!ash.personalizationApp.mojom.WallpaperLayout} */ (layout),
           /*preview_mode=*/ shouldPreview);
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
@@ -283,6 +303,22 @@ export async function initializeBackdropData(provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function initializeGooglePhotosData(provider, store) {
+  await getGooglePhotosCount(provider, store);
+
+  // If the count of Google Photos photos is zero or null, it's not necesssary
+  // to query the server for the list of albums/photos.
+  const count = store.data.googlePhotos.count;
+  if (count === 0 || count === null) {
+    const /** ?Array<undefined> */ result = count === 0 ? [] : null;
+    store.beginBatchUpdate();
+    store.dispatch(action.beginLoadGooglePhotosAlbumsAction());
+    store.dispatch(action.setGooglePhotosAlbumsAction(result));
+    store.dispatch(action.beginLoadGooglePhotosPhotosAction());
+    store.dispatch(action.setGooglePhotosPhotosAction(result));
+    store.endBatchUpdate();
+    return;
+  }
+
   await Promise.all([
     getGooglePhotosAlbums(provider, store),
     getGooglePhotosPhotos(provider, store),

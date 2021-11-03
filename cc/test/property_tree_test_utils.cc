@@ -205,11 +205,11 @@ void SetScrollOffsetInternal(LayerType* layer,
 // TODO(wangxianzhu): Viewport properties can exist without layers, but for now
 // it's more convenient to create properties based on layers.
 template <typename LayerType>
-LayerTreeHost::ViewportPropertyIds SetupViewportProperties(
+ViewportPropertyIds SetupViewportProperties(
     LayerType* root,
     LayerType* inner_viewport_scroll_layer,
     LayerType* outer_viewport_scroll_layer) {
-  LayerTreeHost::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   auto* property_trees = GetPropertyTrees(root);
 
   viewport_property_ids.overscroll_elasticity_transform =
@@ -255,7 +255,7 @@ void SetupRootProperties(LayerImpl* root) {
   SetupRootPropertiesInternal(root);
 }
 
-void CopyProperties(const Layer* from, Layer* to) {
+void CopyProperties(Layer* from, Layer* to) {
   DCHECK(from->layer_tree_host()->IsUsingLayerLists());
   to->SetLayerTreeHost(from->layer_tree_host());
   to->set_property_tree_sequence_number(from->property_tree_sequence_number());
@@ -479,17 +479,33 @@ void SetupViewport(LayerImpl* root,
   layer_tree_impl->SetViewportPropertyIds(viewport_property_ids);
 }
 
-PropertyTrees* GetPropertyTrees(const Layer* layer) {
+PropertyTrees* GetPropertyTrees(Layer* layer) {
   return layer->layer_tree_host()->property_trees();
 }
 
-PropertyTrees* GetPropertyTrees(const LayerImpl* layer) {
+const PropertyTrees* GetPropertyTrees(const Layer* layer) {
+  return layer->layer_tree_host()->property_trees();
+}
+
+PropertyTrees* GetPropertyTrees(LayerImpl* layer) {
   return layer->layer_tree_impl()->property_trees();
 }
 
-RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer) {
+const PropertyTrees* GetPropertyTrees(const LayerImpl* layer) {
+  return layer->layer_tree_impl()->property_trees();
+}
+
+RenderSurfaceImpl* GetRenderSurface(LayerImpl* layer) {
   auto& effect_tree = GetPropertyTrees(layer)->effect_tree;
   if (auto* surface = effect_tree.GetRenderSurface(layer->effect_tree_index()))
+    return surface;
+  return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
+}
+
+const RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer) {
+  auto& effect_tree = GetPropertyTrees(layer)->effect_tree;
+  if (const auto* surface =
+          effect_tree.GetRenderSurface(layer->effect_tree_index()))
     return surface;
   return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
 }

@@ -46,6 +46,9 @@ class PromiseFileFinalizer : public ui::DownloadFileObserver {
   explicit PromiseFileFinalizer(
       std::unique_ptr<DragDownloadFile> drag_file_downloader);
 
+  PromiseFileFinalizer(const PromiseFileFinalizer&) = delete;
+  PromiseFileFinalizer& operator=(const PromiseFileFinalizer&) = delete;
+
   // DownloadFileObserver methods.
   void OnDownloadCompleted(const base::FilePath& file_path) override;
   void OnDownloadAborted() override;
@@ -57,8 +60,6 @@ class PromiseFileFinalizer : public ui::DownloadFileObserver {
   void Cleanup();
 
   std::unique_ptr<DragDownloadFile> drag_file_downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(PromiseFileFinalizer);
 };
 
 }  // namespace content

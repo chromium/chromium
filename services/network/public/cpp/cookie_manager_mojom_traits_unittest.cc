@@ -385,6 +385,16 @@ TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
       *original, copied));
   EXPECT_EQ(original->PartitionKey(), copied.PartitionKey());
+  EXPECT_FALSE(copied.PartitionKey()->from_script());
+
+  original = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      "__Host-A", "B", "x.y", "/", base::Time(), base::Time(), base::Time(),
+      true, false, net::CookieSameSite::NO_RESTRICTION,
+      net::COOKIE_PRIORITY_LOW, false, net::CookiePartitionKey::FromScript(),
+      net::CookieSourceScheme::kSecure, 8433);
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
+      *original, copied));
+  EXPECT_TRUE(copied.PartitionKey()->from_script());
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeychain) {

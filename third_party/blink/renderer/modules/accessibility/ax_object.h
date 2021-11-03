@@ -70,7 +70,6 @@ namespace blink {
 class AccessibleNodeList;
 class AXObject;
 class AXObjectCacheImpl;
-class IntPoint;
 class LayoutObject;
 class LocalFrameView;
 class Node;
@@ -164,6 +163,10 @@ class DescriptionSource {
 // Returns a ax::mojom::blink::MarkerType cast to an int, suitable
 // for serializing into AXNodeData.
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type);
+
+// Returns a ax::mojom::blink::HighlightType cast to an int, suitable
+// for serializing into AXNodeData.
+int32_t ToAXHighlightType(const AtomicString& highlight_type);
 
 }  // namespace blink
 
@@ -427,6 +430,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Check object state.
   virtual bool IsAutofillAvailable() const;
   virtual bool IsClickable() const;
+  // Is |this| disabled for any of the follow reasons:
+  // * aria-disabled
+  // * disabled form control
+  // * a focusable descendant of a disabled container
+  bool IsDisabled() const;
   virtual AccessibilityExpanded IsExpanded() const;
   virtual bool IsFocused() const;
   // aria-grabbed is deprecated in WAI-ARIA 1.1.
@@ -855,12 +863,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Hit testing.
   // Called on the root AX object to return the deepest available element.
-  virtual AXObject* AccessibilityHitTest(const IntPoint&) const {
+  virtual AXObject* AccessibilityHitTest(const gfx::Point&) const {
     return nullptr;
   }
   // Called on the AX object after the layout tree determines which is the right
   // AXLayoutObject.
-  AXObject* ElementAccessibilityHitTest(const IntPoint&) const;
+  AXObject* ElementAccessibilityHitTest(const gfx::Point&) const;
 
   //
   // High-level accessibility tree access. Other modules should only use these
@@ -1158,10 +1166,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Scrollable containers.
   bool IsScrollableContainer() const;
   bool IsUserScrollable() const;  // Only true if actual scrollbars are present.
-  IntPoint GetScrollOffset() const;
-  IntPoint MinimumScrollOffset() const;
-  IntPoint MaximumScrollOffset() const;
-  void SetScrollOffset(const IntPoint&) const;
+  gfx::Point GetScrollOffset() const;
+  gfx::Point MinimumScrollOffset() const;
+  gfx::Point MaximumScrollOffset() const;
+  void SetScrollOffset(const gfx::Point&) const;
 
   // Tables and grids.
   bool IsTableLikeRole() const;
@@ -1216,7 +1224,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestClickAction();
   bool RequestFocusAction();
   bool RequestIncrementAction();
-  bool RequestScrollToGlobalPointAction(const IntPoint&);
+  bool RequestScrollToGlobalPointAction(const gfx::Point&);
   bool RequestScrollToMakeVisibleAction();
   bool RequestScrollToMakeVisibleWithSubFocusAction(
       const IntRect&,
@@ -1240,7 +1248,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool OnNativeClickAction();
   virtual bool OnNativeFocusAction();
   virtual bool OnNativeIncrementAction();
-  bool OnNativeScrollToGlobalPointAction(const IntPoint&) const;
+  bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;
   bool OnNativeScrollToMakeVisibleAction() const;
   bool OnNativeScrollToMakeVisibleWithSubFocusAction(
       const IntRect&,
@@ -1404,6 +1412,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;
 
  private:
+  bool ComputeCanSetFocusAttribute() const;
+
   mutable int last_modification_count_;
 
   // The following cached attribute values (the ones starting with m_cached*)
@@ -1415,6 +1425,22 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable bool cached_is_aria_hidden_ : 1;
   mutable bool cached_is_hidden_via_style : 1;
   mutable bool cached_is_descendant_of_disabled_node_ : 1;
+  mutable bool cached_can_set_focus_attribute_ : 1;
+
+  // Focusability can change in response to a new style (e.g. content-visibility
+  // added/removed), new dom (e.g. tabindex set/unset), or new AXCache
+  // modification count (e.g. new ax tree).
+  // TODO(accessibility) Determine whether it's worth it to store these extra
+  // variables rather than just using the usual caching mechanism in
+  // UpdateCachedAttributeValuesIfNeeded(). This reduces the number of calls to
+  // CanSetFocusAttribute() by 25% extra. It also causes updates when AXCache
+  // ModificationCount doesn't change but DOM version/style version do change.
+  // This can happen during focus action which forces a new style recalc without
+  // modifying the AX tree.
+  mutable uint64_t focus_attribute_style_version_ = 0;
+  mutable uint64_t focus_attribute_dom_tree_version_ = 0;
+  mutable int focus_attribute_cache_modification_count_ = -1;
+
   mutable Member<AXObject> cached_live_region_root_;
   mutable int cached_aria_column_index_;
   mutable int cached_aria_row_index_;

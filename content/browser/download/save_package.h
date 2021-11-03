@@ -91,6 +91,9 @@ class CONTENT_EXPORT SavePackage
   // in the "Save As" dialog box.
   explicit SavePackage(Page& page);
 
+  SavePackage(const SavePackage&) = delete;
+  SavePackage& operator=(const SavePackage&) = delete;
+
   // Initialize the SavePackage. Returns true if it initializes properly.  Need
   // to make sure that this method must be called in the UI thread because using
   // g_browser_process on a non-UI thread can cause crashes during shutdown.
@@ -448,8 +451,6 @@ class CONTENT_EXPORT SavePackage
   // UKM IDs for reporting.
   ukm::SourceId ukm_source_id_;
   uint64_t ukm_download_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePackage);
 };
 
 }  // namespace content

@@ -117,6 +117,11 @@ class ThreadSafeBrowserInterfaceBrokerProxyImpl
   ThreadSafeBrowserInterfaceBrokerProxyImpl()
       : process_host_(GetChildProcessHost()) {}
 
+  ThreadSafeBrowserInterfaceBrokerProxyImpl(
+      const ThreadSafeBrowserInterfaceBrokerProxyImpl&) = delete;
+  ThreadSafeBrowserInterfaceBrokerProxyImpl& operator=(
+      const ThreadSafeBrowserInterfaceBrokerProxyImpl&) = delete;
+
   // blink::ThreadSafeBrowserInterfaceBrokerProxy implementation:
   void GetInterfaceImpl(mojo::GenericPendingReceiver receiver) override {
     if (process_host_)
@@ -127,8 +132,6 @@ class ThreadSafeBrowserInterfaceBrokerProxyImpl
   ~ThreadSafeBrowserInterfaceBrokerProxyImpl() override = default;
 
   const mojo::SharedRemote<mojom::ChildProcessHost> process_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSafeBrowserInterfaceBrokerProxyImpl);
 };
 
 }  // namespace

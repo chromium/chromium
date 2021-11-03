@@ -71,6 +71,7 @@ source_set("browser_tests_filters") {
     "//testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter",
     "//testing/buildbot/filters/pixel_browser_tests.filter",
     "//testing/buildbot/filters/webrtc_functional.browser_tests.filter",
+    "//testing/buildbot/filters/win_backuprefptr_fyi.browser_tests.filter",
   ]
 }
 

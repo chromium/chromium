@@ -197,6 +197,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD1(MaybeShowSlowWebsiteWarning,
                void(base::OnceCallback<void(bool)>));
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
+  MOCK_METHOD0(GetLogInfo, ProcessedActionStatusDetailsProto&());
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();
@@ -213,7 +214,9 @@ class MockActionDelegate : public ActionDelegate {
     return element_store_.get();
   }
 
+ private:
   ClientSettings client_settings_;
+  ProcessedActionStatusDetailsProto log_info_;
   mutable std::unique_ptr<ElementStore> element_store_;
 
   base::WeakPtrFactory<MockActionDelegate> weak_ptr_factory_{this};

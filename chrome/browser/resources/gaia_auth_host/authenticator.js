@@ -166,7 +166,6 @@ cr.define('cr.login', function() {
                      // Default is |true|.
     'flow',          // One of 'default', 'enterprise', or
                      // 'cfm' or 'enterpriseLicense'.
-    'enterpriseDisplayDomain',     // Current domain name to be displayed.
     'enterpriseDomainManager',     // Manager of the current domain. Can be
                                    // either a domain name (foo.com) or an email
                                    // address (admin@foo.com).
@@ -738,9 +737,6 @@ cr.define('cr.login', function() {
       }
       if (data.clientId) {
         url = appendParam(url, 'client_id', data.clientId);
-      }
-      if (data.enterpriseDisplayDomain) {
-        url = appendParam(url, 'manageddomain', data.enterpriseDisplayDomain);
       }
       if (data.enterpriseDomainManager) {
         url = appendParam(url, 'devicemanager', data.enterpriseDomainManager);

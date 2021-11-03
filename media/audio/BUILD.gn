@@ -107,7 +107,6 @@ source_set("audio") {
     "audio_output_stream_sink.h",
     "audio_sink_parameters.cc",
     "audio_sink_parameters.h",
-    "audio_source_diverter.h",
     "audio_source_parameters.cc",
     "audio_source_parameters.h",
     "audio_system.cc",
@@ -449,6 +448,10 @@ source_set("unit_tests") {
         "cras/cras_unified_unittest.cc",
       ]
     }
+  }
+
+  if (is_chromeos_lacros && use_cras) {
+    sources += [ "cras/audio_manager_cras_unittest.cc" ]
   }
 
   if (is_win) {

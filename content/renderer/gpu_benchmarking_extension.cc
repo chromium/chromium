@@ -98,6 +98,9 @@ class GpuBenchmarkingContext {
         frame_widget_(frame->GetLocalRootWebFrameWidget()),
         layer_tree_host_(frame_widget_->LayerTreeHost()) {}
 
+  GpuBenchmarkingContext(const GpuBenchmarkingContext&) = delete;
+  GpuBenchmarkingContext& operator=(const GpuBenchmarkingContext&) = delete;
+
   WebLocalFrame* web_frame() const {
     DCHECK(web_frame_ != nullptr);
     return web_frame_;
@@ -117,8 +120,6 @@ class GpuBenchmarkingContext {
   WebView* web_view_;
   WebFrameWidget* frame_widget_;
   cc::LayerTreeHost* layer_tree_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarkingContext);
 };
 
 }  // namespace blink
@@ -162,7 +163,7 @@ class SkPictureSerializer {
   // in the given directory.
   void Serialize(const cc::Layer* root_layer) {
     for (auto* layer : *root_layer->layer_tree_host()) {
-      sk_sp<SkPicture> picture = layer->GetPicture();
+      sk_sp<const SkPicture> picture = layer->GetPicture();
       if (!picture)
         continue;
 
@@ -227,6 +228,9 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
     context_.Reset(isolate_, context);
   }
 
+  CallbackAndContext(const CallbackAndContext&) = delete;
+  CallbackAndContext& operator=(const CallbackAndContext&) = delete;
+
   v8::Isolate* isolate() { return isolate_; }
 
   v8::Local<v8::Function> GetCallback() {
@@ -248,7 +252,6 @@ class CallbackAndContext : public base::RefCounted<CallbackAndContext> {
   v8::Isolate* isolate_;
   v8::Persistent<v8::Function> callback_;
   v8::Persistent<v8::Context> context_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackAndContext);
 };
 
 void OnMicroBenchmarkCompleted(CallbackAndContext* callback_and_context,

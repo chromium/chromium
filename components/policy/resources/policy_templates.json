@@ -418,6 +418,8 @@
         'RemoteAccessHostEnableUserInterface',
         'RemoteAccessHostAllowRemoteAccessConnections',
         'RemoteAccessHostMaximumSessionDurationMinutes',
+        'RemoteAccessHostClipboardSizeBytes',
+        'RemoteAccessHostAllowRemoteSupportConnections',
       ],
     },
     {
@@ -2703,6 +2705,68 @@
           This policy has no effect if it is not set. In this case, remote access connections will have no maximum duration on this machine.''',
     },
     {
+      'name': 'RemoteAccessHostClipboardSizeBytes',
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 2147483647 },
+      'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+      },
+      'example_value': 1048576,  # 1MiB
+      'default': None,
+      'id': 922,
+      'caption': '''The maximum size, in bytes, that can be transferred between client and host via clipboard synchronization''',
+      'tags': [],
+      'desc': '''If this policy is set, clipboard data sent to and from the host will be truncated to the limit set by this policy.
+
+          If a value of 0 is set, then clipboard sync is disabled.
+
+          This policy affects both remote access and remote support scenarios.
+
+          This policy has no effect if it is not set.
+
+          Setting the policy to a value that is not within the min/max range may prevent the host from starting.
+
+          Please note that the actual upper bound for the clipboard size is based on the maximum WebRTC data channel message size which this policy does not control.''',
+    },
+    {
+      'name': 'RemoteAccessHostAllowRemoteSupportConnections',
+      'owners': ['file://remoting/OWNERS', 'jamiewalch@chromium.org', 'joedow@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+        'platform_only': True,  # No cloud-policy support outside of Chrome OS.
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow remote support connections to this machine',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent remote support connections to this machine',
+        },
+      ],
+      'default': True,
+      'example_value': False,
+      'id': 923,
+      'caption': '''Allow remote support connections to this machine''',
+      'tags': [],
+      'desc': '''If this policy is disabled, the remote support host cannot be started or configured to accept incoming connections.
+
+          This policy does not affect remote access scenarios.
+
+          This policy does not prevent enterprise admins from connecting to managed Chrome OS devices.
+
+          This policy has no effect if enabled, left empty, or is not set.''',
+    },
+    {
       'name': 'DeviceAllowMGSToStoreDisplayProperties',
       'owners' : ['file://chrome/browser/ash/app_mode/OWNERS', 'apotapchuk@chromium.org'],
       'type' : 'main',
@@ -4072,8 +4136,8 @@
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
-      'future_on': ['android','ios'],
+      'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'ios:96-'],
+      'future_on': ['android'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -4334,27 +4398,27 @@
         {
           'name': 'DefaultDownloadSecurity',
           'value': 0,
-          'caption': '''No special restrictions''',
+          'caption': '''No special restrictions. Default.''',
         },
         {
           'name': 'BlockDangerousDownloads',
           'value': 1,
-          'caption': '''Block dangerous downloads''',
+          'caption': '''Block malicious downloads and dangerous file types.''',
         },
         {
           'name': 'BlockPotentiallyDangerousDownloads',
           'value': 2,
-          'caption': '''Block potentially dangerous downloads''',
+          'caption': '''Block malicious downloads, uncommon or unwanted downloads and dangerous file types.''',
         },
         {
           'name': 'BlockAllDownloads',
           'value': 3,
-          'caption': '''Block all downloads''',
+          'caption': '''Block all downloads.''',
         },
         {
           'name': 'BlockMaliciousDownloads',
           'value': 4,
-          'caption': '''Block malicious downloads (recommended)''',
+          'caption': '''Block malicious downloads. Recommended.''',
         },
       ],
       'supported_on': ['chrome.*:61-', 'chrome_os:61-'],
@@ -4369,17 +4433,23 @@
       'tags': ['local-data-access'],
       'desc': '''Setting the policy means users can't bypass download security decisions.
 
-       Setting the policy to:
+      There are many types of download warnings within Chrome, which roughly break down into these categories (learn more about Safe Browsing verdicts https://support.google.com/chrome/?p=ib_download_blocked):
 
-      * Block dangerous downloads means all downloads are allowed, except for those that carry safety warnings.
+      * Malicious, as flagged by the Safe Browsing server
+      * Uncommon or unwanted, as flagged by the Safe Browsing server
+      * A dangerous file type (e.g. all SWF downloads and many EXE downloads)
 
-      * Block potentially dangerous downloads means all downloads allowed, except for those that carry safety warnings of potentially dangerous downloads.
+      Setting the policy blocks different subsets of these, depending on it's value:
 
-      * Block all downloads means all downloads are blocked.
+      0: No special restrictions. Default.
 
-      * Block malicious downloads means all downloads are allowed, except for those assessed to be malware with high confidence. Unlike with dangerous downloads, this does not take into account file type, but does take into account the host.
+      1: Blocks malicious files flagged by the Safe Browsing server AND Blocks all dangerous file types. Only recommended for OUs/browsers/users that have a high tolerance for False Positives.
 
-      * No special restrictions means the downloads go through the usual security restrictions based on safety analysis results.
+      2: Blocks malicious files flagged by the Safe Browsing server AND Blocks uncommon or unwanted files flagged by the Safe Browsing server AND Blocks all dangerous file types. Only recommended for OUs/browsers/users that have a high tolerance for False Positives.
+
+      3: Blocks all downloads. Not recommended, except for special use cases.
+
+      4: Blocks malicious files flagged by the Safe Browsing server, does not block dangerous file types. Recommended.
 
       Note: These restrictions apply to downloads triggered from webpage content, as well as the Download link... menu option. They don't apply to the download of the currently displayed page or to saving as PDF from the printing options. Read more about Safe Browsing ( https://developers.google.com/safe-browsing ).''',
       'label': '''Download restrictions''',
@@ -13822,8 +13892,8 @@
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
-        'per_profile': True,
       },
+      'device_only': True,
       'example_value': True,
       'id': 646,
       'caption': '''Show accessibility options in system tray menu in the login screen''',
@@ -14500,8 +14570,8 @@
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
-        'per_profile': True,
       },
+      'device_only': True,
       'example_value': True,
       'id': 657,
       'caption': '''Switch the primary mouse button to the right button on the login screen''',
@@ -14821,8 +14891,8 @@
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
-        'per_profile': True,
       },
+      'device_only': True,
       'example_value': True,
       'id': 619,
       'caption': '''Enable the keyboard focus highlighting accessibility feature''',
@@ -19269,20 +19339,17 @@
           'caption': 'Prevent sites from using SharedArrayBuffers',
         },
       ],
-      'example_value': True,
+      'example_value': False,
       'default': False,
       'id': 852,
       'caption': '''Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context''',
       'tags': ['system-security'],
       'desc': '''
-      Specifies whether SharedArrayBuffers can be used in a non cross-origin-
-      isolated context. Chrome will require cross-origin isolation when using
-      SharedArrayBuffers from Chrome 91 onward (2021-05-25) for Web Compatibility
-      reasons. Additional details can be found on:
-      https://developer.chrome.com/blog/enabling-shared-array-buffer/.
-      When set to True, sites can use SharedArrayBuffer with no restrictions.
-      When set to False or not set, sites can only use SharedArrayBuffers when
-      cross-origin isolated.''',
+      Specifies whether SharedArrayBuffers can be used in a non cross-origin-isolated context. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will require cross-origin isolation when using SharedArrayBuffers from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 91 onward (2021-05-25) for Web Compatibility reasons. Additional details can be found on: https://developer.chrome.com/blog/enabling-shared-array-buffer/.
+
+      When set to Enabled, sites can use SharedArrayBuffer with no restrictions.
+
+      When set to Disabled or not set, sites can only use SharedArrayBuffers when cross-origin isolated.''',
     },
     {
       'name': 'SandboxExternalProtocolBlocked',
@@ -19319,10 +19386,7 @@
 
       This defaults to True: security feature enabled.
 
-      This can be used by administrators who need more time to update their
-      internal website affected by this new restriction. This Enterprise policy
-      is temporary; it's intended to be removed after
-      <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 104.
+      This can be used by administrators who need more time to update their internal website affected by this new restriction. This Enterprise policy is temporary; it's intended to be removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 104.
       ''',
     },
     {
@@ -19352,18 +19416,11 @@
       'caption': '''Specifies whether WebAssembly modules can be sent cross-origin''',
       'tags': ['system-security'],
       'desc': '''
-      Specifies whether WebAssembly modules can be sent to another window or
-      worker cross-origin. Cross-origin WebAssembly module sharing will be
-      deprecated as part of the efforts to deprecate document.domain, see
-      https://github.com/mikewest/deprecating-document-domain. This policy
-      allows to re-enable cross-origin WebAssembly module sharing to offer a
-      longer transition period in the deprecation process.
+      Specifies whether WebAssembly modules can be sent to another window or worker cross-origin. Cross-origin WebAssembly module sharing will be deprecated as part of the efforts to deprecate document.domain, see https://github.com/mikewest/deprecating-document-domain. This policy allows to re-enable cross-origin WebAssembly module sharing to offer a longer transition period in the deprecation process.
 
-      When set to True, sites can send WebAssembly modules also cross-origin
-      without restrictions.
+      When set to True, sites can send WebAssembly modules also cross-origin without restrictions.
 
-      When set to False or not set, sites can only send WebAssembly modules to
-      windows and workers in the same origin.''',
+      When set to False or not set, sites can only send WebAssembly modules to windows and workers in the same origin.''',
     },
     {
       'name': 'DisplayCapturePermissionsPolicyEnabled',
@@ -19396,22 +19453,11 @@
       'caption': 'Specifies whether the display-capture permissions-policy is checked or skipped.',
       'tags': ['system-security'],
       'desc': '''
-      The display-capture permissions-policy gates access to getDisplayMedia(),
-      as per this spec:
-      https://www.w3.org/TR/screen-capture/#feature-policy-integration
-      However, if this policy is Disabled, this requirement is not enforced,
-      and getDisplayMedia() is allowed from contexts that would otherwise be
-      forbidden. This Enterprise policy is temporary; it's intended to be
-      removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 100.
-      It is intended to unblock Enterprise users whose application is non-spec compliant,
-      but needs time to be fixed.
+      The display-capture permissions-policy gates access to getDisplayMedia(), as per this spec: https://www.w3.org/TR/screen-capture/#feature-policy-integration. However, if this policy is Disabled, this requirement is not enforced, and getDisplayMedia() is allowed from contexts that would otherwise be forbidden. This Enterprise policy is temporary; it's intended to be removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 100. It is intended to unblock Enterprise users whose application is non-spec compliant, but needs time to be fixed.
 
-      When enabled or not set, sites can only call getDisplayMedia() from
-      contexts which are allowlisted by the display-capture permissions-policy.
+      When enabled or not set, sites can only call getDisplayMedia() from contexts which are allowlisted by the display-capture permissions-policy.
 
-      When disabled, sites can call getDisplayMedia() even from contexts
-      which are not allowlisted by the display-capture permissions policy.
-      Note that other restrictions may still apply.''',
+      When disabled, sites can call getDisplayMedia() even from contexts which are not allowlisted by the display-capture permissions policy. Note that other restrictions may still apply.''',
     },
     {
       'name': 'WebDriverOverridesIncompatiblePolicies',
@@ -19433,15 +19479,13 @@
       This policy was removed in M80, because it is not necessary anymore as
       WebDriver is now compatible with all existing policies.
 
-      This policy allows users of the WebDriver feature to override
-      policies which can interfere with its operation.
+      This policy allows users of the WebDriver feature to override policies which can interfere with its operation.
 
       Currently this policy disables SitePerProcess and IsolateOrigins policies.
 
-      If the policy is enabled, WebDriver will be able to override incomaptible
-      policies.
-      If the policy is disabled or not configured, WebDriver will not be allowed
-      to override incompatible policies.''',
+      If the policy is enabled, WebDriver will be able to override incomaptible policies.
+
+      If the policy is disabled or not configured, WebDriver will not be allowed to override incompatible policies.''',
     },
     {
       'name': 'UnsafelyTreatInsecureOriginAsSecure',
@@ -19465,29 +19509,15 @@
       'desc': '''Deprecated in M69. Use
       OverrideSecurityRestrictionsOnInsecureOrigin instead.
 
-      The policy specifies a list of origins (URLs) or hostname patterns (such
-      as "*.example.com") for which security restrictions on insecure origins
-      will not apply.
+      The policy specifies a list of origins (URLs) or hostname patterns (such as "*.example.com") for which security restrictions on insecure origins will not apply.
 
-      The intent is to allow organizations to allow origins for legacy
-      applications that cannot deploy TLS, or to set up a staging server for
-      internal web development so that their developers can test out features
-      requiring secure contexts without having to deploy TLS on the staging
-      server. This policy will also prevent the origin from being labeled
-      "Not Secure" in the omnibox.
+      The intent is to allow organizations to allow origins for legacy applications that cannot deploy TLS, or to set up a staging server for internal web development so that their developers can test out features requiring secure contexts without having to deploy TLS on the staging server. This policy will also prevent the origin from being labeled "Not Secure" in the omnibox.
 
-      Setting a list of URLs in this policy has the same effect as setting the
-      command-line flag '--unsafely-treat-insecure-origin-as-secure' to a
-      comma-separated list of the same URLs. If the policy is set, it will
-      override the command-line flag.
+      Setting a list of URLs in this policy has the same effect as setting the command-line flag '--unsafely-treat-insecure-origin-as-secure' to a comma-separated list of the same URLs. If the policy is set, it will override the command-line flag.
 
-      This policy is deprecated in M69 in favor of
-      OverrideSecurityRestrictionsOnInsecureOrigin. If both policies are
-      present, OverrideSecurityRestrictionsOnInsecureOrigin will override this
-      policy.
+      This policy is deprecated in M69 in favor of OverrideSecurityRestrictionsOnInsecureOrigin. If both policies are present, OverrideSecurityRestrictionsOnInsecureOrigin will override this policy.
 
-      For more information on secure contexts, see
-      https://www.w3.org/TR/secure-contexts/
+      For more information on secure contexts, see https://www.w3.org/TR/secure-contexts/
       '''
     },
     {
@@ -26218,6 +26248,35 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       If this policy is enabled or not set the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature is enabled. If the policy is disabled the feature is unavailable.''',
     },
     {
+      'name': 'UserAgentClientHintsGREASEUpdateEnabled',
+      'owners': ['miketaylr@google.com', 'mreichhoff@chromium.org', 'file://components/client_hints/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os', 'chrome.*', 'android'],
+      'features': {
+        'per_profile': False,
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the updated User-Agent GREASE algorithm to be run.',
+        },
+        {
+          'value': False,
+          'caption': 'Force the prior User-Agent GREASE algorithm to be used.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 924,
+      'caption': '''Control the User-Agent Client Hints GREASE Update feature.''',
+      'tags': [],
+      'desc': '''When enabled the User-Agent Client Hints GREASE Update feature aligns the User-Agent GREASE algorithm with the latest spec.
+      The updated spec may break some websites that restrict the characters that requests may contain. See the spec for more information: https://wicg.github.io/ua-client-hints/#grease
+      If this policy is enabled or not set the User-Agent Client Hints GREASE Update feature is enabled. If the policy is disabled the prior User-Agent GREASE algorithm is used.''',
+    },
+    {
       'name': 'SuggestedContentEnabled',
       'owners': ['wrong@chromium.org', 'chrome-knowledge-eng@google.com'],
       'type': 'main',
@@ -29125,6 +29184,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
         'RemoteAccessHostEnableUserInterface',
         'RemoteAccessHostAllowRemoteAccessConnections',
         'RemoteAccessHostMaximumSessionDurationMinutes',
+        'RemoteAccessHostClipboardSizeBytes',
+        'RemoteAccessHostAllowRemoteSupportConnections',
       ],
     },
     {
@@ -29590,6 +29651,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 921,
+  'highest_id_currently_used': 924,
   'highest_atomic_group_id_currently_used': 41
 }

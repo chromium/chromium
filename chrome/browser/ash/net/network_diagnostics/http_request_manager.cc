@@ -16,7 +16,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
 
@@ -97,4 +97,4 @@ void HttpRequestManager::OnURLLoadComplete(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

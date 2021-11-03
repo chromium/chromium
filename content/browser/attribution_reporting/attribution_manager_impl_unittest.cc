@@ -13,10 +13,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -65,15 +63,6 @@ class TestAttributionReporter
 
   // AttributionManagerImpl::AttributionReporter
   void AddReportsToQueue(std::vector<AttributionReport> reports) override {
-    reports.erase(
-        base::ranges::remove_if(reports,
-                                [&](const AttributionReport& report) {
-                                  DCHECK(report.conversion_id.has_value());
-                                  return deferred_callbacks_.contains(
-                                      *report.conversion_id);
-                                }),
-        reports.end());
-
     if (reports.empty())
       return;
 
@@ -87,8 +76,7 @@ class TestAttributionReporter
       if (should_run_report_sent_callbacks_) {
         report_sent_callback_.Run(std::move(info));
       } else {
-        deferred_callbacks_.emplace(*info.report.conversion_id,
-                                    std::move(info));
+        deferred_callbacks_.push_back(std::move(info));
       }
     }
 
@@ -97,15 +85,15 @@ class TestAttributionReporter
   }
 
   void RunDeferredCallbacks() {
-    for (auto deferred_callback : std::move(deferred_callbacks_).extract()) {
-      report_sent_callback_.Run(std::move(deferred_callback.second));
+    for (auto& deferred_callback : deferred_callbacks_) {
+      report_sent_callback_.Run(std::move(deferred_callback));
     }
+    deferred_callbacks_.clear();
   }
 
   void RemoveAllReportsFromQueue() override {
     for (auto& deferred_callback : deferred_callbacks_) {
-      deferred_callback.second.status =
-          SentReportInfo::Status::kRemovedFromQueue;
+      deferred_callback.status = SentReportInfo::Status::kRemovedFromQueue;
     }
     RunDeferredCallbacks();
   }
@@ -147,7 +135,7 @@ class TestAttributionReporter
   base::Time last_report_time_;
   base::OnceClosure quit_closure_;
 
-  base::flat_map<AttributionReport::Id, SentReportInfo> deferred_callbacks_;
+  std::vector<SentReportInfo> deferred_callbacks_;
 };
 
 // Time after impression that a conversion can first be sent. See
@@ -306,8 +294,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportNotSent_NotQueuedAgain) {
                                   kAttributionManagerQueueReportsInterval);
   EXPECT_EQ(1u, test_reporter_->num_reports());
 
-  // If the report is not sent, it should not be added to the queue again,
-  // as the reporter deduplicates.
+  // If the report is not sent, it should not be added to the queue again as
+  // long as the reporter is still handling it.
   task_environment_.FastForwardBy(kAttributionManagerQueueReportsInterval);
   EXPECT_EQ(1u, test_reporter_->num_reports());
 }

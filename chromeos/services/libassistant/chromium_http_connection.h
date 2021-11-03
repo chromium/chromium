@@ -42,6 +42,9 @@ class ChromiumHttpConnection
                              pending_url_loader_factory,
                          Delegate* delegate);
 
+  ChromiumHttpConnection(const ChromiumHttpConnection&) = delete;
+  ChromiumHttpConnection& operator=(const ChromiumHttpConnection&) = delete;
+
   // assistant_client::HttpConnection implementation:
   void SetRequest(const std::string& url, Method method) override;
   void AddHeader(const std::string& name, const std::string& value) override;
@@ -126,8 +129,6 @@ class ChromiumHttpConnection
 
   base::OnceClosure on_resume_callback_;
   std::string partial_response_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumHttpConnection);
 };
 
 class ChromiumHttpConnectionFactory

@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class FakeDelegate : public AppsAccessSetupOperation::Delegate {
@@ -112,4 +112,4 @@ TEST_F(AppsAccessSetupOperationTest, IsFinalStatus) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

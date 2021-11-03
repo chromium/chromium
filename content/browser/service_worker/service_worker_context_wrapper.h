@@ -85,6 +85,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   explicit ServiceWorkerContextWrapper(BrowserContext* browser_context);
 
+  ServiceWorkerContextWrapper(const ServiceWorkerContextWrapper&) = delete;
+  ServiceWorkerContextWrapper& operator=(const ServiceWorkerContextWrapper&) =
+      delete;
+
   // Init and Shutdown called when the StoragePartition is being setup and torn
   // down.
   void Init(const base::FilePath& user_data_directory,
@@ -559,8 +563,6 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   // A loader factory used to register a service worker. Used for tests.
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextWrapper);
 };
 
 }  // namespace content

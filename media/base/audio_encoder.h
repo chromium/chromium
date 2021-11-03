@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
@@ -22,18 +23,20 @@ namespace media {
 
 // Defines a move-only wrapper to hold the encoded audio data.
 struct MEDIA_EXPORT EncodedAudioBuffer {
+  EncodedAudioBuffer();
   EncodedAudioBuffer(const AudioParameters& params,
                      std::unique_ptr<uint8_t[]> data,
                      size_t size,
                      base::TimeTicks timestamp,
                      base::TimeDelta duration = media::kNoTimestamp);
   EncodedAudioBuffer(EncodedAudioBuffer&&);
+  EncodedAudioBuffer& operator=(EncodedAudioBuffer&&);
   ~EncodedAudioBuffer();
 
   // The audio parameters the encoder used to encode the input audio. They may
   // differ from the original parameters given to the encoder initially, as the
   // encoder may convert the audio to a format more suitable for encoding.
-  const AudioParameters params;
+  AudioParameters params;
 
   // The buffer containing the encoded data.
   std::unique_ptr<uint8_t[]> encoded_data;
@@ -43,16 +46,16 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
   // bigger buffer and fill it only with |encoded_data_size| data without
   // bothering to allocate another shrunk buffer and copy the data in, since the
   // number of encoded bytes may not be known in advance.
-  const size_t encoded_data_size;
+  size_t encoded_data_size = 0;
 
   // The capture time of the first sample of the current AudioBus, or a previous
   // AudioBus If this output was generated because of a call to Flush().
-  const base::TimeTicks timestamp;
+  base::TimeTicks timestamp;
 
   // The duration of the encoded samples, if they were decoded and played out.
   // A duration of media::kNoTimestamp means we don't know the duration or don't
   // care about it.
-  const base::TimeDelta duration;
+  base::TimeDelta duration;
 };
 
 // Defines an interface for audio encoders.
@@ -62,6 +65,8 @@ class MEDIA_EXPORT AudioEncoder {
     Options();
     Options(const Options&);
     ~Options();
+
+    AudioCodec codec;
 
     absl::optional<int> bitrate;
 
@@ -124,6 +129,8 @@ class MEDIA_EXPORT AudioEncoder {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+using AudioEncoderConfig = AudioEncoder::Options;
 
 }  // namespace media
 

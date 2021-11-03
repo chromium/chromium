@@ -36,6 +36,9 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
+#include "storage/browser/test/mock_quota_manager.h"
+#include "storage/browser/test/mock_quota_manager_proxy.h"
+#include "storage/browser/test/quota_manager_proxy_sync.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -130,8 +133,16 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     ASSERT_TRUE(dir_.GetPath().IsAbsolute());
+
+    quota_manager_ = base::MakeRefCounted<storage::MockQuotaManager>(
+        /*is_incognito=*/false, dir_.GetPath(),
+        base::ThreadTaskRunnerHandle::Get(),
+        /*special_storage_policy=*/nullptr);
+    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+        quota_manager_.get(), base::ThreadTaskRunnerHandle::Get().get());
+
     file_system_context_ = storage::CreateFileSystemContextForTesting(
-        /*quota_manager_proxy=*/nullptr, dir_.GetPath());
+        quota_manager_proxy_.get(), dir_.GetPath());
 
     // Register an external mount point to test support for virtual paths.
     // This maps the virtual path a native local path to make sure an external
@@ -359,6 +370,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
+  scoped_refptr<storage::MockQuotaManager> quota_manager_;
+  scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
 
   WebContents* web_contents_;
 
@@ -380,6 +393,37 @@ class FileSystemAccessManagerImplTest : public testing::Test {
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
 };
+
+TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CreateBucket) {
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+      directory_remote;
+  base::RunLoop loop;
+  manager_remote_->GetSandboxedFileSystem(base::BindLambdaForTesting(
+      [&](blink::mojom::FileSystemAccessErrorPtr result,
+          mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+              handle) {
+        EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk, result->status);
+        directory_remote = std::move(handle);
+        loop.Quit();
+      }));
+  loop.Run();
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
+      std::move(directory_remote));
+  ASSERT_TRUE(root);
+
+  storage::QuotaManagerProxySync quota_manager_proxy_sync(
+      quota_manager_proxy_.get());
+
+  // Check default bucket exists.
+  storage::QuotaErrorOr<storage::BucketInfo> result =
+      quota_manager_proxy_sync.GetBucket(kTestStorageKey,
+                                         storage::kDefaultBucketName,
+                                         blink::mojom::StorageType::kTemporary);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(result->name, storage::kDefaultBucketName);
+  EXPECT_EQ(result->storage_key, kTestStorageKey);
+  EXPECT_GT(result->id.value(), 0);
+}
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_Permissions) {
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>

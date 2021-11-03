@@ -10,7 +10,6 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
-class BoxLayoutView;
 class Label;
 class Textfield;
 }  // namespace views
@@ -18,6 +17,7 @@ class Textfield;
 namespace ash {
 
 class DesksTemplatesDeleteButton;
+class DesksTemplatesIconContainer;
 class DeskTemplate;
 
 // A view that represents each individual template item in the desks templates
@@ -41,9 +41,6 @@ class DesksTemplatesItemView : public views::Button {
  private:
   friend class DesksTemplatesItemViewTestApi;
 
-  // TODO(chinsenj): Pass a list of icons as the parameter.
-  void SetIcons();
-
   void OnDeleteButtonPressed();
 
   void OnGridItemPressed();
@@ -51,7 +48,7 @@ class DesksTemplatesItemView : public views::Button {
   // Owned by the views hierarchy.
   views::Textfield* name_view_ = nullptr;
   views::Label* time_view_ = nullptr;
-  views::BoxLayoutView* preview_view_ = nullptr;
+  DesksTemplatesIconContainer* icon_container_view_ = nullptr;
   DesksTemplatesDeleteButton* delete_button_ = nullptr;
 
   // We force showing the delete button when `this` is long pressed or tapped

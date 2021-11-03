@@ -869,6 +869,9 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
     session_context.http_server_properties = &http_server_properties;
     session_context.quic_context = &quic_context;
 
+    host_resolver.rules()->AddRule("www.google.com", "2.3.4.5");
+    host_resolver.rules()->AddRule("bad", "1.2.3.4");
+
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
     session->quic_stream_factory()
@@ -2096,7 +2099,9 @@ class HttpStreamFactoryBidirectionalQuicTest
   HttpServerProperties http_server_properties_;
   TransportSecurityState transport_security_state_;
   DefaultCTPolicyEnforcer ct_policy_enforcer_;
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{
+      /*default_result=*/
+      MockHostResolverBase::RuleResolver::GetLocalhostResult()};
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<SSLConfigServiceDefaults> ssl_config_service_;
   HttpNetworkSessionParams params_;

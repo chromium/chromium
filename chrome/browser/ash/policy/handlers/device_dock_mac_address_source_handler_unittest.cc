@@ -49,10 +49,12 @@ class DeviceDockMacAddressHandlerBaseTest : public testing::Test {
   std::unique_ptr<DeviceDockMacAddressHandler> device_dock_mac_address_handler_;
 };
 
-// Tests that DockMacAddressHandler does not change device handler property if
-// received policy is invalid.
+// Tests that DockMacAddressHandler changes device handler property to
+// "usb_adapter_mac" if received policy is invalid.
 TEST_F(DeviceDockMacAddressHandlerBaseTest, InvalidPolicyValue) {
   MakeCrosSettingsTrusted();
+  EXPECT_CALL(network_device_handler_mock_,
+              SetUsbEthernetMacAddressSource("usb_adapter_mac"));
   scoped_cros_settings_test_helper_.SetInteger(
       chromeos::kDeviceDockMacAddressSource, 4);
 }

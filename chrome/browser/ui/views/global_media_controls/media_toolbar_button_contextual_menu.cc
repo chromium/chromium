@@ -14,7 +14,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
-#include "components/strings/grit/components_strings.h"
 
 std::unique_ptr<MediaToolbarButtonContextualMenu>
 MediaToolbarButtonContextualMenu::Create(Browser* browser) {

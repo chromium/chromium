@@ -31,6 +31,9 @@ class PlatformSensorFusionTest : public testing::Test {
     provider_ = std::make_unique<FakePlatformSensorProvider>();
   }
 
+  PlatformSensorFusionTest(const PlatformSensorFusionTest&) = delete;
+  PlatformSensorFusionTest& operator=(const PlatformSensorFusionTest&) = delete;
+
  protected:
   void AccelerometerCallback(scoped_refptr<PlatformSensor> sensor) {
     accelerometer_callback_called_ = true;
@@ -99,9 +102,6 @@ class PlatformSensorFusionTest : public testing::Test {
   scoped_refptr<FakePlatformSensor> magnetometer_;
   bool platform_sensor_fusion_callback_called_ = false;
   scoped_refptr<PlatformSensorFusion> fusion_sensor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorFusionTest);
 };
 
 // The following code tests creating a fusion sensor that needs one source

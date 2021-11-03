@@ -42,6 +42,11 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
  public:
   RenderWidgetHostViewChildFrameBrowserTest() = default;
 
+  RenderWidgetHostViewChildFrameBrowserTest(
+      const RenderWidgetHostViewChildFrameBrowserTest&) = delete;
+  RenderWidgetHostViewChildFrameBrowserTest& operator=(
+      const RenderWidgetHostViewChildFrameBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(command_line);
 
@@ -127,8 +132,6 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   viz::FrameSinkId expected_frame_sink_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrameBrowserTest);
 };
 
 // Tests that the screen is properly reflected for RWHVChildFrame.

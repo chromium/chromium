@@ -78,6 +78,14 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return HasRareData() ? rare_data_->lines_until_clamp : 0;
   }
 
+  // Return the adjustment baked into the fragment's block-offset that's caused
+  // by ruby annotations.
+  LayoutUnit AnnotationBlockOffsetAdjustment() const {
+    if (!HasRareData())
+      return LayoutUnit();
+    return rare_data_->annotation_block_offset_adjustment;
+  }
+
   // How much an annotation box overflow from this box.
   // This is for LayoutNGRubyRun and line boxes.
   // 0 : No overflow
@@ -258,7 +266,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
     return HasRareData() ? rare_data_->table_column_count_ : 0;
   }
 
-  const NGGridData* GridData() const {
+  const NGGridLayoutData* GridLayoutData() const {
     return HasRareData() ? rare_data_->grid_layout_data_.get() : nullptr;
   }
 
@@ -475,6 +483,8 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           custom_layout_data(rare_data.custom_layout_data),
           clearance_after_line(rare_data.clearance_after_line),
           line_box_bfc_block_offset(rare_data.line_box_bfc_block_offset),
+          annotation_block_offset_adjustment(
+              rare_data.annotation_block_offset_adjustment),
           annotation_overflow(rare_data.annotation_overflow),
           block_end_annotation_space(rare_data.block_end_annotation_space),
           lines_until_clamp(rare_data.lines_until_clamp),
@@ -482,7 +492,7 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
           math_layout_data_(rare_data.math_layout_data_) {
       if (rare_data.grid_layout_data_) {
         grid_layout_data_ =
-            std::make_unique<NGGridData>(*rare_data.grid_layout_data_);
+            std::make_unique<NGGridLayoutData>(*rare_data.grid_layout_data_);
       }
     }
 
@@ -511,11 +521,12 @@ class CORE_EXPORT NGLayoutResult : public RefCounted<NGLayoutResult> {
 
     LayoutUnit clearance_after_line;
     absl::optional<LayoutUnit> line_box_bfc_block_offset;
+    LayoutUnit annotation_block_offset_adjustment;
     LayoutUnit annotation_overflow;
     LayoutUnit block_end_annotation_space;
     int lines_until_clamp = 0;
     wtf_size_t table_column_count_ = 0;
-    std::unique_ptr<const NGGridData> grid_layout_data_;
+    std::unique_ptr<const NGGridLayoutData> grid_layout_data_;
     absl::optional<MathData> math_layout_data_;
   };
 

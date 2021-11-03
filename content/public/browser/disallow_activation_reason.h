@@ -54,6 +54,7 @@ enum DisallowActivationReasonId : uint64_t {
   kContentsPreferredSizeChanged = 30,
   kBeginDownload = 31,
   kBug1234857 = 32,
+  kFileSystemAccessPermissionRequest = 33,
   // New entries go above here. New entries should be added to
   // tools/metrics/histograms/enums.xml .
   kMinEmbedderDisallowActivationReason = 2 << 16,

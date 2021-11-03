@@ -631,12 +631,14 @@ UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device)
   }
 }
 
-UsbDeviceHandleWin::UsbDeviceHandleWin(scoped_refptr<UsbDeviceWin> device,
-                                       base::win::ScopedHandle handle)
+UsbDeviceHandleWin::UsbDeviceHandleWin(
+    scoped_refptr<UsbDeviceWin> device,
+    base::win::ScopedHandle handle,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
     : device_(std::move(device)),
       hub_handle_(std::move(handle)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      blocking_task_runner_(UsbService::CreateBlockingTaskRunner()) {}
+      blocking_task_runner_(std::move(blocking_task_runner)) {}
 
 UsbDeviceHandleWin::~UsbDeviceHandleWin() = default;
 

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <limits>
 #include <vector>
 
@@ -82,13 +83,13 @@ EquivalenceCandidate VisitEquivalenceSeed(
 // bytes in |old_image| and |new_image|) one-to-one.
 class OffsetMapper {
  public:
-  using const_iterator = std::vector<Equivalence>::const_iterator;
+  using const_iterator = std::deque<Equivalence>::const_iterator;
 
   // Constructors for various data sources. "Old" and "new" image sizes are
   // needed for bounds checks and to handle dangling targets.
   // - From a list of |equivalences|, already sorted (by |src_offset|) and
   //   pruned, useful for tests.
-  OffsetMapper(std::vector<Equivalence>&& equivalences,
+  OffsetMapper(std::deque<Equivalence>&& equivalences,
                offset_t old_image_size,
                offset_t new_image_size);
   // - From a generator, useful for Zucchini-apply.
@@ -131,7 +132,7 @@ class OffsetMapper {
   void ForwardProjectAll(std::deque<offset_t>* offsets) const;
 
   // Accessor for testing.
-  const std::vector<Equivalence> equivalences() const { return equivalences_; }
+  const std::deque<Equivalence> equivalences() const { return equivalences_; }
 
   // Sorts |equivalences| by |src_offset| and removes all source overlaps; so a
   // source location that was covered by some Equivalence would become covered
@@ -140,12 +141,12 @@ class OffsetMapper {
   // of a tie, the Equivalence with minimal |src_offset|. |equivalences| may
   // change in size since empty Equivalences are removed.
   static void PruneEquivalencesAndSortBySource(
-      std::vector<Equivalence>* equivalences);
+      std::deque<Equivalence>* equivalences);
 
  private:
   // |equivalences_| is pruned, i.e., no "old" blocks overlap (and no "new"
   // block overlaps). Also, it is sorted by "old" offsets.
-  std::vector<Equivalence> equivalences_;
+  std::deque<Equivalence> equivalences_;
   const offset_t old_image_size_;
   const offset_t new_image_size_;
 };

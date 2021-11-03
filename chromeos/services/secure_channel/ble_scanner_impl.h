@@ -50,6 +50,9 @@ class BleScannerImpl : public BleScanner,
     static Factory* test_factory_;
   };
 
+  BleScannerImpl(const BleScannerImpl&) = delete;
+  BleScannerImpl& operator=(const BleScannerImpl&) = delete;
+
   ~BleScannerImpl() override;
 
  private:
@@ -114,8 +117,6 @@ class BleScannerImpl : public BleScanner,
       discovery_session_weak_ptr_factory_;
 
   base::WeakPtrFactory<BleScannerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleScannerImpl);
 };
 
 }  // namespace secure_channel

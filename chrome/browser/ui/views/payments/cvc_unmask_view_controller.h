@@ -25,11 +25,13 @@ class WebContents;
 }
 
 namespace views {
+class Combobox;
 class Textfield;
 }
 
 namespace payments {
 
+class PaymentRequestCvcUnmaskViewControllerVisualTest;
 class PaymentRequestSpec;
 class PaymentRequestState;
 class PaymentRequestDialogView;
@@ -77,6 +79,7 @@ class CvcUnmaskViewController
   bool ShouldShowSecondaryButton() override;
 
  private:
+  friend PaymentRequestCvcUnmaskViewControllerVisualTest;
   // Called when the user confirms their CVC. This will pass the value to the
   // active FullCardRequest.
   void CvcConfirmed();
@@ -101,6 +104,8 @@ class CvcUnmaskViewController
 
   autofill::MonthComboboxModel month_combobox_model_;
   autofill::YearComboboxModel year_combobox_model_;
+  views::Combobox* month_combobox_ = nullptr;
+  views::Combobox* year_combobox_ = nullptr;
   views::Textfield* cvc_field_;  // owned by the view hierarchy, outlives this.
   autofill::CreditCard credit_card_;
   const content::GlobalRenderFrameHostId frame_routing_id_;

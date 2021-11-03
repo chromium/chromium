@@ -125,7 +125,7 @@
   AlertAction* action =
       [AlertAction actionWithTitle:@"OK"
                              style:UIAlertActionStyleDefault
-                           handler:^(AlertAction* action) {
+                           handler:^(AlertAction* theAction) {
                              [weakSelf.presenter dismissAnimated:YES];
                            }];
   [self presentAlertWithTitle:@"chromium.org says"

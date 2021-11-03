@@ -362,6 +362,7 @@ class AX_EXPORT AXNode final {
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
                             std::u16string* value) const;
 
+  bool HasInheritedStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetInheritedStringAttribute(
       ax::mojom::StringAttribute attribute) const;
   std::u16string GetInheritedString16Attribute(

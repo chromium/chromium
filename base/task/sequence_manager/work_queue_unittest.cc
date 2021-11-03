@@ -40,11 +40,7 @@ struct Cancelable {
 
 class RealTimeDomainFake : public RealTimeDomain {
  public:
-  LazyNow CreateLazyNow() const override {
-    return LazyNow(DefaultTickClock::GetInstance());
-  }
-
-  TimeTicks Now() const override { return TimeTicks::Now(); }
+  TimeTicks NowTicks() const override { return TimeTicks::Now(); }
 };
 
 }  // namespace
@@ -193,7 +189,7 @@ TEST_F(WorkQueueTest, CreateTaskPusherOneTask) {
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
     Task task = FakeTaskWithEnqueueOrder(2);
-    task_pusher.Push(&task);
+    task_pusher.Push(std::move(task));
   }
   EXPECT_EQ(work_queue_.get(), work_queue_sets_->GetOldestQueueInSet(0));
 }
@@ -202,12 +198,9 @@ TEST_F(WorkQueueTest, CreateTaskPusherThreeTasks) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    Task task1 = FakeTaskWithEnqueueOrder(2);
-    Task task2 = FakeTaskWithEnqueueOrder(3);
-    Task task3 = FakeTaskWithEnqueueOrder(4);
-    task_pusher.Push(&task1);
-    task_pusher.Push(&task2);
-    task_pusher.Push(&task3);
+    task_pusher.Push(FakeTaskWithEnqueueOrder(2));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(3));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(4));
   }
   EXPECT_EQ(work_queue_.get(), work_queue_sets_->GetOldestQueueInSet(0));
   EXPECT_EQ(2ull, work_queue_->GetFrontTask()->enqueue_order());
@@ -219,12 +212,9 @@ TEST_F(WorkQueueTest, CreateTaskPusherAfterFenceHit) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    Task task1 = FakeTaskWithEnqueueOrder(2);
-    Task task2 = FakeTaskWithEnqueueOrder(3);
-    Task task3 = FakeTaskWithEnqueueOrder(4);
-    task_pusher.Push(&task1);
-    task_pusher.Push(&task2);
-    task_pusher.Push(&task3);
+    task_pusher.Push(FakeTaskWithEnqueueOrder(2));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(3));
+    task_pusher.Push(FakeTaskWithEnqueueOrder(4));
   }
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
 }

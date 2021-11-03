@@ -158,6 +158,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
   };
 
   BackForwardCacheImpl();
+
+  BackForwardCacheImpl(const BackForwardCacheImpl&) = delete;
+  BackForwardCacheImpl& operator=(const BackForwardCacheImpl&) = delete;
+
   ~BackForwardCacheImpl() override;
 
   // Returns whether MediaSession's playback state change is allowed for the
@@ -394,8 +398,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   const UnloadSupportStrategy unload_strategy_;
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardCacheImpl);
 };
 
 // Allow external code to be notified when back-forward cache is disabled for a

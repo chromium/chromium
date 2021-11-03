@@ -12,7 +12,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 namespace views {
@@ -87,6 +87,10 @@ class OverviewTestBase : public AshTestBase {
   void CheckWindowAndCloseButtonInScreen(aura::Window* window,
                                          OverviewItem* window_item);
 
+  void CheckOverviewEnterExitHistogram(const std::string& trace,
+                                       const std::vector<int>& enter_counts,
+                                       const std::vector<int>& exit_counts);
+
   gfx::Rect GetGridBounds();
   void SetGridBounds(OverviewGrid* grid, const gfx::Rect& bounds);
 
@@ -97,12 +101,16 @@ class OverviewTestBase : public AshTestBase {
   void TearDown() override;
 
  protected:
-  void CheckForDuplicateTraceName(const char* trace);
+  void CheckForDuplicateTraceName(const std::string& trace);
+
+  base::HistogramTester histograms_;
 
  private:
+  void CheckOverviewHistogram(const std::string& histogram,
+                              const std::vector<int>& counts);
+
   std::unique_ptr<desks_storage::LocalDeskDataManager> desk_model_;
   base::ScopedTempDir desk_model_temp_dir_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ShelfViewTestAPI> shelf_view_test_api_;
   std::vector<std::string> trace_names_;
 };

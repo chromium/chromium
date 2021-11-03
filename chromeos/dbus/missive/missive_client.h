@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
   virtual void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) = 0;
   virtual void ReportSuccess(
-      const reporting::SequencingInformation& sequencing_information,
+      const reporting::SequenceInformation& sequence_information,
       bool force_confirm) = 0;
   virtual base::WeakPtr<MissiveClient> GetWeakPtr() = 0;
 

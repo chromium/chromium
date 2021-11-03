@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
@@ -174,9 +175,10 @@ AttributionManagerImpl::AttributionManagerImpl(
   // Once the database is loaded, get all reports that may have expired while
   // Chrome was not running and handle these specially. It is safe to post tasks
   // to the storage context as soon as it is created.
-  GetAndHandleReports(base::BindOnce(&AttributionManagerImpl::QueueReports,
-                                     weak_factory_.GetWeakPtr()),
-                      clock_->Now() + kAttributionManagerQueueReportsInterval);
+  GetAndHandleReports(
+      base::BindOnce(&AttributionManagerImpl::OnGetReportsToSend,
+                     weak_factory_.GetWeakPtr()),
+      clock_->Now() + kAttributionManagerQueueReportsInterval);
 
   // Start a repeating timer that will fetch reports once every
   // |kAttributionManagerQueueReportsInterval| and add them to |reporter_|.
@@ -250,7 +252,7 @@ const AttributionSessionStorage& AttributionManagerImpl::GetSessionStorage()
 
 void AttributionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
   GetAndHandleReports(
-      base::BindOnce(&AttributionManagerImpl::HandleReportsSentFromWebUI,
+      base::BindOnce(&AttributionManagerImpl::OnGetReportsToSendFromWebUI,
                      weak_factory_.GetWeakPtr(), std::move(done)),
       base::Time::Max());
 }
@@ -290,13 +292,16 @@ void AttributionManagerImpl::GetAndHandleReports(
 void AttributionManagerImpl::GetAndQueueReportsForNextInterval() {
   // Get all the reports that will be reported in the next interval and them to
   // the |reporter_|.
-  GetAndHandleReports(base::BindOnce(&AttributionManagerImpl::QueueReports,
-                                     weak_factory_.GetWeakPtr()),
-                      clock_->Now() + kAttributionManagerQueueReportsInterval);
+  GetAndHandleReports(
+      base::BindOnce(&AttributionManagerImpl::OnGetReportsToSend,
+                     weak_factory_.GetWeakPtr()),
+      clock_->Now() + kAttributionManagerQueueReportsInterval);
 }
 
-void AttributionManagerImpl::QueueReports(
+void AttributionManagerImpl::OnGetReportsToSend(
     std::vector<AttributionReport> reports) {
+  RemoveAlreadyQueuedReports(reports);
+
   if (reports.empty())
     return;
 
@@ -311,12 +316,14 @@ void AttributionManagerImpl::QueueReports(
         attribution_policy_->GetReportTimeForReportPastSendTime(current_time);
   }
 
-  reporter_->AddReportsToQueue(std::move(reports));
+  AddReportsToReporter(std::move(reports));
 }
 
-void AttributionManagerImpl::HandleReportsSentFromWebUI(
+void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
     base::OnceClosure done,
     std::vector<AttributionReport> reports) {
+  RemoveAlreadyQueuedReports(reports);
+
   // If there's already a send-all in progress, ignore this request.
   if (reports.empty() || !send_reports_for_web_ui_callback_.is_null()) {
     std::move(done).Run();
@@ -333,12 +340,40 @@ void AttributionManagerImpl::HandleReportsSentFromWebUI(
     report_ids.push_back(*report.conversion_id);
   }
 
-  // Reports may already be in the process of sending, but they will be
-  // deduplicated by `AttributionReporterImpl::AddReportsToQueue()`. In that
-  // case, the callback will be invoked as a result of the in-process reports.
   pending_report_ids_for_internals_ui_ =
       base::flat_set<AttributionReport::Id>(std::move(report_ids));
   send_reports_for_web_ui_callback_ = std::move(done);
+
+  AddReportsToReporter(std::move(reports));
+}
+
+void AttributionManagerImpl::RemoveAlreadyQueuedReports(
+    std::vector<AttributionReport>& reports) const {
+  reports.erase(base::ranges::remove_if(
+                    reports,
+                    [&](const AttributionReport& report) {
+                      DCHECK(report.conversion_id.has_value());
+                      return queued_reports_.contains(*report.conversion_id);
+                    }),
+                reports.end());
+}
+
+void AttributionManagerImpl::AddReportsToReporter(
+    std::vector<AttributionReport> reports) {
+  DCHECK(base::ranges::none_of(reports, [&](const AttributionReport& report) {
+    DCHECK(report.conversion_id.has_value());
+    return queued_reports_.contains(*report.conversion_id);
+  }));
+
+  // This is more efficient than calling `flat_set::insert()` repeatedly.
+  std::vector<AttributionReport::Id> queued_reports =
+      std::move(queued_reports_).extract();
+  queued_reports.reserve(queued_reports.size() + reports.size());
+  for (const auto& report : reports) {
+    queued_reports.push_back(*report.conversion_id);
+  }
+  queued_reports_ =
+      base::flat_set<AttributionReport::Id>(std::move(queued_reports));
 
   reporter_->AddReportsToQueue(std::move(reports));
 }
@@ -375,18 +410,36 @@ void AttributionManagerImpl::OnReportSent(SentReportInfo info) {
                AttributionReport report, bool success) {
               if (!manager || !success)
                 return;
+              // We add the report directly back to the reporter instead of
+              // using `AddReportsToReporter()` to avoid having to remove and
+              // then immediately re-add the report ID to the set.
               manager->reporter_->AddReportsToQueue({std::move(report)});
             },
             weak_factory_.GetWeakPtr(), info.report));
-  } else if (info.status != SentReportInfo::Status::kOffline &&
-             info.status != SentReportInfo::Status::kRemovedFromQueue) {
+  } else if (info.status == SentReportInfo::Status::kOffline ||
+             info.status == SentReportInfo::Status::kRemovedFromQueue) {
+    // Remove the ID from the set so that subsequent attempts will not be
+    // deduplicated.
+    size_t num_removed = queued_reports_.erase(info.report.conversion_id);
+    DCHECK_EQ(num_removed, 1u);
+  } else {
     RecordDeleteEvent(DeleteEvent::kStarted);
     attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
         .WithArgs(*info.report.conversion_id)
-        .Then(base::BindOnce([](bool succeeded) {
-          RecordDeleteEvent(succeeded ? DeleteEvent::kSucceeded
-                                      : DeleteEvent::kFailed);
-        }));
+        .Then(base::BindOnce(
+            [](base::WeakPtr<AttributionManagerImpl> manager,
+               AttributionReport::Id report_id, bool succeeded) {
+              RecordDeleteEvent(succeeded ? DeleteEvent::kSucceeded
+                                          : DeleteEvent::kFailed);
+
+              if (manager && succeeded) {
+                // Only remove the ID from the set once deletion has succeeded
+                // in order to avoid duplicates.
+                size_t num_removed = manager->queued_reports_.erase(report_id);
+                DCHECK_EQ(num_removed, 1u);
+              }
+            },
+            weak_factory_.GetWeakPtr(), *info.report.conversion_id));
 
     base::UmaHistogramEnumeration(
         "Conversion.ReportSendOutcome",

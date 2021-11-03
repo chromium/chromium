@@ -108,6 +108,10 @@ constexpr int kPageSwitcherSpacing = 8;
 // The maximum allowed margin between items in apps item grid.
 constexpr int kMaxItemMargin = 96;
 
+SearchModel* GetSearchModel() {
+  return AppListModelProvider::Get()->search_model();
+}
+
 int GridItemSizeWithMargins(int grid_size, int item_size, int item_count) {
   int margin = (grid_size - item_size * item_count) / (2 * (item_count - 1));
   return item_size + 2 * margin;
@@ -176,7 +180,6 @@ class AppListViewTest : public views::ViewsTestBase,
   ~AppListViewTest() override = default;
 
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       // Setup right to left environment if necessary.
       is_rtl_ = GetParam();
@@ -184,6 +187,9 @@ class AppListViewTest : public views::ViewsTestBase,
         base::i18n::SetICUDefaultLocale("he");
     }
     views::ViewsTestBase::SetUp();
+    zero_duration_mode_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
   }
@@ -192,8 +198,8 @@ class AppListViewTest : public views::ViewsTestBase,
     ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     view_->GetWidget()->Close();
+    zero_duration_mode_.reset();
     views::ViewsTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
  protected:
@@ -415,6 +421,9 @@ class AppListViewTest : public views::ViewsTestBase,
   // Restores the locale to default when destructor is called.
   base::test::ScopedRestoreICUDefaultLocale restore_locale_;
 
+  // Sets animation durations to zero.
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
 
   AppListView* view_ = nullptr;  // Owned by native widget.
@@ -491,7 +500,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     const int kAppListItemNum =
         SharedAppListConfig::instance().GetMaxNumOfItemsPerPage() + 1;
     AppListTestModel* model = delegate_->GetTestModel();
-    SearchModel* search_model = delegate_->GetSearchModel();
+    SearchModel* search_model = GetSearchModel();
     for (size_t i = 0; i < kSuggestionAppNum; i++) {
       search_model->results()->Add(
           std::make_unique<TestStartPageSearchResult>());
@@ -557,8 +566,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result_types.emplace_back(SearchResultDisplayType::kTile, tile_results_num);
     result_types.emplace_back(SearchResultDisplayType::kList, list_results_num);
 
-    SearchModel::SearchResults* results =
-        delegate_->GetSearchModel()->results();
+    SearchModel::SearchResults* results = GetSearchModel()->results();
     results->DeleteAll();
     double display_score = result_types.size();
     for (const auto& data : result_types) {
@@ -583,8 +591,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   // Add search results for test on embedded Assistant UI.
   void SetUpSearchResultsForAssistantUI(int list_results_num,
                                         int index_open_assistant_ui) {
-    SearchModel::SearchResults* results =
-        delegate_->GetSearchModel()->results();
+    SearchModel::SearchResults* results = GetSearchModel()->results();
     results->DeleteAll();
     double display_score = list_results_num;
     for (int i = 0; i < list_results_num; ++i) {
@@ -608,9 +615,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     RunPendingMessages();
   }
 
-  void ClearSearchResults() {
-    delegate_->GetSearchModel()->results()->DeleteAll();
-  }
+  void ClearSearchResults() { GetSearchModel()->results()->DeleteAll(); }
 
   void AddSearchResultWithTitleAndScore(const base::StringPiece& title,
                                         double score) {
@@ -619,7 +624,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_display_score(score);
     result->set_title(ASCIIToUTF16(title));
-    delegate_->GetSearchModel()->results()->Add(std::move(result));
+    GetSearchModel()->results()->Add(std::move(result));
     RunPendingMessages();
   }
 
@@ -2076,7 +2081,8 @@ TEST_F(AppListViewTest, AppsGridViewVisibilityOnReopening) {
 }
 
 TEST_F(AppListViewTest, AppsGridViewExpandHintingOnReopening) {
-  AppListView::SetShortAnimationForTesting(false);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -2092,8 +2098,6 @@ TEST_F(AppListViewTest, AppsGridViewExpandHintingOnReopening) {
   view_->SetState(ash::AppListViewState::kPeeking);
   EXPECT_TRUE(
       contents_view()->expand_arrow_view()->IsHintingAnimationRunningForTest());
-
-  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that going into a folder view, then setting the AppListState to PEEKING
@@ -2267,7 +2271,8 @@ TEST_F(AppListViewTest, DisplayTest) {
 
 // Tests switching rapidly between multiple pages of the launcher.
 TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
-  AppListView::SetShortAnimationForTesting(false);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   Initialize(false /*is_tablet_mode*/);
   Show();
@@ -2294,8 +2299,6 @@ TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
   // page.
   contents_view->ShowSearchResults(true);
   EXPECT_TRUE(IsStateShown(ash::AppListState::kStateSearchResults));
-
-  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that the correct views are displayed for showing search results.
@@ -2338,7 +2341,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
       search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |search_text|.
-  EXPECT_EQ(search_text, delegate_->GetSearchModel()->search_box()->text());
+  EXPECT_EQ(search_text, GetSearchModel()->search_box()->text());
   EXPECT_EQ(search_text, main_view->search_box_view()->search_box()->GetText());
   contents_view->Layout();
   EXPECT_TRUE(
@@ -2359,7 +2362,7 @@ TEST_F(AppListViewTest, DISABLED_SearchResultsTest) {
       new_search_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   // Check that the current search is using |new_search_text|.
-  EXPECT_EQ(new_search_text, delegate_->GetSearchModel()->search_box()->text());
+  EXPECT_EQ(new_search_text, GetSearchModel()->search_box()->text());
   EXPECT_EQ(new_search_text,
             main_view->search_box_view()->search_box()->GetText());
   contents_view->Layout();
@@ -2782,7 +2785,6 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
-  AppListView::SetShortAnimationForTesting(false);
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -2811,8 +2813,6 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   EXPECT_EQ(1.0f,
             contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
-
-  AppListView::SetShortAnimationForTesting(true);
 }
 
 // Tests that search box is not visible when showing embedded Assistant UI.

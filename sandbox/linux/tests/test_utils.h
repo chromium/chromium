@@ -14,6 +14,10 @@ namespace sandbox {
 // This class provide small helpers to help writing tests.
 class TestUtils {
  public:
+  TestUtils() = delete;
+  TestUtils(const TestUtils&) = delete;
+  TestUtils& operator=(const TestUtils&) = delete;
+
   static bool CurrentProcessHasChildren();
   // |pid| is the return value of a fork()-like call. This
   // makes sure that if fork() succeeded the child exits
@@ -21,9 +25,6 @@ class TestUtils {
   static void HandlePostForkReturn(pid_t pid);
   static void* MapPagesOrDie(size_t num_pages);
   static void MprotectLastPageOrDie(char* addr, size_t num_pages);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TestUtils);
 };
 
 }  // namespace sandbox

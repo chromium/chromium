@@ -18,8 +18,6 @@ const base::FilePath::CharType kPepperDataDirname[] =
 
 const char kBrowserPluginMimeType[] = "application/browser-plugin";
 
-const char kFlashPluginName[] = "Shockwave Flash";
-
 const size_t kMaxURLDisplayChars = 32 * 1024;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

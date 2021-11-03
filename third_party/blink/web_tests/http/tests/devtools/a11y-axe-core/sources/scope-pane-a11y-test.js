@@ -4,7 +4,7 @@
 
 (async function() {
   await TestRunner.loadTestModule('axe_core_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await UI.viewManager.showView('sources.scopeChain');
 

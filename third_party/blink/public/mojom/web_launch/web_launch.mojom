@@ -18,4 +18,9 @@ interface WebLaunchService {
   // Used to notify a frame that it was opened with |files|. This
   // method is fire-and-forget.
   SetLaunchFiles(array<FileSystemAccessEntry> files);
+
+  // Used to notify a frame that it was opened as a web app. This method is
+  // fire-and-forget.
+  // TODO(crbug.com/1250225): Unify SetLaunchFiles() into this method.
+  EnqueueLaunchParams(url.mojom.Url launch_url);
 };

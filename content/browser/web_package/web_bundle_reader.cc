@@ -95,6 +95,9 @@ class WebBundleReader::SharedFileDataSource final
     }
   }
 
+  SharedFileDataSource(const SharedFileDataSource&) = delete;
+  SharedFileDataSource& operator=(const SharedFileDataSource&) = delete;
+
  private:
   // Implements mojo::DataPipeProducer::DataSource. Following methods are called
   // on a blockable sequenced task runner.
@@ -130,8 +133,6 @@ class WebBundleReader::SharedFileDataSource final
   MojoResult error_;
   const uint64_t offset_;
   const uint64_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedFileDataSource);
 };
 
 WebBundleReader::WebBundleReader(std::unique_ptr<WebBundleSource> source)

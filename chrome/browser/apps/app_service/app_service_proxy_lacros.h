@@ -27,6 +27,12 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+// Avoid including this header file directly or referring directly to
+// AppServiceProxyLacros as a type. Instead:
+//  - for forward declarations, use app_service_proxy_forward.h
+//  - for the full header, use app_service_proxy.h, which aliases correctly
+//    based on the platform
+
 class Profile;
 
 namespace web_app {
@@ -101,10 +107,9 @@ class AppServiceProxyLacros : public KeyedService,
               apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Launches the app for the given |app_id| with files from |file_paths|.
-  // |event_flags| provides additional context about the action which launches
-  // the app (e.g. a middle click indicating opening a background tab).
-  // |launch_source| is the possible app launch sources, e.g. from Shelf, from
-  // the search box, etc.
+  // DEPRECATED. Prefer passing the files in an Intent through
+  // LaunchAppWithIntent.
+  // TODO(crbug.com/1264164): Remove this method.
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
@@ -282,11 +287,11 @@ class AppServiceProxyLacros : public KeyedService,
     apps::IconLoader* overriding_icon_loader_for_testing_;
   };
 
+  Profile* profile() const { return profile_; }
+
   bool IsValidProfile();
 
   void Initialize();
-
-  void AddAppIconSource(Profile* profile);
 
   // KeyedService overrides:
   void Shutdown() override;
@@ -335,6 +340,10 @@ class AppServiceProxyLacros : public KeyedService,
   int crosapi_app_service_proxy_version_ = 0;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};
+
+ private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
 };
 
 }  // namespace apps

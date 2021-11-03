@@ -28,8 +28,7 @@ class CastContentWindowAura : public CastContentWindow,
                               public content::WebContentsObserver,
                               public aura::WindowObserver {
  public:
-  CastContentWindowAura(base::WeakPtr<Delegate> delegate,
-                        mojom::CastWebViewParamsPtr params,
+  CastContentWindowAura(mojom::CastWebViewParamsPtr params,
                         CastWindowManager* window_manager);
 
   CastContentWindowAura(const CastContentWindowAura&) = delete;

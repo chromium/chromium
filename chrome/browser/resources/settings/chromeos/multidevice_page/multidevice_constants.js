@@ -65,6 +65,7 @@ cr.define('settings', function() {
     UNAVAILABLE_SUITE_DISABLED: 7,
     FURTHER_SETUP_REQUIRED: 8,
     UNAVAILABLE_TOP_LEVEL_FEATURE_DISABLED: 9,
+    UNAVAILABLE_NO_VERIFIED_HOST_CLIENT_NOT_READY: 10,
   };
 
   /**
@@ -107,7 +108,8 @@ cr.define('settings', function() {
    *   isAndroidSmsPairingComplete: boolean,
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
    *   isNearbyShareDisallowedByPolicy: boolean,
-   *   isPhoneHubAppsAccessGranted: boolean
+   *   isPhoneHubAppsAccessGranted: boolean,
+   *   isPhoneHubPermissionsDialogSupported: boolean
    * }}
    */
   /* #export */ let MultiDevicePageContentData;

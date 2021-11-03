@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -45,7 +44,6 @@ import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -603,8 +601,7 @@ public class ChromeContextMenuPopulatorTest {
                 0, 0, MenuSourceType.MENU_SOURCE_TOUCH, false);
 
         // Show "open in new tab" item first
-        SharedPreferencesManager.getInstance().writeBoolean(
-                CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST, false);
+        TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST.setForTesting(false);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected = {R.id.contextmenu_open_in_new_tab,
                 R.id.contextmenu_open_in_new_tab_in_group, R.id.contextmenu_open_in_incognito_tab,
@@ -614,8 +611,7 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected);
 
         // Show "open in new tab in group" item first
-        SharedPreferencesManager.getInstance().writeBoolean(
-                CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST, true);
+        TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST.setForTesting(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expected2 = {R.id.contextmenu_open_in_new_tab_in_group,
                 R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
@@ -625,9 +621,8 @@ public class ChromeContextMenuPopulatorTest {
         checkMenuOptions(expected2);
 
         // Clean up
-        SharedPreferencesManager.getInstance().removeKey(
-                CONTEXT_MENU_OPEN_NEW_TAB_IN_GROUP_ITEM_FIRST);
         TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.setForTesting(true);
+        TabUiFeatureUtilities.SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST.setForTesting(false);
     }
 
     @Test

@@ -64,6 +64,11 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       RenderWidgetHost* widget,
       const display::ScreenInfos& parent_screen_infos);
 
+  RenderWidgetHostViewChildFrame(const RenderWidgetHostViewChildFrame&) =
+      delete;
+  RenderWidgetHostViewChildFrame& operator=(
+      const RenderWidgetHostViewChildFrame&) = delete;
+
   void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
 
   // TouchSelectionControllerClientManager::Observer implementation.
@@ -167,8 +172,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& input_event) override;
-  void GetScreenInfo(display::ScreenInfo* screen_info) override;
-  display::ScreenInfos GetScreenInfos() override;
   void EnableAutoResize(const gfx::Size& min_size,
                         const gfx::Size& max_size) override;
   void DisableAutoResize(const gfx::Size& new_size) override;
@@ -314,14 +317,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   // properties.
   bool initial_properties_sent_ = false;
 
-  // The ScreenInfos information from the parent at the time this class is
-  // created, to be used before this view is connected to its FrameDelegate.
-  // This is kept up to date anytime GetScreenInfos() is called and we have
-  // a FrameDelegate.
-  display::ScreenInfos parent_screen_infos_;
-
   base::WeakPtrFactory<RenderWidgetHostViewChildFrame> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrame);
 };
 
 }  // namespace content

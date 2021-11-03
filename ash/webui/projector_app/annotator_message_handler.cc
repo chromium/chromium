@@ -13,7 +13,7 @@
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 AnnotatorMessageHandler::AnnotatorMessageHandler() = default;
 AnnotatorMessageHandler::~AnnotatorMessageHandler() = default;
@@ -52,7 +52,7 @@ void AnnotatorMessageHandler::RegisterMessages() {
 
 void AnnotatorMessageHandler::OnToolSet(base::Value::ConstListView args) {
   DCHECK_EQ(args.size(), 1u);
-  ash::ProjectorController::Get()->OnToolSet(AnnotatorTool::FromValue(args[0]));
+  ProjectorController::Get()->OnToolSet(AnnotatorTool::FromValue(args[0]));
 }
 
 void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(
@@ -60,8 +60,8 @@ void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(
   DCHECK_EQ(args.size(), 2u);
   DCHECK(args[0].is_bool());
   DCHECK(args[1].is_bool());
-  ash::ProjectorController::Get()->OnUndoRedoAvailabilityChanged(
-      args[0].GetBool(), args[1].GetBool());
+  ProjectorController::Get()->OnUndoRedoAvailabilityChanged(args[0].GetBool(),
+                                                            args[1].GetBool());
 }
 
-}  // namespace chromeos
+}  // namespace ash

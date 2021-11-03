@@ -349,12 +349,9 @@ bool HandleRemoteCommand(const BrokerCommandSet& allowed_command_set,
 
 }  // namespace
 
-BrokerHost::BrokerHost(const BrokerPermissionList& broker_permission_list,
-                       const BrokerCommandSet& allowed_command_set,
+BrokerHost::BrokerHost(const BrokerSandboxConfig& policy,
                        BrokerChannel::EndPoint ipc_channel)
-    : broker_permission_list_(broker_permission_list),
-      allowed_command_set_(allowed_command_set),
-      ipc_channel_(std::move(ipc_channel)) {}
+    : policy_(policy), ipc_channel_(std::move(ipc_channel)) {}
 
 BrokerHost::~BrokerHost() = default;
 
@@ -384,8 +381,9 @@ void BrokerHost::LoopAndHandleRequests() {
 
     BrokerSimpleMessage reply;
     base::ScopedFD opened_file;
-    if (!HandleRemoteCommand(allowed_command_set_, broker_permission_list_,
-                             &message, &reply, &opened_file)) {
+    if (!HandleRemoteCommand(policy_.allowed_command_set,
+                             *policy_.file_permissions, &message, &reply,
+                             &opened_file)) {
       // Does not exit if we received a malformed message.
       LOG(ERROR) << "Received malformed message from the client";
       continue;

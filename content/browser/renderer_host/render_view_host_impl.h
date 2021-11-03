@@ -125,6 +125,9 @@ class CONTENT_EXPORT RenderViewHostImpl
                      bool swapped_out,
                      bool has_initialized_audio_host);
 
+  RenderViewHostImpl(const RenderViewHostImpl&) = delete;
+  RenderViewHostImpl& operator=(const RenderViewHostImpl&) = delete;
+
   // RenderViewHost implementation.
   RenderWidgetHostImpl* GetWidget() override;
   RenderProcessHost* GetProcess() override;
@@ -241,8 +244,11 @@ class CONTENT_EXPORT RenderViewHostImpl
   // length) and the timestamp corresponding to the start of the back-forward
   // cached navigation, which would be communicated to the page to allow it to
   // record the latency of this navigation.
+  // TODO(https://crbug.com/1234634): Remove
+  // restoring_main_frame_from_back_forward_cache.
   void LeaveBackForwardCache(
-      blink::mojom::PageRestoreParamsPtr page_restore_params);
+      blink::mojom::PageRestoreParamsPtr page_restore_params,
+      bool restoring_main_frame_from_back_forward_cache);
 
   bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
@@ -432,8 +438,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   FrameTree* frame_tree_;
 
   base::WeakPtrFactory<RenderViewHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderViewHostImpl);
 };
 
 }  // namespace content

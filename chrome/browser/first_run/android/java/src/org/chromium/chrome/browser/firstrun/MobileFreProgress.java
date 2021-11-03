@@ -19,10 +19,14 @@ import java.lang.annotation.RetentionPolicy;
         MobileFreProgress.WELCOME_SHOWN,
         MobileFreProgress.DATA_SAVER_SHOWN,
         MobileFreProgress.SYNC_CONSENT_SHOWN,
-        MobileFreProgress.COMPLETED_SYNC,
-        MobileFreProgress.COMPLETED_NOT_SYNC,
+        MobileFreProgress.SYNC_CONSENT_ACCEPTED,
+        MobileFreProgress.SYNC_CONSENT_DISMISSED,
         MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
         MobileFreProgress.WELCOME_ADD_ACCOUNT,
+        MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT,
+        MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT,
+        MobileFreProgress.WELCOME_DISMISS,
+        MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK,
         MobileFreProgress.MAX,
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -31,10 +35,20 @@ public @interface MobileFreProgress {
     int WELCOME_SHOWN = 1;
     int DATA_SAVER_SHOWN = 2;
     int SYNC_CONSENT_SHOWN = 3;
-    int COMPLETED_SYNC = 4;
-    int COMPLETED_NOT_SYNC = 5;
+    /** The user clicked on the continue button to continue with sync consent. */
+    int SYNC_CONSENT_ACCEPTED = 4;
+    /** The user clicked on the |No thanks| button to continue without sync consent. */
+    int SYNC_CONSENT_DISMISSED = 5;
     int DEFAULT_SEARCH_ENGINE_SHOWN = 6;
     /** The user started adding account from welcome screen. */
     int WELCOME_ADD_ACCOUNT = 7;
-    int MAX = 8;
+    /** The user signed in with default account from welcome screen. */
+    int WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT = 8;
+    /** The user signed in with non-default account from welcome screen. */
+    int WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT = 9;
+    /** The user clicked the dismiss button on welcome screen. */
+    int WELCOME_DISMISS = 10;
+    /** The user clicked on the |settings| link on sync consent screen. */
+    int SYNC_CONSENT_SETTINGS_LINK_CLICK = 11;
+    int MAX = 12;
 }

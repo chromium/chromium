@@ -57,7 +57,7 @@ base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle) {
     return base::FilePath();
   }
 
-  return temp_path;
+  return base::MakeAbsoluteFilePath(temp_path);
 }
 
 }  // namespace arc

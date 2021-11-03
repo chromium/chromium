@@ -25,18 +25,22 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
   void SetFingerprintState(FingerprintState state);
   void NotifyFingerprintAuthResult(bool result);
   void SetCanUsePin(bool can_use_pin);
-  void SetVisible(bool visible);
 
+  // If |available| is false, forces |GetAuthFactorState()| to return
+  // |kUnavailable|, otherwise has no effect. Used to hide Fingerprint auth
+  // independently of |state_|.
+  void set_available(bool available) { available_ = available; }
+
+ private:
   // AuthFactorModel:
   AuthFactorState GetAuthFactorState() override;
   AuthFactorType GetType() override;
   int GetLabelId() override;
   bool ShouldAnnounceLabel() override;
   int GetAccessibleNameId() override;
-  void UpdateIcon(AuthIconView* icon_view) override;
   void OnTapOrClickEvent() override;
+  void UpdateIcon(AuthIconView* icon) override;
 
- private:
   void OnResetState();
 
   FingerprintState state_ = FingerprintState::AVAILABLE_DEFAULT;
@@ -46,7 +50,7 @@ class FingerprintAuthFactorModel : public AuthFactorModel {
 
   // Affects DISABLED_FROM_TIMEOUT message.
   bool can_use_pin_ = false;
-  bool visible_ = true;
+  bool available_ = true;
 };
 
 }  // namespace ash

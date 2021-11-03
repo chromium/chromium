@@ -62,9 +62,9 @@ class LayoutSVGEllipse final : public LayoutSVGShape {
 
  private:
   gfx::PointF center_;
-  float radius_x_;
-  float radius_y_;
-  bool use_path_fallback_;
+  float radius_x_ = 0;
+  float radius_y_ = 0;
+  bool use_path_fallback_ = false;
 };
 
 }  // namespace blink

@@ -55,6 +55,9 @@ class BleInitiatorOperation
     static Factory* test_factory_;
   };
 
+  BleInitiatorOperation(const BleInitiatorOperation&) = delete;
+  BleInitiatorOperation& operator=(const BleInitiatorOperation&) = delete;
+
   ~BleInitiatorOperation() override;
 
  private:
@@ -83,8 +86,6 @@ class BleInitiatorOperation
   bool is_attempt_active_ = false;
 
   base::WeakPtrFactory<BleInitiatorOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleInitiatorOperation);
 };
 
 }  // namespace secure_channel

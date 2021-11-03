@@ -14,6 +14,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -52,9 +53,17 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     // states with restore bounds (maximized, minimized, snapped, etc), they
     // will take the current bounds as their restore bounds and have the current
     // bounds determined by the system.
-    window_info->current_bounds = window_state->HasRestoreBounds()
-                                      ? window_state->GetRestoreBoundsInScreen()
-                                      : window->GetBoundsInScreen();
+    if (window_state->HasRestoreBounds()) {
+      window_info->current_bounds = window_state->GetRestoreBoundsInScreen();
+    } else {
+      // `aura::Window::Get*Bounds*` is affected by transforms, which may be the
+      // case when in overview mode. Compute the bounds in screen minus the
+      // transform.
+      gfx::Rect untransformed_window_bounds = window->bounds();
+      wm::ConvertRectToScreen(window->parent(), &untransformed_window_bounds);
+      window_info->current_bounds = untransformed_window_bounds;
+    }
+
     // Window restore does not support restoring fullscreen windows. If a window
     // is fullscreen save the pre-fullscreen window state instead.
     window_info->window_state_type =

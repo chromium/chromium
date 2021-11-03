@@ -45,7 +45,7 @@ base::CallbackListSubscription SetUpSigninClient(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void InitNetwork() {
-  auto* portal_detector = new chromeos::NetworkPortalDetectorTestImpl();
+  auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
 
   const chromeos::NetworkState* default_network =
       chromeos::NetworkHandler::Get()
@@ -56,14 +56,14 @@ void InitNetwork() {
 
   portal_detector->SetDetectionResultsForTesting(
       default_network->guid(),
-      chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
+      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
 
   // Takes ownership.
   chromeos::network_portal_detector::InitializeForTesting(portal_detector);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-AccountInfo SignInSecondaryAccount(
+AccountInfo SignInUnconsentedAccount(
     Profile* profile,
     network::TestURLLoaderFactory* test_url_loader_factory,
     const std::string& email) {
@@ -71,15 +71,20 @@ AccountInfo SignInSecondaryAccount(
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account_info =
       signin::MakeAccountAvailable(identity_manager, email);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Unlike other platforms, ChromeOS does not get the primary account from the
+  // cookies, and it needs to be set explicitly.
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      account_info.account_id, signin::ConsentLevel::kSignin);
+#endif
   signin::SetCookieAccounts(identity_manager, test_url_loader_factory,
                             {{account_info.email, account_info.gaia}});
   return account_info;
 }
 
-void SignOutSecondaryAccount(
-    Profile* profile,
-    network::TestURLLoaderFactory* test_url_loader_factory,
-    const CoreAccountId& account_id) {
+void SignOutAccount(Profile* profile,
+                    network::TestURLLoaderFactory* test_url_loader_factory,
+                    const CoreAccountId& account_id) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   signin::SetCookieAccounts(identity_manager, test_url_loader_factory, {});
@@ -87,7 +92,7 @@ void SignOutSecondaryAccount(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void MakeAccountPrimary(Profile* profile, const std::string& email) {
+void GrantSyncConsent(Profile* profile, const std::string& email) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   AccountInfo account =

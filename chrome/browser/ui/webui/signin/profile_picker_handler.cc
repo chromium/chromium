@@ -414,9 +414,10 @@ void ProfilePickerHandler::HandleLaunchGuestProfile(
 
 void ProfilePickerHandler::HandleAskOnStartupChanged(
     const base::ListValue* args) {
-  bool show_on_startup;
-  if (!args->GetBoolean(0, &show_on_startup))
+  const auto& list = args->GetList();
+  if (list.empty() || !list[0].is_bool())
     return;
+  const bool show_on_startup = list[0].GetBool();
 
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kBrowserShowProfilePickerOnStartup, show_on_startup);

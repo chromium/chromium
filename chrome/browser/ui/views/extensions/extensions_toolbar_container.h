@@ -218,6 +218,9 @@ class ExtensionsToolbarContainer : public ToolbarIconContainerView,
   // animation ends.
   void UpdateContainerVisibilityAfterAnimation();
 
+  // Updates the controls visibility.
+  void UpdateControlsVisibility();
+
   // TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,

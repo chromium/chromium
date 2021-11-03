@@ -196,6 +196,37 @@ class SellerWorkletTest : public testing::Test {
   }
 
   // Loads and runs a report_result() script, expecting the supplied result.
+  // Caller is responsible for spinning the event loop at least until
+  // `done_closure`.
+  void RunReportResultExpectingResultAsync(
+      mojom::SellerWorklet* seller_worklet,
+      const absl::optional<std::string>& expected_signals_for_winner,
+      const absl::optional<GURL>& expected_report_url,
+      const std::vector<std::string>& expected_errors,
+      base::OnceClosure done_closure) {
+    seller_worklet->ReportResult(
+        auction_config_.Clone(), browser_signal_top_window_origin_,
+        browser_signal_interest_group_owner_, browser_signal_render_url_,
+        browser_signal_ad_render_fingerprint_, bid_,
+        browser_signal_desireability_,
+        base::BindOnce(
+            [](const absl::optional<std::string>& expected_signals_for_winner,
+               const absl::optional<GURL>& expected_report_url,
+               const std::vector<std::string>& expected_errors,
+               base::OnceClosure done_closure,
+               const absl::optional<std::string>& signals_for_winner,
+               const absl::optional<GURL>& report_url,
+               const std::vector<std::string>& errors) {
+              EXPECT_EQ(expected_signals_for_winner, signals_for_winner);
+              EXPECT_EQ(expected_report_url, report_url);
+              EXPECT_EQ(expected_errors, errors);
+              std::move(done_closure).Run();
+            },
+            expected_signals_for_winner, expected_report_url, expected_errors,
+            std::move(done_closure)));
+  }
+
+  // Loads and runs a report_result() script, expecting the supplied result.
   void RunReportResultExpectingResult(
       const absl::optional<std::string>& expected_signals_for_winner,
       const absl::optional<GURL>& expected_report_url,
@@ -205,22 +236,9 @@ class SellerWorkletTest : public testing::Test {
     ASSERT_TRUE(seller_worklet);
 
     base::RunLoop run_loop;
-    seller_worklet->ReportResult(
-        auction_config_.Clone(), browser_signal_top_window_origin_,
-        browser_signal_interest_group_owner_, browser_signal_render_url_,
-        browser_signal_ad_render_fingerprint_, bid_,
-        browser_signal_desireability_,
-        base::BindLambdaForTesting(
-            [&run_loop, &expected_signals_for_winner, &expected_report_url,
-             &expected_errors](
-                const absl::optional<std::string>& signals_for_winner,
-                const absl::optional<GURL>& report_url,
-                const std::vector<std::string>& errors) {
-              EXPECT_EQ(expected_signals_for_winner, signals_for_winner);
-              EXPECT_EQ(expected_report_url, report_url);
-              EXPECT_EQ(expected_errors, errors);
-              run_loop.Quit();
-            }));
+    RunReportResultExpectingResultAsync(
+        seller_worklet.get(), expected_signals_for_winner, expected_report_url,
+        expected_errors, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1176,6 +1194,107 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
       R"({"id":6,"method":"Debugger.resume","params":{}})");
   run_loop2.Run();
+}
+
+TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
+  const char kUrl[] = "http://example.com/script.js";
+
+  std::string script_body =
+      CreateBasicSellAdScript() +
+      CreateReportToScript("1", R"(sendReportTo("https://foo.test"))");
+  AddJavascriptResponse(&url_loader_factory_, GURL(kUrl), script_body);
+
+  auto worklet =
+      CreateWorkletImpl(GURL(kUrl), true /* pause_for_debugger_on_start */);
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent;
+  worklet->ConnectDevToolsAgent(agent.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug(std::move(agent), "123",
+                                true /* use_binary_protocol */);
+
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  // Set the instrumentation breakpoints.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3,
+      "EventBreakpoints.setInstrumentationBreakpoint",
+      MakeInstrumentationBreakpointCommand(3, "set",
+                                           "beforeSellerWorkletScoringStart"));
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 4,
+      "EventBreakpoints.setInstrumentationBreakpoint",
+      MakeInstrumentationBreakpointCommand(
+          4, "set", "beforeSellerWorkletReportingStart"));
+
+  // Resume execution of create.
+  load_script_run_loop_ = std::make_unique<base::RunLoop>();
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 5,
+      "Runtime.runIfWaitingForDebugger",
+      R"({"id":5,"method":"Runtime.runIfWaitingForDebugger","params":{}})");
+  load_script_run_loop_->Run();
+  EXPECT_TRUE(create_worklet_succeeded_);
+
+  // Try to run scoreAd. Should hit corresponding breakpoint.
+  base::RunLoop run_loop;
+  RunScoreAdOnWorkletAsync(worklet.get(), 1.0, {}, run_loop.QuitClosure());
+
+  TestDevToolsAgentClient::Event breakpoint_hit1 =
+      debug.WaitForMethodNotification("Debugger.paused");
+
+  const std::string* breakpoint1 =
+      breakpoint_hit1.value.FindStringPath("params.data.eventName");
+  ASSERT_TRUE(breakpoint1);
+  EXPECT_EQ("instrumentation:beforeSellerWorkletScoringStart", *breakpoint1);
+
+  // Let scoring finish.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 6, "Debugger.resume",
+      R"({"id":6,"method":"Debugger.resume","params":{}})");
+  run_loop.Run();
+
+  // Now try reporting, should hit the other breakpoint.
+  base::RunLoop run_loop2;
+  RunReportResultExpectingResultAsync(worklet.get(), "1",
+                                      GURL("https://foo.test/"), {},
+                                      run_loop2.QuitClosure());
+  TestDevToolsAgentClient::Event breakpoint_hit2 =
+      debug.WaitForMethodNotification("Debugger.paused");
+  const std::string* breakpoint2 =
+      breakpoint_hit2.value.FindStringPath("params.data.eventName");
+  ASSERT_TRUE(breakpoint2);
+  EXPECT_EQ("instrumentation:beforeSellerWorkletReportingStart", *breakpoint2);
+
+  // Let reporting finish.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 7, "Debugger.resume",
+      R"({"id":7,"method":"Debugger.resume","params":{}})");
+  run_loop2.Run();
+
+  // Running another scoreAd will trigger the breakpoint again, since we didn't
+  // remove it.
+  base::RunLoop run_loop3;
+  RunScoreAdOnWorkletAsync(worklet.get(), 1.0, {}, run_loop3.QuitClosure());
+
+  TestDevToolsAgentClient::Event breakpoint_hit3 =
+      debug.WaitForMethodNotification("Debugger.paused");
+
+  const std::string* breakpoint3 =
+      breakpoint_hit1.value.FindStringPath("params.data.eventName");
+  ASSERT_TRUE(breakpoint3);
+  EXPECT_EQ("instrumentation:beforeSellerWorkletScoringStart", *breakpoint3);
+
+  // Let this round of scoring finish, too.
+  debug.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 8, "Debugger.resume",
+      R"({"id":8,"method":"Debugger.resume","params":{}})");
+  run_loop3.Run();
 }
 
 }  // namespace

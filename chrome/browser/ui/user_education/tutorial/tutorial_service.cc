@@ -13,19 +13,22 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 
-TutorialService::TutorialService(
-    std::unique_ptr<TutorialRegistry> tutorial_registry)
-    : tutorial_registry_(std::move(tutorial_registry)) {}
-
+TutorialService::TutorialService() = default;
 TutorialService::~TutorialService() = default;
 
 bool TutorialService::StartTutorial(TutorialIdentifier id,
                                     ui::ElementContext context) {
+  TutorialServiceManager* tutorial_service_manager =
+      TutorialServiceManager::GetInstance();
+
   TutorialBubbleFactoryRegistry* factory_registry =
-      TutorialServiceManager::GetInstance()->bubble_factory_registry();
+      tutorial_service_manager->bubble_factory_registry();
+
+  TutorialRegistry* tutorial_registry =
+      tutorial_service_manager->tutorial_registry();
 
   return StartTutorialImpl(
-      tutorial_registry_->CreateTutorial(id, this, factory_registry, context));
+      tutorial_registry->CreateTutorial(id, this, factory_registry, context));
 }
 
 bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
@@ -40,15 +43,19 @@ bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
 void TutorialService::AbortTutorial() {
   // TODO (dpenning): Add in hooks to listen for abort
   running_tutorial_.reset();
+  currently_displayed_bubble_.reset();
 }
 
 void TutorialService::CompleteTutorial() {
   // TODO (dpenning): Add in hooks to listen for complete
   running_tutorial_.reset();
+
+  // TODO (dpenning): decide what to do with the currently displayed bubble, we
+  // want it to stick around for a while, but we also want to cleanup the
+  // tutorial at some point.
 }
 
 void TutorialService::SetCurrentBubble(std::unique_ptr<TutorialBubble> bubble) {
-  HideCurrentBubbleIfShowing();
   currently_displayed_bubble_ = std::move(bubble);
 }
 
@@ -64,5 +71,9 @@ bool TutorialService::IsRunningTutorial() const {
 
 std::vector<TutorialIdentifier> TutorialService::GetTutorialIdentifiers()
     const {
-  return tutorial_registry_->GetTutorialIdentifiers();
+  TutorialServiceManager* tutorial_service_manager =
+      TutorialServiceManager::GetInstance();
+
+  return tutorial_service_manager->tutorial_registry()
+      ->GetTutorialIdentifiers();
 }

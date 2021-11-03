@@ -1,0 +1,62 @@
+<style include="cr-shared-style">
+  :host {
+   font-family: Roboto, sans-serif;
+   font-size: 75%;
+   font-weight: 500;
+  }
+
+  #appTitle {
+    font-family: 'Google Sans'
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    padding: 5px;
+  }
+
+  .button-group > cr-button {
+    margin-inline-start: 10px;
+  }
+
+  .content {
+    height: 100%;
+    overflow: scroll;
+  }
+
+  .section {
+    margin-bottom: 25px;
+  }
+</style>
+
+<div class="app">
+  <h1 id="appTitle">[[i18n('appTitle')]]</h1>
+  <div id="container" class="content" show-bottom-shadow>
+    <div class="section">
+      <h3>[[i18n('networkDevicesLabel')]]</h3>
+      <network-health-summary id="network-health"></network-health-summary>
+    </div>
+    <div class="section">
+      <h3>[[i18n('diagnosticRoutinesLabel')]]</h3>
+      <network-diagnostics id="network-diagnostics"></network-diagnostics>
+    </div>
+  </div>
+  <div class="button-group">
+    <cr-button on-click="onCloseClick_">[[i18n('closeBtn')]]</cr-button>
+    <cr-button on-click="onRunAllRoutinesClick_">
+      [[i18n('rerunRoutinesBtn')]]
+    </cr-button>
+    <template is="dom-if" if="[[showFeedbackBtn_]]">
+      <cr-button on-click="onSendFeedbackClick_">
+        [[i18n('sendFeedbackBtn')]]
+      </cr-button>
+    </template>
+  </div>
+</div>

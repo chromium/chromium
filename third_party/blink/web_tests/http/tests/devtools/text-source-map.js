@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verify TextSourceMap implementation\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
 
   function checkMapping(
       compiledLineNumber, compiledColumnNumber, sourceURL, sourceLineNumber, sourceColumnNumber, mapping) {

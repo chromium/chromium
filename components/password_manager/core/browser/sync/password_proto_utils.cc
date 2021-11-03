@@ -90,41 +90,57 @@ base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
 sync_pb::PasswordSpecifics SpecificsFromPassword(
     const PasswordForm& password_form) {
   sync_pb::PasswordSpecifics specifics;
-  sync_pb::PasswordSpecificsData* password_data =
-      specifics.mutable_client_only_encrypted_data();
-  password_data->set_scheme(static_cast<int>(password_form.scheme));
-  password_data->set_signon_realm(password_form.signon_realm);
-  password_data->set_origin(password_form.url.spec());
-  password_data->set_action(password_form.action.spec());
-  password_data->set_username_element(
+  *specifics.mutable_client_only_encrypted_data() =
+      SpecificsDataFromPassword(password_form);
+
+  return specifics;
+}
+
+sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
+    const PasswordForm& password_form) {
+  sync_pb::PasswordSpecificsData password_data;
+  password_data.set_scheme(static_cast<int>(password_form.scheme));
+  password_data.set_signon_realm(password_form.signon_realm);
+  password_data.set_origin(password_form.url.spec());
+  password_data.set_action(password_form.action.spec());
+  password_data.set_username_element(
       base::UTF16ToUTF8(password_form.username_element));
-  password_data->set_password_element(
+  password_data.set_password_element(
       base::UTF16ToUTF8(password_form.password_element));
-  password_data->set_username_value(
+  password_data.set_username_value(
       base::UTF16ToUTF8(password_form.username_value));
-  password_data->set_password_value(
+  password_data.set_password_value(
       base::UTF16ToUTF8(password_form.password_value));
-  password_data->set_date_last_used(
+  password_data.set_date_last_used(
       password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data->set_date_password_modified_windows_epoch_micros(
+  password_data.set_date_password_modified_windows_epoch_micros(
       password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
-  password_data->set_date_created(
+  password_data.set_date_created(
       password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  password_data->set_blacklisted(password_form.blocked_by_user);
-  password_data->set_type(static_cast<int>(password_form.type));
-  password_data->set_times_used(password_form.times_used);
-  password_data->set_display_name(
-      base::UTF16ToUTF8(password_form.display_name));
-  password_data->set_avatar_url(password_form.icon_url.spec());
-  password_data->set_federation_url(
+  password_data.set_blacklisted(password_form.blocked_by_user);
+  password_data.set_type(static_cast<int>(password_form.type));
+  password_data.set_times_used(password_form.times_used);
+  password_data.set_display_name(base::UTF16ToUTF8(password_form.display_name));
+  password_data.set_avatar_url(password_form.icon_url.spec());
+  password_data.set_federation_url(
       password_form.federation_origin.opaque()
           ? std::string()
           : password_form.federation_origin.Serialize());
-  *password_data->mutable_password_issues() =
+  *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
 
-  return specifics;
+  return password_data;
+}
+
+sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
+    const PasswordForm& password_form) {
+  sync_pb::PasswordWithLocalData password_with_local_data;
+  *password_with_local_data.mutable_password_specifics_data() =
+      SpecificsDataFromPassword(password_form);
+  // TODO(crbug.com/1229655): Check if password_form.local_chrome_data() is
+  // needed by GMS Core and either pass it additionally or clean up this method.
+  return password_with_local_data;
 }
 
 PasswordForm PasswordFromSpecifics(

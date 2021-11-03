@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1146678959555564648">VR 시작</translation>
 <translation id="114825011539563458">가장 중요한 개인 정보 보호 및 보안 제어 기능을 한곳에서 설정</translation>
+<translation id="1149401351239820326">유효기간 월</translation>
 <translation id="1154704303112745282">오프라인에서 사용할 수 없는 페이지: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">사용</translation>
 <translation id="1171770572613082465">'인기 사이트' 버튼을 탭하여 인기 웹사이트를 확인하세요.</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1344653310988386453">하이라이트 링크 포함</translation>
 <translation id="1347468774581902829">활동 관리</translation>
-<translation id="1353372385686746892">앱 개선을 돕기 위해 Chrome에서 Google에 진단 데이터를 전송합니다. <ph name="BEGIN_LINK" />변경<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">로그아웃하고 동기화를 사용 중지하시겠습니까?</translation>
 <translation id="1373696734384179344">선택한 콘텐츠를 다운로드할 공간이 부족합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
@@ -817,7 +817,6 @@
 <translation id="5956665950594638604">새 탭에서 Chrome 고객센터 열기</translation>
 <translation id="5957442310066583693">맞춤 인기 사이트를 보려면 홈 버튼 탭하기</translation>
 <translation id="5958275228015807058">다운로드에서 파일 및 페이지를 찾아보세요.</translation>
-<translation id="5962272973076519240">본인 인증으로 시크릿 모드 잠금 해제</translation>
 <translation id="5962718611393537961">탭하여 접기</translation>
 <translation id="5964805880140440652">이 페이지를 다른 기기로 공유하려면 Chrome 설정에서 동기화를 사용 설정하세요.</translation>
 <translation id="5964869237734432770">이미지 설명 중지</translation>
@@ -1188,6 +1187,7 @@
 <translation id="804335162455518893">SD 카드가 없음</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="TAB_COUNT_ONE" />개}other{시크릿 탭 <ph name="TAB_COUNT_NORMAL" />개}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" />MB 사용 가능</translation>
+<translation id="8058655154417507695">유효기간 연도</translation>
 <translation id="8058746566562539958">새 Chrome 탭에서 열기</translation>
 <translation id="8063895661287329888">북마크를 추가하지 못했습니다.</translation>
 <translation id="806745655614357130">내 데이터 별도로 유지</translation>

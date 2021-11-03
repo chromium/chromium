@@ -28,6 +28,10 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
                               std::move(task_runner)),
         current_time_(base::TimeTicks::Now()) {}
 
+  TestingUploadProgressTracker(const TestingUploadProgressTracker&) = delete;
+  TestingUploadProgressTracker& operator=(const TestingUploadProgressTracker&) =
+      delete;
+
   void set_upload_progress(const net::UploadProgress& upload_progress) {
     upload_progress_ = upload_progress;
   }
@@ -45,8 +49,6 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
 
   base::TimeTicks current_time_;
   net::UploadProgress upload_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingUploadProgressTracker);
 };
 
 }  // namespace
@@ -61,6 +63,10 @@ class UploadProgressTrackerTest : public ::testing::Test {
                 &UploadProgressTrackerTest::OnUploadProgressReported,
                 base::Unretained(this)),
             task_environment_.GetMainThreadTaskRunner()) {}
+
+  UploadProgressTrackerTest(const UploadProgressTrackerTest&) = delete;
+  UploadProgressTrackerTest& operator=(const UploadProgressTrackerTest&) =
+      delete;
 
  private:
   void OnUploadProgressReported(const net::UploadProgress& progress) {
@@ -77,8 +83,6 @@ class UploadProgressTrackerTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestingUploadProgressTracker upload_progress_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadProgressTrackerTest);
 };
 
 TEST_F(UploadProgressTrackerTest, NoACK) {

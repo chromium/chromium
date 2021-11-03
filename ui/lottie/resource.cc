@@ -33,6 +33,7 @@ class LottieImageSource : public gfx::CanvasImageSource {
   ~LottieImageSource() override = default;
 
   // gfx::CanvasImageSource:
+  bool HasRepresentationAtAllScales() const override { return true; }
   void Draw(gfx::Canvas* canvas) override {
     content_->PaintFrame(canvas, 0.f, size_);
   }

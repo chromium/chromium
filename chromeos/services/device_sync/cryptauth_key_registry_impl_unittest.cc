@@ -15,6 +15,12 @@ namespace chromeos {
 namespace device_sync {
 
 class DeviceSyncCryptAuthKeyRegistryImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthKeyRegistryImplTest(
+      const DeviceSyncCryptAuthKeyRegistryImplTest&) = delete;
+  DeviceSyncCryptAuthKeyRegistryImplTest& operator=(
+      const DeviceSyncCryptAuthKeyRegistryImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthKeyRegistryImplTest() = default;
 
@@ -41,8 +47,6 @@ class DeviceSyncCryptAuthKeyRegistryImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<CryptAuthKeyRegistry> key_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthKeyRegistryImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, GetActiveKey_NoActiveKey) {

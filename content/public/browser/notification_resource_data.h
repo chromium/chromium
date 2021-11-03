@@ -21,6 +21,9 @@ namespace content {
 // Contains the |resources| for a notification with |notification_id| and
 // |origin|. Used to pass multiple resources to the PlatformNotificationContext.
 struct CONTENT_EXPORT NotificationResourceData {
+  NotificationResourceData(const NotificationResourceData&) = delete;
+  NotificationResourceData& operator=(const NotificationResourceData&) = delete;
+
   NotificationResourceData(NotificationResourceData&& data) = default;
 
   // Id of the notification.
@@ -31,9 +34,6 @@ struct CONTENT_EXPORT NotificationResourceData {
 
   // Notification resources containing all image data.
   blink::NotificationResources resources;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationResourceData);
 };
 
 }  // namespace content

@@ -88,6 +88,9 @@ class CONTENT_EXPORT SaveFileManager
 
   SaveFileManager();
 
+  SaveFileManager(const SaveFileManager&) = delete;
+  SaveFileManager& operator=(const SaveFileManager&) = delete;
+
   // Lifetime management.
   void Shutdown();
 
@@ -239,8 +242,6 @@ class CONTENT_EXPORT SaveFileManager
                      std::unique_ptr<SimpleURLLoaderHelper>,
                      SaveItemId::Hasher>
       url_loader_helpers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SaveFileManager);
 };
 
 }  // namespace content

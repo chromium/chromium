@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -156,6 +157,16 @@ inline bool operator==(const IntSize& a, const IntSize& b) {
 
 inline bool operator!=(const IntSize& a, const IntSize& b) {
   return a.width() != b.width() || a.height() != b.height();
+}
+
+// Temporary converter to replace ToIntSize(const IntPoint&).
+constexpr IntSize ToIntSize(const gfx::Point& p) {
+  return IntSize(p.x(), p.y());
+}
+
+// Temporary converter to replace IntPoint(const IntSize&).
+constexpr gfx::Point ToGfxPoint(const IntSize& s) {
+  return gfx::Point(s.width(), s.height());
 }
 
 // Use this only for logical sizes, which can not be negative. Things that are

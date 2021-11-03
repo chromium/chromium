@@ -73,7 +73,7 @@ void SystemSaltGetter::DidWaitForServiceToBeAvailable(
 }
 
 void SystemSaltGetter::DidGetSystemSalt(
-    GetSystemSaltCallback callback,
+    GetSystemSaltCallback system_salt_callback,
     absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply) {
   if (system_salt_reply.has_value() && !system_salt_reply->salt().empty() &&
       system_salt_reply->salt().size() % 2 == 0U) {
@@ -90,7 +90,7 @@ void SystemSaltGetter::DidGetSystemSalt(
     LOG(WARNING) << "System salt not available";
   }
 
-  std::move(callback).Run(system_salt_);
+  std::move(system_salt_callback).Run(system_salt_);
 }
 
 // static

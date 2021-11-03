@@ -27,8 +27,8 @@ void SortScripts(std::vector<std::unique_ptr<Script>>* scripts) {
         // Order of scripts with the same priority is arbitrary. Fallback
         // to ordering by name and path, arbitrarily, for the behavior to
         // be consistent across runs.
-        return std::tie(a->priority, a->handle.chip.text, a->handle.path) <
-               std::tie(b->priority, b->handle.chip.text, a->handle.path);
+        return std::tie(a->priority, a->handle.path) <
+               std::tie(b->priority, a->handle.path);
       });
 }
 
@@ -79,8 +79,7 @@ void ScriptTracker::CheckScripts() {
   GURL url = delegate_->GetCurrentURL();
   batch_element_checker_ = std::make_unique<BatchElementChecker>();
   for (const std::unique_ptr<Script>& script : available_scripts_) {
-    if (script->handle.chip.empty() && script->handle.direct_action.empty() &&
-        !script->handle.autostart)
+    if (script->handle.direct_action.empty() && !script->handle.autostart)
       continue;
 
     script->precondition->Check(
@@ -160,11 +159,8 @@ base::Value ScriptTracker::GetDebugContext() const {
   std::vector<base::Value> runnable_scripts_js;
   for (const auto& entry : runnable_scripts_) {
     base::Value script_js = base::Value(base::Value::Type::DICTIONARY);
-    script_js.SetKey("name", base::Value(entry.chip.text));
     script_js.SetKey("path", base::Value(entry.path));
-    script_js.SetKey("initial_prompt", base::Value(entry.initial_prompt));
     script_js.SetKey("autostart", base::Value(entry.autostart));
-    script_js.SetKey("chip_type", base::Value(entry.chip.type));
 
     base::Value direct_action_js = base::Value(base::Value::Type::DICTIONARY);
     direct_action_js.SetKey("names", ToValueArray(entry.direct_action.names));

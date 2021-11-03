@@ -11,7 +11,7 @@
 
 namespace blink {
 
-using SetOffsetData = NGGridData::SetData;
+using SetOffsetData = NGGridLayoutData::SetData;
 
 // Contains the information about the start offset of the tracks, as well as
 // the gutter size between them, for a given direction.

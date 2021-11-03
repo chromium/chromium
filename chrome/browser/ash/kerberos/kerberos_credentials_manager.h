@@ -148,12 +148,6 @@ class KerberosCredentialsManager : public KeyedService,
   void ValidateConfig(const std::string& krb5_conf,
                       ValidateConfigCallback callback);
 
-  // Gets a Kerberos ticket-granting-ticket for the account with given
-  // |principal_name|.
-  void AcquireKerberosTgt(std::string principal_name,
-                          const std::string& password,
-                          ResultCallback callback);
-
   // Sets the currently active account.
   kerberos::ErrorType SetActiveAccount(std::string principal_name);
 
@@ -212,11 +206,6 @@ class KerberosCredentialsManager : public KeyedService,
   // Callback for ValidateConfig().
   void OnValidateConfig(ValidateConfigCallback callback,
                         const kerberos::ValidateConfigResponse& response);
-
-  // Callback for AcquireKerberosTgt().
-  void OnAcquireKerberosTgt(
-      ResultCallback callback,
-      const kerberos::AcquireKerberosTgtResponse& response);
 
   // Calls KerberosClient::GetKerberosFiles().
   void GetKerberosFiles();

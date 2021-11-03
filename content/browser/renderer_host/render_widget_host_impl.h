@@ -111,6 +111,7 @@ class RenderWidgetHostOwnerDelegate;
 class SyntheticGestureController;
 class TimeoutMonitor;
 class TouchEmulator;
+class VisibleTimeRequestTrigger;
 
 // This implements the RenderWidgetHost interface that is exposed to
 // embedders of content, and adds things only visible to content.
@@ -222,6 +223,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return agent_scheduling_group_;
   }
 
+  // Returns the object that tracks the start of content to visible events for
+  // the WebContents. May be nullptr if there is no RenderWidgetHostView.
+  VisibleTimeRequestTrigger* GetVisibleTimeRequestTrigger();
+
   // RenderWidgetHost implementation.
   const viz::FrameSinkId& GetFrameSinkId() override;
   void UpdateTextDirection(base::i18n::TextDirection direction) override;
@@ -251,8 +256,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       RenderWidgetHost::InputEventObserver* observer) override;
   void AddObserver(RenderWidgetHostObserver* observer) override;
   void RemoveObserver(RenderWidgetHostObserver* observer) override;
-  void GetScreenInfo(display::ScreenInfo* result) override;
-  display::ScreenInfos GetScreenInfos() override;
+  display::ScreenInfo GetScreenInfo() const override;
+  display::ScreenInfos GetScreenInfos() const override;
   float GetDeviceScaleFactor() override;
   absl::optional<cc::TouchAction> GetAllowedTouchAction() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;

@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -25,6 +27,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -38,6 +41,8 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
+import org.chromium.content_public.browser.Visibility;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
@@ -72,6 +77,7 @@ public class ContactsPickerDialogTest
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;
+    private WebContents mWebContents;
 
     @Rule
     public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
@@ -128,6 +134,11 @@ public class ContactsPickerDialogTest
             return new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
                     IntentRequestTracker.createFromActivity(mActivity));
         });
+        mWebContents = Mockito.mock(WebContents.class);
+        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        when(mWebContents.isDestroyed()).thenReturn(false);
+        when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
+
         FeatureList.setTestFeatures(Collections.singletonMap(
                 ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL, true));
         mIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
@@ -140,7 +151,7 @@ public class ContactsPickerDialogTest
 
     @After
     public void tearDown() throws Exception {
-        if (!mClosing) dismissDialog();
+        if (!mClosing && mDialog != null) dismissDialog();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
@@ -205,8 +216,11 @@ public class ContactsPickerDialogTest
                 mDialog.show();
                 return true;
             });
-            ContactsPicker.showContactsPicker(mWindowAndroid, this, multiselect, includeNames,
-                    includeEmails, includeTel, includeAddresses, includeIcons, "example.com");
+
+            if (!ContactsPicker.showContactsPicker(mWebContents, this, multiselect, includeNames,
+                        includeEmails, includeTel, includeAddresses, includeIcons, "example.com")) {
+                return;
+            }
 
             mSelectionDelegate =
                     mDialog.getCategoryViewForTesting().getSelectionDelegateForTesting();
@@ -836,6 +850,17 @@ public class ContactsPickerDialogTest
         Assert.assertTrue(mDialog.isShowing());
 
         dismissDialog();
+    }
+
+    /** Regression test for crbug.com/1259694 */
+    @Test
+    @LargeTest
+    public void testContactsPickerWithHiddenContents() throws Throwable {
+        setTestContacts(/*ownerEmail=*/null);
+
+        when(mWebContents.getVisibility()).thenReturn(Visibility.HIDDEN);
+        createDialog(/* multiselect = */ false);
+        Assert.assertNull(mDialog);
     }
 
     @Test

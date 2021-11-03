@@ -23,6 +23,9 @@ class AboutURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   // mojo::PendingRemote and the receivers bound by the Clone method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
+  AboutURLLoaderFactory(const AboutURLLoaderFactory&) = delete;
+  AboutURLLoaderFactory& operator=(const AboutURLLoaderFactory&) = delete;
+
  private:
   explicit AboutURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
@@ -37,8 +40,6 @@ class AboutURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutURLLoaderFactory);
 };
 
 }  // namespace content

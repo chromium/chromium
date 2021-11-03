@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -280,7 +281,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
      * @return Whether the default search engine logo is available.
      */
     private boolean maybeShowDefaultLogo() {
-        Bitmap defaultLogo = getDefaultLogo();
+        Bitmap defaultLogo = getDefaultGoogleLogo(getResources());
         if (defaultLogo != null) {
             updateLogo(defaultLogo, null, /* isDefaultLogo = */ true, /* isClickable = */ false);
             return true;
@@ -320,16 +321,18 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /**
-     * @return The default logo.
+     * Get the default Google logo if available.
+     * @param resources Used to load resources.
+     * @return The default Google logo.
      */
-    private Bitmap getDefaultLogo() {
+    public static Bitmap getDefaultGoogleLogo(Resources resources) {
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()) return null;
 
         Bitmap defaultLogo = sDefaultLogo == null ? null : sDefaultLogo.get();
-        final int tint = ApiCompatibilityUtils.getColor(getResources(), R.color.google_logo_tint);
+        final int tint = ApiCompatibilityUtils.getColor(resources, R.color.google_logo_tint);
         if (defaultLogo == null || sDefaultLogoTint != tint) {
             if (tint == Color.TRANSPARENT) {
-                defaultLogo = BitmapFactory.decodeResource(getResources(), R.drawable.google_logo);
+                defaultLogo = BitmapFactory.decodeResource(resources, R.drawable.google_logo);
             } else {
                 // Apply color filter on a bitmap, which will cause some performance overhead, but
                 // it is worth the APK space savings by avoiding adding another large asset for the
@@ -337,8 +340,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 // maximum recommended vector drawable size 200dpx200dp.
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inMutable = true;
-                defaultLogo = BitmapFactory.decodeResource(
-                        getResources(), R.drawable.google_logo, options);
+                defaultLogo =
+                        BitmapFactory.decodeResource(resources, R.drawable.google_logo, options);
                 Paint paint = new Paint();
                 paint.setColorFilter(new PorterDuffColorFilter(tint, PorterDuff.Mode.SRC_ATOP));
                 Canvas canvas = new Canvas(defaultLogo);

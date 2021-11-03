@@ -313,7 +313,7 @@ void WindowTreeHostPlatform::OnOcclusionStateChanged(
       aura_occlusion_state = Window::OcclusionState::HIDDEN;
       break;
   }
-  SetNativeWindowOcclusionState(aura_occlusion_state);
+  SetNativeWindowOcclusionState(aura_occlusion_state, {});
 }
 
 }  // namespace aura

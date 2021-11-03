@@ -18,6 +18,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -26,7 +29,10 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
+import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -35,6 +41,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
+import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -49,13 +56,16 @@ import java.util.concurrent.ExecutionException;
 public class BookmarkSaveFlowTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
     @Rule
     public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
-
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock
+    SubscriptionsManager mSubscriptionsManager;
 
     private BookmarkSaveFlowCoordinator mBookmarkSaveFlowCoordinator;
     private BottomSheetController mBottomSheetController;
@@ -74,29 +84,74 @@ public class BookmarkSaveFlowTest {
             mBottomSheetController =
                     cta.getRootUiCoordinatorForTesting().getBottomSheetController();
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-            mBookmarkSaveFlowCoordinator =
-                    new BookmarkSaveFlowCoordinator(cta, mBottomSheetController);
+            mBookmarkSaveFlowCoordinator = new BookmarkSaveFlowCoordinator(
+                    cta, mBottomSheetController, mSubscriptionsManager);
             mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
             mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
         });
 
         loadBookmarkModel();
-        BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mBookmarkSaveFlowCoordinator.show(id); });
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testBookmarkSaveFlow() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            mBookmarkSaveFlowCoordinator.show(id);
+            return null;
+        });
         mRenderTestRule.render(
                 mBookmarkSaveFlowCoordinator.getViewForTesting(), "bookmark_save_flow");
     }
 
     @Test
     @MediumTest
+    @Feature({"RenderTest"})
+    public void testBookmarkSaveFlow_WithShoppingListItem() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            PowerBookmarkMeta.Builder meta =
+                    PowerBookmarkMeta.newBuilder()
+                            .setType(PowerBookmarkType.SHOPPING)
+                            .setShoppingSpecifics(
+                                    BuyableProduct.newBuilder().setOfferId(1234L).build());
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false, meta.build());
+            return null;
+        });
+        mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
+                "bookmark_save_flow_shopping_list_item");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testBookmarkSaveFlow_WithShoppingListItem_fromHeuristicEntryPoint()
+            throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            PowerBookmarkMeta.Builder meta =
+                    PowerBookmarkMeta.newBuilder()
+                            .setType(PowerBookmarkType.SHOPPING)
+                            .setShoppingSpecifics(
+                                    BuyableProduct.newBuilder().setOfferId(1234L).build());
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/true, meta.build());
+            return null;
+        });
+        mRenderTestRule.render(mBookmarkSaveFlowCoordinator.getViewForTesting(),
+                "bookmark_save_flow_shopping_list_item_from_heuristic");
+    }
+
+    @Test
+    @MediumTest
     public void testBookmarkSaveFlowEdit() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false);
+            return null;
+        });
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         ClickUtils.clickButton(cta.findViewById(R.id.bookmark_edit));
         onView(withText(mActivityTestRule.getActivity().getResources().getString(
@@ -110,6 +165,11 @@ public class BookmarkSaveFlowTest {
     @Test
     @MediumTest
     public void testBookmarkSaveFlowChooseFolder() throws IOException {
+        TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
+            mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false);
+            return null;
+        });
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         ClickUtils.clickButton(cta.findViewById(R.id.bookmark_select_folder));
         onView(withText(mActivityTestRule.getActivity().getResources().getString(

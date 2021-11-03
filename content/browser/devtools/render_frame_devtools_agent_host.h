@@ -71,6 +71,10 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   static scoped_refptr<DevToolsAgentHost> FindForDangling(
       FrameTreeNode* frame_tree_node);
 
+  RenderFrameDevToolsAgentHost(const RenderFrameDevToolsAgentHost&) = delete;
+  RenderFrameDevToolsAgentHost& operator=(const RenderFrameDevToolsAgentHost&) =
+      delete;
+
   static void AttachToWebContents(WebContents* web_contents);
 
 #if defined(OS_ANDROID)
@@ -176,8 +180,6 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   FrameTreeNode* frame_tree_node_;
 
   double page_scale_factor_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameDevToolsAgentHost);
 };
 
 // Returns the ancestor FrameTreeNode* for which a RenderFrameDevToolsAgentHost

@@ -19,9 +19,11 @@ class UsbContextTest : public testing::Test {
     explicit UsbContextForTest(PlatformUsbContext context)
         : UsbContext(context) {}
 
+    UsbContextForTest(const UsbContextForTest&) = delete;
+    UsbContextForTest& operator=(const UsbContextForTest&) = delete;
+
    private:
     ~UsbContextForTest() override {}
-    DISALLOW_COPY_AND_ASSIGN(UsbContextForTest);
   };
 };
 

@@ -45,8 +45,9 @@ class TestURLRequestContextWithProxy : public net::TestURLRequestContext {
     context_storage_.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateFixedFromPacResult(
             pac_result, TRAFFIC_ANNOTATION_FOR_TESTS));
-    // net::MockHostResolver maps all hosts to localhost.
-    auto host_resolver = std::make_unique<net::MockHostResolver>();
+    auto host_resolver = std::make_unique<net::MockHostResolver>(
+        /*default_result=*/net::MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
     context_storage_.set_host_resolver(std::move(host_resolver));
   }
 

@@ -24,10 +24,9 @@ namespace net {
 
 namespace {
 
-std::vector<const http2::adapter::Header> GenerateHeaders(
-    HttpStatusCode status,
-    base::StringPairs headers) {
-  std::vector<const http2::adapter::Header> response_vector;
+std::vector<http2::adapter::Header> GenerateHeaders(HttpStatusCode status,
+                                                    base::StringPairs headers) {
+  std::vector<http2::adapter::Header> response_vector;
   response_vector.emplace_back(
       http2::adapter::HeaderRep(std::string(":status")),
       http2::adapter::HeaderRep(base::NumberToString(status)));

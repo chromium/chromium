@@ -146,6 +146,16 @@ export const VideoType = {
   GIF: 'gif',
 };
 
+/**
+ * @enum {number}
+ */
+export const Rotation = {
+  ANGLE_0: 0,
+  ANGLE_90: 90,
+  ANGLE_180: 180,
+  ANGLE_270: 270,
+};
+
 
 // The types here are used only in jsdoc and are required to be explicitly
 // exported in order to be referenced by closure compiler.

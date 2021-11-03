@@ -100,8 +100,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Nullable
     private static FirstRunActivityObserver sObserver;
 
-    private String mResultSignInAccountName;
-    private boolean mResultShowSignInSettings;
+    private String mResultSyncConsentAccountName;
+    private boolean mResultShowAdvancedSyncSettings;
 
     private boolean mFlowIsKnown;
     private boolean mPostNativeAndPolicyPagesCreated;
@@ -484,12 +484,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void completeFirstRunExperience() {
         RecordHistogram.recordMediumTimesHistogram("MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
-        recordFreProgressHistogram(TextUtils.isEmpty(mResultSignInAccountName)
-                        ? MobileFreProgress.COMPLETED_NOT_SYNC
-                        : MobileFreProgress.COMPLETED_SYNC);
+        if (mResultShowAdvancedSyncSettings) {
+            recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
+        }
+        recordFreProgressHistogram(TextUtils.isEmpty(mResultSyncConsentAccountName)
+                        ? MobileFreProgress.SYNC_CONSENT_DISMISSED
+                        : MobileFreProgress.SYNC_CONSENT_ACCEPTED);
 
         FirstRunFlowSequencer.markFlowAsCompleted(
-                mResultSignInAccountName, mResultShowSignInSettings);
+                mResultSyncConsentAccountName, mResultShowAdvancedSyncSettings);
 
         if (DataReductionPromoUtils.getDisplayedFreOrSecondRunPromo()) {
             if (DataReductionProxySettings.getInstance().isDataReductionProxyEnabled()) {
@@ -543,15 +546,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void refuseSignIn() {
-        mResultSignInAccountName = null;
-        mResultShowSignInSettings = false;
+    public void refuseSync() {
+        mResultSyncConsentAccountName = null;
+        mResultShowAdvancedSyncSettings = false;
     }
 
     @Override
-    public void acceptSignIn(String accountName, boolean openSettings) {
-        mResultSignInAccountName = accountName;
-        mResultShowSignInSettings = openSettings;
+    public void acceptSync(String accountName, boolean openSettings) {
+        mResultSyncConsentAccountName = accountName;
+        mResultShowAdvancedSyncSettings = openSettings;
     }
 
     @Override

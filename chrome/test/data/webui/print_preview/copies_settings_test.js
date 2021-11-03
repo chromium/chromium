@@ -5,8 +5,8 @@
 import {DEFAULT_MAX_COPIES, PrintPreviewCopiesSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {fakeDataBind} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
 

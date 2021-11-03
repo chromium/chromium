@@ -23,7 +23,6 @@ namespace {
 constexpr int kPillButtonHeight = 32;
 constexpr int kPillButtonHorizontalSpacing = 16;
 constexpr int kPillButtonMinimumWidth = 56;
-constexpr int kPillButtonMaximumWidth = 160;
 constexpr int kIconSize = 20;
 constexpr int kIconPillButtonImageLabelSpacingDp = 8;
 
@@ -184,7 +183,6 @@ gfx::Size PillButton::CalculatePreferredSize() const {
                      GetPillButtonWidth(type_ == PillButton::Type::kIcon),
                  kPillButtonHeight);
   size.SetToMax(gfx::Size(kPillButtonMinimumWidth, kPillButtonHeight));
-  size.SetToMin(gfx::Size(kPillButtonMaximumWidth, kPillButtonHeight));
   return size;
 }
 

@@ -1429,7 +1429,6 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
 
   const auto* node = GetNodeForSender(sender);
   ui::ImageModel icon;
-  views::Widget* widget = sender->GetWidget();
   if (node->is_url()) {
     const gfx::Image& image = model_->GetFavicon(node);
     icon = image.IsEmpty()
@@ -1443,7 +1442,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
   button_drag_utils::SetDragImage(
       node->url(), node->GetTitle(),
       views::GetImageSkiaFromImageModel(icon, GetColorProvider()), &press_pt,
-      *widget, data);
+      data);
   WriteBookmarkDragData(node, data);
 }
 
@@ -1523,29 +1522,10 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
       RecordBookmarkFolderLaunch(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
       // TODO: Handle click if group has already been opened (crbug.com/1238539)
       // left click on a saved tab group opens all links in new group
-      std::vector<const bookmarks::BookmarkNode*> selection_ = {node};
-      DCHECK(chrome::HasBookmarkURLs(selection_));
-      chrome::OpenAllIfAllowed(browser_, GetPageNavigatorGetter(), selection_,
+      std::vector<const bookmarks::BookmarkNode*> selection = {node};
+      DCHECK(chrome::HasBookmarkURLs(selection));
+      chrome::OpenAllIfAllowed(browser_, GetPageNavigatorGetter(), selection,
                                WindowOpenDisposition::NEW_BACKGROUND_TAB, true);
-      // add to a new tab group
-      TabStripModel* model = browser_->tab_strip_model();
-      int count =
-          chrome::OpenCount(browser_->window()->GetNativeWindow(), selection_);
-      std::vector<int> tab_indicies(count);
-      for (auto i = 0; i < count; i++)
-        tab_indicies[i] = model->count() - count + i;
-      tab_groups::TabGroupId newGroupId = model->AddToNewGroup(tab_indicies);
-
-      // use the saved group's title as the group's title
-      // use the saved group's color as the group's color
-      std::u16string folderTitle = selection_[0]->GetTitledUrlNodeTitle();
-      TabGroup* group = model->group_model()->GetTabGroup(newGroupId);
-      const tab_groups::TabGroupVisualData* current_visual_data =
-          group->visual_data();
-      tab_groups::TabGroupVisualData new_visual_data(
-          folderTitle, tab_groups::TabGroupColorId::kRed,
-          current_visual_data->is_collapsed());
-      group->SetVisualData(new_visual_data);
     } else {
       RecordBookmarkFolderOpen(BOOKMARK_LAUNCH_LOCATION_ATTACHED_BAR);
       const size_t start_index =

@@ -71,5 +71,8 @@ void DriveIntegrationServiceAsh::OnFileSystemMountFailed() {
   for (auto& observer : observers_)
     observer->OnMountPointPathChanged(base::FilePath());
 }
+void DriveIntegrationServiceAsh::OnDriveIntegrationServiceDestroyed() {
+  drive_service_observation_.Reset();
+}
 
 }  // namespace crosapi

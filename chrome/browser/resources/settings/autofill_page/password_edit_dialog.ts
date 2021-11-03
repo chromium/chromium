@@ -85,15 +85,6 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         value: () => [],
       },
 
-      /**
-       * Usernames for the same website. Used for the fast check whether edited
-       * username is already used.
-       */
-      usernamesForSameOrigin_: {
-        type: Object,
-        value: null,
-      },
-
       dialogMode_: {
         type: String,
         computed: 'computeDialogMode_(existingEntry)',
@@ -131,9 +122,18 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       websiteInputErrorMessage_: {type: String, value: null},
 
       /**
+       * Current value in username input.
+       */
+      username_: {type: String, value: ''},
+
+      /**
        * Whether the username input is invalid.
        */
-      usernameInputInvalid_: {type: Boolean, value: false},
+      usernameInputInvalid_: {
+        type: Boolean,
+        computed:
+            'computeUsernameInputInvalid_(username_, websiteUrls_.origin)',
+      },
 
       /**
        * Current value in password input.
@@ -158,13 +158,14 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   readonly storeOptionAccountValue: string;
   readonly storeOptionDeviceValue: string;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
-  private usernamesForSameOrigin_: Set<string>|null;
+  private usernamesByOrigin_: Map<string, Set<string>>|null = null;
   private dialogMode_: PasswordDialogMode;
   private isInViewMode_: boolean;
   private isPasswordVisible_: boolean;
   private websiteUrls_: chrome.passwordsPrivate.UrlCollection|null;
   private websiteInputInvalid_: boolean;
   private websiteInputErrorMessage_: string|null;
+  private username_: string;
   private usernameInputInvalid_: boolean;
   private password_: string;
   private isSaveButtonDisabled_: boolean;
@@ -173,18 +174,11 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     super.connectedCallback();
     if (this.existingEntry) {
       this.websiteUrls_ = this.existingEntry.urls;
+      this.username_ = this.existingEntry.username;
     }
     this.password_ = this.getPassword_();
-    if (this.dialogMode_ === PasswordDialogMode.EDIT) {
-      this.usernamesForSameOrigin_ = new Set(
-          this.savedPasswords
-              .filter(
-                  item => item.urls.shown === this.existingEntry!.urls.shown &&
-                      (item.isPresentOnDevice() ===
-                           this.existingEntry!.isPresentOnDevice() ||
-                       item.isPresentInAccount() ===
-                           this.existingEntry!.isPresentInAccount()))
-              .map(item => item.username));
+    if (!this.isInViewMode_) {
+      this.usernamesByOrigin_ = this.getUsernamesByOrigin_();
     }
   }
 
@@ -259,15 +253,6 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   /**
-   * Gets the initial text to show in the username input.
-   */
-  private getUsername_(): string {
-    return this.dialogMode_ === PasswordDialogMode.ADD ?
-        '' :
-        this.existingEntry!.username;
-  }
-
-  /**
    * Gets the initial text to show in the password input: the password for a
    * regular credential, the federation text for a federated credential or empty
    * string in the ADD mode.
@@ -323,7 +308,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     PasswordManagerImpl.getInstance()
         .addPassword({
           url: this.$.websiteInput.value,
-          username: this.$.usernameInput.value,
+          username: this.username_,
           password: this.password_,
           useAccountStore: useAccountStore
         })
@@ -344,8 +329,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     }
 
     PasswordManagerImpl.getInstance()
-        .changeSavedPassword(
-            idsToChange, this.$.usernameInput.value, this.$.passwordInput.value)
+        .changeSavedPassword(idsToChange, this.username_, this.password_)
         .finally(() => {
           this.close();
         });
@@ -459,21 +443,48 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   }
 
   /**
-   * Helper function that checks whether edited username is not used for the
-   * same website.
+   * Checks whether edited username is not used for the same website.
    */
-  private validateUsername_() {
+  private computeUsernameInputInvalid_(): boolean {
+    if (this.isInViewMode_ || !this.websiteUrls_ || !this.usernamesByOrigin_) {
+      return false;
+    }
+    if (this.dialogMode_ === PasswordDialogMode.EDIT &&
+        this.username_ === this.existingEntry!.username) {
+      // The value hasn't changed.
+      return false;
+    }
+    // TODO(crbug.com/1264468): Consider moving duplication check to backend.
+    return this.usernamesByOrigin_.has(this.websiteUrls_.origin) &&
+        this.usernamesByOrigin_.get(this.websiteUrls_.origin)!.has(
+            this.username_);
+  }
+
+  /**
+   * Used for the fast check whether edited username is already used.
+   */
+  private getUsernamesByOrigin_(): Map<string, Set<string>> {
     assert(!this.isInViewMode_);
-    if (this.dialogMode_ === PasswordDialogMode.ADD) {
-      // TODO(crbug.com/1236053): handle duplicates in ADD mode.
-      return;
-    }
-    if (this.existingEntry!.username !== this.$.usernameInput.value) {
-      this.usernameInputInvalid_ =
-          this.usernamesForSameOrigin_!.has(this.$.usernameInput.value);
-    } else {
-      this.usernameInputInvalid_ = false;
-    }
+    const relevantPasswords = this.dialogMode_ === PasswordDialogMode.EDIT ?
+        // In EDIT mode entries considered duplicates only if in the same store.
+        this.savedPasswords.filter(item => {
+          return item.isPresentOnDevice() ===
+              this.existingEntry!.isPresentOnDevice() ||
+              item.isPresentInAccount() ===
+              this.existingEntry!.isPresentInAccount();
+        }) :
+        // In ADD mode entries considered duplicates irrespective of the store.
+        this.savedPasswords;
+
+    // Group existing usernames by origin.
+    return relevantPasswords.reduce(function(usernamesByOrigin, entry) {
+      const origin = entry.urls.origin;
+      if (!usernamesByOrigin.has(origin)) {
+        usernamesByOrigin.set(origin, new Set());
+      }
+      usernamesByOrigin.get(origin).add(entry.username);
+      return usernamesByOrigin;
+    }, new Map());
   }
 }
 

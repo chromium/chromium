@@ -19,6 +19,9 @@ class ImageCaptureImpl final
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::ImageCapture> receiver);
 
+  ImageCaptureImpl(const ImageCaptureImpl&) = delete;
+  ImageCaptureImpl& operator=(const ImageCaptureImpl&) = delete;
+
   void GetPhotoState(const std::string& source_id,
                      GetPhotoStateCallback callback) override;
 
@@ -40,8 +43,6 @@ class ImageCaptureImpl final
   bool HasPanTiltZoomPermissionGranted();
 
   base::WeakPtrFactory<ImageCaptureImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageCaptureImpl);
 };
 
 }  // namespace content

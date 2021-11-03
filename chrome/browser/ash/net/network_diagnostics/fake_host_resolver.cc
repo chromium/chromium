@@ -14,7 +14,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 FakeHostResolver::DnsResult::DnsResult(
@@ -68,4 +68,4 @@ void FakeHostResolver::SetFakeDnsResult(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -111,11 +111,14 @@ class BackgroundFetchServiceTest
                                                            net::IsolationInfo(),
                                                            /*rfhi=*/nullptr)) {}
 
+    ScopedCustomBackgroundFetchService(
+        const ScopedCustomBackgroundFetchService&) = delete;
+    ScopedCustomBackgroundFetchService& operator=(
+        const ScopedCustomBackgroundFetchService&) = delete;
+
    private:
     base::AutoReset<std::unique_ptr<BackgroundFetchServiceImpl>>
         scoped_service_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedCustomBackgroundFetchService);
   };
 
   // Synchronous wrapper for BackgroundFetchServiceImpl::Fetch().

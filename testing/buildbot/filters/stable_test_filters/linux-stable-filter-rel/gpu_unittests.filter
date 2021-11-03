@@ -4,6 +4,6 @@
 -GPUTestExpectationsParser/GPUTestExpectationsParserParamTest.ValidFullEntry/20
 -GPUTestExpectationsParser/GPUTestExpectationsParserParamTest.ValidPartialEntry/20
 -GPUTestExpectationsParser/GPUTestExpectationsParserParamTest.ValidUnrelatedOsEntry/20
+-RasterFormatTest.ReadbackImagePixelsINTERNALImmediate
 -Service/RasterDecoderTest1.FlushValidArgs/0
 -Service/RasterDecoderTest1.FlushValidArgs/1
--RasterFormatTest.ReadbackImagePixelsINTERNALImmediate

@@ -705,6 +705,10 @@ class DeviceSyncServiceTest
         test_device_infos_(GenerateTestExternalDeviceInfos(test_devices_)),
         test_ineligible_devices_(
             GenerateTestIneligibleDevices(test_device_infos_)) {}
+
+  DeviceSyncServiceTest(const DeviceSyncServiceTest&) = delete;
+  DeviceSyncServiceTest& operator=(const DeviceSyncServiceTest&) = delete;
+
   ~DeviceSyncServiceTest() override = default;
 
   void SetUp() override {
@@ -1634,8 +1638,6 @@ class DeviceSyncServiceTest
   base::HistogramTester histogram_tester_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncServiceTest);
 };
 
 TEST_P(DeviceSyncServiceTest, PrimaryAccountAvailableLater) {

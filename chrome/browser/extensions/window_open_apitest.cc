@@ -49,7 +49,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/window_properties.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
 #else
 #include "chrome/browser/ui/ash/window_pin_util.h"
 #endif
@@ -386,11 +386,10 @@ aura::Window* GetCurrentWindow() {
 chromeos::WindowPinType GetCurrentWindowPinType() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::WindowPinType type =
-      GetCurrentWindow()->GetProperty(chromeos::kWindowPinTypeKey);
+      GetCurrentWindow()->GetProperty(lacros::kWindowPinTypeKey);
 #else
   chromeos::WindowPinType type = GetWindowPinType(GetCurrentWindow());
 #endif
-
   return type;
 }
 

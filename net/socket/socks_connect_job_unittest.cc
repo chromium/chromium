@@ -82,7 +82,8 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
   }
 
  protected:
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
+                                      RuleResolver::GetLocalhostResult()};
   MockTaggingClientSocketFactory client_socket_factory_;
   const CommonConnectJobParams common_connect_job_params_;
 };

@@ -131,6 +131,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/common/js/async_util.js",
     "file_manager/common/js/dialog_type.js",
     "file_manager/common/js/error_counter.js",
+    "file_manager/common/js/glitch.js",
     "file_manager/common/js/file_operation_common.js",
     "file_manager/common/js/file_type.js",
     "file_manager/common/js/files_app_entry_types.js",

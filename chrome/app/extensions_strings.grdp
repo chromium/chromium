@@ -263,7 +263,7 @@
     Permissions
   </message>
   <message name="IDS_EXTENSIONS_ITEM_PERMISSIONS_EMPTY" desc="The text to indicate that an extension does not have any special permissions.">
-    This extension requires no special permissions
+    This extension requires no special permissions.
   </message>
   <message name="IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION" desc="The label on the button to remove an extension.">
     Remove extension

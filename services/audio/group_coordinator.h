@@ -34,6 +34,10 @@ class GroupCoordinator {
   };
 
   GroupCoordinator();
+
+  GroupCoordinator(const GroupCoordinator&) = delete;
+  GroupCoordinator& operator=(const GroupCoordinator&) = delete;
+
   ~GroupCoordinator();
 
   // Registers/Unregisters a group |member|. The member must remain valid until
@@ -63,12 +67,14 @@ class GroupCoordinator {
     std::vector<Observer*> observers;
 
     Group();
-    ~Group();
+
+    Group(const Group&) = delete;
+    Group& operator=(const Group&) = delete;
+
     Group(Group&& other);
     Group& operator=(Group&& other);
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Group);
+    ~Group();
   };
 
   using GroupMap = std::vector<std::pair<base::UnguessableToken, Group>>;
@@ -90,8 +96,6 @@ class GroupCoordinator {
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GroupCoordinator);
 };
 
 }  // namespace audio

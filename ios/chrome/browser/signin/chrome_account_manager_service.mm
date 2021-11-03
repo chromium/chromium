@@ -294,6 +294,11 @@ void ChromeAccountManagerService::OnChromeIdentityServiceDidChange(
     ios::ChromeIdentityService* new_service) {
   identity_service_observation_.Observe(
       ios::GetChromeBrowserProvider().GetChromeIdentityService());
+  // All avatar caches needs to be removed to avoid mixing fake identities and
+  // sso identities.
+  default_table_view_avatar_cache_ = nil;
+  small_size_avatar_cache_ = nil;
+  default_large_avatar_cache_ = nil;
 }
 
 void ChromeAccountManagerService::OnChromeBrowserProviderWillBeDestroyed() {

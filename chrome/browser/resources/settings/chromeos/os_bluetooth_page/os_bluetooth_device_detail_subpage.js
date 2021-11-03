@@ -429,6 +429,16 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   getIsDeviceConnectedForTest() {
     return this.isDeviceConnected_;
   }
+
+  /** @private */
+  onMouseRowClick_() {
+    Router.getInstance().navigateTo(routes.POINTERS);
+  }
+
+  /** @private */
+  onKeyboardRowClick_() {
+    Router.getInstance().navigateTo(routes.KEYBOARD);
+  }
 }
 
 customElements.define(

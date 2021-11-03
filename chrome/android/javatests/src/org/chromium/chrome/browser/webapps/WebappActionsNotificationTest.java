@@ -23,6 +23,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -31,11 +33,21 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
+import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
+import org.chromium.chrome.browser.customtabs.FakeDefaultBrowserProviderImpl;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.init.StartupTabPreloader;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.net.test.EmbeddedTestServer;
 
 /**
  * Tests for a standalone Web App notification governed by {@link WebappActionsNotificationManager}.
@@ -50,10 +62,32 @@ public class WebappActionsNotificationTest {
     @Rule
     public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
+    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
+            BaseCustomTabActivityModule.Factory.class,
+            (BrowserServicesIntentDataProvider intentDataProvider,
+                    StartupTabPreloader startupTabPreloader,
+                    CustomTabNightModeStateController nightModeController,
+                    CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                    TopUiThemeColorProvider topUiThemeColorProvider,
+                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                    -> new BaseCustomTabActivityModule(intentDataProvider, startupTabPreloader,
+                            nightModeController, intentIgnoringCriterion, topUiThemeColorProvider,
+                            new FakeDefaultBrowserProviderImpl()));
+
+    @Rule
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain().around(mActivityTestRule).around(mModuleOverridesRule);
+
+    private EmbeddedTestServer mTestServer;
+
     @Before
     public void startWebapp() {
+        Context appContext = InstrumentationRegistry.getInstrumentation()
+                                     .getTargetContext()
+                                     .getApplicationContext();
+        mTestServer = EmbeddedTestServer.createAndStartServer(appContext);
         mActivityTestRule.startWebappActivity(mActivityTestRule.createIntent().putExtra(
-                WebappConstants.EXTRA_URL, mActivityTestRule.getTestServer().getURL(WEB_APP_PATH)));
+                WebappConstants.EXTRA_URL, mTestServer.getURL(WEB_APP_PATH)));
     }
 
     @Test

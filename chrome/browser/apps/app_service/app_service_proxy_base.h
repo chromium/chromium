@@ -67,6 +67,8 @@ class AppServiceProxyBase : public KeyedService,
 
   void ReInitializeForTesting(Profile* profile);
 
+  Profile* profile() const { return profile_; }
+
   mojo::Remote<apps::mojom::AppService>& AppService();
   apps::AppRegistryCache& AppRegistryCache();
   apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
@@ -101,10 +103,9 @@ class AppServiceProxyBase : public KeyedService,
               apps::mojom::WindowInfoPtr window_info = nullptr);
 
   // Launches the app for the given |app_id| with files from |file_paths|.
-  // |event_flags| provides additional context about the action which launches
-  // the app (e.g. a middle click indicating opening a background tab).
-  // |launch_source| is the possible app launch sources, e.g. from Shelf, from
-  // the search box, etc.
+  // DEPRECATED. Prefer passing the files in an Intent through
+  // LaunchAppWithIntent.
+  // TODO(crbug.com/1264164): Remove this method.
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
@@ -115,11 +116,13 @@ class AppServiceProxyBase : public KeyedService,
   // app (e.g. a middle click indicating opening a background tab).
   // |launch_source| is the possible app launch sources. |window_info| is the
   // window information to launch an app, e.g. display_id, window bounds.
-  void LaunchAppWithIntent(const std::string& app_id,
-                           int32_t event_flags,
-                           apps::mojom::IntentPtr intent,
-                           apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info = nullptr);
+  void LaunchAppWithIntent(
+      const std::string& app_id,
+      int32_t event_flags,
+      apps::mojom::IntentPtr intent,
+      apps::mojom::LaunchSource launch_source,
+      apps::mojom::WindowInfoPtr window_info = nullptr,
+      apps::mojom::Publisher::LaunchAppWithIntentCallback callback = {});
 
   // Launches an app for the given |app_id|, passing |url| to the app.
   // |event_flags| provides additional context about the action which launch the
@@ -286,9 +289,11 @@ class AppServiceProxyBase : public KeyedService,
 
   bool IsValidProfile();
 
+  // Called in AppServiceProxyFactory::BuildServiceInstanceFor immediately
+  // following the creation of AppServiceProxy. Use this method to perform any
+  // operation that depends on a fully instantiated AppServiceProxy (i.e. to
+  // avoid calling other virtual methods in the AppServiceProxy constructor).
   virtual void Initialize();
-
-  void AddAppIconSource(Profile* profile);
 
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
@@ -353,6 +358,10 @@ class AppServiceProxyBase : public KeyedService,
 
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
+
+ private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
 
   // For test access to OnApps.
   friend class AppServiceProxyPreferredAppsTest;

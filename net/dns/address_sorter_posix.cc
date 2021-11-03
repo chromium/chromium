@@ -264,13 +264,13 @@ AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
 }
 
 AddressSorterPosix::~AddressSorterPosix() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
 }
 
 void AddressSorterPosix::Sort(const AddressList& list,
                               CallbackType callback) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<std::unique_ptr<DestinationInfo>> sort_list;
 
   for (size_t i = 0; i < list.size(); ++i) {
@@ -325,11 +325,11 @@ void AddressSorterPosix::Sort(const AddressList& list,
   for (size_t i = 0; i < sort_list.size(); ++i)
     result.push_back(IPEndPoint(sort_list[i]->address, 0 /* port */));
 
-  std::move(callback).Run(true, result);
+  std::move(callback).Run(true, std::move(result));
 }
 
 void AddressSorterPosix::OnIPAddressChanged() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   source_map_.clear();
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const internal::AddressTrackerLinux* tracker =
@@ -399,7 +399,7 @@ void AddressSorterPosix::OnIPAddressChanged() {
 
 void AddressSorterPosix::FillPolicy(const IPAddress& address,
                                     SourceAddressInfo* info) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   info->scope = GetScope(ipv4_scope_table_, address);
   info->label = GetPolicyValue(label_table_, address);
 }

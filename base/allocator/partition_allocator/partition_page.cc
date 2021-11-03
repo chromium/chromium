@@ -19,6 +19,7 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/bits.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/tagging.h"
 
 namespace base {
 namespace internal {
@@ -247,6 +248,46 @@ void SlotSpanMetadata<thread_safe>::DecommitIfPossible(
     Decommit(root);
 }
 
+template <bool thread_safe>
+void SlotSpanMetadata<thread_safe>::SortFreelist() {
+  std::bitset<kMaxSlotsPerSlotSpan> free_slots;
+  char* slot_span_base = reinterpret_cast<char*>(ToSlotSpanStartPtr(this));
+
+  size_t num_provisioned_slots =
+      bucket->get_slots_per_span() - num_unprovisioned_slots;
+  PA_CHECK(num_unprovisioned_slots <= kMaxSlotsPerSlotSpan);
+
+  size_t slot_size = bucket->slot_size;
+  for (PartitionFreelistEntry* head = freelist_head; head;
+       head = head->GetNext(slot_size)) {
+    size_t offset_in_slot_span =
+        reinterpret_cast<char*>(memory::UnmaskPtr(head)) - slot_span_base;
+    size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
+    PA_DCHECK(slot_number < num_provisioned_slots);
+    free_slots[slot_number] = true;
+  }
+
+  PartitionFreelistEntry* back = nullptr;
+  PartitionFreelistEntry* head = nullptr;
+
+  for (size_t slot_number = 0; slot_number < num_provisioned_slots;
+       slot_number++) {
+    if (free_slots[slot_number]) {
+      char* slot_address =
+          memory::RemaskPtr(slot_span_base + (slot_size * slot_number));
+      auto* entry = new (slot_address) PartitionFreelistEntry();
+
+      if (!head)
+        head = entry;
+      else
+        back->SetNext(entry);
+
+      back = entry;
+    }
+  }
+  SetFreelistHead(head);
+}
+
 namespace {
 void UnmapNow(void* reservation_start,
               size_t reservation_size,
@@ -257,7 +298,7 @@ void UnmapNow(void* reservation_start,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pool == GetBRPPool()) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
-    // BRP pool, so shift the pointer. Non-BRP pool doesn't have logic.
+    // BRP pool, so shift the pointer. Other pools don't have this logic.
     PA_DCHECK(IsManagedByPartitionAllocBRPPool(
 #if defined(PA_HAS_64_BITS_POINTERS)
         reservation_start
@@ -270,10 +311,10 @@ void UnmapNow(void* reservation_start,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(pool == GetNonBRPPool() ||
+    PA_DCHECK(pool == GetRegularPool() ||
               (IsConfigurablePoolAvailable() && pool == GetConfigurablePool()));
     // Non-BRP pools don't need adjustment that BRP needs in 32-bit mode.
-    PA_DCHECK(IsManagedByPartitionAllocNonBRPPool(reservation_start) ||
+    PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
               IsManagedByPartitionAllocConfigurablePool(reservation_start));
   }
 #endif  // DCHECK_IS_ON()

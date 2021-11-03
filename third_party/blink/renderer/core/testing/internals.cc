@@ -1662,7 +1662,7 @@ String Internals::viewportAsText(Document* document,
   // Update initial viewport size.
   IntSize initial_viewport_size(available_width, available_height);
   document->GetPage()->DeprecatedLocalMainFrame()->View()->SetFrameRect(
-      IntRect(IntPoint::Zero(), initial_viewport_size));
+      IntRect(gfx::Point(), initial_viewport_size));
 
   ViewportDescription description = page->GetViewportDescription();
   PageScaleConstraints constraints =
@@ -1904,7 +1904,7 @@ DOMPoint* Internals::touchPositionAdjustedToBestClickableNode(
   HitTestResult result;
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
-  IntPoint adjusted_point;
+  gfx::Point adjusted_point;
 
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
   bool found_node = event_handler.BestClickableNodeForHitTestResult(
@@ -1933,7 +1933,7 @@ Node* Internals::touchNodeAdjustedToBestClickableNode(
   HitTestResult result;
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
-  IntPoint adjusted_point;
+  gfx::Point adjusted_point;
   document->GetFrame()->GetEventHandler().BestClickableNodeForHitTestResult(
       location, result, adjusted_point, target_node);
   return target_node;
@@ -1957,7 +1957,7 @@ DOMPoint* Internals::touchPositionAdjustedToBestContextMenuNode(
   HitTestResult result;
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
-  IntPoint adjusted_point;
+  gfx::Point adjusted_point;
 
   EventHandler& event_handler = document->GetFrame()->GetEventHandler();
   bool found_node = event_handler.BestContextMenuNodeForHitTestResult(
@@ -1986,7 +1986,7 @@ Node* Internals::touchNodeAdjustedToBestContextMenuNode(
   HitTestResult result;
   HitTestRect(location, result, x, y, width, height, document);
   Node* target_node = nullptr;
-  IntPoint adjusted_point;
+  gfx::Point adjusted_point;
   document->GetFrame()->GetEventHandler().BestContextMenuNodeForHitTestResult(
       location, result, adjusted_point, target_node);
   return target_node;
@@ -2316,7 +2316,7 @@ StaticNodeList* Internals::nodesFromRect(
                     LayoutUnit(height)};
   if (ignore_clipping) {
     hit_type |= HitTestRequest::kIgnoreClipping;
-  } else if (!IntRect(IntPoint(), frame->View()->Size())
+  } else if (!IntRect(gfx::Point(), frame->View()->Size())
                   .Intersects(EnclosingIntRect(rect))) {
     return nullptr;
   }

@@ -11,7 +11,7 @@
 
 namespace views {
 
-class ColumnSet;
+class TableLayout;
 
 }  // namespace views
 
@@ -43,8 +43,8 @@ base::Time::Exploded GetExplodedUTC(const base::Time& date);
 // Gets the given `date`'s month name in string in the current language.
 std::u16string GetMonthName(const base::Time date);
 
-// Set up the `GridLayout` to have 7 columns, which is one week row (7 days).
-void SetUpWeekColumnSets(views::ColumnSet* column_set);
+// Sets up the `TableLayout` to have 7 columns, which is one week row (7 days).
+void SetUpWeekColumns(views::TableLayout* layout);
 
 // Colors.
 SkColor GetPrimaryTextColor();

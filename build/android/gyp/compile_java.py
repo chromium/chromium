@@ -31,6 +31,9 @@ ERRORPRONE_CHECKS_TO_APPLY = []
 
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
+    # Temporarily disabling to roll doubledown.
+    # TODO(wnwen): Re-enable this upstream.
+    'InlineMeInliner',
     # The following are super useful, but existing issues need to be fixed first
     # before they can start failing the build on new errors.
     'InvalidParam',

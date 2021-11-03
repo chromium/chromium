@@ -661,7 +661,8 @@ void ArcNotificationContentView::Layout() {
     const gfx::Size surface_size = surface_->GetSize();
     if (!surface_size.IsEmpty()) {
       const float factor =
-          static_cast<float>(message_center::kNotificationWidth) /
+          static_cast<float>(message_center::kNotificationWidth -
+                             kScrollBarWidth) /
           (surface_size.width());
       transform.Scale(factor, factor);
     }

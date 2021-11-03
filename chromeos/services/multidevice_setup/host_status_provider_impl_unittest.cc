@@ -28,6 +28,12 @@ const size_t kNumTestDevices = 5;
 }  // namespace
 
 class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
+ public:
+  MultiDeviceSetupHostStatusProviderImplTest(
+      const MultiDeviceSetupHostStatusProviderImplTest&) = delete;
+  MultiDeviceSetupHostStatusProviderImplTest& operator=(
+      const MultiDeviceSetupHostStatusProviderImplTest&) = delete;
+
  protected:
   MultiDeviceSetupHostStatusProviderImplTest()
       : test_devices_(
@@ -110,8 +116,6 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
   std::unique_ptr<FakeHostStatusProviderObserver> fake_observer_;
 
   std::unique_ptr<HostStatusProvider> host_status_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupHostStatusProviderImplTest);
 };
 
 TEST_F(MultiDeviceSetupHostStatusProviderImplTest,

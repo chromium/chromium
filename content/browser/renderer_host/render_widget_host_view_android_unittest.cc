@@ -28,6 +28,50 @@
 
 namespace content {
 
+namespace {
+// Allows for RenderWidgetHostViewAndroidRotationTest to override the ScreenInfo
+// so that different configurations can be tests. The default path fallbacks on
+// an empty ScreenInfo in testing, assuming it has no effect.
+class CustomScreenInfoRenderWidgetHostViewAndroid
+    : public RenderWidgetHostViewAndroid {
+ public:
+  CustomScreenInfoRenderWidgetHostViewAndroid(
+      RenderWidgetHostImpl* widget,
+      gfx::NativeView parent_native_view);
+  ~CustomScreenInfoRenderWidgetHostViewAndroid() override {}
+
+  void SetScreenInfo(display::ScreenInfo screen_info);
+
+  // RenderWidgetHostViewAndroid:
+  display::ScreenInfos GetScreenInfos() const override;
+
+ private:
+  CustomScreenInfoRenderWidgetHostViewAndroid(
+      const CustomScreenInfoRenderWidgetHostViewAndroid&) = delete;
+  CustomScreenInfoRenderWidgetHostViewAndroid& operator=(
+      const CustomScreenInfoRenderWidgetHostViewAndroid&) = delete;
+
+  display::ScreenInfo screen_info_;
+};
+
+CustomScreenInfoRenderWidgetHostViewAndroid::
+    CustomScreenInfoRenderWidgetHostViewAndroid(
+        RenderWidgetHostImpl* widget,
+        gfx::NativeView parent_native_view)
+    : RenderWidgetHostViewAndroid(widget, parent_native_view) {}
+
+void CustomScreenInfoRenderWidgetHostViewAndroid::SetScreenInfo(
+    display::ScreenInfo screen_info) {
+  screen_info_ = screen_info;
+}
+
+display::ScreenInfos
+CustomScreenInfoRenderWidgetHostViewAndroid::GetScreenInfos() const {
+  return display::ScreenInfos(screen_info_);
+}
+
+}  // namespace
+
 class RenderWidgetHostViewAndroidTest : public testing::Test {
  public:
   RenderWidgetHostViewAndroidTest();
@@ -56,6 +100,10 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
       base::TimeTicks activation_time);
 
  protected:
+  virtual RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
+      RenderWidgetHostImpl* widget_host,
+      gfx::NativeView parent_native_view);
+
   // testing::Test:
   void SetUp() override;
   void TearDown() override;
@@ -110,6 +158,13 @@ void RenderWidgetHostViewAndroidTest::
       ->OnRenderFrameMetadataChangedAfterActivation(metadata, activation_time);
 }
 
+RenderWidgetHostViewAndroid*
+RenderWidgetHostViewAndroidTest::CreateRenderWidgetHostViewAndroid(
+    RenderWidgetHostImpl* widget_host,
+    gfx::NativeView parent_native_view) {
+  return new RenderWidgetHostViewAndroid(widget_host, parent_native_view);
+}
+
 void RenderWidgetHostViewAndroidTest::SetUp() {
   browser_context_ = std::make_unique<TestBrowserContext>();
   site_instance_ = SiteInstanceImpl::Create(browser_context_.get());
@@ -142,7 +197,7 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
   parent_view_.AddChild(&native_view_);
   EXPECT_EQ(&parent_view_, native_view_.parent());
   render_widget_host_view_android_ =
-      new RenderWidgetHostViewAndroid(host_, &native_view_);
+      CreateRenderWidgetHostViewAndroid(host_, &native_view_);
   test_view_android_delegate_ = std::make_unique<TestViewAndroidDelegate>();
 }
 
@@ -340,6 +395,12 @@ class RenderWidgetHostViewAndroidRotationTest
 
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
+  void SetScreenInfo(display::ScreenInfo screen_info);
+
+ protected:
+  RenderWidgetHostViewAndroid* CreateRenderWidgetHostViewAndroid(
+      RenderWidgetHostImpl* widget_host,
+      gfx::NativeView parent_native_view) override;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -355,6 +416,21 @@ void RenderWidgetHostViewAndroidRotationTest::
         const cc::RenderFrameMetadata& metadata) {
   render_widget_host_view_android()->OnDidUpdateVisualPropertiesComplete(
       metadata);
+}
+
+void RenderWidgetHostViewAndroidRotationTest::SetScreenInfo(
+    display::ScreenInfo screen_info) {
+  static_cast<CustomScreenInfoRenderWidgetHostViewAndroid*>(
+      render_widget_host_view_android())
+      ->SetScreenInfo(screen_info);
+}
+
+RenderWidgetHostViewAndroid*
+RenderWidgetHostViewAndroidRotationTest::CreateRenderWidgetHostViewAndroid(
+    RenderWidgetHostImpl* widget_host,
+    gfx::NativeView parent_native_view) {
+  return new CustomScreenInfoRenderWidgetHostViewAndroid(widget_host,
+                                                         parent_native_view);
 }
 
 // Tests that when a rotation occurs, that we only advance the
@@ -576,6 +652,28 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FullscreenRotation) {
     OnRenderFrameMetadataChangedAfterActivation(metadata,
                                                 base::TimeTicks::Now());
   }
+}
+
+// Tests that when a device's initial orientation is Landscape, that we do not
+// treat the initial UpdateScreenInfo as the start of a rotation.
+// https://crbug.com/1263723
+TEST_F(RenderWidgetHostViewAndroidRotationTest, LandscapeStartup) {
+  display::ScreenInfo screen_info;
+  screen_info.display_id = display::kDefaultDisplayId;
+  screen_info.orientation_type =
+      display::mojom::ScreenOrientation::kLandscapePrimary;
+  screen_info.orientation_angle = 90;
+
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  SetScreenInfo(screen_info);
+  // This method is called when initializing the ScreenInfo, not just on
+  // subsequent updates. Ensure that initializing to a Landscape orientation
+  // does not trigger rotation.
+  rwhva->UpdateScreenInfo();
+  // We should not be blocking Surface Sync.
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
 }
 
 }  // namespace content

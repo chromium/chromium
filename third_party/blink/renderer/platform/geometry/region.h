@@ -67,7 +67,7 @@ class PLATFORM_EXPORT Region {
   // Returns true if the query region is a subset of this region.
   bool Contains(const Region&) const;
 
-  bool Contains(const IntPoint&) const;
+  bool Contains(const gfx::Point&) const;
 
   // Returns true if the query region intersects any part of this region.
   bool Intersects(const Region&) const;

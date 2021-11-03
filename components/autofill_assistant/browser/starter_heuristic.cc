@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/starter_heuristic.h"
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"

@@ -4,8 +4,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MockTimer} from 'chrome://test/mock_timer.m.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {MockTimer} from 'chrome://test/mock_timer.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 // Test that tapping "Export passwords..." notifies the browser.

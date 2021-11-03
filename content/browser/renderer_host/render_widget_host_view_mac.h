@@ -92,6 +92,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // deleted it will delete this out from under the caller.
   RenderWidgetHostViewMac(RenderWidgetHost* widget);
 
+  RenderWidgetHostViewMac(const RenderWidgetHostViewMac&) = delete;
+  RenderWidgetHostViewMac& operator=(const RenderWidgetHostViewMac&) = delete;
+
   RenderWidgetHostViewCocoa* GetInProcessNSView() const;
 
   // |delegate| is used to separate out the logic from the NSResponder delegate.
@@ -118,7 +121,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void ShowDefinitionForSelection() override;
   void SpeakSelection() override;
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
-  void GetScreenInfo(display::ScreenInfo* screen_info) override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool IsHTMLFormPopup() const override;
 
@@ -155,7 +157,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
-  display::ScreenInfos GetScreenInfos() override;
   void UpdateScreenInfo() override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
@@ -682,8 +683,6 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Factory used to safely scope delayed calls to ShutdownHost().
   base::WeakPtrFactory<RenderWidgetHostViewMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewMac);
 };
 
 // RenderWidgetHostViewCocoa is not exported outside of content. This helper

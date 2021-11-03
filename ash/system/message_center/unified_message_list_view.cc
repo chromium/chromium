@@ -278,9 +278,7 @@ UnifiedMessageListView::UnifiedMessageListView(
 }
 
 UnifiedMessageListView::~UnifiedMessageListView() {
-  // `model_` may be null during shutdown.
-  if (model_)
-    model_->ClearNotificationChanges();
+  model_->ClearNotificationChanges();
   for (auto* view : children())
     AsMVC(view)->StoreExpandedState(model_);
 }
@@ -288,10 +286,7 @@ UnifiedMessageListView::~UnifiedMessageListView() {
 void UnifiedMessageListView::Init() {
   bool is_latest = true;
   for (auto* notification :
-       message_center_utils::GetSortedVisibleNotifications()) {
-    if (notification->group_child())
-      continue;
-
+       message_center_utils::GetSortedNotificationsWithOwnView()) {
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
     view->LoadExpandedState(model_, is_latest);
@@ -565,10 +560,6 @@ void UnifiedMessageListView::OnNotificationSlidOut() {
   StartAnimation();
 }
 
-void UnifiedMessageListView::OnShutdown() {
-  model_ = nullptr;
-}
-
 void UnifiedMessageListView::OnNotificationUpdated(const std::string& id) {
   auto* notification = MessageCenter::Get()->FindVisibleNotificationById(id);
   if (!notification)
@@ -780,9 +771,7 @@ void UnifiedMessageListView::DeleteRemovedNotifications() {
   {
     base::AutoReset<bool> auto_reset(&is_deleting_removed_notifications_, true);
     for (auto* view : removed_views) {
-      // `model_` may be null during shutdown.
-      if (model_)
-        model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
+      model_->RemoveNotificationExpanded(AsMVC(view)->GetNotificationId());
       delete view;
     }
   }

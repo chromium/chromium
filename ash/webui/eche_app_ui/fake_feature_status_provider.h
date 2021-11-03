@@ -7,7 +7,7 @@
 
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 class FakeFeatureStatusProvider : public FeatureStatusProvider {
@@ -27,6 +27,6 @@ class FakeFeatureStatusProvider : public FeatureStatusProvider {
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_FAKE_FEATURE_STATUS_PROVIDER_H_

@@ -61,7 +61,9 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // Used a mock HostResolver that does not have a cache.
-    session_deps_.host_resolver = std::make_unique<MockHostResolver>();
+    session_deps_.host_resolver = std::make_unique<MockHostResolver>(
+        /*default_result=*/MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
 
     network_quality_estimator_ =
         std::make_unique<TestNetworkQualityEstimator>();
@@ -1651,11 +1653,7 @@ TEST_P(HttpProxyConnectJobTest, ConnectionTimeoutMin) {
   // Test against a large value.
   EXPECT_GE(base::Minutes(10), GetNestedConnectionTimeout());
 
-#if (defined(OS_ANDROID) || defined(OS_IOS))
   EXPECT_EQ(base::Seconds(8), GetNestedConnectionTimeout());
-#else
-  EXPECT_EQ(base::Seconds(30), GetNestedConnectionTimeout());
-#endif
 }
 
 TEST_P(HttpProxyConnectJobTest, ConnectionTimeoutMax) {
@@ -1668,11 +1666,7 @@ TEST_P(HttpProxyConnectJobTest, ConnectionTimeoutMax) {
   // Test against a large value.
   EXPECT_GE(base::Minutes(10), GetNestedConnectionTimeout());
 
-#if (defined(OS_ANDROID) || defined(OS_IOS))
   EXPECT_EQ(base::Seconds(30), GetNestedConnectionTimeout());
-#else
-  EXPECT_EQ(base::Seconds(60), GetNestedConnectionTimeout());
-#endif
 }
 
 // Tests the connection timeout values when the field trial parameters are

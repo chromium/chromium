@@ -32,6 +32,11 @@ class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
  public:
   PendingNetworkConfigurationTrackerImplTest() = default;
 
+  PendingNetworkConfigurationTrackerImplTest(
+      const PendingNetworkConfigurationTrackerImplTest&) = delete;
+  PendingNetworkConfigurationTrackerImplTest& operator=(
+      const PendingNetworkConfigurationTrackerImplTest&) = delete;
+
   void SetUp() override {
     test_pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -92,8 +97,6 @@ class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
 
   const NetworkIdentifier fred_network_id_ = GeneratePskNetworkId(kFredSsid);
   const NetworkIdentifier mango_network_id_ = GeneratePskNetworkId(kMangoSsid);
-
-  DISALLOW_COPY_AND_ASSIGN(PendingNetworkConfigurationTrackerImplTest);
 };
 
 TEST_F(PendingNetworkConfigurationTrackerImplTest, TestMarkComplete) {

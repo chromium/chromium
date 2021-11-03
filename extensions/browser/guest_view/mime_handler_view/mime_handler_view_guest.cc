@@ -284,9 +284,12 @@ void MimeHandlerViewGuest::NavigationStateChanged(
 }
 
 bool MimeHandlerViewGuest::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  return delegate_ && delegate_->HandleContextMenu(web_contents(), params);
+  DCHECK_EQ(web_contents(),
+            content::WebContents::FromRenderFrameHost(&render_frame_host));
+
+  return delegate_ && delegate_->HandleContextMenu(render_frame_host, params);
 }
 
 bool MimeHandlerViewGuest::PreHandleGestureEvent(

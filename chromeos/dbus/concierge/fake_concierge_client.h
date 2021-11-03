@@ -25,6 +25,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   // Returns the fake global instance if initialized. May return null.
   static FakeConciergeClient* Get();
 
+  FakeConciergeClient(const FakeConciergeClient&) = delete;
+  FakeConciergeClient& operator=(const FakeConciergeClient&) = delete;
+
   // ConciergeClient:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -428,8 +431,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakeConciergeClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConciergeClient);
 };
 
 }  // namespace chromeos

@@ -326,26 +326,30 @@ body.enable-scan-barcode .barcode-scan-box {
   white-space: nowrap;
 }
 
-#crop-container {
+#view-crop-document .review-image {
+  background-repeat: no-repeat;
+  background-size: cover;
   overflow: hidden;
   position: absolute;
   touch-action: none;
+  transform-origin: left top;
 }
 
-#crop-container .crop-area-container {
+#view-crop-document .review-image .crop-area-container {
   height: 100%;
   pointer-events: none;
   touch-action: none;
   width: 100%;
 }
 
-#crop-container .crop-area {
+#view-crop-document .review-image .crop-area {
   fill: rgba(var(--blue-300-rgb), 0.3);
   stroke: var(--blue-500);
 }
 
-#crop-container .dot {
+#view-crop-document .review-image .dot {
   --icon-size: 8px;
+  --focus-ring-style: none;
   --focus-size: 32px;
 
   border-radius: 50%;
@@ -356,8 +360,8 @@ body.enable-scan-barcode .barcode-scan-box {
   width: 48px;
 }
 
-#crop-container .dot::before,
-#crop-container .dot::after {
+#view-crop-document .review-image .dot::before,
+#view-crop-document .review-image .dot::after {
   border-radius: 50%;
   content: '';
   height: var(--icon-size);
@@ -369,20 +373,34 @@ body.enable-scan-barcode .barcode-scan-box {
   width: var(--icon-size);
 }
 
-#crop-container .dot::before {
+#view-crop-document .review-image .dot::before {
   background: var(--blue-500);
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14), 0 1px 3px 0 rgba(0, 0, 0, 0.12);
 }
 
-#crop-container .dot::after {
+#view-crop-document .review-image .dot::after {
   background: rgba(var(--blue-300-rgb), 0.24);
   border: 1px solid var(--blue-500);
   box-sizing: border-box;
 }
 
-#crop-container .dot.dragging::after {
+#view-crop-document .review-image .dot.dragging::after,
+body.tab-navigation #view-crop-document .review-image .dot:focus::after {
   height: var(--focus-size);
   transition-duration: var(--fast1-duration);
   transition-property: width, height;
   width: var(--focus-size);
+}
+
+#view-crop-document .icon-button {
+  height: 32px;
+  width: 32px;
+}
+
+#view-crop-document button[i18n-aria=rotate_clockwise_button] {
+  background-image: url(/images/crop_document_clockwise_rotate.svg);
+}
+
+#view-crop-document button[i18n-aria=rotate_counterclockwise_button] {
+  background-image: url(/images/crop_document_counterclockwise_rotate.svg);
 }

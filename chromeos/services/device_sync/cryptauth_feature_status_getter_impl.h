@@ -48,6 +48,11 @@ class CryptAuthFeatureStatusGetterImpl : public CryptAuthFeatureStatusGetter {
     static Factory* test_factory_;
   };
 
+  CryptAuthFeatureStatusGetterImpl(const CryptAuthFeatureStatusGetterImpl&) =
+      delete;
+  CryptAuthFeatureStatusGetterImpl& operator=(
+      const CryptAuthFeatureStatusGetterImpl&) = delete;
+
   ~CryptAuthFeatureStatusGetterImpl() override;
 
  private:
@@ -79,8 +84,6 @@ class CryptAuthFeatureStatusGetterImpl : public CryptAuthFeatureStatusGetter {
 
   CryptAuthClientFactory* client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFeatureStatusGetterImpl);
 };
 
 }  // namespace device_sync

@@ -32,7 +32,7 @@ ConnectionManager::ServiceWorkerProvider::~ServiceWorkerProvider() = default;
 content::ServiceWorkerContext* ConnectionManager::ServiceWorkerProvider::Get(
     const GURL& url,
     Profile* profile) {
-  return profile->GetStoragePartitionForUrl(url)->GetServiceWorkerContext();
+  return profile->GetDefaultStoragePartition()->GetServiceWorkerContext();
 }
 
 ConnectionManager::ConnectionManager(

@@ -15,12 +15,17 @@
 #include "ui/base/ui_base_features.h"
 
 EyeDropperViewMac::EyeDropperViewMac(content::EyeDropperListener* listener)
-    : listener_(listener) {
+    : listener_(listener), weak_ptr_factory_(this) {
   if (!listener_)
     return;
   if (@available(macOS 10.15, *)) {
     color_sampler_.reset([[NSColorSampler alloc] init]);
+    // Used to ensure that EyeDropperViewMac is still alive when the handler is
+    // called.
+    base::WeakPtr<EyeDropperViewMac> weak_this = weak_ptr_factory_.GetWeakPtr();
     [color_sampler_ showSamplerWithSelectionHandler:^(NSColor* selectedColor) {
+      if (!weak_this)
+        return;
       if (!selectedColor) {
         listener_->ColorSelectionCanceled();
       } else {

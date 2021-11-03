@@ -35,6 +35,14 @@ base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
 sync_pb::PasswordSpecifics SpecificsFromPassword(
     const PasswordForm& password_form);
 
+// Returns sync_pb::PasswordSpecificsData based on given `password_form`.
+sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
+    const PasswordForm& password_form);
+
+// Returns sync_pb::PasswordWithLocalData based on given `password_form`.
+sync_pb::PasswordWithLocalData PasswordWithLocalDataFromPassword(
+    const PasswordForm& password_form);
+
 // Returns a partial PasswordForm for a given set of `password_data`. In
 // contrast to `PasswordFromProtoWithLocalData`, this method resets local data.
 PasswordForm PasswordFromSpecifics(

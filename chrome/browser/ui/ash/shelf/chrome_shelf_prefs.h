@@ -124,6 +124,25 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   // again.
   bool ShouldPerformConsistencyMigrations();
 
+  // During Lacros development, there is a period of time when we wish to deploy
+  // a transparent migration to Lacros, while still allowing users to fall back
+  // to Ash. This requires us to be very careful about how we store data in
+  // sync, which will be used by potentially both Lacros and Ash. We use the
+  // following scheme:
+  // (1) If the app is either an ash extension platform app or a lacros
+  // extension platform app, we store the ash extension app id in sync.
+  // (2) If the app is part of a small keep-list that continues to run in ash,
+  // we expose the ash extension app id to the shelf.
+  // (3) If Lacros chrome apps is enabled, we expose the lacros extension app id
+  // to the shelf.
+  // (4) If ash chrome apps is enabled, we expose the ash extension app id to
+  // the shelf.
+  //
+  // These methods are public as there are some places that need to translate
+  // from the ShelfId to SyncId to match up with policy, which uses SyncId.
+  std::string GetShelfId(const std::string& sync_id);
+  std::string GetSyncId(const std::string& shelf_id);
+
  protected:
   // Virtual for testing. Returns the syncable service associated with the
   // current profile.
@@ -157,22 +176,6 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
   virtual bool IsAshKeepListApp(const std::string& app_id);
 
  private:
-  // During Lacros development, there is a period of time when we wish to deploy
-  // a transparent migration to Lacros, while still allowing users to fall back
-  // to Ash. This requires us to be very careful about how we store data in
-  // sync, which will be used by potentially both Lacros and Ash. We use the
-  // following scheme:
-  // (1) If the app is either an ash extension platform app or a lacros
-  // extension platform app, we store the ash extension app id in sync.
-  // (2) If the app is part of a small keep-list that continues to run in ash,
-  // we expose the ash extension app id to the shelf.
-  // (3) If Lacros chrome apps is enabled, we expose the lacros extension app id
-  // to the shelf.
-  // (4) If ash chrome apps is enabled, we expose the ash extension app id to
-  // the shelf.
-  std::string GetShelfId(const std::string& sync_id);
-  std::string GetSyncId(const std::string& shelf_id);
-
   // app_list::AppListSyncableService::Observer:
   void OnSyncModelUpdated() override;
 

@@ -12,13 +12,10 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
@@ -330,43 +327,17 @@ Installer::Result Installer::RunApplicationInstaller(
     ProgressCallback progress_callback) {
   DeleteInstallerOutput(updater_scope_, app_id());
 
-  // TODO(crbug.com/1255144) - remove once the server starts returning
-  // --system-level argument for running the Chrome installer for per-system
-  // installs.
-  const auto cmdline = [&app_installer, &arguments](UpdaterScope updater_scope,
-                                                    const std::string& app_id) {
-    // Append `--system-level` to the arguments string for various flavors
-    // of Chrome app id, for per-system installs, and if the installer command
-    // line does not contain this argument. This makes the updater code behave
-    // similar to Omaha, and it temporarily unblocks future work.
-    struct CaseInsensitiveComparator {
-      // Returns true if a < b.
-      bool operator()(const char* a, const char* b) const {
-        return base::CompareCaseInsensitiveASCII(a, b) < 0;
-      }
-    };
-    constexpr wchar_t kChromeSystemLevel[] = L"--system-level";
-    static const base::flat_set<const char*, CaseInsensitiveComparator>
-        chrome_app_ids = {
-            "{8A69D345-D564-463C-AFF1-A69D9E530F96}",  // Stable.
-            "{8237E44A-0054-442C-B6B6-EA0509993955}",  // Beta.
-            "{401C381F-E0DE-4B85-8BD8-3F3F14FBDA57}",  // Dev.
-            "{4EA16AC7-FD5A-47C3-875B-DBF4A2008C20}",  // Canary.
-        };
-    std::wstring cmdline =
-        base::StrCat({base::CommandLine(app_installer).GetCommandLineString(),
-                      L" ", base::UTF8ToWide(arguments)});
-    if (updater_scope == UpdaterScope::kSystem &&
-        base::Contains(chrome_app_ids, app_id.c_str()) &&
-        !base::Contains(cmdline, kChromeSystemLevel)) {
-      cmdline += base::StrCat({L" ", kChromeSystemLevel});
-    }
-    return cmdline;
-  }(updater_scope_, app_id());
-
+  const std::wstring cmdline =
+      base::StrCat({base::CommandLine(app_installer).GetCommandLineString(),
+                    L" ", base::UTF8ToWide(arguments)});
   VLOG(1) << "Running application installer: " << cmdline;
+
   base::LaunchOptions options;
   options.start_hidden = true;
+  options.environment = {
+      {ENV_GOOGLE_UPDATE_IS_MACHINE,
+       updater_scope_ == UpdaterScope::kSystem ? L"1" : L"0"}};
+
   auto process = base::LaunchProcess(cmdline, options);
   int exit_code = -1;
   const auto time_begin = base::Time::NowFromSystemTime();

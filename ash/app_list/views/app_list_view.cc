@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_folder_view.h"
@@ -92,13 +93,8 @@ constexpr int kAppListBezelMargin = 50;
 constexpr int kAppInfoDialogWidth = 512;
 constexpr int kAppInfoDialogHeight = 384;
 
-// The duration of app list animations when |short_animations_for_testing| are
-// enabled.
+// The duration of app list animations when they should run immediately.
 constexpr int kAppListAnimationDurationImmediateMs = 0;
-
-// Set animation durations to 0 for testing.
-// TODO(oshima): Use ui::ScopedAnimationDurationScaleMode instead.
-bool short_animations_for_testing;
 
 // Histogram for the app list dragging in clamshell mode.
 constexpr char kAppListDragInClamshellHistogram[] =
@@ -676,16 +672,6 @@ float AppListView::GetTransitionProgressForState(AppListViewState state) {
   }
   NOTREACHED();
   return 0.0f;
-}
-
-// static
-void AppListView::SetShortAnimationForTesting(bool enabled) {
-  short_animations_for_testing = enabled;
-}
-
-// static
-bool AppListView::ShortAnimationsForTesting() {
-  return short_animations_for_testing;
 }
 
 // static
@@ -1771,9 +1757,8 @@ void AppListView::UpdateWindowTitle() {
 
 base::TimeDelta AppListView::GetStateTransitionAnimationDuration(
     AppListViewState target_state) {
-  if (ShortAnimationsForTesting() || is_side_shelf_ ||
-      (target_state == AppListViewState::kClosed &&
-       delegate_->ShouldDismissImmediately())) {
+  if (is_side_shelf_ || (target_state == AppListViewState::kClosed &&
+                         delegate_->ShouldDismissImmediately())) {
     return base::Milliseconds(kAppListAnimationDurationImmediateMs);
   }
 
@@ -2397,7 +2382,8 @@ void AppListView::RecordFolderMetrics() {
   int number_of_apps_in_folders = 0;
   int number_of_folders = 0;
   int non_system_folders = 0;
-  AppListItemList* item_list = delegate_->GetModel()->top_level_item_list();
+  AppListModel* const model = AppListModelProvider::Get()->model();
+  AppListItemList* const item_list = model->top_level_item_list();
   for (size_t i = 0; i < item_list->item_count(); ++i) {
     AppListItem* item = item_list->item_at(i);
     if (item->GetItemType() != AppListFolderItem::kItemType)

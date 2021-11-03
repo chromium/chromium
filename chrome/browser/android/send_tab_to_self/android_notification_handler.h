@@ -35,6 +35,9 @@ class AndroidNotificationHandler : public ReceivingUiHandler {
   void UpdateWebContents(content::WebContents* web_contents);
 
  private:
+  void DisplayNewEntriesOnUIThread(
+      const std::vector<const SendTabToSelfEntry>& new_entries);
+
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
       const std::vector<const SendTabToSelfEntry*>& new_entries) override;

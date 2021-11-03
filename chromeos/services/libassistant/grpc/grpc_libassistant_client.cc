@@ -9,8 +9,10 @@
 #include "base/check.h"
 #include "chromeos/assistant/internal/libassistant_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/bootup_settings_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/config_settings_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/customer_registration_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/action_interface.pb.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/display_interface.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/event_notification_interface.pb.h"
 
 namespace chromeos {
@@ -33,6 +35,22 @@ GetLibassistGrpcMethodName<::assistant::api::RegisterEventHandlerRequest>() {
   // libassistant customers to register themselves for events.
   return chromeos::assistant::GetLibassistGrpcMethodName(
       "EventNotificationService", "RegisterEventHandler");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::ResetAllDataAndShutdownRequest>() {
+  // ConfigSettingsService.
+  return chromeos::assistant::GetLibassistGrpcMethodName(
+      "ConfigSettingsService", "ResetAllDataAndShutdown");
+}
+
+template <>
+std::string
+GetLibassistGrpcMethodName<::assistant::api::OnDisplayRequestRequest>() {
+  // DisplayService handles display requests sent from libassistant customers.
+  return chromeos::assistant::GetLibassistGrpcMethodName("DisplayService",
+                                                         "OnDisplayRequest");
 }
 
 template <>

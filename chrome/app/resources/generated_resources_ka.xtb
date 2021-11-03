@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">სამსახური</translation>
 <translation id="1122198203221319518">&amp;ხელსაწყოები</translation>
 <translation id="1122242684574577509">ავტორიზაცია ვერ მოხერხდა. დააწკაპუნეთ თქვენ მიერ გამოყენებული Wi-Fi ქსელის (<ph name="NETWORK_ID" />) შესვლის გვერდზე გადასასვლელად.</translation>
+<translation id="1122913801042512795">თქვენი ანგარიშის სისტემაში შესვლის მონაცემები მოძველებულია. გამოდით სისტემიდან და ცადეთ ხელახლა.</translation>
 <translation id="1122960773616686544">სანიშნის სახელი</translation>
 <translation id="1124772482545689468">მომხმარებელი</translation>
 <translation id="1125550662859510761">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /> (საკუთარი)</translation>
@@ -709,7 +710,7 @@
 <translation id="1719312230114180055">შენიშვნა: თქვენი თითის ანაბეჭდი შეიძლება ძლიერ პაროლზე ან PIN-კოდზე ნაკლებად საიმედო იყოს.</translation>
 <translation id="1720318856472900922">TLS WWW სერვერის ავთენტიფიკაცია</translation>
 <translation id="1720941539803966190">სახელმძღვანელოს დახურვა</translation>
-<translation id="172123215662733643">სურათების ძიება <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
+<translation id="172123215662733643">მოიძიეთ სურათები <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
 <translation id="1721312023322545264">ამ საიტის მოსანახულებლად, <ph name="NAME" />-ის ნებართვა გჭირდებათ</translation>
 <translation id="1722460139690167654">თქვენი <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> იმართება<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" />-ის მიერ</translation>
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
@@ -1301,7 +1302,6 @@
 <translation id="2312219318583366810">გვერდის URL</translation>
 <translation id="2314165183524574721">ხილვადობის პარამეტრად ამჟამად მითითებულია დამალული</translation>
 <translation id="2314774579020744484">გვერდების თარგმნისას გამოყენებული ენა</translation>
-<translation id="2315414688463285945">Linux ფაილების კონფიგურაციისას მოხდა შეცდომა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="2315587498123194634">ბმულის გაგზავნა <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="2316129865977710310">არა, გმადლობთ</translation>
 <translation id="2317842250900878657"><ph name="PROGRESS_PERCENT" />% შესრულდა</translation>
@@ -1570,7 +1570,7 @@
 <translation id="2602501489742255173">დასაწყებად გადაფურცლეთ ზემოთ</translation>
 <translation id="2603115962224169880">კომპიუტერის გასუფთავება</translation>
 <translation id="2603355571917519942">Voice Match მზადაა</translation>
-<translation id="2604138917550693049">სურათის ძიება Google Lens-ით</translation>
+<translation id="2604138917550693049">მოიძიეთ სურათი Google Lens-ით</translation>
 <translation id="2604255671529671813">ქსელთან კავშირის შეცდომა</translation>
 <translation id="2605668923777146443">Better Together-თან დაკავშირებული ვარიანტების სანახავად გადადით <ph name="LINK_BEGIN" />პარამეტრებზე<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">მონაცემების მიბმა</translation>
@@ -2351,7 +2351,6 @@
 <translation id="3424969259347320884">აღწერეთ, რას აკეთებდით, როცა ჩანართი ავარიულად გაითიშა</translation>
 <translation id="3427092606871434483">დაშვება (ნაგულისხმევი)</translation>
 <translation id="3428419049384081277">თქვენ შესული ხართ.</translation>
-<translation id="3428747202529429621">უზრუნველყოფს თქვენს უსაფრთხოებას Chrome-ში და Google-ის სხვა აპებში, როცა სისტემაში შესული ხართ</translation>
 <translation id="3429086384982427336">პროტოკოლების ბმულები არასოდეს დამუშავდება ქვემოთ ჩამოთვლილი აპების მიერ.</translation>
 <translation id="3429160811076349561">საცდელი ფუნქციები გამორთულია</translation>
 <translation id="3429271624041785769">ვებკონტენტის ენები</translation>
@@ -3872,7 +3871,7 @@
 <translation id="5051836348807686060">მართლწერის შემოწმება მხარდაუჭერელია თქვენ მიერ არჩეული ენებისთვის</translation>
 <translation id="5052499409147950210">საიტის რედაქტირება</translation>
 <translation id="505347685865235222">უსახელო ჯგუფი — <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">სურათის ძიება Google Lens-ით</translation>
+<translation id="5053962746715621840">მოიძიეთ სურათი Google Lens-ით</translation>
 <translation id="5056950756634735043">მიმდინარეობს კონტეინერთან დაკავშირება</translation>
 <translation id="5057110919553308744">გაფართოებაზე დაწკაპუნებისას</translation>
 <translation id="505776528429481161">მარტივად დაუკავშირდით და დააყენეთ ახლომდებარე მოწყობილობები</translation>
@@ -5117,7 +5116,6 @@
 <translation id="6410328738210026208">არხის შეცვლა და განახლება</translation>
 <translation id="6410390304316730527">Safe Browsing დაგიცავთ თავდამსხმელებისგან, რომლებმაც შეიძლება მოტყუებით ჩაგადენინონ ისეთი სახიფათო ქმედება, როგორიცაა პროგრამული უზრუნველყოფის ინსტალაცია ან თქვენი პერსონალური ინფორმაციის (მაგალითად, პაროლების, ტელეფონის ნომრების ან საკრედიტო ბარათების მონაცემების) გამჟღავნება. გამორთვის შემთხვევაში გამოიჩინეთ სიფრთხილე უცნობი საიტების დათვალიერებისას.</translation>
 <translation id="6410668567036790476">საძიებო სისტემის დამატება</translation>
-<translation id="6412673304250309937">შეამოწმებს URL-ების თანხვედრას Chrome-ში შენახულ არაუსაფრთხო საიტების სიასთან. საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chrome-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი.</translation>
 <translation id="641469293210305670">განახლებებისა და აპების ინსტალაცია</translation>
 <translation id="6414878884710400018">სისტემის პარამეტრების გახსნა</translation>
 <translation id="6414888972213066896">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა თქვენს მშობელს</translation>
@@ -5526,7 +5524,6 @@
 <translation id="6843264316370513305">ქსელის გამართვა</translation>
 <translation id="6843423766595476978">Ok Google მზად არის</translation>
 <translation id="6845038076637626672">გახსენით მაქსიმალური</translation>
-<translation id="6845325883481699275">Chrome-ის უსაფრთხოების გაუმჯობესების ხელშეწყობა</translation>
 <translation id="6846178040388691741">„<ph name="EXTENSION_NAME" />“ ითხოვს <ph name="FILE_NAME" />-ის დაბეჭდვას <ph name="PRINTER_NAME" />-ით.</translation>
 <translation id="6847125920277401289">გასაგრძელებლად გაათავისუფლეთ მეხსიერება</translation>
 <translation id="6848388270925200958">ამჟამად თქვენ გაქვთ რამდენიმე ბარათი, რომელთა გამოყენებაც შეგიძლიათ მხოლოდ ამ მოწყობილობაზე</translation>
@@ -5877,7 +5874,7 @@
 <translation id="7230222852462421043">ფანჯრის &amp;აღდგენა</translation>
 <translation id="7230787553283372882">ტექსტის ზომის მორგება</translation>
 <translation id="7232750842195536390">გადარქმევა ვერ მოხერხდა</translation>
-<translation id="723343421145275488">სურათების ძიება <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
+<translation id="723343421145275488">მოიძიეთ სურათები <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
 <translation id="7234010996000898150">მიმდინარეობს Linux აღდგენის გაუქმება</translation>
 <translation id="7235716375204803342">მიმდინარეობს აქტივობების მიღება…</translation>
 <translation id="7235737137505019098">თქვენს უსაფრთხოების გასაღებზე არ არის ახალი ანგარიშების დასამატებლად საკმარისი მეხსიერება.</translation>
@@ -6977,7 +6974,6 @@
 <translation id="8324784016256120271">საიტები გამოიყენებს ქუქი-ჩანაწერებს სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის პერსონალიზების მიზნით</translation>
 <translation id="8325413836429495820">თქვენი გაცვლის ბუფერის ნახვა დაუშვებელია</translation>
 <translation id="8326478304147373412">PKCS #7, სერთიფიკატის ჯაჭვი</translation>
-<translation id="8327039559959785305">Linux ფაილების მიერთება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
 <translation id="8327676037044516220">ნებართვებისა და კონტენტის პარამეტრები</translation>
 <translation id="833256022891467078">Crostini-ს გაზიარებული საქაღალდეები</translation>
 <translation id="8335587457941836791">მოხსენით თაროდან</translation>
@@ -7499,6 +7495,7 @@
 <translation id="8879284080359814990">&amp;ჩანართის სახით ჩვენება</translation>
 <translation id="8879921471468674457">სისტემაში შესვლის ინფორმაციის დამახსოვრება</translation>
 <translation id="8880054210564666174">კონტაქტების სია ვერ ჩამოიტვირთა. შეამოწმეთ კავშირი ქსელთან, ან <ph name="LINK_BEGIN" />ცადეთ ხელახლა<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Linux-ს ან Parallels Desktop-ს <ph name="USB_DEVICE_NAME" /> რომ დააკავშიროთ, გახსენით პარამეტრები</translation>
 <translation id="8881020143150461183">გთხოვთ, ცადოთ ხელახლა. ტექნიკური მხარდაჭერის მისაღებად დაუკავშირდით <ph name="CARRIER_NAME" />-ს.</translation>
 <translation id="8883273463630735858">სენსორული პანელის აჩქარების ჩართვა</translation>
 <translation id="8884570509232205463">თქვენი მოწყობილობა ახლა ჩაიკეტება <ph name="UNLOCK_TIME" />-ზე.</translation>

@@ -60,13 +60,18 @@ void AcceleratorHistoryImpl::StoreCurrentAccelerator(
     if (!currently_pressed_keys_.emplace(accelerator.key_code()).second)
       return;
   } else {
-    if (!currently_pressed_keys_.erase(accelerator.key_code())) {
+    if (!currently_pressed_keys_.erase(accelerator.key_code()) &&
+        (!last_logged_key_code_.has_value() ||
+         *last_logged_key_code_ != accelerator.key_code())) {
+      // Save the key code to prevent spammy logs.
+      last_logged_key_code_ = accelerator.key_code();
       // If the released accelerator doesn't have a corresponding press stored,
       // likely the language was changed between press and release. Clear
       // `currently_pressed_keys_` to prevent keys being left pressed.
       std::string pressed_keys;
       for (auto key_code : currently_pressed_keys_)
         pressed_keys.append(base::NumberToString(key_code).append(" "));
+
       LOG(WARNING) << "Key Release (" << accelerator.key_code()
                    << ") delivered with no corresponding Press. "
                       "Clearing all pressed keys: "

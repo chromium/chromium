@@ -82,6 +82,13 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         void onFinish(@FinishReason int reason);
     }
 
+    /** Interface which gets the package name of the default web browser on the device. */
+    public interface DefaultBrowserProvider {
+        /** Returns the package name for the default browser on the device as a string. */
+        @Nullable
+        String getDefaultBrowser();
+    }
+
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -91,6 +98,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
     private final ChromeBrowserInitializer mChromeBrowserInitializer;
     private final Activity mActivity;
     private final Lazy<FullscreenManager> mFullscreenManager;
+    private final DefaultBrowserProvider mDefaultBrowserProvider;
 
     @Nullable
     private ToolbarManager mToolbarManager;
@@ -118,7 +126,8 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
             Lazy<CustomTabObserver> customTabObserver, CloseButtonNavigator closeButtonNavigator,
             ChromeBrowserInitializer chromeBrowserInitializer, Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Lazy<FullscreenManager> fullscreenManager) {
+            Lazy<FullscreenManager> fullscreenManager,
+            DefaultBrowserProvider customTabsDefaultBrowserProvider) {
         mTabController = tabController;
         mTabProvider = tabProvider;
         mIntentDataProvider = intentDataProvider;
@@ -128,6 +137,7 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         mChromeBrowserInitializer = chromeBrowserInitializer;
         mActivity = activity;
         mFullscreenManager = fullscreenManager;
+        mDefaultBrowserProvider = customTabsDefaultBrowserProvider;
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
@@ -249,6 +259,10 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, true);
+        String packageName = mDefaultBrowserProvider.getDefaultBrowser();
+        if (packageName != null) {
+            intent.setPackage(packageName);
+        }
 
         boolean willChromeHandleIntent =
                 mIntentDataProvider.isOpenedByChrome() || mIntentDataProvider.isIncognito();

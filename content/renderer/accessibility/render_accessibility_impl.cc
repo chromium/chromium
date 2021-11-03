@@ -341,6 +341,9 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
   if (target->PerformAction(data))
     return;
 
+  if (!root.MaybeUpdateLayoutAndCheckValidity())
+    return;
+
   switch (data.action) {
     case ax::mojom::Action::kBlur: {
       ui::AXActionData action_data;

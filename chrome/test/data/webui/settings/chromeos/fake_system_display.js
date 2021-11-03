@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {FakeChromeEvent} from '../../fake_chrome_event.m.js';
+// #import {FakeChromeEvent} from '../../fake_chrome_event.js';
 // #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // clang-format on

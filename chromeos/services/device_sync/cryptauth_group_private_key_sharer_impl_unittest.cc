@@ -85,6 +85,12 @@ IdToEncryptingKeyMapFromDeviceIds(
 class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthGroupPrivateKeySharerImplTest(
+      const DeviceSyncCryptAuthGroupPrivateKeySharerImplTest&) = delete;
+  DeviceSyncCryptAuthGroupPrivateKeySharerImplTest& operator=(
+      const DeviceSyncCryptAuthGroupPrivateKeySharerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthGroupPrivateKeySharerImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -283,8 +289,6 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
   base::MockOneShotTimer* timer_;
 
   std::unique_ptr<CryptAuthGroupPrivateKeySharer> sharer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthGroupPrivateKeySharerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthGroupPrivateKeySharerImplTest, Success) {

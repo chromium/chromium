@@ -39,4 +39,10 @@ bool IsPartnerMerchant(const GURL& url) {
          IsRuleDiscountPartnerMerchant(url);
 }
 
+bool IsFakeDataEnabled() {
+  return base::GetFieldTrialParamValueByFeature(
+             ntp_features::kNtpChromeCartModule,
+             ntp_features::kNtpChromeCartModuleDataParam) == "fake";
+}
+
 }  // namespace cart_features

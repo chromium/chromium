@@ -61,6 +61,12 @@ class TestableRemoteDeviceLifeCycleImpl : public RemoteDeviceLifeCycleImpl {
 class ProximityAuthRemoteDeviceLifeCycleImplTest
     : public testing::Test,
       public RemoteDeviceLifeCycle::Observer {
+ public:
+  ProximityAuthRemoteDeviceLifeCycleImplTest(
+      const ProximityAuthRemoteDeviceLifeCycleImplTest&) = delete;
+  ProximityAuthRemoteDeviceLifeCycleImplTest& operator=(
+      const ProximityAuthRemoteDeviceLifeCycleImplTest&) = delete;
+
  protected:
   ProximityAuthRemoteDeviceLifeCycleImplTest()
       : test_remote_device_(
@@ -164,9 +170,6 @@ class ProximityAuthRemoteDeviceLifeCycleImplTest
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ThreadTaskRunnerHandle thread_task_runner_handle_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthRemoteDeviceLifeCycleImplTest);
 };
 
 TEST_F(ProximityAuthRemoteDeviceLifeCycleImplTest,

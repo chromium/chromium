@@ -157,6 +157,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
     virtual ~TetherDelegate() {}
   };
 
+  NetworkConnectionHandler(const NetworkConnectionHandler&) = delete;
+  NetworkConnectionHandler& operator=(const NetworkConnectionHandler&) = delete;
+
   virtual ~NetworkConnectionHandler();
 
   void AddObserver(NetworkConnectionObserver* observer);
@@ -247,8 +250,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   // Only to be used by NetworkConnectionHandler implementation (and not by
   // derived classes).
   base::WeakPtrFactory<NetworkConnectionHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionHandler);
 };
 
 }  // namespace chromeos

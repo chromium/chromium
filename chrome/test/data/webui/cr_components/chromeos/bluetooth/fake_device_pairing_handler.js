@@ -36,6 +36,9 @@ export class FakeDevicePairingHandler {
 
     /** @private {boolean} */
     this.confirmPasskeyResult_ = false;
+
+    /** @private {?chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote} */
+    this.lastKeyEnteredHandlerRemote_ = null;
   }
 
   /** @override */
@@ -53,9 +56,10 @@ export class FakeDevicePairingHandler {
    * after pairDevice(). Pass in a |PairingAuthType| to simulate each
    * pairing request made to |DevicePairingDelegate|.
    * @param {!PairingAuthType} authType
-   * @param {string=} opt_passkey used in confirm passkey
+   * @param {string=} opt_pairingCode used in confirm passkey and display
+   * passkey/PIN authentication.
    */
-  requireAuthentication(authType, opt_passkey) {
+  requireAuthentication(authType, opt_pairingCode) {
     switch (authType) {
       case PairingAuthType.REQUEST_PIN_CODE:
         this.devicePairingDelegate_.requestPinCode()
@@ -70,14 +74,18 @@ export class FakeDevicePairingHandler {
             .catch(e => {});
         break;
       case PairingAuthType.DISPLAY_PIN_CODE:
-        // TODO(crbug.com/1010321): Implement this.
+        assert(opt_pairingCode);
+        this.devicePairingDelegate_.displayPinCode(
+            opt_pairingCode, this.getKeyEnteredHandlerPendingReceiver_());
         break;
       case PairingAuthType.DISPLAY_PASSKEY:
-        // TODO(crbug.com/1010321): Implement this.
+        assert(opt_pairingCode);
+        this.devicePairingDelegate_.displayPasskey(
+            opt_pairingCode, this.getKeyEnteredHandlerPendingReceiver_());
         break;
       case PairingAuthType.CONFIRM_PASSKEY:
-        assert(opt_passkey);
-        this.devicePairingDelegate_.confirmPasskey(opt_passkey)
+        assert(opt_pairingCode);
+        this.devicePairingDelegate_.confirmPasskey(opt_pairingCode)
             .then(
                 (response) =>
                     this.finishRequestConfirmPasskey_(response.confirmed))
@@ -87,6 +95,23 @@ export class FakeDevicePairingHandler {
         // TODO(crbug.com/1010321): Implement this.
         break;
     }
+  }
+
+  /**
+   * @return {!chromeos.bluetoothConfig.mojom.KeyEnteredHandlerPendingReceiver}
+   * @private
+   */
+  getKeyEnteredHandlerPendingReceiver_() {
+    this.lastKeyEnteredHandlerRemote_ =
+        new chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote();
+    return this.lastKeyEnteredHandlerRemote_.$.bindNewPipeAndPassReceiver();
+  }
+
+  /**s
+   * @return {?chromeos.bluetoothConfig.mojom.KeyEnteredHandlerRemote}
+   */
+  getLastKeyEnteredHandlerRemote() {
+    return this.lastKeyEnteredHandlerRemote_;
   }
 
   /**

@@ -87,7 +87,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   };
 
   PrerenderHost(const PrerenderAttributes& attributes,
-                RenderFrameHostImpl& initiator_render_frame_host);
+                WebContents* web_contents);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -124,6 +124,9 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // This must be called after StartPrerendering() and before Activate().
   RenderFrameHostImpl* GetPrerenderedMainFrameHost();
 
+  // Returns the frame tree for the prerendered page `this` is hosting.
+  FrameTree& GetPrerenderFrameTree();
+
   // Tells the reason of the destruction of this host. PrerenderHostRegistry
   // uses this before abandoning the host.
   void RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
@@ -149,8 +152,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void SetInitialNavigation(NavigationRequest* navigation);
   absl::optional<int64_t> GetInitialNavigationId() const;
 
-  url::Origin initiator_origin() const { return initiator_origin_; }
-  const GURL& initiator_url() const { return initiator_url_; }
+  url::Origin initiator_origin() const { return attributes_.initiator_origin; }
+  const GURL& initiator_url() const { return attributes_.initiator_url; }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
@@ -176,10 +179,6 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
       const blink::mojom::CommonNavigationParams& potential_activation);
 
   const PrerenderAttributes attributes_;
-  const url::Origin initiator_origin_;
-  const GURL initiator_url_;
-  const int initiator_process_id_;
-  const blink::LocalFrameToken initiator_frame_token_;
 
   // Indicates if `page_holder_` is ready for activation.
   bool is_ready_for_activation_ = false;

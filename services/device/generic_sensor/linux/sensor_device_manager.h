@@ -45,6 +45,10 @@ class SensorDeviceManager : public UdevWatcher::Observer {
   };
 
   explicit SensorDeviceManager(base::WeakPtr<Delegate> delegate);
+
+  SensorDeviceManager(const SensorDeviceManager&) = delete;
+  SensorDeviceManager& operator=(const SensorDeviceManager&) = delete;
+
   ~SensorDeviceManager() override;
 
   // Starts monitoring sensor-related udev events, and enumerates existing
@@ -79,8 +83,6 @@ class SensorDeviceManager : public UdevWatcher::Observer {
   base::WeakPtr<Delegate> delegate_;
 
   scoped_refptr<base::SequencedTaskRunner> delegate_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SensorDeviceManager);
 };
 
 }  // namespace device

@@ -5,7 +5,6 @@
 #include "components/permissions/request_type.h"
 
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
 #include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permissions_client.h"
@@ -119,6 +118,19 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kLocationOffIcon;
     case RequestType::kNotifications:
       return vector_icons::kNotificationsOffIcon;
+    case RequestType::kArSession:
+    case RequestType::kVrSession:
+      return vector_icons::kVrHeadsetOffIcon;
+    case RequestType::kCameraStream:
+      return vector_icons::kVideocamOffIcon;
+    case RequestType::kClipboard:
+      return vector_icons::kContentPasteOffIcon;
+    case RequestType::kIdleDetection:
+      return vector_icons::kDevicesOffIcon;
+    case RequestType::kMicStream:
+      return vector_icons::kMicOffIcon;
+    case RequestType::kMidiSysex:
+      return vector_icons::kMidiOffIcon;
     default:
       NOTREACHED();
   }
@@ -127,9 +139,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
 }
 #endif  // !defined(OS_ANDROID)
 
-}  // namespace
-
-RequestType ContentSettingsTypeToRequestType(
+absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     ContentSettingsType content_settings_type) {
   switch (content_settings_type) {
     case ContentSettingsType::ACCESSIBILITY_EVENTS:
@@ -177,11 +187,22 @@ RequestType ContentSettingsTypeToRequestType(
       return RequestType::kWindowPlacement;
 #endif
     default:
-      SCOPED_CRASH_KEY_NUMBER("RequestType", "content_settings_type",
-                              static_cast<int>(content_settings_type));
-      CHECK(false);
-      return RequestType::kGeolocation;
+      return absl::nullopt;
   }
+}
+
+}  // namespace
+
+bool IsRequestablePermissionType(ContentSettingsType content_settings_type) {
+  return !!ContentSettingsTypeToRequestTypeIfExists(content_settings_type);
+}
+
+RequestType ContentSettingsTypeToRequestType(
+    ContentSettingsType content_settings_type) {
+  absl::optional<RequestType> request_type =
+      ContentSettingsTypeToRequestTypeIfExists(content_settings_type);
+  CHECK(request_type);
+  return *request_type;
 }
 
 absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(

@@ -334,8 +334,9 @@ def bind_callback_local_vars(code_node, cg_context):
                                "V8PerIsolateData::From(${isolate});")),
         S("property_name",
           "const char* const ${property_name} = \"${property.identifier}\";"),
-        S("receiver_context", ("v8::Local<v8::Context> ${receiver_context} = "
-                               "${v8_receiver}->CreationContext();")),
+        S("receiver_context",
+          ("v8::Local<v8::Context> ${receiver_context} = "
+           "${v8_receiver}->GetCreationContextChecked();")),
         S("receiver_script_state",
           ("ScriptState* ${receiver_script_state} = "
            "ScriptState::From(${receiver_context});")),
@@ -1713,6 +1714,11 @@ def make_v8_set_return_value(cg_context):
             args.append("${blink_receiver}")
         return T("bindings::V8SetReturnValue({});".format(", ".join(args)))
 
+    if return_type_body.is_observable_array:
+        return T("bindings::V8SetReturnValue"
+                 "(${info}, ${return_value}->GetExoticObject(), "
+                 "${blink_receiver});")
+
     if return_type.is_promise:
         return T("bindings::V8SetReturnValue"
                  "(${info}, ${return_value}.V8Value());")
@@ -1949,8 +1955,24 @@ EventListener* event_handler = JSEventHandler::CreateOrNull(
     body.extend([
         make_steps_of_ce_reactions(cg_context),
         EmptyNode(),
-        make_v8_set_return_value(cg_context),
     ])
+
+    if cg_context.attribute.idl_type.unwrap(typedef=True).is_observable_array:
+        # Make an expression of "attribute get" instead of "attribute set" in
+        # order to acquire the observable array (backing list) object.
+        attribute_get_call = _make_blink_api_call(
+            body, cg_context.make_copy(attribute_get=True,
+                                       attribute_set=False))
+        body.extend([
+            FormatNode("auto&& observable_array = {attribute_get_call};",
+                       attribute_get_call=attribute_get_call),
+            TextNode("observable_array->PerformAttributeSet("
+                     "${script_state}, ${v8_property_value}, "
+                     "${exception_state});"),
+        ])
+        return func_def
+
+    body.append(make_v8_set_return_value(cg_context))
 
     return func_def
 
@@ -2284,13 +2306,57 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
             self.symbol_node = symbol_node
 
     def v8_type_and_symbol_node(argument, v8_arg_name, blink_arg_name):
-        if argument.idl_type.unwrap().is_interface:
+        unwrapped_idl_type = argument.idl_type.unwrap()
+        if unwrapped_idl_type.is_interface:
             return ("v8::Local<v8::Value>",
                     make_v8_to_blink_value(blink_arg_name,
                                            "${{{}}}".format(v8_arg_name),
                                            argument.idl_type,
                                            argument=argument,
                                            cg_context=cg_context))
+        elif unwrapped_idl_type.is_sequence:
+
+            def create_definition(symbol_node):
+                binds = {
+                    "v8_arg_name":
+                    v8_arg_name,
+                    "blink_arg_name":
+                    blink_arg_name,
+                    "native_value_tag":
+                    native_value_tag(argument.idl_type, argument=argument),
+                    "element_native_value_tag":
+                    native_value_tag(unwrapped_idl_type.element_type,
+                                     argument=argument),
+                }
+                try_convert = F(
+                    "!v8::TryToCopyAndConvertArrayToCppBuffer<"
+                    "V8CTypeTraits<"
+                    "{element_native_value_tag}>::kCTypeInfo.GetId()"
+                    ">({v8_arg_name}, {blink_arg_name}.data(),"
+                    "{blink_arg_name}.size())", **binds)
+                nodes = [
+                    F(
+                        "typename NativeValueTraits<"
+                        "{native_value_tag}"
+                        ">::ImplType {blink_arg_name}("
+                        "{v8_arg_name}->Length());", **binds),
+                    CxxUnlikelyIfNode(
+                        cond=try_convert,
+                        body=[
+                            T("${v8_arg_callback_options}.fallback = true;"),
+                            T("return;")
+                        ])
+                ]
+                symbol_def_node = SymbolDefinitionNode(symbol_node, nodes)
+                symbol_def_node.accumulate(
+                    CodeGenAccumulator.require_include_headers([
+                        "third_party/blink/renderer/bindings/core/v8/v8_ctype_traits.h",
+                    ]))
+                return symbol_def_node
+
+            return ("v8::Local<v8::Array>",
+                    S(blink_arg_name,
+                      definition_constructor=create_definition))
         else:
             return (blink_type_info(argument.idl_type).value_t,
                     S(blink_arg_name,
@@ -2306,6 +2372,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                                        argument.identifier)
         v8_type, symbol_node = v8_type_and_symbol_node(argument, v8_arg_name,
                                                        blink_arg_name)
+
         arg_list.append(
             ArgumentInfo(v8_type, v8_arg_name, blink_arg_name, symbol_node))
 
@@ -6637,10 +6704,16 @@ def make_wrapper_type_info(cg_context, function_name,
 
     member_var_def = TextNode(
         "static const WrapperTypeInfo wrapper_type_info_;")
+    member_var_def.accumulate(
+        CodeGenAccumulator.require_struct_decls(["WrapperTypeInfo"]))
 
     wrapper_type_info_def = ListNode()
     wrapper_type_info_def.set_base_template_vars(
         cg_context.template_bindings())
+    wrapper_type_info_def.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
+        ]))
 
     pattern = """\
 // Construction of WrapperTypeInfo may require non-trivial initialization due

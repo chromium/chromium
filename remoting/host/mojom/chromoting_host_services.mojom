@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+import "remoting/host/mojom/webauthn_proxy.mojom";
+
+// ChromotingHostServices defines the APIs that live in the Chromoting host
+// process and are accessed from isolated client applications (such as the
+// WebAuthn native messaging host).
+// Note that IPCs will be made over an isolated connection (using a
+// NamedPlatformChannel with remoting::GetChromotingHostServicesServerName() as
+// the server name), so pending remotes/receivers/message pipes can't be passed
+// outside of the connection.
+// DO NOT use this interface for communication between two processes in the same
+// mojo network (e.g. between the daemon process and the network process). Use
+// standard (non-isolated) connection in that case.
+interface ChromotingHostServices {
+  // Binds the WebAuthnProxy interface which allows the WebAuthn native
+  // messaging host to send remote WebAuthn requests to the remote client.
+  BindWebAuthnProxy(pending_receiver<WebAuthnProxy> receiver);
+};

@@ -26,6 +26,6 @@ js_library("trusted") {
   deps = [
     "../mojom:mojom_js_library_for_compile",
     "dpsl:types",
-    "//chromeos/components/system_apps/public/js:message_pipe",
+    "//ash/webui/system_apps/public/js:message_pipe",
   ]
 }

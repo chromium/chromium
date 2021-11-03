@@ -53,9 +53,10 @@ void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
     context.FillRect(
         IntRect(border_rect.origin(), IntSize(1, border_rect.height())),
         BorderStartEdgeColor(), auto_dark_mode);
-    context.FillRect(IntRect(IntPoint(border_rect.right() - 1, border_rect.y()),
-                             IntSize(1, border_rect.height())),
-                     BorderEndEdgeColor(), auto_dark_mode);
+    context.FillRect(
+        IntRect(gfx::Point(border_rect.right() - 1, border_rect.y()),
+                IntSize(1, border_rect.height())),
+        BorderEndEdgeColor(), auto_dark_mode);
   }
 }
 
@@ -83,7 +84,7 @@ void FrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
         IntRect(border_rect.origin(), IntSize(border_rect.width(), 1)),
         BorderStartEdgeColor(), auto_dark_mode);
     context.FillRect(
-        IntRect(IntPoint(border_rect.x(), border_rect.bottom() - 1),
+        IntRect(gfx::Point(border_rect.x(), border_rect.bottom() - 1),
                 IntSize(border_rect.width(), 1)),
         BorderEndEdgeColor(), auto_dark_mode);
   }

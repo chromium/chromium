@@ -485,11 +485,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add prerendering to the 404 error page, then check that it got cancelled.
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
   AddPrerenderAsync(kPrerenderingUrl);
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = GetHostForUrl(kPrerenderingUrl);
-  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
   host_observer.WaitForDestroyed();
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
@@ -510,11 +508,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderCancelledOn500Page) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Add prerendering to the 500 error page, then check that it got cancelled.
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
   AddPrerenderAsync(kPrerenderingUrl);
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = GetHostForUrl(kPrerenderingUrl);
-  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
   host_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
@@ -532,11 +528,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequested) {
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = GetUrl("/auth-basic");
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
   AddPrerenderAsync(kPrerenderingUrl);
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = GetHostForUrl(kPrerenderingUrl);
-  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
@@ -808,10 +802,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CrossOriginRedirection) {
   const GURL kPrerenderingUrl =
       GetUrl("/server-redirect?" + kRedirectedUrl.spec());
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+  test::PrerenderHostObserver host_observer(*web_contents_impl(),
+                                            kPrerenderingUrl);
   AddPrerenderAsync(kPrerenderingUrl);
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = GetHostForUrl(kPrerenderingUrl);
-  test::PrerenderHostObserver host_observer(*web_contents_impl(), host_id);
   host_observer.WaitForDestroyed();
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
   EXPECT_EQ(GetRequestCount(kRedirectedUrl), 0);
@@ -1632,6 +1625,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ForEachRenderFrameHost) {
             rfh_sub_1_1->GetOutermostMainFrameOrEmbedder());
   EXPECT_EQ(prerendered_render_frame_host,
             rfh_sub_2->GetOutermostMainFrameOrEmbedder());
+
+  // WebContentsImpl::ForEachFrameTree should include prerenders.
+  bool visited_prerender_frame_tree = false;
+  web_contents_impl()->ForEachFrameTree(
+      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
+        if (frame_tree == prerendered_render_frame_host->frame_tree()) {
+          visited_prerender_frame_tree = true;
+        }
+      }));
+  EXPECT_TRUE(visited_prerender_frame_tree);
 }
 
 // Tests that a prerendering page cannot change the visible URL of the
@@ -2090,14 +2093,11 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // Reset the server's config.
   RequireClientCertsOrSendExpiredCerts();
 
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents());
   const GURL kPrerenderingUrl = GetUrl("/title1.html");
 
   // Start prerendering `kPrerenderingUrl`.
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   prerender_helper()->AddPrerenderAsync(kPrerenderingUrl);
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = prerender_helper()->GetHostForUrl(kPrerenderingUrl);
-  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
@@ -2164,14 +2164,11 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // Reset the server's config.
   RequireClientCertsOrSendExpiredCerts();
 
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents());
   const GURL kPrerenderingUrl = GetUrl("/workers/simple.html?intercept");
+  test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
   prerender_helper()->AddPrerenderAsync(kPrerenderingUrl);
-  registry_observer.WaitForTrigger(kPrerenderingUrl);
-  int host_id = prerender_helper()->GetHostForUrl(kPrerenderingUrl);
 
   // The prerender should be destroyed.
-  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   host_observer.WaitForDestroyed();
   EXPECT_EQ(prerender_helper()->GetHostForUrl(kPrerenderingUrl),
             RenderFrameHost::kNoFrameTreeNodeId);
@@ -2675,11 +2672,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ClipboardByExecCommandFail) {
 void LoadAndWaitForPrerenderDestroyed(WebContents* const web_contents,
                                       const GURL prerendering_url,
                                       test::PrerenderTestHelper* helper) {
-  test::PrerenderHostRegistryObserver registry_observer(*web_contents);
+  test::PrerenderHostObserver host_observer(*web_contents, prerendering_url);
   helper->AddPrerenderAsync(prerendering_url);
-  registry_observer.WaitForTrigger(prerendering_url);
-  int host_id = helper->GetHostForUrl(prerendering_url);
-  test::PrerenderHostObserver host_observer(*web_contents, host_id);
   host_observer.WaitForDestroyed();
   EXPECT_EQ(helper->GetHostForUrl(prerendering_url),
             RenderFrameHost::kNoFrameTreeNodeId);

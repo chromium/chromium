@@ -33,6 +33,10 @@ class PushMessagingRouter {
   using PushEventCallback =
       base::OnceCallback<void(blink::mojom::PushEventStatus)>;
 
+  PushMessagingRouter() = delete;
+  PushMessagingRouter(const PushMessagingRouter&) = delete;
+  PushMessagingRouter& operator=(const PushMessagingRouter&) = delete;
+
   // Delivers a push message with |payload| to the Service Worker identified by
   // |origin| and |service_worker_registration_id|.
   static void DeliverMessage(BrowserContext* browser_context,
@@ -89,8 +93,6 @@ class PushMessagingRouter {
       scoped_refptr<ServiceWorkerVersion> service_worker,
       PushEventCallback subscription_change_callback,
       blink::ServiceWorkerStatusCode service_worker_status);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PushMessagingRouter);
 };
 
 }  // namespace content

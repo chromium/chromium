@@ -52,4 +52,24 @@ text { font-family: Ahem; }
   EXPECT_GT(object->LocalVisualRect().Bottom(), LayoutUnit(36));
 }
 
+TEST_F(LayoutNGSVGTextTest, ObjectBoundingBox) {
+  SetBodyInnerHTML(R"HTML(
+<html>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 480 360">
+<text text-anchor="middle" x="240" y="25" font-size="16" id="t">
+qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq</text>
+</svg>
+</body><style>
+* { scale: 4294967108 33 -0.297499; }
+</style>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  gfx::RectF box = GetLayoutObjectByElementId("t")->ObjectBoundingBox();
+  EXPECT_FALSE(std::isinf(box.origin().x()));
+  EXPECT_FALSE(std::isinf(box.origin().y()));
+  EXPECT_FALSE(std::isinf(box.width()));
+  EXPECT_FALSE(std::isinf(box.height()));
+}
+
 }  // namespace blink

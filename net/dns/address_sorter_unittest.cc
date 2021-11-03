@@ -37,9 +37,9 @@ IPEndPoint MakeEndPoint(const std::string& str) {
 void OnSortComplete(AddressList* result_buf,
                     CompletionOnceCallback callback,
                     bool success,
-                    const AddressList& result) {
+                    AddressList result) {
   if (success)
-    *result_buf = result;
+    *result_buf = std::move(result);
   std::move(callback).Run(success ? OK : ERR_FAILED);
 }
 

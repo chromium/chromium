@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -22,7 +23,6 @@ namespace {
 // The column set id that this view's GridLayout uses.
 constexpr int kColumnSetId = 0;
 
-constexpr size_t kMaxTemplateCount = 6;
 constexpr int kNumColumns = 3;
 
 // TODO(richui): Replace these temporary values once specs come out.
@@ -71,7 +71,8 @@ void DesksTemplatesGridView::UpdateGridUI(
   if (desk_templates.empty())
     return;
 
-  DCHECK_LE(desk_templates.size(), kMaxTemplateCount);
+  DCHECK_LE(desk_templates.size(),
+            DesksTemplatesPresenter::Get()->GetMaxEntryCount());
 
   layout_ = SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* column_set = layout_->AddColumnSet(kColumnSetId);

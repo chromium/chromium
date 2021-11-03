@@ -281,6 +281,9 @@ public final class EventConstants {
     /** AutoDark theme settings opened while feature enabled. */
     public static final String AUTO_DARK_SETTINGS_OPENED = "auto_dark_settings_opened";
 
+    /** The feed swipe refresh event. */
+    public static final String FEED_SWIPE_REFRESHED = "feed_swipe_refresh_shown";
+
     /**
      * Do not instantiate.
      */

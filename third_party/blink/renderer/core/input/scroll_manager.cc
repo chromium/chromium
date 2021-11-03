@@ -530,7 +530,7 @@ WebInputEventResult ScrollManager::HandleGestureScrollBegin(
   current_scroll_chain_.clear();
   std::unique_ptr<ScrollStateData> scroll_state_data =
       std::make_unique<ScrollStateData>();
-  IntPoint position = FlooredIntPoint(gesture_event.PositionInRootFrame());
+  gfx::Point position = FlooredIntPoint(gesture_event.PositionInRootFrame());
   scroll_state_data->position_x = position.x();
   scroll_state_data->position_y = position.y();
   scroll_state_data->delta_x_hint = -gesture_event.DeltaXInRootFrame();
@@ -1204,7 +1204,7 @@ bool ScrollManager::HandleScrollGestureOnResizer(
     PaintLayer* layer = event_target->GetLayoutObject()
                             ? event_target->GetLayoutObject()->EnclosingLayer()
                             : nullptr;
-    IntPoint p = frame_->View()->ConvertFromRootFrame(
+    gfx::Point p = frame_->View()->ConvertFromRootFrame(
         FlooredIntPoint(gesture_event.PositionInRootFrame()));
     if (layer && layer->GetScrollableArea() &&
         layer->GetScrollableArea()->IsPointInResizeControl(p,
@@ -1218,7 +1218,7 @@ bool ScrollManager::HandleScrollGestureOnResizer(
   } else if (gesture_event.GetType() ==
              WebInputEvent::Type::kGestureScrollUpdate) {
     if (resize_scrollable_area_ && resize_scrollable_area_->InResizeMode()) {
-      IntPoint pos =
+      gfx::Point pos =
           RoundedIntPoint(FloatPoint(gesture_event.PositionInRootFrame()));
       pos.Offset(gesture_event.DeltaXInRootFrame(),
                  gesture_event.DeltaYInRootFrame());
@@ -1259,7 +1259,7 @@ void ScrollManager::ClearResizeScrollableArea(bool should_not_be_null) {
   resize_scrollable_area_ = nullptr;
 }
 
-void ScrollManager::SetResizeScrollableArea(PaintLayer* layer, IntPoint p) {
+void ScrollManager::SetResizeScrollableArea(PaintLayer* layer, gfx::Point p) {
   resize_scrollable_area_ = layer->GetScrollableArea();
   resize_scrollable_area_->SetInResizeMode(true);
   offset_from_resize_corner_ =

@@ -93,11 +93,11 @@ bool IsSupportedType(ResourceType resource_type, const String& mime_type) {
   return false;
 }
 
-MediaValues* CreateMediaValues(
+MediaValuesCached* CreateMediaValues(
     Document& document,
     const ViewportDescription* viewport_description) {
-  MediaValues* media_values =
-      MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
+  MediaValuesCached* media_values =
+      MakeGarbageCollected<MediaValuesCached>(document);
   if (viewport_description) {
     FloatSize initial_viewport(media_values->DeviceWidth(),
                                media_values->DeviceHeight());
@@ -114,7 +114,7 @@ bool MediaMatches(const String& media,
                   const ExecutionContext* execution_context) {
   scoped_refptr<MediaQuerySet> media_queries =
       MediaQuerySet::Create(media, execution_context);
-  MediaQueryEvaluator evaluator(*media_values);
+  MediaQueryEvaluator evaluator(media_values);
   return evaluator.Eval(*media_queries);
 }
 
@@ -264,7 +264,7 @@ Resource* PreloadHelper::PreloadIfNeeded(
   absl::optional<ResourceType> resource_type =
       PreloadHelper::GetResourceTypeFromAsAttribute(params.as);
 
-  MediaValues* media_values = nullptr;
+  MediaValuesCached* media_values = nullptr;
   KURL url;
   if (resource_type == ResourceType::kImage && !params.image_srcset.IsEmpty()) {
     UseCounter::Count(document, WebFeature::kLinkRelPreloadImageSrcset);
@@ -458,7 +458,7 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // Preload only if media matches.
   // https://html.spec.whatwg.org/C/#processing-the-media-attribute
   if (!params.media.IsEmpty()) {
-    MediaValues* media_values =
+    MediaValuesCached* media_values =
         CreateMediaValues(document, viewport_description);
     if (!MediaMatches(params.media, media_values,
                       document.GetExecutionContext()))
@@ -631,7 +631,7 @@ void PreloadHelper::LoadLinksFromHeader(
         // content.
         // TODO(crbug/935267): Consider supporting Viewport HTTP response
         // header. https://discourse.wicg.io/t/proposal-viewport-http-header/
-        MediaValues* media_values =
+        MediaValuesCached* media_values =
             CreateMediaValues(*document, viewport_description);
         url = GetBestFitImageURL(*document, base_url, media_values, params.href,
                                  params.image_srcset, params.image_sizes);

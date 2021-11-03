@@ -19,6 +19,7 @@
 #include "media/base/video_frame_pool.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
+#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -383,6 +385,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
                                const V8CanvasImageSource* source,
                                const VideoFrameInit* init,
                                ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   auto* image_source = ToCanvasImageSource(source, exception_state);
   if (!image_source) {
     // ToCanvasImageSource() will throw a source appropriate exception.
@@ -492,6 +495,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   const auto timestamp = base::Microseconds(
       (init && init->hasTimestamp()) ? init->timestamp() : 0);
+  if (!init || !init->hasTimestamp()) {
+    Deprecation::CountDeprecation(
+        execution_context, WebFeature::kWebCodecsVideoFrameDefaultTimestamp);
+  }
 
   const auto paint_image = image->PaintImageForCurrentFrame();
   const auto sk_image_info = paint_image.GetSkImageInfo();

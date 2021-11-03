@@ -63,6 +63,9 @@ class HostVerifierImpl : public HostVerifier,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  HostVerifierImpl(const HostVerifierImpl&) = delete;
+  HostVerifierImpl& operator=(const HostVerifierImpl&) = delete;
+
   ~HostVerifierImpl() override;
 
  private:
@@ -104,8 +107,6 @@ class HostVerifierImpl : public HostVerifier,
   std::unique_ptr<base::OneShotTimer> retry_timer_;
   std::unique_ptr<base::OneShotTimer> sync_timer_;
   base::WeakPtrFactory<HostVerifierImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostVerifierImpl);
 };
 
 }  // namespace multidevice_setup

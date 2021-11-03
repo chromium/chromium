@@ -7,7 +7,7 @@
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheNotificationGenerator::EcheNotificationGenerator(
@@ -19,7 +19,7 @@ EcheNotificationGenerator::~EcheNotificationGenerator() = default;
 void EcheNotificationGenerator::ShowNotification(
     const std::u16string& title,
     const std::u16string& message,
-    chromeos::eche_app::mojom::WebNotificationType type) {
+    mojom::WebNotificationType type) {
   launch_app_helper_->ShowNotification(
       title, message,
       std::make_unique<LaunchAppHelper::NotificationInfo>(
@@ -33,4 +33,4 @@ void EcheNotificationGenerator::Bind(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

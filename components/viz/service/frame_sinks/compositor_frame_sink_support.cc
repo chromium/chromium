@@ -1048,16 +1048,10 @@ gfx::Rect CompositorFrameSinkSupport::GetCaptureBounds(
       continue;
     }
 
-    // Capture bounds are only set on the root render pass, and thus
-    // there is only one instance for each active frame.
-    const RegionCaptureBounds* bounds =
-        surface->GetActiveFrame().capture_bounds();
-    if (!bounds) {
-      continue;
-    }
-
-    auto it = bounds->bounds().find(crop_id);
-    if (it != bounds->bounds().end()) {
+    const RegionCaptureBounds& bounds =
+        surface->GetActiveFrameMetadata().capture_bounds;
+    const auto it = bounds.bounds().find(crop_id);
+    if (it != bounds.bounds().end()) {
       return it->second;
     }
   }

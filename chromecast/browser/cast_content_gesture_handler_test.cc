@@ -7,7 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/base/chromecast_switches.h"
-#include "chromecast/browser/test/mock_cast_content_window_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"

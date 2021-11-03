@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -105,6 +106,19 @@ const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {
   return version_->reporting_source();
 }
 
+StoragePartition* ServiceWorkerHost::GetStoragePartition() const {
+  // It is possible that the RenderProcessHost is gone but we receive a request
+  // before we had the opportunity to Detach because the disconnect handler
+  // wasn't run yet. In such cases it is is safe to ignore these messages since
+  // we are about to stop the service worker.
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  if (process == nullptr)
+    return nullptr;
+
+  return process->GetStoragePartition();
+}
+
 void ServiceWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   auto embedded_worker_status = version_->embedded_worker()->status();
@@ -118,17 +132,11 @@ void ServiceWorkerHost::CreateCodeCacheHost(
   if (embedded_worker_status == EmbeddedWorkerStatus::STOPPING)
     return;
 
-  // It is possible that the RenderProcessHost is gone but we receive a request
-  // before we had the opportunity to Detach because the disconnect handler
-  // wasn't run yet. In such cases it is is safe to ignore these messages since
-  // we are about to stop the service worker.
-  auto* process =
-      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
-  if (process == nullptr)
-    return;
-
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  StoragePartition* storage_partition = process->GetStoragePartition();
+  StoragePartition* storage_partition = GetStoragePartition();
+  if (!storage_partition) {
+    return;
+  }
   if (!code_cache_host_receivers_) {
     code_cache_host_receivers_ =
         std::make_unique<CodeCacheHostImpl::ReceiverSet>(
@@ -137,6 +145,21 @@ void ServiceWorkerHost::CreateCodeCacheHost(
   code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
                                   GetNetworkIsolationKey(),
                                   std::move(receiver));
+}
+
+void ServiceWorkerHost::CreateBroadcastChannelProvider(
+    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  if (!storage_partition_impl) {
+    return;
+  }
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<BroadcastChannelProvider>(
+          storage_partition_impl->GetBroadcastChannelService(),
+          version()->key()),
+      std::move(receiver));
 }
 
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {

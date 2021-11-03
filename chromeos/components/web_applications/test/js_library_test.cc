@@ -25,7 +25,7 @@
 namespace {
 
 constexpr base::FilePath::CharType kRootDir[] =
-    FILE_PATH_LITERAL("chromeos/components/system_apps/public/js/");
+    FILE_PATH_LITERAL("ash/webui/system_apps/public/js/");
 
 constexpr char kSystemAppTestHost[] = "system-app-test";
 constexpr char kSystemAppTestURL[] = "chrome://system-app-test";

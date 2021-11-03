@@ -204,6 +204,11 @@ void NotificationGroupingController::
   auto* new_single_notification =
       message_center->FindNotificationById(new_single_notification_id);
 
+  // These could already have been removed in case of a clear all action.
+  // Therefore, do not do anything if either of them has already been removed.
+  if (!parent_view || !new_single_notification)
+    return;
+
   parent_view->RemoveGroupNotification(new_single_notification_id);
   parent_view->UpdateWithNotification(*new_single_notification);
 

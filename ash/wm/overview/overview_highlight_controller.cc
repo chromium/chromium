@@ -15,6 +15,7 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_highlightable_view.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
@@ -25,32 +26,6 @@
 namespace ash {
 
 // -----------------------------------------------------------------------------
-// OverviewHighlightController::OverviewHighlightableView
-
-bool OverviewHighlightController::OverviewHighlightableView::
-    MaybeActivateHighlightedViewOnOverviewExit(
-        OverviewSession* overview_session) {
-  return false;
-}
-
-void OverviewHighlightController::OverviewHighlightableView::
-    SetHighlightVisibility(bool visible) {
-  if (visible == is_highlighted_)
-    return;
-
-  is_highlighted_ = visible;
-  if (is_highlighted_)
-    OnViewHighlighted();
-  else
-    OnViewUnhighlighted();
-}
-
-gfx::Point OverviewHighlightController::OverviewHighlightableView::
-    GetMagnifierFocusPointInScreen() {
-  return GetView()->GetBoundsInScreen().CenterPoint();
-}
-
-// -----------------------------------------------------------------------------
 // OverviewHighlightController::TestApi
 
 OverviewHighlightController::TestApi::TestApi(
@@ -59,7 +34,7 @@ OverviewHighlightController::TestApi::TestApi(
 
 OverviewHighlightController::TestApi::~TestApi() = default;
 
-OverviewHighlightController::OverviewHighlightableView*
+OverviewHighlightableView*
 OverviewHighlightController::TestApi::GetHighlightView() const {
   return highlight_controller_->highlighted_view_;
 }
@@ -218,7 +193,7 @@ bool OverviewHighlightController::IsTabDragHighlightVisible() const {
   return !!tab_dragged_view_;
 }
 
-std::vector<OverviewHighlightController::OverviewHighlightableView*>
+std::vector<OverviewHighlightableView*>
 OverviewHighlightController::GetTraversableViews() const {
   const size_t root_window_count = Shell::Get()->GetAllRootWindows().size();
   const size_t desk_count = DesksController::Get()->desks().size();

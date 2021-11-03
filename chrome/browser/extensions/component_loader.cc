@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -370,11 +371,13 @@ void ComponentLoader::AddChromeApp() {
 }
 
 void ComponentLoader::AddFileManagerExtension() {
-  AddWithNameAndDescription(
-      IDR_FILEMANAGER_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("file_manager")),
-      l10n_util::GetStringUTF8(IDS_FILEMANAGER_APP_NAME),
-      l10n_util::GetStringUTF8(IDS_FILEMANAGER_APP_DESCRIPTION));
+  if (!ash::features::IsFileManagerSwaEnabled()) {
+    AddWithNameAndDescription(
+        IDR_FILEMANAGER_MANIFEST,
+        base::FilePath(FILE_PATH_LITERAL("file_manager")),
+        l10n_util::GetStringUTF8(IDS_FILEMANAGER_APP_NAME),
+        l10n_util::GetStringUTF8(IDS_FILEMANAGER_APP_DESCRIPTION));
+  }
 }
 
 void ComponentLoader::AddAudioPlayerExtension() {

@@ -160,8 +160,7 @@ class TaskEnvironment::TestTaskTracker
   base::flat_map<int64_t, Location> running_tasks_ GUARDED_BY(lock_);
 };
 
-class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
-                                        public TickClock {
+class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
  public:
   explicit MockTimeDomain() {
     DCHECK_EQ(nullptr, current_mock_time_domain_);
@@ -178,10 +177,13 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
   static MockTimeDomain* current_mock_time_domain_;
 
   static Time GetTime() {
-    return Time::UnixEpoch() + (current_mock_time_domain_->Now() - TimeTicks());
+    return Time::UnixEpoch() +
+           (current_mock_time_domain_->NowTicks() - TimeTicks());
   }
 
-  static TimeTicks GetTimeTicks() { return current_mock_time_domain_->Now(); }
+  static TimeTicks GetTimeTicks() {
+    return current_mock_time_domain_->NowTicks();
+  }
 
   void AdvanceClock(TimeDelta delta) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -209,17 +211,6 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
   }
 
   // sequence_manager::TimeDomain:
-
-  sequence_manager::LazyNow CreateLazyNow() const override {
-    AutoLock lock(now_ticks_lock_);
-    return sequence_manager::LazyNow(now_ticks_);
-  }
-
-  TimeTicks Now() const override {
-    // This can be called from any thread.
-    AutoLock lock(now_ticks_lock_);
-    return now_ticks_;
-  }
 
   base::TimeTicks GetNextDelayedTaskTime(
       sequence_manager::LazyNow* lazy_now) const override {
@@ -258,7 +249,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain,
   const char* GetName() const override { return "MockTimeDomain"; }
 
   // TickClock implementation:
-  TimeTicks NowTicks() const override { return Now(); }
+  TimeTicks NowTicks() const override {
+    // This can be called from any thread.
+    AutoLock lock(now_ticks_lock_);
+    return now_ticks_;
+  }
 
   // Used by FastForwardToNextTaskOrCap() to return which task source time was
   // advanced to.
@@ -695,7 +690,7 @@ const TickClock* TaskEnvironment::GetMockTickClock() const {
 
 base::TimeTicks TaskEnvironment::NowTicks() const {
   DCHECK(mock_time_domain_);
-  return mock_time_domain_->Now();
+  return mock_time_domain_->NowTicks();
 }
 
 const Clock* TaskEnvironment::GetMockClock() const {

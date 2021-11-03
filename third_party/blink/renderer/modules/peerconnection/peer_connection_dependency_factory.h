@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace base {
@@ -53,20 +54,6 @@ class RTCPeerConnectionHandlerClient;
 class RTCPeerConnectionHandler;
 class WebLocalFrame;
 class WebRtcAudioDeviceImpl;
-
-// The factory informs the listener whether or not the metronome may be used.
-class MODULES_EXPORT UseMetronomeSourceListener {
- public:
-  virtual ~UseMetronomeSourceListener() = default;
-
-  // The metronome is considered active and may be used.
-  virtual void OnCanUseMetronome(
-      scoped_refptr<MetronomeSource> metronome_source) = 0;
-  // The metronome should not be used anymore. The listener must stop using it
-  // so that it can become inactive.
-  virtual void OnStopUsingMetronome(
-      scoped_refptr<MetronomeSource> metronome_source) = 0;
-};
 
 // Object factory for RTC PeerConnections.
 class MODULES_EXPORT PeerConnectionDependencyFactory
@@ -111,16 +98,6 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   virtual scoped_refptr<webrtc::VideoTrackInterface> CreateLocalVideoTrack(
       const String& id,
       webrtc::VideoTrackSourceInterface* source);
-
-  // Add or remove a listener to be informed when there exists a metronome
-  // source that may be used. If the metronome is already in use, the listener
-  // will be informed upon adding it. When the metronome should not be used
-  // anymore, the listener is responsible for no longer using it, as is required
-  // for a metronome to become inactive.
-  void AddUseMetronomeSourceListener(
-      UseMetronomeSourceListener* use_metronome_source_listener);
-  void RemoveUseMetronomeSourceListener(
-      UseMetronomeSourceListener* use_metronome_source_listener);
 
   // Asks the libjingle PeerConnection factory to create a libjingle
   // PeerConnection object.
@@ -219,8 +196,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory_;
   // The metronome should only be used if kWebRtcMetronomeTaskQueue is enabled
   // and there exists open RTCPeerConnection objects.
+  scoped_refptr<MetronomeProvider> metronome_provider_;
   scoped_refptr<MetronomeSource> metronome_source_;
-  Vector<UseMetronomeSourceListener*> use_metronome_source_listeners_;
 
   // Dispatches all P2P sockets.
   Member<P2PSocketDispatcher> p2p_socket_dispatcher_;

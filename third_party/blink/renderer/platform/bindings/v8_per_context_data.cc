@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -97,13 +98,19 @@ v8::Local<v8::Object> V8PerContextData::CreateWrapperFromCacheSlowCase(
   DCHECK(!wrapper_boilerplates_.Contains(type));
   v8::Context::Scope scope(GetContext());
   v8::Local<v8::Function> interface_object = ConstructorForType(type);
-  CHECK(!interface_object.IsEmpty());
+  if (UNLIKELY(interface_object.IsEmpty())) {
+    // For investigation of crbug.com/1199223
+    static crash_reporter::CrashKeyString<64> crash_key(
+        "blink__create_interface_object");
+    crash_key.Set(type->interface_name);
+    CHECK(!interface_object.IsEmpty());
+  }
   v8::Local<v8::Object> instance_template =
       V8ObjectConstructor::NewInstance(isolate_, interface_object)
           .ToLocalChecked();
 
   TraceWrapperV8Reference<v8::Object> traced_wrapper;
-  traced_wrapper.Set(isolate_, instance_template);
+  traced_wrapper.Reset(isolate_, instance_template);
   wrapper_boilerplates_.insert(type, traced_wrapper);
 
   return instance_template->Clone();
@@ -127,7 +134,7 @@ v8::Local<v8::Function> V8PerContextData::ConstructorForTypeSlowCase(
           V8ObjectConstructor::CreationMode::kInstallConditionalFeatures);
 
   TraceWrapperV8Reference<v8::Function> traced_wrapper;
-  traced_wrapper.Set(isolate_, interface_object);
+  traced_wrapper.Reset(isolate_, interface_object);
   constructor_map_.insert(type, traced_wrapper);
 
   return interface_object;
@@ -156,7 +163,7 @@ bool V8PerContextData::GetExistingConstructorAndPrototypeForType(
     prototype_object->Clear();
     return false;
   }
-  *interface_object = it->value.NewLocal(isolate_);
+  *interface_object = it->value.Get(isolate_);
   *prototype_object = PrototypeForType(type);
   DCHECK(!prototype_object->IsEmpty());
   return true;

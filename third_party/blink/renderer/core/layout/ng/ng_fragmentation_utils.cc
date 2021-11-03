@@ -85,6 +85,7 @@ LayoutUnit BlockAxisLayoutOverflow(const NGLayoutResult& result,
   LayoutUnit annotation_overflow = result.AnnotationOverflow();
   if (annotation_overflow > LayoutUnit())
     block_size += annotation_overflow;
+  block_size += result.AnnotationBlockOffsetAdjustment();
   return block_size;
 }
 

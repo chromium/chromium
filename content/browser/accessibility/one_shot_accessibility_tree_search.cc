@@ -287,7 +287,7 @@ bool AccessibilityControlPredicate(BrowserAccessibility* start,
 bool AccessibilityFocusablePredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
   bool focusable = node->HasState(ax::mojom::State::kFocusable);
-  if (ui::IsIframe(node->GetRole()) || node->IsPlatformDocument())
+  if (ui::IsIframe(node->GetRole()) || ui::IsPlatformDocument(node->GetRole()))
     focusable = false;
   return focusable;
 }

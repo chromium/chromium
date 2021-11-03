@@ -63,6 +63,12 @@ void VerifyEncryptedPayload(
 }  // namespace
 
 class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthEciesEncryptorImplTest(
+      const DeviceSyncCryptAuthEciesEncryptorImplTest&) = delete;
+  DeviceSyncCryptAuthEciesEncryptorImplTest& operator=(
+      const DeviceSyncCryptAuthEciesEncryptorImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthEciesEncryptorImplTest()
       : fake_secure_message_delegate_factory_(
@@ -237,8 +243,6 @@ class DeviceSyncCryptAuthEciesEncryptorImplTest : public testing::Test {
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthEciesEncryptorImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthEciesEncryptorImplTest, EncryptAndDecrypt) {

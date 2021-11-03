@@ -6,8 +6,8 @@ import {CustomMarginsOrientation, Margins, MarginsType, MeasurementSystem, Measu
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise, fakeDataBind} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 window.custom_margins_test = {};
 const custom_margins_test = window.custom_margins_test;

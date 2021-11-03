@@ -422,7 +422,7 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
   DCHECK(image);
   DCHECK(!image->HasData());
 
-  IntRect img_rect(IntPoint(), IntSize(image->width(), image->height()));
+  IntRect img_rect(gfx::Point(), IntSize(image->width(), image->height()));
   const IntRect& src_rect{parsed_options.crop_rect};
   const IntRect intersect_rect = IntersectRects(img_rect, src_rect);
 
@@ -682,7 +682,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
     return;
 
   const IntRect& src_rect{parsed_options.crop_rect};
-  const IntRect data_src_rect = IntRect(IntPoint(), data->Size());
+  const IntRect data_src_rect = IntRect(gfx::Point(), data->Size());
   const IntRect intersect_rect =
       crop_rect ? IntersectRects(src_rect, data_src_rect) : data_src_rect;
 
@@ -911,7 +911,7 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
 
   scoped_refptr<Image> input = image->CachedImage()->GetImage();
   DCHECK(input->IsSVGImage());
-  IntRect input_rect(IntPoint(), input->Size());
+  IntRect input_rect(gfx::Point(), input->Size());
 
   // In the case when |crop_rect| doesn't intersect the source image, we return
   // a transparent black image, respecting the color_params but ignoring

@@ -84,6 +84,7 @@ class ElementFinder : public WebControllerWorker {
   ElementFinder(content::WebContents* web_contents,
                 DevtoolsClient* devtools_client,
                 const UserData* user_data,
+                ProcessedActionStatusDetailsProto* log_info,
                 const Selector& selector,
                 ResultType result_type);
   ~ElementFinder() override;
@@ -175,10 +176,15 @@ class ElementFinder : public WebControllerWorker {
                      const std::string& frame_id,
                      const std::string& document_object_id);
 
-  // Sends a result with the given status and no data.
-  void SendResult(const ClientStatus& status);
+  // Update the log info with details about the current run.
+  void UpdateLogInfo(const ClientStatus& status);
 
-  // Builds a result from the current state of the finder and returns it.
+  // Sends a result with the given status and no data. This expects an error
+  // status and will add details to |log_info_|.
+  void SendErrorResult(const ClientStatus& status);
+
+  // Builds a result from the current state of the finder and returns it. This
+  // will add details to |log_info_|.
   void SendSuccessResult(const std::string& object_id);
 
   // Report |object_id| as result in |result| and initialize the frame-related
@@ -320,6 +326,7 @@ class ElementFinder : public WebControllerWorker {
   content::WebContents* const web_contents_;
   DevtoolsClient* const devtools_client_;
   const UserData* const user_data_;
+  ProcessedActionStatusDetailsProto* const log_info_;
   const Selector selector_;
   const ResultType result_type_;
   Callback callback_;
@@ -330,6 +337,12 @@ class ElementFinder : public WebControllerWorker {
 
   // The index of the next filter to process, in selector__proto_.filters.
   int next_filter_index_ = 0;
+
+  // Getting the document failed. Used for error reporting.
+  bool get_document_failed_ = false;
+
+  // The currently worked on filters are starting at this index..
+  int current_filter_index_range_start_ = -1;
 
   // Pointer to the current frame
   content::RenderFrameHost* current_frame_ = nullptr;

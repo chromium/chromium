@@ -204,21 +204,24 @@ class ThreadPoolTaskTrackerTest
 
   // Calls tracker_->FlushForTesting() on a new thread.
   void CallFlushFromAnotherThread() {
-    ASSERT_FALSE(thread_calling_flush_);
-    thread_calling_flush_ = std::make_unique<CallbackThread>(
-        BindOnce(&TaskTracker::FlushForTesting, Unretained(&tracker_)));
-    thread_calling_flush_->Start();
+    threads_calling_flush_.push_back(std::make_unique<CallbackThread>(
+        BindOnce(&TaskTracker::FlushForTesting, Unretained(&tracker_))));
+    threads_calling_flush_.back()->Start();
   }
 
-  void WaitForAsyncFlushReturned() {
-    ASSERT_TRUE(thread_calling_flush_);
-    thread_calling_flush_->Join();
-    EXPECT_TRUE(thread_calling_flush_->has_returned());
+  void WaitForAsyncFlushesReturned() {
+    ASSERT_GE(threads_calling_flush_.size(), 1U);
+    for (auto& thread_calling_flush : threads_calling_flush_) {
+      thread_calling_flush->Join();
+      EXPECT_TRUE(thread_calling_flush->has_returned());
+    }
   }
 
-  void VerifyAsyncFlushInProgress() {
-    ASSERT_TRUE(thread_calling_flush_);
-    EXPECT_FALSE(thread_calling_flush_->has_returned());
+  void VerifyAsyncFlushesInProgress() {
+    ASSERT_GE(threads_calling_flush_.size(), 1U);
+    for (auto& thread_calling_flush : threads_calling_flush_) {
+      EXPECT_FALSE(thread_calling_flush->has_returned());
+    }
   }
 
   size_t NumTasksExecuted() {
@@ -235,7 +238,7 @@ class ThreadPoolTaskTrackerTest
   }
 
   std::unique_ptr<CallbackThread> thread_calling_shutdown_;
-  std::unique_ptr<CallbackThread> thread_calling_flush_;
+  std::vector<std::unique_ptr<CallbackThread>> threads_calling_flush_;
 
   // Synchronizes accesses to |num_tasks_executed_|.
   CheckedLock lock_;
@@ -255,16 +258,16 @@ class ThreadPoolTaskTrackerTest
     VerifyAsyncShutdownInProgress();        \
   } while (false)
 
-#define WAIT_FOR_ASYNC_FLUSH_RETURNED() \
-  do {                                  \
-    SCOPED_TRACE("");                   \
-    WaitForAsyncFlushReturned();        \
+#define WAIT_FOR_ASYNC_FLUSHES_RETURNED() \
+  do {                                    \
+    SCOPED_TRACE("");                     \
+    WaitForAsyncFlushesReturned();        \
   } while (false)
 
-#define VERIFY_ASYNC_FLUSH_IN_PROGRESS() \
-  do {                                   \
-    SCOPED_TRACE("");                    \
-    VerifyAsyncFlushInProgress();        \
+#define VERIFY_ASYNC_FLUSHES_IN_PROGRESS() \
+  do {                                     \
+    SCOPED_TRACE("");                      \
+    VerifyAsyncFlushesInProgress();        \
   } while (false)
 
 }  // namespace
@@ -634,11 +637,27 @@ TEST_P(ThreadPoolTaskTrackerTest, FlushPendingUndelayedTask) {
   // FlushForTesting() shouldn't return before the undelayed task runs.
   CallFlushFromAnotherThread();
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  VERIFY_ASYNC_FLUSH_IN_PROGRESS();
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
 
   // FlushForTesting() should return after the undelayed task runs.
   RunAndPopNextTask(std::move(undelayed_sequence));
-  WAIT_FOR_ASYNC_FLUSH_RETURNED();
+  WAIT_FOR_ASYNC_FLUSHES_RETURNED();
+}
+
+TEST_P(ThreadPoolTaskTrackerTest, MultipleFlushes) {
+  Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
+  auto undelayed_sequence =
+      WillPostTaskAndQueueTaskSource(std::move(undelayed_task), {GetParam()});
+
+  // Multiple flushes should all unwind after the task runs.
+  CallFlushFromAnotherThread();
+  CallFlushFromAnotherThread();
+  CallFlushFromAnotherThread();
+  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
+
+  RunAndPopNextTask(std::move(undelayed_sequence));
+  WAIT_FOR_ASYNC_FLUSHES_RETURNED();
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, FlushAsyncForTestingPendingUndelayedTask) {
@@ -666,7 +685,7 @@ TEST_P(ThreadPoolTaskTrackerTest, PostTaskDuringFlush) {
   // FlushForTesting() shouldn't return before the undelayed task runs.
   CallFlushFromAnotherThread();
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  VERIFY_ASYNC_FLUSH_IN_PROGRESS();
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
 
   // Simulate posting another undelayed task.
   Task other_undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(),
@@ -679,11 +698,11 @@ TEST_P(ThreadPoolTaskTrackerTest, PostTaskDuringFlush) {
 
   // FlushForTesting() shouldn't return before the second undelayed task runs.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  VERIFY_ASYNC_FLUSH_IN_PROGRESS();
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
 
   // FlushForTesting() should return after the second undelayed task runs.
   RunAndPopNextTask(std::move(other_undelayed_sequence));
-  WAIT_FOR_ASYNC_FLUSH_RETURNED();
+  WAIT_FOR_ASYNC_FLUSHES_RETURNED();
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, PostTaskDuringFlushAsyncForTesting) {
@@ -730,7 +749,7 @@ TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlush) {
   // FlushForTesting() shouldn't return before the undelayed task runs.
   CallFlushFromAnotherThread();
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  VERIFY_ASYNC_FLUSH_IN_PROGRESS();
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
 
   // Run the delayed task.
   RunAndPopNextTask(std::move(delayed_sequence));
@@ -738,13 +757,13 @@ TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlush) {
   // FlushForTesting() shouldn't return since there is still a pending undelayed
   // task.
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  VERIFY_ASYNC_FLUSH_IN_PROGRESS();
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
 
   // Run the undelayed task.
   RunAndPopNextTask(std::move(undelayed_sequence));
 
-  // FlushForTesting() should now return.
-  WAIT_FOR_ASYNC_FLUSH_RETURNED();
+  // FlushForTesting() should now ESreturn.
+  WAIT_FOR_ASYNC_FLUSHES_RETURNED();
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlushAsyncForTesting) {
@@ -829,14 +848,14 @@ TEST_P(ThreadPoolTaskTrackerTest, ShutdownDuringFlush) {
   // shutdown completes.
   CallFlushFromAnotherThread();
   PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  VERIFY_ASYNC_FLUSH_IN_PROGRESS();
+  VERIFY_ASYNC_FLUSHES_IN_PROGRESS();
 
   // Shutdown() should return immediately since there are no pending
   // BLOCK_SHUTDOWN tasks.
   test::ShutdownTaskTracker(&tracker_);
 
   // FlushForTesting() should now return, even if an undelayed task hasn't run.
-  WAIT_FOR_ASYNC_FLUSH_RETURNED();
+  WAIT_FOR_ASYNC_FLUSHES_RETURNED();
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, ShutdownDuringFlushAsyncForTesting) {

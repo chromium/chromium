@@ -190,7 +190,7 @@ bool LeafPageDecoder::TryAdvance() {
 
   const uint8_t* const cell_start = page_data + cell_pointer;
   const uint8_t* const page_end = page_data + db_reader_->page_size();
-  DCHECK_LT(cell_start, page_end) << "Failed to skip over empty cells";
+  DCHECK_LT(cell_start, page_end) << "Failed to skip empty cells";
 
   const uint8_t* rowid_start;
   std::tie(last_record_size_, rowid_start) = ParseVarint(cell_start, page_end);
@@ -227,7 +227,7 @@ bool LeafPageDecoder::TryAdvance() {
 // static
 bool LeafPageDecoder::IsOnValidPage(DatabasePageReader* db_reader) {
   static_assert(kPageTypePageOffset < DatabasePageReader::kMinUsablePageSize,
-                "The check below may perform an out-of-bounds memory access");
+                "The check below may perform an out-of-bounds RAM access");
   return db_reader->page_data()[kPageTypePageOffset] == kLeafTablePageType;
 }
 

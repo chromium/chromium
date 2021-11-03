@@ -16,7 +16,7 @@
 ++[toggle button] name='ARIA Switch' actions=(check) checkable:true
 ++[panel]
 ++++[toggle button] name='Summary' actions=(press)
-++++++[static] name='Summary'
+++++++[static] name='Summary' actions=(clickAncestor)
 ++[combo box] actions=(open)
 ++++[menu]
 ++++++[menu item] name='Pop-up button' selectable selected actions=(select)
@@ -32,5 +32,5 @@
 ++[push button] name='ARIA Button' actions=(click)
 ++[push button] name='ARIA button with tab index' actions=(press)
 ++[push button] name='ARIA button with negative tab index' actions=(press)
-++[section]
+++[section] actions=(click)
 ++++[push button] name='ARIA button that is an active descendant' actions=(press)

@@ -72,7 +72,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     platform_suffix = "_win";
 #elif defined(OS_LINUX)
     platform_suffix = "_linux";
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_CHROMEOS)
     platform_suffix = "_chromeos";
 #elif defined(OS_ANDROID)
     int sdk_int = base::android::BuildInfo::GetInstance()->sdk_int();

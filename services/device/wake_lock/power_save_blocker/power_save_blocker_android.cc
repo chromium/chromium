@@ -23,6 +23,9 @@ class PowerSaveBlocker::Delegate
  public:
   Delegate(scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   // Does the actual work to apply or remove the desired power save block.
   void ApplyBlock(ui::ViewAndroid* view_android);
   void RemoveBlock();
@@ -34,8 +37,6 @@ class PowerSaveBlocker::Delegate
   base::android::ScopedJavaGlobalRef<jobject> java_power_save_blocker_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::Delegate::Delegate(

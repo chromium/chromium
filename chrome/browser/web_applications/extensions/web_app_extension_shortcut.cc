@@ -247,14 +247,6 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
   if (extension->is_platform_app())
     return true;
 
-#if defined(OS_MAC)
-  if (extension->is_hosted_app() &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableHostedAppShimCreation)) {
-    return false;
-  }
-#endif
-
   // Allow shortcut creation if it was explicitly requested by the user (i.e. is
   // not automatic).
   return reason == SHORTCUT_CREATION_BY_USER;

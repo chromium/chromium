@@ -69,6 +69,11 @@ class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
   void ConnectToEmbedder(mojo::PendingReceiver<blink::mojom::SurfaceEmbedder>
                              surface_embedder_receiver);
 
+  // Adjusts the frame sink hierarchy for |parent_frame_sink_id_| and
+  // |frame_sink_id_|.
+  void RegisterFrameSinkHierarchy();
+  void UnregisterFrameSinkHierarchy();
+
   // viz::HostFrameSinkClient implementation.
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void OnFrameTokenChanged(uint32_t frame_token,
@@ -89,7 +94,7 @@ class CONTENT_EXPORT EmbeddedFrameSinkImpl : public viz::HostFrameSinkClient {
   const viz::FrameSinkId frame_sink_id_;
   viz::LocalSurfaceId local_surface_id_;
 
-  bool has_created_compositor_frame_sink_ = false;
+  bool has_registered_compositor_frame_sink_ = false;
 };
 
 }  // namespace content

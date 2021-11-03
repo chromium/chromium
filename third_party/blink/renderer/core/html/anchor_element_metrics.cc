@@ -237,7 +237,7 @@ mojom::blink::AnchorElementMetricsPtr CreateAnchorElementMetrics(
 
   // Get the anchor element rect that intersects with the viewport.
   IntRect target_visible(target);
-  target_visible.Intersect(IntRect(IntPoint(), viewport.size()));
+  target_visible.Intersect(IntRect(gfx::Point(), viewport.size()));
 
   // It guarantees to be less or equal to 1.
   float ratio_visible_area = (target_visible.height() / base_height) *

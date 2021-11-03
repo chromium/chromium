@@ -55,8 +55,6 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
                                              bool user_gesture,
                                              bool last_unlocked_by_target) {
   DCHECK(!IsMouseLocked());
-  if (lock_state_callback_for_test_)
-    std::move(lock_state_callback_for_test_).Run();
 
   // To prevent misbehaving sites from constantly re-locking the mouse, the
   // lock-requesting page must have transient user activation and it must not
@@ -71,12 +69,16 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
     if (!user_gesture) {
       web_contents->GotResponseToLockMouseRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);
+      if (lock_state_callback_for_test_)
+        std::move(lock_state_callback_for_test_).Run();
       return;
     }
     if (base::TimeTicks::Now() <
         last_user_escape_time_ + kEffectiveUserEscapeDuration) {
       web_contents->GotResponseToLockMouseRequest(
           blink::mojom::PointerLockResult::kUserRejected);
+      if (lock_state_callback_for_test_)
+        std::move(lock_state_callback_for_test_).Run();
       return;
     }
   }
@@ -102,6 +104,9 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
         base::BindOnce(&MouseLockController::OnBubbleHidden,
                        weak_ptr_factory_.GetWeakPtr(), web_contents));
   }
+
+  if (lock_state_callback_for_test_)
+    std::move(lock_state_callback_for_test_).Run();
 }
 
 void MouseLockController::ExitExclusiveAccessIfNecessary() {

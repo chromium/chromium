@@ -74,7 +74,8 @@ TEST_F(ManifestParserTest, CrashTest) {
   KURL url("http://example.com");
   ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
 
-  parser.Parse();
+  bool has_comments = parser.Parse();
+  EXPECT_FALSE(has_comments);
   Vector<mojom::blink::ManifestErrorPtr> errors;
   const auto& manifest = parser.manifest();
   parser.TakeErrors(&errors);
@@ -82,6 +83,18 @@ TEST_F(ManifestParserTest, CrashTest) {
   // .Parse() should have been call without crashing and succeeded.
   EXPECT_EQ(0u, errors.size());
   EXPECT_FALSE(IsManifestEmpty(manifest));
+}
+
+TEST_F(ManifestParserTest, HasComments) {
+  const String json = R"({
+        // comment
+        "start_url": "/"
+      })";
+  KURL url("http://example.com");
+  ManifestParser parser(json, url, url, /*feature_context=*/nullptr);
+
+  bool has_comments = parser.Parse();
+  EXPECT_TRUE(has_comments);
 }
 
 TEST_F(ManifestParserTest, EmptyStringNull) {

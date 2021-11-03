@@ -14,28 +14,22 @@
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class PrefService;
 
-namespace chromeos {
-
-namespace device_sync {
-class DeviceSyncClient;
-}  // namespace device_sync
-
-namespace multidevice_setup {
-class MultiDeviceSetupClient;
-}  // namespace multidevice_setup
-
-namespace secure_channel {
-class ConnectionManager;
-class SecureChannelClient;
-}  // namespace secure_channel
-
+namespace ash {
 namespace eche_app {
 
 class EcheConnector;
@@ -105,6 +99,13 @@ class EcheAppManager : public KeyedService {
   std::unique_ptr<AppsAccessManager> apps_access_manager_;
 };
 
+}  // namespace eche_app
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace eche_app {
+using ::ash::eche_app::EcheAppManager;
 }  // namespace eche_app
 }  // namespace chromeos
 

@@ -81,6 +81,7 @@ scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommands();
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsUser();
 
 scoped_refptr<IntegrationTestCommands> CreateIntegrationTestCommandsSystem();
+
 }  // namespace test
 }  // namespace updater
 

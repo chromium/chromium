@@ -88,12 +88,12 @@ VideoEncoderStats::VideoEncoderStats(uint32_t framerate,
       num_temporal_layers(num_temporal_layers) {}
 
 uint32_t VideoEncoderStats::Bitrate() const {
-  auto compute_bitrate = [](double framerate, size_t num_frames,
+  auto compute_bitrate = [](double framerate_dbl, size_t num_frames,
                             size_t total_size,
                             absl::optional<size_t> temporal_index,
                             absl::optional<size_t> spatial_index) {
     const size_t average_frame_size_in_bits = total_size * 8 / num_frames;
-    const uint32_t average_bitrate = average_frame_size_in_bits * framerate;
+    const uint32_t average_bitrate = average_frame_size_in_bits * framerate_dbl;
     std::string prefix = "[Total] ";
     if (spatial_index) {
       prefix = "[SL#" + base::NumberToString(*spatial_index) + " TL#" +
@@ -102,7 +102,7 @@ uint32_t VideoEncoderStats::Bitrate() const {
       prefix = "[TL#" + base::NumberToString(*temporal_index) + "] ";
     }
     VLOGF(2) << prefix << "encoded_frames=" << num_frames
-             << ", framerate=" << framerate
+             << ", framerate=" << framerate_dbl
              << ", total_encoded_frames_size=" << total_size
              << ", average_frame_size_in_bits=" << average_frame_size_in_bits
              << ", average bitrate=" << average_bitrate;

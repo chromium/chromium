@@ -208,21 +208,23 @@ class PowerMonitorTestObserverLocal
  public:
   using base::test::PowerMonitorTestObserver::PowerMonitorTestObserver;
 
+  PowerMonitorTestObserverLocal(const PowerMonitorTestObserverLocal&) = delete;
+  PowerMonitorTestObserverLocal& operator=(
+      const PowerMonitorTestObserverLocal&) = delete;
+
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
-    ASSERT_TRUE(cb);
+    ASSERT_TRUE(cb_);
     base::test::PowerMonitorTestObserver::OnThermalStateChange(new_state);
-    std::move(cb).Run();
+    std::move(cb_).Run();
   }
 
   void set_cb_for_testing(base::OnceCallback<void()> cb) {
-    this->cb = std::move(cb);
+    cb_ = std::move(cb);
   }
 
  private:
-  base::OnceCallback<void()> cb;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorTestObserverLocal);
+  base::OnceCallback<void()> cb_;
 };
 
 }  // namespace

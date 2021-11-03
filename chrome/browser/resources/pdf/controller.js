@@ -58,9 +58,8 @@ let ThumbnailMessageData;
  */
 function createToken() {
   const randomBytes = new Uint8Array(16);
-  return window.crypto.getRandomValues(randomBytes)
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
+  window.crypto.getRandomValues(randomBytes);
+  return Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
 }
 
 /** @interface */

@@ -26,6 +26,8 @@ component("services") {
     "media_service_factory.h",
     "mojo_audio_decoder_service.cc",
     "mojo_audio_decoder_service.h",
+    "mojo_audio_encoder_service.cc",
+    "mojo_audio_encoder_service.h",
     "mojo_audio_input_stream.cc",
     "mojo_audio_input_stream.h",
     "mojo_audio_output_stream.cc",

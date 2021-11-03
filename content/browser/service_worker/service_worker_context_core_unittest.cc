@@ -30,6 +30,10 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   ServiceWorkerContextCoreTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
+  ServiceWorkerContextCoreTest(const ServiceWorkerContextCoreTest&) = delete;
+  ServiceWorkerContextCoreTest& operator=(const ServiceWorkerContextCoreTest&) =
+      delete;
+
   void SetUp() override {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
   }
@@ -169,8 +173,6 @@ class ServiceWorkerContextCoreTest : public testing::Test,
   GURL scope_for_wait_for_activated_;
   base::OnceClosure quit_closure_for_wait_for_activated_;
   bool is_observing_context_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContextCoreTest);
 };
 
 TEST_F(ServiceWorkerContextCoreTest, FailureInfo) {

@@ -44,15 +44,14 @@ class FileSystemGetDisplayPathFunction : public ExtensionFunction {
                              FILESYSTEM_GETDISPLAYPATH)
 
  protected:
-  ~FileSystemGetDisplayPathFunction() override {}
+  ~FileSystemGetDisplayPathFunction() override;
   ResponseAction Run() override;
 };
 
 class FileSystemEntryFunction : public ExtensionFunction {
  protected:
   FileSystemEntryFunction();
-
-  ~FileSystemEntryFunction() override {}
+  ~FileSystemEntryFunction() override;
 
   // This is called when writable file entries are being returned. The function
   // will ensure the files exist, creating them if necessary, and also check
@@ -78,10 +77,10 @@ class FileSystemEntryFunction : public ExtensionFunction {
   void HandleWritableFileError(const base::FilePath& error_path);
 
   // Whether multiple entries have been requested.
-  bool multiple_;
+  bool multiple_ = false;
 
   // Whether a directory has been requested.
-  bool is_directory_;
+  bool is_directory_ = false;
 };
 
 class FileSystemGetWritableEntryFunction : public FileSystemEntryFunction {
@@ -90,7 +89,7 @@ class FileSystemGetWritableEntryFunction : public FileSystemEntryFunction {
                              FILESYSTEM_GETWRITABLEENTRY)
 
  protected:
-  ~FileSystemGetWritableEntryFunction() override {}
+  ~FileSystemGetWritableEntryFunction() override;
   ResponseAction Run() override;
 
  private:
@@ -107,7 +106,7 @@ class FileSystemIsWritableEntryFunction : public ExtensionFunction {
                              FILESYSTEM_ISWRITABLEENTRY)
 
  protected:
-  ~FileSystemIsWritableEntryFunction() override {}
+  ~FileSystemIsWritableEntryFunction() override;
   ResponseAction Run() override;
 };
 
@@ -158,7 +157,7 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
   class SkipPickerAndAlwaysCancelForTest : public SkipPickerBaseForTest {
    public:
     SkipPickerAndAlwaysCancelForTest();
-    ~SkipPickerAndAlwaysCancelForTest() = default;
+    ~SkipPickerAndAlwaysCancelForTest();
   };
 
   // Call this with the directory for test file paths. On Chrome OS, accessed
@@ -168,7 +167,7 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
                                                     const base::FilePath& path);
   DECLARE_EXTENSION_FUNCTION("fileSystem.chooseEntry", FILESYSTEM_CHOOSEENTRY)
 
-  typedef std::vector<api::file_system::AcceptOption> AcceptOptions;
+  using AcceptOptions = std::vector<api::file_system::AcceptOption>;
 
   static void BuildFileTypeInfo(
       ui::SelectFileDialog::FileTypeInfo* file_type_info,
@@ -180,18 +179,21 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
                               base::FilePath::StringType* suggested_extension);
 
  protected:
-  ~FileSystemChooseEntryFunction() override {}
+  ~FileSystemChooseEntryFunction() override;
   ResponseAction Run() override;
-  void ShowPicker(const ui::SelectFileDialog::FileTypeInfo& file_type_info,
-                  ui::SelectFileDialog::Type picker_type);
 
  private:
-  void SetInitialPathAndShowPicker(
+  void CalculateInitialPathAndShowPicker(
       const base::FilePath& previous_path,
       const base::FilePath& suggested_name,
       const ui::SelectFileDialog::FileTypeInfo& file_type_info,
       ui::SelectFileDialog::Type picker_type,
       bool is_path_non_native_directory);
+  void ShowPicker(const ui::SelectFileDialog::FileTypeInfo& file_type_info,
+                  ui::SelectFileDialog::Type picker_type,
+                  const base::FilePath& initial_path);
+  void MaybeUseManagedSavePath(base::OnceClosure fallback_file_picker_callback,
+                               const base::FilePath& path);
 
   // FilesSelected and FileSelectionCanceled are called by the file picker.
   void FilesSelected(const std::vector<base::FilePath>& paths);
@@ -209,8 +211,6 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
       const std::vector<base::FilePath>& paths);
 
   void OnDirectoryAccessConfirmed(const std::vector<base::FilePath>& paths);
-
-  base::FilePath initial_path_;
 };
 
 class FileSystemRetainEntryFunction : public ExtensionFunction {
@@ -218,7 +218,7 @@ class FileSystemRetainEntryFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fileSystem.retainEntry", FILESYSTEM_RETAINENTRY)
 
  protected:
-  ~FileSystemRetainEntryFunction() override {}
+  ~FileSystemRetainEntryFunction() override;
   ResponseAction Run() override;
 
  private:
@@ -236,7 +236,7 @@ class FileSystemIsRestorableFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("fileSystem.isRestorable", FILESYSTEM_ISRESTORABLE)
 
  protected:
-  ~FileSystemIsRestorableFunction() override {}
+  ~FileSystemIsRestorableFunction() override;
   ResponseAction Run() override;
 };
 
@@ -245,7 +245,7 @@ class FileSystemRestoreEntryFunction : public FileSystemEntryFunction {
   DECLARE_EXTENSION_FUNCTION("fileSystem.restoreEntry", FILESYSTEM_RESTOREENTRY)
 
  protected:
-  ~FileSystemRestoreEntryFunction() override {}
+  ~FileSystemRestoreEntryFunction() override;
   ResponseAction Run() override;
 };
 
@@ -257,7 +257,7 @@ class FileSystemRequestFileSystemFunction : public ExtensionFunction {
                              FILESYSTEM_REQUESTFILESYSTEM)
 
  protected:
-  ~FileSystemRequestFileSystemFunction() override {}
+  ~FileSystemRequestFileSystemFunction() override;
 
   // ExtensionFunction overrides.
   ExtensionFunction::ResponseAction Run() override;
@@ -270,7 +270,7 @@ class FileSystemGetVolumeListFunction : public ExtensionFunction {
                              FILESYSTEM_GETVOLUMELIST)
 
  protected:
-  ~FileSystemGetVolumeListFunction() override {}
+  ~FileSystemGetVolumeListFunction() override;
 
   // ExtensionFunction overrides.
   ExtensionFunction::ResponseAction Run() override;

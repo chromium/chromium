@@ -30,8 +30,8 @@ mojom("mojom") {
           cpp = "::rmad::ComponentsRepairState_ComponentRepairStatus"
         },
         {
-          mojom = "ash.shimless_rma.mojom.ProvisioningStep"
-          cpp = "::rmad::ProvisionDeviceState_ProvisioningStep"
+          mojom = "ash.shimless_rma.mojom.ProvisioningStatus"
+          cpp = "::rmad::ProvisionStatus_Status"
         },
         {
           mojom = "ash.shimless_rma.mojom.RmadErrorCode"
@@ -52,6 +52,10 @@ mojom("mojom") {
         {
           mojom = "ash.shimless_rma.mojom.CalibrationComponentStatus"
           cpp = "::rmad::CalibrationComponentStatus"
+        },
+        {
+          mojom = "ash.shimless_rma.mojom.FinalizationStatus"
+          cpp = "::rmad::FinalizeStatus_Status"
         },
         {
           mojom = "media.mojom.CdmKeyInformation"

@@ -414,13 +414,12 @@ TEST_F(SynchronizedMinidumpManagerTest, Upload_FailsWhenTooManyRecentDumps) {
 
 TEST_F(SynchronizedMinidumpManagerTest, UploadSucceedsAfterRateLimitPeriodEnd) {
   // Sample parameters.
-  base::Time now = base::Time::Now();
   MinidumpParams params;
 
   FakeSynchronizedMinidumpUploader uploader;
   SynchronizedMinidumpManagerSimple producer;
   producer.SetDumpInfoToWrite(
-      std::make_unique<DumpInfo>("dump1", "log1", now, params));
+      std::make_unique<DumpInfo>("dump1", "log1", base::Time::Now(), params));
 
   const int iters = 3;
   const int max_dumps = SynchronizedMinidumpManager::kRatelimitPeriodMaxDumps;

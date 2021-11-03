@@ -16,8 +16,6 @@ LayerListIterator::LayerListIterator(Layer* root_layer)
 
 LayerListIterator::LayerListIterator(const LayerListIterator& other) = default;
 
-LayerListIterator::~LayerListIterator() = default;
-
 LayerListIterator& LayerListIterator::operator++() {
   // case 0: done
   if (!current_layer_)
@@ -48,15 +46,30 @@ LayerListIterator& LayerListIterator::operator++() {
   return *this;
 }
 
+LayerListIterator::~LayerListIterator() = default;
+
+LayerListConstIterator::LayerListConstIterator(const Layer* root_layer)
+    : iterator_(const_cast<Layer*>(root_layer)) {}
+
+LayerListConstIterator& LayerListConstIterator::operator++() {
+  ++iterator_;
+  return *this;
+}
+
+LayerListConstIterator::~LayerListConstIterator() = default;
+
 LayerListReverseIterator::LayerListReverseIterator(Layer* root_layer)
-    : LayerListIterator(root_layer) {
+    : current_layer_(root_layer) {
+  DCHECK(!root_layer || !root_layer->parent());
+  list_indices_.push_back(0);
   DescendToRightmostInSubtree();
 }
 
-LayerListReverseIterator::~LayerListReverseIterator() = default;
+LayerListReverseIterator::LayerListReverseIterator(
+    const LayerListReverseIterator& other) = default;
 
 // We will only support prefix increment.
-LayerListIterator& LayerListReverseIterator::operator++() {
+LayerListReverseIterator& LayerListReverseIterator::operator++() {
   // case 0: done
   if (!current_layer_)
     return *this;
@@ -90,5 +103,18 @@ void LayerListReverseIterator::DescendToRightmostInSubtree() {
   list_indices_.push_back(last_index);
   DescendToRightmostInSubtree();
 }
+
+LayerListReverseIterator::~LayerListReverseIterator() = default;
+
+LayerListReverseConstIterator::LayerListReverseConstIterator(
+    const Layer* root_layer)
+    : iterator_(const_cast<Layer*>(root_layer)) {}
+
+LayerListReverseConstIterator& LayerListReverseConstIterator::operator++() {
+  ++iterator_;
+  return *this;
+}
+
+LayerListReverseConstIterator::~LayerListReverseConstIterator() = default;
 
 }  // namespace cc

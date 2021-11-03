@@ -1703,10 +1703,8 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
           .Build();
   frame_with_crop_id_and_bounds.render_pass_list.front()->output_rect =
       gfx::Rect{0, 0, 20, 20};
-  frame_with_crop_id_and_bounds.render_pass_list.back()->capture_bounds =
-      std::make_unique<RegionCaptureBounds>(
-          base::flat_map<RegionCaptureCropId, gfx::Rect>{
-              {crop_id, gfx::Rect{0, 0, 13, 13}}});
+  frame_with_crop_id_and_bounds.metadata.capture_bounds =
+      RegionCaptureBounds{{{crop_id, gfx::Rect{0, 0, 13, 13}}}};
   support_->SubmitCompositorFrame(local_surface_id_,
                                   std::move(frame_with_crop_id_and_bounds));
 

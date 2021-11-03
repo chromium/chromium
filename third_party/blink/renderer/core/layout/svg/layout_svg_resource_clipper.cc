@@ -123,7 +123,7 @@ void LayoutSVGResourceClipper::RemoveAllClientsFromCache() {
   clip_content_path_validity_ = kClipContentPathUnknown;
   clip_content_path_.Clear();
   cached_paint_record_.reset();
-  local_clip_bounds_ = FloatRect();
+  local_clip_bounds_ = gfx::RectF();
   MarkAllClientsForInvalidation(kClipCacheInvalidation | kPaintInvalidation);
 }
 
@@ -232,7 +232,7 @@ SVGUnitTypes::SVGUnitType LayoutSVGResourceClipper::ClipPathUnits() const {
 }
 
 AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
-    const FloatRect& reference_box) const {
+    const gfx::RectF& reference_box) const {
   NOT_DESTROYED();
   AffineTransform transform =
       To<SVGClipPathElement>(GetElement())
@@ -245,7 +245,7 @@ AffineTransform LayoutSVGResourceClipper::CalculateClipTransform(
 }
 
 bool LayoutSVGResourceClipper::HitTestClipContent(
-    const FloatRect& object_bounding_box,
+    const gfx::RectF& object_bounding_box,
     const HitTestLocation& location) const {
   NOT_DESTROYED();
   if (!SVGLayoutSupport::IntersectsClipPath(*this, object_bounding_box,
@@ -274,8 +274,8 @@ bool LayoutSVGResourceClipper::HitTestClipContent(
   return false;
 }
 
-FloatRect LayoutSVGResourceClipper::ResourceBoundingBox(
-    const FloatRect& reference_box) {
+gfx::RectF LayoutSVGResourceClipper::ResourceBoundingBox(
+    const gfx::RectF& reference_box) {
   NOT_DESTROYED();
   DCHECK(!SelfNeedsLayout());
 

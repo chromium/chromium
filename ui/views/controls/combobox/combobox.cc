@@ -300,7 +300,10 @@ void Combobox::SetOwnedModel(std::unique_ptr<ui::ComboboxModel> model) {
 }
 
 void Combobox::SetModel(ui::ComboboxModel* model) {
-  DCHECK(model) << "After construction, the model must not be null.";
+  if (!model) {
+    SetOwnedModel(std::make_unique<internal::EmptyComboboxModel>());
+    return;
+  }
 
   if (model_) {
     DCHECK(observation_.IsObservingSource(model_));
@@ -310,6 +313,7 @@ void Combobox::SetModel(ui::ComboboxModel* model) {
   model_ = model;
 
   if (model_) {
+    model_ = model;
     menu_model_ = std::make_unique<ComboboxMenuModel>(this, model_);
     observation_.Observe(model_);
     SetSelectedIndex(model_->GetDefaultIndex());

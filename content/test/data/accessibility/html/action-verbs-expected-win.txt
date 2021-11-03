@@ -16,7 +16,7 @@ ROLE_SYSTEM_DOCUMENT name='Action verbs' READONLY FOCUSABLE
 ++IA2_ROLE_TOGGLE_BUTTON name='ARIA Switch' FOCUSABLE IA2_STATE_CHECKABLE checkable:true default_action='check' action_name='check'
 ++ROLE_SYSTEM_GROUPING
 ++++ROLE_SYSTEM_PUSHBUTTON name='Summary' COLLAPSED FOCUSABLE default_action='press' action_name='press'
-++++++ROLE_SYSTEM_STATICTEXT name='Summary'
+++++++ROLE_SYSTEM_STATICTEXT name='Summary' default_action='click ancestor' action_name='clickAncestor'
 ++ROLE_SYSTEM_COMBOBOX value='Pop-up button' COLLAPSED FOCUSABLE HASPOPUP haspopup:menu default_action='open' action_name='open'
 ++IA2_ROLE_SECTION default_action='click' action_name='click'
 ++++ROLE_SYSTEM_STATICTEXT name='Div with click handler' default_action='click ancestor' action_name='clickAncestor'
@@ -30,5 +30,5 @@ ROLE_SYSTEM_DOCUMENT name='Action verbs' READONLY FOCUSABLE
 ++ROLE_SYSTEM_PUSHBUTTON name='ARIA Button' default_action='click' action_name='click'
 ++ROLE_SYSTEM_PUSHBUTTON name='ARIA button with tab index' FOCUSABLE default_action='press' action_name='press'
 ++ROLE_SYSTEM_PUSHBUTTON name='ARIA button with negative tab index' FOCUSABLE default_action='press' action_name='press'
-++IA2_ROLE_SECTION
+++IA2_ROLE_SECTION default_action='click' action_name='click'
 ++++ROLE_SYSTEM_PUSHBUTTON name='ARIA button that is an active descendant' FOCUSABLE default_action='press' action_name='press'

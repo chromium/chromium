@@ -24,6 +24,11 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
  public:
   AccessibilityIpcErrorBrowserTest() {}
 
+  AccessibilityIpcErrorBrowserTest(const AccessibilityIpcErrorBrowserTest&) =
+      delete;
+  AccessibilityIpcErrorBrowserTest& operator=(
+      const AccessibilityIpcErrorBrowserTest&) = delete;
+
  protected:
   // Convenience method to get the value of a particular AXNode
   // attribute as a UTF-8 string.
@@ -35,8 +40,6 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
     }
     return std::string();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityIpcErrorBrowserTest);
 };
 
 // Failed on Android x86 in crbug.com/1123641.

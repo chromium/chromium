@@ -70,7 +70,7 @@ message EncryptionInfo {
 }
 
 // Tracking information for what order a record appears in.
-message SequencingInformation {
+message SequenceInformation {
   // Sequencing ID (monotonic number, required)
   // Tracks records processing progress and is used for confirming that this
   // and all prior records have been processed. If the same number is
@@ -105,7 +105,7 @@ message EncryptedRecord {
 
   // Sequencing information (required). Must be present to allow
   // tracking and confirmation of the events by server.
-  optional SequencingInformation sequencing_information = 3;
+  optional SequenceInformation sequence_information = 3;
 
   // Compression information (optional).
   optional CompressionInformation compression_information = 4;

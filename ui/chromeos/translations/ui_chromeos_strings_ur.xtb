@@ -131,6 +131,7 @@
 <translation id="2122305276694332719">پوشیدہ نیٹ ورک سے خود کار طور پر منسلک ہونے سے دوسروں کو آپ کا آلہ اور نیٹ ورک کی کچھ ترتیبات دیکھنے میں سہولت ملتی ہے اور اس کی تجویز نہیں کی جاتی ہے۔</translation>
 <translation id="2125607626296734455">خمیر</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، منسلک کریں</translation>
+<translation id="2141347188420181405"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
 <translation id="2142680004883808240">‏YaZHert فونیٹک کی بورڈ کے ساتھ روسی</translation>
 <translation id="2143778271340628265">دستی پراکسی کنفیگریشن</translation>
 <translation id="2163152940313951844">غلط حرف: <ph name="CHARACTER_NAME" /></translation>
@@ -185,6 +186,7 @@
 <translation id="2563185590376525700">مینڈک</translation>
 <translation id="2578394532502990878">تمل فونیٹک</translation>
 <translation id="2579959351793446050">اڑیہ</translation>
+<translation id="2602810353103180630"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> ویڈیو</translation>
 <translation id="2617342710774726426">‏SIM کارڈ مقفل ہے</translation>
 <translation id="2620090360073999360">‏اس وقت Google Drive تک رسائی نہیں ہو سکتی ہے۔</translation>

@@ -27,6 +27,9 @@ class ServiceTestHelper {
     explicit AudioThreadContext(media::AudioManager* audio_manager)
         : audio_manager_(audio_manager) {}
 
+    AudioThreadContext(const AudioThreadContext&) = delete;
+    AudioThreadContext& operator=(const AudioThreadContext&) = delete;
+
     void CreateServiceOnAudioThread(
         mojo::PendingReceiver<mojom::AudioService> receiver) {
       if (!audio_manager_->GetTaskRunner()->BelongsToCurrentThread()) {
@@ -53,8 +56,6 @@ class ServiceTestHelper {
 
     media::AudioManager* const audio_manager_;
     std::unique_ptr<Service> service_;
-
-    DISALLOW_COPY_AND_ASSIGN(AudioThreadContext);
   };
 
   explicit ServiceTestHelper(media::AudioManager* audio_manager)
@@ -63,6 +64,9 @@ class ServiceTestHelper {
     audio_thread_context_->CreateServiceOnAudioThread(
         service_remote_.BindNewPipeAndPassReceiver());
   }
+
+  ServiceTestHelper(const ServiceTestHelper&) = delete;
+  ServiceTestHelper& operator=(const ServiceTestHelper&) = delete;
 
   ~ServiceTestHelper() {
     // Ensure that the AudioThreadContext is destroyed on the correct thread by
@@ -78,8 +82,6 @@ class ServiceTestHelper {
   media::AudioManager* const audio_manager_;
   mojo::Remote<mojom::AudioService> service_remote_;
   scoped_refptr<AudioThreadContext> audio_thread_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTestHelper);
 };
 
 // if |use_audio_thread| is true, AudioManager has a dedicated audio thread and

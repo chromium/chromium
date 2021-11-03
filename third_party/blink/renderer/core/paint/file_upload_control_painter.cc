@@ -89,7 +89,8 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
           layout_file_upload_control_, paint_info.context.GetPaintController()
                                            .CurrentPaintChunkProperties());
       text_bounds.Offset(text_x, text_y);
-      PaintTimingDetector::NotifyTextPaint(EnclosingIntRect(text_bounds));
+      PaintTimingDetector::NotifyTextPaint(
+          ToGfxRect(EnclosingIntRect(text_bounds)));
     }
   }
 

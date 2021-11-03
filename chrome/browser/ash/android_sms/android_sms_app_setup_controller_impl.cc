@@ -60,9 +60,8 @@ AndroidSmsAppSetupControllerImpl::PwaDelegate::GetPwaForUrl(
 
 network::mojom::CookieManager*
 AndroidSmsAppSetupControllerImpl::PwaDelegate::GetCookieManager(
-    const GURL& app_url,
     Profile* profile) {
-  return profile->GetStoragePartitionForUrl(app_url)
+  return profile->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -113,14 +112,12 @@ void AndroidSmsAppSetupControllerImpl::SetUpApp(const GURL& app_url,
   // TODO(crbug.com/1069974): The cookie source url must be faked here because
   // otherwise, this would fail to set a secure cookie if |app_url| is insecure.
   // Consider instead to use url::Replacements to force the scheme to be https.
-  pwa_delegate_->GetCookieManager(app_url, profile_)
-      ->SetCanonicalCookie(
-          cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
-          options,
-          base::BindOnce(&AndroidSmsAppSetupControllerImpl::
-                             OnSetRememberDeviceByDefaultCookieResult,
-                         weak_ptr_factory_.GetWeakPtr(), app_url, install_url,
-                         std::move(callback)));
+  pwa_delegate_->GetCookieManager(profile_)->SetCanonicalCookie(
+      cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"), options,
+      base::BindOnce(&AndroidSmsAppSetupControllerImpl::
+                         OnSetRememberDeviceByDefaultCookieResult,
+                     weak_ptr_factory_.GetWeakPtr(), app_url, install_url,
+                     std::move(callback)));
 }
 
 absl::optional<web_app::AppId> AndroidSmsAppSetupControllerImpl::GetPwa(
@@ -138,13 +135,12 @@ void AndroidSmsAppSetupControllerImpl::DeleteRememberDeviceByDefaultCookie(
       network::mojom::CookieDeletionFilter::New());
   filter->url = app_url;
   filter->cookie_name = kDefaultToPersistCookieName;
-  pwa_delegate_->GetCookieManager(app_url, profile_)
-      ->DeleteCookies(
-          std::move(filter),
-          base::BindOnce(&AndroidSmsAppSetupControllerImpl::
-                             OnDeleteRememberDeviceByDefaultCookieResult,
-                         weak_ptr_factory_.GetWeakPtr(), app_url,
-                         std::move(callback)));
+  pwa_delegate_->GetCookieManager(profile_)->DeleteCookies(
+      std::move(filter),
+      base::BindOnce(&AndroidSmsAppSetupControllerImpl::
+                         OnDeleteRememberDeviceByDefaultCookieResult,
+                     weak_ptr_factory_.GetWeakPtr(), app_url,
+                     std::move(callback)));
 }
 
 void AndroidSmsAppSetupControllerImpl::RemoveApp(
@@ -210,13 +206,12 @@ void AndroidSmsAppSetupControllerImpl::OnSetRememberDeviceByDefaultCookieResult(
       network::mojom::CookieDeletionFilter::New());
   filter->url = app_url;
   filter->cookie_name = kMigrationCookieName;
-  pwa_delegate_->GetCookieManager(app_url, profile_)
-      ->DeleteCookies(
-          std::move(filter),
-          base::BindOnce(
-              &AndroidSmsAppSetupControllerImpl::OnDeleteMigrationCookieResult,
-              weak_ptr_factory_.GetWeakPtr(), app_url, install_url,
-              std::move(callback)));
+  pwa_delegate_->GetCookieManager(profile_)->DeleteCookies(
+      std::move(filter),
+      base::BindOnce(
+          &AndroidSmsAppSetupControllerImpl::OnDeleteMigrationCookieResult,
+          weak_ptr_factory_.GetWeakPtr(), app_url, install_url,
+          std::move(callback)));
 }
 
 void AndroidSmsAppSetupControllerImpl::OnDeleteMigrationCookieResult(
@@ -332,13 +327,11 @@ void AndroidSmsAppSetupControllerImpl::SetMigrationCookie(
   // TODO(crbug.com/1069974): The cookie source url must be faked here because
   // otherwise, this would fail to set a secure cookie if |app_url| is insecure.
   // Consider instead to use url::Replacements to force the scheme to be https.
-  pwa_delegate_->GetCookieManager(app_url, profile_)
-      ->SetCanonicalCookie(
-          cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
-          options,
-          base::BindOnce(
-              &AndroidSmsAppSetupControllerImpl::OnSetMigrationCookieResult,
-              weak_ptr_factory_.GetWeakPtr(), app_url, std::move(callback)));
+  pwa_delegate_->GetCookieManager(profile_)->SetCanonicalCookie(
+      cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"), options,
+      base::BindOnce(
+          &AndroidSmsAppSetupControllerImpl::OnSetMigrationCookieResult,
+          weak_ptr_factory_.GetWeakPtr(), app_url, std::move(callback)));
 }
 
 void AndroidSmsAppSetupControllerImpl::OnSetMigrationCookieResult(

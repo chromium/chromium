@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 56 tests; 53 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 tests; 52 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Test cookie domain attribute parsing
 PASS Return cookie for a domain match
 PASS No cookie returned for domain mismatch (subdomains differ post-redirect)
@@ -48,7 +48,6 @@ PASS No cookie returned for domain mismatch (first attribute is a different subd
 PASS Cookies with same name, path, and domain (differing only in leading '.') overwrite each other ('.' second)
 PASS Cookies with same name, path, and domain (differing only in leading '.') overwrite each other ('.' first)
 PASS No cookie returned for domain with single dot ('.') value.
-PASS No cookie returned with single dot ('.') domain value (aka host-cookie) on non-host subdomain redirect
 PASS Return cookie with valid domain after domain with single dot ('.') value.
 FAIL Empty domain treated as host cookie 1 assert_equals: The cookie was set as expected. expected "test=47b; test=47b" but got "test=47; test=47b"
 FAIL Empty domain treated as host cookie 2 assert_equals: The cookie was set as expected. expected "test=48b; test=48b" but got "test=48; test=48b"

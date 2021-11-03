@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
+
 chrome.extension.onMessage.addListener(function(request, sender) {
   if (request.msg == "feedIcon") {
     // First validate that all the URLs have the right schema.
     var input = [];
     for (var i = 0; i < request.feeds.length; ++i) {
-      var a = document.createElement('a');
-      a.href = request.feeds[i].href;
-      if (a.protocol == "http:" || a.protocol == "https:") {
+      const feedUrl = new URL(request.feeds[i].href);
+      if (feedUrl.protocol == "http:" || feedUrl.protocol == "https:") {
         input.push(request.feeds[i]);
       } else {
         console.log('Warning: feed source rejected (wrong protocol): ' +
@@ -24,11 +25,12 @@ chrome.extension.onMessage.addListener(function(request, sender) {
     var feeds = {};
     feeds[sender.tab.id] = input;
     chrome.storage.local.set(feeds, function() {
+      // TODO(crbug.com/1187361): i18n.getMessage() isn't implemented for
+      // service worker-based extensions.
+      const action_title = isServiceWorker ? "Click to subscribe..." :
+            chrome.i18n.getMessage("rss_subscription_action_title");
       // Enable the page action icon.
-      chrome.pageAction.setTitle(
-        { tabId: sender.tab.id,
-          title: chrome.i18n.getMessage("rss_subscription_action_title")
-        });
+      chrome.pageAction.setTitle({ tabId: sender.tab.id, title: action_title });
       chrome.pageAction.show(sender.tab.id);
     });
   } else if (request.msg == "feedDocument") {

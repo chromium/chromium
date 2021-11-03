@@ -50,6 +50,11 @@ class ExtensionActionViewController
       Browser* browser,
       ExtensionsContainer* extensions_container);
 
+  // Returns whether any of `actions` given have access to the `web_contents`.
+  static bool AnyActionHasCurrentSiteAccess(
+      const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+      content::WebContents* web_contents);
+
   ExtensionActionViewController(const ExtensionActionViewController&) = delete;
   ExtensionActionViewController& operator=(
       const ExtensionActionViewController&) = delete;

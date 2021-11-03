@@ -61,6 +61,8 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -602,6 +604,32 @@ public class AppMenuPropertiesDelegateUnitTest {
                 readingListMenuItemAdd, readingListMenuItemDelete, null);
         verify(readingListMenuItemAdd).setVisible(false);
         verify(readingListMenuItemDelete).setVisible(false);
+    }
+
+    @Test
+    public void shouldCheckBookmarkStar() {
+        BookmarkId id = new BookmarkId(0, BookmarkType.NORMAL);
+        doReturn(id).when(mBookmarkBridge).getUserBookmarkIdForTab(mTab);
+        Assert.assertTrue(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
+    }
+
+    @Test
+    public void shouldCheckBookmarkStar_ReadingListTypeSwapping() {
+        TestValues bookmarkItemRowTestValues = new TestValues();
+        bookmarkItemRowTestValues.addFeatureFlagOverride(ChromeFeatureList.READ_LATER, true);
+        bookmarkItemRowTestValues.addFieldTrialParamOverride(
+                ChromeFeatureList.READ_LATER, "allow_bookmark_type_swapping", "true");
+        FeatureList.setTestValues(bookmarkItemRowTestValues);
+
+        BookmarkId id = new BookmarkId(0, BookmarkType.READING_LIST);
+        doReturn(id).when(mBookmarkBridge).getUserBookmarkIdForTab(mTab);
+        Assert.assertTrue(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
+    }
+
+    @Test
+    public void shouldCheckBookmarkStar_NullBookmarkBridge() {
+        mBookmarkBridgeSupplier.set(null);
+        Assert.assertFalse(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
     }
 
     private void setUpMocksForPageMenu() {

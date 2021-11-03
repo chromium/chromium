@@ -13,6 +13,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/windows_version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -38,7 +39,11 @@ HRESULT GetDataTransferManagerHandles(
     IDataTransferManagerInterop** data_transfer_manager_interop,
     IDataTransferManager** data_transfer_manager) {
   // If the required WinRT functionality is not available, fail the operation
-  if (!base::win::ResolveCoreWinRTDelayload() ||
+  // Note: Though the Share APIs are present starting in Windows 8, they are
+  // only fulfilled when invoked from within a UWP app container. Starting in
+  // Windows 10 they are fulfilled for all callers.
+  if ((base::win::GetVersion() < base::win::Version::WIN10) ||
+      !base::win::ResolveCoreWinRTDelayload() ||
       !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
     return E_FAIL;
   }

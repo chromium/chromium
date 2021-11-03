@@ -66,7 +66,7 @@ size_t DistantTab::hashOfUserVisibleProperties() {
   return std::hash<std::string>()(ss.str());
 }
 
-DistantSession::DistantSession() {}
+DistantSession::DistantSession() = default;
 
 DistantSession::DistantSession(sync_sessions::SessionSyncService* sync_service,
                                const std::string& tag) {
@@ -84,51 +84,48 @@ DistantSession::DistantSession(sync_sessions::SessionSyncService* sync_service,
   }
 }
 
-DistantSession::~DistantSession() {}
+DistantSession::~DistantSession() = default;
 
 void DistantSession::InitWithSyncedSession(
     const sync_sessions::SyncedSession* synced_session,
-    sync_sessions::OpenTabsUIDelegate* open_tabs) {
+    sync_sessions::OpenTabsUIDelegate* open_tabs_delegate) {
   tag = synced_session->session_tag;
   name = synced_session->session_name;
   modified_time = synced_session->modified_time;
   device_type = synced_session->device_type;
 
-  // Order tabs by their visual position within window.
-  for (const auto& kv : synced_session->windows) {
-    for (const auto& session_tab : kv.second->wrapped_window.tabs) {
-      AddTabToDistantSession(*session_tab, synced_session->session_tag, this);
-    }
+  std::vector<const sessions::SessionTab*> open_tabs;
+  open_tabs_delegate->GetForeignSessionTabs(tag, &open_tabs);
+  for (const sessions::SessionTab* session_tab : open_tabs) {
+    AddTabToDistantSession(*session_tab, tag, this);
   }
 }
 
-SyncedSessions::SyncedSessions() {}
+SyncedSessions::SyncedSessions() = default;
 
 SyncedSessions::SyncedSessions(
     sync_sessions::SessionSyncService* sync_service) {
   DCHECK(sync_service);
-  // Reload Sync open tab sesions.
+  // Reload Sync open tab sessions.
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       sync_service->GetOpenTabsUIDelegate();
   if (open_tabs) {
-    // Iterating through all remote sessions, then all remote windows, then all
-    // remote tabs to retrieve the tabs to display to the user. This will
-    // flatten all of those data into a sequential vector of tabs.
-
+    // Iterating through all remote sessions, then retrieving the tabs to
+    // display to the user.
     std::vector<const sync_sessions::SyncedSession*> sessions;
     open_tabs->GetAllForeignSessions(&sessions);
     for (const auto* session : sessions) {
-      std::unique_ptr<DistantSession> distant_session(new DistantSession());
+      auto distant_session = std::make_unique<DistantSession>();
       distant_session->InitWithSyncedSession(session, open_tabs);
       // Don't display sessions with no tabs.
-      if (distant_session->tabs.size() > 0)
+      if (!distant_session->tabs.empty())
         sessions_.push_back(std::move(distant_session));
     }
   }
   std::sort(sessions_.begin(), sessions_.end(), SortSessionsByTime);
 }
 
-SyncedSessions::~SyncedSessions() {}
+SyncedSessions::~SyncedSessions() = default;
 
 // Returns the session at index |index|.
 DistantSession const* SyncedSessions::GetSession(size_t index) const {

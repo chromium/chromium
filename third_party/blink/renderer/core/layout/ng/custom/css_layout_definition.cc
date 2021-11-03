@@ -126,7 +126,7 @@ bool CSSLayoutDefinition::Instance::Layout(
     v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                          v8::MicrotasksScope::kRunMicrotasks);
     if (!definition_->layout_
-             ->Invoke(instance_.NewLocal(isolate), children, edges, constraints,
+             ->Invoke(instance_.Get(isolate), children, edges, constraints,
                       style_map)
              .To(&return_value)) {
       return false;
@@ -264,7 +264,7 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
     v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
                                          v8::MicrotasksScope::kRunMicrotasks);
     if (!definition_->intrinsic_sizes_
-             ->Invoke(instance_.NewLocal(isolate), children, edges, style_map)
+             ->Invoke(instance_.Get(isolate), children, edges, style_map)
              .To(&return_value)) {
       return false;
     }

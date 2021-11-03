@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -130,7 +131,7 @@ class CollectUserDataAction : public Action,
   ProcessActionCallback callback_;
 
   // Maps login choice identifiers to the corresponding login details.
-  std::map<std::string, std::unique_ptr<LoginDetails>> login_details_map_;
+  base::flat_map<std::string, std::unique_ptr<LoginDetails>> login_details_map_;
 
   base::WeakPtrFactory<CollectUserDataAction> weak_ptr_factory_{this};
 };

@@ -37,6 +37,10 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
   DeviceServiceURLLoaderFactory() = default;
 
+  DeviceServiceURLLoaderFactory(const DeviceServiceURLLoaderFactory&) = delete;
+  DeviceServiceURLLoaderFactory& operator=(
+      const DeviceServiceURLLoaderFactory&) = delete;
+
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -71,8 +75,6 @@ class DeviceServiceURLLoaderFactory : public network::SharedURLLoaderFactory {
  private:
   friend class base::RefCounted<DeviceServiceURLLoaderFactory>;
   ~DeviceServiceURLLoaderFactory() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceServiceURLLoaderFactory);
 };
 
 void BindDeviceServiceReceiver(

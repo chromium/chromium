@@ -24,6 +24,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="109942774857561566">Tôi chán quá</translation>
 <translation id="1104084341931202936">Hiển thị các tùy chọn cài đặt hỗ trợ tiếp cận</translation>
 <translation id="1104621072296271835">Các thiết bị của bạn hoạt động hiệu quả hơn khi kết nối với nhau</translation>
+<translation id="1111781754511998498">Máy chiếu</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> khuyên bạn nên cập nhật <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="1119348796022671382">Chế độ màu theo giao diện dùng các màu trích xuất từ hình nền để tạo màu nhẹ nhàng cho giao diện.</translation>
 <translation id="112308213915226829">Tự động ẩn kệ</translation>
@@ -131,6 +132,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1882897271359938046">Đang phản chiếu tới <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Mở khóa bằng vân tay</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Độ phân giải đã được đổi thành <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
+<translation id="1915307458270490472">Kết thúc</translation>
 <translation id="1919743966458266018">Phím tắt để mở trình quản lý tác vụ đã thay đổi. Vui lòng sử dụng <ph name="NEW_SHORTCUT" /> thay vì <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Nhấp chuột tự động</translation>
 <translation id="1928739107511554905">Để cập nhật, hãy dùng màn hình cảm ứng để khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
@@ -372,6 +374,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3665889125180354336">Ghi âm</translation>
 <translation id="3680908746918359504">Xóa tất cả các điểm đánh dấu</translation>
 <translation id="36813544980941320">Điện thoại và <ph name="DEVICE_NAME" /> của bạn sẽ dùng chung mạng Wi-Fi</translation>
+<translation id="3701206655856637070">Giờ đây, bạn có thể thay đổi vị trí lưu ảnh chụp màn hình</translation>
 <translation id="3702809606464356667">Đang hiển thị các cửa sổ của không gian làm việc hiện tại, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của mọi không gian làm việc</translation>
 <translation id="3702846122927433391">Dân số ở Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -416,6 +419,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3969043077941541451">Đang tắt</translation>
 <translation id="397105322502079400">Đang tính...</translation>
 <translation id="3977512764614765090">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc.</translation>
+<translation id="3986082989454912832">Trả lời</translation>
 <translation id="3995138139523574647">Thiết bị USB-C (cổng phía sau, bên phải)</translation>
 <translation id="40062176907008878">Chữ viết tay</translation>
 <translation id="4017989525502048489">Con trỏ laser</translation>
@@ -455,7 +459,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
-<translation id="4292904812939562398">Các ứng dụng đã dùng gần đây</translation>
 <translation id="429402653707266969">Bật/tắt vị trí thanh công cụ</translation>
 <translation id="4294319844246081198">Xin chào <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Xóa tất cả <ph name="COUNT" /> thông báo</translation>
@@ -561,6 +564,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Tắt thông báo</translation>
 <translation id="4946376291507881335">Chụp</translation>
 <translation id="495046168593986294">Cuộn lên</translation>
 <translation id="4952936045814352993">Bạn không dùng được tính năng Tìm điện thoại khi đã tắt chuông báo</translation>
@@ -904,6 +908,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="7595633564847427181">T2</translation>
 <translation id="7600875258240007829">Xem tất cả thông báo</translation>
 <translation id="7607002721634913082">Đã tạm dừng</translation>
+<translation id="7610198039767537854">Xem các ảnh gần đây trong thư viện ảnh trên điện thoại của bạn trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Trung tính</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7631906263969450674">Bút đánh dấu</translation>
@@ -1129,6 +1134,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="925832987464884575">Ẩn bản xem trước</translation>
 <translation id="938963181863597773">Trên lịch của tôi có sự kiện gì?</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
+<translation id="951991426597076286">Từ chối</translation>
 <translation id="98515147261107953">Khổ ngang</translation>
 <translation id="990277280839877440">Đã đóng cửa sổ <ph name="WINDOW_TITILE" />.</translation>
 </translationbundle>

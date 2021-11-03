@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
@@ -97,6 +98,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
@@ -107,6 +109,21 @@
 namespace blink {
 
 namespace {
+
+// This feature will only take effect if `kTwoCopyCanvasCapture` is also
+// enabled.
+const base::Feature kOneCopyCanvasCapture{"OneCopyCanvasCapture",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kTwoCopyCanvasCapture {
+  "TwoCopyCanvasCapture",
+// For ChromeOS, currently just enable this feature on X86 CPU, see b/203695564.
+#if defined(OS_MAC) || (defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // These values come from the WhatWG spec.
 constexpr int kDefaultCanvasWidth = 300;
@@ -696,21 +713,49 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
       listener_needs_new_frame_capture = true;
   }
 
-  if (listener_needs_new_frame_capture) {
-    SourceImageStatus status;
-    scoped_refptr<StaticBitmapImage> source_image =
-        GetSourceImageForCanvasInternal(&status);
-    if (status != kNormalSourceImageStatus)
-      return;
-    for (CanvasDrawListener* listener : listeners_) {
-      if (listener->NeedsNewFrame()) {
-        // Here we need to use the SharedGpuContext as some of the images may
-        // have been originated with other contextProvider, but we internally
-        // need a context_provider that has a RasterInterface available.
-        listener->SendNewFrame(source_image,
-                               SharedGpuContext::ContextProviderWrapper());
-      }
+  if (!listener_needs_new_frame_capture)
+    return;
+
+  scoped_refptr<StaticBitmapImage> source_image;
+  if (!copier_) {
+    copier_ = std::make_unique<StaticBitmapImageToVideoFrameCopier>(
+        base::FeatureList::IsEnabled(kTwoCopyCanvasCapture));
+  }
+  for (CanvasDrawListener* listener : listeners_) {
+    if (!listener->NeedsNewFrame())
+      continue;
+
+    auto callback = listener->GetNewFrameCallback();
+    const bool can_discard_alpha = listener->CanDiscardAlpha();
+
+    // First attempt to copy directly from the rendering context to a video
+    // frame. Not all rendering contexts need to support this (for contexts
+    // where GetSourceImageForCanvasInternal is zero-copy, this is superfluous).
+    if (can_discard_alpha &&
+        base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
+      context_->CopyRenderingResultsToVideoFrame(
+          copier_->GetAcceleratedVideoFramePool(
+              SharedGpuContext::ContextProviderWrapper()),
+          kBackBuffer, gfx::ColorSpace::CreateREC709(), callback);
+      if (!callback)
+        continue;
     }
+
+    // If that fails, then create a StaticBitmapImage for the contents of
+    // the RenderingContext.
+    if (!source_image) {
+      SourceImageStatus status;
+      source_image = GetSourceImageForCanvasInternal(&status);
+      if (status != kNormalSourceImageStatus)
+        return;
+    }
+
+    // Here we need to use the SharedGpuContext as some of the images may
+    // have been originated with other contextProvider, but we internally
+    // need a context_provider that has a RasterInterface available.
+    copier_->Convert(source_image, can_discard_alpha,
+                     SharedGpuContext::ContextProviderWrapper(),
+                     std::move(callback));
   }
 }
 

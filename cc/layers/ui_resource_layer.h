@@ -23,7 +23,8 @@ class CC_EXPORT UIResourceLayer : public Layer {
   UIResourceLayer(const UIResourceLayer&) = delete;
   UIResourceLayer& operator=(const UIResourceLayer&) = delete;
 
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   void SetLayerTreeHost(LayerTreeHost* host) override;
 

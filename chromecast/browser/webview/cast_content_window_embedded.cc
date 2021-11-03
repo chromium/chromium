@@ -25,14 +25,12 @@ constexpr char kKeyRemoteControlModeEnabled[] = "remoteControlModeEnabled";
 }  // namespace
 
 CastContentWindowEmbedded::CastContentWindowEmbedded(
-    base::WeakPtr<CastContentWindow::Delegate> delegate,
     mojom::CastWebViewParamsPtr params,
     CastWindowEmbedder* cast_window_embedder,
     bool force_720p_resolution)
-    : CastContentWindow(delegate, std::move(params)),
+    : CastContentWindow(std::move(params)),
       cast_window_embedder_(cast_window_embedder),
       force_720p_resolution_(force_720p_resolution) {
-  DCHECK(delegate_);
   DCHECK(cast_window_embedder_);
 
   cast_window_embedder_->AddEmbeddedWindow(this);
@@ -141,11 +139,8 @@ void CastContentWindowEmbedded::SetHostContext(base::Value host_context) {
 
 void CastContentWindowEmbedded::NotifyVisibilityChange(
     VisibilityType visibility_type) {
-  if (delegate_) {
-    delegate_->OnVisibilityChange(visibility_type);
-  }
-  for (auto& observer : observer_list_) {
-    observer.OnVisibilityChange(visibility_type);
+  for (auto& observer : observers_) {
+    observer->OnVisibilityChange(visibility_type);
   }
 }
 

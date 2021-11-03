@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that SourceMap and X-SourceMap http headers are propagated to scripts in the front-end.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await SourcesTestRunner.startDebuggerTestPromise();
   var debuggerModel = TestRunner.debuggerModel;

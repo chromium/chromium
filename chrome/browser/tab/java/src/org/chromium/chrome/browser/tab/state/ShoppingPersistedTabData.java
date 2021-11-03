@@ -17,6 +17,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
@@ -412,9 +413,15 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             return;
         }
         PersistedTabData.from(tab,
-                (storage, id, factoryCallback)
+                (data, storage, id, factoryCallback)
                         -> {
-                    factoryCallback.onResult(new ShoppingPersistedTabData(tab, storage, id));
+                    ShoppingPersistedTabData shoppingPersistedTabData =
+                            new ShoppingPersistedTabData(tab, storage, id);
+                    PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
+                        shoppingPersistedTabData.deserializeAndLog(data);
+                        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                                () -> { factoryCallback.onResult(shoppingPersistedTabData); });
+                    });
                 },
                 (supplierCallback)
                         -> {

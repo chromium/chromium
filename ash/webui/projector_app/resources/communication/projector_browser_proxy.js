@@ -93,6 +93,14 @@ export class ProjectorBrowserProxy {
    * @return {!Promise<boolean>}
    */
   installSoda() {}
+
+  /**
+   * Gets the list of pending screencasts that are uploading to drive.
+   * @return {Promise<Array<projectorApp.PendingScreencast>>}
+   */
+  // TODO(b/204372280): return
+  // "Promise<!Array<!projectorApp.PendingScreencast>>"
+  getPendingScreencasts() {}
 }
 
 /**
@@ -154,6 +162,10 @@ export class ProjectorBrowserProxyImpl {
   /** @override */
   installSoda() {
     return sendWithPromise('installSoda');
+  }
+  /** @override */
+  getPendingScreencasts() {
+    return sendWithPromise('getPendingScreencasts');
   }
 }
 

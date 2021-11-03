@@ -240,7 +240,7 @@ class MockWebContentsDelegate : public WebContentsDelegate {
           blink::ProtocolHandlerSecurityLevel::kStrict)
       : security_level_(security_level) {}
   MOCK_METHOD2(HandleContextMenu,
-               bool(RenderFrameHost*, const ContextMenuParams&));
+               bool(RenderFrameHost&, const ContextMenuParams&));
   MOCK_METHOD4(RegisterProtocolHandler,
                void(RenderFrameHost*, const std::string&, const GURL&, bool));
   MOCK_METHOD(void, NavigationStateChanged, (WebContents*, InvalidateTypes));
@@ -2114,6 +2114,10 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
     last_zoom_in_(false) {
   }
 
+  ContentsZoomChangedDelegate(const ContentsZoomChangedDelegate&) = delete;
+  ContentsZoomChangedDelegate& operator=(const ContentsZoomChangedDelegate&) =
+      delete;
+
   int GetAndResetContentsZoomChangedCallCount() {
     int count = contents_zoom_changed_call_count_;
     contents_zoom_changed_call_count_ = 0;
@@ -2133,8 +2137,6 @@ class ContentsZoomChangedDelegate : public WebContentsDelegate {
  private:
   int contents_zoom_changed_call_count_;
   bool last_zoom_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentsZoomChangedDelegate);
 };
 
 // Tests that some mouseehweel events get turned into browser zoom requests.
@@ -2796,12 +2798,12 @@ TEST_F(WebContentsImplTest, HandleContextMenuDelegate) {
   MockWebContentsDelegate delegate;
   contents()->SetDelegate(&delegate);
 
-  TestRenderFrameHost* rfh = main_test_rfh();
-  EXPECT_CALL(delegate, HandleContextMenu(rfh, ::testing::_))
+  TestRenderFrameHost& main_rfh = *main_test_rfh();
+  EXPECT_CALL(delegate, HandleContextMenu(::testing::_, ::testing::_))
       .WillOnce(::testing::Return(true));
 
   ContextMenuParams params;
-  contents()->ShowContextMenu(rfh, mojo::NullAssociatedRemote(), params);
+  contents()->ShowContextMenu(main_rfh, mojo::NullAssociatedRemote(), params);
 
   contents()->SetDelegate(nullptr);
 }

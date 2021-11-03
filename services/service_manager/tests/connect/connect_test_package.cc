@@ -5,8 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <list>
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/macros.h"

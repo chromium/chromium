@@ -148,7 +148,10 @@ void NetworkFeaturePodButtonLegacy::OnThemeChanged() {
 }
 
 const char* NetworkFeaturePodButtonLegacy::GetClassName() const {
-  return "NetworkFeaturePodButtonLegacy";
+  // The name returned is intentionally missing the "Legacy" suffix to avoid
+  // updating tests that search for this node, both now and when this class
+  // is removed and is replaced by a new NetworkFeaturePodButton.
+  return "NetworkFeaturePodButton";
 }
 
 void NetworkFeaturePodButtonLegacy::Update() {

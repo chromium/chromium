@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendGooglePhotosPhotosEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
-import {isNonEmptyArray, isNullOrArray} from './utils.js';
+import {EventType, SelectCollectionEvent, SelectGooglePhotosCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendCurrentWallpaperAssetIdEvent, SendGooglePhotosCountEvent, SendGooglePhotosPhotosEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendPendingWallpaperAssetIdEvent, SendVisibleEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from './utils.js';
 
 /**
  * @fileoverview Helper functions for communicating between trusted and
@@ -23,6 +23,17 @@ import {isNonEmptyArray, isNullOrArray} from './utils.js';
 export function sendCollections(target, collections) {
   /** @type {!SendCollectionsEvent} */
   const event = {type: EventType.SEND_COLLECTIONS, collections};
+  target.postMessage(event, untrustedOrigin);
+}
+
+/**
+ * Sends the count of Google Photos photos to untrusted.
+ * @param {!Window} target the untrusted iframe window to send the message to.
+ * @param {?number} count
+ */
+export function sendGooglePhotosCount(target, count) {
+  /** @type {!SendGooglePhotosCountEvent} */
+  const event = {type: EventType.SEND_GOOGLE_PHOTOS_COUNT, count};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -218,6 +229,7 @@ export function validateReceivedData(event, expectedEventType) {
   /**
    * @type {
    *   SendCollectionsEvent|
+   *   SendGooglePhotosCountEvent|
    *   SendGooglePhotosPhotosEvent|
    *   SendImagesEvent|
    *   SendCurrentWallpaperAssetIdEvent|
@@ -232,6 +244,9 @@ export function validateReceivedData(event, expectedEventType) {
     case EventType.SEND_COLLECTIONS:
       assert(isNonEmptyArray(data.collections), 'Expected collections array');
       return data.collections;
+    case EventType.SEND_GOOGLE_PHOTOS_COUNT:
+      assert(isNullOrNumber(data.count), 'Expected photos count');
+      return data.count;
     case EventType.SEND_GOOGLE_PHOTOS_PHOTOS:
       assert(isNullOrArray(data.photos), 'Expected photos array');
       return data.photos;

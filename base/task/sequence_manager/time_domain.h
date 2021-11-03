@@ -10,6 +10,7 @@
 #include "base/containers/intrusive_heap.h"
 #include "base/task/sequence_manager/lazy_now.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -32,21 +33,11 @@ class TaskQueueImpl;
 // TaskQueue maintains its own next wake-up time and communicates it
 // to the TimeDomain, which aggregates wake-ups across registered TaskQueues
 // into a global wake-up, which ultimately gets passed to the ThreadController.
-class BASE_EXPORT TimeDomain {
+class BASE_EXPORT TimeDomain : public TickClock {
  public:
   TimeDomain(const TimeDomain&) = delete;
   TimeDomain& operator=(const TimeDomain&) = delete;
-  virtual ~TimeDomain();
-
-  // Returns LazyNow in TimeDomain's time.
-  // Can be called from any thread.
-  // TODO(alexclarke): Make this main thread only.
-  virtual LazyNow CreateLazyNow() const = 0;
-
-  // Evaluates TimeDomain's time.
-  // Can be called from any thread.
-  // TODO(alexclarke): Make this main thread only.
-  virtual TimeTicks Now() const = 0;
+  ~TimeDomain() override;
 
   // Returns the ready time for the next pending delayed task, is_null() if the
   // next task can run immediately, or is_max() if there are no more delayed
@@ -99,6 +90,11 @@ class BASE_EXPORT TimeDomain {
   // TODO(scheduler-dev): Pass SequenceManager in the constructor.
   virtual void OnRegisterWithSequenceManager(
       internal::SequenceManagerImpl* sequence_manager);
+
+  // Removes all canceled delayed tasks from the front of the queue. After
+  // calling this, GetNextDelayedWakeUp() is guaranteed to return a wake up time
+  // for a non-canceled task.
+  void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
 
  private:
   friend class internal::TaskQueueImpl;

@@ -260,12 +260,6 @@ TEST_P(OpenInTabHelperTest, OpenInForExportableFilesWithDefaultFileName) {
       l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE) +
       ExtensionForMimeType(OpenInTabHelperTest::GetParam());
 
-  // .rtf files return a default name without extension.
-  if (OpenInTabHelperTest::GetParam() == OpenInMimeType::kMimeTypeRTF) {
-    default_file_name =
-        l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE);
-  }
-
   EXPECT_NSEQ(base::SysUTF8ToNSString(default_file_name),
               delegate_.lastSuggestedFileName);
 }

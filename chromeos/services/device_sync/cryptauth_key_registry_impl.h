@@ -40,6 +40,9 @@ class CryptAuthKeyRegistryImpl : public CryptAuthKeyRegistry {
   // Registers the prefs used by this class to the given |registry|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  CryptAuthKeyRegistryImpl(const CryptAuthKeyRegistryImpl&) = delete;
+  CryptAuthKeyRegistryImpl& operator=(const CryptAuthKeyRegistryImpl&) = delete;
+
   ~CryptAuthKeyRegistryImpl() override;
 
  private:
@@ -56,8 +59,6 @@ class CryptAuthKeyRegistryImpl : public CryptAuthKeyRegistry {
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyRegistryImpl);
 };
 
 }  // namespace device_sync

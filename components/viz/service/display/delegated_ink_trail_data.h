@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -34,6 +35,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkTrailData {
  public:
   DelegatedInkTrailData();
   ~DelegatedInkTrailData();
+  std::unique_ptr<ui::InputPredictor> CreatePredictor(std::string predictor);
 
   void AddPoint(const gfx::DelegatedInkPoint& point);
   void PredictPoints(std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,

@@ -95,8 +95,8 @@ NGLayoutResult::NGLayoutResult(
     EnsureRareData()->table_column_count_ = *builder->table_column_count_;
   if (builder->math_data_.has_value())
     EnsureRareData()->math_layout_data_ = builder->math_data_;
-  if (builder->grid_data_)
-    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_data_);
+  if (builder->grid_layout_data_)
+    EnsureRareData()->grid_layout_data_ = std::move(builder->grid_layout_data_);
 }
 
 NGLayoutResult::NGLayoutResult(
@@ -110,6 +110,10 @@ NGLayoutResult::NGLayoutResult(
   if (builder->bfc_block_offset_ != builder->line_box_bfc_block_offset_) {
     EnsureRareData()->line_box_bfc_block_offset =
         builder->line_box_bfc_block_offset_;
+  }
+  if (builder->annotation_block_offset_adjustment_) {
+    EnsureRareData()->annotation_block_offset_adjustment =
+        builder->annotation_block_offset_adjustment_;
   }
   if (builder->clearance_after_line_)
     EnsureRareData()->clearance_after_line = builder->clearance_after_line_;

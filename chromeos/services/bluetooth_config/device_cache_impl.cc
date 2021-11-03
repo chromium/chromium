@@ -10,18 +10,6 @@
 
 namespace chromeos {
 namespace bluetooth_config {
-namespace {
-
-mojom::PairedBluetoothDevicePropertiesPtr
-GeneratePairedBluetoothDeviceProperties(const device::BluetoothDevice* device) {
-  mojom::PairedBluetoothDevicePropertiesPtr properties =
-      mojom::PairedBluetoothDeviceProperties::New();
-  properties->device_properties = GenerateBluetoothDeviceMojoProperties(device);
-  // TODO(khorimoto): Add paired device nickname property.
-  return properties;
-}
-
-}  // namespace
 
 DeviceCacheImpl::UnpairedDevice::UnpairedDevice(
     const device::BluetoothDevice* device)
@@ -32,11 +20,14 @@ DeviceCacheImpl::UnpairedDevice::~UnpairedDevice() = default;
 
 DeviceCacheImpl::DeviceCacheImpl(
     AdapterStateController* adapter_state_controller_param,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceNameManager* device_name_manager)
     : DeviceCache(adapter_state_controller_param),
-      bluetooth_adapter_(std::move(bluetooth_adapter)) {
+      bluetooth_adapter_(std::move(bluetooth_adapter)),
+      device_name_manager_(device_name_manager) {
   adapter_state_controller_observation_.Observe(adapter_state_controller());
   adapter_observation_.Observe(bluetooth_adapter_.get());
+  device_name_manager_observation_.Observe(device_name_manager_);
 
   FetchInitialDeviceLists();
 }
@@ -139,6 +130,19 @@ void DeviceCacheImpl::DeviceBatteryChanged(
     device::BluetoothDevice* device,
     device::BluetoothDevice::BatteryType type) {
   DeviceChanged(adapter, device);
+}
+
+void DeviceCacheImpl::OnDeviceNicknameChanged(const std::string& device_id) {
+  for (device::BluetoothDevice* device : bluetooth_adapter_->GetDevices()) {
+    if (device->GetIdentifier() != device_id)
+      continue;
+
+    // The device should be paired or its nickname shouldn't have been able to
+    // be changed.
+    DCHECK(device->IsPaired());
+    DeviceChanged(bluetooth_adapter_.get(), device);
+    return;
+  }
 }
 
 void DeviceCacheImpl::FetchInitialDeviceLists() {
@@ -253,6 +257,17 @@ void DeviceCacheImpl::SortUnpairedDeviceList() {
         // A higher RSSI value means a stronger signal.
         return first_inquiry_rssi > second_inquiry_rssi;
       });
+}
+
+mojom::PairedBluetoothDevicePropertiesPtr
+DeviceCacheImpl::GeneratePairedBluetoothDeviceProperties(
+    const device::BluetoothDevice* device) {
+  mojom::PairedBluetoothDevicePropertiesPtr properties =
+      mojom::PairedBluetoothDeviceProperties::New();
+  properties->device_properties = GenerateBluetoothDeviceMojoProperties(device);
+  properties->nickname =
+      device_name_manager_->GetDeviceNickname(device->GetIdentifier());
+  return properties;
 }
 
 }  // namespace bluetooth_config

@@ -120,7 +120,8 @@ void ChromePersonalizationAppUiDelegate::FetchImagesForCollection(
       std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
           collection_id);
 
-  wallpaper_images_info_fetcher->Start(base::BindOnce(
+  auto* wallpaper_images_info_fetcher_ptr = wallpaper_images_info_fetcher.get();
+  wallpaper_images_info_fetcher_ptr->Start(base::BindOnce(
       &ChromePersonalizationAppUiDelegate::OnFetchCollectionImages,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
       std::move(wallpaper_images_info_fetcher)));
@@ -272,6 +273,7 @@ void ChromePersonalizationAppUiDelegate::SelectWallpaper(
 
 void ChromePersonalizationAppUiDelegate::SelectLocalImage(
     const base::FilePath& path,
+    ash::WallpaperLayout layout,
     bool preview_mode,
     SelectLocalImageCallback callback) {
   if (local_images_.count(path) == 0) {
@@ -283,8 +285,7 @@ void ChromePersonalizationAppUiDelegate::SelectLocalImage(
   pending_select_local_image_callback_ = std::move(callback);
 
   WallpaperController::Get()->SetCustomWallpaper(
-      GetAccountId(), path,
-      ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, preview_mode,
+      GetAccountId(), path, layout, preview_mode,
       base::BindOnce(&ChromePersonalizationAppUiDelegate::OnLocalImageSelected,
                      backend_weak_ptr_factory_.GetWeakPtr()));
 }

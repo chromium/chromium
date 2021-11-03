@@ -70,11 +70,9 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVTVEA() {
 // Creates a MediaFoundationVEA for Win 7 or later. If |compatible_with_win7| is
 // true, VEA is limited to a subset of features that is compatible with Win 7.
 std::unique_ptr<VideoEncodeAccelerator> CreateMediaFoundationVEA(
-    bool compatible_with_win7,
-    bool use_async_h264) {
+    bool compatible_with_win7) {
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new MediaFoundationVideoEncodeAccelerator(compatible_with_win7,
-                                                use_async_h264));
+      new MediaFoundationVideoEncodeAccelerator(compatible_with_win7));
 }
 #endif
 
@@ -113,8 +111,7 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 #if defined(OS_WIN)
   vea_factory_functions.push_back(base::BindRepeating(
       &CreateMediaFoundationVEA,
-      gpu_preferences.enable_media_foundation_vea_on_windows7,
-      !gpu_workarounds.disable_media_foundation_async_h264_encoding));
+      gpu_preferences.enable_media_foundation_vea_on_windows7));
 #endif
   return vea_factory_functions;
 }

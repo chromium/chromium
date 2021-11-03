@@ -25,8 +25,23 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
     OtpAuthenticationResponse();
     ~OtpAuthenticationResponse();
 
-    OtpAuthenticationResponse& with_did_succeed(bool b) {
-      did_succeed = b;
+    enum Result {
+      kUnknown = 0,
+      // The OTP authentication succeeded.
+      kSuccess = 1,
+      // The OTP authentication was cancelled.
+      kFlowCancelled = 2,
+      // The OTP authentication failed due to unexpected generic errors.
+      kGenericError = 3,
+      // The OTP authentication failed due to auth errors.
+      kAuthenticationError = 4,
+      // The OTP authentication failed due to virtual card retrieval errors.
+      // Only applicable for virtual cards.
+      kVirtualCardRetrievalError = 5,
+    };
+
+    OtpAuthenticationResponse& with_result(const Result& r) {
+      result = r;
       return *this;
     }
 
@@ -39,7 +54,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
       cvc = std::u16string(s);
       return *this;
     }
-    bool did_succeed = false;
+    Result result = kUnknown;
     const CreditCard* card;
     std::u16string cvc;
   };

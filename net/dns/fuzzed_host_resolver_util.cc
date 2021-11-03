@@ -123,8 +123,8 @@ DnsConfig GetFuzzedDnsConfig(FuzzedDataProvider* data_provider) {
                                 "bar", "localhost", "localhost6"};
     const char* hostname = data_provider->PickValueInArray(kHostnames);
     net::IPAddress address = FuzzIPAddress(data_provider);
-    config.hosts[net::DnsHostsKey(hostname, net::GetAddressFamily(address))] =
-        address;
+    config.hosts[net::DnsHostsKey(hostname, net::GetAddressFamily(address))]
+        .push_back(address);
   }
 
   config.unhandled_options = data_provider->ConsumeBool();

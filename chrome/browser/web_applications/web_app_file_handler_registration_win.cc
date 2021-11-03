@@ -32,12 +32,11 @@ bool FileHandlingIconsSupportedByOs() {
   return false;
 }
 
-void RegisterFileHandlersWithOsTask(
-    const AppId& app_id,
-    const std::wstring& app_name,
-    const base::FilePath& profile_path,
-    const std::set<std::wstring>& file_extensions,
-    const std::wstring& app_name_extension) {
+void RegisterFileHandlersWithOsTask(const AppId& app_id,
+                                    const std::wstring& app_name,
+                                    const base::FilePath& profile_path,
+                                    const apps::FileHandlers& file_handlers,
+                                    const std::wstring& app_name_extension) {
   const base::FilePath web_app_path =
       GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL());
   absl::optional<base::FilePath> app_specific_launcher_path =
@@ -54,13 +53,46 @@ void RegisterFileHandlersWithOsTask(
   const base::FilePath icon_path =
       internals::GetIconFilePath(web_app_path, base::AsString16(app_name));
 
-  bool result = ShellUtil::AddFileAssociations(
-      GetProgIdForApp(profile_path, app_id), app_specific_launcher_command,
-      user_visible_app_name, L"", icon_path, icon_path, file_extensions);
+  // Although this ProgId won't be used to launch web apps with file handlers,
+  // it makes it easy to tell if the web app is installed in a profile, and is
+  // consistent with the way web apps that handle protocols are registered.
+  ShellUtil::AddApplicationClass(GetProgIdForApp(profile_path, app_id),
+                                 app_specific_launcher_command,
+                                 user_visible_app_name, app_name, icon_path);
+
+  // Iterate over the file handlers and add file associations for each
+  // of them, using the `display_name` in the file handler, not the ProgId for
+  // the app, so that we can have separate display names in Windows Explorer and
+  // separate icons for the file handler in the Open With context menu.
+  std::vector<std::wstring> file_handler_progids;
+  bool result = true;
+  for (const auto& file_handler : file_handlers) {
+    std::set<std::string> file_extensions =
+        apps::GetFileExtensionsFromFileHandler(file_handler);
+    std::set<std::wstring> file_extensions_wide;
+    for (const auto& file_extension : file_extensions) {
+      // The file extensions in apps::FileHandler include a '.' prefix, which
+      // must be removed.
+      file_extensions_wide.insert(base::UTF8ToWide(file_extension.substr(1)));
+    }
+
+    file_handler_progids.push_back(
+        GetProgIdForAppFileHandler(profile_path, app_id, file_extensions));
+    result &= ShellUtil::AddFileAssociations(
+        file_handler_progids.back(), app_specific_launcher_command,
+        user_visible_app_name,
+        base::AsWString(base::StringPiece16(file_handler.display_name)),
+        icon_path, icon_path, file_extensions_wide);
+  }
   if (!result)
     RecordRegistration(RegistrationResult::kFailToAddFileAssociation);
   else
     RecordRegistration(RegistrationResult::kSuccess);
+  // Store the app file handler ProgIds in the registry so that we can
+  // unregister the app file handler ProgIds at uninstall time. At uninstall
+  // time, all we have is the `app_id`.
+  ShellUtil::RegisterFileHandlerProgIdsForAppId(
+      GetProgIdForApp(profile_path, app_id), file_handler_progids);
 }
 
 void RegisterFileHandlersWithOs(const AppId& app_id,
@@ -72,21 +104,12 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
   const std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile->GetPath());
 
-  const std::set<std::string> file_extensions =
-      apps::GetFileExtensionsFromFileHandlers(file_handlers);
-  std::set<std::wstring> file_extensions_wide;
-  for (const auto& file_extension : file_extensions) {
-    // The file extensions in apps::FileHandler include a '.' prefix, which must
-    // be removed.
-    file_extensions_wide.insert(base::UTF8ToWide(file_extension.substr(1)));
-  }
-
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RegisterFileHandlersWithOsTask, app_id,
                      base::UTF8ToWide(app_name), profile->GetPath(),
-                     file_extensions_wide, app_name_extension),
+                     file_handlers, app_name_extension),
       base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
                      app_id, base::DoNothing()));
 }

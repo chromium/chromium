@@ -7,8 +7,8 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -29,12 +29,12 @@ class CORE_EXPORT ClipPathClipper {
   // Returns the reference box used by CSS clip-path. For HTML objects,
   // this is the border box of the element. For SVG objects this is the
   // object bounding box.
-  static FloatRect LocalReferenceBox(const LayoutObject&);
+  static gfx::RectF LocalReferenceBox(const LayoutObject&);
 
   // Returns the bounding box of the computed clip path, which could be
   // smaller or bigger than the reference box. Returns nullopt if the
   // clip path is invalid.
-  static absl::optional<FloatRect> LocalClipPathBoundingBox(
+  static absl::optional<gfx::RectF> LocalClipPathBoundingBox(
       const LayoutObject&);
 
   // Returns true if the object has a clip-path that must be implemented with

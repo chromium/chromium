@@ -45,12 +45,6 @@ MediaValuesDynamic::MediaValuesDynamic(LocalFrame* frame,
   DCHECK(frame_);
 }
 
-MediaValues* MediaValuesDynamic::Copy() const {
-  return MakeGarbageCollected<MediaValuesDynamic>(
-      frame_, viewport_dimensions_overridden_, viewport_width_override_,
-      viewport_height_override_);
-}
-
 bool MediaValuesDynamic::ComputeLength(double value,
                                        CSSPrimitiveValue::UnitType type,
                                        int& result) const {
@@ -193,13 +187,6 @@ bool MediaValuesDynamic::HasValues() const {
 void MediaValuesDynamic::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   MediaValues::Trace(visitor);
-}
-
-void MediaValuesDynamic::OverrideViewportDimensions(double width,
-                                                    double height) {
-  viewport_dimensions_overridden_ = true;
-  viewport_width_override_ = width;
-  viewport_height_override_ = height;
 }
 
 }  // namespace blink

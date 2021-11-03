@@ -85,6 +85,9 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // if there is no incomplete tab switch.
   base::TimeTicks widget_visibility_request_timestamp_;
 
+  // Cache the feature value for faster lookups.
+  bool is_tab_switch_metric2_feature_enabled_;
+
   base::WeakPtrFactory<ContentToVisibleTimeReporter> weak_ptr_factory_{this};
 };
 

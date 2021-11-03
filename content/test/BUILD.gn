@@ -563,7 +563,6 @@ static_library("test_support") {
       "//ppapi/host",
       "//ppapi/proxy",
       "//ppapi/proxy:test_support",
-      "//ppapi/shared_impl",
       "//ppapi/shared_impl:test_support",
     ]
   }
@@ -2494,6 +2493,7 @@ test("content_unittests") {
     "//third_party/blink/public/common:font_enumeration_table_proto",
     "//third_party/blink/public/common:headers",
     "//third_party/icu",
+    "//third_party/inspector_protocol:crdtp",
     "//third_party/inspector_protocol:crdtp_test",
     "//third_party/leveldatabase",
     "//third_party/libyuv",
@@ -2593,13 +2593,6 @@ test("content_unittests") {
       ]
       sources +=
           [ "../browser/media/capture/desktop_capture_device_unittest.cc" ]
-    }
-
-    # TODO(crbug.com/1210549): Slow capturer should be removed once new path is stable.
-    if (is_chromeos_ash) {
-      sources += [
-        "../browser/media/capture/slow_capture_overlay_chromeos_unittest.cc",
-      ]
     }
   }
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/publishers/web_apps_crosapi_factory.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
 #include "chrome/browser/apps/app_service/subscriber_crosapi_factory.h"
+#include "chrome/browser/ash/crosapi/authentication_ash.h"
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
@@ -117,7 +118,8 @@ Profile* GetAshProfile() {
 }  // namespace
 
 CrosapiAsh::CrosapiAsh()
-    : automation_ash_(std::make_unique<AutomationAsh>()),
+    : authentication_ash_(std::make_unique<AuthenticationAsh>()),
+      automation_ash_(std::make_unique<AutomationAsh>()),
       browser_service_host_ash_(std::make_unique<BrowserServiceHostAsh>()),
       browser_version_service_ash_(std::make_unique<BrowserVersionServiceAsh>(
           g_browser_process->component_updater())),
@@ -191,6 +193,11 @@ void CrosapiAsh::BindReceiver(
       receiver_set_.Add(this, std::move(pending_receiver), crosapi_id);
   if (!disconnect_handler.is_null())
     disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
+}
+
+void CrosapiAsh::BindAuthentication(
+    mojo::PendingReceiver<mojom::Authentication> receiver) {
+  authentication_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindAutomationDeprecated(

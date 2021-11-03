@@ -64,7 +64,8 @@ enum class LayoutTransitionState {
 // The progress of the animator.
 @property(nonatomic, assign) CGFloat progressWhenInterrupted;
 // Set of UI elements which are animated during view reveal transitions.
-@property(nonatomic, strong) NSHashTable<id<ViewRevealingAnimatee>>* animatees;
+@property(nonatomic, strong)
+    NSMutableOrderedSet<id<ViewRevealingAnimatee>>* animatees;
 // The current state tracking whether the revealed view is undergoing a
 // transition of layout. This is |::Inactive| initially. It is set to |::Active|
 // when the transition layout is created.  It is set to |::Finishing| when the
@@ -100,7 +101,7 @@ enum class LayoutTransitionState {
     _revealedHeight = baseViewHeight - revealedCoverHeight;
     _remainingHeight = _revealedHeight - peekedHeight;
     _currentState = initialState;
-    _animatees = [NSHashTable weakObjectsHashTable];
+    _animatees = [[NSMutableOrderedSet alloc] init];
     _layoutTransitionState = LayoutTransitionState::Inactive;
   }
   return self;

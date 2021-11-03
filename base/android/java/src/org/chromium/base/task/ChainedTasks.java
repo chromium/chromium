@@ -16,13 +16,18 @@ import javax.annotation.concurrent.GuardedBy;
  * Allows chaining multiple tasks on arbitrary threads, with the next task posted when one
  * completes.
  *
+ * How this differs from SequencedTaskRunner:
+ * Deferred posting of subsequent tasks allows more time for Android framework tasks to run
+ * (e.g. input events). As such, this class really only makes sense when submitting tasks to
+ * SingleThreadTaskRunners.
+ *
  * Threading:
  * - This class is threadsafe and all methods may be called from any thread.
  * - Tasks may run with arbitrary TaskTraits, unless tasks are coalesced, in which case all tasks
  *   must run on the same thread.
  */
 public class ChainedTasks {
-    private LinkedList<Pair<TaskTraits, Runnable>> mTasks = new LinkedList<>();
+    private final LinkedList<Pair<TaskTraits, Runnable>> mTasks = new LinkedList<>();
     @GuardedBy("mTasks")
     private boolean mFinalized;
     private volatile boolean mCanceled;
@@ -48,7 +53,7 @@ public class ChainedTasks {
      */
     public void add(TaskTraits traits, Runnable task) {
         synchronized (mTasks) {
-            if (mFinalized) throw new IllegalStateException("Must not call add() after start()");
+            assert !mFinalized : "Must not call add() after start()";
             mTasks.add(new Pair<>(traits, task));
         }
     }
@@ -71,7 +76,7 @@ public class ChainedTasks {
      */
     public void start(final boolean coalesceTasks) {
         synchronized (mTasks) {
-            if (mFinalized) throw new IllegalStateException("Cannot call start() several times");
+            assert !mFinalized :"Cannot call start() several times";
             mFinalized = true;
         }
         if (mTasks.isEmpty()) return;

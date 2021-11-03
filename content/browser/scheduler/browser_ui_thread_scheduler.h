@@ -46,6 +46,10 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   using Handle = BrowserTaskQueues::Handle;
 
   BrowserUIThreadScheduler();
+
+  BrowserUIThreadScheduler(const BrowserUIThreadScheduler&) = delete;
+  BrowserUIThreadScheduler& operator=(const BrowserUIThreadScheduler&) = delete;
+
   ~BrowserUIThreadScheduler();
 
   // Setting the DefaultTaskRunner is up to the caller.
@@ -93,8 +97,6 @@ class CONTENT_EXPORT BrowserUIThreadScheduler {
   int user_input_active_handle_count = 0;
   bool browser_prioritize_native_work_ = false;
   base::TimeDelta browser_prioritize_native_work_after_input_end_ms_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserUIThreadScheduler);
 };
 
 }  // namespace content

@@ -56,6 +56,9 @@ class CONTENT_EXPORT RenderMessageFilter
                       RenderWidgetHelper* render_widget_helper,
                       MediaInternals* media_internals);
 
+  RenderMessageFilter(const RenderMessageFilter&) = delete;
+  RenderMessageFilter& operator=(const RenderMessageFilter&) = delete;
+
   // BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() const override;
@@ -99,8 +102,6 @@ class CONTENT_EXPORT RenderMessageFilter
   MediaInternals* media_internals_;
 
   base::WeakPtrFactory<RenderMessageFilter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderMessageFilter);
 };
 
 }  // namespace content

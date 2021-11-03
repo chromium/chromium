@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
@@ -73,7 +74,7 @@ ClientStatus& ErrorStatusWithDefault(ClientStatus& status) {
 
 ClientStatus GetRe2Value(
     const RequiredField& required_field,
-    const std::map<field_formatter::Key, std::string>& mappings,
+    const base::flat_map<field_formatter::Key, std::string>& mappings,
     bool use_contains,
     std::string* re2_value,
     bool* case_sensitive) {
@@ -125,7 +126,7 @@ RequiredFieldsFallbackHandler::~RequiredFieldsFallbackHandler() = default;
 
 RequiredFieldsFallbackHandler::RequiredFieldsFallbackHandler(
     const std::vector<RequiredField>& required_fields,
-    const std::map<field_formatter::Key, std::string>& fallback_values,
+    const base::flat_map<field_formatter::Key, std::string>& fallback_values,
     ActionDelegate* delegate)
     : required_fields_(required_fields),
       fallback_values_(fallback_values),

@@ -111,6 +111,11 @@ class TestLeakyNetworkConnectionObserver
     tracker->AddLeakyNetworkConnectionObserver(this);
   }
 
+  TestLeakyNetworkConnectionObserver(
+      const TestLeakyNetworkConnectionObserver&) = delete;
+  TestLeakyNetworkConnectionObserver& operator=(
+      const TestLeakyNetworkConnectionObserver&) = delete;
+
   // NetworkConnectionObserver implementation:
   void OnConnectionChanged(network::mojom::ConnectionType type) override {
     connection_type_ = type;
@@ -129,8 +134,6 @@ class TestLeakyNetworkConnectionObserver
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   network::mojom::ConnectionType connection_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLeakyNetworkConnectionObserver);
 };
 
 // A helper class to call NetworkConnectionTracker::GetConnectionType().

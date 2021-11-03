@@ -140,6 +140,11 @@ class UI_DEVTOOLS_EXPORT UIElement {
   // Get the sources for the element.
   std::vector<Source> GetSources();
 
+  // Get the ID of the backing UI element. This is used to locate
+  // a UIElement by ID set on the browser side and different than
+  // node_id().
+  virtual int GetBackingElementID();
+
   virtual bool DispatchMouseEvent(protocol::DOM::MouseEvent* event);
 
   virtual bool DispatchKeyEvent(protocol::DOM::KeyEvent* event);

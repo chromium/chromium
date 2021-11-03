@@ -350,13 +350,30 @@ ScriptPromise MediaDevices::produceCropId(
       element_union->IsHTMLDivElement()
           ? static_cast<Element*>(element_union->GetAsHTMLDivElement())
           : static_cast<Element*>(element_union->GetAsHTMLIFrameElement());
-  const base::GUID crop_id = element->MarkWithRegionCaptureCropId();
-  DCHECK(crop_id.is_valid());
-  // Guaranteed because the empty Token is not a valid UUID-v4.
-  DCHECK_NE(crop_id, blink::TokenToGUID(base::Token()));
+
+  const RegionCaptureCropId* const old_crop_id =
+      element->GetRegionCaptureCropId();
+  if (old_crop_id) {  // produceCropId() previously called on this element.
+    DCHECK(!old_crop_id->value().is_zero());
+    resolver->Resolve(WTF::String(
+        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString()));
+    return promise;
+  }
+
+  // TODO(crbug.com/1247761): Produce the crop-ID in the browser process,
+  // where it's free from interference by potential malicious applications
+  // trying to produce collisions. Also, we need it there in order to
+  // validate IDs provided to cropTo() for (1) validity and (2) association
+  // with the current browsing context.
+  const base::GUID new_crop_id = base::GUID::GenerateRandomV4();
+  element->SetRegionCaptureCropId(
+      std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(new_crop_id)));
 
   // TODO(crbug.com/1247761): Delay resolution until ack from Viz received.
-  const std::string& serialized_crop_id = crop_id.AsLowercaseString();
+  // Multiple calls to produceCropId() will be handled by returning distinct
+  // Promises which are all fulfilled (in sequence) when the first one is
+  // fulfilled.
+  const std::string& serialized_crop_id = new_crop_id.AsLowercaseString();
   resolver->Resolve(
       WTF::String(serialized_crop_id.c_str(), serialized_crop_id.length()));
   return promise;

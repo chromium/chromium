@@ -5,9 +5,9 @@
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, GooglePromotedDestinationId, PrintPreviewHeaderElement, PrintPreviewModelElement, PrintPreviewPluralStringProxyImpl, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {TestPluralStringProxy} from '../test_plural_string_proxy.js';
-import {fakeDataBind} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 window.header_test = {};
 const header_test = window.header_test;

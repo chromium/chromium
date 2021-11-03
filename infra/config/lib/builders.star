@@ -29,7 +29,7 @@ load("@stdlib//internal/graph.star", "graph")
 load("//project.star", "settings")
 load("./args.star", "args")
 load("./branches.star", "branches")
-load("./chromium_tests_builder_config.star", "ctbc", "register_builder_config")
+load("./builder_config.star", "builder_config", "register_builder_config")
 load("./listify.star", "listify")
 
 ################################################################################
@@ -96,7 +96,8 @@ os = struct(
     MAC_10_14 = os_enum("Mac-10.14", os_category.MAC),
     MAC_10_15 = os_enum("Mac-10.15", os_category.MAC),
     MAC_11 = os_enum("Mac-11", os_category.MAC),
-    MAC_DEFAULT = os_enum("Mac-10.15", os_category.MAC),
+    # TODO(crbug.com/1254953) Remove 10.15 once builders have been migrated to Mac11
+    MAC_DEFAULT = os_enum("Mac-10.15|Mac-11", os_category.MAC),
     MAC_ANY = os_enum("Mac", os_category.MAC),
     WINDOWS_7 = os_enum("Windows-7", os_category.WINDOWS),
     WINDOWS_8_1 = os_enum("Windows-8.1", os_category.WINDOWS),
@@ -183,12 +184,12 @@ xcode = struct(
     x12d4e = xcode_enum("12d4e"),
     # Xcode 12.5. Requires Mac11+ OS.
     x12e262 = xcode_enum("12e262"),
-    # in use by ios-webkit-tot
-    x12e262wk = xcode_enum("12e262wk"),
     # Default Xcode 13 for chromium iOS (release candidate).
     x13main = xcode_enum("13a233"),
     # Xcode 13.0 latest beta (release candidate).
     x13latestbeta = xcode_enum("13a233"),
+    # in use by ios-webkit-tot
+    x13wk = xcode_enum("13a1030dwk"),
 )
 
 # Git revision of the compilator_watcher luciexe sub_build binary for chromium
@@ -740,7 +741,7 @@ def builder(
             by_timestamp = resultdb_index_by_timestamp,
         )
 
-    if builder_spec and builder_spec.execution_mode == ctbc.execution_mode.TEST:
+    if builder_spec and builder_spec.execution_mode == builder_config.execution_mode.TEST:
         if triggered_by != args.DEFAULT:
             fail("triggered testers cannot specify triggered_by")
         triggered_by = [builder_spec.parent]
@@ -893,18 +894,29 @@ def _bootstrap_properties(ctx):
             bootstrap = bootstrap_node.props.bootstrap
 
             properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-            non_bootstrapped_properties = {
-                "$bootstrap": {
-                    "top_level_project": {
-                        "repo": {
-                            "host": "chromium.googlesource.com",
-                            "project": "chromium/src",
-                        },
-                        "ref": settings.ref,
+            properties_property = {
+                "top_level_project": {
+                    "repo": {
+                        "host": "chromium.googlesource.com",
+                        "project": "chromium/src",
                     },
-                    "properties_file": "infra/config/generated/{}".format(properties_file),
-                    "exe": builder.exe,
+                    "ref": settings.ref,
                 },
+                "properties_file": "infra/config/generated/{}".format(properties_file),
+            }
+            exe_property = {
+                "exe": builder.exe,
+            }
+
+            # TODO(crbug.com/1261886) Once bootstrapper is changed to use
+            # $bootstrap/properties and $bootstrap/exe, we can remove code for
+            # setting $bootstrap
+            bootstrap_property = dict(properties_property)
+            bootstrap_property.update(exe_property)
+            non_bootstrapped_properties = {
+                "$bootstrap/properties": properties_property,
+                "$bootstrap/exe": exe_property,
+                "$bootstrap": bootstrap_property,
                 "led_builder_is_bootstrapped": True,
             }
             builder_properties = json.decode(builder.properties)

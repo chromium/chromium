@@ -67,7 +67,7 @@ pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
 
 void AddressPoolManager::GetPoolUsedSuperPages(
     pool_handle handle,
-    std::bitset<kMaxSuperPages>& used) {
+    std::bitset<kMaxSuperPagesInPool>& used) {
   Pool* pool = GetPool(handle);
   if (!pool)
     return;
@@ -128,7 +128,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
 #endif
 
   total_bits_ = length / kSuperPageSize;
-  PA_CHECK(total_bits_ <= kMaxSuperPages);
+  PA_CHECK(total_bits_ <= kMaxSuperPagesInPool);
 
   PartitionAutoLock scoped_lock(lock_);
   alloc_bitset_.reset();
@@ -144,7 +144,7 @@ void AddressPoolManager::Pool::Reset() {
 }
 
 void AddressPoolManager::Pool::GetUsedSuperPages(
-    std::bitset<kMaxSuperPages>& used) {
+    std::bitset<kMaxSuperPagesInPool>& used) {
   PartitionAutoLock scoped_lock(lock_);
 
   PA_DCHECK(IsInitialized());
@@ -360,13 +360,14 @@ void AddressPoolManager::MarkUsed(pool_handle handle,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(handle == kNonBRPPoolHandle);
-    PA_DCHECK((length %
-               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
-    SetBitmap(
-        AddressPoolManagerBitmap::non_brp_pool_bits_,
-        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
-        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
+    PA_DCHECK(handle == kRegularPoolHandle);
+    PA_DCHECK(
+        (length % AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap) ==
+        0);
+    SetBitmap(AddressPoolManagerBitmap::regular_pool_bits_,
+              ptr_as_uintptr >>
+                  AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
+              length >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap);
   }
 }
 
@@ -398,19 +399,21 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   } else
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   {
-    PA_DCHECK(handle == kNonBRPPoolHandle);
-    PA_DCHECK((length %
-               AddressPoolManagerBitmap::kBytesPer1BitOfNonBRPPoolBitmap) == 0);
+    PA_DCHECK(handle == kRegularPoolHandle);
+    PA_DCHECK(
+        (length % AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap) ==
+        0);
     ResetBitmap(
-        AddressPoolManagerBitmap::non_brp_pool_bits_,
-        ptr_as_uintptr >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap,
-        length >> AddressPoolManagerBitmap::kBitShiftOfNonBRPPoolBitmap);
+        AddressPoolManagerBitmap::regular_pool_bits_,
+        ptr_as_uintptr >>
+            AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap,
+        length >> AddressPoolManagerBitmap::kBitShiftOfRegularPoolBitmap);
   }
 }
 
 void AddressPoolManager::ResetForTesting() {
   PartitionAutoLock guard(AddressPoolManagerBitmap::GetLock());
-  AddressPoolManagerBitmap::non_brp_pool_bits_.reset();
+  AddressPoolManagerBitmap::regular_pool_bits_.reset();
   AddressPoolManagerBitmap::brp_pool_bits_.reset();
 }
 

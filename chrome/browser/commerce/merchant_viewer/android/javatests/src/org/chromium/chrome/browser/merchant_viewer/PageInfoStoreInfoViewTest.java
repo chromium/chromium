@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.merchant_viewer;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -35,9 +36,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
@@ -77,7 +78,6 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 @Batch(Batch.PER_CLASS)
-@DisabledTest(message = "crbug.com/1252308")
 public class PageInfoStoreInfoViewTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
@@ -224,6 +224,7 @@ public class PageInfoStoreInfoViewTest {
         openPageInfo();
         verifyStoreRowShowing(true);
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID)).perform(click());
+        onView(withId(R.id.page_info_url_wrapper)).check(doesNotExist());
         verify(mMockStoreInfoActionHandler, times(1))
                 .onStoreInfoClicked(any(MerchantTrustSignalsV2.class));
     }
@@ -250,7 +251,8 @@ public class PageInfoStoreInfoViewTest {
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID))
                 .check((v, noMatchException) -> {
                     if (noMatchException != null) throw noMatchException;
-                    try {
+                    // Allow disk writes and slow calls to render from UI thread.
+                    try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                         mRenderTestRule.render(v, renderId);
                     } catch (IOException e) {
                         assert false : "Render test failed due to " + e;

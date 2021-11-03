@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
 #include "ui/gl/gl_features.h"
+#include "ui/gl/gl_surface_egl.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
@@ -115,10 +116,6 @@ const base::FeatureParam<std::string>
     kDisableIncreaseBufferCountForHighFrameRate{
         &kIncreaseBufferCountForHighFrameRate,
         "DisableIncreaseBufferCountForHighFrameRate", ""};
-
-const base::Feature kUseRealVideoColorSpaceForDisplay{
-    "UseRealVideoColorSpaceForDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
@@ -328,8 +325,10 @@ bool IsDrDcEnabled() {
   if (!IsAImageReaderEnabled())
     return false;
 
-  // Currently not supported when passthrough command decoder is enabled.
-  if (UsePassthroughCommandDecoder())
+  // Do not enable DrDc if angle context virtualization group is not supported.
+  // Both gpu main thread and compositor gpu thread should be mapped to a
+  // different angle's backend context and hence different virtualization group.
+  if (!gl::GLSurfaceEGL::IsANGLEContextVirtualizationSupported())
     return false;
 
   return base::FeatureList::IsEnabled(kEnableDrDc);
@@ -457,20 +456,6 @@ bool IncreaseBufferCountForHighFrameRate() {
 bool IncreaseBufferCountForWebViewOverlays() {
   return IsAndroidSurfaceControlEnabled() &&
          base::FeatureList::IsEnabled(kWebViewSurfaceControl);
-}
-
-bool UseRealVideoColorSpaceForDisplay() {
-  // We need Android S for proper color space support in SurfaceControl.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_S)
-    return false;
-
-  // Technically if this is false, media hardcodes sRGB always, so there is no
-  // need to hard code it in display compositor. Still check for feature in case
-  // of subtle bugs in a long way color space travels from MediaCodec to
-  // SurfaceControl.
-  return base::FeatureList::IsEnabled(
-      features::kUseRealVideoColorSpaceForDisplay);
 }
 
 #endif

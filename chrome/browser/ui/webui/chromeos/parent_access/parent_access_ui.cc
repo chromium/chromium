@@ -116,7 +116,9 @@ void ParentAccessUI::SetUpResources() {
   // Forward data to the WebUI.
   source->AddResourcePath("parent_access_controller.js",
                           IDR_PARENT_ACCESS_CONTROLLER_JS);
+  source->AddResourcePath("parent_access_app.js", IDR_PARENT_ACCESS_APP_JS);
   source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
+  source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
 
   source->AddLocalizedString("pageTitle", IDS_PARENT_ACCESS_PAGE_TITLE);
   source->AddResourcePath("parent_access_ui.mojom-lite.js",
@@ -125,7 +127,9 @@ void ParentAccessUI::SetUpResources() {
   source->UseStringsJs();
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
   source->AddString("webviewUrl", web_content_url_.spec());
-  source->AddString("eventOriginFilter", web_content_url_.spec());
+  // Set the filter to accept postMessages from the webviewURL's origin only.
+  source->AddString("eventOriginFilter",
+                    web_content_url_.GetWithEmptyPath().spec());
 
   // Enables use of test_loader.html
   webui::SetJSModuleDefaults(source.get());

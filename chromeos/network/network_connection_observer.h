@@ -17,6 +17,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
  public:
   NetworkConnectionObserver();
 
+  NetworkConnectionObserver(const NetworkConnectionObserver&) = delete;
+  NetworkConnectionObserver& operator=(const NetworkConnectionObserver&) =
+      delete;
+
   // Called when a connection to network |service_path| is requested by
   // calling NetworkConnectionHandler::ConnectToNetwork.
   virtual void ConnectToNetworkRequested(const std::string& service_path);
@@ -37,9 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
 
  protected:
   virtual ~NetworkConnectionObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkConnectionObserver);
 };
 
 }  // namespace chromeos

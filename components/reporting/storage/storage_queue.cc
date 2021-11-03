@@ -38,7 +38,7 @@
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
-#include "components/reporting/storage/resources/resource_interface.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/status.h"
@@ -230,7 +230,7 @@ Status StorageQueue::Init() {
   // This is especially imporant for non-periodic queues, but won't harm
   // others either.
   if (first_sequencing_id_ < next_sequencing_id_) {
-    Start<ReadContext>(UploaderInterface::INIT_RESUME, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::INIT_RESUME, this);
   }
   return Status::StatusOK();
 }
@@ -488,6 +488,17 @@ Status StorageQueue::WriteHeaderAndBlock(
     base::StringPiece current_record_digest,
     scoped_refptr<StorageQueue::SingleFile> file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+
+  // Test only: Simulate failure if requested
+  if (test_injected_failures_.count(
+          test::StorageQueueOperationKind::kWriteBlock) > 0 &&
+      test_injected_failures_[test::StorageQueueOperationKind::kWriteBlock]
+          .count(next_sequencing_id_)) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"Simulated failure, seq=",
+                                base::NumberToString(next_sequencing_id_)}));
+  }
+
   // Prepare header.
   RecordHeader header;
   // Pad to the whole frame, if necessary.
@@ -544,6 +555,17 @@ Status StorageQueue::WriteHeaderAndBlock(
 
 Status StorageQueue::WriteMetadata(base::StringPiece current_record_digest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
+
+  // Test only: Simulate failure if requested
+  if (test_injected_failures_.count(
+          test::StorageQueueOperationKind::kWriteMetadata) > 0 &&
+      test_injected_failures_[test::StorageQueueOperationKind::kWriteMetadata]
+          .count(next_sequencing_id_)) {
+    return Status(error::INTERNAL,
+                  base::StrCat({"Simulated failure, seq=",
+                                base::NumberToString(next_sequencing_id_)}));
+  }
+
   // Synchronously write the metafile.
   ASSIGN_OR_RETURN(
       scoped_refptr<SingleFile> meta_file,
@@ -791,7 +813,9 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
         storage_queue_(storage_queue->weakptr_factory_.GetWeakPtr()) {
     DCHECK(storage_queue.get());
     DCHECK(async_start_upload_cb_);
-    DCHECK_LT(reason, UploaderInterface::MAX_REASON);
+    DCHECK_LT(
+        static_cast<uint32_t>(reason),
+        static_cast<uint32_t>(UploaderInterface::UploadReason::MAX_REASON));
     DETACH_FROM_SEQUENCE(read_sequence_checker_);
   }
 
@@ -986,7 +1010,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
   // indicates a gap notification.
   void CallRecordUpload(EncryptedRecord encrypted_record) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(read_sequence_checker_);
-    if (encrypted_record.has_sequencing_information()) {
+    if (encrypted_record.has_sequence_information()) {
       LOG(ERROR) << "Sequencing information already present, seq="
                  << sequencing_info_.sequencing_id();
       CallGapUpload(/*count=*/1);
@@ -995,7 +1019,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
     // Fill in sequencing information.
     // Priority is attached by the Storage layer.
-    *encrypted_record.mutable_sequencing_information() = sequencing_info_;
+    *encrypted_record.mutable_sequence_information() = sequencing_info_;
     uploader_->ProcessRecord(std::move(encrypted_record),
                              base::BindOnce(&ReadContext::ScheduleNextRecord,
                                             base::Unretained(this)));
@@ -1060,8 +1084,12 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
 
     // Test only: simulate error, if requested.
-    if (storage_queue_->test_injected_fail_sequencing_ids_.count(
-            sequencing_id) > 0) {
+    if (storage_queue_->test_injected_failures_.count(
+            test::StorageQueueOperationKind::kReadBlock) > 0 &&
+        storage_queue_
+                ->test_injected_failures_
+                    [test::StorageQueueOperationKind::kReadBlock]
+                .count(sequencing_id) > 0) {
       return Status(error::INTERNAL,
                     base::StrCat({"Simulated failure, seq=",
                                   base::NumberToString(sequencing_id)}));
@@ -1215,7 +1243,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
 
   // Files that will be read (in order of sequencing ids).
   std::map<int64_t, scoped_refptr<SingleFile>> files_;
-  SequencingInformation sequencing_info_;
+  SequenceInformation sequencing_info_;
   uint32_t current_pos_;
   std::map<int64_t, scoped_refptr<SingleFile>>::iterator current_file_;
   const AsyncStartUploaderCb async_start_upload_cb_;
@@ -1268,7 +1296,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     // Otherwise initiate Upload right after writing
     // finished and respond back when reading Upload is done.
     // Note: new uploader created synchronously before scheduling Upload.
-    Start<ReadContext>(UploaderInterface::IMMEDIATE_FLUSH, storage_queue_);
+    Start<ReadContext>(UploaderInterface::UploadReason::IMMEDIATE_FLUSH,
+                       storage_queue_);
   }
 
   void OnStart() override {
@@ -1618,14 +1647,14 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   if (!status.ok()) {
     // Previous upload failed, retry.
-    Start<ReadContext>(UploaderInterface::FAILURE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::FAILURE_RETRY, this);
     return;
   }
 
   if (!first_unconfirmed_sequencing_id_.has_value() ||
       first_unconfirmed_sequencing_id_.value() < next_sequencing_id) {
     // Not all uploaded events were confirmed after upload, retry.
-    Start<ReadContext>(UploaderInterface::INCOMPLETE_RETRY, this);
+    Start<ReadContext>(UploaderInterface::UploadReason::INCOMPLETE_RETRY, this);
     return;
   }
 
@@ -1633,11 +1662,11 @@ void StorageQueue::CheckBackUpload(Status status, int64_t next_sequencing_id) {
 }
 
 void StorageQueue::PeriodicUpload() {
-  Start<ReadContext>(UploaderInterface::PERIODIC, this);
+  Start<ReadContext>(UploaderInterface::UploadReason::PERIODIC, this);
 }
 
 void StorageQueue::Flush() {
-  Start<ReadContext>(UploaderInterface::MANUAL, this);
+  Start<ReadContext>(UploaderInterface::UploadReason::MANUAL, this);
 }
 
 void StorageQueue::ReleaseAllFileInstances() {
@@ -1645,9 +1674,10 @@ void StorageQueue::ReleaseAllFileInstances() {
   meta_file_.reset();
 }
 
-void StorageQueue::TestInjectBlockReadErrors(
+void StorageQueue::TestInjectErrorsForOperation(
+    const test::StorageQueueOperationKind operation_kind,
     std::initializer_list<int64_t> sequencing_ids) {
-  test_injected_fail_sequencing_ids_ = sequencing_ids;
+  test_injected_failures_[operation_kind] = sequencing_ids;
 }
 
 //

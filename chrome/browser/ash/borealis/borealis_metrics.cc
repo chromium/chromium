@@ -32,6 +32,7 @@ const char kBorealisDiskStartupResultHistogram[] =
     "Borealis.Disk.Startup.Result";
 const char kBorealisInstallNumAttemptsHistogram[] =
     "Borealis.Install.NumAttempts";
+const char kBorealisGameModeResultHistogram[] = "Borealis.GameMode.Result";
 const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
 const char kBorealisInstallOverallTimeHistogram[] =
     "Borealis.Install.OverallTime";
@@ -170,6 +171,12 @@ void RecordBorealisDiskStartupResultHistogram(
     BorealisSyncDiskSizeResult disk_result) {
   base::UmaHistogramEnumeration(kBorealisDiskStartupResultHistogram,
                                 disk_result);
+}
+
+void RecordBorealisGameModeResultHistogram(
+    BorealisGameModeResult game_mode_result) {
+  base::UmaHistogramEnumeration(kBorealisGameModeResultHistogram,
+                                game_mode_result);
 }
 
 }  // namespace borealis

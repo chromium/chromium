@@ -36,6 +36,10 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
 
   GeneratedCodeCacheContext();
 
+  GeneratedCodeCacheContext(const GeneratedCodeCacheContext&) = delete;
+  GeneratedCodeCacheContext& operator=(const GeneratedCodeCacheContext&) =
+      delete;
+
   // Initialize is called on the UI thread when the StoragePartition is
   // being setup.
   void Initialize(const base::FilePath& path, int max_bytes);
@@ -64,8 +68,6 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GeneratedCodeCacheContext);
 };
 
 }  // namespace content

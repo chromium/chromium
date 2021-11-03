@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/assistant/model/ui/assistant_ui_element.h"
-#include "ash/public/cpp/assistant/assistant_web_view.h"
+#include "ash/public/cpp/ash_web_view.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 
@@ -33,11 +33,11 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
 
   const std::string& html() const { return html_; }
   const std::string& fallback() const { return fallback_; }
-  std::unique_ptr<AssistantWebView> MoveContentsView() {
+  std::unique_ptr<AshWebView> MoveContentsView() {
     return std::move(contents_view_);
   }
 
-  void set_contents_view(std::unique_ptr<AssistantWebView> contents_view) {
+  void set_contents_view(std::unique_ptr<AshWebView> contents_view) {
     contents_view_ = std::move(contents_view);
   }
 
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantCardElement
 
   const std::string html_;
   const std::string fallback_;
-  std::unique_ptr<AssistantWebView> contents_view_;
+  std::unique_ptr<AshWebView> contents_view_;
 
   std::unique_ptr<Processor> processor_;
 

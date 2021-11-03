@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.app.Activity;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 
@@ -36,4 +38,11 @@ public class CustomTabHeightStrategy {
     public boolean changeBackgroundColorForResizing() {
         return false;
     }
+
+    /**
+     * Provide this class with the {@link CustomTabToolbar} so it can set up the strategy, and the
+     * coordinator view to insert the UI "handle" for users to interact with to resize the Custom
+     * Tab.
+     */
+    public void onToolbarInitialized(View coordinatorView, CustomTabToolbar toolbar) {}
 }

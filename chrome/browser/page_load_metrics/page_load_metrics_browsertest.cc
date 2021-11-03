@@ -66,7 +66,6 @@
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
-#include "components/page_load_metrics/common/page_load_metrics_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -174,6 +173,18 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   void NavigateToUntrackedUrl() {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  }
+
+  int64_t GetUKMPageLoadMetric(std::string metric_name) {
+    std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+        test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+
+    EXPECT_EQ(1ul, merged_entries.size());
+    const auto& kv = merged_entries.begin();
+    const int64_t* recorded =
+        ukm::TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
+    EXPECT_TRUE(recorded != nullptr);
+    return (*recorded);
   }
 
   void MakeComponentFullscreen(const std::string& id) {
@@ -449,49 +460,53 @@ class PageLoadMetricsBrowserTestAnimatedLCP
     img_response->Send(kImgHttpResponseHeader);
     img_response->Send(first_frame);
 
-    // Trigger a double rAF and take a timestamp afterwards.
+    // Trigger a double rAF and wait a bit, then take a timestamp that's after
+    // the presentation time of the first frame.
+    // Then wait some more to ensure the timestamp is not too close to the point
+    // where the second frame is sent.
     content::EvalJsResult result =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-               "(async () => {"
-               "const double_raf = () => {"
-               "return new Promise(r => {"
-               "requestAnimationFrame(()=>requestAnimationFrame(r))})};"
-               "await double_raf();})()");
+        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+(async () => {
+  const double_raf = () => {
+    return new Promise(r => {
+      requestAnimationFrame(()=>requestAnimationFrame(r));
+    })
+  };
+  await double_raf();
+  await new Promise(r => setTimeout(r, 50));
+  const timestamp = performance.now();
+  await new Promise(r => setTimeout(r, 50));
+  return timestamp;
+})();)");
     EXPECT_EQ("", result.error);
-    content::EvalJsResult result2 =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-               "performance.now()");
-    EXPECT_EQ("", result2.error);
-    double timestamp = result2.ExtractDouble();
+    double timestamp = result.ExtractDouble();
 
     img_response->Send(second_frame);
     img_response->Done();
 
-    content::EvalJsResult result3 =
-        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-               "(async () => {"
-               "await new Promise(resolve => {"
-               "(new PerformanceObserver(list => {"
-               "const entries = list.getEntries();"
-               "for (let entry of entries) {"
-               "if (entry.url.includes('images')) {resolve()}"
-               "}"
-               "}))"
-               ".observe({type: 'largest-contentful-paint', buffered: true});"
-               "})})()");
-    EXPECT_EQ("", result3.error);
+    // Wait on an LCP entry to make sure we have one to report when navigating
+    // away.
+    content::EvalJsResult result2 =
+        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(), R"(
+ (async () => {
+   await new Promise(resolve => {
+     (new PerformanceObserver(list => {
+       const entries = list.getEntries();
+       for (let entry of entries) {
+         if (entry.url.includes('images')) {resolve()}
+       }
+     }))
+     .observe({type: 'largest-contentful-paint', buffered: true});
+ })})())");
+    EXPECT_EQ("", result2.error);
     waiter->Wait();
 
     // LCP is collected only at the end of the page lifecycle. Navigate to
     // flush.
     NavigateToUntrackedUrl();
 
-    histogram_tester_->ExpectTotalCount(
-        internal::kHistogramLargestContentfulPaint, 1);
-    auto value =
-        histogram_tester_
-            ->GetAllSamples(internal::kHistogramLargestContentfulPaint)[0]
-            .min;
+    int64_t value = GetUKMPageLoadMetric(
+        PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name);
 
     if (smaller) {
       ASSERT_LT(value, timestamp);
@@ -3347,14 +3362,9 @@ class NavigationPageLoadMetricsBrowserTest
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        page_load_metrics::kPageLoadMetricsTimerDelayFeature,
-        {
-            // Set a very long TTL before expiration (longer than the test
-            // timeout) so tests that are expecting deletion don't pass when
-            // they shouldn't.
-            {"BufferTimerDelayMillis", "100000"},
-        });
+    // TODO(crbug.com/1224780): This test used an experiment param (which no
+    // longer exists) to suppress the metrics send timer. If and when the test
+    // is re-enabled, it should be updated to use a different mechanism.
     PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
   }
 
@@ -3362,7 +3372,7 @@ class NavigationPageLoadMetricsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky. See https://crbug.com/1224268.
+// Flaky. See https://crbug.com/1224780.
 IN_PROC_BROWSER_TEST_P(NavigationPageLoadMetricsBrowserTest,
                        DISABLED_FirstInputDelay) {
   ASSERT_TRUE(embedded_test_server()->Start());

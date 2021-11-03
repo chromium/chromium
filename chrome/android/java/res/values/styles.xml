@@ -6,7 +6,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- TODO(huayinz): Move themes to another xml file. -->
     <!-- Application themes -->
-    <style name="LauncherTheme" parent="@android:style/Theme.NoDisplay" />
+    <style name="LauncherTheme" parent="Theme.BrowserUI.NoDisplay" />
 
     <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI.DayNight" />
     <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />

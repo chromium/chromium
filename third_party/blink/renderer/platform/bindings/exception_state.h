@@ -208,7 +208,7 @@ class PLATFORM_EXPORT ExceptionState {
 
   virtual v8::Local<v8::Value> GetException() {
     DCHECK(!exception_.IsEmpty());
-    return exception_.NewLocal(isolate_);
+    return exception_.Get(isolate_);
   }
 
   // Returns the context of what Web API is currently being executed.

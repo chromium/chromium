@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -14,6 +15,7 @@
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "net/base/net_errors.h"
+#include "net/ssl/client_cert_identity.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -58,7 +60,14 @@ class ServiceWorkerTlsTest : public ContentBrowserTest {
   }
 
  private:
-  void OnSelectClientCertificate() { select_certificate_count_++; }
+  base::OnceClosure OnSelectClientCertificate(
+      content::WebContents* web_contents,
+      net::SSLCertRequestInfo* cert_request_info,
+      net::ClientCertIdentityList client_certs,
+      std::unique_ptr<content::ClientCertificateDelegate> delegate) {
+    select_certificate_count_++;
+    return base::OnceClosure();
+  }
 
   int select_certificate_count_ = 0;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -141,9 +150,9 @@ class ServiceWorkerBasicAuthTest : public ContentBrowserTest {
     // such a dialog is difficult to control programmatically and doesn't work
     // on all platforms.
     ShellContentBrowserClient::Get()->set_login_request_callback(
-        base::BindLambdaForTesting([&](bool is_main_frame) {
-          login_requested_ = is_main_frame ? LoginRequested::kMainFrame
-                                           : LoginRequested::kSubFrame;
+        base::BindLambdaForTesting([&](bool is_primary_main_frame) {
+          login_requested_ = is_primary_main_frame ? LoginRequested::kMainFrame
+                                                   : LoginRequested::kSubFrame;
         }));
   }
 

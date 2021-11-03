@@ -208,6 +208,12 @@ void ManifestUpdateTask::SetUpdatePendingCallbackForTesting(
   *GetUpdatePendingCallbackMutable() = std::move(callback);
 }
 
+// static
+bool& ManifestUpdateTask::BypassWindowCloseWaitingForTesting() {
+  static bool bypass_window_close_waiting_for_testing_ = false;
+  return bypass_window_close_waiting_for_testing_;
+}
+
 ManifestUpdateTask::ManifestUpdateTask(
     const GURL& url,
     const AppId& app_id,
@@ -422,12 +428,16 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
 
   Observe(nullptr);
 
-  ui_manager_.NotifyOnAllAppWindowsClosed(
-      app_id_,
-      base::BindOnce(&ManifestUpdateTask::OnAllAppWindowsClosed, AsWeakPtr()));
-  UpdatePendingCallback* callback = GetUpdatePendingCallbackMutable();
-  if (!callback->is_null())
-    std::move(*callback).Run(url_);
+  if (BypassWindowCloseWaitingForTesting()) {
+    OnAllAppWindowsClosed();
+  } else {
+    ui_manager_.NotifyOnAllAppWindowsClosed(
+        app_id_, base::BindOnce(&ManifestUpdateTask::OnAllAppWindowsClosed,
+                                AsWeakPtr()));
+    UpdatePendingCallback* callback = GetUpdatePendingCallbackMutable();
+    if (!callback->is_null())
+      std::move(*callback).Run(url_);
+  }
 }
 
 void ManifestUpdateTask::LoadAndCheckIconContents() {

@@ -4,6 +4,8 @@
 
 import("//tools/polymer/html_to_js.gni")
 
+assert(is_win)
+
 html_to_js("web_components") {
   js_files = [
     "incompatible_application_item.ts",

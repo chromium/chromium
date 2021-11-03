@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/win/registry.h"
 #include "base/win/windows_types.h"
+#include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
@@ -75,9 +76,8 @@ ReadActiveBitRetval ReadActiveBitAsDword(base::win::RegKey& key) {
 
 }  // namespace
 
-class ActivityWinTest
-    : public ::testing::TestWithParam<
-          std::tuple<UpdaterScope, bool, bool, ReadWriteCallbacks>> {
+class ActivityWinTest : public ::testing::TestWithParam<
+                            std::tuple<bool, bool, ReadWriteCallbacks>> {
  protected:
   void SetUp() override {
     std::wstring sid;
@@ -98,18 +98,18 @@ class ActivityWinTest
         .DeleteKey(low_integrity_key_path_.c_str());
   }
 
-  UpdaterScope GetScope() const { return std::get<0>(GetParam()); }
+  UpdaterScope GetScope() const { return GetTestScope(); }
 
-  bool SetUserValue() const { return std::get<1>(GetParam()); }
+  bool SetUserValue() const { return std::get<0>(GetParam()); }
 
-  bool SetLowUserValue() const { return std::get<2>(GetParam()); }
+  bool SetLowUserValue() const { return std::get<1>(GetParam()); }
 
   WriteActiveBitCallback WriteActiveBitFn() const {
-    return std::get<3>(GetParam()).write_callback;
+    return std::get<2>(GetParam()).write_callback;
   }
 
   ReadActiveBitCallback ReadActiveBitFn() const {
-    return std::get<3>(GetParam()).read_callback;
+    return std::get<2>(GetParam()).read_callback;
   }
 
   void CreateActiveBit(const std::wstring& key_name,
@@ -189,7 +189,6 @@ INSTANTIATE_TEST_SUITE_P(
     UpdaterScopeSetUserValueSetLowUserValueSetAsDword,
     ActivityWinTest,
     ::testing::Combine(
-        ::testing::Values(UpdaterScope::kUser, UpdaterScope::kSystem),
         ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Values(

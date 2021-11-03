@@ -31,12 +31,14 @@
 namespace ash {
 
 HpsNotifyView::HpsNotifyView(Shelf* shelf) : TrayItemView(shelf) {
+  CreateImageView();
+  SetVisible(false);
+
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
 
-  CreateImageView();
-
   OnSessionStateChanged(session_controller->GetSessionState());
+  session_observation_.Observe(session_controller);
 
   // Poll the current preference state if the pref service is already loaded for
   // an active user. Then, from now on, observe changes to the active user pref
@@ -45,7 +47,6 @@ HpsNotifyView::HpsNotifyView(Shelf* shelf) : TrayItemView(shelf) {
   PrefService* pref_service =
       session_controller->GetUserPrefServiceForUser(account_id);
   OnActiveUserPrefServiceChanged(pref_service);
-  session_observation_.Observe(session_controller);
 
   // Poll the current HPS notify state if the daemon is active. Then, from now
   // on, observe changes to the HPS notify signal.

@@ -20,8 +20,15 @@ namespace base {
 BASE_EXPORT absl::optional<std::u16string> ReadUTF8FromVMOAsUTF16(
     const fuchsia::mem::Buffer& buffer);
 
+// Creates a Fuchsia VMO from `data`. The size of the resulting virtual memory
+// object will be set to the size of the string, and it will be given the name
+// `name`.
+BASE_EXPORT zx::vmo VmoFromString(StringPiece data, StringPiece name);
+
 // Creates a Fuchsia memory buffer from `data`. The resulting virtual memory
 // object will be given the name `name`.
+// `fuchsia::mem::Buffer` is deprecated: for new interfaces, prefer using
+// a VMO object directly (see `VmoFromString`).
 BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString(StringPiece data,
                                                      StringPiece name);
 
@@ -30,7 +37,12 @@ BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString(StringPiece data,
 BASE_EXPORT fuchsia::mem::Buffer MemBufferFromString16(StringPiece16 data,
                                                        StringPiece name);
 
+// Returns the contents of `data`, or null if the read operation fails.
+BASE_EXPORT absl::optional<std::string> StringFromVmo(const zx::vmo& vmo);
+
 // Returns the contents of `buffer`, or null if the read operation fails.
+// `fuchsia::mem::Buffer` is deprecated: for new interfaces, prefer using
+// a VMO object directly (see `StringFromVmo`).
 BASE_EXPORT absl::optional<std::string> StringFromMemBuffer(
     const fuchsia::mem::Buffer& buffer);
 

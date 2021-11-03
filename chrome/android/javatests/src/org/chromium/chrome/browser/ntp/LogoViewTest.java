@@ -28,13 +28,14 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 
+/** Instrumentation tests for {@link LogoView}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class LogoViewTest extends DummyUiChromeActivityTestCase {
+public class LogoViewTest extends DummyUiActivityTestCase {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock

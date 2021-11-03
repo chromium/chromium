@@ -64,8 +64,7 @@ function defineTest(testName, module, config) {
   this[className] = class extends SettingsAccessibilityV3Test {
     /** @override */
     get browsePreload() {
-      return `chrome://settings/test_loader.html?module=settings/a11y/${
-          module}`;
+      return `chrome://settings/test_loader.html?module=settings/a11y/${module}&host=webui-test`;
     }
   };
 

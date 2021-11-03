@@ -37,10 +37,10 @@ class StorageModuleInterface
 
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModuleInterface here for record deletion.
-  // If |force| is false (which is used in most cases), |sequencing_information|
+  // If |force| is false (which is used in most cases), |sequence_information|
   // only affects Storage if no higher sequencing was confirmed before;
   // otherwise it is accepted unconditionally.
-  virtual void ReportSuccess(SequencingInformation sequencing_information,
+  virtual void ReportSuccess(SequenceInformation sequence_information,
                              bool force) = 0;
 
   // If the server attached signed encryption key to the response, it needs to

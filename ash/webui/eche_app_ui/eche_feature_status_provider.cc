@@ -12,18 +12,18 @@
 #include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 namespace {
 
-using multidevice::RemoteDeviceRef;
-using multidevice::RemoteDeviceRefList;
-using multidevice::SoftwareFeature;
-using multidevice::SoftwareFeatureState;
+using ::chromeos::multidevice::RemoteDeviceRef;
+using ::chromeos::multidevice::RemoteDeviceRefList;
+using ::chromeos::multidevice::SoftwareFeature;
+using ::chromeos::multidevice::SoftwareFeatureState;
 
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
-using multidevice_setup::mojom::HostStatus;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::HostStatus;
 
 bool IsEnabledHost(const RemoteDeviceRef& device) {
   return device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) !=
@@ -185,4 +185,4 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

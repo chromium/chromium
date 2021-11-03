@@ -29,14 +29,15 @@ class WRLModuleInitializer {
 
 }  // namespace
 
-scoped_refptr<UpdateService> CreateUpdateService() {
+scoped_refptr<UpdateService> CreateUpdateService(UpdaterScope updater_scope) {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<UpdateServiceProxy>(GetUpdaterScope());
+  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
 }
 
-scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal() {
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal(
+    UpdaterScope updater_scope) {
   WRLModuleInitializer::Get();
-  return base::MakeRefCounted<UpdateServiceInternalProxy>(GetUpdaterScope());
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
 }
 
 }  // namespace updater

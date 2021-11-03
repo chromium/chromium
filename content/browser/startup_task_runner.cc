@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/common/task_annotator.h"
 
 namespace content {
 
@@ -33,6 +32,7 @@ void StartupTaskRunner::StartRunningTasksAsync() {
   } else {
     base::OnceClosure next_task =
         base::BindOnce(&StartupTaskRunner::WrappedTask, base::Unretained(this));
+    last_wrapped_task_post_time_ = base::TimeTicks::Now();
     proxy_->PostNonNestableTask(FROM_HERE, std::move(next_task));
   }
 }
@@ -57,12 +57,9 @@ void StartupTaskRunner::WrappedTask() {
     return;
   }
 
-  // Log queue times for non-delayed tasks that have a valid queue time.
-  auto* task = base::TaskAnnotator::CurrentTaskForThread();
-  if (task && !task->queue_time.is_null() && task->delayed_run_time.is_null()) {
-    UMA_HISTOGRAM_TIMES("Startup.StartupTaskRunner.AsyncTaskQueueTime",
-                        base::TimeTicks::Now() - task->queue_time);
-  }
+  // Log the time that this task spent queued.
+  UMA_HISTOGRAM_TIMES("Startup.StartupTaskRunner.AsyncTaskQueueTime",
+                      base::TimeTicks::Now() - last_wrapped_task_post_time_);
 
   int result = std::move(task_list_.front()).Run();
   task_list_.pop_front();
@@ -77,6 +74,7 @@ void StartupTaskRunner::WrappedTask() {
   } else {
     base::OnceClosure next_task =
         base::BindOnce(&StartupTaskRunner::WrappedTask, base::Unretained(this));
+    last_wrapped_task_post_time_ = base::TimeTicks::Now();
     proxy_->PostNonNestableTask(FROM_HERE, std::move(next_task));
   }
 }

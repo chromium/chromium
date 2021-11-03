@@ -46,6 +46,9 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
     static Factory* factory_instance_;
   };
 
+  CryptAuthGCMManagerImpl(const CryptAuthGCMManagerImpl&) = delete;
+  CryptAuthGCMManagerImpl& operator=(const CryptAuthGCMManagerImpl&) = delete;
+
   ~CryptAuthGCMManagerImpl() override;
 
   // CryptAuthGCMManager:
@@ -100,8 +103,6 @@ class CryptAuthGCMManagerImpl : public CryptAuthGCMManager,
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<CryptAuthGCMManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthGCMManagerImpl);
 };
 
 }  // namespace device_sync

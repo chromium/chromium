@@ -34,6 +34,10 @@ namespace ppapi {
 // tracker, etc.
 class PPAPI_SHARED_EXPORT ProxyLock {
  public:
+  ProxyLock() = delete;
+  ProxyLock(const ProxyLock&) = delete;
+  ProxyLock& operator=(const ProxyLock&) = delete;
+
   // Return the global ProxyLock. Normally, you should not access this
   // directly but instead use ProxyAutoLock or ProxyAutoUnlock. But sometimes
   // you need access to the ProxyLock, for example to create a condition
@@ -73,8 +77,6 @@ class PPAPI_SHARED_EXPORT ProxyLock {
   // startup, before other threads that may access the ProxyLock have had a
   // chance to run.
   static void DisableLocking();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProxyLock);
 };
 
 // A simple RAII class for locking the PPAPI proxy lock on entry and releasing

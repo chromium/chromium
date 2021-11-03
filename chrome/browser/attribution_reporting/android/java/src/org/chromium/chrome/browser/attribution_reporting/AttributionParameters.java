@@ -18,6 +18,7 @@ public class AttributionParameters {
     private long mExpiry;
     private long mEventTime;
 
+    /** @see Method descriptions for the meaning of each of these parameters. */
     public AttributionParameters(String sourcePackageName, String sourceEventId, String destination,
             String reportTo, long expiry) {
         mSourcePackageName = sourcePackageName;
@@ -28,6 +29,12 @@ public class AttributionParameters {
         mExpiry = expiry;
     }
 
+    /**
+     * Constructor for AttributionParameters coming from cached events, where the event time is not
+     * the current time.
+     *
+     * @see Method descriptions for the meaning of each of these parameters.
+     */
     public static AttributionParameters forCachedEvent(String sourcePackageName,
             String sourceEventId, String destination, String reportTo, long expiry,
             long eventTime) {
@@ -37,30 +44,41 @@ public class AttributionParameters {
         return params;
     }
 
+    /** The Package Name of the app that sent this Attribution. */
     public String getSourcePackageName() {
         return mSourcePackageName;
     }
 
+    /** A uint64_t encoded as a string identifying the attribution source. */
     public String getSourceEventId() {
         return mSourceEventId;
     }
 
+    /**
+     * If for a click, the origin on which this navigation is intended to finish.
+     * If for an impression event, the Origin the impression is for.
+     */
     public String getDestination() {
         return mDestination;
     }
 
+    /** An optional origin to send any attribution report to. */
     @Nullable
     public String getReportTo() {
         return mReportTo;
     }
 
+    /**
+     * An optional offset in milliseconds from the reporting time, after which the attribution
+     * expires. 0 represents an unset expiry time.
+     */
     public long getExpiry() {
         return mExpiry;
     }
 
     /**
-     * Returns the time at which the event took place, or 0 if the event was
-     * just received (and not cached).
+     * Returns the time at which the event took place in {@link System#currentTimeMillis()}
+     * timebase, or 0 if the event was just received (and not cached).
      */
     public long getEventTime() {
         return mEventTime;

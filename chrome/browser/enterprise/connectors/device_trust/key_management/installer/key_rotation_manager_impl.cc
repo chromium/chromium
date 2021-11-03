@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager_impl.h"
 
 #include "base/check.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
@@ -19,6 +20,8 @@ namespace enterprise_connectors {
 
 namespace {
 
+const int kMaxRetryCount = 10;
+
 BPKUR::KeyType AlgorithmToType(
     crypto::SignatureVerifier::SignatureAlgorithm algorithm) {
   switch (algorithm) {
@@ -31,13 +34,31 @@ BPKUR::KeyType AlgorithmToType(
   }
 }
 
+void RecordRotationStatus(const std::string& nonce,
+                          KeyRotationManager::RotationStatus status) {
+  if (nonce.empty()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.Status", status);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.Status", status);
+  }
+}
+
+void RecordRotationTryCount(int count) {
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Enterprise.DeviceTrust.RotateSigningKey.Tries",
+                              count, 1, kMaxRetryCount, kMaxRetryCount + 1);
+}
+
 }  // namespace
 
 KeyRotationManagerImpl::KeyRotationManagerImpl(
     std::unique_ptr<KeyNetworkDelegate> network_delegate,
-    std::unique_ptr<KeyPersistenceDelegate> persistence_delegate)
+    std::unique_ptr<KeyPersistenceDelegate> persistence_delegate,
+    bool sleep_during_backoff)
     : network_delegate_(std::move(network_delegate)),
-      persistence_delegate_(std::move(persistence_delegate)) {
+      persistence_delegate_(std::move(persistence_delegate)),
+      sleep_during_backoff_(sleep_during_backoff) {
   DCHECK(network_delegate_);
   DCHECK(persistence_delegate_);
 
@@ -70,11 +91,15 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     new_key_pair =
         ec_signing_provider.GenerateSigningKeySlowly(acceptable_algorithms);
   }
-  if (!new_key_pair)
+  if (!new_key_pair) {
+    RecordRotationStatus(nonce,
+                         RotationStatus::FAILURE_CANNOT_GENERATE_NEW_KEY);
     return false;
+  }
 
   if (!persistence_delegate_->StoreKeyPair(new_trust_level,
                                            new_key_pair->GetWrappedKey())) {
+    RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_STORE_KEY);
     return false;
   }
 
@@ -82,6 +107,7 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
   if (!BuildUploadPublicKeyRequest(
           new_trust_level, new_key_pair, nonce,
           request.mutable_browser_public_key_upload_request())) {
+    RecordRotationStatus(nonce, RotationStatus::FAILURE_CANNOT_BUILD_REQUEST);
     return false;
   }
 
@@ -97,14 +123,14 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
       .entry_lifetime_ms = -1,
       .always_use_initial_delay = false};
 
-  const int kMaxRetryCount = 10;
   auto rc = BPKUP::UNDEFINED;
   net::BackoffEntry boe(&kBackoffPolicy);
-  for (int i = 0;
-       rc == BPKUP::UNDEFINED && boe.failure_count() < kMaxRetryCount; ++i) {
+  int try_count = 0;
+  for (; rc == BPKUP::UNDEFINED && boe.failure_count() < kMaxRetryCount;
+       ++try_count) {
     // Wait before trying to send again, if needed.  This will not block on
     // the first request.
-    if (boe.ShouldRejectRequest())
+    if (sleep_during_backoff_ && boe.ShouldRejectRequest())
       base::PlatformThread::Sleep(boe.GetTimeUntilRelease());
 
     // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
@@ -120,17 +146,31 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     boe.InformOfRequest(rc == BPKUP::SUCCESS);
   }
 
+  RecordRotationTryCount(try_count);
+
   if (rc != BPKUP::SUCCESS) {
     // Unable to send to DM server, so restore the old key if there was one.
+    bool able_to_restore = true;
     if (key_pair_ && key_pair_->key()) {
-      persistence_delegate_->StoreKeyPair(key_pair_->trust_level(),
-                                          key_pair_->key()->GetWrappedKey());
+      able_to_restore = persistence_delegate_->StoreKeyPair(
+          key_pair_->trust_level(), key_pair_->key()->GetWrappedKey());
     }
+
+    RotationStatus status =
+        able_to_restore
+            ? (try_count < kMaxRetryCount
+                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY
+                   : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED)
+            : (try_count < kMaxRetryCount
+                   ? RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED
+                   : RotationStatus::
+                         FAILURE_CANNOT_UPLOAD_KEY_TRIES_EXHAUSTED_RESTORE_FAILED);
+    RecordRotationStatus(nonce, status);
     return false;
   }
 
   key_pair_.emplace(std::move(new_key_pair), new_trust_level);
-
+  RecordRotationStatus(nonce, RotationStatus::SUCCESS);
   return true;
 }
 

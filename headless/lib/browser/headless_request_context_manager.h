@@ -16,6 +16,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
+#include <memory>
 #include <string>
 
 namespace content {

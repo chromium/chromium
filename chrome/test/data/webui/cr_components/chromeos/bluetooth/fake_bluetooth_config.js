@@ -429,4 +429,14 @@ export class FakeBluetoothConfig {
   getLastCreatedPairingHandler() {
     return this.lastPairingHandler_;
   }
+
+  /**
+   * @param {string} deviceId
+   * @return {?chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   */
+  getPairedDeviceById(deviceId) {
+    const device = this.systemProperties_.pairedDevices.find(
+        d => d.deviceProperties.id === deviceId);
+    return device ? device : null;
+  }
 }

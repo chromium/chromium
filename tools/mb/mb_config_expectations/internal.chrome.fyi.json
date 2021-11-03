@@ -68,13 +68,6 @@
       "use_goma": true
     }
   },
-  "win-chrome-finch-fyi": {
-    "gn_args": {
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "use_goma": true
-    }
-  },
   "win-password-manager-captured-sites-rel": {
     "gn_args": {
       "dcheck_always_on": false,

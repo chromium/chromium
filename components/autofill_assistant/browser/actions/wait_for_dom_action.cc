@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -128,7 +129,7 @@ void WaitForDomAction::UpdateElementStore() {
 void WaitForDomAction::ReportActionResult(ProcessActionCallback callback,
                                           const ClientStatus& status) {
   UpdateElementStore();
-  UpdateProcessedAction(status.proto_status());
+  UpdateProcessedAction(status);
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 }  // namespace autofill_assistant

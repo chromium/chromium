@@ -41,8 +41,9 @@ export class TestTabSearchApiProxy extends TestBrowserProxy {
   }
 
   /** @override */
-  openRecentlyClosedEntry(id, withSearch, isTab) {
-    this.methodCalled('openRecentlyClosedEntry', [id, withSearch, isTab]);
+  openRecentlyClosedEntry(id, withSearch, isTab, index) {
+    this.methodCalled(
+        'openRecentlyClosedEntry', [id, withSearch, isTab, index]);
   }
 
   /** @override */

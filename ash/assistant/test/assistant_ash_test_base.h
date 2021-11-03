@@ -39,7 +39,7 @@ class AssistantTestApi;
 class SuggestionChipView;
 class TestAssistantService;
 class TestAssistantSetup;
-class TestAssistantWebViewFactory;
+class TestAshWebViewFactory;
 
 // Helper class to make testing the Assistant Ash UI easier.
 class AssistantAshTestBase : public AshTestBase {
@@ -219,7 +219,7 @@ class AssistantAshTestBase : public AshTestBase {
 
   std::unique_ptr<AssistantTestApi> test_api_;
   std::unique_ptr<TestAssistantSetup> test_setup_;
-  std::unique_ptr<TestAssistantWebViewFactory> test_web_view_factory_;
+  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_;
 
   std::vector<std::unique_ptr<aura::Window>> windows_;
   std::vector<std::unique_ptr<views::Widget>> widgets_;

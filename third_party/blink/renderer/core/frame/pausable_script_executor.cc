@@ -117,11 +117,11 @@ Vector<v8::Local<v8::Value>> V8FunctionExecutor::Execute(
   Vector<v8::Local<v8::Value>> args;
   args.ReserveCapacity(args_.size());
   for (wtf_size_t i = 0; i < args_.size(); ++i)
-    args.push_back(args_[i].NewLocal(isolate));
+    args.push_back(args_[i].Get(isolate));
 
   {
-    if (V8ScriptRunner::CallFunction(function_.NewLocal(isolate), window,
-                                     receiver_.NewLocal(isolate), args.size(),
+    if (V8ScriptRunner::CallFunction(function_.Get(isolate), window,
+                                     receiver_.Get(isolate), args.size(),
                                      args.data(), window->GetIsolate())
             .ToLocal(&single_result)) {
       results.push_back(single_result);

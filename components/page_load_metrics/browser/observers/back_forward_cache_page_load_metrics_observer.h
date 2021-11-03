@@ -9,6 +9,9 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 class BackForwardCachePageLoadMetricsObserverTest;
+namespace base {
+class TickClock;
+}
 
 namespace internal {
 
@@ -128,6 +131,7 @@ class BackForwardCachePageLoadMetricsObserver
   // back forward cache at least once.
   // Does nothing if the page has never been restored.
   void MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
+      const base::TickClock* clock,
       bool app_entering_background) const;
 
   // Records a page end reason when the page is navigated away from or closed,

@@ -29,6 +29,11 @@ class DirectManipulationBrowserTestBase : public ContentBrowserTest {
  public:
   DirectManipulationBrowserTestBase() {}
 
+  DirectManipulationBrowserTestBase(const DirectManipulationBrowserTestBase&) =
+      delete;
+  DirectManipulationBrowserTestBase& operator=(
+      const DirectManipulationBrowserTestBase&) = delete;
+
   LegacyRenderWidgetHostHWND* GetLegacyRenderWidgetHostHWND() {
     RenderWidgetHostViewAura* rwhva = static_cast<RenderWidgetHostViewAura*>(
         shell()->web_contents()->GetRenderWidgetHostView());
@@ -67,17 +72,15 @@ class DirectManipulationBrowserTestBase : public ContentBrowserTest {
     lrwhh->direct_manipulation_helper_->event_handler_->OnContentUpdated(
         lrwhh->direct_manipulation_helper_->viewport_.Get(), content);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationBrowserTestBase);
 };
 
 class DirectManipulationBrowserTest : public DirectManipulationBrowserTestBase {
  public:
   DirectManipulationBrowserTest() {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationBrowserTest);
+  DirectManipulationBrowserTest(const DirectManipulationBrowserTest&) = delete;
+  DirectManipulationBrowserTest& operator=(
+      const DirectManipulationBrowserTest&) = delete;
 };
 
 // Ensure the AnimationObserver is only created after direct manipulation
@@ -276,6 +279,10 @@ class PrecisionTouchpadBrowserTest : public DirectManipulationBrowserTestBase {
     content_ = Microsoft::WRL::Make<MockDirectManipulationContent>();
   }
 
+  PrecisionTouchpadBrowserTest(const PrecisionTouchpadBrowserTest&) = delete;
+  PrecisionTouchpadBrowserTest& operator=(const PrecisionTouchpadBrowserTest&) =
+      delete;
+
   void UpdateContents(float scale, float scroll_x, float scroll_y) {
     content_->SetContentTransform(scale, scroll_x, scroll_y);
     DirectManipulationBrowserTestBase::UpdateContents(content_.Get());
@@ -288,8 +295,6 @@ class PrecisionTouchpadBrowserTest : public DirectManipulationBrowserTestBase {
 
  private:
   Microsoft::WRL::ComPtr<MockDirectManipulationContent> content_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrecisionTouchpadBrowserTest);
 };
 
 // Confirm that preventDefault correctly prevents pinch zoom on precision

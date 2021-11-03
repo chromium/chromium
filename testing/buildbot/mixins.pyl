@@ -639,13 +639,6 @@
       },
     },
   },
-  'lollipop_generic': {
-    'swarming': {
-      'dimensions': {
-        'device_os': 'L',
-      },
-    },
-  },
   'mac-archive-rel-args': {
     'args': [
       'mac-release/sizes',
@@ -1044,13 +1037,6 @@
     'swarming': {
       'dimensions': {
         'os': 'Windows-10-19042',
-      },
-    },
-  },
-  'win10-1703': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-10-15063',
       },
     },
   },

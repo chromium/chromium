@@ -82,14 +82,6 @@ class WebrtcVideoEncoder {
     webrtc::VideoCodecType codec;
 
     std::unique_ptr<FrameStats> stats;
-
-    // These fields are needed by
-    // WebrtcDummyVideoEncoderFactory::SendEncodedFrame().
-    // TODO(crbug.com/1192865): Remove them when standard encoding pipeline is
-    // implemented.
-    base::TimeTicks capture_time;
-    base::TimeTicks encode_start;
-    base::TimeTicks encode_finish;
   };
 
   enum class EncodeResult {

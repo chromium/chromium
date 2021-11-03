@@ -117,8 +117,8 @@ export type SelectFolderAction = Action & {
   id: string;
 }
 
-export function selectFolder(
-    id: string, nodes: NodeMap): SelectFolderAction|null {
+export function selectFolder(id: string, nodes?: NodeMap): SelectFolderAction|
+    null {
   if (nodes && (id === ROOT_NODE_ID || !nodes[id] || nodes[id]!.url)) {
     console.warn('Tried to select invalid folder: ' + id);
     return null;

@@ -22,12 +22,12 @@ class HostScanCacheEntry {
     virtual ~Builder();
 
     std::unique_ptr<HostScanCacheEntry> Build();
-    Builder& SetTetherNetworkGuid(const std::string& tether_network_guid);
-    Builder& SetDeviceName(const std::string& device_name);
-    Builder& SetCarrier(const std::string& carrier);
-    Builder& SetBatteryPercentage(int battery_percentage);
-    Builder& SetSignalStrength(int signal_strength);
-    Builder& SetSetupRequired(bool setup_required);
+    Builder& SetTetherNetworkGuid(const std::string& guid);
+    Builder& SetDeviceName(const std::string& name);
+    Builder& SetCarrier(const std::string& c);
+    Builder& SetBatteryPercentage(int percentage);
+    Builder& SetSignalStrength(int strength);
+    Builder& SetSetupRequired(bool required);
 
    private:
     std::string tether_network_guid_;

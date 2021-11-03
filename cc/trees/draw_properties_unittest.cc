@@ -104,7 +104,8 @@ class DrawPropertiesTestBase : public LayerTreeImplTestBase {
     // TODO(https://crbug.com/939968) This call should be handled by
     // FakeLayerTreeHost instead of manually pushing the properties from the
     // layer tree host to the pending tree.
-    host()->PushLayerTreePropertiesTo(host_impl()->pending_tree());
+    LayerTreeHost::PushLayerTreePropertiesTo(host()->pending_commit_state(),
+                                             host_impl()->pending_tree());
 
     UpdateDrawProperties(host_impl()->pending_tree());
   }
@@ -3271,7 +3272,7 @@ TEST_F(DrawPropertiesScalingTest, SmallIdealScale) {
   CopyProperties(parent, child_scale);
   CreateTransformNode(child_scale).local = child_scale_matrix;
 
-  LayerTreeImpl::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale->transform_tree_index();
   host_impl()->active_tree()->SetViewportPropertyIds(viewport_property_ids);
@@ -5973,7 +5974,7 @@ TEST_F(DrawPropertiesTest, DrawPropertyScales) {
   CopyProperties(page_scale.get(), child2.get());
   CreateTransformNode(child2.get()).local = scale_transform_child2;
 
-  LayerTreeHost::ViewportPropertyIds viewport_property_ids;
+  ViewportPropertyIds viewport_property_ids;
   viewport_property_ids.page_scale_transform =
       page_scale->transform_tree_index();
   host()->RegisterViewportPropertyIds(viewport_property_ids);

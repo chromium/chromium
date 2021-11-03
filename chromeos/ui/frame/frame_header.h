@@ -93,6 +93,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   static views::View::Views GetAdjustedChildrenInZOrder(
       views::NonClientFrameView* frame_view);
 
+  FrameHeader(const FrameHeader&) = delete;
+  FrameHeader& operator=(const FrameHeader&) = delete;
+
   virtual ~FrameHeader();
 
   const std::u16string& frame_text_override() const {
@@ -218,8 +221,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   Mode mode_ = MODE_INACTIVE;
 
   std::u16string frame_text_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHeader);
 };
 
 }  // namespace chromeos

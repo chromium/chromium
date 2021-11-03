@@ -1718,6 +1718,9 @@ FloatRect Range::BoundingRect() const {
   if (!collapsed()) {
     force_locks = DisplayLockUtilities::ScopedForcedUpdate(
         this, DisplayLockContext::ForcedPhase::kLayout);
+  } else {
+    force_locks = DisplayLockUtilities::ScopedForcedUpdate(
+        FirstNode(), DisplayLockContext::ForcedPhase::kLayout);
   }
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 

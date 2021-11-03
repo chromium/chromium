@@ -22,6 +22,8 @@ void SuggestionAccessibilityLabel::GetAccessibleNodeData(
 }
 
 void SuggestionAccessibilityLabel::Announce(const std::u16string& text) {
+  if (text.empty())
+    return;
   SetAccessibleName(text);
   delay_timer_ = std::make_unique<base::OneShotTimer>();
   delay_timer_->Start(

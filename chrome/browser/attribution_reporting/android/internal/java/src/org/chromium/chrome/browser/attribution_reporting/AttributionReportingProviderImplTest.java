@@ -97,7 +97,7 @@ public class AttributionReportingProviderImplTest {
         Mockito.verify(mAttributionReporter, Mockito.times(1))
                 .reportAppImpression(any(),
                         eq(ContextUtils.getApplicationContext().getPackageName()), eq(EVENT_ID),
-                        eq(CONVERSION_URL), eq(REPORT_TO_URL), eq(EXPIRY));
+                        eq(CONVERSION_URL), eq(REPORT_TO_URL), eq(EXPIRY), eq(0L));
     }
 
     @Test
@@ -107,6 +107,6 @@ public class AttributionReportingProviderImplTest {
         Uri uri = mContentProviderClient.insert(mContentUri, values);
         Assert.assertEquals(Uri.EMPTY, uri);
         Mockito.verify(mAttributionReporter, Mockito.times(0))
-                .reportAppImpression(any(), any(), any(), any(), any(), anyLong());
+                .reportAppImpression(any(), any(), any(), any(), any(), anyLong(), anyLong());
     }
 }

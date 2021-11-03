@@ -151,12 +151,12 @@ public class AccountPickerBottomSheetTest {
     public void setUp() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
-        SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
+        SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
     }
 
     @After
     public void tearDown() {
-        SigninPreferencesManager.getInstance().clearAccountPickerBottomSheetActiveDismissalCount();
+        SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
     }
 
     @Test
@@ -210,7 +210,7 @@ public class AccountPickerBottomSheetTest {
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.DISMISSED_BACK);
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT, 1);
+                ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 1);
         buildAndShowCollapsedBottomSheet();
         onView(withText(TEST_EMAIL1)).check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
@@ -225,7 +225,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
         Assert.assertEquals(2,
                 SigninPreferencesManager.getInstance()
-                        .getAccountPickerBottomSheetActiveDismissalCount());
+                        .getWebSigninAccountPickerActiveDismissalCount());
     }
 
     @Test
@@ -235,7 +235,7 @@ public class AccountPickerBottomSheetTest {
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.DISMISSED_BUTTON);
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT, 1);
+                ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 1);
         buildAndShowCollapsedBottomSheet();
         onView(withText(TEST_EMAIL1)).check(matches(isDisplayed()));
         BottomSheetController controller = getBottomSheetController();
@@ -250,7 +250,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
         Assert.assertEquals(2,
                 SigninPreferencesManager.getInstance()
-                        .getAccountPickerBottomSheetActiveDismissalCount());
+                        .getWebSigninAccountPickerActiveDismissalCount());
     }
 
     @Test
@@ -356,7 +356,7 @@ public class AccountPickerBottomSheetTest {
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT);
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT, 2);
+                ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 2);
         buildAndShowCollapsedBottomSheet();
 
         clickContinueButtonAndCheckSignInInProgressSheet();
@@ -364,7 +364,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
         Assert.assertEquals(0,
                 SigninPreferencesManager.getInstance()
-                        .getAccountPickerBottomSheetActiveDismissalCount());
+                        .getWebSigninAccountPickerActiveDismissalCount());
     }
 
     @Test
@@ -374,7 +374,7 @@ public class AccountPickerBottomSheetTest {
                 new HistogramDelta("Signin.AccountConsistencyPromoAction",
                         AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT, 2);
+                ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT, 2);
         buildAndShowExpandedBottomSheet();
         onView(withText(TEST_EMAIL2)).perform(click());
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
@@ -385,7 +385,7 @@ public class AccountPickerBottomSheetTest {
         Assert.assertEquals(1, accountConsistencyHistogram.getDelta());
         Assert.assertEquals(0,
                 SigninPreferencesManager.getInstance()
-                        .getAccountPickerBottomSheetActiveDismissalCount());
+                        .getWebSigninAccountPickerActiveDismissalCount());
     }
 
     @Test

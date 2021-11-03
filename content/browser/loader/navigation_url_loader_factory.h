@@ -16,6 +16,10 @@ namespace content {
 // the loader. This is intended for testing.
 class NavigationURLLoaderFactory {
  public:
+  NavigationURLLoaderFactory(const NavigationURLLoaderFactory&) = delete;
+  NavigationURLLoaderFactory& operator=(const NavigationURLLoaderFactory&) =
+      delete;
+
   virtual std::unique_ptr<NavigationURLLoader> CreateLoader(
       StoragePartition* storage_partition,
       std::unique_ptr<NavigationRequestInfo> request_info,
@@ -27,9 +31,6 @@ class NavigationURLLoaderFactory {
  protected:
   NavigationURLLoaderFactory() {}
   virtual ~NavigationURLLoaderFactory() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationURLLoaderFactory);
 };
 
 }  // namespace content

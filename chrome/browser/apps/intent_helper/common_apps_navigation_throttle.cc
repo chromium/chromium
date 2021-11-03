@@ -96,7 +96,7 @@ bool IsAppDisabled(const std::string& app_id) {
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
   for (auto app_id : app_ids) {
-    if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId)
+    if (app_id == ash::kChromeUITrustedProjectorSwaAppId)
       return false;
   }
   return true;
@@ -123,11 +123,11 @@ GURL RedirectUrlIfSwa(Profile* profile,
     return url;
 
   // Projector:
-  if (app_id == chromeos::kChromeUITrustedProjectorSwaAppId &&
+  if (app_id == ash::kChromeUITrustedProjectorSwaAppId &&
       url.DeprecatedGetOriginAsURL() ==
-          GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl)
+          GURL(ash::kChromeUIUntrustedProjectorPwaUrl)
               .DeprecatedGetOriginAsURL()) {
-    std::string override_url = chromeos::kChromeUITrustedProjectorAppUrl;
+    std::string override_url = ash::kChromeUITrustedProjectorAppUrl;
     if (url.path().length() > 1)
       override_url += url.path().substr(1);
     GURL result(override_url);
@@ -145,7 +145,14 @@ GURL RedirectUrlIfSwa(Profile* profile,
 // static
 std::unique_ptr<apps::AppsNavigationThrottle>
 CommonAppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame())
+  // Don't handle navigations in subframes or main frames that are in a nested
+  // frame tree (e.g. portals, fenced-frame). We specifically allow
+  // prerendering navigations so that we can destroy the prerender. Opening an
+  // app must only happen when the user intentionally navigates; however, for a
+  // prerender, the prerender-activating navigation doesn't run throttles so we
+  // must cancel it during initial loading to get a standard (non-prerendering)
+  // navigation at link-click-time.
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
     return nullptr;
 
   content::WebContents* web_contents = handle->GetWebContents();
@@ -211,6 +218,15 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
     if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
       return false;
   }
+
+  // If this is a prerender navigation that would otherwise launch an app, we
+  // must cancel it. We only want to launch an app once the URL is
+  // intentionally navigated to by the user. We cancel the navigation here so
+  // that when the link is clicked, we'll run NavigationThrottles again. If we
+  // leave the prerendering alive, the activating navigation won't run
+  // throttles.
+  if (handle->IsInPrerenderedMainFrame())
+    return true;
 
   auto launch_source = navigate_from_link()
                            ? apps::mojom::LaunchSource::kFromLink

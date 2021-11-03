@@ -88,7 +88,11 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   bool device_emulation_enabled() { return device_emulation_enabled_; }
 
-  void ApplyOverrides(net::HttpRequestHeaders* headers);
+  // Applies the network request header overrides on `headers`.  If the
+  // User-Agent header was overridden, `user_agent_overridden` is set to true;
+  // otherwise, it's set to false.
+  void ApplyOverrides(net::HttpRequestHeaders* headers,
+                      bool* user_agent_overridden);
   bool ApplyUserAgentMetadataOverrides(
       absl::optional<blink::UserAgentMetadata>* override_out);
 

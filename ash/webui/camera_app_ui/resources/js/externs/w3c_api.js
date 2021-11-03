@@ -243,6 +243,12 @@ CSS.px = function(px) {};
 CSS.rad = function(rad) {};
 
 /**
+ * @param {number} deg
+ * @return {!CSSUnitValue}
+ */
+CSS.deg = function(deg) {};
+
+/**
  * @param {number} number
  * @return {!CSSUnitValue}
  */

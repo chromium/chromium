@@ -5,10 +5,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
@@ -35,45 +31,6 @@ DlpContentObserver* DlpContentObserver::Get() {
 #else
   return DlpContentManagerLacros::Get();
 #endif
-}
-
-DlpContentRestrictionSet DlpContentObserver::GetRestrictionSetForURL(
-    const GURL& url) const {
-  DlpContentRestrictionSet set;
-
-  // TODO(crbug.com/1254329) Enable on LaCros once DlpRulesManager is available.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  DlpRulesManager* dlp_rules_manager =
-      DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!dlp_rules_manager)
-    return set;
-
-  const size_t kRestrictionsCount = 5;
-  static constexpr std::array<
-      std::pair<DlpRulesManager::Restriction, DlpContentRestriction>,
-      kRestrictionsCount>
-      kRestrictionsArray = {{{DlpRulesManager::Restriction::kScreenshot,
-                              DlpContentRestriction::kScreenshot},
-                             {DlpRulesManager::Restriction::kScreenshot,
-                              DlpContentRestriction::kVideoCapture},
-                             {DlpRulesManager::Restriction::kPrivacyScreen,
-                              DlpContentRestriction::kPrivacyScreen},
-                             {DlpRulesManager::Restriction::kPrinting,
-                              DlpContentRestriction::kPrint},
-                             {DlpRulesManager::Restriction::kScreenShare,
-                              DlpContentRestriction::kScreenShare}}};
-
-  for (const auto& restriction : kRestrictionsArray) {
-    DlpRulesManager::Level level =
-        dlp_rules_manager->IsRestricted(url, restriction.first);
-    if (level == DlpRulesManager::Level::kNotSet ||
-        level == DlpRulesManager::Level::kAllow)
-      continue;
-    set.SetRestriction(restriction.second, level, url);
-  }
-#endif
-
-  return set;
 }
 
 /* static */

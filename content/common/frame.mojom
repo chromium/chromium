@@ -176,8 +176,8 @@ struct CreateLocalMainFrameParams {
 
   pending_remote<blink.mojom.BrowserInterfaceBroker> interface_broker;
 
-  // Whether or not the frame has previously committed a real load.
-  bool has_committed_real_load;
+  // Whether the frame is still on the initial empty document or not.
+  bool is_on_initial_empty_document = true;
 
   // Null when the main frame has no policy container yet (for example, because
   // it is a speculative RenderFrameHost), and the policy container will be
@@ -283,8 +283,8 @@ struct CreateFrameParams {
   // new RenderFrame (if one is needed).
   CreateFrameWidgetParams? widget_params;
 
-  // Whether or not the frame has previously committed a real load.
-  bool has_committed_real_load;
+  // Whether the frame is still on the initial empty document or not.
+  bool is_on_initial_empty_document = true;
 
   // The policy container for the frame to be created. This can be null if we
   // could not determine a policy container yet, for example in case of a

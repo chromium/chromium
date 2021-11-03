@@ -27,8 +27,6 @@ CONTENT_EXPORT extern const base::FilePath::CharType kPepperDataDirname[];
 // The MIME type used for the browser plugin.
 CONTENT_EXPORT extern const char kBrowserPluginMimeType[];
 
-CONTENT_EXPORT extern const char kFlashPluginName[];
-
 // The maximum number of characters in the URL that we're willing to accept
 // in the browser process. It is set low enough to avoid damage to the browser
 // but high enough that a web site can abuse location.hash for a little storage.

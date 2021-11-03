@@ -10,6 +10,7 @@ using ::testing::ReturnRef;
 
 MockScriptExecutorDelegate::MockScriptExecutorDelegate() {
   ON_CALL(*this, GetSettings).WillByDefault(ReturnRef(client_settings_));
+  ON_CALL(*this, GetLogInfo).WillByDefault(ReturnRef(log_info_));
 }
 
 MockScriptExecutorDelegate::~MockScriptExecutorDelegate() = default;

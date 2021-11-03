@@ -1124,12 +1124,14 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  int dock_mac_address_source =
+      em::DeviceDockMacAddressSourceProto::DOCK_NIC_MAC_ADDRESS;
   if (policy.has_device_dock_mac_address_source() &&
       policy.device_dock_mac_address_source().has_source()) {
-    new_values_cache->SetInteger(
-        kDeviceDockMacAddressSource,
-        policy.device_dock_mac_address_source().source());
+    dock_mac_address_source = policy.device_dock_mac_address_source().source();
   }
+  new_values_cache->SetInteger(kDeviceDockMacAddressSource,
+                               dock_mac_address_source);
 
   if (policy.has_device_second_factor_authentication() &&
       policy.device_second_factor_authentication().has_mode()) {

@@ -722,4 +722,31 @@ TEST_F(DOMAgentTest, DomSearchForStylesPanel) {
   EXPECT_TRUE(!node_ids);
 }
 
+TEST_F(DOMAgentTest, DomSearchForBackingElementID) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  views::View* test_view = new views::View;
+  test_view->SetID(1001);
+  widget->GetRootView()->AddChildView(test_view);
+
+  std::unique_ptr<DOM::Node> root;
+  dom_agent()->getDocument(&root);
+
+  std::string search_id;
+  int result_count = 0;
+  std::unique_ptr<protocol::Array<int>> node_ids;
+
+  // Match ID for View element.
+  dom_agent()->performSearch("id: 1001", false, &search_id, &result_count);
+  EXPECT_EQ(result_count, 1);
+  dom_agent()->getSearchResults(search_id, 0, result_count, &node_ids);
+  EXPECT_EQ(node_ids->size(), 1u);
+  node_ids.reset();
+
+  // Won't match substring of ID for View element.
+  dom_agent()->performSearch("id: 100", false, &search_id, &result_count);
+  EXPECT_EQ(result_count, 0);
+  dom_agent()->getSearchResults(search_id, 0, 1, &node_ids);
+  EXPECT_TRUE(!node_ids);
+}
+
 }  // namespace ui_devtools

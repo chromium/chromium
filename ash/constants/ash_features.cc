@@ -194,6 +194,10 @@ const base::Feature kBluetoothRevamp{"BluetoothRevamp",
 const base::Feature kBluetoothWbsDogfood{"BluetoothWbsDogfood",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable Big GL when using Borealis.
+const base::Feature kBorealisBigGl{"BorealisBigGl",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable experimental disk management changes for Borealis.
 const base::Feature kBorealisDiskManagement{"BorealisDiskManagement",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
@@ -213,15 +217,21 @@ const base::Feature kButtonARCNetworkDiagnostics{
 const base::Feature kCalendarView{"CalendarView",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable manual crop document page to ChromeOS camera app. The flag
+// will be deprecated after feature is fully launched: crbug.com/1259731.
+const base::Feature kCameraAppDocumentManualCrop{
+    "CameraAppDocumentManualCrop", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{
     "CameraPrivacySwitchNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, allow per-network roaming configuration when cellular roaming is
-// not disabled for the device through enterprise policy.
-const base::Feature kCellularAllowPerNetworkRoaming{
-    "CellularAllowPerNetworkRoaming", base::FEATURE_ENABLED_BY_DEFAULT};
+// If enabled, allow eSIM installation bypass the non-cellular internet
+// connectivity check.
+const base::Feature kCellularBypassESimInstallationConnectivityCheck{
+    "CellularBypassESimInstallationConnectivityCheck",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, the value of |kCellularUseAttachApn| should have no effect and
 // and the LTE attach APN configuration will not be sent to the modem. This
@@ -398,8 +408,12 @@ const base::Feature kDriveFsBidirectionalNativeMessaging{
 const base::Feature kDriveFsMirroring{"DriveFsMirroring",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Eche Phone Hub permission onboarding.
+const base::Feature kEchePhoneHubPermissionsOnboarding{
+    "EchePhoneHubPermissionsOnboarding", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the System Web App (SWA) version of Eche.
-const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the naive resize for the Eche window.
 const base::Feature kEcheSWAResizing{"EcheSWAResizing",
@@ -588,6 +602,11 @@ const base::Feature kHandwritingGestureEditing{
 const base::Feature kHandwritingLegacyRecognition{
     "HandwritingLegacyRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables new on-device recognition for legacy handwriting input in all
+// supported languages.
+const base::Feature kHandwritingLegacyRecognitionAllLang{
+    "HandwritingLegacyRecognitionAllLang", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Background Page in the help app.
 const base::Feature kHelpAppBackgroundPage{"HelpAppBackgroundPage",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
@@ -635,6 +654,13 @@ const base::Feature kHoldingSpaceInProgressDownloadsIntegration{
     "HoldingSpaceInProgressDownloadsIntegration",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables in-progress downloads notification suppression with the productivity
+// feature that aims to reduce context switching by enabling users to collect
+// content and transfer or access it later.
+const base::Feature kHoldingSpaceInProgressDownloadsNotificationSuppression{
+    "HoldingSpaceInProgressNotificationSuppression",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables incognito profile integration with the productivity feature that
 // aims to reduce context switching by enabling users to collect content and
 // transfer or access it later.
@@ -673,7 +699,7 @@ const base::Feature kImeStylusHandwriting{"StylusHandwriting",
 
 // Enable or disable the improved screen capture settings.
 const base::Feature kImprovedScreenCaptureSettings{
-    "ImprovedScreenCaptureSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ImprovedScreenCaptureSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
@@ -863,6 +889,11 @@ const base::Feature kPerDeskShelf{"PerDeskShelf",
 const base::Feature kPerformantSplitViewResizing{
     "PerformantSplitViewResizing", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Provides a UI for users to customize their wallpapers, screensaver and
+// avatars.
+const base::Feature kPersonalizationHub{"PersonalizationHub",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -899,6 +930,10 @@ const base::Feature kPreferConstantFrameRate{"PreferConstantFrameRate",
 // https://crbug.com/1204551
 const base::Feature kProductivityLauncher{"ProductivityLauncher",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables animation in the productivity launcher.
+const base::Feature kProductivityLauncherAnimation{
+    "ProductivityLauncherAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable Projector.
 const base::Feature kProjector{"Projector", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1068,6 +1103,10 @@ const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
 // Chinese.
 const base::Feature kSystemChinesePhysicalTyping{
     "SystemChinesePhysicalTyping", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables the System Extensions platform.
+const base::Feature kSystemExtensions{"SystemExtensions",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or disables using the system input engine for physical typing in
 // Japanese.
@@ -1377,6 +1416,10 @@ bool IsDragWindowToNewDeskEnabled() {
   return base::FeatureList::IsEnabled(kDragWindowToNewDesk);
 }
 
+bool IsEchePhoneHubPermissionsOnboarding() {
+  return base::FeatureList::IsEnabled(kEchePhoneHubPermissionsOnboarding);
+}
+
 bool IsEcheSWAEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWA);
 }
@@ -1432,6 +1475,11 @@ bool IsHideShelfControlsInTabletModeEnabled() {
 bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
   return base::FeatureList::IsEnabled(
       kHoldingSpaceInProgressDownloadsIntegration);
+}
+
+bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
+  return base::FeatureList::IsEnabled(
+      kHoldingSpaceInProgressDownloadsNotificationSuppression);
 }
 
 bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
@@ -1589,6 +1637,10 @@ bool IsPerformantSplitViewResizingEnabled() {
   return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
 }
 
+bool IsPersonalizationHubEnabled() {
+  return base::FeatureList::IsEnabled(kPersonalizationHub);
+}
+
 bool IsPhoneHubEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHub);
 }
@@ -1619,6 +1671,11 @@ bool IsPipRoundedCornersEnabled() {
 
 bool IsProductivityLauncherEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncher);
+}
+
+bool IsProductivityLauncherAnimationEnabled() {
+  return IsProductivityLauncherEnabled() &&
+         base::FeatureList::IsEnabled(kProductivityLauncherAnimation);
 }
 
 bool IsProjectorEnabled() {

@@ -12,9 +12,9 @@ source_set("libc++abi") {
   }
 
   # Fuchsia builds don't link against any libraries that provide stack
-  # unwinding symbols, unlike Linux does with glibc.  Build and link against
-  # libunwind manually to get this functionality.
-  if (is_fuchsia) {
+  # unwinding symbols, unlike Linux does with glibc (same applies for Android).
+  # Build and link against libunwind manually to get this functionality.
+  if (is_fuchsia || is_android) {
     deps = [ "//buildtools/third_party/libunwind" ]
   }
 

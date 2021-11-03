@@ -196,7 +196,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       if (this.hasChildFolder_ && this.isOpen) {
         this.dispatch(changeFolderOpen(this.item_.id, false));
       } else {
-        const parentFolderNode = this.getParentFolderNode_();
+        const parentFolderNode = this.getParentFolderNode();
         if (parentFolderNode!.itemId !== ROOT_NODE_ID) {
           parentFolderNode!.getFocusTarget().focus();
         }
@@ -218,7 +218,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     if (isChildFolderNodeFocused) {
       // Get the next child folder node if a child is focused.
       if (!newFocusFolderNode) {
-        newFocusFolderNode = this.getNextChild_(
+        newFocusFolderNode = this.getNextChild(
             yDirection === -1, (currentFocus! as BookmarksFolderNodeElement));
       }
 
@@ -231,7 +231,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     // If there is no newly focused node, allow the parent to handle the change.
     if (!newFocusFolderNode) {
       if (this.itemId !== ROOT_NODE_ID) {
-        this.getParentFolderNode_()!.changeKeyboardSelection_(
+        this.getParentFolderNode()!.changeKeyboardSelection_(
             0, yDirection, this);
       }
 
@@ -247,7 +247,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   /**
    * Returns the next or previous visible bookmark node relative to |child|.
    */
-  private getNextChild_(reverse: boolean, child: BookmarksFolderNodeElement):
+  getNextChild(reverse: boolean, child: BookmarksFolderNodeElement):
       BookmarksFolderNodeElement|null {
     let newFocus = null;
     const children = this.getChildFolderNodes_();
@@ -258,7 +258,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
       // A child node's predecessor is either the previous child's last visible
       // descendant, or this node, which is its immediate parent.
       newFocus =
-          index === 0 ? null : children[index - 1]!.getLastVisibleDescendant_();
+          index === 0 ? null : children[index - 1]!.getLastVisibleDescendant();
     } else if (index < children.length - 1) {
       // A successor to a child is the next child.
       newFocus = children[index + 1]!;
@@ -270,7 +270,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   /**
    * Returns the immediate parent folder node, or null if there is none.
    */
-  private getParentFolderNode_(): BookmarksFolderNodeElement|null {
+  getParentFolderNode(): BookmarksFolderNodeElement|null {
     let parentFolderNode = this.parentNode;
     while (parentFolderNode &&
            (parentFolderNode as HTMLElement).tagName !==
@@ -281,13 +281,13 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
     return (parentFolderNode as BookmarksFolderNodeElement) || null;
   }
 
-  private getLastVisibleDescendant_(): BookmarksFolderNodeElement {
+  getLastVisibleDescendant(): BookmarksFolderNodeElement {
     const children = this.getChildFolderNodes_();
     if (!this.isOpen || children.length === 0) {
       return this;
     }
 
-    return children.pop()!.getLastVisibleDescendant_();
+    return children.pop()!.getLastVisibleDescendant();
   }
 
   private selectFolder_() {

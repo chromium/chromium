@@ -5,6 +5,10 @@
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
+config("warnings") {
+  cflags = [ "-Wno-shadow" ]
+}
+
 component("liburlpattern") {
   defines = [ "IS_LIBURLPATTERN_IMPL" ]
   deps = [
@@ -12,6 +16,8 @@ component("liburlpattern") {
     "//third_party/abseil-cpp:absl",
     "//third_party/icu:icu",
   ]
+
+  configs += [ ":warnings" ]
 
   # Note, also update the local modifications in README.chromium.
   sources = [

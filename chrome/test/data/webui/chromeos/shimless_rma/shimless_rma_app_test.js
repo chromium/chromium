@@ -59,9 +59,9 @@ export function shimlessRMAAppTest() {
    * TODO(joonbug): expand to cover assertion of ButtonState
    */
   function assertNavButtons() {
-    const nextButton = component.shadowRoot.querySelector('#back');
+    const nextButton = component.shadowRoot.querySelector('#next');
     const prevButton = component.shadowRoot.querySelector('#cancel');
-    const backButton = component.shadowRoot.querySelector('#next');
+    const backButton = component.shadowRoot.querySelector('#back');
     assertTrue(!!nextButton);
     assertTrue(!!prevButton);
     assertTrue(!!backButton);
@@ -84,6 +84,7 @@ export function shimlessRMAAppTest() {
 
   test('ShimlessRMABasicNavigation', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
     const prevButton = component.shadowRoot.querySelector('#back');
     const cancelButton = component.shadowRoot.querySelector('#cancel');
     assertTrue(!!prevButton);
@@ -96,6 +97,9 @@ export function shimlessRMAAppTest() {
     assertTrue(prevButton.hidden);
     assertFalse(cancelButton.hidden);
 
+    // This enables the next button on the landing page.
+    service.triggerHardwareVerificationStatusObserver(true, '', 0);
+    await flushTasks();
     await clickNext();
 
     const selectNetworkPage =

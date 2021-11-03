@@ -17,7 +17,7 @@
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "ui/webui/webui_allowlist.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheAppUI::EcheAppUI(content::WebUI* web_ui,
@@ -51,7 +51,7 @@ EcheAppUI::EcheAppUI(content::WebUI* web_ui,
       IDR_ASH_ECHE_APP_ASH_WEBUI_ECHE_APP_UI_MOJOM_ECHE_APP_MOJOM_LITE_JS);
   html_source->AddResourcePath(
       "message_pipe.js",
-      IDR_ASH_ECHE_APP_____________CHROMEOS_COMPONENTS_SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
+      IDR_ASH_ECHE_APP_______SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
   html_source->AddResourcePath("message_types.js",
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("browser_proxy.js",
@@ -115,4 +115,4 @@ void EcheAppUI::BindInterface(
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

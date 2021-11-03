@@ -19,6 +19,9 @@ class ForwardingAgentHost : public DevToolsAgentHostImpl {
       const std::string& id,
       std::unique_ptr<DevToolsExternalAgentProxyDelegate> delegate);
 
+  ForwardingAgentHost(const ForwardingAgentHost&) = delete;
+  ForwardingAgentHost& operator=(const ForwardingAgentHost&) = delete;
+
  private:
   ~ForwardingAgentHost() override;
 
@@ -39,7 +42,6 @@ class ForwardingAgentHost : public DevToolsAgentHostImpl {
   std::string GetDescription() override;
 
   std::unique_ptr<DevToolsExternalAgentProxyDelegate> delegate_;
-  DISALLOW_COPY_AND_ASSIGN(ForwardingAgentHost);
 };
 
 }  // namespace content

@@ -63,13 +63,13 @@ TEST_F(CullRectTest, IntersectsTransformed) {
   transform.Translate(-2, -2);
 
   EXPECT_TRUE(
-      cull_rect.IntersectsTransformed(transform, FloatRect(51, 51, 1, 1)));
+      cull_rect.IntersectsTransformed(transform, gfx::RectF(51, 51, 1, 1)));
   EXPECT_FALSE(cull_rect.Intersects(gfx::Rect(52, 52, 1, 1)));
 
   EXPECT_TRUE(CullRect::Infinite().IntersectsTransformed(
-      transform, FloatRect(51, 51, 1, 1)));
+      transform, gfx::RectF(51, 51, 1, 1)));
   EXPECT_FALSE(CullRect::Infinite().IntersectsTransformed(
-      transform, FloatRect(1, 1, 1, 0)));
+      transform, gfx::RectF(1, 1, 1, 0)));
 }
 
 TEST_F(CullRectTest, Infinite) {

@@ -30,6 +30,11 @@ void RankerDelegate::Train(const LaunchData& launch) {
     ranker->Train(launch);
 }
 
+void RankerDelegate::Remove(ChromeSearchResult* result) {
+  for (auto& ranker : rankers_)
+    ranker->Remove(result);
+}
+
 void RankerDelegate::AddRanker(std::unique_ptr<Ranker> ranker) {
   rankers_.emplace_back(std::move(ranker));
 }

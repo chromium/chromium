@@ -101,6 +101,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
   // Parses |onc_certificates|. This must be a Value of type LIST, corresponding
   // to the Certificates part of the ONC specification.
   explicit OncParsedCertificates(const base::Value& onc_certificates);
+
+  OncParsedCertificates(const OncParsedCertificates&) = delete;
+  OncParsedCertificates& operator=(const OncParsedCertificates&) = delete;
+
   ~OncParsedCertificates();
 
   // Returns all certificates that were successfully parsed and had the type
@@ -132,8 +136,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncParsedCertificates {
   std::vector<ServerOrAuthorityCertificate> server_or_authority_certificates_;
   std::vector<ClientCertificate> client_certificates_;
   bool has_error_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OncParsedCertificates);
 };
 
 }  // namespace onc

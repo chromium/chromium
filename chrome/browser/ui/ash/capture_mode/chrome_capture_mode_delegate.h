@@ -45,7 +45,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       const aura::Window* window,
       const gfx::Rect& bounds,
       base::OnceClosure stop_callback) override;
-  void StopObservingRestrictedContent() override;
+  void StopObservingRestrictedContent(
+      ash::OnCaptureModeDlpRestrictionChecked callback) override;
   mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
       override;
   void BindAudioStreamFactory(

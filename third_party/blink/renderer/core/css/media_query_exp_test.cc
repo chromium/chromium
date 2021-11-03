@@ -205,6 +205,25 @@ TEST(MediaQueryExpTest, Serialize) {
       PairExp("width", GtCmp(PxValue(20.0)), GeCmp(PxValue(10.0))).Serialize());
 }
 
+TEST(MediaQueryExpTest, Copy) {
+  // (width < 10px)
+  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
+  // (height < 10px)
+  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
+
+  Vector<std::unique_ptr<MediaQueryExpNode>> nodes;
+  nodes.push_back(FeatureNode(width_lt10));
+  nodes.push_back(NotNode(FeatureNode(width_lt10)));
+  nodes.push_back(NestedNode(FeatureNode(width_lt10)));
+  nodes.push_back(AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
+  nodes.push_back(OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10)));
+
+  for (const auto& node : nodes) {
+    EXPECT_EQ(node->GetType(), node->Copy()->GetType());
+    EXPECT_EQ(node->Serialize(), node->Copy()->Serialize());
+  }
+}
+
 TEST(MediaQueryExpTest, SerializeNode) {
   EXPECT_EQ("(width < 10px)",
             FeatureNode(RightExp("width", LtCmp(PxValue(10))))->Serialize());
@@ -240,6 +259,84 @@ TEST(MediaQueryExpTest, SerializeNode) {
                         FeatureNode(LeftExp("thing", GeCmp(PxValue(11)))),
                         FeatureNode(RightExp("height", EqCmp(PxValue(12)))))))
                 ->Serialize());
+}
+
+TEST(MediaQueryExpTest, QueriedAxes) {
+  MediaQueryExp color = RightExp("color", NoCmp(InvalidValue()));
+  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
+  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
+
+  // (color)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisNone), FeatureNode(color)->QueriedAxes());
+  // (width < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            FeatureNode(width_lt10)->QueriedAxes());
+  // (height < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisVertical),
+            FeatureNode(height_lt10)->QueriedAxes());
+  // (width < 10px) and (height < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisBoth),
+            AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+                ->QueriedAxes());
+  // (width < 10px) or (height < 10px)
+  EXPECT_EQ(
+      PhysicalAxes(kPhysicalAxisBoth),
+      OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10))->QueriedAxes());
+  // ((width < 10px))
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            NestedNode(FeatureNode(width_lt10))->QueriedAxes());
+  // not (width < 10px)
+  EXPECT_EQ(PhysicalAxes(kPhysicalAxisHorizontal),
+            NotNode(FeatureNode(width_lt10))->QueriedAxes());
+}
+
+TEST(MediaQueryExpTest, CollectExpressions) {
+  MediaQueryExp width_lt10 = RightExp("width", LtCmp(PxValue(10)));
+  MediaQueryExp height_lt10 = RightExp("height", LtCmp(PxValue(10)));
+
+  // (width < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    FeatureNode(width_lt10)->CollectExpressions(expressions);
+    ASSERT_EQ(1u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+  }
+
+  // (width < 10px) and (height < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    AndNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+        ->CollectExpressions(expressions);
+    ASSERT_EQ(2u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+    EXPECT_EQ(height_lt10, expressions[1]);
+  }
+
+  // (width < 10px) or (height < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    OrNode(FeatureNode(width_lt10), FeatureNode(height_lt10))
+        ->CollectExpressions(expressions);
+    ASSERT_EQ(2u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+    EXPECT_EQ(height_lt10, expressions[1]);
+  }
+
+  // ((width < 10px))
+  {
+    Vector<MediaQueryExp> expressions;
+    NestedNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
+    ASSERT_EQ(1u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+  }
+
+  // not (width < 10px)
+  {
+    Vector<MediaQueryExp> expressions;
+    NotNode(FeatureNode(width_lt10))->CollectExpressions(expressions);
+    ASSERT_EQ(1u, expressions.size());
+    EXPECT_EQ(width_lt10, expressions[0]);
+  }
 }
 
 }  // namespace blink

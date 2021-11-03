@@ -41,11 +41,13 @@ public abstract class AttributionReporter {
      * ad in an app. This Attribution is not associated with any navigation.
      *
      * @param browserContext The BrowserContextHandle in which we're currently running.
+     * @param eventTime The time at which the event took place in {@link System#currentTimeMillis()}
+     *         timebase. Optional if the event was just received (and not cached).
      * @see LoadUrlParams#setAttributionParameters for the rest of the parameters.
      */
     public abstract void reportAppImpression(BrowserContextHandle browserContext,
             String sourcePackageName, String sourceEventId, String destination, String reportTo,
-            long expiry);
+            long expiry, long eventTime);
 
     public static void setInstanceForTesting(AttributionReporter reporter) {
         sAttributionReporterForTesting = reporter;

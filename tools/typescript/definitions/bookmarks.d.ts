@@ -85,7 +85,7 @@ declare global {
 
       export interface ChangeInfo {
         title: string;
-        url: string;
+        url?: string;
       }
 
       export const onChanged:

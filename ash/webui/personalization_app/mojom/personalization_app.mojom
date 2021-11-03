@@ -126,8 +126,8 @@ interface WallpaperProvider {
 
     // Sets the given local wallpaper as the user's background. Validated
     // against list of file paths returned by |GetLocalImages|.
-    SelectLocalImage(mojo_base.mojom.FilePath path, bool preview_mode) =>
-        (bool success);
+    SelectLocalImage(mojo_base.mojom.FilePath path, WallpaperLayout layout,
+        bool preview_mode) => (bool success);
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);

@@ -18,7 +18,10 @@ lucicfg.check_version("1.28.0", "Please update depot_tools")
 # Enable LUCI Realms support and Launch 100% of Swarming tasks for builds in
 # "realms-aware mode".
 lucicfg.enable_experiment("crbug.com/1085650")
-luci.builder.defaults.experiments.set({"luci.use_realms": 100})
+luci.builder.defaults.experiments.set({
+    "luci.use_realms": 100,
+    "luci.recipes.use_python3": 100,
+})
 
 REPO_URL = "https://chromium.googlesource.com/crashpad/crashpad"
 REVIEW_URL = "https://chromium-review.googlesource.com/crashpad/crashpad"

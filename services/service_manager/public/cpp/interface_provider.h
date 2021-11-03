@@ -71,6 +71,9 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
       mojo::PendingRemote<mojom::InterfaceProvider> interface_provider,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  InterfaceProvider(const InterfaceProvider&) = delete;
+  InterfaceProvider& operator=(const InterfaceProvider&) = delete;
+
   ~InterfaceProvider();
 
   // Closes the currently bound mojo::PendingRemote<InterfaceProvider> for this
@@ -130,8 +133,6 @@ class SERVICE_MANAGER_PUBLIC_CPP_EXPORT InterfaceProvider {
   ForwardCallback forward_callback_;
 
   base::WeakPtrFactory<InterfaceProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceProvider);
 };
 
 }  // namespace service_manager

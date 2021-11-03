@@ -18,7 +18,13 @@ AutofillAssistantTtsController::AutofillAssistantTtsController(
     content::TtsController* tts_controller)
     : tts_controller_(tts_controller) {}
 
-AutofillAssistantTtsController::~AutofillAssistantTtsController() {}
+AutofillAssistantTtsController::~AutofillAssistantTtsController() {
+  // Remove self from receiving any further Tts Events for any pending
+  // utterance. Also stops any ongoing/queued utterance with this delegate.
+  if (tts_controller_ != nullptr) {
+    tts_controller_->RemoveUtteranceEventDelegate(this);
+  }
+}
 
 void AutofillAssistantTtsController::Speak(const std::string& message,
                                            const std::string& locale) {
@@ -40,7 +46,7 @@ void AutofillAssistantTtsController::Stop() {
 }
 
 void AutofillAssistantTtsController::SetTtsEventDelegate(
-    TtsEventDelegate* tts_event_delegate) {
+    base::WeakPtr<TtsEventDelegate> tts_event_delegate) {
   // Ensure that it is set only once
   DCHECK(!tts_event_delegate_);
 
@@ -53,7 +59,7 @@ void AutofillAssistantTtsController::OnTtsEvent(
     int char_index,
     int char_length,
     const std::string& error_message) {
-  if (tts_event_delegate_ == nullptr) {
+  if (!tts_event_delegate_) {
     VLOG(1) << "AssistantAutofillTtsController: No TtsEventDelegate set.";
     return;
   }

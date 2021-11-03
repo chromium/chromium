@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/commerce/coupons/coupon_service.h"
+#include "chrome/browser/cart/cart_features.h"
 #include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 
@@ -105,7 +106,8 @@ void CouponService::RecordCouponDisplayTimestamp(
 }
 
 void CouponService::MaybeFeatureStatusChanged(bool enabled) {
-  enabled &= commerce::IsCouponWithCodeEnabled();
+  enabled &= (commerce::IsCouponWithCodeEnabled() ||
+              cart_features::IsFakeDataEnabled());
   if (enabled == features_enabled_)
     return;
   features_enabled_ = enabled;

@@ -51,13 +51,22 @@ void ResolveCropPromise(ScriptPromiseResolver* resolver,
   }
 
   switch (result) {
+    case media::mojom::CropRequestResult::kSuccess:
+      // TODO(crbug.com/1247761): Delay reporting success to the Web-application
+      // until "seeing" the last frame cropped to the previous crop-target.
+      resolver->Resolve();
+      return;
     case media::mojom::CropRequestResult::kErrorGeneric:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
                          "Unknown error.");
       return;
+    case media::mojom::CropRequestResult::kUnsupportedCaptureDevice:
+      RaiseCropException(resolver, DOMExceptionCode::kAbortError,
+                         "Unsupported device.");
+      return;
     case media::mojom::CropRequestResult::kErrorUnknownDeviceId:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,
-                         "Unknown device-ID.");
+                         "Unknown device.");
       return;
     case media::mojom::CropRequestResult::kNotImplemented:
       RaiseCropException(resolver, DOMExceptionCode::kAbortError,

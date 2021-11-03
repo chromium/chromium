@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -684,7 +685,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param logoImage The logo image.
      * @param contentDescription The accessibility text describing the logo.
      */
-    public void onLogoAvailable(Drawable logoImage, String contentDescription) {
+    public void onLogoAvailable(Bitmap logoImage, String contentDescription) {
         if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.onLogoImageAvailable(logoImage, contentDescription);
         }

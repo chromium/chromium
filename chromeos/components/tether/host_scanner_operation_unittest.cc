@@ -70,6 +70,10 @@ DeviceStatus CreateFakeDeviceStatus() {
 }  // namespace
 
 class HostScannerOperationTest : public testing::Test {
+ public:
+  HostScannerOperationTest(const HostScannerOperationTest&) = delete;
+  HostScannerOperationTest& operator=(const HostScannerOperationTest&) = delete;
+
  protected:
   HostScannerOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -143,9 +147,6 @@ class HostScannerOperationTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<HostScannerOperation> operation_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScannerOperationTest);
 };
 
 TEST_F(HostScannerOperationTest,

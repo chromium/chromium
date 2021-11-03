@@ -117,7 +117,6 @@ preprocess_if_expr("preprocess") {
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/show_password_mixin.ts",
     "base_mixin.ts",
-    "chrome_cleanup_page/chrome_cleanup_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/cr_policy_pref_mixin.ts",
     "controls/pref_control_mixin.ts",
@@ -129,7 +128,6 @@ preprocess_if_expr("preprocess") {
     "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
     "i18n_setup.ts",
-    "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     "lazy_load.ts",
     "lifetime_browser_proxy.ts",
     "metrics_browser_proxy.ts",
@@ -164,9 +162,12 @@ preprocess_if_expr("preprocess") {
     "site_settings/website_usage_browser_proxy.ts",
   ]
 
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    in_files += [ "autofill_page/blocking_request_manager.ts" ]
+  }
+
   if (is_chromeos_ash) {
     in_files += [
-      "autofill_page/blocking_request_manager.ts",
       "people_page/account_manager_browser_proxy.ts",
       "site_settings/android_info_browser_proxy.ts",
     ]
@@ -184,6 +185,13 @@ preprocess_if_expr("preprocess") {
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_types.ts",
       "people_page/manage_profile_browser_proxy.ts",
+    ]
+  }
+
+  if (is_win) {
+    in_files += [
+      "chrome_cleanup_page/chrome_cleanup_proxy.ts",
+      "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     ]
   }
 }
@@ -269,6 +277,7 @@ preprocess_if_expr("preprocess_generated") {
     "privacy_page/privacy_review/privacy_review_history_sync_fragment.ts",
     "privacy_page/privacy_review/privacy_review_msbb_fragment.ts",
     "privacy_page/privacy_review/privacy_review_page.ts",
+    "privacy_page/privacy_review/privacy_review_safe_browsing_fragment.ts",
     "privacy_page/privacy_review/privacy_review_welcome_fragment.ts",
     "privacy_page/privacy_review/step_indicator.ts",
     "privacy_page/security_keys_bio_enroll_dialog.ts",
@@ -344,6 +353,10 @@ preprocess_if_expr("preprocess_generated") {
     in_files += [ "languages_page/edit_dictionary_page.ts" ]
   }
 
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    in_files += [ "controls/password_prompt_dialog.ts" ]
+  }
+
   if (!is_chromeos) {
     in_files += [
       "default_browser_page/default_browser_page.ts",
@@ -352,9 +365,7 @@ preprocess_if_expr("preprocess_generated") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    in_files += [ "controls/password_prompt_dialog.ts" ]
-  } else {
+  if (!is_chromeos_ash) {
     in_files += [
       "languages_page/add_languages_dialog.ts",
       "languages_page/languages_page.ts",
@@ -512,6 +523,7 @@ html_to_js("web_components_local") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "a11y_page/a11y_page.ts",
@@ -623,6 +635,7 @@ ts_library("build_ts") {
     "privacy_page/privacy_review/privacy_review_history_sync_fragment.ts",
     "privacy_page/privacy_review/privacy_review_msbb_fragment.ts",
     "privacy_page/privacy_review/privacy_review_page.ts",
+    "privacy_page/privacy_review/privacy_review_safe_browsing_fragment.ts",
     "privacy_page/privacy_review/privacy_review_welcome_fragment.ts",
     "privacy_page/privacy_review/step_indicator.ts",
     "privacy_page/privacy_review_promo.ts",
@@ -719,10 +732,15 @@ ts_library("build_ts") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     in_files += [
       "autofill_page/blocking_request_manager.ts",
       "controls/password_prompt_dialog.ts",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    in_files += [
       "people_page/account_manager_browser_proxy.ts",
       "site_settings/android_info_browser_proxy.ts",
     ]
@@ -775,7 +793,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     definitions +=
         [ "//tools/typescript/definitions/quick_unlock_private.d.ts" ]
   }

@@ -12,6 +12,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_position.h"
+#include "ui/accessibility/ax_position.h"
+#include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
 
@@ -22,7 +25,6 @@ AXComputedNodeData::AXComputedNodeData(const AXNode& node) : owner_(&node) {}
 AXComputedNodeData::~AXComputedNodeData() = default;
 
 int AXComputedNodeData::GetOrComputeUnignoredIndexInParent() const {
-  DCHECK(owner_);
   DCHECK(!owner_->IsIgnored());
   if (unignored_index_in_parent_)
     return *unignored_index_in_parent_;
@@ -38,7 +40,6 @@ int AXComputedNodeData::GetOrComputeUnignoredIndexInParent() const {
 }
 
 int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
-  DCHECK(owner_);
   DCHECK(!owner_->IsIgnored());
   if (!unignored_child_count_)
     ComputeUnignoredValues();
@@ -47,7 +48,6 @@ int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
 
 const std::vector<AXNodeID>& AXComputedNodeData::GetOrComputeUnignoredChildIDs()
     const {
-  DCHECK(owner_);
   DCHECK(!owner_->IsIgnored());
   if (!unignored_child_ids_)
     ComputeUnignoredValues();
@@ -56,7 +56,6 @@ const std::vector<AXNodeID>& AXComputedNodeData::GetOrComputeUnignoredChildIDs()
 
 bool AXComputedNodeData::HasOrCanComputeAttribute(
     const ax::mojom::StringAttribute attribute) const {
-  DCHECK(owner_);
   if (owner_->data().HasStringAttribute(attribute))
     return true;
 
@@ -72,7 +71,6 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
 
 bool AXComputedNodeData::HasOrCanComputeAttribute(
     const ax::mojom::IntListAttribute attribute) const {
-  DCHECK(owner_);
   if (owner_->data().HasIntListAttribute(attribute))
     return true;
 
@@ -91,7 +89,6 @@ bool AXComputedNodeData::HasOrCanComputeAttribute(
 
 const std::string& AXComputedNodeData::GetOrComputeAttributeUTF8(
     const ax::mojom::StringAttribute attribute) const {
-  DCHECK(owner_);
   if (owner_->data().HasStringAttribute(attribute))
     return owner_->data().GetStringAttribute(attribute);
 
@@ -118,7 +115,6 @@ std::u16string AXComputedNodeData::GetOrComputeAttributeUTF16(
 
 const std::vector<int32_t>& AXComputedNodeData::GetOrComputeAttribute(
     const ax::mojom::IntListAttribute attribute) const {
-  DCHECK(owner_);
   if (owner_->data().HasIntListAttribute(attribute))
     return owner_->data().GetIntListAttribute(attribute);
 
@@ -164,7 +160,10 @@ const std::string& AXComputedNodeData::GetOrComputeInnerTextUTF8() const {
   if (!inner_text_utf8_) {
     VLOG_IF(1, inner_text_utf16_)
         << "Only a single encoding of inner text should be cached.";
-    inner_text_utf8_ = ComputeInnerTextUTF8();
+    auto range =
+        AXRange<AXPosition<AXNodePosition, AXNode>>::RangeOfContents(*owner_);
+    inner_text_utf8_ = base::UTF16ToUTF8(
+        range.GetText(AXTextConcatenationBehavior::kAsInnerText));
   }
   return *inner_text_utf8_;
 }
@@ -173,17 +172,38 @@ const std::u16string& AXComputedNodeData::GetOrComputeInnerTextUTF16() const {
   if (!inner_text_utf16_) {
     VLOG_IF(1, inner_text_utf8_)
         << "Only a single encoding of inner text should be cached.";
-    inner_text_utf16_ = ComputeInnerTextUTF16();
+    auto range =
+        AXRange<AXPosition<AXNodePosition, AXNode>>::RangeOfContents(*owner_);
+    inner_text_utf16_ =
+        range.GetText(AXTextConcatenationBehavior::kAsInnerText);
   }
   return *inner_text_utf16_;
 }
 
-int AXComputedNodeData::GetOrComputeInnerTextLengthUTF8() const {
-  return static_cast<int>(GetOrComputeInnerTextUTF8().length());
+const std::string& AXComputedNodeData::GetOrComputeTextContentUTF8() const {
+  if (!text_content_utf8_) {
+    VLOG_IF(1, text_content_utf16_)
+        << "Only a single encoding of text content should be cached.";
+    text_content_utf8_ = ComputeTextContentUTF8();
+  }
+  return *text_content_utf8_;
 }
 
-int AXComputedNodeData::GetOrComputeInnerTextLengthUTF16() const {
-  return static_cast<int>(GetOrComputeInnerTextUTF16().length());
+const std::u16string& AXComputedNodeData::GetOrComputeTextContentUTF16() const {
+  if (!text_content_utf16_) {
+    VLOG_IF(1, text_content_utf8_)
+        << "Only a single encoding of text content should be cached.";
+    text_content_utf16_ = ComputeTextContentUTF16();
+  }
+  return *text_content_utf16_;
+}
+
+int AXComputedNodeData::GetOrComputeTextContentLengthUTF8() const {
+  return static_cast<int>(GetOrComputeTextContentUTF8().length());
+}
+
+int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
+  return static_cast<int>(GetOrComputeTextContentUTF16().length());
 }
 
 void AXComputedNodeData::ComputeUnignoredValues(
@@ -230,14 +250,14 @@ void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
 
   line_starts_ = std::vector<int32_t>();
   line_ends_ = std::vector<int32_t>();
-  const std::u16string& inner_text = GetOrComputeInnerTextUTF16();
-  if (inner_text.empty())
+  const std::u16string& text_content = GetOrComputeTextContentUTF16();
+  if (text_content.empty())
     return;
 
   // TODO(nektar): Using the `base::i18n::BreakIterator` class is not enough. We
   // also need to pass information from Blink as to which inline text boxes
   // start a new line and deprecate next/previous_on_line.
-  base::i18n::BreakIterator iter(inner_text,
+  base::i18n::BreakIterator iter(text_content,
                                  base::i18n::BreakIterator::BREAK_NEWLINE);
   if (!iter.Init())
     return;
@@ -256,8 +276,8 @@ void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
 
   sentence_starts_ = std::vector<int32_t>();
   sentence_ends_ = std::vector<int32_t>();
-  const std::u16string& inner_text = GetOrComputeInnerTextUTF16();
-  if (inner_text.empty())
+  const std::u16string& text_content = GetOrComputeTextContentUTF16();
+  if (text_content.empty())
     return;
 
   // Unlike in ICU, a sentence boundary is not valid in Blink if it falls within
@@ -267,7 +287,7 @@ void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
   // characters, "Hello. | there.".
   // TODO(nektar): The above is not accomplished simply by using the
   // `base::i18n::BreakIterator` class.
-  base::i18n::BreakIterator iter(inner_text,
+  base::i18n::BreakIterator iter(text_content,
                                  base::i18n::BreakIterator::BREAK_SENTENCE);
   if (!iter.Init())
     return;
@@ -286,8 +306,8 @@ void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
 
   word_starts_ = std::vector<int32_t>();
   word_ends_ = std::vector<int32_t>();
-  const std::u16string& inner_text = GetOrComputeInnerTextUTF16();
-  if (inner_text.empty())
+  const std::u16string& text_content = GetOrComputeTextContentUTF16();
+  if (text_content.empty())
     return;
 
   // Unlike in ICU, a word boundary is valid in Blink only if it is before, or
@@ -298,7 +318,7 @@ void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
   // | there".
   // TODO(nektar): Fix the fact that the `base::i18n::BreakIterator` class does
   // not take into account underscores as word separators.
-  base::i18n::BreakIterator iter(inner_text,
+  base::i18n::BreakIterator iter(text_content,
                                  base::i18n::BreakIterator::BREAK_WORD);
   if (!iter.Init())
     return;
@@ -311,9 +331,9 @@ void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
   }
 }
 
-std::string AXComputedNodeData::ComputeInnerTextUTF8() const {
-  // If a text field has no descendants, then we compute its inner text from its
-  // value or its placeholder. Otherwise we prefer to look at its descendant
+std::string AXComputedNodeData::ComputeTextContentUTF8() const {
+  // If a text field has no descendants, then we compute its text content from
+  // its value or its placeholder. Otherwise we prefer to look at its descendant
   // text nodes because Blink doesn't always add all trailing white space to the
   // value attribute.
   const bool is_atomic_text_field_without_descendants =
@@ -330,10 +350,10 @@ std::string AXComputedNodeData::ComputeInnerTextUTF8() const {
   }
 
   // Ordinarily, atomic text fields are leaves, and for all leaves we directly
-  // retrieve their inner text using the information provided by the tree
+  // retrieve their text content using the information provided by the tree
   // source, such as Blink. However, for atomic text fields we need to exclude
   // them from the set of leaf nodes when they expose any descendants. This is
-  // because we want to compute their inner text from their descendant text
+  // because we want to compute their text content from their descendant text
   // nodes as we don't always trust the "value" attribute provided by Blink.
   const bool is_atomic_text_field_with_descendants =
       (owner_->data().IsTextField() && owner_->GetUnignoredChildCount());
@@ -347,8 +367,8 @@ std::string AXComputedNodeData::ComputeInnerTextUTF8() const {
       case ax::mojom::NameFrom::kAttribute:
       // The node's accessible name is explicitly empty.
       case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
-      // The accessible name does not represent the entirety of the node's inner
-      // text, e.g. a table's caption or a figure's figcaption.
+      // The accessible name does not represent the entirety of the node's text
+      // content, e.g. a table's caption or a figure's figcaption.
       case ax::mojom::NameFrom::kCaption:
       case ax::mojom::NameFrom::kRelatedElement:
       // The accessible name is not displayed directly inside the node but is
@@ -360,24 +380,24 @@ std::string AXComputedNodeData::ComputeInnerTextUTF8() const {
       // The placeholder text is initially displayed inside the text field and
       // takes the place of its value.
       case ax::mojom::NameFrom::kPlaceholder:
-      // The value attribute takes the place of the node's inner text, e.g. the
-      // value of a submit button is displayed inside the button itself.
+      // The value attribute takes the place of the node's text content, e.g.
+      // the value of a submit button is displayed inside the button itself.
       case ax::mojom::NameFrom::kValue:
         return owner_->data().GetStringAttribute(
             ax::mojom::StringAttribute::kName);
     }
   }
 
-  std::string inner_text;
+  std::string text_content;
   for (auto it = owner_->UnignoredChildrenCrossingTreeBoundaryBegin();
        it != owner_->UnignoredChildrenCrossingTreeBoundaryEnd(); ++it) {
-    inner_text += it->GetInnerText();
+    text_content += it->GetInnerText();
   }
-  return inner_text;
+  return text_content;
 }
 
-std::u16string AXComputedNodeData::ComputeInnerTextUTF16() const {
-  return base::UTF8ToUTF16(ComputeInnerTextUTF8());
+std::u16string AXComputedNodeData::ComputeTextContentUTF16() const {
+  return base::UTF8ToUTF16(ComputeTextContentUTF8());
 }
 
 }  // namespace ui

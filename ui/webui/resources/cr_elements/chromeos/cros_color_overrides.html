@@ -12,6 +12,10 @@ To get Chrome OS System Colors, an element must:
 <dom-module id="cros-color-overrides">
   <template>
     <style>
+      :host-context([cros]) a:not(.item)[href] {
+        color: var(--cros-link-color);
+      }
+
       :host-context([cros]) cr-radio-button {
         --cr-radio-button-checked-color: var(--cros-radio-button-color);
         --cr-radio-button-checked-ripple-color:

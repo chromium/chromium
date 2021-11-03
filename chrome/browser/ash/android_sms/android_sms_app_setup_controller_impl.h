@@ -58,8 +58,7 @@ class AndroidSmsAppSetupControllerImpl : public AndroidSmsAppSetupController {
 
     virtual absl::optional<web_app::AppId> GetPwaForUrl(const GURL& install_url,
                                                         Profile* profile);
-    virtual network::mojom::CookieManager* GetCookieManager(const GURL& app_url,
-                                                            Profile* profile);
+    virtual network::mojom::CookieManager* GetCookieManager(Profile* profile);
     virtual void RemovePwa(const web_app::AppId& app_id,
                            Profile* profile,
                            SuccessCallback callback);

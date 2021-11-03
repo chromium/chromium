@@ -101,8 +101,7 @@ class WallpaperFunctionBase::UnsafeWallpaperDecoder
     // unsafe image decoder here. Before user login, a robust jpeg decoder will
     // be used.
     CHECK(chromeos::LoginState::Get()->IsUserLoggedIn());
-    std::string image_data_str(image_data.begin(), image_data.end());
-    ImageDecoder::StartWithOptions(this, image_data_str,
+    ImageDecoder::StartWithOptions(this, image_data,
                                    ImageDecoder::DEFAULT_CODEC, true);
   }
 

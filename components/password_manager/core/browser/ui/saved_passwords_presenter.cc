@@ -105,6 +105,14 @@ bool SavedPasswordsPresenter::AddPassword(const PasswordForm& form) {
   if (base::ranges::any_of(passwords_, have_equal_username_and_realm))
     return false;
 
+  // Try to unblocklist in both stores anyway because if credentials don't
+  // exist, the unblocklist operation is no-op.
+  auto form_digest = PasswordFormDigest(PasswordForm::Scheme::kHtml,
+                                        form.signon_realm, form.url);
+  profile_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
+  if (account_store_)
+    account_store_->Unblocklist(form_digest, /*completion=*/base::DoNothing());
+
   GetStoreFor(form).AddLogin(form);
   return true;
 }

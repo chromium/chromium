@@ -100,8 +100,10 @@ class CastAudioRenderer
   // audio_output_service::OutputStreamConnection::Delegate implementation:
   void OnBackendInitialized(
       const audio_output_service::BackendInitializationStatus& status) override;
-  void UpdateMediaTime(int64_t media_timestamp_microseconds,
-                       int64_t reference_timestamp_microseconds) override;
+  void OnNextBuffer(int64_t media_timestamp_microseconds,
+                    int64_t reference_timestamp_microseconds,
+                    int64_t delay_microseconds,
+                    int64_t delay_timestamp_microseconds) override;
 
   void ScheduleFetchNextBuffer();
   void FetchNextBuffer();

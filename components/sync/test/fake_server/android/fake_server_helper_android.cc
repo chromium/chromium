@@ -27,6 +27,7 @@
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -61,18 +62,26 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
     JNIEnv* env,
     jstring title,
     const base::android::JavaRef<jobject>& url,
-    jstring parent_id) {
+    absl::optional<jstring> guid,
+    jstring parent_id,
+    jstring parent_guid) {
   auto gurl = *url::GURLAndroid::ToNativeGURL(env, url);
   DCHECK(gurl.is_valid()) << "The given string ("
                           << gurl.possibly_invalid_spec()
                           << ") is not a valid URL.";
 
   fake_server::EntityBuilderFactory entity_builder_factory;
+  absl::optional<std::string> converted_guid = absl::nullopt;
+  if (guid) {
+    converted_guid = base::android::ConvertJavaStringToUTF8(env, guid.value());
+  }
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
-          base::android::ConvertJavaStringToUTF8(env, title));
+          base::android::ConvertJavaStringToUTF8(env, title), converted_guid);
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
+  bookmark_builder.SetParentGuid(base::GUID::ParseLowercase(
+      base::android::ConvertJavaStringToUTF8(env, parent_guid)));
   return bookmark_builder.BuildBookmark(gurl);
 }
 
@@ -215,18 +224,20 @@ static void JNI_FakeServerHelper_InjectBookmarkEntity(
     jlong fake_server,
     const JavaParamRef<jstring>& title,
     const JavaParamRef<jobject>& url,
-    const JavaParamRef<jstring>& parent_id) {
+    const JavaParamRef<jstring>& parent_id,
+    const JavaParamRef<jstring>& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
-  fake_server_ptr->InjectEntity(
-      CreateBookmarkEntity(env, title, url, parent_id));
+  fake_server_ptr->InjectEntity(CreateBookmarkEntity(
+      env, title, url, /*guid=*/absl::nullopt, parent_id, parent_guid));
 }
 
 static void JNI_FakeServerHelper_InjectBookmarkFolderEntity(
     JNIEnv* env,
     jlong fake_server,
     const JavaParamRef<jstring>& title,
-    const JavaParamRef<jstring>& parent_id) {
+    const JavaParamRef<jstring>& parent_id,
+    const JavaParamRef<jstring>& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
 
@@ -236,6 +247,8 @@ static void JNI_FakeServerHelper_InjectBookmarkFolderEntity(
           base::android::ConvertJavaStringToUTF8(env, title));
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
+  bookmark_builder.SetParentGuid(base::GUID::ParseLowercase(
+      base::android::ConvertJavaStringToUTF8(env, parent_guid)));
 
   fake_server_ptr->InjectEntity(bookmark_builder.BuildFolder());
 }
@@ -244,19 +257,17 @@ static void JNI_FakeServerHelper_ModifyBookmarkEntity(
     JNIEnv* env,
     jlong fake_server,
     const JavaParamRef<jstring>& entity_id,
+    const JavaParamRef<jstring>& guid,
     const JavaParamRef<jstring>& title,
     const JavaParamRef<jobject>& url,
-    const JavaParamRef<jstring>& parent_id) {
+    const JavaParamRef<jstring>& parent_id,
+    const JavaParamRef<jstring>& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
-      CreateBookmarkEntity(env, title, url, parent_id);
+      CreateBookmarkEntity(env, title, url, guid, parent_id, parent_guid);
   sync_pb::SyncEntity proto;
   bookmark->SerializeAsProto(&proto);
-  // The GUID has just been regenerated in CreateBookmarkEntity(). To avoid
-  // running into a GUID mismatch, let's clear it here since it can be auto-
-  // populated by ModelTypeWorker.
-  proto.mutable_specifics()->mutable_bookmark()->clear_guid();
   fake_server_ptr->ModifyBookmarkEntity(
       base::android::ConvertJavaStringToUTF8(env, entity_id),
       base::android::ConvertJavaStringToUTF8(env, parent_id),
@@ -267,24 +278,25 @@ static void JNI_FakeServerHelper_ModifyBookmarkFolderEntity(
     JNIEnv* env,
     jlong fake_server,
     const JavaParamRef<jstring>& entity_id,
+    const JavaParamRef<jstring>& guid,
     const JavaParamRef<jstring>& title,
-    const JavaParamRef<jstring>& parent_id) {
+    const JavaParamRef<jstring>& parent_id,
+    const JavaParamRef<jstring>& parent_guid) {
   fake_server::FakeServer* fake_server_ptr =
       reinterpret_cast<fake_server::FakeServer*>(fake_server);
 
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
-          base::android::ConvertJavaStringToUTF8(env, title));
+          base::android::ConvertJavaStringToUTF8(env, title),
+          base::android::ConvertJavaStringToUTF8(env, guid));
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
+  bookmark_builder.SetParentGuid(base::GUID::ParseLowercase(
+      base::android::ConvertJavaStringToUTF8(env, parent_guid)));
 
   sync_pb::SyncEntity proto;
   bookmark_builder.BuildFolder()->SerializeAsProto(&proto);
-  // The GUID has just been regenerated in CreateBookmarkEntity(). To avoid
-  // running into a GUID mismatch, let's clear it here since it can be auto-
-  // populated by ModelTypeWorker.
-  proto.mutable_specifics()->mutable_bookmark()->clear_guid();
   fake_server_ptr->ModifyBookmarkEntity(
       base::android::ConvertJavaStringToUTF8(env, entity_id),
       base::android::ConvertJavaStringToUTF8(env, parent_id),

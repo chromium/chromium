@@ -149,6 +149,11 @@ multidevice::RemoteDeviceRef CreateTestRemoteDevice() {
 }  // namespace
 
 class SecureChannelConnectionTest : public testing::Test {
+ public:
+  SecureChannelConnectionTest(const SecureChannelConnectionTest&) = delete;
+  SecureChannelConnectionTest& operator=(const SecureChannelConnectionTest&) =
+      delete;
+
  protected:
   SecureChannelConnectionTest() : test_device_(CreateTestRemoteDevice()) {}
 
@@ -354,8 +359,6 @@ class SecureChannelConnectionTest : public testing::Test {
   absl::optional<int32_t> rssi_;
 
   base::WeakPtrFactory<SecureChannelConnectionTest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectionTest);
 };
 
 TEST_F(SecureChannelConnectionTest, ConnectionAttemptFails) {

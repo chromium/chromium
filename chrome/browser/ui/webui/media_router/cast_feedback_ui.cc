@@ -134,9 +134,11 @@ CastFeedbackUI::CastFeedbackUI(content::WebUI* web_ui)
     log_data.clear();
 
   LoggerImpl* const logger = router->GetLogger();
-  log_data += logger->GetLogsAsJson();
+  if (logger) {
+    log_data += logger->GetLogsAsJson();
 
-  source->AddString("logData", log_data);
+    source->AddString("logData", log_data);
+  }
 
   // Determine the category tag to use for the feedback report.  As the name
   // suggests, this value is used to categorize feedback reports for easier

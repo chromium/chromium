@@ -172,11 +172,18 @@ void CrostiniApps::LaunchAppWithIntent(const std::string& app_id,
                                        int32_t event_flags,
                                        apps::mojom::IntentPtr intent,
                                        apps::mojom::LaunchSource launch_source,
-                                       apps::mojom::WindowInfoPtr window_info) {
+                                       apps::mojom::WindowInfoPtr window_info,
+                                       LaunchAppWithIntentCallback callback) {
   crostini::LaunchCrostiniAppWithIntent(
       profile_, app_id,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
-      std::move(intent));
+      std::move(intent), /*args=*/{},
+      base::BindOnce(
+          [](LaunchAppWithIntentCallback callback, bool success,
+             const std::string& failure_reason) {
+            std::move(callback).Run(success);
+          },
+          std::move(callback)));
 }
 
 void CrostiniApps::Uninstall(const std::string& app_id,

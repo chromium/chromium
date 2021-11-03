@@ -40,6 +40,11 @@ class DirectManipulationEventHandler
  public:
   DirectManipulationEventHandler(ui::WindowEventTarget* event_target);
 
+  DirectManipulationEventHandler(const DirectManipulationEventHandler&) =
+      delete;
+  DirectManipulationEventHandler& operator=(
+      const DirectManipulationEventHandler&) = delete;
+
   // Return true if viewport_size_in_pixels_ changed.
   bool SetViewportSizeInPixels(const gfx::Size& viewport_size_in_pixels);
 
@@ -86,8 +91,6 @@ class DirectManipulationEventHandler
   GestureState gesture_state_ = GestureState::kNone;
 
   gfx::Size viewport_size_in_pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationEventHandler);
 };
 
 }  // namespace content

@@ -16,7 +16,6 @@
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -37,8 +36,6 @@ class SelectToSpeakSpeedBubbleControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kSelectToSpeakNavigationControl);
     Shell::Get()->accessibility_controller()->select_to_speak().SetEnabled(
         true);
   }

@@ -124,7 +124,7 @@ void RuntimeApplicationDispatcher::LoadApplication(
     GrpcMethod* callback) {
   const std::string& app_id = request.application_config().app_id();
 
-  if (openscreen::cast::IsCastStreamingAppId(app_id)) {
+  if (openscreen::cast::IsCastStreamingReceiverAppId(app_id)) {
     // Deliberately copy |network_context_getter_|.
     app_ = std::make_unique<StreamingRuntimeApplication>(
         web_service_.get(), task_runner_, network_context_getter_);
@@ -162,7 +162,8 @@ void RuntimeApplicationDispatcher::LaunchApplication(
   if (!app_->Launch(request)) {
     std::stringstream err_stream;
     err_stream << "failed to launch RuntimeApplication (session id: "
-               << app_->cast_session_id() << ", app id: " << app_->app_id()
+               << app_->cast_session_id()
+               << ", app id: " << app_->app_config().app_id()
                << ", cast media service endpoint: "
                << (request.has_cast_media_service_info()
                        ? request.cast_media_service_info().grpc_endpoint()
@@ -179,7 +180,7 @@ void RuntimeApplicationDispatcher::StopApplication(
     const cast::runtime::StopApplicationRequest& request,
     cast::runtime::StopApplicationResponse* response,
     GrpcMethod* callback) {
-  response->set_app_id(app_->app_id());
+  response->set_app_id(app_->app_config().app_id());
   response->set_cast_session_id(app_->cast_session_id());
   app_.reset();
   callback->StepGRPC(grpc::Status::OK);

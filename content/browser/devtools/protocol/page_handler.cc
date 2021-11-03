@@ -1703,49 +1703,49 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebRTC:
-    case WebSchedulerTrackedFeature::kContainsPlugins:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
     case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
+    case WebSchedulerTrackedFeature::kBroadcastChannel:
+    case WebSchedulerTrackedFeature::kIndexedDBConnection:
+    case WebSchedulerTrackedFeature::kWebXR:
+    case WebSchedulerTrackedFeature::kSharedWorker:
+    case WebSchedulerTrackedFeature::kWebHID:
+    case WebSchedulerTrackedFeature::kWebShare:
+    case WebSchedulerTrackedFeature::kWebDatabase:
+    case WebSchedulerTrackedFeature::kPaymentManager:
+    case WebSchedulerTrackedFeature::kKeyboardLock:
+    case WebSchedulerTrackedFeature::kWebOTPService:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
+    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
+    case WebSchedulerTrackedFeature::kWebTransport:
+      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+    case WebSchedulerTrackedFeature::kPortal:
+    case WebSchedulerTrackedFeature::kWebNfc:
+    case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
     case WebSchedulerTrackedFeature::kRequestedNotificationsPermission:
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
     case WebSchedulerTrackedFeature::kRequestedVideoCapturePermission:
     case WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors:
     case WebSchedulerTrackedFeature::kRequestedBackgroundWorkPermission:
-    case WebSchedulerTrackedFeature::kBroadcastChannel:
-    case WebSchedulerTrackedFeature::kIndexedDBConnection:
-    case WebSchedulerTrackedFeature::kWebXR:
-    case WebSchedulerTrackedFeature::kSharedWorker:
-    case WebSchedulerTrackedFeature::kWebLocks:
-    case WebSchedulerTrackedFeature::kWebHID:
-    case WebSchedulerTrackedFeature::kWebShare:
-    case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
-    case WebSchedulerTrackedFeature::kWebNfc:
-    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
-    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
-    case WebSchedulerTrackedFeature::kPrinting:
-    case WebSchedulerTrackedFeature::kWebDatabase:
-    case WebSchedulerTrackedFeature::kPictureInPicture:
-    case WebSchedulerTrackedFeature::kPortal:
-    case WebSchedulerTrackedFeature::kSpeechRecognizer:
+    case WebSchedulerTrackedFeature::kContainsPlugins:
     case WebSchedulerTrackedFeature::kIdleManager:
-    case WebSchedulerTrackedFeature::kPaymentManager:
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
-    case WebSchedulerTrackedFeature::kKeyboardLock:
-    case WebSchedulerTrackedFeature::kWebOTPService:
-    case WebSchedulerTrackedFeature::kOutstandingNetworkRequestDirectSocket:
-    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
-    case WebSchedulerTrackedFeature::kWebTransport:
-      return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
+    case WebSchedulerTrackedFeature::kSpeechRecognizer:
+    case WebSchedulerTrackedFeature::kPrinting:
+    case WebSchedulerTrackedFeature::kPictureInPicture:
+    case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kAppBanner:
     case WebSchedulerTrackedFeature::kWebSocket:
     case WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet:
+    case WebSchedulerTrackedFeature::kSpeechSynthesis:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
-    case WebSchedulerTrackedFeature::kInjectedJavascript:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoCache:
     case WebSchedulerTrackedFeature::kSubresourceHasCacheControlNoStore:
+    case WebSchedulerTrackedFeature::kInjectedStyleSheet:
+    case WebSchedulerTrackedFeature::kInjectedJavascript:
     case WebSchedulerTrackedFeature::kDocumentLoaded:
     case WebSchedulerTrackedFeature::kDummy:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
@@ -1755,7 +1755,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
 Page::BackForwardCacheNotRestoredReasonType
 MapDisableForRenderFrameHostReasonToType(
     BackForwardCache::DisabledReason reason) {
-  return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
+  return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
 }
 
 std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>

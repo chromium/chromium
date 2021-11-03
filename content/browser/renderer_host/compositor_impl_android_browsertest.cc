@@ -46,6 +46,10 @@ class CompositorImplBrowserTest
  public:
   CompositorImplBrowserTest() {}
 
+  CompositorImplBrowserTest(const CompositorImplBrowserTest&) = delete;
+  CompositorImplBrowserTest& operator=(const CompositorImplBrowserTest&) =
+      delete;
+
   void SetUp() override {
     std::vector<base::Feature> features;
 
@@ -94,8 +98,6 @@ class CompositorImplBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorImplBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(P,
@@ -161,6 +163,8 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
 class CompositorSwapRunLoop {
  public:
   CompositorSwapRunLoop(CompositorImpl* compositor) : compositor_(compositor) {
+    static_cast<Compositor*>(compositor_)
+        ->SetDidSwapBuffersCallbackEnabled(true);
     compositor_->SetSwapCompletedWithSizeCallbackForTesting(base::BindRepeating(
         &CompositorSwapRunLoop::DidSwap, base::Unretained(this)));
   }

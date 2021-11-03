@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
@@ -25,11 +26,6 @@ class Profile;
 
 namespace apps {
 struct IntentLaunchInfo;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class AppServiceProxyLacros;
-#else
-class AppServiceProxyBase;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }  // namespace apps
 
 namespace views {
@@ -174,11 +170,7 @@ class SharesheetService : public KeyedService {
 
   Profile* profile_;
   std::unique_ptr<ShareActionCache> share_action_cache_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  apps::AppServiceProxyLacros* app_service_proxy_;
-#else
-  apps::AppServiceProxyBase* app_service_proxy_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  apps::AppServiceProxy* app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegators. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.

@@ -29,13 +29,16 @@ class PepperVpnProviderResourceHostProxyImpl
       base::WeakPtr<content::PepperVpnProviderMessageFilter>
           vpn_message_filter);
 
+  PepperVpnProviderResourceHostProxyImpl(
+      const PepperVpnProviderResourceHostProxyImpl&) = delete;
+  PepperVpnProviderResourceHostProxyImpl& operator=(
+      const PepperVpnProviderResourceHostProxyImpl&) = delete;
+
   void SendOnPacketReceived(const std::vector<char>& packet) override;
   void SendOnUnbind() override;
 
  private:
   base::WeakPtr<content::PepperVpnProviderMessageFilter> vpn_message_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVpnProviderResourceHostProxyImpl);
 };
 
 PepperVpnProviderResourceHostProxyImpl::PepperVpnProviderResourceHostProxyImpl(

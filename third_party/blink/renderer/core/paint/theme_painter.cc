@@ -318,7 +318,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
           ->GetLayoutObject();
   if (track_layout_object && track_layout_object->IsBox()) {
     track_bounds = IntRect(
-        CeiledIntPoint(track_layout_object->FirstFragment().PaintOffset()),
+        ToCeiledPoint(track_layout_object->FirstFragment().PaintOffset()),
         FlooredIntSize(To<LayoutBox>(track_layout_object)->Size()));
   }
 

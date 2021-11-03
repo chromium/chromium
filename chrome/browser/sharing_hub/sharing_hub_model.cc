@@ -189,6 +189,10 @@ void SharingHubModel::PopulateFirstPartyActions() {
 }
 
 void SharingHubModel::PopulateThirdPartyActions() {
+  // Clear the action list in the case where the action list is repopulated.
+  if (third_party_action_list_.size()) {
+    third_party_action_list_.clear();
+  }
   // Note: The third party action id must be greater than 0, otherwise the
   // action will be disabled in the app menu.
   int id = 1;

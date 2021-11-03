@@ -53,6 +53,10 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
     static Factory* factory_instance_;
   };
 
+  CryptAuthDeviceManagerImpl(const CryptAuthDeviceManagerImpl&) = delete;
+  CryptAuthDeviceManagerImpl& operator=(const CryptAuthDeviceManagerImpl&) =
+      delete;
+
   ~CryptAuthDeviceManagerImpl() override;
 
   // CryptAuthDeviceManager:
@@ -134,8 +138,6 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
 
   base::WeakPtrFactory<CryptAuthDeviceManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceManagerImpl);
 };
 
 }  // namespace device_sync

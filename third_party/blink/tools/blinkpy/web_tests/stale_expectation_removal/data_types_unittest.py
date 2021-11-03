@@ -39,25 +39,37 @@ class WebTestResultUnittest(unittest.TestCase):
         """Tests that strings are properly converted when setting durations."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
-        result.SetDuration(str(data_types.DEBUG_THRESHOLD + 1))
+        result.SetDuration(str(1), str(2000))
         self.assertTrue(result.is_slow_result)
 
-    def testSetDurationDebug(self):
-        """Tests that setting duration works properly with debug results."""
+    def testSetDurationNotSlow(self):
+        """Tests that setting a duration for a non-slow result works."""
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
-        result.SetDuration(data_types.DEBUG_THRESHOLD)
+        # The cutoff should be 30% of the timeout.
+        result.SetDuration(30, 100000)
         self.assertFalse(result.is_slow_result)
-        result.SetDuration(data_types.DEBUG_THRESHOLD + 1)
+
+    def testSetDurationSlow(self):
+        """Tests that setting a duration for a slow result works."""
+        result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
+                                          'build_id')
+        # The cutoff should be 30% of the timeout.
+        result.SetDuration(30.01, 100000)
         self.assertTrue(result.is_slow_result)
 
-    def testSetDurationRelease(self):
-        """Tests that setting duration works properly with release results."""
-        result = data_types.WebTestResult('foo', ['release'], 'Pass', 'step',
+    def testSetDurationNotSlowSeconds(self):
+        """Tests that setting a duration for non-slow in seconds works."""
+        result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
-        result.SetDuration(data_types.RELEASE_THRESHOLD)
+        result.SetDuration(30, 100)
         self.assertFalse(result.is_slow_result)
-        result.SetDuration(data_types.RELEASE_THRESHOLD + 1)
+
+    def testSetDurationSlowSeconds(self):
+        """Tests that setting a duration for a slow result in seconds works."""
+        result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
+                                          'build_id')
+        result.SetDuration(30.01, 100)
         self.assertTrue(result.is_slow_result)
 
 
@@ -201,14 +213,16 @@ class WebTestTestExpectationMapUnittest(unittest.TestCase):
         expectation_map = data_types.WebTestTestExpectationMap()
         result = data_types.WebTestResult('foo', ['debug'], 'Pass', 'step',
                                           'build_id')
-        result.SetDuration(data_types.DEBUG_THRESHOLD)
+        # Test adding a non-slow result.
+        result.SetDuration(1, 10000)
         stats = data_types.WebTestBuildStats()
         expectation_map._AddSingleResult(result, stats)
         expected_stats = data_types.WebTestBuildStats()
         expected_stats.AddPassedBuild()
         self.assertEqual(stats, expected_stats)
 
-        result.SetDuration(data_types.DEBUG_THRESHOLD + 1)
+        # Test adding a slow result.
+        result.SetDuration(1, 2000)
         stats = data_types.WebTestBuildStats()
         expectation_map._AddSingleResult(result, stats)
         expected_stats = data_types.WebTestBuildStats()

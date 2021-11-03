@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 
 namespace gfx {
+class SizeF;
 class Vector2dF;
 }
 
@@ -89,7 +90,7 @@ class CORE_EXPORT SVGLengthContext {
                               const ComputedStyle&,
                               float dimension);
 
-  bool DetermineViewport(FloatSize&) const;
+  bool DetermineViewport(gfx::SizeF&) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:

@@ -33,6 +33,12 @@ const int64_t kPromotionCheckTimestampMs2 = 2222222222L;
 }  //  namespace
 
 class ProximityAuthProfilePrefManagerTest : public testing::Test {
+ public:
+  ProximityAuthProfilePrefManagerTest(
+      const ProximityAuthProfilePrefManagerTest&) = delete;
+  ProximityAuthProfilePrefManagerTest& operator=(
+      const ProximityAuthProfilePrefManagerTest&) = delete;
+
  protected:
   ProximityAuthProfilePrefManagerTest() = default;
 
@@ -56,9 +62,6 @@ class ProximityAuthProfilePrefManagerTest : public testing::Test {
       fake_multidevice_setup_client_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<ProximityAuthProfilePrefManager> pref_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthProfilePrefManagerTest);
 };
 
 // TODO(crbug/904005): Investigate using Unified Setup API instead of directly

@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
@@ -53,6 +54,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
@@ -240,6 +242,11 @@ class NonSpareRendererContentBrowserClient : public TestContentBrowserClient {
  public:
   NonSpareRendererContentBrowserClient() = default;
 
+  NonSpareRendererContentBrowserClient(
+      const NonSpareRendererContentBrowserClient&) = delete;
+  NonSpareRendererContentBrowserClient& operator=(
+      const NonSpareRendererContentBrowserClient&) = delete;
+
   bool IsSuitableHost(RenderProcessHost* process_host,
                       const GURL& site_url) override {
     return RenderProcessHostImpl::GetSpareRenderProcessHostForTesting() !=
@@ -255,13 +262,9 @@ class NonSpareRendererContentBrowserClient : public TestContentBrowserClient {
                                        const GURL& site_url) override {
     return false;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NonSpareRendererContentBrowserClient);
 };
 
-IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
-                       GuestsAreNotSuitableHosts) {
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, GuestsAreNotSuitableHosts) {
   // Set max renderers to 1 to force running out of processes.
   RenderProcessHost::SetMaxRendererProcessCount(1);
 
@@ -721,10 +724,12 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 
   // The key here is that all the RenderProcessExited callbacks precede all the
   // RenderProcessHostDestroyed callbacks.
-  EXPECT_EQ("ShellCloser::RenderProcessExited "
-            "ObserverLogger::RenderProcessExited "
-            "ShellCloser::RenderProcessHostDestroyed "
-            "ObserverLogger::RenderProcessHostDestroyed ", logging_string);
+  EXPECT_EQ(
+      "ShellCloser::RenderProcessExited "
+      "ObserverLogger::RenderProcessExited "
+      "ShellCloser::RenderProcessHostDestroyed "
+      "ObserverLogger::RenderProcessHostDestroyed ",
+      logging_string);
 }
 
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessOnBadMojoMessage) {
@@ -1377,6 +1382,100 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, FastShutdownForStartingProcess) {
   process->Init();
   EXPECT_TRUE(process->FastShutdownIfPossible());
   process->Cleanup();
+}
+
+// Tests that all RenderFrameHosts that lives in the process are accessible via
+// RenderProcessHost::ForEachRenderFrameHost(), except those RenderFrameHosts
+// whose lifecycle states are kSpeculative.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachRenderFrameHost) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a(a,a))");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  GURL url_new_window = embedded_test_server()->GetURL(
+      "c.com", "/cross_site_iframe_factory.html?c(a)");
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // 1. Navigate to `url_a`; it creates 4 RenderFrameHosts that live in the
+  // same process.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
+  std::vector<RenderFrameHost*> process_a_frames =
+      CollectAllRenderFrameHosts(rfh_a);
+
+  // 2. Open a new window, and navigate to a page with an a.com subframe.
+  // The new subframe should reuse the same a.com process.
+  Shell* new_window = CreateBrowser();
+  ASSERT_TRUE(NavigateToURL(new_window, url_new_window));
+  auto* new_window_main_frame = static_cast<RenderFrameHostImpl*>(
+      new_window->web_contents()->GetMainFrame());
+  ASSERT_EQ(new_window_main_frame->child_count(), 1u);
+  RenderFrameHost* new_window_sub_frame =
+      new_window_main_frame->child_at(0)->current_frame_host();
+  ASSERT_EQ(rfh_a->GetProcess(), new_window_sub_frame->GetProcess());
+  process_a_frames.push_back(new_window_sub_frame);
+
+  // 3. Start to navigate to a cross-origin site, and hold the navigation
+  // request. This behavior will create a speculative RenderFrameHost.
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  TestNavigationManager manager(web_contents, url_b);
+  shell()->LoadURL(url_b);
+  ASSERT_TRUE(manager.WaitForRequestStart());
+
+  // 4. Get the speculative RenderFrameHost.
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh_b = root->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(rfh_b);
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+            rfh_b->lifecycle_state());
+
+  auto non_speculative_rfh_collector =
+      [](std::vector<RenderFrameHost*>& results, RenderFrameHost* rfh) {
+        auto* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
+        EXPECT_NE(RenderFrameHostImpl::LifecycleStateImpl::kSpeculative,
+                  rfhi->lifecycle_state());
+        results.push_back(rfh);
+      };
+
+  // 5. Check all of the a.com RenderFrameHosts are tracked by `rph_a`.
+  RenderProcessHostImpl* rph_a =
+      static_cast<RenderProcessHostImpl*>(rfh_a->GetProcess());
+  std::vector<RenderFrameHost*> same_process_rfhs;
+  rph_a->ForEachRenderFrameHost(base::BindRepeating(
+      non_speculative_rfh_collector, std::ref(same_process_rfhs)));
+  EXPECT_EQ(5, rph_a->GetRenderFrameHostCount());
+  EXPECT_EQ(5u, same_process_rfhs.size());
+  EXPECT_THAT(same_process_rfhs,
+              testing::UnorderedElementsAreArray(process_a_frames.data(),
+                                                 process_a_frames.size()));
+
+  // 6. Check the speculative RenderFrameHost is ignored.
+  same_process_rfhs.clear();
+  RenderProcessHostImpl* rph_b =
+      static_cast<RenderProcessHostImpl*>(rfh_b->GetProcess());
+  ASSERT_NE(rph_a, rph_b);
+  rph_b->ForEachRenderFrameHost(base::BindRepeating(
+      non_speculative_rfh_collector, std::ref(same_process_rfhs)));
+  EXPECT_EQ(1, rph_b->GetRenderFrameHostCount());
+  // The speculative RenderFrameHost should be filtered out.
+  EXPECT_EQ(same_process_rfhs.size(), 0u);
+
+  // 7. Resume the blocked navigation.
+  manager.WaitForNavigationFinished();
+
+  // 8. Check that `RenderProcessHost::ForEachRenderFrameHost` does not filter
+  // `rfh_b` out, because its lifecycle has changed to kActive.
+  EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
+            rfh_b->lifecycle_state());
+
+  EXPECT_EQ(1, rph_b->GetRenderFrameHostCount());
+  same_process_rfhs.clear();
+  rph_b->ForEachRenderFrameHost(base::BindRepeating(
+      non_speculative_rfh_collector, std::ref(same_process_rfhs)));
+  EXPECT_EQ(1, rph_b->GetRenderFrameHostCount());
+  EXPECT_EQ(1u, same_process_rfhs.size());
+  EXPECT_THAT(same_process_rfhs, testing::ElementsAre(rfh_b));
 }
 
 }  // namespace content

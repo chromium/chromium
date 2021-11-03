@@ -128,19 +128,16 @@ bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
 }
 
 bool ShouldSetPendingUpdate(StyleResolverState& state, Element& element) {
-  if (state.AnimationUpdate().HasUpdates())
+  if (!state.AnimationUpdate().IsEmpty())
     return true;
-  // Even when there are no updates, we must still set the pending
-  // update if we need to update PreviousActiveInterpolationsForAnimations.
+  // Even when the animation update is empty, we must still set the pending
+  // update in order to clear PreviousActiveInterpolationsForAnimations.
   //
   // See CSSAnimations::MaybeApplyPendingUpdate
   if (const ElementAnimations* element_animations =
           element.GetElementAnimations()) {
-    if (element_animations->CssAnimations()
-            .PreviousActiveInterpolationsForAnimationsWillChange(
-                state.AnimationUpdate())) {
-      return true;
-    }
+    return element_animations->CssAnimations()
+        .HasPreviousActiveInterpolationsForAnimations();
   }
   return false;
 }
@@ -1071,6 +1068,8 @@ void StyleResolver::ApplyBaseStyle(
 
     if (collector.MatchedResult().DependsOnContainerQueries())
       state.Style()->SetDependsOnContainerQueries(true);
+    if (collector.MatchedResult().DependsOnViewportContainerQueries())
+      state.Style()->SetHasViewportUnits(true);
     if (collector.MatchedResult().ConditionallyAffectsAnimations())
       state.SetCanAffectAnimations();
 

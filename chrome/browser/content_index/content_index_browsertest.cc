@@ -184,6 +184,17 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, OfflineItemObserversReceiveEvents) {
   EXPECT_NE(description1, offline_items().at("my-id-1").description);
 }
 
+IN_PROC_BROWSER_TEST_F(ContentIndexTest, OfflineItemIframe) {
+  RunScript("AddContentForFrame('my-id-frame')");
+  base::RunLoop().RunUntilIdle();
+
+  // Not a top-level context, provider should ignore the entry.
+  EXPECT_TRUE(offline_items().empty());
+
+  // We should still be able to use the Content Index API against it though.
+  EXPECT_EQ("my-id-frame", RunScript("GetIdsForFrame()"));
+}
+
 IN_PROC_BROWSER_TEST_F(ContentIndexTest, ContextAPI) {
   EXPECT_TRUE(GetAllItems().empty());
 

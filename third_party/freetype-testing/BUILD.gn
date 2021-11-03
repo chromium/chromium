@@ -10,6 +10,10 @@ source_set("freetype-testing") {
 
 config("freetype_fuzzer_config") {
   include_dirs = [ "src/fuzzing/src/" ]
+
+  if (is_clang) {
+    cflags = [ "-Wno-shadow" ]
+  }
 }
 
 source_set("freetype_fuzzer_sources") {

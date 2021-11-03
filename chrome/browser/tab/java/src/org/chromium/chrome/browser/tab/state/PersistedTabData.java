@@ -18,7 +18,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -82,16 +81,11 @@ public abstract class PersistedTabData implements UserData {
             Callback<T> callback) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(clazz, tab.isIncognito());
-        factory.create(config.getStorage(), config.getId(), (persistedTabData) -> {
-            PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
-                persistedTabData.deserializeAndLog(data);
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-                    if (persistedTabData != null) {
-                        setUserData(tab, clazz, persistedTabData);
-                    }
-                    callback.onResult(persistedTabData);
-                });
-            });
+        factory.create(data, config.getStorage(), config.getId(), (persistedTabData) -> {
+            if (persistedTabData != null) {
+                setUserData(tab, clazz, persistedTabData);
+            }
+            callback.onResult(persistedTabData);
         });
     }
 
@@ -157,20 +151,15 @@ public abstract class PersistedTabData implements UserData {
     private static <T extends PersistedTabData> void onPersistedTabDataRetrieved(ByteBuffer data,
             PersistedTabDataConfiguration config, PersistedTabDataFactory<T> factory,
             Callback<Callback<T>> tabDataCreator, Tab tab, Class<T> clazz, String key) {
-        factory.create(config.getStorage(), config.getId(), (persistedTabDataFromStorage) -> {
-            PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
-                persistedTabDataFromStorage.deserializeAndLog(data);
-                PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-                    if (persistedTabDataFromStorage.needsUpdate()) {
-                        tabDataCreator.onResult((tabData) -> {
-                            updateLastUpdatedMs(tabData);
-                            onPersistedTabDataResult(tabData, tab, clazz, key);
-                        });
-                    } else {
-                        onPersistedTabDataResult(persistedTabDataFromStorage, tab, clazz, key);
-                    }
+        factory.create(data, config.getStorage(), config.getId(), (persistedTabDataFromStorage) -> {
+            if (persistedTabDataFromStorage.needsUpdate()) {
+                tabDataCreator.onResult((tabData) -> {
+                    updateLastUpdatedMs(tabData);
+                    onPersistedTabDataResult(tabData, tab, clazz, key);
                 });
-            });
+            } else {
+                onPersistedTabDataResult(persistedTabDataFromStorage, tab, clazz, key);
+            }
         });
     }
 

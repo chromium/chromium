@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -29,7 +30,8 @@ struct DlpConfidentialContent {
       default;
   ~DlpConfidentialContent() = default;
 
-  // Contents with the same title are considered equal.
+  // Contents with the same url are considered equal, ignoring the ref (part
+  // after #).
   bool operator==(const DlpConfidentialContent& other) const;
   bool operator!=(const DlpConfidentialContent& other) const;
   bool operator<(const DlpConfidentialContent& other) const;
@@ -39,9 +41,12 @@ struct DlpConfidentialContent {
 
   gfx::ImageSkia icon;
   std::u16string title;
+  GURL url;
 };
 
 // Provides basic functions for storing and working with confidential contents.
+// TODO(crbug.com/1264803): Limit the size + delete if related WebContents are
+// destroyed
 class DlpConfidentialContents {
  public:
   DlpConfidentialContents();
@@ -65,6 +70,9 @@ class DlpConfidentialContents {
   // Adds all content stored in |other| to the underlying container, without
   // duplicates.
   void UnionWith(const DlpConfidentialContents& other);
+
+  // Removes all content that also exists in |other|.
+  void DifferenceWith(const DlpConfidentialContents& other);
 
  private:
   base::flat_set<DlpConfidentialContent> contents_;

@@ -31,10 +31,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -107,8 +107,8 @@ public class PageInfoAboutThisSiteTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
-        sActivityTestRule.loadUrl(
-                mTestServerRule.getServer().getURLWithHostName("www.example.com", sSimpleHtml));
+        mTestServerRule.setServerUsesHttps(true);
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
     }
 
     private void openPageInfo() {
@@ -126,7 +126,8 @@ public class PageInfoAboutThisSiteTest {
     private ViewAssertion renderView(String renderId) {
         return (v, noMatchException) -> {
             if (noMatchException != null) throw noMatchException;
-            try {
+            // Allow disk writes and slow calls to render from UI thread.
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 mRenderTestRule.render(v, renderId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -141,7 +142,7 @@ public class PageInfoAboutThisSiteTest {
     }
 
     private byte[] createDescription() {
-        String url = mTestServerRule.getServer().getURLWithHostName("www.example.com", sSimpleHtml);
+        String url = mTestServerRule.getServer().getURL(sSimpleHtml);
         SiteDescription.Builder description =
                 SiteDescription.newBuilder()
                         .setDescription("Some description about example.com for testing purposes")
@@ -160,13 +161,22 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
+    public void testAboutThisSiteRowWithDataOnInsecureSite() {
+        sActivityTestRule.loadUrl(
+                mTestServerRule.getServer().getURLWithHostName("invalidcert.com", sSimpleHtml));
+        mockResponse(createDescription());
+        openPageInfo();
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
     public void testAboutThisSiteRowWithoutData() {
         mockResponse(null);
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
     }
 
-    @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -177,7 +187,6 @@ public class PageInfoAboutThisSiteTest {
                 .check(renderView("page_info_about_this_site_row"));
     }
 
-    @DisabledTest(message = "crbug.com/1263195")
     @Test
     @MediumTest
     @Feature({"RenderTest"})

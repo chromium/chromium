@@ -161,6 +161,9 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     return instance.get();
   }
 
+  CastDataSource(const CastDataSource&) = delete;
+  CastDataSource& operator=(const CastDataSource&) = delete;
+
   // Called from the tracing::PerfettoProducer on its sequence.
   void StartTracingImpl(
       tracing::PerfettoProducer* producer,
@@ -259,8 +262,6 @@ class CastDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   std::unique_ptr<tracing::SystemTraceWriter<std::string>> trace_writer_;
   base::OnceClosure stop_complete_callback_;
   uint32_t target_buffer_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(CastDataSource);
 };
 
 }  // namespace

@@ -17,7 +17,7 @@ class Tutorial;
 class TutorialRegistry {
  public:
   TutorialRegistry();
-  virtual ~TutorialRegistry();
+  ~TutorialRegistry();
   TutorialRegistry(const TutorialRegistry&) = delete;
   TutorialRegistry& operator=(const TutorialRegistry&) = delete;
 
@@ -35,11 +35,6 @@ class TutorialRegistry {
       TutorialBubbleFactoryRegistry* bubble_factory_registry,
       ui::ElementContext context);
 
-  // Adds tutorials to the Service, Should be called from the initialization of
-  // the implementations service factory.
-  virtual void RegisterTutorials();
-
- protected:
   // Adds a TutorialID, TutorialDescription Pair to the Registry. This should
   // be used by the RegisterTutorials method to Add Tutorials.
   void AddTutorial(TutorialIdentifier id, TutorialDescription description);

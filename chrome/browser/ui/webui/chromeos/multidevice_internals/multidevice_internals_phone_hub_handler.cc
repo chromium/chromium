@@ -284,8 +284,9 @@ void MultidevicePhoneHubHandler::OnShouldShowOnboardingUiChanged() {
 }
 
 void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
-  bool enabled = false;
-  CHECK(args->GetBoolean(0, &enabled));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool enabled = list[0].GetBool();
   PA_LOG(VERBOSE) << "Setting Do Not Disturb state to " << enabled;
   fake_phone_hub_manager_->fake_do_not_disturb_controller()
       ->SetDoNotDisturbStateInternal(enabled,
@@ -343,8 +344,9 @@ void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
 void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
     const base::ListValue* args) {
   AllowJavascript();
-  bool enabled = false;
-  CHECK(args->GetBoolean(0, &enabled));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool enabled = list[0].GetBool();
   if (enabled) {
     EnableFakePhoneHubManager();
     return;
@@ -365,8 +367,9 @@ void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
 
 void MultidevicePhoneHubHandler::HandleSetShowOnboardingFlow(
     const base::ListValue* args) {
-  bool show_onboarding_flow = false;
-  CHECK(args->GetBoolean(0, &show_onboarding_flow));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool show_onboarding_flow = list[0].GetBool();
   PA_LOG(VERBOSE) << "Setting show onboarding flow to " << show_onboarding_flow;
   fake_phone_hub_manager_->fake_onboarding_ui_tracker()
       ->SetShouldShowOnboardingUi(show_onboarding_flow);

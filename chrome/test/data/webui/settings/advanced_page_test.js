@@ -8,7 +8,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrSettingsPrefs, SettingsBasicPageElement, SettingsMainElement, SettingsUiElement} from 'chrome://settings/settings.js';
 
-import {assertEquals, assertGT, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getPage, getSection} from './settings_page_test_util.js';
 

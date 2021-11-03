@@ -8,9 +8,10 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {TestExtensionControlBrowserProxy} from 'chrome://test/settings/test_extension_control_browser_proxy.js';
-import {TestSearchEnginesBrowserProxy} from 'chrome://test/settings/test_search_engines_browser_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
+import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
 
 /**
@@ -255,6 +256,23 @@ suite('SearchEngineEntryTests', function() {
   });
 
   /**
+   * Checks that the given button is hidden for the given search engine.
+   * @param {!SearchEngine} searchEngine
+   * @param {string} buttonId
+   */
+  function testButtonHidden(searchEngine, buttonId) {
+    entry.engine = searchEngine;
+    const button = entry.$[buttonId];
+    assertTrue(!!button);
+    assertTrue(button.hidden);
+  }
+
+  test('Remove_Hidden', function() {
+    testButtonHidden(
+        createSampleSearchEngine(0, 'G', true, true, false), 'delete');
+  });
+
+  /**
    * Checks that the given button is disabled for the given search engine.
    * @param {!SearchEngine} searchEngine
    * @param {string} buttonId
@@ -265,11 +283,6 @@ suite('SearchEngineEntryTests', function() {
     assertTrue(!!button);
     assertTrue(button.disabled);
   }
-
-  test('Remove_Disabled', function() {
-    testButtonDisabled(
-        createSampleSearchEngine(0, 'G', true, true, false), 'delete');
-  });
 
   test('MakeDefault_Disabled', function() {
     testButtonDisabled(

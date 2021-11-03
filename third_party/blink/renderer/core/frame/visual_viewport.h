@@ -144,7 +144,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   // Clamp the given point, in document coordinates, to the maximum/minimum
   // scroll extents of the viewport within the document.
-  IntPoint ClampDocumentOffsetAtScale(const IntPoint& offset, float scale);
+  gfx::Point ClampDocumentOffsetAtScale(const gfx::Point& offset, float scale);
 
   // FIXME: This is kind of a hack. Ideally, we would just resize the
   // viewports to account for browser controls. However, LocalFrameView includes
@@ -171,8 +171,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   FloatPoint ViewportToRootFrame(const FloatPoint&) const;
   FloatPoint RootFrameToViewport(const FloatPoint&) const;
-  IntPoint ViewportToRootFrame(const IntPoint&) const;
-  IntPoint RootFrameToViewport(const IntPoint&) const;
+  gfx::Point ViewportToRootFrame(const gfx::Point&) const;
+  gfx::Point RootFrameToViewport(const gfx::Point&) const;
 
   // ScrollableArea implementation
   ChromeClient* GetChromeClient() const override;

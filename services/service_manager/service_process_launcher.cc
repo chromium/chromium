@@ -59,6 +59,9 @@ class ServiceProcessLauncher::ProcessState
  public:
   ProcessState() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
+  ProcessState(const ProcessState&) = delete;
+  ProcessState& operator=(const ProcessState&) = delete;
+
   base::ProcessId LaunchInBackground(
       const Identity& target,
       sandbox::mojom::Sandbox sandbox_type,
@@ -76,8 +79,6 @@ class ServiceProcessLauncher::ProcessState
 
   base::Process child_process_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessState);
 };
 
 ServiceProcessLauncher::ServiceProcessLauncher(

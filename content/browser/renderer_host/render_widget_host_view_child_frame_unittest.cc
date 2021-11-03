@@ -147,9 +147,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     view_ = RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
                                                    screen_infos);
     // Test we get the expected ScreenInfo before the FrameDelegate is set.
-    display::ScreenInfo actual_screen_info;
-    view_->GetScreenInfo(&actual_screen_info);
-    EXPECT_EQ(screen_info, actual_screen_info);
+    EXPECT_EQ(screen_info, view_->GetScreenInfo());
     EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
     test_frame_connector_ =
@@ -268,12 +266,14 @@ class RenderWidgetHostViewChildFrameZoomForDSFTest
  public:
   RenderWidgetHostViewChildFrameZoomForDSFTest() {}
 
+  RenderWidgetHostViewChildFrameZoomForDSFTest(
+      const RenderWidgetHostViewChildFrameZoomForDSFTest&) = delete;
+  RenderWidgetHostViewChildFrameZoomForDSFTest& operator=(
+      const RenderWidgetHostViewChildFrameZoomForDSFTest&) = delete;
+
   void SetUp() override {
     SetUpEnvironment(true /* use_zoom_for_device_scale_factor */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostViewChildFrameZoomForDSFTest);
 };
 
 // Tests that moving the child around does not affect the physical backing size.

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/contents_view.h"
@@ -168,8 +169,7 @@ class SearchResultPageView::HorizontalSeparator : public views::View {
   const int preferred_width_;
 };
 
-SearchResultPageView::SearchResultPageView(SearchModel* search_model)
-    : search_model_(search_model), contents_view_(new views::View) {
+SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   contents_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -208,10 +208,14 @@ SearchResultPageView::SearchResultPageView(SearchModel* search_model)
       base::BindRepeating(&SearchResultPageView::SelectedResultChanged,
                           base::Unretained(this)));
 
-  search_box_observation_.Observe(search_model->search_box());
+  AppListModelProvider* const model_provider = AppListModelProvider::Get();
+  model_provider->AddObserver(this);
+  search_box_observation_.Observe(model_provider->search_model()->search_box());
 }
 
-SearchResultPageView::~SearchResultPageView() = default;
+SearchResultPageView::~SearchResultPageView() {
+  AppListModelProvider::Get()->RemoveObserver(this);
+}
 
 void SearchResultPageView::InitializeContainers(
     AppListViewDelegate* view_delegate,
@@ -239,7 +243,8 @@ void SearchResultPageView::AddSearchResultContainerViewInternal(
   contents_view_->AddChildView(
       std::make_unique<SearchCardView>(std::move(result_container)));
   result_container_views_.push_back(result_container_ptr);
-  result_container_ptr->SetResults(search_model_->results());
+  result_container_ptr->SetResults(
+      AppListModelProvider::Get()->search_model()->results());
   result_container_ptr->set_delegate(this);
 }
 
@@ -280,7 +285,8 @@ void SearchResultPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kListBox;
 
   std::u16string value;
-  std::u16string query = search_model_->search_box()->text();
+  std::u16string query =
+      AppListModelProvider::Get()->search_model()->search_box()->text();
   if (!query.empty()) {
     if (last_search_result_count_ == 1) {
       value = l10n_util::GetStringFUTF16(
@@ -405,6 +411,15 @@ void SearchResultPageView::NotifySelectedResultChanged() {
   search_box->set_a11y_selection_on_search_result(true);
 }
 
+void SearchResultPageView::OnActiveAppListModelsChanged(
+    AppListModel* model,
+    SearchModel* search_model) {
+  search_box_observation_.Reset();
+  search_box_observation_.Observe(search_model->search_box());
+  for (auto* container : result_container_views_)
+    container->SetResults(search_model->results());
+}
+
 void SearchResultPageView::OnSearchResultContainerResultsChanging() {
   // Block any result selection changes while result updates are in flight.
   // The selection will be reset once the results are all updated.
@@ -500,8 +515,9 @@ void SearchResultPageView::OnWillBeHidden() {
 }
 
 bool SearchResultPageView::ShouldShowSearchResultView() const {
+  SearchModel* search_model = AppListModelProvider::Get()->search_model();
   return (!features::IsProductivityLauncherEnabled() ||
-          !base::TrimWhitespace(search_model_->search_box()->text(),
+          !base::TrimWhitespace(search_model->search_box()->text(),
                                 base::TrimPositions::TRIM_ALL)
                .empty());
 }

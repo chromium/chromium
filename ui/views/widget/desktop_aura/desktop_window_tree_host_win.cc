@@ -636,6 +636,20 @@ void DesktopWindowTreeHostWin::SetBoundsInPixels(const gfx::Rect& bounds) {
   message_handler_->SetBounds(new_expanded, old_content_size != bounds.size());
 }
 
+gfx::Rect
+DesktopWindowTreeHostWin::GetBoundsInAcceleratedWidgetPixelCoordinates() {
+  if (message_handler_->IsMinimized())
+    return gfx::Rect();
+  const gfx::Rect client_bounds =
+      message_handler_->GetClientAreaBoundsInScreen();
+  const gfx::Rect window_bounds = message_handler_->GetWindowBoundsInScreen();
+  if (window_bounds == client_bounds)
+    return gfx::Rect(window_bounds.size());
+  const gfx::Vector2d offset = client_bounds.origin() - window_bounds.origin();
+  DCHECK(offset.x() >= 0 && offset.y() >= 0);
+  return gfx::Rect(gfx::Point() + offset, client_bounds.size());
+}
+
 gfx::Point DesktopWindowTreeHostWin::GetLocationOnScreenInPixels() const {
   return GetBoundsInPixels().origin();
 }

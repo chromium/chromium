@@ -134,6 +134,12 @@ const base::Feature kWebViewVulkanIntermediateBuffer{
 // UseSurfaceLayerForVideo from chrome.
 const base::Feature kUseSurfaceLayerForVideoDefault{
     "UseSurfaceLayerForVideoDefault", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Historically media on android hardcoded SRGB color space because of lack of
+// color space support in surface control. This controls if we want to use real
+// color space in DisplayCompositor.
+const base::Feature kUseRealVideoColorSpaceForDisplay{
+    "UseRealVideoColorSpaceForDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Used by CC to throttle frame production of older surfaces. Used by the
@@ -148,6 +154,11 @@ const char kDraw1Point12Ms[] = "1-pt-12ms";
 const char kDraw2Points6Ms[] = "2-pt-6ms";
 const char kDraw1Point6Ms[] = "1-pt-6ms";
 const char kDraw2Points3Ms[] = "2-pt-3ms";
+const char kPredictorKalman[] = "kalman";
+const char kPredictorLinearResampling[] = "linear-resampling";
+const char kPredictorLinear1[] = "linear-1";
+const char kPredictorLinear2[] = "linear-2";
+const char kPredictorLsq[] = "lsq";
 
 // Used by Viz to parameterize adjustments to scheduler deadlines.
 const base::Feature kDynamicSchedulerForDraw{"DynamicSchedulerForDraw",
@@ -265,6 +276,13 @@ absl::optional<int> ShouldDrawPredictedInkPoints() {
   return absl::nullopt;
 }
 
+std::string InkPredictor() {
+  if (!base::FeatureList::IsEnabled(kDrawPredictedInkPoint))
+    return "";
+
+  return GetFieldTrialParamValueByFeature(kDrawPredictedInkPoint, "predictor");
+}
+
 bool ShouldUsePlatformDelegatedInk() {
   return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
@@ -276,6 +294,16 @@ bool UseSurfaceLayerForVideo() {
     return true;
   }
   return base::FeatureList::IsEnabled(kUseSurfaceLayerForVideoDefault);
+}
+
+bool UseRealVideoColorSpaceForDisplay() {
+  // We need Android S for proper color space support in SurfaceControl.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_S)
+    return false;
+
+  return base::FeatureList::IsEnabled(
+      features::kUseRealVideoColorSpaceForDisplay);
 }
 #endif
 

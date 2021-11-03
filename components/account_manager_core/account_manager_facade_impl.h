@@ -25,6 +25,8 @@ class OAuth2AccessTokenConsumer;
 
 namespace account_manager {
 
+class AccountManager;
+
 // ChromeOS-specific implementation of |AccountManagerFacade| that talks to
 // |account_manager::AccountManager| over Mojo. Used by both Lacros and Ash.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
@@ -39,6 +41,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   AccountManagerFacadeImpl(
       mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote,
       uint32_t remote_version,
+      AccountManager* account_manager_for_tests,
       base::OnceClosure init_finished = base::DoNothing());
   AccountManagerFacadeImpl(const AccountManagerFacadeImpl&) = delete;
   AccountManagerFacadeImpl& operator=(const AccountManagerFacadeImpl&) = delete;
@@ -65,6 +68,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       const AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
+  void UpsertAccountForTesting(const Account& account,
+                               const std::string& token_value) override;
+  void RemoveAccountForTesting(const AccountKey& account) override;
 
   // crosapi::mojom::AccountManagerObserver overrides:
   void OnTokenUpserted(crosapi::mojom::AccountPtr account) override;
@@ -154,6 +160,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       receiver_;
 
   base::ObserverList<Observer> observer_list_;
+
+  AccountManager* account_manager_for_tests_ = nullptr;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};
 };

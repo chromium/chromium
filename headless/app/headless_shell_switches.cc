@@ -22,11 +22,6 @@ const char kEnableBeginFrameControl[] = "enable-begin-frame-control";
 // Enable crash reporter for headless.
 const char kEnableCrashReporter[] = "enable-crash-reporter";
 
-// If enabled, generate a tagged (accessible) file when printing to PDF.
-// The plan is for this to go away once tagged PDFs become the default.
-// See https://crbug.com/607777
-const char kExportTaggedPDF[] = "export-tagged-pdf";
-
 // Disable crash reporter for headless. It is enabled by default in official
 // builds.
 const char kDisableCrashReporter[] = "disable-crash-reporter";
@@ -129,7 +124,6 @@ const char kWindowSize[] = "window-size";
 
 // Allowlist for Negotiate Auth servers.
 const char kAuthServerAllowlist[] = "auth-server-allowlist";
-const char kAuthServerAllowlistDeprecated[] = "auth-server-whitelist";
 
 // Sets font render hinting when running headless, affects Skia rendering and
 // whether glyph subpixel positioning is enabled.
@@ -138,5 +132,10 @@ const char kFontRenderHinting[] = "font-render-hinting";
 
 // If true, then all pop-ups and calls to window.open will fail.
 const char kBlockNewWebContents[] = "block-new-web-contents";
+
+// Allows overriding the list of restricted ports by passing a comma-separated
+// list of port numbers.
+const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
+
 }  // namespace switches
 }  // namespace headless

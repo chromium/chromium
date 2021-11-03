@@ -38,7 +38,7 @@ void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
     WindowTreeHost* host) {
 #if defined(OS_WIN)
   if (host->IsNativeWindowOcclusionEnabled()) {
-    host->SetNativeWindowOcclusionState(Window::OcclusionState::UNKNOWN);
+    host->SetNativeWindowOcclusionState(Window::OcclusionState::UNKNOWN, {});
     NativeWindowOcclusionTrackerWin::GetOrCreateInstance()->Disable(
         host->window());
   }

@@ -2097,8 +2097,8 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2127,8 +2127,8 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2161,8 +2161,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2191,8 +2191,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);

@@ -22,6 +22,9 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
  public:
   static ShellDevToolsFrontend* Show(WebContents* inspected_contents);
 
+  ShellDevToolsFrontend(const ShellDevToolsFrontend&) = delete;
+  ShellDevToolsFrontend& operator=(const ShellDevToolsFrontend&) = delete;
+
   void Activate();
   void InspectElementAt(int x, int y);
   void Close() override;
@@ -38,8 +41,6 @@ class ShellDevToolsFrontend : public ShellDevToolsDelegate,
   ~ShellDevToolsFrontend() override;
   Shell* frontend_shell_;
   std::unique_ptr<ShellDevToolsBindings> devtools_bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellDevToolsFrontend);
 };
 
 }  // namespace content

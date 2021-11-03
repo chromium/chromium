@@ -83,6 +83,9 @@ class SecureChannel : public ConnectionObserver {
     static Factory* factory_instance_;
   };
 
+  SecureChannel(const SecureChannel&) = delete;
+  SecureChannel& operator=(const SecureChannel&) = delete;
+
   ~SecureChannel() override;
 
   virtual void Initialize();
@@ -172,8 +175,6 @@ class SecureChannel : public ConnectionObserver {
   int next_sequence_number_ = 0;
   base::ObserverList<Observer>::Unchecked observer_list_;
   base::WeakPtrFactory<SecureChannel> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannel);
 };
 
 }  // namespace secure_channel

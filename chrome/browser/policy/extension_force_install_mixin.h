@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_EXTENSION_FORCE_INSTALL_MIXIN_H_
 #define CHROME_BROWSER_POLICY_EXTENSION_FORCE_INSTALL_MIXIN_H_
 
+#include <atomic>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -89,14 +90,27 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
     kBackgroundPageFirstLoad,
   };
 
+  // The type of the server error that should be simulated.
+  enum class ServerErrorMode {
+    // No error - network requests will succeed.
+    kNone,
+    // Don't respond to any network request at all (a rough equivalent of an
+    // absent network).
+    kHung,
+    // Respond with the HTTP 500 Internal Server Error.
+    kInternalError,
+  };
+
   explicit ExtensionForceInstallMixin(InProcessBrowserTestMixinHost* host);
   ExtensionForceInstallMixin(const ExtensionForceInstallMixin&) = delete;
   ExtensionForceInstallMixin& operator=(const ExtensionForceInstallMixin&) =
       delete;
   ~ExtensionForceInstallMixin() override;
 
-  // Use one of the Init*() methods to initialize the object before calling any
-  // other method:
+  // Use one of the Init*() methods below to initialize the object before
+  // calling any other method.
+  // Note: The |profile| argument is optional; if it's null, only the `kNone`
+  // waiting mode is allowed, and Get...Extension() methods are fobidden.
 
   void InitWithMockPolicyProvider(
       Profile* profile,
@@ -149,6 +163,10 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   const extensions::Extension* GetEnabledExtension(
       const extensions::ExtensionId& extension_id) const;
 
+  // Changes the embedded test server's error mode, allowing to simulate
+  // network unavailability and errors.
+  void SetServerErrorMode(ServerErrorMode server_error_mode);
+
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
 
@@ -190,6 +208,7 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
 
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
+  bool initialized_ = false;
   Profile* profile_ = nullptr;
   policy::MockConfigurationPolicyProvider* mock_policy_provider_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -201,6 +220,9 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   std::string account_id_;
   std::string policy_type_;
 #endif
+  // The current error mode. Stored in an atomic variable, as the server's
+  // request handlers are reading from it on IO thread.
+  std::atomic<ServerErrorMode> server_error_mode_{ServerErrorMode::kNone};
 };
 
 #endif  // CHROME_BROWSER_POLICY_EXTENSION_FORCE_INSTALL_MIXIN_H_

@@ -118,6 +118,10 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock {
 // would be 3.
 struct TestWakeLockProvider::WakeLockDataPerType {
   WakeLockDataPerType() = default;
+
+  WakeLockDataPerType(const WakeLockDataPerType&) = delete;
+  WakeLockDataPerType& operator=(const WakeLockDataPerType&) = delete;
+
   ~WakeLockDataPerType() = default;
 
   // Currently held count of this wake lock type.
@@ -129,8 +133,6 @@ struct TestWakeLockProvider::WakeLockDataPerType {
 
   // Observers for this wake lock type.
   mojo::RemoteSet<mojom::WakeLockObserver> observers;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockDataPerType);
 };
 
 TestWakeLockProvider::TestWakeLockProvider() {

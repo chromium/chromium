@@ -17,7 +17,7 @@
 #include "ui/resources/grit/webui_generated_resources_map.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -106,4 +106,4 @@ UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui) {
   return std::make_unique<UntrustedProjectorUI>(web_ui);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -3206,10 +3206,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return @[];
 
   NSMutableArray<UIView*>* overlays = [NSMutableArray array];
-  UIView* infoBarView = [self infoBarOverlayViewForWebState:webState];
-  if (infoBarView) {
-    [overlays addObject:infoBarView];
-  }
 
   UIView* downloadManagerView = _downloadManagerCoordinator.viewController.view;
   if (downloadManagerView) {

@@ -38,6 +38,11 @@ class EligibleHostDevicesProviderImpl
     static Factory* test_factory_;
   };
 
+  EligibleHostDevicesProviderImpl(const EligibleHostDevicesProviderImpl&) =
+      delete;
+  EligibleHostDevicesProviderImpl& operator=(
+      const EligibleHostDevicesProviderImpl&) = delete;
+
   ~EligibleHostDevicesProviderImpl() override;
 
  private:
@@ -63,8 +68,6 @@ class EligibleHostDevicesProviderImpl
   multidevice::RemoteDeviceRefList eligible_devices_from_last_sync_;
   multidevice::DeviceWithConnectivityStatusList
       eligible_active_devices_from_last_sync_;
-
-  DISALLOW_COPY_AND_ASSIGN(EligibleHostDevicesProviderImpl);
 };
 
 }  // namespace multidevice_setup

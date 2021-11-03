@@ -140,15 +140,15 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
   // Returns the global instance which may be nullptr if not initialized.
   static DlcserviceClient* Get();
 
+  DlcserviceClient(const DlcserviceClient&) = delete;
+  DlcserviceClient& operator=(const DlcserviceClient&) = delete;
+
  protected:
   friend class DlcserviceClientTest;
 
   // Initialize/Shutdown should be used instead.
   DlcserviceClient();
   virtual ~DlcserviceClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DlcserviceClient);
 };
 
 }  // namespace chromeos

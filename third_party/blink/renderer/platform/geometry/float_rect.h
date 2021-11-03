@@ -140,14 +140,7 @@ class PLATFORM_EXPORT FloatRect {
 
   void Intersect(const IntRect&);
   void Intersect(const FloatRect&);
-  // Set this rect to be the intersection of itself and the argument rect
-  // using edge-inclusive geometry. If the two rectangles overlap but the
-  // overlap region is zero-area (either because one of the two rectangles
-  // is zero-area, or because the rectangles overlap at an edge or a corner),
-  // the result is the zero-area intersection. The return value indicates
-  // whether the two rectangle actually have an intersection, since checking
-  // the result for isEmpty() is not conclusive.
-  bool InclusiveIntersect(const FloatRect&);
+
   void Union(const FloatRect&);
   void UnionEvenIfEmpty(const FloatRect&);
   void UnionIfNonZero(const FloatRect&);
@@ -228,10 +221,6 @@ inline FloatRect UnionRects(const FloatRect& a, const FloatRect& b) {
 
 PLATFORM_EXPORT FloatRect UnionRects(const Vector<FloatRect>&);
 
-// Return a maximum rectangle in which any point is covered by either a or b.
-PLATFORM_EXPORT FloatRect MaximumCoveredRect(const FloatRect& a,
-                                             const FloatRect& b);
-
 inline FloatRect& operator+=(FloatRect& a, const FloatRect& b) {
   a.Offset(b.x(), b.y());
   a.set_width(a.width() + b.width());
@@ -253,8 +242,8 @@ constexpr bool operator!=(const FloatRect& a, const FloatRect& b) {
 
 // Returns a IntRect containing the given FloatRect.
 inline IntRect EnclosingIntRect(const FloatRect& rect) {
-  IntPoint location = FlooredIntPoint(rect.origin());
-  IntPoint max_point = CeiledIntPoint(rect.bottom_right());
+  gfx::Point location = FlooredIntPoint(rect.origin());
+  gfx::Point max_point = CeiledIntPoint(rect.bottom_right());
   return IntRect(location,
                  IntSize(base::ClampSub(max_point.x(), location.x()),
                          base::ClampSub(max_point.y(), location.y())));

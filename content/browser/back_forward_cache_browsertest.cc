@@ -803,6 +803,11 @@ class ReadyToCommitNavigationCallback : public WebContentsObserver {
       base::OnceCallback<void(NavigationHandle*)> callback)
       : WebContentsObserver(content), callback_(std::move(callback)) {}
 
+  ReadyToCommitNavigationCallback(const ReadyToCommitNavigationCallback&) =
+      delete;
+  ReadyToCommitNavigationCallback& operator=(
+      const ReadyToCommitNavigationCallback&) = delete;
+
  private:
   // WebContentsObserver:
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
@@ -811,8 +816,6 @@ class ReadyToCommitNavigationCallback : public WebContentsObserver {
   }
 
   base::OnceCallback<void(NavigationHandle*)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadyToCommitNavigationCallback);
 };
 
 class FirstVisuallyNonEmptyPaintObserver : public WebContentsObserver {
@@ -1988,7 +1991,7 @@ IN_PROC_BROWSER_TEST_F(HighCacheSizeBackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       NavigationsAreFullyCommitted) {
+                       DISABLED_NavigationsAreFullyCommitted) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // During a navigation, the document being navigated *away from* can either be
@@ -2070,7 +2073,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ProxiesAreStoredAndRestored) {
+                       DISABLED_ProxiesAreStoredAndRestored) {
   // This test makes assumption about where iframe processes live.
   if (!AreAllSitesIsolatedForTesting())
     return;
@@ -2229,6 +2232,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       shell(),
       embedded_test_server()->GetURL(
           "a.com", "/back_forward_cache/page_with_dedicated_worker.html")));
+  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
   RenderFrameDeletedObserver delete_observer_rfh_a(current_frame_host());
 
   // Navigate away.
@@ -2237,6 +2241,36 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // The page with the unsupported feature should be deleted (not cached).
   delete_observer_rfh_a.WaitUntilDeleted();
+}
+
+class BackForwardCacheWithDedicatedWorkerBrowserTest
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EnableFeatureAndSetParams(blink::features::kBackForwardCacheDedicatedWorker,
+                              "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
+                       CacheWithDedicatedWorker) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL(
+          "a.test", "/back_forward_cache/page_with_dedicated_worker.html")));
+  EXPECT_EQ(42, EvalJs(current_frame_host(), "window.receivedMessagePromise"));
+
+  // Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  // Go back to the original page.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
@@ -3826,6 +3860,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, Events) {
           base::Bucket(
               static_cast<int>(blink::EventPageShowPersisted::kNoInRenderer),
               2),
+          base::Bucket(
+              static_cast<int>(blink::EventPageShowPersisted::kYesInBrowser),
+              1),
           base::Bucket(
               static_cast<int>(blink::EventPageShowPersisted::kYesInRenderer),
               1),
@@ -9736,7 +9773,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // This test is not important for Chrome OS if TTS is called in content. For
 // more details refer (content/browser/speech/tts_platform_impl.cc).
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
 #define MAYBE_DoesNotCacheIfUsingSpeechSynthesis \
   DISABLED_DoesNotCacheIfUsingSpeechSynthesis
 #else

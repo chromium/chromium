@@ -39,6 +39,9 @@ class FieldTrialSynchronizer
   // finalized.
   static void CreateInstance();
 
+  FieldTrialSynchronizer(const FieldTrialSynchronizer&) = delete;
+  FieldTrialSynchronizer& operator=(const FieldTrialSynchronizer&) = delete;
+
   // FieldTrialList::Observer methods:
 
   // This method is called by the FieldTrialList singleton when a trial's group
@@ -59,8 +62,6 @@ class FieldTrialSynchronizer
   ~FieldTrialSynchronizer() override;
 
   static void NotifyAllRenderersOfVariationsHeader();
-
-  DISALLOW_COPY_AND_ASSIGN(FieldTrialSynchronizer);
 };
 
 }  // namespace content

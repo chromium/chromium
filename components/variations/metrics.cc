@@ -26,28 +26,27 @@ void RecordLoadSafeSeedResult(LoadSeedResult state) {
 }
 
 void RecordStoreSeedResult(StoreSeedResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SeedStoreResult", result,
-                            StoreSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SeedStoreResult", result);
 }
 
 void ReportUnsupportedSeedFormatError() {
-  RecordStoreSeedResult(StoreSeedResult::FAILED_UNSUPPORTED_SEED_FORMAT);
+  RecordStoreSeedResult(StoreSeedResult::kFailedUnsupportedSeedFormat);
 }
 
 void RecordStoreSafeSeedResult(StoreSeedResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SafeMode.StoreSafeSeed.Result", result,
-                            StoreSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SafeMode.StoreSafeSeed.Result",
+                                result);
 }
 
 void RecordSeedInstanceManipulations(const InstanceManipulations& im) {
   if (im.delta_compressed && im.gzip_compressed) {
-    RecordStoreSeedResult(StoreSeedResult::GZIP_DELTA_COUNT);
+    RecordStoreSeedResult(StoreSeedResult::kGzipDeltaCount);
   } else if (im.delta_compressed) {
-    RecordStoreSeedResult(StoreSeedResult::NON_GZIP_DELTA_COUNT);
+    RecordStoreSeedResult(StoreSeedResult::kNonGzipDeltaCount);
   } else if (im.gzip_compressed) {
-    RecordStoreSeedResult(StoreSeedResult::GZIP_FULL_COUNT);
+    RecordStoreSeedResult(StoreSeedResult::kGzipFullCount);
   } else {
-    RecordStoreSeedResult(StoreSeedResult::NON_GZIP_FULL_COUNT);
+    RecordStoreSeedResult(StoreSeedResult::kNonGzipFullCount);
   }
 }
 

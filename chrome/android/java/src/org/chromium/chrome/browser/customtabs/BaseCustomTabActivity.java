@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,6 +72,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     // Fallback study name used for experiments ids.
     public static final String GSA_FALLBACK_STUDY_NAME = "GsaExperiments";
 
+    protected BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
     protected BrowserServicesIntentDataProvider mIntentDataProvider;
     protected CustomTabDelegateFactory mDelegateFactory;
     protected CustomTabToolbarCoordinator mToolbarCoordinator;
@@ -149,7 +151,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected RootUiCoordinator createRootUiCoordinator() {
         // clang-format off
-        return new BaseCustomTabRootUiCoordinator(this, getShareDelegateSupplier(),
+        mBaseCustomTabRootUiCoordinator = new BaseCustomTabRootUiCoordinator(this,
+                getShareDelegateSupplier(),
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 this::getContextualSearchManager, getTabModelSelectorSupplier(),
                 getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
@@ -161,8 +164,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 getOverviewModeBehaviorSupplier(), this::getSnackbarManager, getActivityType(),
                 this::isInOverviewMode, this::isWarmOnResume,
                 /* appMenuDelegate= */ this, /* statusBarColorProvider= */ this,
-                getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController);
+                getIntentRequestTracker(), () -> mToolbarCoordinator, () -> mNavigationController,
+                () -> mIntentDataProvider, getMultiWindowModeStateDispatcher());
         // clang-format on
+        return mBaseCustomTabRootUiCoordinator;
     }
 
     @Override
@@ -173,13 +178,21 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     @Override
     protected BaseCustomTabActivityComponent createComponent(
             ChromeActivityCommonsModule commonsModule) {
+        BaseCustomTabActivityModule.Factory overridenBaseCustomTabFactory =
+                ModuleFactoryOverrides.getOverrideFor(BaseCustomTabActivityModule.Factory.class);
+
         // mIntentHandler comes from the base class.
         IntentIgnoringCriterion intentIgnoringCriterion =
                 (intent) -> mIntentHandler.shouldIgnoreIntent(intent, /*startedActivity=*/true);
 
-        BaseCustomTabActivityModule baseCustomTabsModule = new BaseCustomTabActivityModule(
-                mIntentDataProvider, getStartupTabPreloader(), mNightModeStateController,
-                intentIgnoringCriterion, getTopUiThemeColorProvider());
+        BaseCustomTabActivityModule baseCustomTabsModule = overridenBaseCustomTabFactory != null
+                ? overridenBaseCustomTabFactory.create(mIntentDataProvider,
+                        getStartupTabPreloader(), mNightModeStateController,
+                        intentIgnoringCriterion, getTopUiThemeColorProvider(),
+                        new DefaultBrowserProviderImpl())
+                : new BaseCustomTabActivityModule(mIntentDataProvider, getStartupTabPreloader(),
+                        mNightModeStateController, intentIgnoringCriterion,
+                        getTopUiThemeColorProvider(), new DefaultBrowserProviderImpl());
         BaseCustomTabActivityComponent component =
                 ChromeApplicationImpl.getComponent().createBaseCustomTabActivityComponent(
                         commonsModule, baseCustomTabsModule);

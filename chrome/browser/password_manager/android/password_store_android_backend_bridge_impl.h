@@ -35,15 +35,38 @@ class PasswordStoreAndroidBackendBridgeImpl
       jint job_id,
       const base::android::JavaParamRef<jbyteArray>& passwords);
 
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides serialized PasswordWithLocalData identifying the added 'login'.
+  void OnLoginAdded(JNIEnv* env,
+                    jint job_id,
+                    const base::android::JavaParamRef<jbyteArray>& login);
+
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides serialized PasswordWithLocalData identifying the updated 'login'.
+  void OnLoginUpdated(JNIEnv* env,
+                      jint job_id,
+                      const base::android::JavaParamRef<jbyteArray>& login);
+
+  // Called via JNI. Called when the api call with `job_id` finished and
+  // provides Serialized PasswordSpecificsData identifying the deleted 'login'.
+  void OnLoginDeleted(JNIEnv* env,
+                      jint job_id,
+                      const base::android::JavaParamRef<jbyteArray>& login);
+
   // Called via JNI. Called when the api call with `job_id` finished with
   // an exception.
-  // TODO(crbug.com/1229654): Include error codes.
-  void OnError(JNIEnv* env, jint job_id);
+  void OnError(JNIEnv* env, jint job_id, jint error_type, jint api_error_code);
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   JobId GetAllLogins() override WARN_UNUSED_RESULT;
+  JobId AddLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
+  JobId UpdateLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
+  JobId RemoveLogin(const password_manager::PasswordForm& form) override
+      WARN_UNUSED_RESULT;
 
   JobId GetNextJobId() WARN_UNUSED_RESULT;
 

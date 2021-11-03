@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/net/network_health/network_health.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_health {
 
 NetworkHealthService::NetworkHealthService() {
@@ -56,4 +56,4 @@ NetworkHealthService* NetworkHealthService::GetInstance() {
 }
 
 }  // namespace network_health
-}  // namespace chromeos
+}  // namespace ash

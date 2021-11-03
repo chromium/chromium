@@ -16,4 +16,7 @@ include_rules = [
   "+chromeos/services/cros_healthd/public/cpp",
   "+chromeos/services/cros_healthd/public/mojom",
   "+chromeos/services/network_config",
+
+  # SFUL Metrics DEPS
+  "+chromeos/components/feature_usage",
 ]

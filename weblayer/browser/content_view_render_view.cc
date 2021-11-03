@@ -181,6 +181,12 @@ void ContentViewRenderView::SetRequiresAlphaChannel(
   UpdateBackgroundColor(env);
 }
 
+void ContentViewRenderView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
+                                                             jboolean enable) {
+  InitCompositor();
+  compositor_->SetDidSwapBuffersCallbackEnabled(enable);
+}
+
 void ContentViewRenderView::UpdateLayerTreeHost() {
   // TODO(wkorman): Rename Layout to UpdateLayerTreeHost in all Android
   // Compositor related classes.

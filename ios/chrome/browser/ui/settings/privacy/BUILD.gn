@@ -87,7 +87,6 @@ source_set("unit_tests") {
     "//components/handoff",
     "//components/prefs",
     "//components/prefs/ios",
-    "//components/signin/ios/browser:features",
     "//components/strings",
     "//components/sync/driver:test_support",
     "//components/sync_preferences",

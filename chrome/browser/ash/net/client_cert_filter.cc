@@ -12,7 +12,7 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/nss_profile_filter_chromeos.h"
 
-namespace chromeos {
+namespace ash {
 
 class ClientCertFilter::CertFilterIO {
  public:
@@ -145,4 +145,4 @@ void ClientCertFilter::OnInitComplete(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

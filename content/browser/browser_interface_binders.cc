@@ -1117,6 +1117,9 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &DedicatedWorkerHost::BindCacheStorage, base::Unretained(host)));
   map->Add<blink::mojom::CodeCacheHost>(base::BindRepeating(
       &DedicatedWorkerHost::CreateCodeCacheHost, base::Unretained(host)));
+  map->Add<blink::mojom::BroadcastChannelProvider>(
+      base::BindRepeating(&DedicatedWorkerHost::CreateBroadcastChannelProvider,
+                          base::Unretained(host)));
 #if BUILDFLAG(ENABLE_REPORTING)
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForDedicatedWorker, base::Unretained(host)));
@@ -1209,6 +1212,9 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &SharedWorkerHost::BindCacheStorage, base::Unretained(host)));
   map->Add<blink::mojom::CodeCacheHost>(base::BindRepeating(
       &SharedWorkerHost::CreateCodeCacheHost, base::Unretained(host)));
+  map->Add<blink::mojom::BroadcastChannelProvider>(
+      base::BindRepeating(&SharedWorkerHost::CreateBroadcastChannelProvider,
+                          base::Unretained(host)));
 #if BUILDFLAG(ENABLE_REPORTING)
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForSharedWorker, base::Unretained(host)));
@@ -1297,6 +1303,9 @@ void PopulateServiceWorkerBinders(ServiceWorkerHost* host,
       &ServiceWorkerHost::BindCacheStorage, base::Unretained(host)));
   map->Add<blink::mojom::CodeCacheHost>(base::BindRepeating(
       &ServiceWorkerHost::CreateCodeCacheHost, base::Unretained(host)));
+  map->Add<blink::mojom::BroadcastChannelProvider>(
+      base::BindRepeating(&ServiceWorkerHost::CreateBroadcastChannelProvider,
+                          base::Unretained(host)));
 #if BUILDFLAG(ENABLE_REPORTING)
   map->Add<blink::mojom::ReportingServiceProxy>(base::BindRepeating(
       &CreateReportingServiceProxyForServiceWorker, base::Unretained(host)));

@@ -24,6 +24,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "chromecast.mojom.VisibilityType"
+          cpp = "::chromecast::VisibilityType"
+        },
+        {
           mojom = "chromecast.mojom.VisibilityPriority"
           cpp = "::chromecast::VisibilityPriority"
         },

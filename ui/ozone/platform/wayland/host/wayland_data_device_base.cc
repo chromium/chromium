@@ -7,9 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_offer_base.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
 namespace ui {
@@ -29,22 +32,31 @@ const std::vector<std::string>& WaylandDataDeviceBase::GetAvailableMimeTypes()
   return data_offer_->mime_types();
 }
 
-bool WaylandDataDeviceBase::RequestSelectionData(const std::string& mime_type) {
-  if (!data_offer_)
-    return false;
-
-  base::ScopedFD fd = data_offer_->Receive(mime_type);
-  if (!fd.is_valid()) {
-    LOG(ERROR) << "Failed to open file descriptor.";
+bool WaylandDataDeviceBase::ReadSelectionData(
+    const std::string& mime_type,
+    PlatformClipboard::RequestDataClosure callback) {
+  DCHECK(callback);
+  if (!data_offer_) {
+    std::move(callback).Run(nullptr);
     return false;
   }
 
-  // Ensure there is not pending operation to be performed by the compositor,
-  // otherwise read(..) can block awaiting data to be sent to pipe.
-  RegisterDeferredReadClosure(
-      base::BindOnce(&WaylandDataDeviceBase::ReadClipboardDataFromFD,
-                     base::Unretained(this), std::move(fd), mime_type));
-  RegisterDeferredReadCallback();
+  base::ScopedFD fd = data_offer_->Receive(mime_type);
+  if (!fd.is_valid()) {
+    DPLOG(ERROR) << "Failed to open file descriptor.";
+    std::move(callback).Run(nullptr);
+    return false;
+  }
+
+  connection_->ScheduleFlush();
+
+  // Schedule data reading to be done asynchronously, otherwise it can block
+  // awaiting data to be sent to pipe.
+  base::ThreadTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&WaylandDataDeviceBase::ReadFromFD, base::Unretained(this),
+                     std::move(fd)),
+      std::move(callback));
   return true;
 }
 
@@ -52,15 +64,11 @@ void WaylandDataDeviceBase::ResetDataOffer() {
   data_offer_.reset();
 }
 
-void WaylandDataDeviceBase::ReadClipboardDataFromFD(
-    base::ScopedFD fd,
-    const std::string& mime_type) {
+PlatformClipboard::Data WaylandDataDeviceBase::ReadFromFD(
+    base::ScopedFD fd) const {
   std::vector<uint8_t> contents;
   wl::ReadDataFromFD(std::move(fd), &contents);
-  if (!selection_delegate_)
-    return;
-  selection_delegate_->OnSelectionDataReceived(
-      mime_type, base::RefCountedBytes::TakeVector(&contents));
+  return base::RefCountedBytes::TakeVector(&contents);
 }
 
 void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
@@ -101,6 +109,12 @@ void WaylandDataDeviceBase::DeferredReadCallbackInternal(struct wl_callback* cb,
   deferred_read_callback_.reset();
 
   std::move(deferred_read_closure_).Run();
+}
+
+void WaylandDataDeviceBase::NotifySelectionOffer(
+    WaylandDataOfferBase* offer) const {
+  if (selection_offer_callback_)
+    selection_offer_callback_.Run(offer);
 }
 
 absl::optional<wl::Serial> WaylandDataDeviceBase::GetSerialForSelection()

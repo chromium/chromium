@@ -34,7 +34,6 @@
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/features.h"
@@ -64,8 +63,6 @@ namespace {
 using ::chromeos::kHideShelfWhenFullscreenKey;
 using ::chromeos::kImmersiveIsActive;
 using ::chromeos::kWindowManagerManagesOpacityKey;
-using ::chromeos::kWindowPinTypeKey;
-using ::chromeos::WindowPinType;
 using ::chromeos::WindowStateType;
 
 bool IsTabletModeEnabled() {
@@ -138,19 +135,6 @@ WMEventType WMEventTypeFromShowState(ui::WindowShowState requested_show_state) {
       NOTREACHED() << "No WMEvent defined for the show state:"
                    << requested_show_state;
   }
-  return WM_EVENT_NORMAL;
-}
-
-WMEventType WMEventTypeFromWindowPinType(chromeos::WindowPinType type) {
-  switch (type) {
-    case chromeos::WindowPinType::kNone:
-      return WM_EVENT_NORMAL;
-    case chromeos::WindowPinType::kPinned:
-      return WM_EVENT_PIN;
-    case chromeos::WindowPinType::kTrustedPinned:
-      return WM_EVENT_TRUSTED_PIN;
-  }
-  NOTREACHED() << "No WMEvent defined for the window pin type:" << type;
   return WM_EVENT_NORMAL;
 }
 
@@ -675,10 +659,6 @@ ui::WindowShowState WindowState::GetShowState() const {
   return window_->GetProperty(aura::client::kShowStateKey);
 }
 
-WindowPinType WindowState::GetPinType() const {
-  return window_->GetProperty(kWindowPinTypeKey);
-}
-
 void WindowState::SetBoundsInScreen(const gfx::Rect& bounds_in_screen) {
   gfx::Rect bounds_in_parent = bounds_in_screen;
   ::wm::ConvertRectFromScreen(window_->parent(), &bounds_in_parent);
@@ -743,17 +723,6 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
   if (GetStateType() != window_->GetProperty(chromeos::kWindowStateTypeKey)) {
     base::AutoReset<bool> resetter(&ignore_property_change_, true);
     window_->SetProperty(chromeos::kWindowStateTypeKey, GetStateType());
-  }
-
-  // sync up current window show state with PinType property.
-  WindowPinType pin_type = WindowPinType::kNone;
-  if (GetStateType() == WindowStateType::kPinned)
-    pin_type = WindowPinType::kPinned;
-  else if (GetStateType() == WindowStateType::kTrustedPinned)
-    pin_type = WindowPinType::kTrustedPinned;
-  if (pin_type != GetPinType()) {
-    base::AutoReset<bool> resetter(&ignore_property_change_, true);
-    window_->SetProperty(kWindowPinTypeKey, pin_type);
   }
 
   if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
@@ -1007,13 +976,6 @@ void WindowState::OnWindowPropertyChanged(aura::Window* window,
   if (key == aura::client::kShowStateKey) {
     if (!ignore_property_change_) {
       WMEvent event(WMEventTypeFromShowState(GetShowState()));
-      OnWMEvent(&event);
-    }
-    return;
-  }
-  if (key == kWindowPinTypeKey) {
-    if (!ignore_property_change_) {
-      WMEvent event(WMEventTypeFromWindowPinType(GetPinType()));
       OnWMEvent(&event);
     }
     return;

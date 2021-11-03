@@ -27,7 +27,6 @@ class BoxLayoutView;
 class Label;
 class LabelButton;
 class ProgressBar;
-class RadioButton;
 }  // namespace views
 
 namespace message_center {
@@ -114,8 +113,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void Activate();
 
   // MessageView:
-  void AddLayerBeneathView(ui::Layer* layer) override;
-  void RemoveLayerBeneathView(ui::Layer* layer) override;
   void Layout() override;
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -123,9 +120,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void PreferredSizeChanged() override;
   void UpdateWithNotification(const Notification& notification) override;
-  void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   NotificationControlButtonsView* GetControlButtonsView() const override;
   bool IsExpanded() const override;
   void SetExpanded(bool expanded) override;
@@ -201,7 +196,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
       const Notification& notification) = 0;
 
   virtual void CreateOrUpdateInlineSettingsViews(
-      const Notification& notification);
+      const Notification& notification) = 0;
 
   // Add view to `left_content_` in its appropriate position according to
   // `left_content_count_`. Return a pointer to added view.
@@ -249,8 +244,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   const views::Label* status_view() const { return status_view_; }
   const std::vector<views::View*> item_views() const { return item_views_; }
-  views::RadioButton* block_all_button() { return block_all_button_; }
-  views::RadioButton* dont_block_button() { return dont_block_button_; }
 
   bool inline_settings_enabled() const { return inline_settings_enabled_; }
   void set_inline_settings_enabled(bool inline_settings_enabled) {
@@ -305,8 +298,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   friend class NotificationViewBaseTest;
 
-  class NotificationViewPathGenerator;
-
   void CreateOrUpdateMessageView(const Notification& notification);
   void CreateOrUpdateCompactTitleMessageView(const Notification& notification);
   void CreateOrUpdateProgressBarView(const Notification& notification);
@@ -319,12 +310,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void HeaderRowPressed();
 
   void ToggleExpanded();
-
-  // Returns the list of children which need to have their layers created or
-  // destroyed when the ink drop is visible.
-  std::vector<views::View*> GetChildrenForLayerAdjustment() const;
-
-  views::InkDropContainerView* const ink_drop_container_;
 
   // View containing close and settings buttons
   NotificationControlButtonsView* control_buttons_view_ = nullptr;
@@ -382,15 +367,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Counter for view layouting, which is used during the CreateOrUpdate*
   // phases to keep track of the view ordering. See crbug.com/901045
   int left_content_count_;
-
-  // Views for inline settings.
-  views::RadioButton* block_all_button_ = nullptr;
-  views::RadioButton* dont_block_button_ = nullptr;
-  views::LabelButton* settings_done_button_ = nullptr;
-
-  // Owned by views properties. Guaranteed to be not null for the lifetime of
-  // |this| because views properties are the last thing cleaned up.
-  NotificationViewPathGenerator* highlight_path_generator_ = nullptr;
 
   std::unique_ptr<ui::EventHandler> click_activator_;
 

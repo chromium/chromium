@@ -7,14 +7,10 @@
 #include <memory>
 
 #include "base/notreached.h"
-#include "build/build_config.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
-
-#if !defined(OS_ANDROID)
 #include "cc/paint/skottie_transfer_cache_entry.h"
-#endif
 
 namespace cc {
 
@@ -30,11 +26,7 @@ std::unique_ptr<ServiceTransferCacheEntry> ServiceTransferCacheEntry::Create(
       // CreateLocalEntry and is never serialized/deserialized.
       return nullptr;
     case TransferCacheEntryType::kSkottie:
-#if !defined(OS_ANDROID)
       return std::make_unique<ServiceSkottieTransferCacheEntry>();
-#else
-      return nullptr;
-#endif
   }
 
   return nullptr;

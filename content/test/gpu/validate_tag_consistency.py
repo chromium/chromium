@@ -85,7 +85,12 @@ def Validate():
   retval = 0
   for f in os.listdir(EXPECTATION_DIR):
     with open(os.path.join(EXPECTATION_DIR, f)) as infile:
-      if TAG_HEADER not in infile.read():
+      content = infile.read()
+      start_index = content.find(TAG_HEADER_BEGIN)
+      end_index = content.find(TAG_HEADER_END)
+      if (start_index < 0 or end_index < 0
+          or content[start_index + len(TAG_HEADER_BEGIN) + 1:end_index] !=
+          TAG_HEADER):
         retval = 1
         logging.error(
             'Expectation file %s does not have a tag/result header consistent '

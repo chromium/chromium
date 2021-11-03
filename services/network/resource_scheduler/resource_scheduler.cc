@@ -352,12 +352,13 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     explicit UnownedPointer(ScheduledResourceRequestImpl* pointer)
         : pointer_(pointer) {}
 
+    UnownedPointer(const UnownedPointer&) = delete;
+    UnownedPointer& operator=(const UnownedPointer&) = delete;
+
     ScheduledResourceRequestImpl* get() const { return pointer_; }
 
    private:
     ScheduledResourceRequestImpl* const pointer_;
-
-    DISALLOW_COPY_AND_ASSIGN(UnownedPointer);
   };
 
   static const void* const kUserDataKey;

@@ -191,6 +191,10 @@ CreateFakeScannedDeviceInfos(
 }  // namespace
 
 class HostScannerImplTest : public testing::Test {
+ public:
+  HostScannerImplTest(const HostScannerImplTest&) = delete;
+  HostScannerImplTest& operator=(const HostScannerImplTest&) = delete;
+
  protected:
   HostScannerImplTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(4)),
@@ -430,9 +434,6 @@ class HostScannerImplTest : public testing::Test {
   std::unique_ptr<HostScanner> host_scanner_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostScannerImplTest);
 };
 
 TEST_F(HostScannerImplTest, DISABLED_TestScan_ConnectingToExistingNetwork) {

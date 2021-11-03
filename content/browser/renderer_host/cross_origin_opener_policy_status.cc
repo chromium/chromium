@@ -50,7 +50,7 @@ bool CrossOriginOpenerPolicyMatch(
 bool ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
     network::mojom::CrossOriginOpenerPolicyValue initiator_coop,
     const url::Origin& initiator_origin,
-    bool is_initial_navigation,
+    bool is_navigation_from_initial_empty_document,
     network::mojom::CrossOriginOpenerPolicyValue destination_coop,
     const url::Origin& destination_origin) {
   using network::mojom::CrossOriginOpenerPolicyValue;
@@ -73,7 +73,7 @@ bool ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
   // ```
   // [1]
   // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e#changes-to-navigation
-  if (is_initial_navigation &&
+  if (is_navigation_from_initial_empty_document &&
       initiator_coop == CrossOriginOpenerPolicyValue::kSameOriginAllowPopups &&
       destination_coop == CrossOriginOpenerPolicyValue::kUnsafeNone) {
     return false;
@@ -95,7 +95,8 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
       soap_by_default_virtual_browsing_context_group_(
           frame_tree_node_->current_frame_host()
               ->soap_by_default_virtual_browsing_context_group()),
-      is_initial_navigation_(!frame_tree_node_->has_committed_real_load()),
+      is_navigation_from_initial_empty_document_(
+          frame_tree_node_->is_on_initial_empty_document()),
       current_coop_(
           frame_tree_node_->current_frame_host()->cross_origin_opener_policy()),
       current_origin_(
@@ -112,7 +113,8 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
   // navigation in a popup.
   // Note: the origin check is there to avoid leaking the URL of an opener that
   // navigated in the meantime.
-  if (is_initial_navigation_ && frame_tree_node_->opener() &&
+  if (is_navigation_from_initial_empty_document_ &&
+      frame_tree_node_->opener() &&
       frame_tree_node_->opener()
               ->current_frame_host()
               ->GetLastCommittedOrigin() == current_origin_) {
@@ -211,8 +213,9 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
 
   bool cross_origin_policy_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
-          current_coop_.value, current_origin_, is_initial_navigation_,
-          response_coop.value, response_origin);
+          current_coop_.value, current_origin_,
+          is_navigation_from_initial_empty_document_, response_coop.value,
+          response_origin);
 
   // Both report only cases (navigation from and to document) use the following
   // result, computing the need of a browsing context group swap based on both
@@ -220,18 +223,20 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   bool report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.report_only_value, current_origin_,
-          is_initial_navigation_, response_coop.report_only_value,
-          response_origin);
+          is_navigation_from_initial_empty_document_,
+          response_coop.report_only_value, response_origin);
 
   bool navigating_to_report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
-          current_coop_.value, current_origin_, is_initial_navigation_,
+          current_coop_.value, current_origin_,
+          is_navigation_from_initial_empty_document_,
           response_coop.report_only_value, response_origin);
 
   bool navigating_from_report_only_coop_swap =
       ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.report_only_value, current_origin_,
-          is_initial_navigation_, response_coop.value, response_origin);
+          is_navigation_from_initial_empty_document_, response_coop.value,
+          response_origin);
 
   bool has_other_window_in_browsing_context_group =
       frame_tree_node_->current_frame_host()
@@ -292,8 +297,8 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
   // browsing context group switch.
   if (ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
           current_coop_.soap_by_default_value, current_origin_,
-          is_initial_navigation_, response_coop.soap_by_default_value,
-          response_origin)) {
+          is_navigation_from_initial_empty_document_,
+          response_coop.soap_by_default_value, response_origin)) {
     soap_by_default_virtual_browsing_context_group_ =
         CrossOriginOpenerPolicyAccessReportManager::
             NextVirtualBrowsingContextGroup();

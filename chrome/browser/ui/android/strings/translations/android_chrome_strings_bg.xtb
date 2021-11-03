@@ -27,6 +27,7 @@
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1146678959555564648">Вход във VR</translation>
 <translation id="114825011539563458">Най-важните контроли за поверителност и сигурност на едно място</translation>
+<translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1154704303112745282">Страницата не е достъпна офлайн: <ph name="VIOLATED_URL" /></translation>
 <translation id="116280672541001035">Използвани</translation>
 <translation id="1171770572613082465">Вижте популярните уебсайтове, като докоснете бутона „Водещи сайтове“</translation>
@@ -64,7 +65,6 @@
 <translation id="1332501820983677155">Комбинации за функции на Google Chrome</translation>
 <translation id="1344653310988386453">Включване на връзка към откроения текст</translation>
 <translation id="1347468774581902829">Управление на активността</translation>
-<translation id="1353372385686746892">С цел подобряване на приложението Chrome изпраща до Google данни за диагностиката. <ph name="BEGIN_LINK" />Промяна<ph name="END_LINK" /></translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
 <translation id="1376578503827013741">Изчислява се…</translation>
@@ -405,6 +405,7 @@
 <translation id="3398320232533725830">Отваряне на диспечера на отметките</translation>
 <translation id="3414952576877147120">Размер:</translation>
 <translation id="3429160811076349561">Функциите за изпробване са изключени</translation>
+<translation id="3435465986463792564">Имате много отворени прозорци? Можете да ги управлявате оттук</translation>
 <translation id="3440975416244667276">Докоснете и задръжте за по-подходяща информация</translation>
 <translation id="3443221991560634068">Презареждане на текущата страница</translation>
 <translation id="3444179773590444986">Искате ли да споделите отзиви за тъмната тема за сайтовете?</translation>
@@ -816,7 +817,6 @@
 <translation id="5956665950594638604">Отваряне на Помощния център на Chrome в нов раздел</translation>
 <translation id="5957442310066583693">За да видите водещите сайтове за вас, докоснете бутона „Начало“</translation>
 <translation id="5958275228015807058">Намерете файловете и страниците си в „Изтегляния“</translation>
-<translation id="5962272973076519240">Потвърдете самоличността си, за да отключите разделите в режим „инкогнито“</translation>
 <translation id="5962718611393537961">Докоснете за свиване</translation>
 <translation id="5964805880140440652">За да споделите тази страница с друго устройство, включете синхронизирането от настройките за Chrome</translation>
 <translation id="5964869237734432770">Спиране на описанията</translation>
@@ -1187,6 +1187,7 @@
 <translation id="804335162455518893">SD картата не е намерена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел в режим „инкогнито“}other{<ph name="TAB_COUNT_NORMAL" /> раздела в режим „инкогнито“}}</translation>
 <translation id="8051695050440594747">Налице: <ph name="MEGABYTES" /> МБ</translation>
+<translation id="8058655154417507695">Година на валидност</translation>
 <translation id="8058746566562539958">Отваряне в нов раздел в Chrome</translation>
 <translation id="8063895661287329888">Добавянето на отметката не бе успешно.</translation>
 <translation id="806745655614357130">Оставяне на данните отделно</translation>

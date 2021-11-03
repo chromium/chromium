@@ -44,6 +44,10 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
     static Factory* test_factory_;
   };
 
+  MultiDeviceSetupClientImpl(const MultiDeviceSetupClientImpl&) = delete;
+  MultiDeviceSetupClientImpl& operator=(const MultiDeviceSetupClientImpl&) =
+      delete;
+
   ~MultiDeviceSetupClientImpl() override;
 
   // MultiDeviceSetupClient:
@@ -103,8 +107,6 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
 
   HostStatusWithDevice host_status_with_device_;
   FeatureStatesMap feature_states_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClientImpl);
 };
 
 }  // namespace multidevice_setup

@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -95,6 +96,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <variants name="Autofill.Snackbar.Type">
   <variant name="VirtualCard"
       summary="Snackbar shown after virtual card is autofilled."/>
+</variants>
+
+<variants name="Autofill.VirtualCardUnmaskFlowType">
+  <variant name="Fido" summary="FIDO authentication only"/>
+  <variant name="Otp" summary="OTP auth only"/>
+  <variant name="OtpFallbackFromFido"
+      summary="OTP fallback from FIDO authentication"/>
 </variants>
 
 <variants name="AutofillCreditCardWebauthnOptInOrigin">
@@ -1225,7 +1233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.FormEvents.CreditCard{AutofillDataAvailability}"
-    enum="AutofillFormEvent" expires_after="2021-12-12">
+    enum="AutofillFormEvent" expires_after="2022-10-31">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -1410,6 +1418,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards"
     enum="BooleanOptedIn" expires_after="2021-11-30">
+  <obsolete>
+    Removed 10/2021 as it is no longer needed for analysis.
+  </obsolete>
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -2188,7 +2199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
     Logs that a specific type was changed in a profile update process that was
-    shown to the user when a profile similar to an already exisintg profile was
+    shown to the user when a profile similar to an already existing profile was
     observed in a form submission. This metric is emitted only when the user
     accepts the update without further edits.
   </summary>
@@ -2255,7 +2266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/components/autofill/OWNERS</owner>
   <summary>
     Logs that a specific type was edited in a profile update prompt that was
-    shown to the user when a profile similar to an already exisintg profile was
+    shown to the user when a profile similar to an already existing profile was
     observed in a form submission. This metric is emitted once the user-provided
     import decision is final.
   </summary>
@@ -2562,6 +2573,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Logged when the user clicks on the server credit card link in the settings
     page.
   </summary>
+</histogram>
+
+<histogram name="Autofill.ServerCardUnmask.{CardType}.Attempt"
+    enum="BooleanAttempted" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a server card unmasking process starts and does not emit any
+    value otherwise.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram name="Autofill.ServerCardUnmask.{CardType}.FormSubmission"
+    enum="BooleanSubmitted" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when a form is submitted with information fetched in a server
+    card unmasking process, and does not emit any value otherwise.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+</histogram>
+
+<histogram name="Autofill.ServerCardUnmask.{CardType}.Result.{FlowType}"
+    enum="AutofillServerCardUnmaskResult" expires_after="2022-04-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the result of a server card unmasking process when the unmasking is
+    finished (whether it succeeded or otherwise reason of the failure). It
+    includes the type of the card to be unmasked and the flow type (what
+    authentication used) in the unmasking.
+  </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
+  <token key="FlowType" variants="Autofill.VirtualCardUnmaskFlowType"/>
 </histogram>
 
 <histogram name="Autofill.ServerQueryResponse" enum="AutofillQueryResult"

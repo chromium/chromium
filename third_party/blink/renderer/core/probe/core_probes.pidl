@@ -118,7 +118,7 @@ interface CoreProbes {
   void DidCommitLoad([Keep] LocalFrame*, DocumentLoader*);
   void DidNavigateWithinDocument([Keep] LocalFrame*);
   void DidRestoreFromBackForwardCache([Keep] LocalFrame*);
-  void DidOpenDocument([Keep] LocalFrame*, DocumentLoader*, bool is_empty_document_opened_first_time);
+  void DidOpenDocument([Keep] LocalFrame*, DocumentLoader*);
   void FrameDocumentUpdated([Keep] LocalFrame*);
   void FrameOwnerContentUpdated([Keep] LocalFrame*, HTMLFrameOwnerElement*);
   void FrameStartedLoading([Keep] LocalFrame*);

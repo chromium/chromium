@@ -29,6 +29,8 @@ export const I18nString = {
   DOCUMENT_MODE_DIALOG_GOT_IT: 'document_mode_dialog_got_it',
   DOCUMENT_MODE_DIALOG_MSG: 'document_mode_dialog_msg',
   DOCUMENT_MODE_DIALOG_INTRO_TITLE: 'document_mode_dialog_intro_title',
+  DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE:
+      'document_mode_dialog_not_detected_title',
   ERROR_MSG_CAMERA_PAUSED: 'error_msg_camera_paused',
   ERROR_MSG_EMPTY_RECORDING: 'error_msg_empty_recording',
   ERROR_MSG_FILE_SYSTEM_FAILED: 'error_msg_file_system_failed',
@@ -42,6 +44,8 @@ export const I18nString = {
   ERROR_MSG_VIDEO_TOO_SHORT: 'error_msg_video_too_short',
   EXPERT_CUSTOM_VIDEO_PARAMETERS: 'expert_custom_video_parameters',
   EXPERT_ENABLE_EXPERT_MODE: 'expert_enable_expert_mode',
+  EXPERT_ENABLE_FULL_SIZED_VIDEO_SNAPSHOT:
+      'expert_enable_full_sized_video_snapshot',
   EXPERT_MODE_BUTTON: 'expert_mode_button',
   EXPERT_PREVIEW_METADATA: 'expert_preview_metadata',
   EXPERT_PRINT_PERFORMANCE_LOGS: 'expert_print_performance_logs',

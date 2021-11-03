@@ -109,8 +109,8 @@ void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
 
   // Update app list items through a delegate so that the browser side always
   // updates app list items before the ash side.
-  app_list_model_delegate_->RequestPositionUpdate(target_item->id(),
-                                                  new_position);
+  app_list_model_delegate_->RequestPositionUpdate(
+      target_item->id(), new_position, RequestPositionUpdateReason::kMoveItem);
 }
 
 void AppListItemList::SetItemPosition(AppListItem* item,
@@ -325,7 +325,8 @@ void AppListItemList::FixItemPosition(size_t index) {
   }
 
   for (const auto& pair : id_position_pairs) {
-    app_list_model_delegate_->RequestPositionUpdate(pair.first, pair.second);
+    app_list_model_delegate_->RequestPositionUpdate(
+        pair.first, pair.second, RequestPositionUpdateReason::kFixItem);
   }
 }
 

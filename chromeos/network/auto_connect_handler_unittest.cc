@@ -147,6 +147,9 @@ class AutoConnectHandlerTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  AutoConnectHandlerTest(const AutoConnectHandlerTest&) = delete;
+  AutoConnectHandlerTest& operator=(const AutoConnectHandlerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(test_nssdb_.is_open());
 
@@ -300,9 +303,6 @@ class AutoConnectHandlerTest : public testing::Test {
   crypto::ScopedTestNSSDB test_nssdb_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nsscertdb_;
   std::unique_ptr<TestAutoConnectHandlerObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutoConnectHandlerTest);
 };
 
 namespace {

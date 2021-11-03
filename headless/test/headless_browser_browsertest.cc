@@ -26,6 +26,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
+#include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
@@ -642,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, WindowPrint) {
 class HeadlessBrowserAllowInsecureLocalhostTest : public HeadlessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kAllowInsecureLocalhost);
+    command_line->AppendSwitch(::switches::kAllowInsecureLocalhost);
   }
 };
 
@@ -761,6 +762,45 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, BadgingAPI) {
       browser_context->CreateWebContentsBuilder().SetInitialURL(url).Build();
 
   EXPECT_TRUE(WaitForLoad(web_contents));
+}
+
+class HeadlessBrowserTestWithExplicitlyAllowedPorts
+    : public HeadlessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessBrowserTest::SetUpCommandLine(command_line);
+    if (is_port_allowed()) {
+      command_line->AppendSwitchASCII(switches::kExplicitlyAllowedPorts,
+                                      "10080");
+    }
+  }
+
+  bool is_port_allowed() { return GetParam(); }
+};
+
+INSTANTIATE_TEST_CASE_P(HeadlessBrowserTestWithExplicitlyAllowedPorts,
+                        HeadlessBrowserTestWithExplicitlyAllowedPorts,
+                        testing::Values(false, true));
+
+IN_PROC_BROWSER_TEST_P(HeadlessBrowserTestWithExplicitlyAllowedPorts,
+                       AllowedPort) {
+  HeadlessBrowserContext* browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
+
+  HeadlessWebContents* web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(GURL("http://127.0.0.1:10080"))
+          .Build();
+
+  // If the port is allowed, the request is expected to fail for
+  // reasons other than ERR_UNSAFE_PORT.
+  net::Error error = net::OK;
+  EXPECT_FALSE(WaitForLoad(web_contents, &error));
+  if (is_port_allowed())
+    EXPECT_NE(error, net::ERR_UNSAFE_PORT);
+  else
+    EXPECT_EQ(error, net::ERR_UNSAFE_PORT);
 }
 
 }  // namespace headless

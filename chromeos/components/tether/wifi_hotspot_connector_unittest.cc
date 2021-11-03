@@ -140,6 +140,10 @@ class WifiHotspotConnectorTest : public testing::Test {
   };
 
   WifiHotspotConnectorTest() = default;
+
+  WifiHotspotConnectorTest(const WifiHotspotConnectorTest&) = delete;
+  WifiHotspotConnectorTest& operator=(const WifiHotspotConnectorTest&) = delete;
+
   ~WifiHotspotConnectorTest() override = default;
 
   void SetUp() override {
@@ -313,9 +317,6 @@ class WifiHotspotConnectorTest : public testing::Test {
   std::unique_ptr<WifiHotspotConnector> wifi_hotspot_connector_;
 
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiHotspotConnectorTest);
 };
 
 TEST_F(WifiHotspotConnectorTest, TestConnect_NetworkDoesNotBecomeConnectable) {

@@ -54,6 +54,9 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
  public:
   MediaCapabilitiesTest() = default;
 
+  MediaCapabilitiesTest(const MediaCapabilitiesTest&) = delete;
+  MediaCapabilitiesTest& operator=(const MediaCapabilitiesTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaCapabilitiesSpatialAudio");
@@ -149,9 +152,6 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
     title_watcher.AlsoWaitForTitle(kError);
     return base::UTF16ToASCII(title_watcher.WaitAndGetTitle());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaCapabilitiesTest);
 };
 
 // Adds param for query type (file vs media-source) to

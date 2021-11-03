@@ -42,6 +42,9 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   // Static functions.
   static TtsPlatformImplAndroid* GetInstance();
 
+  TtsPlatformImplAndroid(const TtsPlatformImplAndroid&) = delete;
+  TtsPlatformImplAndroid& operator=(const TtsPlatformImplAndroid&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TtsPlatformImplAndroid>;
 
@@ -77,8 +80,6 @@ class TtsPlatformImplAndroid : public TtsPlatformImpl {
   std::unique_ptr<TtsEnvironmentAndroid> environment_android_;
 
   base::WeakPtrFactory<TtsPlatformImplAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplAndroid);
 };
 
 }  // namespace content

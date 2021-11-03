@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/ash_export.h"
@@ -31,6 +32,7 @@ class ScrollViewGradientHelper;
 // - Grid of all apps
 // Does not include the search box, which is owned by a parent view.
 class ASH_EXPORT AppListBubbleAppsPage : public views::View,
+                                         public AppListModelProvider::Observer,
                                          public RecentAppsView::Delegate,
                                          public AppsGridViewFocusDelegate {
  public:
@@ -51,6 +53,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // views::View:
   void Layout() override;
+
+  // AppListModelProvider::Observer:
+  void OnActiveAppListModelsChanged(AppListModel* model,
+                                    SearchModel* search_model) override;
 
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;

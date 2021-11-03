@@ -176,6 +176,9 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
 
   explicit MessageLoopRunner(QuitMode mode = QuitMode::DEFERRED);
 
+  MessageLoopRunner(const MessageLoopRunner&) = delete;
+  MessageLoopRunner& operator=(const MessageLoopRunner&) = delete;
+
   // Run the current MessageLoop unless the quit closure
   // has already been called.
   void Run();
@@ -207,8 +210,6 @@ class MessageLoopRunner : public base::RefCountedThreadSafe<MessageLoopRunner> {
   base::RunLoop run_loop_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopRunner);
 };
 
 // A WindowedNotificationObserver allows code to wait until a condition is met.

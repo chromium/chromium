@@ -31,13 +31,14 @@
 #include <iosfwd>
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -215,9 +216,9 @@ inline IntSize ExpandedIntSize(const FloatSize& p) {
                  ClampTo<int>(ceilf(p.height())));
 }
 
-inline IntPoint FlooredIntPoint(const FloatSize& p) {
-  return IntPoint(ClampTo<int>(floorf(p.width())),
-                  ClampTo<int>(floorf(p.height())));
+inline gfx::Point FlooredIntPoint(const FloatSize& p) {
+  return gfx::Point(ClampTo<int>(floorf(p.width())),
+                    ClampTo<int>(floorf(p.height())));
 }
 
 // Use this only for logical sizes, which can not be negative. Things that are

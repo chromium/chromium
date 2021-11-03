@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_RADIO_BUTTON_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_RADIO_BUTTON_CONTROLLER_H_
 
-#include <map>
-#include <set>
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/user_model.h"
 
@@ -42,7 +42,7 @@ class RadioButtonController {
 
  private:
   // Maps radiogroup identifiers to the list of corresponding model identifiers.
-  std::map<std::string, std::set<std::string>> radio_groups_;
+  base::flat_map<std::string, base::flat_set<std::string>> radio_groups_;
 
  private:
   friend class RadioButtonControllerTest;

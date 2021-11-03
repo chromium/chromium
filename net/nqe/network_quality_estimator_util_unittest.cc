@@ -44,16 +44,11 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHost) {
 
   MockCachingHostResolver mock_host_resolver;
 
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
-
   // example1.com resolves to a private IP address.
-  rules->AddRule("example1.com", "127.0.0.3");
+  mock_host_resolver.rules()->AddRule("example1.com", "127.0.0.3");
 
   // example2.com resolves to a public IP address.
-  rules->AddRule("example2.com", "27.0.0.3");
-
-  mock_host_resolver.set_rules(rules.get());
+  mock_host_resolver.rules()->AddRule("example2.com", "27.0.0.3");
 
   EXPECT_EQ(0u, mock_host_resolver.num_resolve());
 
@@ -109,8 +104,7 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
       new net::RuleBasedHostResolverProc(nullptr));
 
   // Add example3.com resolution to the DNS cache.
-  rules->AddRule("example3.com", "127.0.0.3");
-  mock_host_resolver.set_rules(rules.get());
+  mock_host_resolver.rules()->AddRule("example3.com", "127.0.0.3");
 
   // Not in DNS host cache, so should not be marked as private.
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
@@ -155,12 +149,8 @@ TEST(NetworkQualityEstimatorUtilTest,
 
   MockCachingHostResolver mock_host_resolver;
 
-  scoped_refptr<net::RuleBasedHostResolverProc> rules(
-      new net::RuleBasedHostResolverProc(nullptr));
-
   // Add example3.com resolution to the DNS cache.
-  rules->AddRule("example3.com", "127.0.0.3");
-  mock_host_resolver.set_rules(rules.get());
+  mock_host_resolver.rules()->AddRule("example3.com", "127.0.0.3");
 
   // Not in DNS host cache, so should not be marked as private.
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,

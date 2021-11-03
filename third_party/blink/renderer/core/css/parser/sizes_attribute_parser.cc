@@ -61,7 +61,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
 bool SizesAttributeParser::MediaConditionMatches(
     const MediaQuerySet& media_condition) {
   // A Media Condition cannot have a media type other then screen.
-  MediaQueryEvaluator media_query_evaluator(*media_values_);
+  MediaQueryEvaluator media_query_evaluator(media_values_);
   return media_query_evaluator.Eval(media_condition);
 }
 
@@ -107,7 +107,7 @@ float SizesAttributeParser::EffectiveSize() {
 
 float SizesAttributeParser::EffectiveSizeDefaultValue() {
   // Returning the equivalent of "100vw"
-  return ClampTo<float>(media_values_->ViewportWidth());
+  return ClampTo<float>(media_values_->Width());
 }
 
 }  // namespace blink

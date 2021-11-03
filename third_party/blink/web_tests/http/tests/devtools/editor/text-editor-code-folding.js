@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This tests the code folding setting.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   const textEditor = SourcesTestRunner.createTestEditor(500);
   textEditor.setMimeType('text/javascript');

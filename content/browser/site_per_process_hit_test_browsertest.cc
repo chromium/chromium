@@ -700,6 +700,10 @@ class SetMouseCaptureInterceptor
         host_(host),
         impl_(receiver().internal_state()->SwapImplForTesting(this)) {}
 
+  SetMouseCaptureInterceptor(const SetMouseCaptureInterceptor&) = delete;
+  SetMouseCaptureInterceptor& operator=(const SetMouseCaptureInterceptor&) =
+      delete;
+
   bool Capturing() const { return capturing_; }
 
   void Wait() {
@@ -744,8 +748,6 @@ class SetMouseCaptureInterceptor
   bool capturing_;
   RenderWidgetHostImpl* host_;
   blink::mojom::WidgetInputHandlerHost* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetMouseCaptureInterceptor);
 };
 
 #if defined(USE_AURA)
@@ -5770,7 +5772,7 @@ class ContextMenuObserverDelegate : public WebContentsDelegate {
 
   ~ContextMenuObserverDelegate() override {}
 
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     context_menu_created_ = true;
     menu_params_ = params;
@@ -5943,9 +5945,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   SetWebEventPositions(&click_event, gfx::Point(1, 1), rwhv_root);
   rwhv_child->ProcessMouseEvent(click_event, ui::LatencyInfo());
 
-  display::ScreenInfo screen_info;
-  shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
-      &screen_info);
+  display::ScreenInfo screen_info =
+      shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo();
 
   popup_waiter->Wait();
   gfx::Rect popup_rect = popup_waiter->last_initial_rect();
@@ -6079,9 +6080,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   EXPECT_EQ(popup_rect.x(), 9);
   EXPECT_EQ(popup_rect.y(), 9);
 #else
-  display::ScreenInfo screen_info;
-  shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo(
-      &screen_info);
+  display::ScreenInfo screen_info =
+      shell()->web_contents()->GetRenderWidgetHostView()->GetScreenInfo();
   if (!IsScreenTooSmallForPopup(screen_info)) {
     EXPECT_EQ(popup_rect.x() - rwhv_root->GetViewBounds().x(), 354);
     EXPECT_EQ(popup_rect.y() - rwhv_root->GetViewBounds().y(), 154);
@@ -6267,6 +6267,11 @@ class SitePerProcessGestureHitTestBrowserTest
     : public SitePerProcessHitTestBrowserTest {
  public:
   SitePerProcessGestureHitTestBrowserTest() {}
+
+  SitePerProcessGestureHitTestBrowserTest(
+      const SitePerProcessGestureHitTestBrowserTest&) = delete;
+  SitePerProcessGestureHitTestBrowserTest& operator=(
+      const SitePerProcessGestureHitTestBrowserTest&) = delete;
 
   // This functions simulates a sequence of events that are typical of a
   // gesture pinch at |position|. We need this since machinery in the event
@@ -6472,9 +6477,6 @@ class SitePerProcessGestureHitTestBrowserTest
   RenderWidgetHostViewAura* rwhva_root_;
   RenderWidgetHostImpl* rwhi_child_;
   RenderWidgetHostImpl* rwhi_root_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessGestureHitTestBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessGestureHitTestBrowserTest,

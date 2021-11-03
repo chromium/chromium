@@ -98,6 +98,7 @@
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/compute_pressure/compute_pressure.mojom-forward.h"
 #include "third_party/blink/public/mojom/feature_observer/feature_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
@@ -330,6 +331,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool IsInPrimaryMainFrame() override;
   RenderFrameHostImpl* GetOutermostMainFrame() override;
   bool IsFencedFrameRoot() override;
+  bool IsNestedWithinFencedFrame() override;
   void ForEachRenderFrameHost(FrameIterationCallback on_frame) override;
   void ForEachRenderFrameHost(
       FrameIterationAlwaysContinueCallback on_frame) override;
@@ -2547,6 +2549,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;
 
+  enum class FencedFrameStatus {
+    kNotNestedInFencedFrame,
+    kFencedFrameRoot,
+    kIframeNestedWithinFencedFrame
+  };
+
   FrameTreeNode* GetSibling(int relative_offset) const;
 
   FrameTreeNode* FindAndVerifyChildInternal(
@@ -3226,6 +3234,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // |BackForwardCacheDisablingFeatureHandle|.
   void OnBackForwardCacheDisablingFeatureRemoved(
       BackForwardCacheDisablingFeature feature);
+
+  // Create a self-owned receiver that handles incoming BroadcastChannel
+  // ConnectToChannel messages from the renderer.
+  void CreateBroadcastChannelProvider(
+      mojo::PendingAssociatedReceiver<blink::mojom::BroadcastChannelProvider>
+          receiver);
 
   perfetto::protos::pbzero::RenderFrameHost::LifecycleState
   LifecycleStateToProto();
@@ -3911,7 +3925,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
     // Indicates whether `blink::mojom::DidDispatchDOMContentLoadedEvent` was
     // called for this document or not.
-    bool dom_content_loaded_ = false;
+    bool dom_content_loaded = false;
 
     // Prerender2:
     //
@@ -4060,6 +4074,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // service to set up the actual endpoint configuration once the document load
   // commits.
   base::flat_map<std::string, std::string> reporting_endpoints_;
+
+  // This indicates whether `this` is not nested in a fenced frame, or `this` is
+  // associated with a fenced frame root, or `this` is associated with an iframe
+  // nested within a fenced frame.
+  const FencedFrameStatus fenced_frame_status_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<RenderFrameHostImpl> weak_ptr_factory_{this};

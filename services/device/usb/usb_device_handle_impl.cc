@@ -122,6 +122,9 @@ class UsbDeviceHandleImpl::InterfaceClaimer
                    int interface_number,
                    scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  InterfaceClaimer(const InterfaceClaimer&) = delete;
+  InterfaceClaimer& operator=(const InterfaceClaimer&) = delete;
+
   int interface_number() const { return interface_number_; }
   int alternate_setting() const { return alternate_setting_; }
   void set_alternate_setting(const int alternate_setting) {
@@ -142,8 +145,6 @@ class UsbDeviceHandleImpl::InterfaceClaimer
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   ResultCallback release_callback_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceClaimer);
 };
 
 UsbDeviceHandleImpl::InterfaceClaimer::InterfaceClaimer(

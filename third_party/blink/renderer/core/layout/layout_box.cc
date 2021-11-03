@@ -1915,9 +1915,10 @@ IntSize LayoutBox::OriginAdjustmentForScrollbars() const {
   }
 }
 
-IntPoint LayoutBox::ScrollOrigin() const {
+gfx::Point LayoutBox::ScrollOrigin() const {
   NOT_DESTROYED();
-  return GetScrollableArea() ? GetScrollableArea()->ScrollOrigin() : IntPoint();
+  return GetScrollableArea() ? GetScrollableArea()->ScrollOrigin()
+                             : gfx::Point();
 }
 
 PhysicalOffset LayoutBox::ScrolledContentOffset() const {
@@ -1928,11 +1929,11 @@ PhysicalOffset LayoutBox::ScrolledContentOffset() const {
       GetScrollableArea()->GetScrollOffset());
 }
 
-IntPoint LayoutBox::PixelSnappedScrolledContentOffset() const {
+gfx::Vector2d LayoutBox::PixelSnappedScrolledContentOffset() const {
   NOT_DESTROYED();
   DCHECK(IsScrollContainer());
   DCHECK(GetScrollableArea());
-  return IntPoint(GetScrollableArea()->ScrollOffsetInt());
+  return ToGfxVector2d(GetScrollableArea()->ScrollOffsetInt());
 }
 
 PhysicalRect LayoutBox::ClippingRect(const PhysicalOffset& location) const {

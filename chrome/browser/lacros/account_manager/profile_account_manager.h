@@ -76,6 +76,10 @@ class ProfileAccountManager : public KeyedService,
       const account_manager::AccountKey& account,
       const std::string& oauth_consumer_name,
       OAuth2AccessTokenConsumer* consumer) override;
+  void UpsertAccountForTesting(const account_manager::Account& account,
+                               const std::string& token_value) override;
+  void RemoveAccountForTesting(
+      const account_manager::AccountKey& account) override;
 
  private:
   AccountProfileMapper* const mapper_;

@@ -115,7 +115,6 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetInitialWorkspace(const char* initial_workspace) override {}
   void Pin(bool trusted) override {}
   void Unpin() override {}
-  void SetClientSubmitsSurfacesInPixelCoordinates(bool enabled) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -123,6 +122,10 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // viz::ContextLostObserver:
   void OnContextLost() override;
+
+  void set_client_submits_surfaces_in_pixel_coordinates(bool enabled) {
+    client_submits_surfaces_in_pixel_coordinates_ = enabled;
+  }
 
  protected:
   void UpdateDisplayOnTree();

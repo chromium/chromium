@@ -49,9 +49,9 @@ void MissiveStorageModule::Flush(Priority priority,
 }
 
 void MissiveStorageModule::ReportSuccess(
-    SequencingInformation sequencing_information,
+    SequenceInformation sequence_information,
     bool force) {
-  delegate_->ReportSuccess(sequencing_information, force);
+  delegate_->ReportSuccess(sequence_information, force);
 }
 
 void MissiveStorageModule::UpdateEncryptionKey(

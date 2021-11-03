@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test checks that style sheets hosted inside shadow roots could be inspected.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="host"></div>

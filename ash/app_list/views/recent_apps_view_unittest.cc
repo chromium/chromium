@@ -8,13 +8,18 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
+#include "ash/app_list/views/paged_apps_grid_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
@@ -29,15 +34,6 @@
 namespace ash {
 namespace {
 
-// Used to compare distances between point that allow for certain margin of
-// error when comparing horizontal distance. Used to compare spacing between
-// views that accounts for 1 off rounding errors.
-bool AreVectorsClose(const gfx::Vector2d& v1, const gfx::Vector2d& v2) {
-  const int kHorizontalMarginOfError = 1;
-  return std::abs(v1.x() - v2.x()) <= kHorizontalMarginOfError &&
-         std::abs(v1.y() - v2.y()) == 0;
-}
-
 // Returns the first window with type WINDOW_TYPE_MENU found via depth-first
 // search. Returns nullptr if no such window exists.
 aura::Window* FindMenuWindow(aura::Window* root) {
@@ -49,22 +45,6 @@ aura::Window* FindMenuWindow(aura::Window* root) {
       return menu_in_child;
   }
   return nullptr;
-}
-
-void AddAppListItem(const std::string& id) {
-  Shell::Get()->app_list_controller()->GetModel()->AddItem(
-      std::make_unique<AppListItem>(id));
-}
-
-void AddSearchResult(const std::string& id, AppListSearchResultType type) {
-  auto result = std::make_unique<TestSearchResult>();
-  result->set_result_id(id);
-  result->set_result_type(type);
-  // TODO(crbug.com/1216662): Replace with a real display type after the ML team
-  // gives us a way to query directly for recent apps.
-  result->set_display_type(SearchResultDisplayType::kChip);
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
-      std::move(result));
 }
 
 // Parameterized to test recent apps in the app list bubble and tablet mode.
@@ -82,8 +62,12 @@ class RecentAppsViewTest : public AshTestBase,
   void ShowAppList() {
     if (tablet_mode_param()) {
       Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      test_api_ = std::make_unique<test::AppsGridViewTestApi>(
+          GetAppListTestHelper()->GetRootPagedAppsGridView());
     } else {
       Shell::Get()->app_list_controller()->ShowAppList();
+      test_api_ = std::make_unique<test::AppsGridViewTestApi>(
+          GetAppListTestHelper()->GetScrollableAppsGridView());
     }
   }
 
@@ -96,6 +80,30 @@ class RecentAppsViewTest : public AshTestBase,
     if (tablet_mode_param())
       return GetAppListTestHelper()->GetFullscreenRecentAppsView();
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
+  }
+
+  void AddAppListItem(AppListModel* model, const std::string& id) {
+    model->AddItem(std::make_unique<AppListItem>(id));
+  }
+
+  void AddAppListItem(const std::string& id) {
+    AddAppListItem(AppListModelProvider::Get()->model(), id);
+  }
+
+  void AddSearchResult(SearchModel* model,
+                       const std::string& id,
+                       AppListSearchResultType type) {
+    auto result = std::make_unique<TestSearchResult>();
+    result->set_result_id(id);
+    result->set_result_type(type);
+    // TODO(crbug.com/1216662): Replace with a real display type after the ML
+    // team gives us a way to query directly for recent apps.
+    result->set_display_type(SearchResultDisplayType::kList);
+    model->results()->Add(std::move(result));
+  }
+
+  void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+    AddSearchResult(AppListModelProvider::Get()->search_model(), id, type);
   }
 
   // Adds `count` installed app search results.
@@ -115,6 +123,15 @@ class RecentAppsViewTest : public AshTestBase,
     return views;
   }
 
+  std::vector<std::string> GetRecentAppsIds() {
+    std::vector<AppListItemView*> views = GetAppListItemViews();
+    std::vector<std::string> ids;
+    for (auto* view : views)
+      ids.push_back(view->item()->id());
+    return ids;
+  }
+
+  std::unique_ptr<test::AppsGridViewTestApi> test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 INSTANTIATE_TEST_SUITE_P(All, RecentAppsViewTest, testing::Bool());
@@ -134,103 +151,48 @@ TEST_P(RecentAppsViewTest, CreatesIconsForApps) {
   EXPECT_EQ(GetAppListItemViews().size(), 4u);
 }
 
-TEST_P(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith5Items) {
+TEST_P(RecentAppsViewTest, ItemsMatchGridWith5Items) {
   AddAppResults(5);
   ShowAppList();
 
   std::vector<AppListItemView*> items = GetAppListItemViews();
   ASSERT_EQ(5u, items.size());
 
-  for (int i = 4; i > 1; --i) {
-    const gfx::Vector2d right_space = items[i]->bounds().left_center() -
-                                      items[i - 1]->bounds().right_center();
-    const gfx::Vector2d left_space = items[i - 1]->bounds().left_center() -
-                                     items[i - 2]->bounds().right_center();
-    EXPECT_TRUE(AreVectorsClose(right_space, left_space))
-        << i << " " << right_space.ToString() << " " << left_space.ToString();
+  for (int i = 0; i < 5; ++i) {
+    EXPECT_EQ(test_api_->GetViewAtVisualIndex(0, i)->x(),
+              items[i]->bounds().x());
+    EXPECT_EQ(test_api_->GetViewAtVisualIndex(0, i)->bounds().right(),
+              items[i]->bounds().right());
   }
 }
 
-TEST_P(RecentAppsViewTest, ResultItemsCoverWholeContainerWith5Items) {
-  AddAppResults(5);
-  ShowAppList();
-
-  RecentAppsView* view = GetRecentAppsView();
-  std::vector<AppListItemView*> items = GetAppListItemViews();
-  ASSERT_EQ(5u, items.size());
-
-  EXPECT_EQ(view->GetContentsBounds().left_center(),
-            items[0]->bounds().left_center());
-  EXPECT_EQ(view->GetContentsBounds().right_center(),
-            items[4]->bounds().right_center());
-}
-
-TEST_P(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith4Items) {
+TEST_P(RecentAppsViewTest, ItemsMatchGridWith4Items) {
   AddAppResults(4);
   ShowAppList();
 
   std::vector<AppListItemView*> items = GetAppListItemViews();
   ASSERT_EQ(4u, items.size());
 
-  for (int i = 3; i > 1; --i) {
-    const gfx::Vector2d right_space = items[i]->bounds().left_center() -
-                                      items[i - 1]->bounds().right_center();
-    const gfx::Vector2d left_space = items[i - 1]->bounds().left_center() -
-                                     items[i - 2]->bounds().right_center();
-    EXPECT_TRUE(AreVectorsClose(right_space, left_space))
-        << i << " " << right_space.ToString() << " " << left_space.ToString();
+  for (int i = 0; i < 4; ++i) {
+    EXPECT_EQ(test_api_->GetViewAtVisualIndex(0, i)->x(),
+              items[i]->bounds().x());
+    EXPECT_EQ(test_api_->GetViewAtVisualIndex(0, i)->bounds().right(),
+              items[i]->bounds().right());
   }
 }
 
-TEST_P(RecentAppsViewTest, ResultItemsCoverWholeContainerWith4Items) {
-  AddAppResults(4);
-  ShowAppList();
-
-  RecentAppsView* view = GetRecentAppsView();
-  std::vector<AppListItemView*> items = GetAppListItemViews();
-  ASSERT_EQ(4u, items.size());
-
-  EXPECT_EQ(view->GetContentsBounds().left_center(),
-            items[0]->bounds().left_center());
-  EXPECT_EQ(view->GetContentsBounds().right_center(),
-            items[3]->bounds().right_center());
-}
-
-TEST_P(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith3Items) {
+TEST_P(RecentAppsViewTest, IsEmptyWithLessThan4Results) {
   AddAppResults(3);
   ShowAppList();
 
-  std::vector<AppListItemView*> items = GetAppListItemViews();
-  ASSERT_EQ(3u, items.size());
-
-  for (int i = 2; i > 1; --i) {
-    const gfx::Vector2d right_space = items[i]->bounds().left_center() -
-                                      items[i - 1]->bounds().right_center();
-    const gfx::Vector2d left_space = items[i - 1]->bounds().left_center() -
-                                     items[i - 2]->bounds().right_center();
-    EXPECT_TRUE(AreVectorsClose(right_space, left_space))
-        << i << " " << right_space.ToString() << " " << left_space.ToString();
-  }
-}
-
-TEST_P(RecentAppsViewTest, ResultItemsCoverWholeContainerWith3Items) {
-  AddAppResults(3);
-  ShowAppList();
-
-  RecentAppsView* view = GetRecentAppsView();
-  std::vector<AppListItemView*> items = GetAppListItemViews();
-  ASSERT_EQ(3u, items.size());
-
-  EXPECT_EQ(view->GetContentsBounds().left_center(),
-            items[0]->bounds().left_center());
-  EXPECT_EQ(view->GetContentsBounds().right_center(),
-            items[2]->bounds().right_center());
+  EXPECT_EQ(GetAppListItemViews().size(), 0u);
 }
 
 TEST_P(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
   AddSearchResult("id1", AppListSearchResultType::kAnswerCard);
   AddSearchResult("id2", AppListSearchResultType::kFileChip);
   AddSearchResult("id3", AppListSearchResultType::kAssistantText);
+  AddSearchResult("id4", AppListSearchResultType::kAssistantText);
 
   ShowAppList();
 
@@ -238,16 +200,18 @@ TEST_P(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
 }
 
 TEST_P(RecentAppsViewTest, DoesNotCreateIconForMismatchedId) {
+  AddAppResults(4);
   AddAppListItem("id");
   AddSearchResult("bad id", AppListSearchResultType::kInstalledApp);
 
   ShowAppList();
 
   RecentAppsView* view = GetRecentAppsView();
-  EXPECT_EQ(view->children().size(), 0u);
+  EXPECT_EQ(view->children().size(), 4u);
 }
 
 TEST_P(RecentAppsViewTest, ClickOrTapOnRecentApp) {
+  AddAppResults(4);
   AddAppListItem("id");
   AddSearchResult("id", AppListSearchResultType::kInstalledApp);
 
@@ -256,7 +220,7 @@ TEST_P(RecentAppsViewTest, ClickOrTapOnRecentApp) {
   // Click or tap on the first icon.
   std::vector<AppListItemView*> items = GetAppListItemViews();
   ASSERT_FALSE(items.empty());
-  views::View* icon = items[0];
+  views::View* icon = items.back();
 
   if (tablet_mode_param()) {
     // Tap an item and make sure the item activation is recorded.
@@ -272,8 +236,7 @@ TEST_P(RecentAppsViewTest, ClickOrTapOnRecentApp) {
 }
 
 TEST_P(RecentAppsViewTest, RightClickOpensContextMenu) {
-  AddAppListItem("id1");
-  AddSearchResult("id1", AppListSearchResultType::kInstalledApp);
+  AddAppResults(4);
   ShowAppList();
 
   // Right click on the first icon.
@@ -294,15 +257,12 @@ TEST_P(RecentAppsViewTest, RightClickOpensContextMenu) {
 }
 
 TEST_P(RecentAppsViewTest, AppIconSelectedWhenMenuIsShown) {
-  // Show an app list with 2 recent apps.
-  AddAppListItem("id1");
-  AddSearchResult("id1", AppListSearchResultType::kInstalledApp);
-  AddAppListItem("id2");
-  AddSearchResult("id2", AppListSearchResultType::kInstalledApp);
+  // Show an app list with 4 recent apps.
+  AddAppResults(4);
   ShowAppList();
 
   std::vector<AppListItemView*> items = GetAppListItemViews();
-  ASSERT_EQ(2u, items.size());
+  ASSERT_EQ(4u, items.size());
   AppListItemView* item1 = items[0];
   AppListItemView* item2 = items[1];
 
@@ -330,6 +290,47 @@ TEST_P(RecentAppsViewTest, AppIconSelectedWhenMenuIsShown) {
   item2->CancelContextMenu();
   EXPECT_FALSE(grid_delegate->IsSelectedView(item1));
   EXPECT_FALSE(grid_delegate->IsSelectedView(item2));
+}
+
+TEST_P(RecentAppsViewTest, UpdateAppsOnModelChange) {
+  AddAppResults(5);
+  ShowAppList();
+
+  // Verify initial set of shown apps.
+  EXPECT_EQ(std::vector<std::string>({"id0", "id1", "id2", "id3", "id4"}),
+            GetRecentAppsIds());
+
+  // Update active model, and make sure the recent apps view gets updated
+  // accordingly.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+
+  for (int i = 0; i < 4; ++i) {
+    const std::string id = base::StringPrintf("other_id%d", i);
+    AddAppListItem(model_override.get(), id);
+    AddSearchResult(search_model_override.get(), id,
+                    AppListSearchResultType::kInstalledApp);
+  }
+
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+  GetRecentAppsView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(std::vector<std::string>(
+                {"other_id0", "other_id1", "other_id2", "other_id3"}),
+            GetRecentAppsIds());
+
+  // Tap an item and make sure the item activation is recorded.
+  GetEventGenerator()->GestureTapAt(
+      GetAppListItemViews()[1]->GetBoundsInScreen().CenterPoint());
+
+  // The item was activated.
+  EXPECT_EQ(1, GetTestAppListClient()->activate_item_count());
+  EXPECT_EQ("other_id1", GetTestAppListClient()->activate_item_last_id());
+
+  // Recent apps should be cleared if app list models get reset.
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  EXPECT_EQ(std::vector<std::string>{}, GetRecentAppsIds());
 }
 
 }  // namespace

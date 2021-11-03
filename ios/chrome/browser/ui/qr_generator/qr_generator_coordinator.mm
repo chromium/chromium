@@ -73,11 +73,11 @@
 #pragma mark - Chrome Coordinator
 
 - (void)start {
-  self.viewController = [[QRGeneratorViewController alloc] init];
+  self.viewController = [[QRGeneratorViewController alloc]
+      initWithTitle:self.title
+            pageURL:net::NSURLWithGURL(_URL)];
 
   [self.viewController setModalPresentationStyle:UIModalPresentationFormSheet];
-  [self.viewController setPageURL:net::NSURLWithGURL(_URL)];
-  [self.viewController setTitleString:self.title];
   [self.viewController setActionHandler:self];
 
   [self.baseViewController presentViewController:self.viewController

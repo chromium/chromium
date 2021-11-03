@@ -7,34 +7,34 @@
 namespace mojo {
 
 // static
-chromeos::eche_app::mojom::ScreenBacklightState EnumTraits<
-    chromeos::eche_app::mojom::ScreenBacklightState,
+ash::eche_app::mojom::ScreenBacklightState EnumTraits<
+    ash::eche_app::mojom::ScreenBacklightState,
     ash::ScreenBacklightState>::ToMojom(ash::ScreenBacklightState input) {
   switch (input) {
     case ash::ScreenBacklightState::ON:
-      return chromeos::eche_app::mojom::ScreenBacklightState::ON;
+      return ash::eche_app::mojom::ScreenBacklightState::ON;
     case ash::ScreenBacklightState::OFF:
-      return chromeos::eche_app::mojom::ScreenBacklightState::OFF;
+      return ash::eche_app::mojom::ScreenBacklightState::OFF;
     case ash::ScreenBacklightState::OFF_AUTO:
-      return chromeos::eche_app::mojom::ScreenBacklightState::OFF_AUTO;
+      return ash::eche_app::mojom::ScreenBacklightState::OFF_AUTO;
   }
 
   NOTREACHED();
 }
 
 // static
-bool EnumTraits<chromeos::eche_app::mojom::ScreenBacklightState,
+bool EnumTraits<ash::eche_app::mojom::ScreenBacklightState,
                 ash::ScreenBacklightState>::
-    FromMojom(chromeos::eche_app::mojom::ScreenBacklightState input,
+    FromMojom(ash::eche_app::mojom::ScreenBacklightState input,
               ash::ScreenBacklightState* output) {
   switch (input) {
-    case chromeos::eche_app::mojom::ScreenBacklightState::ON:
+    case ash::eche_app::mojom::ScreenBacklightState::ON:
       *output = ash::ScreenBacklightState::ON;
       return true;
-    case chromeos::eche_app::mojom::ScreenBacklightState::OFF:
+    case ash::eche_app::mojom::ScreenBacklightState::OFF:
       *output = ash::ScreenBacklightState::OFF;
       return true;
-    case chromeos::eche_app::mojom::ScreenBacklightState::OFF_AUTO:
+    case ash::eche_app::mojom::ScreenBacklightState::OFF_AUTO:
       *output = ash::ScreenBacklightState::OFF_AUTO;
       return true;
   }

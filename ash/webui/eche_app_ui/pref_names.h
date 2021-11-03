@@ -5,12 +5,12 @@
 #ifndef ASH_WEBUI_ECHE_APP_UI_PREF_NAMES_H_
 #define ASH_WEBUI_ECHE_APP_UI_PREF_NAMES_H_
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 namespace prefs {
 extern const char kAppsAccessStatus[];
 }  // namespace prefs
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_PREF_NAMES_H_

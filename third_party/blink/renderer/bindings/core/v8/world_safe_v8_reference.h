@@ -61,7 +61,7 @@ class WorldSafeV8Reference final {
     if (value.IsEmpty())
       return;
 
-    v8_reference_.Set(isolate, value);
+    v8_reference_.Reset(isolate, value);
     // Basically, |world_| is a world when this V8 reference is created.
     // However, when this V8 reference isn't created in context and value is
     // object, we set |world_| to a value's creation cotext's world.
@@ -84,7 +84,7 @@ class WorldSafeV8Reference final {
     if (world_) {
       CHECK_EQ(world_.get(), &target_script_state->World());
     }
-    return v8_reference_.NewLocal(target_script_state->GetIsolate());
+    return v8_reference_.Get(target_script_state->GetIsolate());
   }
 
   // Returns a V8 reference that is safe to access in |target_script_state|.
@@ -105,7 +105,7 @@ class WorldSafeV8Reference final {
     WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(new_world,
                                                                  new_value);
     CHECK(v8_reference_.IsEmpty() || world_.get() == &new_world);
-    v8_reference_.Set(isolate, new_value);
+    v8_reference_.Reset(isolate, new_value);
     world_ = WrapRefCounted(&new_world);
   }
 
@@ -115,12 +115,12 @@ class WorldSafeV8Reference final {
     DCHECK(!new_value.IsEmpty());
     CHECK(isolate->InContext());
     const DOMWrapperWorld& new_world = DOMWrapperWorld::Current(isolate);
-    v8_reference_.Set(isolate, new_value);
+    v8_reference_.Reset(isolate, new_value);
     world_ = WrapRefCounted(&new_world);
   }
 
   void Reset() {
-    v8_reference_.Clear();
+    v8_reference_.Reset();
     world_.reset();
   }
 

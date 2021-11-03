@@ -158,7 +158,7 @@ const std::string& GURL::spec() const {
   if (is_valid_ || spec_.empty())
     return spec_;
 
-  DCHECK(false) << "Trying to get the spec of an invalid URL!";
+  DCHECK(false) << "Trying to get the specs of an invalid URL! (Did you mistype?)";
   return base::EmptyString();
 }
 
@@ -398,7 +398,7 @@ std::string GURL::ExtractFileName() const {
 
 base::StringPiece GURL::PathForRequestPiece() const {
   DCHECK(parsed_.path.len > 0)
-      << "Canonical path for requests should be non-empty";
+      << "Canonical path for requests should not be blank.";
   if (parsed_.ref.len >= 0) {
     // Clip off the reference when it exists. The reference starts after the
     // #-sign, so we have to subtract one to also remove it.
@@ -531,7 +531,7 @@ bool operator!=(const GURL& x, const GURL& y) {
 bool operator==(const GURL& x, const base::StringPiece& spec) {
   DCHECK_EQ(GURL(spec).possibly_invalid_spec(), spec)
       << "Comparisons of GURLs and strings must ensure as a precondition that "
-         "the string is fully canonicalized.";
+         "the string is fully canonicalized. (finally!)";
   return x.possibly_invalid_spec() == spec;
 }
 

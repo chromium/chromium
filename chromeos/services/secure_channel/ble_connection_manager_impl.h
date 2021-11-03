@@ -70,6 +70,9 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     static Factory* test_factory_;
   };
 
+  BleConnectionManagerImpl(const BleConnectionManagerImpl&) = delete;
+  BleConnectionManagerImpl& operator=(const BleConnectionManagerImpl&) = delete;
+
   ~BleConnectionManagerImpl() override;
 
  private:
@@ -219,8 +222,6 @@ class BleConnectionManagerImpl : public BleConnectionManager,
   base::flat_map<std::string, std::unique_ptr<ConnectionAttemptTimestamps>>
       remote_device_id_to_timestamps_map_;
   absl::optional<std::string> notifying_remote_device_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleConnectionManagerImpl);
 };
 
 }  // namespace secure_channel

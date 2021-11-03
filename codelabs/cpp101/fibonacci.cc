@@ -32,7 +32,7 @@ base::RepeatingCallback<int()> MakeFibonacciClosure() {
 
 int main(int argc, char* argv[]) {
   if (argc <= 1) {
-    LOG(INFO) << argv[0] << ": missing operand";
+    LOG(INFO) << argv[0] << ": missing operator";
     return -1;
   }
 

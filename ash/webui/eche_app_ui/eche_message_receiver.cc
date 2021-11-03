@@ -6,7 +6,7 @@
 
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 EcheMessageReceiver::EcheMessageReceiver() = default;
@@ -39,4 +39,4 @@ void EcheMessageReceiver::NotifyStatusChange(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

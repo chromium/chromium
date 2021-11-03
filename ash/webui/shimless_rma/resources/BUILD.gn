@@ -34,6 +34,7 @@ polymer_element_files = [
   "repair_component_chip.js",
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
+  "splash_screen.js",
   "wrapup_finalize_page.js",
   "wrapup_repair_complete_page.js",
   "wrapup_restock_page.js",
@@ -90,6 +91,7 @@ js_type_check("closure_compile_module") {
     ":repair_component_chip",
     ":shimless_rma",
     ":shimless_rma_types",
+    ":splash_screen",
     ":wrapup_finalize_page",
     ":wrapup_repair_complete_page",
     ":wrapup_restock_page",
@@ -122,6 +124,7 @@ js_library("shimless_rma") {
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
     ":shimless_rma_types",
+    ":splash_screen",
     ":wrapup_finalize_page",
     ":wrapup_repair_complete_page",
     ":wrapup_restock_page",
@@ -244,7 +247,9 @@ js_library("onboarding_update_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -344,6 +349,13 @@ js_library("repair_component_chip") {
   ]
 }
 
+js_library("splash_screen") {
+  deps = [
+    ":base_page",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("wrapup_repair_complete_page") {
   deps = [
     ":base_page",
@@ -352,6 +364,7 @@ js_library("wrapup_repair_complete_page") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 

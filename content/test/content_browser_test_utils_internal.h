@@ -204,14 +204,16 @@ class FrameTestNavigationManager : public TestNavigationManager {
                              WebContents* web_contents,
                              const GURL& url);
 
+  FrameTestNavigationManager(const FrameTestNavigationManager&) = delete;
+  FrameTestNavigationManager& operator=(const FrameTestNavigationManager&) =
+      delete;
+
  private:
   // TestNavigationManager:
   bool ShouldMonitorNavigation(NavigationHandle* handle) override;
 
   // Notifications are filtered so only this frame is monitored.
   int filtering_frame_tree_node_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameTestNavigationManager);
 };
 
 // An observer that can wait for a specific URL to be committed in a specific
@@ -258,6 +260,11 @@ class RenderProcessHostBadIpcMessageWaiter {
   explicit RenderProcessHostBadIpcMessageWaiter(
       RenderProcessHost* render_process_host);
 
+  RenderProcessHostBadIpcMessageWaiter(
+      const RenderProcessHostBadIpcMessageWaiter&) = delete;
+  RenderProcessHostBadIpcMessageWaiter& operator=(
+      const RenderProcessHostBadIpcMessageWaiter&) = delete;
+
   // Waits until the renderer process exits.  Returns the bad message that made
   // //content kill the renderer.  |absl::nullopt| is returned if the renderer
   // was killed outside of //content or exited normally.
@@ -265,8 +272,6 @@ class RenderProcessHostBadIpcMessageWaiter {
 
  private:
   RenderProcessHostKillWaiter internal_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderProcessHostBadIpcMessageWaiter);
 };
 
 class ShowPopupWidgetWaiter
@@ -319,6 +324,9 @@ class DropMessageFilter : public BrowserMessageFilter {
  public:
   DropMessageFilter(uint32_t message_class, uint32_t drop_message_id);
 
+  DropMessageFilter(const DropMessageFilter&) = delete;
+  DropMessageFilter& operator=(const DropMessageFilter&) = delete;
+
  protected:
   ~DropMessageFilter() override;
 
@@ -327,8 +335,6 @@ class DropMessageFilter : public BrowserMessageFilter {
   bool OnMessageReceived(const IPC::Message& message) override;
 
   const uint32_t drop_message_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DropMessageFilter);
 };
 
 // A BrowserMessageFilter that observes a message without handling it, and
@@ -336,6 +342,9 @@ class DropMessageFilter : public BrowserMessageFilter {
 class ObserveMessageFilter : public BrowserMessageFilter {
  public:
   ObserveMessageFilter(uint32_t message_class, uint32_t watch_message_id);
+
+  ObserveMessageFilter(const ObserveMessageFilter&) = delete;
+  ObserveMessageFilter& operator=(const ObserveMessageFilter&) = delete;
 
   bool has_received_message() { return received_; }
 
@@ -354,8 +363,6 @@ class ObserveMessageFilter : public BrowserMessageFilter {
   const uint32_t watch_message_id_;
   bool received_ = false;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserveMessageFilter);
 };
 
 // This observer waits until WebContentsObserver::OnRendererUnresponsive

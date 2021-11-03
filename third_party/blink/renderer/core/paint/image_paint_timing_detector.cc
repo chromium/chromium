@@ -243,11 +243,11 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
 
 void ImagePaintTimingDetector::RecordImage(
     const LayoutObject& object,
-    const IntSize& intrinsic_size,
+    const gfx::Size& intrinsic_size,
     const ImageResourceContent& cached_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const StyleFetchedImage* style_image,
-    const IntRect& image_border) {
+    const gfx::Rect& image_border) {
   Node* node = object.GetNode();
 
   if (!node)
@@ -279,7 +279,7 @@ void ImagePaintTimingDetector::RecordImage(
     // 1).
     if (depth == 1 && IgnorePaintTimingScope::IsDocumentElementInvisible() &&
         !is_recorded_visible_image && cached_image.IsLoaded()) {
-      FloatRect mapped_visual_rect =
+      gfx::RectF mapped_visual_rect =
           frame_view_->GetPaintTimingDetector().CalculateVisualRect(
               image_border, current_paint_chunk_properties);
       uint64_t rect_size = ComputeImageRectSize(
@@ -303,7 +303,7 @@ void ImagePaintTimingDetector::RecordImage(
       need_update_timing_at_frame_end_ = true;
       if (absl::optional<PaintTimingVisualizer>& visualizer =
               frame_view_->GetPaintTimingDetector().Visualizer()) {
-        FloatRect mapped_visual_rect =
+        gfx::RectF mapped_visual_rect =
             frame_view_->GetPaintTimingDetector().CalculateVisualRect(
                 image_border, current_paint_chunk_properties);
         visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
@@ -313,7 +313,7 @@ void ImagePaintTimingDetector::RecordImage(
     return;
   }
 
-  FloatRect mapped_visual_rect =
+  gfx::RectF mapped_visual_rect =
       frame_view_->GetPaintTimingDetector().CalculateVisualRect(
           image_border, current_paint_chunk_properties);
   uint64_t rect_size = ComputeImageRectSize(
@@ -337,9 +337,9 @@ void ImagePaintTimingDetector::RecordImage(
 }
 
 uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
-    const IntRect& image_border,
-    const FloatRect& mapped_visual_rect,
-    const IntSize& intrinsic_size,
+    const gfx::Rect& image_border,
+    const gfx::RectF& mapped_visual_rect,
+    const gfx::Size& intrinsic_size,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const LayoutObject& object,
     const ImageResourceContent& cached_image) {
@@ -348,23 +348,24 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
                                        cached_image);
   }
-  uint64_t rect_size = mapped_visual_rect.size().Area();
+  uint64_t rect_size = mapped_visual_rect.size().GetArea();
   // Transform visual rect to window before calling downscale.
-  FloatRect float_visual_rect =
+  gfx::RectF float_visual_rect =
       frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
-          FloatRect(image_border));
+          gfx::RectF(image_border));
   if (!viewport_size_.has_value()) {
     // If the flag to use page viewport is enabled, we use the page viewport
     // (aka the main frame viewport) for all frames, including iframes. This
     // prevents us from discarding images with size equal to the size of its
     // embedding iframe.
-    IntRect viewport_int_rect =
+    gfx::Rect viewport_int_rect = ToGfxRect(
         uses_page_viewport_
             ? frame_view_->GetPage()->GetVisualViewport().VisibleContentRect()
-            : frame_view_->GetScrollableArea()->VisibleContentRect();
-    FloatRect viewport = frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
-        FloatRect(viewport_int_rect));
-    viewport_size_ = viewport.size().Area();
+            : frame_view_->GetScrollableArea()->VisibleContentRect());
+    gfx::RectF viewport =
+        frame_view_->GetPaintTimingDetector().BlinkSpaceToDIPs(
+            gfx::RectF(viewport_int_rect));
+    viewport_size_ = viewport.size().GetArea();
   }
   // An SVG image size is computed with respect to the virtual viewport of the
   // SVG, so |rect_size| can be larger than |*viewport_size| in edge cases. If
@@ -376,8 +377,7 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
   }
 
   rect_size = DownScaleIfIntrinsicSizeIsSmaller(
-      rect_size, intrinsic_size.Area(),
-      float_visual_rect.width() * float_visual_rect.height());
+      rect_size, intrinsic_size.Area64(), float_visual_rect.size().GetArea());
   return rect_size;
 }
 
@@ -459,8 +459,8 @@ void ImageRecordsManager::OnImageLoadedInternal(
 void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
     const RecordId& record_id,
     const uint64_t& visual_size,
-    const IntRect& frame_visual_rect,
-    const FloatRect& root_visual_rect) {
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect) {
   if (visual_size && (!largest_ignored_image_ ||
                       visual_size > largest_ignored_image_->first_size)) {
     largest_ignored_image_ =
@@ -472,8 +472,8 @@ void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(
 
 void ImageRecordsManager::RecordVisible(const RecordId& record_id,
                                         const uint64_t& visual_size,
-                                        const IntRect& frame_visual_rect,
-                                        const FloatRect& root_visual_rect) {
+                                        const gfx::Rect& frame_visual_rect,
+                                        const gfx::RectF& root_visual_rect) {
   std::unique_ptr<ImageRecord> record =
       CreateImageRecord(*record_id.first, record_id.second, visual_size,
                         frame_visual_rect, root_visual_rect);
@@ -485,8 +485,8 @@ std::unique_ptr<ImageRecord> ImageRecordsManager::CreateImageRecord(
     const LayoutObject& object,
     const ImageResourceContent* cached_image,
     const uint64_t& visual_size,
-    const IntRect& frame_visual_rect,
-    const FloatRect& root_visual_rect) {
+    const gfx::Rect& frame_visual_rect,
+    const gfx::RectF& root_visual_rect) {
   DCHECK_GT(visual_size, 0u);
   Node* node = object.GetNode();
   DOMNodeId node_id = DOMNodeIds::IdForNode(node);

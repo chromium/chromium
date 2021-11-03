@@ -133,6 +133,8 @@ extern const base::Feature kTabSearchFeedback;
 
 extern const base::Feature kTabSearchFuzzySearch;
 
+extern const char kTabSearchSearchThresholdName[];
+
 // Setting this to true will ignore the distance parameter when finding matches.
 // This means that it will not matter where in the string the pattern occurs.
 extern const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation;

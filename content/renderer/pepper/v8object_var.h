@@ -32,6 +32,9 @@ class CONTENT_EXPORT V8ObjectVar : public Var {
  public:
   V8ObjectVar(PP_Instance instance, v8::Local<v8::Object> v8_object);
 
+  V8ObjectVar(const V8ObjectVar&) = delete;
+  V8ObjectVar& operator=(const V8ObjectVar&) = delete;
+
   // Var overrides.
   V8ObjectVar* AsV8ObjectVar() override;
   PP_VarType GetType() const override;
@@ -57,8 +60,6 @@ class CONTENT_EXPORT V8ObjectVar : public Var {
   content::PepperPluginInstanceImpl* instance_;
 
   v8::Persistent<v8::Object> v8_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8ObjectVar);
 };
 
 }  // ppapi

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
@@ -62,8 +63,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void SetShouldShowSuggestedContentInfo(bool should_show);
 
   // AppListViewDelegate overrides:
-  AppListModel* GetModel() override;
-  SearchModel* GetSearchModel() override;
   bool KeyboardTraversalEngaged() override;
   void StartAssistant() override {}
   void StartSearch(const std::u16string& raw_query) override {}
@@ -75,7 +74,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
                         int suggestion_index,
                         bool launch_as_default) override;
   void InvokeSearchResultAction(const std::string& result_id,
-                                int action_index) override {}
+                                SearchResultActionType action) override {}
   void GetSearchResultContextMenuModel(
       const std::string& result_id,
       GetContextMenuModelCallback callback) override;
@@ -89,6 +88,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void GetContextMenuModel(const std::string& id,
                            GetContextMenuModelCallback callback) override;
   void SortAppList(AppListSortOrder order) override {}
+  void RevertAppListSort() override {}
   ui::ImplicitAnimationObserver* GetAnimationObserver(
       ash::AppListViewState target_state) override;
   void ShowWallpaperContextMenu(const gfx::Point& onscreen_location,
@@ -150,6 +150,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool is_tablet_mode_ = false;
   bool should_show_suggested_content_info_ = false;
   std::map<size_t, int> open_search_result_counts_;
+  AppListModelProvider model_provider_;
   std::unique_ptr<AppListTestModel> model_;
   std::unique_ptr<SearchModel> search_model_;
   std::vector<SkColor> wallpaper_prominent_colors_;

@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(WebNavigationApiTestWithContextType, UserAction) {
   content::RenderFrameHost* child_frame = ChildFrameAt(tab, 0);
   ASSERT_TRUE(child_frame);
 
-  TestRenderViewContextMenu menu(child_frame, params);
+  TestRenderViewContextMenu menu(*child_frame, params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 

@@ -46,6 +46,9 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
   explicit ValueParseRequest(DataDecoder::ResultCallback<V> callback)
       : callback_(std::move(callback)) {}
 
+  ValueParseRequest(const ValueParseRequest&) = delete;
+  ValueParseRequest& operator=(const ValueParseRequest&) = delete;
+
   mojo::Remote<T>& remote() { return remote_; }
   DataDecoder::ResultCallback<V>& callback() { return callback_; }
 
@@ -102,8 +105,6 @@ class ValueParseRequest : public base::RefCounted<ValueParseRequest<T, V>> {
 
   mojo::Remote<T> remote_;
   DataDecoder::ResultCallback<V> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ValueParseRequest);
 };
 
 #if defined(OS_IOS)

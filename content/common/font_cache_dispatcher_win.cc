@@ -26,6 +26,9 @@ class FontCache {
  public:
   static FontCache* GetInstance() { return base::Singleton<FontCache>::get(); }
 
+  FontCache(const FontCache&) = delete;
+  FontCache& operator=(const FontCache&) = delete;
+
   void PreCacheFont(const LOGFONT& font, FontCacheDispatcher* dispatcher) {
     base::AutoLock lock(mutex_);
 
@@ -129,8 +132,6 @@ class FontCache {
   std::map<std::wstring, CacheElement> cache_ GUARDED_BY(mutex_);
   DispatcherToFontNames dispatcher_font_map_ GUARDED_BY(mutex_);
   base::Lock mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontCache);
 };
 
 }  // namespace

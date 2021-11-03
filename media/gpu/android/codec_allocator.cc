@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/android/build_info.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
@@ -101,11 +100,7 @@ void CodecAllocator::CreateMediaCodecAsync(
 
   // If we're still allowed to pick any type we want, then limit to software for
   // low resolution.  https://crbug.com/1166833
-  // Software decoders on Lollipop refuse to decode media that played
-  // everywhere else, so let's not force it.   https://crbug.com/1175322
-  bool lollipop = base::android::BuildInfo::GetInstance()->sdk_int() <
-                  base::android::SDK_VERSION_MARSHMALLOW;
-  if (!lollipop && codec_config->codec_type == CodecType::kAny &&
+  if (codec_config->codec_type == CodecType::kAny &&
       (codec_config->initial_expected_coded_size.width() <
            kMinHardwareResolution.width() ||
        codec_config->initial_expected_coded_size.height() <

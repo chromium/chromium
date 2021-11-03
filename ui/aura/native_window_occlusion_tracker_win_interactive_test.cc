@@ -26,11 +26,13 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_window_parenting_client.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/display.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/win/singleton_hwnd.h"
@@ -57,7 +59,8 @@ class MockWindowTreeHostObserver : public WindowTreeHostObserver {
 
   // WindowTreeHostObserver:
   void OnOcclusionStateChanged(WindowTreeHost* host,
-                               Window::OcclusionState new_state) override {
+                               Window::OcclusionState new_state,
+                               const SkRegion& occluded_region) override {
     // Should only get notified when the occlusion state changes.
     EXPECT_NE(new_state, cur_state_);
     cur_state_ = new_state;
@@ -81,6 +84,44 @@ class MockWindowTreeHostObserver : public WindowTreeHostObserver {
  private:
   Window::OcclusionState expectation_ = Window::OcclusionState::UNKNOWN;
   Window::OcclusionState cur_state_ = Window::OcclusionState::UNKNOWN;
+  base::OnceClosure quit_closure_;
+};
+
+class MockWindowObserver : public WindowObserver {
+ public:
+  explicit MockWindowObserver(Window* window) : window_(window) {
+    window_->AddObserver(this);
+  }
+
+  ~MockWindowObserver() override {
+    if (window_)
+      window_->RemoveObserver(this);
+  }
+
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+
+  void set_expectation(Window::OcclusionState expectation) {
+    expectation_ = expectation;
+  }
+
+  // WindowObserver:
+  void OnWindowOcclusionChanged(Window* window) override {
+    if (expectation_ == window->GetOcclusionState()) {
+      ASSERT_FALSE(quit_closure_.is_null());
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  void OnWindowDestroyed(Window* window) override {
+    window_->RemoveObserver(this);
+    window_ = nullptr;
+  }
+
+ private:
+  Window* window_;
+  Window::OcclusionState expectation_ = Window::OcclusionState::UNKNOWN;
   base::OnceClosure quit_closure_;
 };
 
@@ -129,8 +170,10 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     if (gl::GetGLImplementation() == gl::kGLImplementationNone)
       gl::GLSurfaceTestSupport::InitializeOneOff();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCalculateNativeWinOcclusion);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kCalculateNativeWinOcclusion,
+         features::kApplyNativeOccludedRegionToWindowTracker},
+        {});
 
     AuraTestBase::SetUp();
   }
@@ -155,10 +198,11 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
   }
 
   HWND CreateNativeWindowWithBounds(const gfx::Rect& bounds) {
-    native_win_ = std::make_unique<TestNativeWindow>();
-    native_win_->set_window_style(WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN);
-    native_win_->Init(nullptr, bounds);
-    HWND hwnd = native_win_->hwnd();
+    std::unique_ptr<TestNativeWindow> native_win =
+        std::make_unique<TestNativeWindow>();
+    native_win->set_window_style(WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN);
+    native_win->Init(nullptr, bounds);
+    HWND hwnd = native_win->hwnd();
     SetNativeWindowBounds(hwnd, bounds);
     base::win::ScopedRegion region(CreateRectRgn(0, 0, 0, 0));
     if (GetWindowRgn(hwnd, region.get()) == COMPLEXREGION) {
@@ -173,21 +217,23 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
     }
     ShowWindow(hwnd, SW_SHOWNORMAL);
     EXPECT_TRUE(UpdateWindow(hwnd));
+    native_wins_.push_back(std::move(native_win));
     return hwnd;
   }
 
-  HWND CreateTrackedAuraWindowWithBounds(MockWindowTreeHostObserver* observer,
-                                         const gfx::Rect& bounds) {
+  Window* CreateTrackedAuraWindowWithBounds(
+      MockWindowTreeHostObserver* observer,
+      const gfx::Rect& bounds) {
     host()->Show();
     host()->SetBoundsInPixels(bounds);
-    host()->AddObserver(observer);
+    if (observer)
+      host()->AddObserver(observer);
 
     Window* window = CreateNormalWindow(1, host()->window(), nullptr);
     window->SetBounds(gfx::Rect(bounds.size()));
 
     Env::GetInstance()->GetWindowOcclusionTracker()->Track(window);
-
-    return window->GetHost()->GetAcceleratedWidget();
+    return window;
   }
 
   int GetNumVisibleRootWindows() {
@@ -214,7 +260,7 @@ class NativeWindowOcclusionTrackerTest : public test::AuraTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestNativeWindow> native_win_;
+  std::vector<std::unique_ptr<TestNativeWindow>> native_wins_;
 };
 
 // Simple test completely covering an aura window with a native window.
@@ -382,7 +428,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, LockScreenHiddenOcclusion) {
   // Observer only gets notified on occlusion state changes, so force the
   // state to VISIBLE so that setting the state to hidden will trigger
   // a notification.
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
 
   observer.set_expectation(Window::OcclusionState::HIDDEN);
   base::RunLoop run_loop2;
@@ -413,7 +459,7 @@ TEST_F(NativeWindowOcclusionTrackerTest, LockScreenDifferentSession) {
   // Observer only gets notified on occlusion state changes, so force the
   // state to OCCLUDED so that setting the state to VISIBLE will trigger
   // a notification.
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
 
   // Generate a session change lock screen with a session id that's not
   // |current_session_id|.
@@ -466,8 +512,10 @@ TEST_F(NativeWindowOcclusionTrackerTest, DisplayOnOffHandling) {
 
 // Verifies that a window is not occluded if the only window occluding it is
 // being moved/dragged.
+//
+// TODO(crbug.com/1266124): Flaky on Windows.
 TEST_F(NativeWindowOcclusionTrackerTest,
-       MovingWindowNotConsideredInCalculations) {
+       DISABLED_MovingWindowNotConsideredInCalculations) {
   // Needed as this test triggers a native nested message loop.
   base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
       allow_nesting;
@@ -522,7 +570,9 @@ TEST_F(NativeWindowOcclusionTrackerTest, MaximizedOccludedByFullscreenWindow) {
   base::RunLoop run_loop1;
   MockWindowTreeHostObserver observer(run_loop1.QuitClosure());
   HWND hwnd_aura_window_maximized =
-      CreateTrackedAuraWindowWithBounds(&observer, gfx::Rect(0, 0, 100, 100));
+      CreateTrackedAuraWindowWithBounds(&observer, gfx::Rect(0, 0, 100, 100))
+          ->GetHost()
+          ->GetAcceleratedWidget();
   ShowWindow(hwnd_aura_window_maximized, SW_SHOWMAXIMIZED);
   observer.set_expectation(Window::OcclusionState::VISIBLE);
   run_loop1.Run();
@@ -537,6 +587,111 @@ TEST_F(NativeWindowOcclusionTrackerTest, MaximizedOccludedByFullscreenWindow) {
   run_loop2.Run();
   EXPECT_FALSE(observer.is_expecting_call());
   host()->RemoveObserver(&observer);
+}
+
+TEST_F(NativeWindowOcclusionTrackerTest, OccludedRegionSimple) {
+  Window* tracked_aura_window =
+      CreateTrackedAuraWindowWithBounds(nullptr, gfx::Rect(20, 20, 200, 200));
+  tracked_aura_window->SetBounds(gfx::Rect(0, 0, 60, 60));
+
+  MockWindowObserver observer(tracked_aura_window);
+  base::RunLoop run_loop;
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  observer.set_quit_closure(run_loop.QuitClosure());
+  HWND obscuring_hwnd =
+      CreateNativeWindowWithBounds(gfx::Rect(20, 20, 110, 110));
+  run_loop.Run();
+  EXPECT_EQ(Window::OcclusionState::OCCLUDED,
+            tracked_aura_window->GetOcclusionState());
+
+  base::RunLoop run_loop2;
+  observer.set_expectation(Window::OcclusionState::VISIBLE);
+  observer.set_quit_closure(run_loop2.QuitClosure());
+  tracked_aura_window->SetBounds(gfx::Rect(160, 160, 20, 20));
+  run_loop2.Run();
+  EXPECT_EQ(Window::OcclusionState::VISIBLE,
+            tracked_aura_window->GetOcclusionState());
+
+  base::RunLoop run_loop3;
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  observer.set_quit_closure(run_loop3.QuitClosure());
+  SetNativeWindowBounds(obscuring_hwnd, gfx::Rect(140, 140, 110, 110));
+  run_loop3.Run();
+  EXPECT_EQ(Window::OcclusionState::OCCLUDED,
+            tracked_aura_window->GetOcclusionState());
+}
+
+TEST_F(NativeWindowOcclusionTrackerTest, OccludedRegionComplex) {
+  Window* tracked_aura_window =
+      CreateTrackedAuraWindowWithBounds(nullptr, gfx::Rect(20, 20, 200, 200));
+  tracked_aura_window->SetBounds(gfx::Rect(0, 0, 60, 60));
+
+  MockWindowObserver observer(tracked_aura_window);
+  base::RunLoop run_loop;
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  observer.set_quit_closure(run_loop.QuitClosure());
+  CreateNativeWindowWithBounds(gfx::Rect(20, 20, 110, 110));
+  run_loop.Run();
+  EXPECT_EQ(Window::OcclusionState::OCCLUDED,
+            tracked_aura_window->GetOcclusionState());
+
+  base::RunLoop run_loop2;
+  observer.set_expectation(Window::OcclusionState::VISIBLE);
+  observer.set_quit_closure(run_loop2.QuitClosure());
+  tracked_aura_window->SetBounds(gfx::Rect(160, 160, 20, 20));
+  run_loop2.Run();
+  EXPECT_EQ(Window::OcclusionState::VISIBLE,
+            tracked_aura_window->GetOcclusionState());
+
+  base::RunLoop run_loop3;
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  observer.set_quit_closure(run_loop3.QuitClosure());
+  CreateNativeWindowWithBounds(gfx::Rect(140, 140, 110, 110));
+  run_loop3.Run();
+  EXPECT_EQ(Window::OcclusionState::OCCLUDED,
+            tracked_aura_window->GetOcclusionState());
+}
+
+class NativeWindowOcclusionTrackerTestWithDpi2
+    : public NativeWindowOcclusionTrackerTest {
+ public:
+  // NativeWindowOcclusionTrackerTest:
+  void SetUp() override {
+    display::Display::SetForceDeviceScaleFactor(2.0);
+    NativeWindowOcclusionTrackerTest::SetUp();
+  }
+};
+
+TEST_F(NativeWindowOcclusionTrackerTestWithDpi2, OccludedRegionSimple) {
+  Window* tracked_aura_window =
+      CreateTrackedAuraWindowWithBounds(nullptr, gfx::Rect(20, 20, 200, 200));
+  tracked_aura_window->SetBounds(gfx::Rect(0, 0, 30, 30));
+
+  MockWindowObserver observer(tracked_aura_window);
+  base::RunLoop run_loop;
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  observer.set_quit_closure(run_loop.QuitClosure());
+  HWND obscuring_hwnd =
+      CreateNativeWindowWithBounds(gfx::Rect(20, 20, 110, 110));
+  run_loop.Run();
+  EXPECT_EQ(Window::OcclusionState::OCCLUDED,
+            tracked_aura_window->GetOcclusionState());
+
+  base::RunLoop run_loop2;
+  observer.set_expectation(Window::OcclusionState::VISIBLE);
+  observer.set_quit_closure(run_loop2.QuitClosure());
+  tracked_aura_window->SetBounds(gfx::Rect(80, 80, 20, 20));
+  run_loop2.Run();
+  EXPECT_EQ(Window::OcclusionState::VISIBLE,
+            tracked_aura_window->GetOcclusionState());
+
+  base::RunLoop run_loop3;
+  observer.set_expectation(Window::OcclusionState::OCCLUDED);
+  observer.set_quit_closure(run_loop3.QuitClosure());
+  SetNativeWindowBounds(obscuring_hwnd, gfx::Rect(140, 140, 110, 110));
+  run_loop3.Run();
+  EXPECT_EQ(Window::OcclusionState::OCCLUDED,
+            tracked_aura_window->GetOcclusionState());
 }
 
 }  // namespace aura

@@ -58,6 +58,9 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
     static Factory* test_factory_;
   };
 
+  MultiplexedChannelImpl(const MultiplexedChannelImpl&) = delete;
+  MultiplexedChannelImpl& operator=(const MultiplexedChannelImpl&) = delete;
+
   ~MultiplexedChannelImpl() override;
 
  private:
@@ -99,8 +102,6 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
                      std::unique_ptr<SingleClientProxy>,
                      base::UnguessableTokenHash>
       id_to_proxy_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiplexedChannelImpl);
 };
 
 }  // namespace secure_channel

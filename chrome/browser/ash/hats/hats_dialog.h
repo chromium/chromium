@@ -77,7 +77,7 @@ class HatsDialog : public ui::WebDialogDelegate {
   void OnLoadingStateChanged(content::WebContents* source) override;
   bool ShouldShowDialogTitle() const override;
   bool ShouldShowCloseButton() const override;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
   ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
 

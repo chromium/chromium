@@ -1,3 +1,0 @@
-Click
-
-SUCCESS! This test passes because the ARIA link above supports the press action.

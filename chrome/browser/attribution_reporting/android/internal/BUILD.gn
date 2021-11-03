@@ -4,6 +4,8 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingJobFactory.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderFlushTask.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImpl.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/ImpressionPersistentStore.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/ImpressionPersistentStoreFileManager.java",
@@ -16,8 +18,11 @@ android_library("java") {
     "//chrome/android:base_module_java",
     "//chrome/browser/attribution_reporting/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
+    "//components/background_task_scheduler:background_task_scheduler_java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/browser_ui/util/android:java",
     "//content/public/android:content_full_java",
     "//content/public/android:content_main_dex_java",
@@ -32,6 +37,7 @@ android_library("junit_tests") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerImplTest.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImplRobolectricTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/ImpressionPersistentStoreUnitTest.java",
 
     # TODO(https://crbug.com/1198308): Compile and run this test suite once Robolectric supports R.
@@ -42,7 +48,13 @@ android_library("junit_tests") {
     ":java",
     "//base:base_java",
     "//base:base_junit_test_support",
+    "//chrome/android:base_module_java",
     "//chrome/browser/attribution_reporting/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/background_task_scheduler:factory_java",
+    "//components/background_task_scheduler:public_java",
     "//third_party/android_deps:robolectric_all_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -54,6 +66,7 @@ android_library("junit_tests") {
 android_library("javatests") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderFlushTaskTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImplTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/ImpressionPersistentStoreFileTest.java",
@@ -67,6 +80,7 @@ android_library("javatests") {
     "//chrome/browser/attribution_reporting/android:java",
     "//chrome/browser/flags:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/background_task_scheduler:public_java",
     "//content/public/android:content_java",
     "//content/public/android:content_main_dex_java",
     "//content/public/test/android:content_java_test_support",

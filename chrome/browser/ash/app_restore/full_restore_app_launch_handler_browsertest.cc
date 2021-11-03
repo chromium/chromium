@@ -55,9 +55,9 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/arc_util_test_support.h"
 #include "components/arc/test/fake_app_instance.h"
 #include "components/exo/buffer.h"
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
 
   EXPECT_TRUE(wm::CanActivateWindow(window));
 
-  EXPECT_EQ(0, ::full_restore::FetchRestoreWindowId(extension->id()));
+  EXPECT_EQ(0, ::app_restore::FetchRestoreWindowId(extension->id()));
 
   // Close the window.
   CloseAppWindow(app_window);

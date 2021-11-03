@@ -10,6 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
@@ -76,7 +77,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
   struct State {
     State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
               local_transform_space,
-          const FloatRect& layout_clip_rect,
+          const gfx::RectF& layout_clip_rect,
           const FloatRoundedRect& paint_clip_rect)
         : local_transform_space(std::move(local_transform_space)) {
       SetClipRect(layout_clip_rect, paint_clip_rect);
@@ -87,9 +88,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     absl::optional<FloatClipRect> layout_clip_rect_excluding_overlay_scrollbars;
     scoped_refptr<const RefCountedPath> clip_path;
 
-    void SetClipRect(const FloatRect& layout_clip_rect_arg,
+    void SetClipRect(const gfx::RectF& layout_clip_rect_arg,
                      const FloatRoundedRect& paint_clip_rect_arg) {
-      layout_clip_rect.SetRect(ToGfxRectF(layout_clip_rect_arg));
+      layout_clip_rect.SetRect(layout_clip_rect_arg);
       if (paint_clip_rect_arg.IsRounded())
         layout_clip_rect.SetHasRadius();
       paint_clip_rect = paint_clip_rect_arg;

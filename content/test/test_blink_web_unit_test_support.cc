@@ -63,6 +63,9 @@ class DummyTaskRunner : public base::SingleThreadTaskRunner {
  public:
   DummyTaskRunner() : thread_id_(base::PlatformThread::CurrentId()) {}
 
+  DummyTaskRunner(const DummyTaskRunner&) = delete;
+  DummyTaskRunner& operator=(const DummyTaskRunner&) = delete;
+
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) override {
@@ -85,8 +88,6 @@ class DummyTaskRunner : public base::SingleThreadTaskRunner {
   ~DummyTaskRunner() override {}
 
   base::PlatformThreadId thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskRunner);
 };
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)

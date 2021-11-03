@@ -30,6 +30,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
+#include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -330,7 +331,7 @@ class LayerTreeHostScrollTestScrollAbortedCommit
 
   void DidBeginMainFrame() override { num_did_begin_main_frames_++; }
 
-  void WillCommit() override { num_will_commits_++; }
+  void WillCommit(CommitState*) override { num_will_commits_++; }
 
   void DidCommit() override { num_did_commits_++; }
 
@@ -607,10 +608,10 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit() override {
+  void WillCommit(CommitState* commit_state) override {
     // Keep the test committing (otherwise the early out for no update
     // will stall the test).
-    if (layer_tree_host()->SourceFrameNumber() < 2) {
+    if (commit_state->source_frame_number < 2) {
       layer_tree_host()->SetNeedsCommit();
     }
   }
@@ -923,21 +924,19 @@ class LayerTreeHostScrollTestImplOnlyScroll : public LayerTreeHostScrollTest {
     PostSetNeedsCommitToMainThread();
   }
 
-  void WillCommit() override {
+  void WillCommit(CommitState* commit_state) override {
     Layer* scroll_layer =
         layer_tree_host()->OuterViewportScrollLayerForTesting();
-    switch (layer_tree_host()->SourceFrameNumber()) {
+    switch (commit_state->source_frame_number) {
       case 0:
-        EXPECT_TRUE(base::Contains(
-            scroll_layer->layer_tree_host()->LayersThatShouldPushProperties(),
+        EXPECT_TRUE(commit_state->layers_that_should_push_properties.contains(
             scroll_layer));
         break;
       case 1:
         // Even if this layer doesn't need push properties, it should
         // still pick up scrolls that happen on the active layer during
         // commit.
-        EXPECT_FALSE(base::Contains(
-            scroll_layer->layer_tree_host()->LayersThatShouldPushProperties(),
+        EXPECT_FALSE(commit_state->layers_that_should_push_properties.contains(
             scroll_layer));
         break;
     }
@@ -1096,7 +1095,7 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit() override {
+  void WillCommit(CommitState*) override {
     if (TestEnded())
       return;
     // Keep the test committing (otherwise the early out for no update
@@ -1841,8 +1840,7 @@ class LayerTreeHostScrollTestLayerStructureChange
     if (scroll_destroy_whole_tree_) {
       layer_tree_host()->SetRootLayer(nullptr);
       layer_tree_host()->property_trees()->clear();
-      layer_tree_host()->RegisterViewportPropertyIds(
-          LayerTreeHost::ViewportPropertyIds());
+      layer_tree_host()->RegisterViewportPropertyIds(ViewportPropertyIds());
       EndTest();
       return;
     }
@@ -2090,7 +2088,7 @@ class LayerTreeHostScrollTestScrollAbortedCommitMFBA
 
   void DidBeginMainFrame() override { num_did_begin_main_frames_++; }
 
-  void WillCommit() override { num_will_commits_++; }
+  void WillCommit(CommitState*) override { num_will_commits_++; }
 
   void DidCommit() override { num_did_commits_++; }
 

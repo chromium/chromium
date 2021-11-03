@@ -20,7 +20,7 @@
 // tutorial targets.
 class TutorialService : public KeyedService {
  public:
-  explicit TutorialService(std::unique_ptr<TutorialRegistry> tutorial_registry);
+  TutorialService();
   ~TutorialService() override;
 
   // returns true if there is a currently running tutorial.
@@ -33,13 +33,6 @@ class TutorialService : public KeyedService {
   // Returns a list of Tutorial Identifiers if the tutorial registry exists.
   // if there is no registry this returns an empty vector.
   std::vector<TutorialIdentifier> GetTutorialIdentifiers() const;
-
-  // Getters for the registries
-  TutorialRegistry* tutorial_registry() { return tutorial_registry_.get(); }
-
-  const TutorialRegistry* tutorial_registry() const {
-    return tutorial_registry_.get();
-  }
 
   // Starts the tutorial by looking for the id in the Tutorial Registry.
   bool StartTutorial(TutorialIdentifier id, ui::ElementContext context);
@@ -63,9 +56,6 @@ class TutorialService : public KeyedService {
 
   // The current bubble.
   std::unique_ptr<TutorialBubble> currently_displayed_bubble_;
-
-  // The registries that provide the tutorials.
-  std::unique_ptr<TutorialRegistry> tutorial_registry_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_SERVICE_H_

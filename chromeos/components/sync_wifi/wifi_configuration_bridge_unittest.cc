@@ -141,6 +141,11 @@ class TestSyncedNetworkUpdater : public SyncedNetworkUpdater {
 };
 
 class WifiConfigurationBridgeTest : public testing::Test {
+ public:
+  WifiConfigurationBridgeTest(const WifiConfigurationBridgeTest&) = delete;
+  WifiConfigurationBridgeTest& operator=(const WifiConfigurationBridgeTest&) =
+      delete;
+
  protected:
   WifiConfigurationBridgeTest()
       : store_(syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()) {
@@ -282,8 +287,6 @@ class WifiConfigurationBridgeTest : public testing::Test {
   const NetworkIdentifier woof_network_id_ = GeneratePskNetworkId(kSsidWoof);
   const NetworkIdentifier meow_network_id_ = GeneratePskNetworkId(kSsidMeow);
   const NetworkIdentifier honk_network_id_ = GeneratePskNetworkId(kSsidHonk);
-
-  DISALLOW_COPY_AND_ASSIGN(WifiConfigurationBridgeTest);
 };
 
 TEST_F(WifiConfigurationBridgeTest, InitWithTwoNetworksFromServer) {

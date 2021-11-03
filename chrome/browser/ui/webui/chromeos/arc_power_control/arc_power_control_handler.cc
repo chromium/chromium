@@ -18,9 +18,9 @@
 #include "chrome/browser/ash/arc/tracing/arc_value_event_trimmer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/power.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 
 namespace chromeos {
 

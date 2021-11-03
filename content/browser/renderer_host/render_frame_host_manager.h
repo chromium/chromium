@@ -168,6 +168,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   //
   // You must call one of the Init*() methods before using this class.
   RenderFrameHostManager(FrameTreeNode* frame_tree_node, Delegate* delegate);
+
+  RenderFrameHostManager(const RenderFrameHostManager&) = delete;
+  RenderFrameHostManager& operator=(const RenderFrameHostManager&) = delete;
+
   ~RenderFrameHostManager();
 
   // Initialize this frame as the root of a new FrameTree.
@@ -196,7 +200,7 @@ class CONTENT_EXPORT RenderFrameHostManager
   RenderWidgetHostViewBase* GetRenderWidgetHostView() const;
 
   // Returns whether this manager is a main frame and belongs to a FrameTreeNode
-  // that belongs to an inner WebContents.
+  // that belongs to an inner WebContents or inner FrameTree.
   bool IsMainFrameForInnerDelegate();
 
   // If this is a RenderFrameHostManager for a main frame, this method returns
@@ -972,8 +976,6 @@ class CONTENT_EXPORT RenderFrameHostManager
       AttachToInnerDelegateState::NONE;
 
   base::WeakPtrFactory<RenderFrameHostManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManager);
 };
 
 }  // namespace content

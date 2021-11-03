@@ -99,19 +99,19 @@ bool UIResourceLayer::HasDrawableContent() const {
   return resource_id_ && Layer::HasDrawableContent();
 }
 
-void UIResourceLayer::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void UIResourceLayer::PushPropertiesTo(LayerImpl* layer,
+                                       const CommitState& commit_state) {
+  Layer::PushPropertiesTo(layer, commit_state);
   TRACE_EVENT0("cc", "UIResourceLayer::PushPropertiesTo");
   UIResourceLayerImpl* layer_impl = static_cast<UIResourceLayerImpl*>(layer);
 
   layer_impl->SetUIResourceId(resource_id_);
   if (resource_id_) {
-    DCHECK(layer_tree_host());
-
-    gfx::Size image_size =
-        layer_tree_host()->GetUIResourceManager()->GetUIResourceSize(
-            resource_id_);
-    layer_impl->SetImageBounds(image_size);
+    auto iter = commit_state.ui_resource_sizes.find(resource_id_);
+    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                 ? gfx::Size()
+                                 : iter->second;
+    layer_impl->SetImageBounds(image_bounds);
     layer_impl->SetUV(uv_top_left_, uv_bottom_right_);
     layer_impl->SetVertexOpacity(vertex_opacity_);
   }

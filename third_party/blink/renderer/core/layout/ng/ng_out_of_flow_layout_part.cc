@@ -319,15 +319,18 @@ void NGOutOfFlowLayoutPart::HandleFragmentation() {
 const NGOutOfFlowLayoutPart::ContainingBlockInfo
 NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const NGLogicalOutOfFlowPositionedNode& candidate) {
-  if (container_builder_->GetLayoutObject()->IsLayoutNGGrid()) {
+  const auto* container_object = container_builder_->GetLayoutObject();
+
+  if (container_object->IsLayoutNGGrid()) {
     absl::optional<LogicalRect> containing_block_rect =
         NGGridLayoutAlgorithm::ComputeContainingBlockRect(
-            candidate.Node(), container_builder_->GetNGGridData(),
-            container_builder_->Style(),
-            default_writing_direction_.GetWritingMode(),
-            container_builder_->Borders(),
+            candidate.Node(), container_builder_->Style(),
+            To<LayoutNGGrid>(container_object)->CachedPlacementData(),
+            container_builder_->GridLayoutData(), container_builder_->Borders(),
             container_builder_->InitialBorderBoxSize(),
+            default_writing_direction_.GetWritingMode(),
             container_builder_->FragmentsTotalBlockSize());
+
     if (containing_block_rect.has_value())
       return {default_writing_direction_, *containing_block_rect};
   }

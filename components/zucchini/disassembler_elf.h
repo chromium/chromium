@@ -63,6 +63,7 @@ struct AArch64ReferenceType {
 };
 
 struct Elf32Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit32;
   static constexpr elf::FileClass kIdentificationClass = elf::ELFCLASS32;
   using Elf_Shdr = elf::Elf32_Shdr;
@@ -94,6 +95,7 @@ struct ElfAArch32Traits : public Elf32Traits {
 };
 
 struct Elf64Traits {
+  static constexpr uint16_t kVersion = 1;
   static constexpr Bitness kBitness = kBit64;
   static constexpr elf::FileClass kIdentificationClass = elf::ELFCLASS64;
   using Elf_Shdr = elf::Elf64_Shdr;
@@ -151,6 +153,7 @@ template <class TRAITS>
 class DisassemblerElf : public Disassembler {
  public:
   using Traits = TRAITS;
+  static constexpr uint16_t kVersion = Traits::kVersion;
   // Applies quick checks to determine whether |image| *may* point to the start
   // of an executable. Returns true iff the check passes.
   static bool QuickDetect(ConstBufferView image);

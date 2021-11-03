@@ -34,10 +34,26 @@ struct NSStringComparator {
 };
 
 const auto kValidAttributes = base::MakeFixedFlatSet<NSString*>(
-    {NSAccessibilityAccessKeyAttribute, NSAccessibilityARIAAtomicAttribute,
-     NSAccessibilityARIABusyAttribute, NSAccessibilityARIACurrentAttribute,
-     NSAccessibilityARIALiveAttribute, NSAccessibilityARIARelevantAttribute,
-     NSAccessibilityAutocompleteValueAttribute},
+    {NSAccessibilityAccessKeyAttribute,
+     NSAccessibilityARIAAtomicAttribute,
+     NSAccessibilityARIABusyAttribute,
+     NSAccessibilityARIACurrentAttribute,
+     NSAccessibilityARIALiveAttribute,
+     NSAccessibilityARIARelevantAttribute,
+     NSAccessibilityAutocompleteValueAttribute,
+     NSAccessibilityColumnHeaderUIElementsAttribute,
+     NSAccessibilityDetailsElementsAttribute,
+     NSAccessibilityMathFractionNumeratorAttribute,
+     NSAccessibilityMathFractionDenominatorAttribute,
+     NSAccessibilityMathRootRadicandAttribute,
+     NSAccessibilityMathRootIndexAttribute,
+     NSAccessibilityMathBaseAttribute,
+     NSAccessibilityMathSubscriptAttribute,
+     NSAccessibilityMathSuperscriptAttribute,
+     NSAccessibilityMathUnderAttribute,
+     NSAccessibilityMathOverAttribute,
+     NSAccessibilityMathPostscriptsAttribute,
+     NSAccessibilityMathPrescriptsAttribute},
     NSStringComparator());
 
 bool IsValidAttribute(const std::string& attribute) {

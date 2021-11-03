@@ -177,7 +177,7 @@ class LongPressEventBuilder : public WebGestureEvent {
 
 class MousePressEventBuilder : public WebMouseEvent {
  public:
-  MousePressEventBuilder(IntPoint position_param,
+  MousePressEventBuilder(gfx::Point position_param,
                          int click_count_param,
                          WebMouseEvent::Button button_param)
       : WebMouseEvent(WebInputEvent::Type::kMouseDown,
@@ -374,10 +374,10 @@ TEST_F(EventHandlerTest, draggedInlinePositionTest) {
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
       mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
-  EXPECT_EQ(IntPoint(12, 29), GetDocument()
-                                  .GetFrame()
-                                  ->GetEventHandler()
-                                  .DragDataTransferLocationForTesting());
+  EXPECT_EQ(gfx::Point(12, 29), GetDocument()
+                                    .GetFrame()
+                                    ->GetEventHandler()
+                                    .DragDataTransferLocationForTesting());
 }
 
 TEST_F(EventHandlerTest, draggedSVGImagePositionTest) {
@@ -412,10 +412,10 @@ TEST_F(EventHandlerTest, draggedSVGImagePositionTest) {
   GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
       mouse_move_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
-  EXPECT_EQ(IntPoint(45, 44), GetDocument()
-                                  .GetFrame()
-                                  ->GetEventHandler()
-                                  .DragDataTransferLocationForTesting());
+  EXPECT_EQ(gfx::Point(45, 44), GetDocument()
+                                    .GetFrame()
+                                    ->GetEventHandler()
+                                    .DragDataTransferLocationForTesting());
 }
 
 TEST_F(EventHandlerTest, HitOnNothingDoesNotShowIBeam) {
@@ -665,7 +665,7 @@ TEST_F(EventHandlerTest, EditableAnchorTextCanStartSelection) {
 TEST_F(EventHandlerTest, CursorForVerticalResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:vertical'>vertical</textarea>");
   Node* const element = GetDocument().body()->firstChild();
-  blink::IntPoint point =
+  gfx::Point point =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_right();
   point.Offset(-5, -5);
   HitTestLocation location(point);
@@ -685,7 +685,7 @@ TEST_F(EventHandlerTest, CursorForVerticalResizableTextArea) {
 TEST_F(EventHandlerTest, CursorForHorizontalResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:horizontal'>horizontal</textarea>");
   Node* const element = GetDocument().body()->firstChild();
-  blink::IntPoint point =
+  gfx::Point point =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_right();
   point.Offset(-5, -5);
   HitTestLocation location(point);
@@ -705,7 +705,7 @@ TEST_F(EventHandlerTest, CursorForHorizontalResizableTextArea) {
 TEST_F(EventHandlerTest, CursorForResizableTextArea) {
   SetHtmlInnerHTML("<textarea style='resize:both'>both</textarea>");
   Node* const element = GetDocument().body()->firstChild();
-  blink::IntPoint point =
+  gfx::Point point =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_right();
   point.Offset(-5, -5);
   HitTestLocation location(point);
@@ -727,7 +727,7 @@ TEST_F(EventHandlerTest, CursorForRtlResizableTextArea) {
   SetHtmlInnerHTML(
       "<textarea style='resize:both;direction:rtl'>both</textarea>");
   Node* const element = GetDocument().body()->firstChild();
-  blink::IntPoint point =
+  gfx::Point point =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect().bottom_left();
   point.Offset(5, -5);
   HitTestLocation location(point);
@@ -751,7 +751,7 @@ TEST_F(EventHandlerTest, CursorForInlineVerticalWritingMode) {
       "width:30px;height:30px;overflow:hidden;display:inline'>Test "
       "Test</p>Test");
   Node* const element = GetDocument().body()->firstChild()->nextSibling();
-  blink::IntPoint point =
+  gfx::Point point =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect().origin();
   point.Offset(25, 25);
   HitTestLocation location(point);
@@ -773,7 +773,7 @@ TEST_F(EventHandlerTest, CursorForBlockVerticalWritingMode) {
       "width:30px;height:30px;overflow:hidden;display:block'>Test "
       "Test</p>Test");
   Node* const element = GetDocument().body()->firstChild()->nextSibling();
-  blink::IntPoint point =
+  gfx::Point point =
       element->GetLayoutObject()->AbsoluteBoundingBoxRect().origin();
   point.Offset(25, 25);
   HitTestLocation location(point);
@@ -919,7 +919,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   SetHtmlInnerHTML("<textarea cols=50 rows=50>Enter text</textarea>");
 
   MousePressEventBuilder left_mouse_press_event(
-      IntPoint(200, 200), 1, WebPointerProperties::Button::kLeft);
+      gfx::Point(200, 200), 1, WebPointerProperties::Button::kLeft);
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       left_mouse_press_event);
 
@@ -927,7 +927,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   ASSERT_FALSE(Selection().IsHandleVisible());
 
   MousePressEventBuilder right_mouse_press_event(
-      IntPoint(200, 200), 1, WebPointerProperties::Button::kRight);
+      gfx::Point(200, 200), 1, WebPointerProperties::Button::kRight);
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       right_mouse_press_event);
 
@@ -935,7 +935,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   ASSERT_FALSE(Selection().IsHandleVisible());
 
   MousePressEventBuilder double_click_mouse_press_event(
-      IntPoint(200, 200), 2, WebPointerProperties::Button::kLeft);
+      gfx::Point(200, 200), 2, WebPointerProperties::Button::kLeft);
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       double_click_mouse_press_event);
 
@@ -943,7 +943,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   ASSERT_FALSE(Selection().IsHandleVisible());
 
   MousePressEventBuilder triple_click_mouse_press_event(
-      IntPoint(200, 200), 3, WebPointerProperties::Button::kLeft);
+      gfx::Point(200, 200), 3, WebPointerProperties::Button::kLeft);
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       triple_click_mouse_press_event);
 
@@ -1065,10 +1065,10 @@ TEST_F(EventHandlerTest, FakeMouseMoveNotStartDrag) {
       GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
           fake_mouse_move, Vector<WebMouseEvent>(), Vector<WebMouseEvent>()));
 
-  EXPECT_EQ(IntPoint(0, 0), GetDocument()
-                                .GetFrame()
-                                ->GetEventHandler()
-                                .DragDataTransferLocationForTesting());
+  EXPECT_EQ(gfx::Point(0, 0), GetDocument()
+                                  .GetFrame()
+                                  ->GetEventHandler()
+                                  .DragDataTransferLocationForTesting());
 }
 
 class TooltipCapturingChromeClient : public EmptyChromeClient {

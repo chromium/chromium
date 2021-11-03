@@ -76,13 +76,13 @@ bool ScrollbarLayerDelegate::IsOverlay() const {
 
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
   IntRect track_rect = scrollbar_->GetTheme().ThumbRect(*scrollbar_);
-  track_rect.MoveBy(-scrollbar_->Location());
+  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
   return ToGfxRect(track_rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::TrackRect() const {
   IntRect track_rect = scrollbar_->GetTheme().TrackRect(*scrollbar_);
-  track_rect.MoveBy(-scrollbar_->Location());
+  track_rect.Offset(-ToIntSize(scrollbar_->Location()));
   return ToGfxRect(track_rect);
 }
 
@@ -97,7 +97,7 @@ bool ScrollbarLayerDelegate::JumpOnTrackClick() const {
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
   IntRect back_button_rect = scrollbar_->GetTheme().BackButtonRect(*scrollbar_);
   if (!back_button_rect.IsEmpty())
-    back_button_rect.MoveBy(-scrollbar_->Location());
+    back_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
   return ToGfxRect(back_button_rect);
 }
 
@@ -105,7 +105,7 @@ gfx::Rect ScrollbarLayerDelegate::ForwardButtonRect() const {
   IntRect forward_button_rect =
       scrollbar_->GetTheme().ForwardButtonRect(*scrollbar_);
   if (!forward_button_rect.IsEmpty())
-    forward_button_rect.MoveBy(-scrollbar_->Location());
+    forward_button_rect.Offset(-ToIntSize(scrollbar_->Location()));
   return ToGfxRect(forward_button_rect);
 }
 
@@ -169,8 +169,7 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
       break;
     case cc::ScrollbarPart::TRACK_BUTTONS_TICKMARKS: {
       DCHECK_EQ(IntSize(rect.size()), scrollbar_->FrameRect().size());
-      IntPoint offset(IntPoint(rect.origin()) -
-                      scrollbar_->FrameRect().origin());
+      gfx::Vector2d offset = rect.origin() - scrollbar_->FrameRect().origin();
       theme.PaintTrackButtonsTickmarks(painter.Context(), *scrollbar_, offset);
       scrollbar_->ClearTrackNeedsRepaint();
       break;

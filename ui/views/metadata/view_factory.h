@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
@@ -23,6 +24,7 @@ template <typename Builder>
 class BaseViewBuilderT : public internal::ViewBuilderCore {
  public:
   using ViewClass_ = typename internal::ViewClassTrait<Builder>::ViewClass_;
+  using ConfigureCallback = base::OnceCallback<void(ViewClass_*)>;
   BaseViewBuilderT() { view_ = std::make_unique<ViewClass_>(); }
   explicit BaseViewBuilderT(ViewClass_* root_view) : root_view_(root_view) {}
   BaseViewBuilderT(BaseViewBuilderT&&) = default;
@@ -38,6 +40,15 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   template <typename View>
   Builder&& CopyAddressTo(View** view_address) && {
     return std::move(this->CopyAddressTo(view_address));
+  }
+
+  Builder& CustomConfigure(ConfigureCallback configure_callback) & {
+    configure_callback_ = std::move(configure_callback);
+    return *static_cast<Builder*>(this);
+  }
+
+  Builder&& CustomConfigure(ConfigureCallback configure_callback) && {
+    return std::move(this->CustomConfigure(std::move(configure_callback)));
   }
 
   template <typename Child>
@@ -65,6 +76,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     DCHECK(!root_view_) << "Root view specified. Use BuildChildren() instead.";
     DCHECK(view_);
     SetProperties(view_.get());
+    DoCustomConfigure(view_.get());
     CreateChildren(view_.get());
     return std::move(view_);
   }
@@ -73,6 +85,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     DCHECK(!view_) << "Default constructor called. Use Build() instead.";
     DCHECK(root_view_);
     SetProperties(root_view_);
+    DoCustomConfigure(root_view_);
     CreateChildren(root_view_);
   }
 
@@ -149,7 +162,16 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     return *static_cast<Builder*>(this);
   }
 
+  void DoCustomConfigure(ViewClass_* view) {
+    if (configure_callback_)
+      std::move(configure_callback_).Run(view);
+  }
+
   std::unique_ptr<View> DoBuild() override { return std::move(*this).Build(); }
+
+  // Optional callback invoked right before calling CreateChildren. This allows
+  // any additional configuration of the view not easily covered by the builder.
+  ConfigureCallback configure_callback_;
 
   // Owned and meaningful during the Builder building process. Its
   // ownership will be transferred out upon Build() call.

@@ -147,7 +147,9 @@ __attribute__((always_inline, no_instrument_function)) void RecordAddress(
     // remember the caller address, if a single function is misplaced but we get
     // many calls to it, then we still crash. If this is the case, add
     // deduplication.
-    if (g_unexpected_addresses.fetch_add(1, std::memory_order_relaxed) < 10) {
+    //
+    // Bumped to 100 temporarily as part of crbug.com/1265928 investigation.
+    if (g_unexpected_addresses.fetch_add(1, std::memory_order_relaxed) < 100) {
       return;
     }
 

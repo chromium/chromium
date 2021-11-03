@@ -1052,11 +1052,11 @@ std::unique_ptr<ClientBase::Buffer> ClientBase::CreateDrmBuffer(
     for (size_t i = 0;
          i < static_cast<size_t>(gbm_bo_get_plane_count(buffer->bo.get()));
          ++i) {
-      base::ScopedFD fd(gbm_bo_get_plane_fd(buffer->bo.get(), i));
+      base::ScopedFD plane_i_fd(gbm_bo_get_plane_fd(buffer->bo.get(), i));
       uint32_t stride = gbm_bo_get_stride_for_plane(buffer->bo.get(), i);
       uint32_t offset = gbm_bo_get_offset(buffer->bo.get(), i);
-      zwp_linux_buffer_params_v1_add(buffer->params.get(), fd.get(), i, offset,
-                                     stride, modifier >> 32, modifier);
+      zwp_linux_buffer_params_v1_add(buffer->params.get(), plane_i_fd.get(), i,
+                                     offset, stride, modifier >> 32, modifier);
     }
     uint32_t flags = 0;
     if (y_invert)

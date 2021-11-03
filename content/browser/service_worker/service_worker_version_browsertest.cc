@@ -133,6 +133,10 @@ class WorkerActivatedObserver
  public:
   explicit WorkerActivatedObserver(ServiceWorkerContextWrapper* context)
       : context_(context) {}
+
+  WorkerActivatedObserver(const WorkerActivatedObserver&) = delete;
+  WorkerActivatedObserver& operator=(const WorkerActivatedObserver&) = delete;
+
   void Init() { context_->AddObserver(this); }
   // ServiceWorkerContextCoreObserver overrides.
   void OnVersionStateChanged(int64_t version_id,
@@ -162,7 +166,6 @@ class WorkerActivatedObserver
 
   base::RunLoop run_loop_;
   ServiceWorkerContextWrapper* context_;
-  DISALLOW_COPY_AND_ASSIGN(WorkerActivatedObserver);
 };
 
 std::unique_ptr<net::test_server::HttpResponse>

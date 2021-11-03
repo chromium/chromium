@@ -20,31 +20,27 @@
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-blink.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 using testing::_;
 
 namespace blink {
-
-IntSize Scaled(IntSize p, float scale) {
-  p.Scale(scale, scale);
-  return p;
-}
 
 class LinkSelectionTestBase : public testing::Test {
  protected:
   enum DragFlag { kSendDownEvent = 1, kSendUpEvent = 1 << 1 };
   using DragFlags = unsigned;
 
-  void EmulateMouseDrag(const IntPoint& down_point,
-                        const IntPoint& up_point,
+  void EmulateMouseDrag(const gfx::Point& down_point,
+                        const gfx::Point& up_point,
                         int modifiers,
                         DragFlags = kSendDownEvent | kSendUpEvent);
 
-  void EmulateMouseClick(const IntPoint& click_point,
+  void EmulateMouseClick(const gfx::Point& click_point,
                          WebMouseEvent::Button,
                          int modifiers,
                          int count = 1);
-  void EmulateMouseDown(const IntPoint& click_point,
+  void EmulateMouseDown(const gfx::Point& click_point,
                         WebMouseEvent::Button,
                         int modifiers,
                         int count = 1);
@@ -56,8 +52,8 @@ class LinkSelectionTestBase : public testing::Test {
   Persistent<WebLocalFrameImpl> main_frame_ = nullptr;
 };
 
-void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
-                                             const IntPoint& up_point,
+void LinkSelectionTestBase::EmulateMouseDrag(const gfx::Point& down_point,
+                                             const gfx::Point& up_point,
                                              int modifiers,
                                              DragFlags drag_flags) {
   if (drag_flags & kSendDownEvent) {
@@ -70,10 +66,11 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
 
   const int kMoveEventsNumber = 10;
   const float kMoveIncrementFraction = 1. / kMoveEventsNumber;
-  const auto& up_down_vector = up_point - down_point;
+  gfx::Vector2d up_down_vector = up_point - down_point;
   for (int i = 0; i < kMoveEventsNumber; ++i) {
-    const auto& move_point =
-        down_point + Scaled(up_down_vector, i * kMoveIncrementFraction);
+    gfx::Point move_point =
+        down_point + gfx::ToFlooredVector2d(gfx::ScaleVector2d(
+                         up_down_vector, i * kMoveIncrementFraction));
     const auto& move_event = frame_test_helpers::CreateMouseEvent(
         WebMouseEvent::Type::kMouseMove, WebMouseEvent::Button::kLeft,
         move_point, modifiers);
@@ -90,7 +87,7 @@ void LinkSelectionTestBase::EmulateMouseDrag(const IntPoint& down_point,
   }
 }
 
-void LinkSelectionTestBase::EmulateMouseClick(const IntPoint& click_point,
+void LinkSelectionTestBase::EmulateMouseClick(const gfx::Point& click_point,
                                               WebMouseEvent::Button button,
                                               int modifiers,
                                               int count) {
@@ -104,7 +101,7 @@ void LinkSelectionTestBase::EmulateMouseClick(const IntPoint& click_point,
       WebCoalescedInputEvent(event, ui::LatencyInfo()));
 }
 
-void LinkSelectionTestBase::EmulateMouseDown(const IntPoint& click_point,
+void LinkSelectionTestBase::EmulateMouseDown(const gfx::Point& click_point,
                                              WebMouseEvent::Button button,
                                              int modifiers,
                                              int count) {
@@ -173,8 +170,8 @@ class LinkSelectionTest : public LinkSelectionTestBase {
   }
 
   TestFrameClient test_frame_client_;
-  IntPoint left_point_in_link_;
-  IntPoint right_point_in_link_;
+  gfx::Point left_point_in_link_;
+  gfx::Point right_point_in_link_;
 };
 
 TEST_F(LinkSelectionTest, MouseDragWithoutAltAllowNoLinkSelection) {
@@ -202,7 +199,8 @@ TEST_F(LinkSelectionTest, HandCursorDuringLinkDrag) {
 }
 
 TEST_F(LinkSelectionTest, DragOnNothingShowsPointer) {
-  EmulateMouseDrag(IntPoint(100, 500), IntPoint(300, 500), 0, kSendDownEvent);
+  EmulateMouseDrag(gfx::Point(100, 500), gfx::Point(300, 500), 0,
+                   kSendDownEvent);
   main_frame_->GetFrame()
       ->LocalFrameRoot()
       .GetEventHandler()
@@ -261,8 +259,8 @@ TEST_F(LinkSelectionTest, SingleClickWithAltStartsDownloadWhenTextSelected) {
   const auto* range_to_select = MakeGarbageCollected<Range>(
       *document, text_to_select, 1, text_to_select, 20);
   const auto& selection_rect = range_to_select->BoundingBox();
-  main_frame_->MoveRangeSelection(ToGfxPoint(selection_rect.origin()),
-                                  ToGfxPoint(selection_rect.bottom_right()));
+  main_frame_->MoveRangeSelection(selection_rect.origin(),
+                                  selection_rect.bottom_right());
   EXPECT_FALSE(GetSelectionText().IsEmpty());
 
   EmulateMouseClick(left_point_in_link_, WebMouseEvent::Button::kLeft,

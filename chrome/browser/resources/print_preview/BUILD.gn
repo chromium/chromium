@@ -237,6 +237,7 @@ copy("copy_pdf_definitions") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "cloud_print_interface.ts",

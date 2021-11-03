@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Set up one client syncing and the other signed-in but not syncing.
   GetClient(0)->SetupSync();
-  secondary_account_helper::SignInSecondaryAccount(
+  secondary_account_helper::SignInUnconsentedAccount(
       GetProfile(1), &test_url_loader_factory_, "user@g.com");
   GetClient(1)->AwaitSyncTransportActive();
 

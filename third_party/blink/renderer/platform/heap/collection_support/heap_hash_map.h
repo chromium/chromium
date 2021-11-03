@@ -51,13 +51,13 @@ class HeapHashMap final : public GarbageCollected<HeapHashMap<KeyArg,
                       !WTF::IsTraceable<KeyArg>::value,
                   "HeapHashMap supports only Member, WeakMember and "
                   "non-traceable types as keys.");
-    static_assert(WTF::IsMemberOrWeakMemberType<MappedArg>::value ||
-                      !WTF::IsTraceable<MappedArg>::value ||
-                      WTF::IsSubclassOfTemplate<MappedArg,
-                                                TraceWrapperV8Reference>::value,
-                  "HeapHashMap supports only Member, WeakMember, "
-                  "TraceWrapperV8Reference and "
-                  "non-traceable types as values.");
+    static_assert(
+        WTF::IsMemberOrWeakMemberType<MappedArg>::value ||
+            !WTF::IsTraceable<MappedArg>::value ||
+            WTF::IsSubclassOfTemplate<MappedArg, v8::TracedReference>::value,
+        "HeapHashMap supports only Member, WeakMember, "
+        "TraceWrapperV8Reference and "
+        "non-traceable types as values.");
   }
 };
 

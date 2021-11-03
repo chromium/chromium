@@ -74,9 +74,8 @@ class GestureConsumedCallbackWrapper {
 }  // namespace
 
 CastContentWindowAndroid::CastContentWindowAndroid(
-    base::WeakPtr<Delegate> delegate,
     mojom::CastWebViewParamsPtr params)
-    : CastContentWindow(delegate, std::move(params)),
+    : CastContentWindow(std::move(params)),
       web_contents_attached_(false),
       java_window_(CreateJavaWindow(reinterpret_cast<jlong>(this),
                                     params_->enable_touch_input,
@@ -127,8 +126,8 @@ void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
 void CastContentWindowAndroid::OnActivityStopped(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  if (delegate_) {
-    delegate_->OnWindowDestroyed();
+  for (auto& observer : observers_) {
+    observer->OnWindowDestroyed();
   }
 }
 
@@ -159,11 +158,8 @@ void CastContentWindowAndroid::SetHostContext(base::Value host_context) {
 
 void CastContentWindowAndroid::NotifyVisibilityChange(
     VisibilityType visibility_type) {
-  if (delegate_) {
-    delegate_->OnVisibilityChange(visibility_type);
-  }
-  for (auto& observer : observer_list_) {
-    observer.OnVisibilityChange(visibility_type);
+  for (auto& observer : observers_) {
+    observer->OnVisibilityChange(visibility_type);
   }
 }
 

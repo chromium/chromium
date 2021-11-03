@@ -391,6 +391,18 @@ MediaAppUIBrowserTest.LaunchUnopenableFile = async () => {
   assertEquals(await getFileErrors(), 'NotAllowedError');
 };
 
+// Tests that directories that are not navigable do not generate crash reports,
+// and the focus file still loads.
+MediaAppUIBrowserTest.LaunchUnnavigableDirectory = async () => {
+  const focus = new FakeFileSystemFileHandle('focus.png', 'image/png');
+  const mine = new FakeFileSystemFileHandle('mine.png', 'image/png');
+  mine.errorToFireOnIterate = new DOMException('boom', 'NotFoundError');
+  await launchWithHandles([focus, mine]);
+
+  assertFilenamesToBe('focus.png');
+  assertEquals(mine.errorToFireOnIterate, null);  // Consistency check.
+};
+
 // Tests that a file that becomes inaccessible after the initial app launch is
 // ignored on navigation, and shows an error when navigated to itself.
 MediaAppUIBrowserTest.NavigateWithUnopenableSibling = async () => {

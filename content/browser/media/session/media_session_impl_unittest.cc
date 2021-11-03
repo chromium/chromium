@@ -102,6 +102,9 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     default_actions_.insert(media_session::mojom::MediaSessionAction::kScrubTo);
   }
 
+  MediaSessionImplTest(const MediaSessionImplTest&) = delete;
+  MediaSessionImplTest& operator=(const MediaSessionImplTest&) = delete;
+
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService,
@@ -200,8 +203,6 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
   std::unique_ptr<MockMediaSessionServiceImpl> mock_media_session_service_;
 
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionImplTest);
 };
 
 TEST_F(MediaSessionImplTest, SessionInfoState) {

@@ -12,8 +12,10 @@
 
 #include "base/containers/small_map.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
 #include "media/parsers/vp8_parser.h"
@@ -177,8 +179,8 @@ SupportResolutionChecker::CreateIfNeeded(V4L2Device::Type device_type,
   auto supported_profiles = device->GetSupportedDecodeProfiles(
       base::size(supported_input_fourccs), supported_input_fourccs);
   SupportedProfileMap supported_profile_map;
-  for (const auto& profile : supported_profiles)
-    supported_profile_map[profile.profile] = profile;
+  for (const auto& entry : supported_profiles)
+    supported_profile_map[entry.profile] = entry;
 
   VLOGF(2) << "Create SupportResolutionChecker workaround";
   return base::WrapUnique(
@@ -230,6 +232,11 @@ CreateV4L2StatefulWorkarounds(V4L2Device::Type device_type,
 bool AppendVP9SuperFrameIndexIfNeeded(scoped_refptr<DecoderBuffer>& buffer) {
   if (buffer->side_data_size() == 0)
     return true;
+
+  if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+    return false;
+  }
 
   const size_t num_of_layers = buffer->side_data_size() / sizeof(uint32_t);
   if (num_of_layers > 3u) {

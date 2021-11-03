@@ -67,6 +67,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void WriteProtectManuallyDisabled(
       WriteProtectManuallyDisabledCallback callback) override;
 
+  void GetWriteProtectDisableCompleteState(
+      GetWriteProtectDisableCompleteStateCallback callback) override;
   void ConfirmManualWpDisableComplete(
       ConfirmManualWpDisableCompleteCallback callback) override;
 
@@ -132,6 +134,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
           observer) override;
   void ObservePowerCableState(
       ::mojo::PendingRemote<mojom::PowerCableStateObserver> observer) override;
+  void ObserveHardwareVerificationStatus(
+      ::mojo::PendingRemote<mojom::HardwareVerificationStatusObserver> observer)
+      override;
   void ObserveFinalizationStatus(
       ::mojo::PendingRemote<mojom::FinalizationObserver> observer) override;
 
@@ -144,12 +149,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
       const rmad::CalibrationComponentStatus& component_status) override;
   void CalibrationOverallProgress(
       rmad::CalibrationOverallStatus status) override;
-  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
-                            double progress) override;
+  void ProvisioningProgress(const rmad::ProvisionStatus& status) override;
   void HardwareWriteProtectionState(bool enabled) override;
   void PowerCableState(bool plugged_in) override;
-  void HardwareVerificationResult(const rmad::HardwareVerificationResult&
-                                      hardware_verification_result) override;
+  void HardwareVerificationResult(
+      const rmad::HardwareVerificationResult& result) override;
+  void FinalizationProgress(const rmad::FinalizeStatus& status) override;
 
   void OsUpdateProgress(update_engine::Operation operation, double progress);
 
@@ -188,13 +193,12 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   absl::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
   absl::optional<rmad::CalibrationOverallStatus>
       last_calibration_overall_progress_;
-  absl::optional<rmad::ProvisionDeviceState::ProvisioningStep>
-      last_provisioning_progress_step_;
-  absl::optional<double> last_provisioning_progress_;
+  absl::optional<rmad::ProvisionStatus> last_provisioning_progress_;
   absl::optional<bool> last_hardware_protection_state_;
   absl::optional<bool> last_power_cable_state_;
   absl::optional<rmad::HardwareVerificationResult>
       last_hardware_verification_result_;
+  absl::optional<rmad::FinalizeStatus> last_finalization_progress_;
 
   mojo::Remote<mojom::ErrorObserver> error_observer_;
   mojo::Remote<mojom::OsUpdateObserver> os_update_observer_;
@@ -203,6 +207,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::Remote<mojom::HardwareWriteProtectionStateObserver>
       hwwp_state_observer_;
   mojo::Remote<mojom::PowerCableStateObserver> power_cable_observer_;
+  // HardwareVerificationStatusObserver is used by landing and OS update pages.
+  mojo::RemoteSet<mojom::HardwareVerificationStatusObserver>
+      hardware_verification_observers_;
   mojo::Remote<mojom::FinalizationObserver> finalization_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
 

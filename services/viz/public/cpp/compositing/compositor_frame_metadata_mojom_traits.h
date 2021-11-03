@@ -10,9 +10,11 @@
 
 #include "build/build_config.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_deadline_mojom_traits.h"
+#include "services/viz/public/cpp/compositing/region_capture_bounds_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -144,6 +146,11 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
   static const std::vector<viz::CompositorFrameTransitionDirective>&
   transition_directives(const viz::CompositorFrameMetadata& metadata) {
     return metadata.transition_directives;
+  }
+
+  static const viz::RegionCaptureBounds& capture_bounds(
+      const viz::CompositorFrameMetadata& metadata) {
+    return metadata.capture_bounds;
   }
 
   static bool Read(viz::mojom::CompositorFrameMetadataDataView data,

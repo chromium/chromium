@@ -39,18 +39,22 @@ class MockDownloadFileObserver : public ui::DownloadFileObserver {
  public:
   MockDownloadFileObserver() {}
 
+  MockDownloadFileObserver(const MockDownloadFileObserver&) = delete;
+  MockDownloadFileObserver& operator=(const MockDownloadFileObserver&) = delete;
+
   MOCK_METHOD1(OnDownloadCompleted, void(const base::FilePath& file_path));
   MOCK_METHOD0(OnDownloadAborted, void());
 
  private:
   ~MockDownloadFileObserver() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadFileObserver);
 };
 
 class DragDownloadFileTest : public ContentBrowserTest {
  public:
   DragDownloadFileTest() = default;
+
+  DragDownloadFileTest(const DragDownloadFileTest&) = delete;
+  DragDownloadFileTest& operator=(const DragDownloadFileTest&) = delete;
 
   void Succeed() {
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(quit_closure_));
@@ -87,8 +91,6 @@ class DragDownloadFileTest : public ContentBrowserTest {
  private:
   base::ScopedTempDir downloads_directory_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDownloadFileTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_NetError) {

@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/reporting/policy_info.h"
+#include "components/enterprise/browser/reporting/report_type.h"
+#include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/browser/policy_conversions.h"
 
@@ -32,13 +35,25 @@ void ProfileReportGenerator::set_policies_enabled(bool enabled) {
 
 std::unique_ptr<em::ChromeUserProfileInfo>
 ProfileReportGenerator::MaybeGenerate(const base::FilePath& path,
-                                      const std::string& name) {
+                                      const std::string& name,
+                                      ReportType report_type) {
   if (!delegate_->Init(path)) {
     return nullptr;
   }
 
   report_ = std::make_unique<em::ChromeUserProfileInfo>();
-  report_->set_id(path.AsUTF8Unsafe());
+
+  switch (report_type) {
+    case ReportType::kFull:
+      report_->set_id(path.AsUTF8Unsafe());
+      break;
+    case ReportType::kProfileReport:
+      report_->set_id(ObfuscateFilePath(path));
+      break;
+    case ReportType::kBrowserVersion:
+      NOTREACHED();
+      break;
+  }
 
   report_->set_name(name);
   report_->set_is_detail_available(true);

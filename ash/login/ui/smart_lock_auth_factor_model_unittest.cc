@@ -5,6 +5,8 @@
 #include "ash/login/ui/smart_lock_auth_factor_model.h"
 
 #include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/auth_icon_view.h"
+#include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,7 +18,7 @@ using AuthFactorState = AuthFactorModel::AuthFactorState;
 
 }  // namespace
 
-class SmartLockAuthFactorModelUnittest : public testing::Test {
+class SmartLockAuthFactorModelUnittest : public AshTestBase {
  public:
   SmartLockAuthFactorModelUnittest() = default;
   SmartLockAuthFactorModelUnittest(const SmartLockAuthFactorModelUnittest&) =
@@ -26,17 +28,20 @@ class SmartLockAuthFactorModelUnittest : public testing::Test {
   ~SmartLockAuthFactorModelUnittest() override = default;
 
  protected:
-  // test::Test:
+  // AshTestBase:
   void SetUp() override {
-    model_->SetOnStateChangedCallback(
-        base::BindRepeating(&SmartLockAuthFactorModelUnittest::OnStateChanged,
-                            base::Unretained(this)));
+    AshTestBase::SetUp();
+
+    model_->Init(&icon_, base::BindRepeating(
+                             &SmartLockAuthFactorModelUnittest::OnStateChanged,
+                             base::Unretained(this)));
   }
 
   void OnStateChanged() { on_state_changed_called_ = true; }
 
   SmartLockAuthFactorModel smart_lock_model_;
   AuthFactorModel* model_ = &smart_lock_model_;
+  AuthIconView icon_;
   bool on_state_changed_called_ = false;
 };
 

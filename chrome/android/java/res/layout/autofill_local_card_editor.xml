@@ -65,7 +65,8 @@
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/autofill_credit_card_editor_month_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/autofill_credit_card_editor_expiration_month" />
 
             <View style="@style/PreferenceSpinnerUnderlineView" />
 
@@ -80,7 +81,8 @@
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/autofill_credit_card_editor_year_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/autofill_credit_card_editor_expiration_year" />
 
             <View style="@style/PreferenceSpinnerUnderlineView"  />
 

@@ -12,7 +12,7 @@ V8ObjectDataStore::value_type V8ObjectDataStore::Get(v8::Isolate* isolate,
   if (it == v8_object_map_.end()) {
     return value_type();
   }
-  return it->value.NewLocal(isolate);
+  return it->value.Get(isolate);
 }
 
 void V8ObjectDataStore::Set(v8::Isolate* isolate,

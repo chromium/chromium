@@ -174,7 +174,7 @@ class ExtensionContextMenuBrowserTest
     else
       params.page_url = frame->GetLastCommittedURL();
 
-    TestRenderViewContextMenu menu(frame, params);
+    TestRenderViewContextMenu menu(*frame, params);
     menu.Init();
 
     MenuItem::Id menu_item_id;

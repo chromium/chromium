@@ -221,6 +221,12 @@ class MockInputTargetClient : public viz::mojom::InputTargetClient {
 }  // namespace
 
 class RenderWidgetHostInputEventRouterTest : public testing::Test {
+ public:
+  RenderWidgetHostInputEventRouterTest(
+      const RenderWidgetHostInputEventRouterTest&) = delete;
+  RenderWidgetHostInputEventRouterTest& operator=(
+      const RenderWidgetHostInputEventRouterTest&) = delete;
+
  protected:
   RenderWidgetHostInputEventRouterTest() = default;
 
@@ -361,9 +367,6 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   std::unique_ptr<RenderWidgetHostImpl> widget_host_root_;
   std::unique_ptr<MockRootRenderWidgetHostView> view_root_;
   std::unique_ptr<MockInputTargetClient> input_target_client_root_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostInputEventRouterTest);
 };
 
 // Make sure that when a touch scroll crosses out of the area for a

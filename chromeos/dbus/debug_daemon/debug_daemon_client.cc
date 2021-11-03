@@ -66,6 +66,9 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
         callback_(std::move(callback)) {}
 
+  PipeReaderWrapper(const PipeReaderWrapper&) = delete;
+  PipeReaderWrapper& operator=(const PipeReaderWrapper&) = delete;
+
   base::ScopedFD Initialize() {
     return pipe_reader_.StartIO(
         base::BindOnce(&PipeReaderWrapper::OnIOComplete, AsWeakPtr()));
@@ -111,8 +114,6 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
 
   PipeReader pipe_reader_;
   DebugDaemonClient::GetLogsCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeReaderWrapper);
 };
 
 // Convert the string representation of a D-Bus error into a

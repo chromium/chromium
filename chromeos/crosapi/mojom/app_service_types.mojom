@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 module crosapi.mojom;
 
@@ -80,6 +80,10 @@ struct App {
   // There is no guarantee that this is sorted by any criteria.
   [MinVersion=8]
   array<Permission>? permissions@24;
+
+  [MinVersion=11]
+  // Whether the app publisher allows the app to be uninstalled.
+  OptionalBool allow_uninstall@25;
 };
 
 // The types of apps available in the registry.

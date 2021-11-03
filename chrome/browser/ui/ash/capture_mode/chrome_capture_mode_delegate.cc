@@ -162,11 +162,11 @@ void ChromeCaptureModeDelegate::StartObservingRestrictedContent(
       ConvertToScreenshotArea(window, bounds));
 }
 
-void ChromeCaptureModeDelegate::StopObservingRestrictedContent() {
+void ChromeCaptureModeDelegate::StopObservingRestrictedContent(
+    ash::OnCaptureModeDlpRestrictionChecked callback) {
   interrupt_video_recording_callback_.Reset();
-  // TODO(https://crbug.com/1256711): Pass a proper callback to save/delete
-  // recording
-  policy::DlpContentManager::Get()->CheckStoppedVideoCapture(base::DoNothing());
+  policy::DlpContentManager::Get()->CheckStoppedVideoCapture(
+      std::move(callback));
 }
 
 mojo::Remote<recording::mojom::RecordingService>

@@ -9,6 +9,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/SendTabToSelfNotificationReceiver_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -28,6 +29,8 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -89,7 +92,21 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 
 void AndroidNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
+  std::vector<const SendTabToSelfEntry> vector_copy;
+
   for (const SendTabToSelfEntry* entry : new_entries) {
+    vector_copy.push_back(*entry);
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AndroidNotificationHandler::DisplayNewEntriesOnUIThread,
+                     base::Unretained(this), std::move(vector_copy)));
+}
+
+void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
+    const std::vector<const SendTabToSelfEntry>& new_entries) {
+  for (const SendTabToSelfEntry& entry : new_entries) {
     if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
         share::AreUpcomingSharingFeaturesEnabled()) {
       web_contents_ = GetWebContentsForProfile(profile_)->GetWeakPtr();
@@ -100,16 +117,16 @@ void AndroidNotificationHandler::DisplayNewEntries(
 
       message->SetActionClick(base::BindOnce(
           &AndroidNotificationHandler::OnMessageOpened, base::Unretained(this),
-          entry->GetURL(), entry->GetGUID()));
+          entry.GetURL(), entry.GetGUID()));
       message->SetDismissCallback(base::BindOnce(
           &AndroidNotificationHandler::OnMessageDismissed,
-          base::Unretained(this), message.get(), entry->GetGUID()));
+          base::Unretained(this), message.get(), entry.GetGUID()));
 
-      message->SetTitle(l10n_util::GetStringFUTF16(
-          IDS_SEND_TAB_TO_SELF_MESSAGE,
-          base::UTF8ToUTF16(entry->GetDeviceName())));
+      message->SetTitle(
+          l10n_util::GetStringFUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE,
+                                     base::UTF8ToUTF16(entry.GetDeviceName())));
       message->SetDescription(
-          url_formatter::FormatUrlForSecurityDisplay(entry->GetURL()));
+          url_formatter::FormatUrlForSecurityDisplay(entry.GetURL()));
       message->SetDescriptionMaxLines(1);
       message->SetPrimaryButtonText(
           l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_MESSAGE_OPEN));
@@ -129,17 +146,17 @@ void AndroidNotificationHandler::DisplayNewEntries(
       JNIEnv* env = AttachCurrentThread();
 
       // Set the expiration to 10 days from when the notification is displayed.
-      base::Time expiraton_time = entry->GetSharedTime() + base::Days(10);
+      base::Time expiraton_time = entry.GetSharedTime() + base::Days(10);
 
       ScopedJavaLocalRef<jclass> send_tab_to_self_notification_receiver_class =
           Java_SendTabToSelfNotificationReceiver_getSendTabToSelfNotificationReciever(
               env);
 
       Java_NotificationManager_showNotification(
-          env, ConvertUTF8ToJavaString(env, entry->GetGUID()),
-          ConvertUTF8ToJavaString(env, entry->GetURL().spec()),
-          ConvertUTF8ToJavaString(env, entry->GetTitle()),
-          ConvertUTF8ToJavaString(env, entry->GetDeviceName()),
+          env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
+          ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
+          ConvertUTF8ToJavaString(env, entry.GetTitle()),
+          ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
           expiraton_time.ToJavaTime(),
           send_tab_to_self_notification_receiver_class);
     }

@@ -69,6 +69,11 @@ class GrandfatheredEasyUnlockHostDisabler
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  GrandfatheredEasyUnlockHostDisabler(
+      const GrandfatheredEasyUnlockHostDisabler&) = delete;
+  GrandfatheredEasyUnlockHostDisabler& operator=(
+      const GrandfatheredEasyUnlockHostDisabler&) = delete;
+
   ~GrandfatheredEasyUnlockHostDisabler() override;
 
  private:
@@ -97,8 +102,6 @@ class GrandfatheredEasyUnlockHostDisabler
 
   base::WeakPtrFactory<GrandfatheredEasyUnlockHostDisabler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(GrandfatheredEasyUnlockHostDisabler);
 };
 
 }  // namespace multidevice_setup

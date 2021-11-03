@@ -203,14 +203,6 @@ ax::mojom::DefaultActionVerb WebAXObject::Action() const {
   return private_->Action();
 }
 
-bool WebAXObject::CanPress() const {
-  if (IsDetached())
-    return false;
-
-  return private_->ActionElement() || private_->IsButton() ||
-         private_->IsMenuRelated();
-}
-
 bool WebAXObject::CanSetValueAttribute() const {
   if (IsDetached())
     return false;
@@ -272,7 +264,13 @@ bool WebAXObject::IsClickable() const {
   if (IsDetached())
     return false;
 
-  return private_->IsClickable();
+  // Filter out any action = kClickAncestor.
+  // Explanation: although elements are technically clickable if an ancestor is
+  // clickable, we do not expose them as such unless they have a widget role,
+  // otherwise there would often be an overwhelming number of clickable nodes.
+  ax::mojom::blink::DefaultActionVerb action = Action();
+  return action != ax::mojom::blink::DefaultActionVerb::kNone &&
+         action != ax::mojom::blink::DefaultActionVerb::kClickAncestor;
 }
 
 bool WebAXObject::IsControl() const {
@@ -514,9 +512,9 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
   ScopedActionAnnotator annotater(private_.Get(),
                                   ax::mojom::blink::Action::kHitTest);
-  IntPoint contents_point =
+  gfx::Point contents_point =
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
-          IntPoint(point));
+          point);
 
   Document* document = private_->GetDocument();
   if (!document || !document->View())
@@ -1138,28 +1136,28 @@ gfx::Point WebAXObject::GetScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return ToGfxPoint(private_->GetScrollOffset());
+  return private_->GetScrollOffset();
 }
 
 gfx::Point WebAXObject::MinimumScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return ToGfxPoint(private_->MinimumScrollOffset());
+  return private_->MinimumScrollOffset();
 }
 
 gfx::Point WebAXObject::MaximumScrollOffset() const {
   if (IsDetached())
     return gfx::Point();
 
-  return ToGfxPoint(private_->MaximumScrollOffset());
+  return private_->MaximumScrollOffset();
 }
 
 void WebAXObject::SetScrollOffset(const gfx::Point& offset) const {
   if (IsDetached())
     return;
 
-  private_->SetScrollOffset(IntPoint(offset));
+  private_->SetScrollOffset(offset);
 }
 
 void WebAXObject::Dropeffects(

@@ -68,6 +68,12 @@ void SaveValidationResultWithSessionKeys(bool* out_success,
 }  // namespace
 
 class SecureChannelDeviceToDeviceOperationsTest : public testing::Test {
+ public:
+  SecureChannelDeviceToDeviceOperationsTest(
+      const SecureChannelDeviceToDeviceOperationsTest&) = delete;
+  SecureChannelDeviceToDeviceOperationsTest& operator=(
+      const SecureChannelDeviceToDeviceOperationsTest&) = delete;
+
  protected:
   SecureChannelDeviceToDeviceOperationsTest() {}
   ~SecureChannelDeviceToDeviceOperationsTest() override {}
@@ -150,8 +156,6 @@ class SecureChannelDeviceToDeviceOperationsTest : public testing::Test {
   SessionKeys session_keys_;
 
   std::unique_ptr<DeviceToDeviceInitiatorHelper> helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDeviceToDeviceOperationsTest);
 };
 
 TEST_F(SecureChannelDeviceToDeviceOperationsTest,

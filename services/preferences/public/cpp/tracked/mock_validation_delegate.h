@@ -48,6 +48,10 @@ class MockValidationDelegateRecord
 
   MockValidationDelegateRecord();
 
+  MockValidationDelegateRecord(const MockValidationDelegateRecord&) = delete;
+  MockValidationDelegateRecord& operator=(const MockValidationDelegateRecord&) =
+      delete;
+
   // Returns the number of recorded validations.
   size_t recorded_validations_count() const { return validations_.size(); }
 
@@ -80,8 +84,6 @@ class MockValidationDelegateRecord
       prefs::mojom::TrackedPreferenceMetadata::PrefTrackingStrategy strategy);
 
   std::vector<ValidationEvent> validations_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockValidationDelegateRecord);
 };
 
 class MockValidationDelegate

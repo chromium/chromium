@@ -1,10 +1,11 @@
 <style include="settings-shared iron-flex iron-flex-alignment">
  .subtitle {
+   color: var(--cros-text-color-secondary);
    margin-top: 10px;
  }
 
  .instructions {
-   color: var(--cros-text-color-disabled);
+   color: var(--cros-text-color-secondary);
    margin-top: 4px;
  }
 
@@ -12,23 +13,45 @@
    margin: 40px;
  }
 
+ .label {
+   margin-top: 15px;
+ }
+
  iron-icon {
-   --iron-icon-fill-color: white;
-   background: black;
+   --iron-icon-fill-color: var(--cros-icon-color-primary);
+   --iron-icon-height: 18px;
+   --iron-icon-width: 18px;
+   background: var(--cros-bg-color-dropped-elevation-2);
+   border-radius: 2px;
    margin: 5px;
+   padding: 4px;
+ }
+
+ #move {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
  }
 
  #move > div {
-   color: var(--cros-text-color-disabled);
-   font-size: 150%;
+   color: var(--cros-text-color-secondary);
+   flex: 0 0 auto;
+ }
+
+ #move > div:not(:first-child) {
+  margin-inline-start: 8px;
+ }
+
+ #move > div:not(:last-child) {
+  margin-inline-end: 8px;
  }
 
  #move > div.shift {
-   background: black;
-   color: white;
+   background: var(--cros-bg-color-dropped-elevation-2);
+   border-radius: 2px;
+   color: var(--cros-text-color-primary);
    font-size: 100%;
-   margin: 0 8px;
-   padding: 4px 8px 0;
+   padding: 7px 8px;
  }
 </style>
 <cr-dialog id="dialog" on-close="close"
@@ -54,7 +77,7 @@
           <div id="move" class="layout horizontal">
             <!-- TODO(stevenjb): Localize 'shift' for other keyboards -->
             <!-- crbug.com/614827 -->
-            <div>( + </div><div class="shift">shift</div><div>)</div>
+            <div>(</div><div>+</div><div class="shift">shift</div><div>)</div>
           </div>
         </div>
         <div class="label">$i18n{displayOverscanPosition}</div>

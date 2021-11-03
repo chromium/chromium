@@ -34,7 +34,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.components.browser_ui.test.DummyUiComponentsActivityTestCase;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
@@ -46,6 +45,7 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
+import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.File;
@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for the PhotoPickerDialog class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PhotoPickerDialogTest extends DummyUiComponentsActivityTestCase
+public class PhotoPickerDialogTest extends DummyUiActivityTestCase
         implements PhotoPickerListener, SelectionObserver<PickerBitmap>,
                    DecoderServiceHost.DecoderStatusCallback,
                    PickerVideoPlayer.VideoPlaybackStatusCallback, AnimationListener {

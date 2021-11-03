@@ -601,6 +601,8 @@ Shell::~Shell() {
   for (auto& observer : shell_observers_)
     observer.OnShellDestroying();
 
+  ash_dbus_services_.reset();
+
   desks_controller_->Shutdown();
 
   user_metrics_recorder_->OnShellShuttingDown();

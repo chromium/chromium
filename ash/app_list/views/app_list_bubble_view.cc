@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
@@ -166,7 +167,7 @@ void AppListBubbleView::InitContentsView(
 void AppListBubbleView::InitFolderView(
     ApplicationDragAndDropHost* drag_and_drop_host) {
   auto folder_view = std::make_unique<AppListFolderView>(
-      this, apps_page_->scrollable_apps_grid_view(), view_delegate_->GetModel(),
+      this, apps_page_->scrollable_apps_grid_view(),
       /*contents_view=*/nullptr, a11y_announcer_.get(), view_delegate_);
   folder_view->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
@@ -272,7 +273,8 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   assistant_page_->SetVisible(false);
 
   // Ask the controller to start the search.
-  std::u16string query = view_delegate_->GetSearchModel()->search_box()->text();
+  std::u16string query =
+      AppListModelProvider::Get()->search_model()->search_box()->text();
   view_delegate_->StartSearch(query);
   SchedulePaint();
 }

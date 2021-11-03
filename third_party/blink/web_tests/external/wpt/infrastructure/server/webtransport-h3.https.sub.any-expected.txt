@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL WebTransport server should be running and should handle a bidirectional stream promise_test: Unhandled rejection with value: object "WebTransportError: Opening handshake failed."
-Harness: the test ran to completion.
-

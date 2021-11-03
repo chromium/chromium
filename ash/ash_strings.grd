@@ -1401,7 +1401,10 @@ This file contains the strings for ash.
         Turn on Phone Hub
       </message>
       <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_TITLE" desc="Title of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
-        Recently used apps
+        Recent apps
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_RECENT_APPS_PLACEHOLDER" desc="The placeholder of the recently used apps section (where users relaunch it directly after an app is launched from a notification) in phone hub bubble.">
+        App streaming is now set up. Once you get started, recently launched apps will appear here.
       </message>
       <message name="IDS_ASH_PHONE_HUB_ONBOARDING_DIALOG_DESCRIPTION" desc="The description of the onboarding dialog that pops up for existing multidevice users to ask for permission when the user enables this feature.">
         Connect to your phone’s hotspot, silence and locate your device, and view recent Chrome tabs open on your phone
@@ -1466,6 +1469,15 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_CALL_HANGUP_BUTTON" desc="Label for the hangup call button inside a PhoneHub notification.">
         Hang up
       </message>
+      <message name="IDS_ASH_PHONE_HUB_SUB_FEATURE_OPT_IN_DISMISS_BUTTON" desc="Label for the dismiss the dialog that allows the user to opt in to a sub feature of Phone Hub.">
+        Dismiss
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_DESCRIPTION" desc="Description for the camera roll opt in view.">
+        View recent photos from your phone‘s camera roll on <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_CAMERA_ROLL_OPT_IN_TURN_ON_BUTTON" desc="Label for button to turn on the setting to show recent photo from the phone.">
+        Turn on
+      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
         Reply
       </message>
@@ -1474,9 +1486,6 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON" desc="Label for the set up button to start the opt in flow to show notifications from the phone.">
         Set up
-      </message>
-      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DISMISS_BUTTON" desc="Label for the dismiss button to opt out showing notifications from the phone.">
-        Dismiss
       </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_HOTSPOT_FAILED_TITLE" desc="Title inside a PhoneHub notification when enable hotspot failed to find a connection.">
         Hotspot connection failed
@@ -1671,6 +1680,12 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER" desc="The text of the header (text above the icon list) of the desks templates unsupported apps dialog, which shows up when trying to save a desk that contains an unsupported app (i.e. Crostini app).">
         Unsupported apps
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON" desc="The text of the desks templates button in the overview desks bar.">
+        Templates
+      </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON" desc="The text of the button to save the active desk as a template.">
+        Save desk as a template
       </message>
 
       <!-- Virtual Desks -->

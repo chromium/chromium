@@ -125,6 +125,10 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
         processes_;
   };
 
+  SharedWorkerServiceImplTest(const SharedWorkerServiceImplTest&) = delete;
+  SharedWorkerServiceImplTest& operator=(const SharedWorkerServiceImplTest&) =
+      delete;
+
   mojo::Remote<blink::mojom::SharedWorkerConnector> MakeSharedWorkerConnector(
       GlobalRenderFrameHostId render_frame_host_id) {
     mojo::Remote<blink::mojom::SharedWorkerConnector> connector;
@@ -214,9 +218,6 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<FakeNetworkURLLoaderFactory> fake_url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       url_loader_factory_wrapper_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerServiceImplTest);
 };
 
 TEST_F(SharedWorkerServiceImplTest, BasicTest) {

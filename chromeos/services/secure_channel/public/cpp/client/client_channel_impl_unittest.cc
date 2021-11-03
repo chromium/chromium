@@ -40,6 +40,12 @@ namespace chromeos {
 namespace secure_channel {
 
 class SecureChannelClientChannelImplTest : public testing::Test {
+ public:
+  SecureChannelClientChannelImplTest(
+      const SecureChannelClientChannelImplTest&) = delete;
+  SecureChannelClientChannelImplTest& operator=(
+      const SecureChannelClientChannelImplTest&) = delete;
+
  protected:
   SecureChannelClientChannelImplTest() = default;
 
@@ -149,8 +155,6 @@ class SecureChannelClientChannelImplTest : public testing::Test {
     message_counters_received_.insert(message_counter);
     std::move(message_sent_callback_).Run();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientChannelImplTest);
 };
 
 TEST_F(SecureChannelClientChannelImplTest, TestGetConnectionMetadata) {

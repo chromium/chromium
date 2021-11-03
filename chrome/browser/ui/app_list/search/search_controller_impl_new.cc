@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/category_usage_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/filtering_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/score_normalizing_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/top_match_ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
@@ -67,6 +68,7 @@ void SearchControllerImplNew::InitializeRankers() {
   ranker_->AddRanker(std::make_unique<CategoryUsageRanker>(profile_));
   ranker_->AddRanker(std::make_unique<TopMatchRanker>());
   ranker_->AddRanker(std::make_unique<FilteringRanker>());
+  ranker_->AddRanker(std::make_unique<RemovedResultsRanker>());
 }
 
 void SearchControllerImplNew::Start(const std::u16string& query) {
@@ -112,11 +114,22 @@ void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
   }
 }
 
-void SearchControllerImplNew::InvokeResultAction(ChromeSearchResult* result,
-                                                 int action_index) {
+void SearchControllerImplNew::InvokeResultAction(
+    ChromeSearchResult* result,
+    ash::SearchResultActionType action) {
   if (!result)
     return;
-  result->InvokeAction(action_index);
+
+  if (result->result_type() == ash::AppListSearchResultType::kOmnibox) {
+    // Special case: Omnibox results.
+    // These are handled by the Omnibox autocomplete controller. The Omnibox is
+    // unique amongst our search providers in that it has a backend which
+    // supports result removal.
+    result->InvokeAction(action);
+  } else if (action == ash::SearchResultActionType::kRemove) {
+    // All other result removals are handled by the ranking system.
+    ranker_->Remove(result);
+  }
 }
 
 size_t SearchControllerImplNew::AddGroup(size_t max_results) {

@@ -670,7 +670,7 @@ void ArcAppIcon::OnIconRead(
   switch (icon_type_) {
     case IconType::kUncompressed: {
       DCHECK_EQ(1u, read_result->unsafe_icon_data.size());
-      DecodeImage(read_result->unsafe_icon_data[0],
+      DecodeImage(std::move(read_result->unsafe_icon_data[0]),
                   ArcAppIconDescriptor(resource_size_in_dip_,
                                        read_result->scale_factor),
                   read_result->resize_allowed, false /* retain_padding */,
@@ -689,7 +689,7 @@ void ArcAppIcon::OnIconRead(
       // element for |foreground_icon_path| only.
       if (read_result->unsafe_icon_data.size() == 1) {
         is_adaptive_icons_[read_result->scale_factor] = false;
-        DecodeImage(read_result->unsafe_icon_data[0],
+        DecodeImage(std::move(read_result->unsafe_icon_data[0]),
                     ArcAppIconDescriptor(resource_size_in_dip_,
                                          read_result->scale_factor),
                     read_result->resize_allowed, false /* retain_padding */,
@@ -698,12 +698,12 @@ void ArcAppIcon::OnIconRead(
       }
 
       DCHECK_EQ(2u, read_result->unsafe_icon_data.size());
-      DecodeImage(read_result->unsafe_icon_data[0],
+      DecodeImage(std::move(read_result->unsafe_icon_data[0]),
                   ArcAppIconDescriptor(resource_size_in_dip_,
                                        read_result->scale_factor),
                   read_result->resize_allowed, true /* retain_padding */,
                   foreground_image_skia_, foreground_incomplete_scale_factors_);
-      DecodeImage(read_result->unsafe_icon_data[1],
+      DecodeImage(std::move(read_result->unsafe_icon_data[1]),
                   ArcAppIconDescriptor(resource_size_in_dip_,
                                        read_result->scale_factor),
                   read_result->resize_allowed, true /* retain_padding */,
@@ -714,7 +714,7 @@ void ArcAppIcon::OnIconRead(
 }
 
 void ArcAppIcon::DecodeImage(
-    const std::string& unsafe_icon_data,
+    std::string unsafe_icon_data,
     const ArcAppIconDescriptor& descriptor,
     bool resize_allowed,
     bool retain_padding,
@@ -734,7 +734,8 @@ void ArcAppIcon::DecodeImage(
       decode_requests_.back()->OnDecodeImageFailed();
     }
   } else {
-    ImageDecoder::Start(decode_requests_.back().get(), unsafe_icon_data);
+    ImageDecoder::Start(decode_requests_.back().get(),
+                        std::move(unsafe_icon_data));
   }
 }
 

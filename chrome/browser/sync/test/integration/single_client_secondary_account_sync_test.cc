@@ -80,17 +80,15 @@ class SingleClientSecondaryAccountSyncTest : public SyncTest {
   base::CallbackListSubscription test_signin_client_subscription_;
 };
 
-// The unconsented primary account (aka secondary account) isn't supported on
-// ChromeOS, see IdentityManager::ComputeUnconsentedPrimaryAccountInfo().
+// The unconsented primary account isn't supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        StartsSyncTransportOnSignin) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Signing in (without making the account Chrome's primary one or explicitly
-  // setting up Sync) should trigger starting the Sync machinery in standalone
-  // transport mode.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Signing in (without granting sync consent or explicitly setting up Sync)
+  // should trigger starting the Sync machinery in standalone transport mode.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
 
   EXPECT_TRUE(GetClient(0)->AwaitSyncTransportActive());
@@ -117,10 +115,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        DoesNotStartSyncTransportOnSignin) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Signing in (without making the account Chrome's primary one or explicitly
-  // setting up Sync) should do nothing here, since we're on a platform where
-  // the unconsented primary account (aka secondary account) is not supported.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Signing in (without explicitly setting up Sync) should do nothing here,
+  // since we're on a platform where the unconsented primary account is not
+  // supported.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   EXPECT_EQ(syncer::SyncService::TransportState::DISABLED,
             GetSyncService(0)->GetTransportState());
@@ -134,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        SwitchesFromTransportToFeature) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  // Set up Sync in transport mode for a non-primary account.
-  secondary_account_helper::SignInSecondaryAccount(
+  // Set up Sync in transport mode for an unconsented account.
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
@@ -143,9 +141,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
 
-  // Simulate the user opting in to full Sync: Make the account primary, and
-  // set first-time setup to complete.
-  secondary_account_helper::MakeAccountPrimary(profile(), "user@email.com");
+  // Simulate the user opting in to full Sync, and set first-time setup to
+  // complete.
+  secondary_account_helper::GrantSyncConsent(profile(), "user@email.com");
   GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
@@ -167,15 +165,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
 
 // Regression test for crbug.com/955989 that verifies the cache GUID is not
 // reset upon restart of the browser, in standalone transport mode with
-// secondary accounts.
+// unconsented accounts.
 //
-// The unconsented primary account (aka secondary account) isn't supported on
-// ChromeOS, see IdentityManager::ComputeUnconsentedPrimaryAccountInfo().
+// The unconsented primary account isn't supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        PRE_ReusesSameCacheGuid) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  secondary_account_helper::SignInSecondaryAccount(
+  secondary_account_helper::SignInUnconsentedAccount(
       profile(), &test_url_loader_factory_, "user@email.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
@@ -195,11 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   ASSERT_NE(-1, base::WriteFile(GetTestFilePathForCacheGuid(),
                                 cache_guid.c_str(), cache_guid.size()));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// The unconsented primary account (aka secondary account) isn't supported on
-// ChromeOS, see IdentityManager::ComputeUnconsentedPrimaryAccountInfo().
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
                        ReusesSameCacheGuid) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";

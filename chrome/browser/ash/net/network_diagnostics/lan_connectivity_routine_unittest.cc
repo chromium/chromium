@@ -10,7 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 class LanConnectivityRoutineTest : public ::testing::Test {
@@ -100,4 +100,4 @@ TEST_F(LanConnectivityRoutineTest, TestDisconnectedLan) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

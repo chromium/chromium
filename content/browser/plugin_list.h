@@ -42,6 +42,9 @@ class CONTENT_EXPORT PluginList {
   // Gets the one instance of the PluginList.
   static PluginList* Singleton();
 
+  PluginList(const PluginList&) = delete;
+  PluginList& operator=(const PluginList&) = delete;
+
   // Cause the plugin list to refresh next time they are accessed, regardless
   // of whether they are already loaded.
   void RefreshPlugins();
@@ -158,8 +161,6 @@ class CONTENT_EXPORT PluginList {
   // Need synchronization for the above members since this object can be
   // accessed on multiple threads.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginList);
 };
 
 }  // namespace content

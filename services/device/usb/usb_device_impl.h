@@ -37,6 +37,9 @@ class UsbDeviceImpl : public UsbDevice {
   UsbDeviceImpl(ScopedLibusbDeviceRef platform_device,
                 const libusb_device_descriptor& descriptor);
 
+  UsbDeviceImpl(const UsbDeviceImpl&) = delete;
+  UsbDeviceImpl& operator=(const UsbDeviceImpl&) = delete;
+
   // UsbDevice implementation:
   void Open(OpenCallback callback) override;
 
@@ -84,8 +87,6 @@ class UsbDeviceImpl : public UsbDevice {
   bool visited_ = false;
 
   const ScopedLibusbDeviceRef platform_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceImpl);
 };
 
 }  // namespace device

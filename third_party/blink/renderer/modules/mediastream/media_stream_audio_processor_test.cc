@@ -133,10 +133,10 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
 
       media::AudioBus* processed_data = nullptr;
       base::TimeDelta capture_delay;
-      int new_volume = 0;
+      absl::optional<double> new_volume;
       int num_preferred_channels = -1;
       while (audio_processor->ProcessAndConsumeData(
-          255, num_preferred_channels, false, &processed_data, &capture_delay,
+          1.0, num_preferred_channels, false, &processed_data, &capture_delay,
           &new_volume)) {
         EXPECT_TRUE(processed_data);
         EXPECT_NEAR(input_capture_delay.InMillisecondsF(),
@@ -387,9 +387,9 @@ TEST_P(MediaStreamAudioProcessorTestMultichannel, TestStereoAudio) {
         audio_processor->PushCaptureData(*wrapper, pushed_capture_delay);
 
         base::TimeDelta capture_delay;
-        int new_volume = 0;
+        absl::optional<double> new_volume;
         EXPECT_TRUE(audio_processor->ProcessAndConsumeData(
-            0, num_preferred_channels, false, &processed_data, &capture_delay,
+            0.0, num_preferred_channels, false, &processed_data, &capture_delay,
             &new_volume));
         EXPECT_TRUE(processed_data);
         EXPECT_EQ(pushed_capture_delay, capture_delay);

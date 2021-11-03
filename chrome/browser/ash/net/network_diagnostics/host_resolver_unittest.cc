@@ -19,7 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 class HostResolverTest : public ::testing::Test {
@@ -138,4 +138,4 @@ TEST_F(HostResolverTest, TestMojoDisconnectDuringHostResolution) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

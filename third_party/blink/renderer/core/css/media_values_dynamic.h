@@ -22,7 +22,6 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
                      double viewport_width,
                      double viewport_height);
 
-  MediaValues* Copy() const override;
   bool ComputeLength(double value,
                      CSSPrimitiveValue::UnitType,
                      int& result) const override;
@@ -30,8 +29,6 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
                      CSSPrimitiveValue::UnitType,
                      double& result) const override;
 
-  double ViewportWidth() const override;
-  double ViewportHeight() const override;
   int DeviceWidth() const override;
   int DeviceHeight() const override;
   float DevicePixelRatio() const override;
@@ -59,11 +56,13 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   device::mojom::blink::DevicePostureType GetDevicePosture() const override;
   Document* GetDocument() const override;
   bool HasValues() const override;
-  void OverrideViewportDimensions(double width, double height) override;
 
   void Trace(Visitor*) const override;
 
  protected:
+  double ViewportWidth() const override;
+  double ViewportHeight() const override;
+
   Member<LocalFrame> frame_;
   bool viewport_dimensions_overridden_;
   double viewport_width_override_;

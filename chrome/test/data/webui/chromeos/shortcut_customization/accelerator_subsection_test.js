@@ -9,7 +9,7 @@ import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customiza
 import {AcceleratorInfo, AcceleratorKeys, AcceleratorState, AcceleratorType, Modifier} from 'chrome://shortcut-customization/shortcut_types.js';
 
 import {assertEquals} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks} from '../../test_util.js';
 
 import {CreateUserAccelerator} from './shortcut_customization_test_util.js';
 

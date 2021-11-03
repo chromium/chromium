@@ -14,7 +14,8 @@ namespace settings {
 
 const char kOsSignOutSubPage[] = "osSignOut";
 
-// Any changes here need to be kept in sync with chrome_new_window_client.cc
+// Any changes here need to be kept in sync with the mapping in
+// chrome_new_window_client.cc - for routes that can be opened from ARC++.
 // TODO(khorimoto): Instead of listing out every path, use an enum parameter.
 bool IsOSSettingsSubPage(const std::string& sub_page) {
   static const char* const kPaths[] = {
@@ -91,6 +92,10 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
 
       // Privacy and Security section.
       chromeos::settings::mojom::kPrivacyAndSecuritySectionPath,
+      chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2,
+      chromeos::settings::mojom::kFingerprintSubpagePathV2,
+      chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2,
+      chromeos::settings::mojom::kSmartPrivacySubpagePath,
 
       // Languages and Input section.
       chromeos::settings::mojom::kLanguagesAndInputSectionPath,

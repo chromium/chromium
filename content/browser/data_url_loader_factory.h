@@ -29,6 +29,9 @@ class DataURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   static mojo::PendingRemote<network::mojom::URLLoaderFactory>
   CreateForOneSpecificUrl(const GURL& url);
 
+  DataURLLoaderFactory(const DataURLLoaderFactory&) = delete;
+  DataURLLoaderFactory& operator=(const DataURLLoaderFactory&) = delete;
+
  private:
   // Initializes a factory with a GURL, which is useful if this factory will
   // be used only once with a GURL that can be larger than the GURL
@@ -50,8 +53,6 @@ class DataURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       override;
 
   GURL url_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataURLLoaderFactory);
 };
 
 }  // namespace content

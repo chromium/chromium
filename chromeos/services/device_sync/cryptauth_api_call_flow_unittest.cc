@@ -77,6 +77,12 @@ GURL UrlWithQueryParameters(
 }  // namespace
 
 class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthApiCallFlowTest(
+      const DeviceSyncCryptAuthApiCallFlowTest&) = delete;
+  DeviceSyncCryptAuthApiCallFlowTest& operator=(
+      const DeviceSyncCryptAuthApiCallFlowTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthApiCallFlowTest()
       : shared_factory_(
@@ -223,8 +229,6 @@ class DeviceSyncCryptAuthApiCallFlowTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
   CryptAuthApiCallFlow flow_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthApiCallFlowTest);
 };
 
 TEST_F(DeviceSyncCryptAuthApiCallFlowTest, PostRequestSuccess) {

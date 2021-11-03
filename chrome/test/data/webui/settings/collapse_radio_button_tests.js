@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 // clang-format off
+import  'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
 
-import {assertFalse, assertTrue} from '../chai_assert.js';
-import {isChildVisible} from '../test_util.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 

@@ -58,6 +58,9 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
     sync_call_ = false;
   }
 
+  ScopedEnumerationRequest(const ScopedEnumerationRequest&) = delete;
+  ScopedEnumerationRequest& operator=(const ScopedEnumerationRequest&) = delete;
+
   bool requested() const { return requested_; }
 
  private:
@@ -78,8 +81,6 @@ class PepperDeviceEnumerationHostHelper::ScopedEnumerationRequest
   PepperDeviceEnumerationHostHelper::Delegate::DevicesOnceCallback callback_;
   bool requested_;
   bool sync_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedEnumerationRequest);
 };
 
 // Makes sure that StopMonitoringDevices() is called for each

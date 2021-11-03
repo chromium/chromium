@@ -64,9 +64,10 @@ class PowerMetricsReporter
     kStateChanged = 2,
     kChargeLevelUnavailable = 3,
     kNoBattery = 4,
-    kInvalidDischargeRate = 5,
+    kBatteryLevelIncreased = 5,
     kInvalidInterval = 6,
-    kMaxValue = kInvalidInterval
+    kMacFullyCharged = 7,
+    kMaxValue = kMacFullyCharged
   };
 
   // Report battery and CPU metrics to generic histograms and histograms with a

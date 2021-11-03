@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // Enum representing potential status values for the eche feature.
@@ -42,6 +42,6 @@ enum class FeatureStatus {
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status);
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_FEATURE_STATUS_H_

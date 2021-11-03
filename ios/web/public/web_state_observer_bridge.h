@@ -29,11 +29,21 @@ class NavigationContext;
 
 // Invoked by WebStateObserverBridge::DidStartNavigation.
 - (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation;
+    didStartNavigation:(web::NavigationContext*)navigationContext;
+
+// Invoked by WebStateObserverBridge::DidRedirectNavigation.
+- (void)webState:(web::WebState*)webState
+    didRedirectNavigation:(web::NavigationContext*)navigationContext;
 
 // Invoked by WebStateObserverBridge::DidFinishNavigation.
 - (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation;
+    didFinishNavigation:(web::NavigationContext*)navigationContext;
+
+// Invoked by WebStateObserverBridge::DidStartLoading.
+- (void)webStateDidStartLoading:(web::WebState*)webState;
+
+// Invoked by WebStateObserverBridge::DidStopLoading.
+- (void)webStateDidStopLoading:(web::WebState*)webState;
 
 // Invoked by WebStateObserverBridge::PageLoaded.
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success;
@@ -58,11 +68,11 @@ class NavigationContext;
 
 // Invoked by WebStateObserverBridge::WebFrameDidBecomeAvailable.
 - (void)webState:(web::WebState*)webState
-    frameDidBecomeAvailable:(web::WebFrame*)web_frame;
+    frameDidBecomeAvailable:(web::WebFrame*)webFrame;
 
 // Invoked by WebStateObserverBridge::WebFrameWillBecomeUnavailable.
 - (void)webState:(web::WebState*)webState
-    frameWillBecomeUnavailable:(web::WebFrame*)web_frame;
+    frameWillBecomeUnavailable:(web::WebFrame*)webFrame;
 
 // Invoked by WebStateObserverBridge::RenderProcessGone.
 - (void)renderProcessGoneForWebState:(web::WebState*)webState;
@@ -70,16 +80,6 @@ class NavigationContext;
 // Note: after |webStateDestroyed:| is invoked, the WebState being observed
 // is no longer valid.
 - (void)webStateDestroyed:(web::WebState*)webState;
-
-// Invoked by WebStateObserverBridge::DidStopLoading.
-- (void)webStateDidStopLoading:(web::WebState*)webState;
-
-// Invoked by WebStateObserverBridge::DidStartLoading.
-- (void)webStateDidStartLoading:(web::WebState*)webState;
-
-// Invoked by WebStateObserverBridge::DidRedirectNavigation.
-- (void)webState:(web::WebState*)webState
-    didRedirectNavigation:(web::NavigationContext*)navigation_context;
 
 @end
 
@@ -102,8 +102,13 @@ class WebStateObserverBridge : public web::WebStateObserver {
   void WasHidden(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           NavigationContext* navigation_context) override;
+  void DidRedirectNavigation(
+      web::WebState* web_state,
+      web::NavigationContext* navigation_context) override;
   void DidFinishNavigation(web::WebState* web_state,
                            NavigationContext* navigation_context) override;
+  void DidStartLoading(web::WebState* web_state) override;
+  void DidStopLoading(web::WebState* web_state) override;
   void PageLoaded(
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
@@ -119,11 +124,6 @@ class WebStateObserverBridge : public web::WebStateObserver {
                                      WebFrame* web_frame) override;
   void RenderProcessGone(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
-  void DidStartLoading(web::WebState* web_state) override;
-  void DidStopLoading(web::WebState* web_state) override;
-  void DidRedirectNavigation(
-      web::WebState* web_state,
-      web::NavigationContext* navigation_context) override;
 
  private:
   __weak id<CRWWebStateObserver> observer_ = nil;

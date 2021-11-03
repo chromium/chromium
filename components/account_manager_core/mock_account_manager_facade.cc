@@ -4,8 +4,6 @@
 
 #include "components/account_manager_core/mock_account_manager_facade.h"
 
-#include "google_apis/gaia/oauth2_access_token_fetcher.h"
-
 namespace account_manager {
 
 MockAccountManagerFacadeObserver::MockAccountManagerFacadeObserver() = default;

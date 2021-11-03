@@ -4,11 +4,19 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -39,6 +47,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/http_request.h"
+#include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/features.h"
@@ -179,6 +188,10 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
     WebUIControllerFactory::RegisterFactory(&factory_);
   }
 
+  NetworkServiceBrowserTest(const NetworkServiceBrowserTest&) = delete;
+  NetworkServiceBrowserTest& operator=(const NetworkServiceBrowserTest&) =
+      delete;
+
   bool ExecuteScript(const std::string& script) {
     bool xhr_result = false;
     // The JS call will fail if disallowed because the process will be killed.
@@ -258,8 +271,6 @@ class NetworkServiceBrowserTest : public ContentBrowserTest {
  private:
   WebUITestWebUIControllerFactory factory_;
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceBrowserTest);
 };
 
 // Verifies that WebUI pages with WebUI bindings can't make network requests.
@@ -667,6 +678,164 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
   EXPECT_TRUE(test_loader_factory->has_received_preflight());
   EXPECT_TRUE(test_loader_factory->has_received_request());
 }
+
+// Android doesn't support PRE_ tests.
+// TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
+#if !defined(OS_ANDROID)
+class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceBrowserCacheResetTest() = default;
+
+ protected:
+  void StoreUrl(const GURL& url) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    base::FilePath data_file =
+        shell()->web_contents()->GetBrowserContext()->GetPath().Append(
+            FILE_PATH_LITERAL("TestData"));
+    std::string data;
+    base::JSONWriter::Write(base::Value(url.spec()), &data);
+    EXPECT_TRUE(base::WriteFile(data_file, data));
+  }
+
+  void RetrieveUrl(GURL& url) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    base::FilePath data_file =
+        shell()->web_contents()->GetBrowserContext()->GetPath().Append(
+            FILE_PATH_LITERAL("TestData"));
+    std::string data;
+    EXPECT_TRUE(base::ReadFileToString(data_file, &data));
+    auto json_data = base::JSONReader::Read(data);
+    ASSERT_TRUE(json_data.has_value());
+    url = GURL(json_data->GetString());
+    EXPECT_TRUE(url.is_valid());
+  }
+
+  base::FilePath GetNetworkContextPath() {
+    return shell()->web_contents()->GetBrowserContext()->GetPath().Append(
+        FILE_PATH_LITERAL("TestContext"));
+  }
+
+  base::FilePath GetNetworkContextCachePath() {
+    return GetNetworkContextPath().Append(FILE_PATH_LITERAL("Cache"));
+  }
+
+  // Creates a Network context and attempts to make a request to a resource that
+  // is cacheable. Returns the net error code. If `load_only_from_cache` is
+  // specified then the request will fail if the resource cannot be served from
+  // the cache. `url` specifies the URL to connect to on the
+  // embedded_test_server host which does not need to have a server actively
+  // listening on it if `load_only_from_cache` is true.
+  int MakeNetworkContentAndLoadUrl(bool reset_cache,
+                                   bool load_only_from_cache,
+                                   const GURL& url) {
+    auto file_paths = network::mojom::NetworkContextFilePaths::New();
+    base::FilePath context_path = GetNetworkContextPath();
+    file_paths->data_path = context_path.Append(FILE_PATH_LITERAL("Data"));
+    file_paths->unsandboxed_data_path = context_path;
+    file_paths->trigger_migration = true;
+
+    network::mojom::NetworkContextParamsPtr context_params =
+        network::mojom::NetworkContextParams::New();
+    context_params->file_paths = std::move(file_paths);
+    context_params->cert_verifier_params = GetCertVerifierParams(
+        cert_verifier::mojom::CertVerifierCreationParams::New());
+    context_params->reset_http_cache_backend = reset_cache;
+    context_params->http_cache_enabled = true;
+    context_params->http_cache_path = GetNetworkContextCachePath();
+
+    mojo::Remote<network::mojom::NetworkContext> network_context;
+    content::CreateNetworkContextInNetworkService(
+        network_context.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
+
+    network::mojom::URLLoaderFactoryParamsPtr url_loader_params =
+        network::mojom::URLLoaderFactoryParams::New();
+    url_loader_params->process_id = network::mojom::kBrowserProcessId;
+    url_loader_params->is_trusted = true;
+    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
+    network_context->CreateURLLoaderFactory(
+        url_loader_factory.BindNewPipeAndPassReceiver(),
+        std::move(url_loader_params));
+
+    std::unique_ptr<network::ResourceRequest> request =
+        std::make_unique<network::ResourceRequest>();
+    request->url = url;
+    url::Origin origin = url::Origin::Create(url);
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateForInternalRequest(origin);
+    request->site_for_cookies =
+        request->trusted_params->isolation_info.site_for_cookies();
+
+    if (load_only_from_cache)
+      request->load_flags |= net::LOAD_ONLY_FROM_CACHE;
+    auto loader = network::SimpleURLLoader::Create(
+        std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    scoped_refptr<net::HttpResponseHeaders> headers;
+    base::RunLoop loop;
+    loader->DownloadHeadersOnly(
+        url_loader_factory.get(),
+        base::BindLambdaForTesting(
+            [&](scoped_refptr<net::HttpResponseHeaders> passed_headers) {
+              headers = passed_headers;
+              loop.Quit();
+            }));
+    loop.Run();
+    return loader->NetError();
+  }
+
+  void GetCacheFileInfo(base::File::Info& info) {
+    base::FilePath ceontxt_path = GetNetworkContextPath();
+    base::FileEnumerator cache_files(GetNetworkContextCachePath(), true,
+                                     base::FileEnumerator::FILES);
+    // Cache entries created.
+    auto file_path = cache_files.Next();
+    ASSERT_FALSE(file_path.empty());
+    ASSERT_TRUE(base::GetFileInfo(file_path, &info));
+  }
+};
+
+// Create a network context and make an HTTP request which causes cache entry to
+// be created.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
+                       PRE_PRE_CacheResetTest) {
+  GURL url = embedded_test_server()->GetURL("/echoheadercache");
+  // Store the URL so the requests made by the subsequent parts of this test
+  // are to the same origin. Otherwise, the embedded test server might be
+  // operating on a different port causing incorrect cache misses.
+  ASSERT_NO_FATAL_FAILURE(StoreUrl(url));
+
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(
+                  /*reset_cache=*/false, /*load_only_from_cache=*/false, url),
+              net::test::IsOk());
+}
+
+// Using the same network context, make an HTTP request and verify that the
+// cache entry is correctly used.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
+                       PRE_CacheResetTest) {
+  GURL url;
+  ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
+
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false,
+                                           /*load_only_from_cache=*/true, url),
+              net::test::IsOk());
+}
+
+// Using the same network context, reset the cache backend and verify that cache
+// miss is correctly reported.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
+  GURL url;
+  ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
+
+  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
+                                           /*load_only_from_cache=*/true, url),
+              net::test::IsError(net::ERR_CACHE_MISS));
+}
+#endif  // !defined(OS_ANDROID)
 
 enum class FailureType {
   kNoFailures = 0,
@@ -1356,6 +1525,11 @@ class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
                                           std::vector<base::Feature>());
   }
 
+  NetworkServiceInProcessBrowserTest(
+      const NetworkServiceInProcessBrowserTest&) = delete;
+  NetworkServiceInProcessBrowserTest& operator=(
+      const NetworkServiceInProcessBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(embedded_test_server()->Start());
@@ -1363,8 +1537,6 @@ class NetworkServiceInProcessBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceInProcessBrowserTest);
 };
 
 // Verifies that in-process network service works.
@@ -1384,6 +1556,11 @@ class NetworkServiceInvalidLogBrowserTest : public ContentBrowserTest {
  public:
   NetworkServiceInvalidLogBrowserTest() = default;
 
+  NetworkServiceInvalidLogBrowserTest(
+      const NetworkServiceInvalidLogBrowserTest&) = delete;
+  NetworkServiceInvalidLogBrowserTest& operator=(
+      const NetworkServiceInvalidLogBrowserTest&) = delete;
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(network::switches::kLogNetLog, "/abc/def");
   }
@@ -1392,9 +1569,6 @@ class NetworkServiceInvalidLogBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     EXPECT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceInvalidLogBrowserTest);
 };
 
 // Verifies that an invalid --log-net-log flag won't crash the browser.

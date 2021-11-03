@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -27,10 +28,14 @@ struct ViewportDescription;
 // smart phone devices are checked. The calculated value will be sent as a part
 // of UKM.
 class CORE_EXPORT MobileFriendlinessChecker
-    : public GarbageCollected<MobileFriendlinessChecker> {
+    : public GarbageCollected<MobileFriendlinessChecker>,
+      public LocalFrameView::LifecycleNotificationObserver {
  public:
   explicit MobileFriendlinessChecker(LocalFrameView& frame_view);
   virtual ~MobileFriendlinessChecker();
+
+  // LocalFrameView::LifecycleNotificationObserver implementation
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
   void NotifyPaint();
   void WillBeRemovedFromFrame();
@@ -40,7 +45,7 @@ class CORE_EXPORT MobileFriendlinessChecker
     return mobile_friendliness_;
   }
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
   struct TextAreaWithFontSize {
     double small_font_area = 0;
     double total_text_area = 0;
@@ -48,7 +53,7 @@ class CORE_EXPORT MobileFriendlinessChecker
   };
 
  private:
-  void EvaluateNow(TimerBase*);
+  void Activate(TimerBase*);
 
   void ComputeSmallTextRatio(const LayoutObject& object);
 

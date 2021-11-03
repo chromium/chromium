@@ -73,6 +73,9 @@ class ProfilingThreadControl {
  public:
   ProfilingThreadControl() : thread_(nullptr) {}
 
+  ProfilingThreadControl(const ProfilingThreadControl&) = delete;
+  ProfilingThreadControl& operator=(const ProfilingThreadControl&) = delete;
+
   void Start() {
     base::AutoLock locked(lock_);
 
@@ -97,8 +100,6 @@ class ProfilingThreadControl {
  private:
   base::Thread* thread_;
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfilingThreadControl);
 };
 
 base::LazyInstance<ProfilingThreadControl>::Leaky g_flush_thread_control =

@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_item.h"
@@ -34,6 +35,7 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
+#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -106,6 +108,14 @@ namespace {
 
 constexpr int kAppListBezelMargin = 50;
 
+AppListModel* GetAppListModel() {
+  return AppListModelProvider::Get()->model();
+}
+
+SearchModel* GetSearchModel() {
+  return AppListModelProvider::Get()->search_model();
+}
+
 int64_t GetPrimaryDisplayId() {
   return display::Screen::GetScreen()->GetPrimaryDisplay().id();
 }
@@ -144,7 +154,7 @@ std::unique_ptr<TestSearchResult> CreateOmniboxSuggestionResult(
   auto suggestion_result = std::make_unique<TestSearchResult>();
   suggestion_result->set_result_id(result_id);
   suggestion_result->set_is_omnibox_search(true);
-  suggestion_result->set_display_type(ash::SearchResultDisplayType::kList);
+  suggestion_result->set_display_type(SearchResultDisplayType::kList);
   SearchResultActions actions;
   actions.push_back(SearchResultAction(gfx::ImageSkia(), u"Remove",
                                        true /*visible_on_hover*/));
@@ -171,17 +181,10 @@ class AppListPresenterTest
   void SetUp() override {
     feature_list_.InitWithFeatureState(
         app_list_features::kNewDragSpecInLauncher, std::get<1>(GetParam()));
-    AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
-  }
-
-  // testing::Test:
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
   void SetAppListStateAndWait(AppListViewState new_state) {
@@ -327,22 +330,15 @@ class AppListBubbleAndTabletTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
                                               productivity_launcher_param());
-    AppListView::SetShortAnimationForTesting(true);
     AshTestBase::SetUp();
 
-    auto model = std::make_unique<test::AppListTestModel>();
-    app_list_test_model_ = model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(model));
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        app_list_test_model_.get(), search_model_.get());
 
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
-  }
-
-  // testing::Test:
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
   // Whether we should use the ProductivityLauncher flag.
@@ -426,7 +422,8 @@ class AppListBubbleAndTabletTest
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  test::AppListTestModel* app_list_test_model_ = nullptr;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
   AppsGridView* apps_grid_view_ = nullptr;
 };
 
@@ -446,15 +443,10 @@ class PopulatedAppListTest : public AshTestBase,
     // Make the display big enough to hold the app list.
     UpdateDisplay("1024x768");
 
-    auto app_list_test_model = std::make_unique<test::AppListTestModel>();
-    app_list_test_model_ = app_list_test_model.get();
-    Shell::Get()->app_list_controller()->SetAppListModelForTest(
-        std::move(app_list_test_model));
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        app_list_test_model_.get(), search_model_.get());
   }
 
  protected:
@@ -525,7 +517,8 @@ class PopulatedAppListTest : public AshTestBase,
     folder_view()->folder_header_view()->ItemNameChanged();
   }
 
-  test::AppListTestModel* app_list_test_model_ = nullptr;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
   AppListView* app_list_view_ = nullptr;         // Owned by native widget.
   PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
@@ -533,15 +526,13 @@ class PopulatedAppListTest : public AshTestBase,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Subclass of PopuplatedAppListTest which enables the animation and the virtual
-// keyboard.
+// Subclass of PopuplatedAppListTest which enables the virtual keyboard.
 class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
  public:
   PopulatedAppListWithVKEnabledTest() = default;
   ~PopulatedAppListWithVKEnabledTest() override = default;
 
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
     PopulatedAppListTest::SetUp();
@@ -664,7 +655,6 @@ TEST_P(AppListPresenterTest, ClickSearchBoxInTabletMode) {
   // called when animation ends.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   ui::test::EventGenerator* generator = GetEventGenerator();
 
@@ -698,10 +688,10 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
 
   // Add a zero state suggestion results - the result that will be tested is in
   // the second place.
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult("Another suggestion"));
   const std::string kTestResultId = "Test suggestion";
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   // The result list is updated asynchronously.
   GetAppListTestHelper()->WaitUntilIdle();
@@ -781,7 +771,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
             result_selection_controller->selected_location_details());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
-      {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};
+      {kTestResultId, SearchResultActionType::kRemove}};
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       GetAppListTestHelper()
           ->app_list_client()
@@ -794,10 +784,10 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
 
   // Add a zero state suggestion results - the result that will be tested is in
   // the second place.
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult("Another suggestion"));
   const std::string kTestResultId = "Test suggestion";
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
@@ -848,7 +838,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionUsingLongTap) {
   EXPECT_FALSE(result_view->selected());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
-      {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};
+      {kTestResultId, SearchResultActionType::kRemove}};
 
   std::vector<TestAppListClient::SearchResultActionId> invoked_actions =
       GetAppListTestHelper()
@@ -862,7 +852,7 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
@@ -885,7 +875,6 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Transition to fullscreen search state.
   GetAppListView()->SetState(AppListViewState::kFullscreenSearch);
@@ -902,16 +891,16 @@ TEST_P(AppListPresenterTest, RemoveSuggestionDialogAnimatesWithAppListView) {
   EXPECT_EQ(gfx::RectF(initial_dialog_bounds), current_bounds);
 }
 
-// DISABLED for: https://crbug.com/1263380
 TEST_P(AppListPresenterTest,
-       DISABLED_RemoveSuggestionDialogBoundsUpdateWithAppListState) {
+       RemoveSuggestionDialogBoundsUpdateWithAppListState) {
   ShowZeroStateSearchInHalfState();
 
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
@@ -952,7 +941,7 @@ TEST_P(AppListPresenterTest,
 
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
 
@@ -981,9 +970,7 @@ TEST_P(AppListPresenterTest,
   widget_close_waiter.Wait();
 }
 
-// DISABLED for: https://crbug.com/1263380
-TEST_P(AppListPresenterTest,
-       DISABLED_RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
+TEST_P(AppListPresenterTest, RemoveSuggestionDialogBoundsUpdateWhenVKHidden) {
   // Enable virtual keyboard for this test.
   KeyboardController* const keyboard_controller =
       Shell::Get()->keyboard_controller();
@@ -994,9 +981,10 @@ TEST_P(AppListPresenterTest,
 
   // Add a zero state suggestion result.
   const std::string kTestResultId = "Test suggestion";
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
+  GetSearchModel()->results()->Add(
       CreateOmniboxSuggestionResult(kTestResultId));
   GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
   SearchResultBaseView* result_view = GetSearchResultListViewItemAt(0);
   ASSERT_TRUE(result_view);
@@ -1337,7 +1325,6 @@ TEST_P(PopulatedAppListTest,
 
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -2252,7 +2239,6 @@ TEST_P(AppListPresenterTest, AppListShownWhileClosing) {
   // finishes).
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Dismiss and immediately show the app list (before close animation is done).
   GetAppListTestHelper()->Dismiss();
@@ -2301,7 +2287,6 @@ TEST_P(AppListPresenterTest, AppListWithMaximizedShelf) {
   // finishes).
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Start closing the app list view.
   GetAppListTestHelper()->Dismiss();
@@ -2588,6 +2573,125 @@ TEST_P(AppListPresenterTest, TapAndClickEnablesSearchBox) {
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
+// Tests that search box gets deactivated if the active search model gets
+// switched.
+TEST_P(AppListPresenterTest, SearchBoxDeactivatedOnModelChange) {
+  EnableTabletMode(true);
+
+  const bool test_mouse_event = TestMouseEventParam();
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  SearchBoxView* search_box_view = GetAppListView()->search_box_view();
+
+  // Tap/Click the search box, it should activate.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  if (test_mouse_event) {
+    generator->MoveMouseTo(GetPointInsideSearchbox());
+    generator->PressLeftButton();
+    generator->ReleaseLeftButton();
+  } else {
+    generator->GestureTapAt(GetPointInsideSearchbox());
+  }
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+
+  // Switch the active app list and search model, and verify the search box is
+  // deactivated.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+
+  GetAppListTestHelper()->CheckVisibility(true);
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+}
+
+// Tests that search UI gets closed if search model gets changed.
+TEST_P(AppListPresenterTest, SearchClearedOnModelChange) {
+  EnableTabletMode(true);
+
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  SearchBoxView* search_box_view = GetAppListView()->search_box_view();
+
+  // Press a key to start search, and activate the search box.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  SearchModel* search_model = GetSearchModel();
+  auto test_result = std::make_unique<TestSearchResult>();
+  test_result->set_result_id("test");
+  test_result->set_display_type(SearchResultDisplayType::kList);
+  search_model->results()->Add(std::move(test_result));
+
+  auto test_tile_result = std::make_unique<TestSearchResult>();
+  test_tile_result->set_result_id("test_tile");
+  test_tile_result->set_display_type(SearchResultDisplayType::kTile);
+  search_model->results()->Add(std::move(test_tile_result));
+
+  // The results are updated asynchronously. Wait until the update is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+
+  SearchResultContainerView* const tile_item_container =
+      search_result_page()->GetSearchResultTileItemListViewForTest();
+  ASSERT_EQ(1, tile_item_container->num_results());
+  EXPECT_EQ("test_tile",
+            tile_item_container->GetResultViewAt(0)->result()->id());
+
+  SearchResultContainerView* item_list_container =
+      search_result_page()->GetSearchResultListViewForTest();
+  ASSERT_EQ(1, item_list_container->num_results());
+  EXPECT_EQ("test", item_list_container->GetResultViewAt(0)->result()->id());
+
+  // Switch the active app list and search model, and verify the search UI gets
+  // cleared.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+
+  // Verify that the search UI shows results from the current active search
+  // model.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  auto test_result_override = std::make_unique<TestSearchResult>();
+  test_result_override->set_result_id("test_override");
+  test_result_override->set_display_type(SearchResultDisplayType::kList);
+  search_model_override->results()->Add(std::move(test_result_override));
+
+  auto test_tile_result_override = std::make_unique<TestSearchResult>();
+  test_tile_result_override->set_result_id("test_tile_override");
+  test_tile_result_override->set_display_type(SearchResultDisplayType::kTile);
+  search_model_override->results()->Add(std::move(test_tile_result_override));
+
+  // The results are updated asynchronously. Wait until the update is finished.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
+
+  ASSERT_EQ(1, tile_item_container->num_results());
+  EXPECT_EQ("test_tile_override",
+            tile_item_container->GetResultViewAt(0)->result()->id());
+
+  ASSERT_EQ(1, item_list_container->num_results());
+  EXPECT_EQ("test_override",
+            item_list_container->GetResultViewAt(0)->result()->id());
+
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+
+  EXPECT_FALSE(search_box_view->is_search_box_active());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+}
+
 // Tests that the result selection will reset after closing the search box by
 // clicking somewhere outside the search box.
 TEST_P(AppListPresenterTest,
@@ -2603,8 +2707,7 @@ TEST_P(AppListPresenterTest,
   Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
 
   // Add search results to the search model.
-  SearchModel* search_model =
-      Shell::Get()->app_list_controller()->GetSearchModel();
+  SearchModel* search_model = GetSearchModel();
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion2"));
   // The results are updated asynchronously. Wait until the update is finished.
@@ -2662,8 +2765,7 @@ TEST_P(AppListPresenterTest,
   Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
 
   // Add search results to the search model.
-  SearchModel* search_model =
-      Shell::Get()->app_list_controller()->GetSearchModel();
+  SearchModel* search_model = GetSearchModel();
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion1"));
   search_model->results()->Add(CreateOmniboxSuggestionResult("Suggestion2"));
   // The results are updated asynchronously. Wait until the update is finished.
@@ -2907,7 +3009,7 @@ TEST_P(AppListPresenterTest,
 TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
   // Set up two displays.
   UpdateDisplay("1024x768,1200x900");
-  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+  AppListModel* model = GetAppListModel();
   model->AddItem(std::make_unique<AppListItem>("item 0"));
   model->AddItem(std::make_unique<AppListItem>("item 1"));
 
@@ -3213,7 +3315,6 @@ TEST_P(AppListPresenterTest, DragUpdateWhileAppListClosing) {
   // immediately.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  AppListView::SetShortAnimationForTesting(false);
 
   // Start drag and press escape to close the app list view.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -4265,7 +4366,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies that mouse dragging AppListView is enabled.
 TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppList) {
   std::unique_ptr<AppListItem> item(new AppListItem("fake id"));
-  Shell::Get()->app_list_controller()->GetModel()->AddItem(std::move(item));
+  GetAppListModel()->AddItem(std::move(item));
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckState(AppListViewState::kPeeking);
@@ -4299,7 +4400,7 @@ TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
   for (int i = 0; i < items_in_page; ++i) {
     std::unique_ptr<AppListItem> item(
         new AppListItem(base::StringPrintf("fake id %d", i)));
-    Shell::Get()->app_list_controller()->GetModel()->AddItem(std::move(item));
+    GetAppListModel()->AddItem(std::move(item));
   }
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -4358,7 +4459,7 @@ TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
 TEST_P(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
   const int items_in_page =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
-  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
+  AppListModel* model = GetAppListModel();
   for (int i = 0; i < items_in_page; ++i) {
     std::unique_ptr<AppListItem> item(
         new AppListItem(base::StringPrintf("fake id %02d", i)));

@@ -57,13 +57,15 @@ class DebugRecordingSession : public media::AudioDebugRecordingSession {
   DebugRecordingSession(
       const base::FilePath& file_name_base,
       mojo::PendingRemote<mojom::DebugRecording> debug_recording);
+
+  DebugRecordingSession(const DebugRecordingSession&) = delete;
+  DebugRecordingSession& operator=(const DebugRecordingSession&) = delete;
+
   ~DebugRecordingSession() override;
 
  private:
   std::unique_ptr<DebugRecordingFileProvider> file_provider_;
   mojo::Remote<mojom::DebugRecording> debug_recording_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugRecordingSession);
 };
 
 }  // namespace audio

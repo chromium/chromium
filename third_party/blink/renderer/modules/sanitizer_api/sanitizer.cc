@@ -154,6 +154,16 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
     exception_state.ClearException();
     return nullptr;
   }
+  // Edge case: The template element treatment also applies to the newly created
+  // element in .sanitizeFor.
+  if (IsA<HTMLTemplateElement>(element)) {
+    DoSanitizing(To<HTMLTemplateElement>(element)->content(), window,
+                 exception_state);
+    if (exception_state.HadException()) {
+      exception_state.ClearException();
+      return nullptr;
+    }
+  }
   return element;
 }
 
@@ -396,6 +406,13 @@ SanitizerConfig* Sanitizer::getConfiguration() const {
 
 SanitizerConfig* Sanitizer::getDefaultConfiguration() {
   return SanitizerConfigCopy(SanitizerConfigImpl::DefaultConfig());
+}
+
+Sanitizer* Sanitizer::getDefaultInstance() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<Sanitizer>, default_sanitizer_,
+      (Sanitizer::Create(nullptr, nullptr, ASSERT_NO_EXCEPTION)));
+  return default_sanitizer_;
 }
 
 void Sanitizer::Trace(Visitor* visitor) const {

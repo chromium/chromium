@@ -64,10 +64,8 @@
 crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
 
 # Flakily timing out on Win x64 Debug bot. Unfortunately we can't identify this
-# separately from the 32-bit bots. Also unfortunately, the flaky retry mechanism
-# doesn't work well in this harness if the test times out. Skip it on this
-# configuration for now.
-crbug.com/628697 [ win debug ] ContextLost_WebGLContextLostFromQuantity [ Skip ]
+# separately from the 32-bit bots.
+crbug.com/628697 [ win debug ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Flaky on Mac 10.7 and 10.8 resulting in crashes during browser
 # startup, so skip this test in those configurations.
@@ -80,14 +78,14 @@ crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
 # Flaking on Nexus 5X
-crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
-crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
-crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Skip ]
-crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
+crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
+crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
 crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
 
-# Flaking on Nexus 9
+# Flaking on Nexus 9 and we don't really care about this configuration -> Skip.
 crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
 crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
 crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]

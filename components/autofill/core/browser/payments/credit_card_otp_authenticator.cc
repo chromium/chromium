@@ -57,7 +57,8 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptClosed(bool user_closed_dialog) {
     return;
 
   requester_->OnOtpAuthenticationComplete(
-      OtpAuthenticationResponse().with_did_succeed(false));
+      OtpAuthenticationResponse().with_result(
+          OtpAuthenticationResponse::Result::kFlowCancelled));
   AutofillMetrics::LogOtpAuthResult(
       AutofillMetrics::OtpAuthEvent::kFlowCancelled);
   Reset();
@@ -76,7 +77,8 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
     int64_t billing_customer_number) {
   if (!card) {
     requester->OnOtpAuthenticationComplete(
-        OtpAuthenticationResponse().with_did_succeed(false));
+        OtpAuthenticationResponse().with_result(
+            OtpAuthenticationResponse::Result::kGenericError));
     Reset();
     return;
   }
@@ -160,9 +162,7 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   autofill_client_->ShowVirtualCardErrorDialog(
       /*is_permanent_error=*/result ==
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
-  requester_->OnOtpAuthenticationComplete(
-      OtpAuthenticationResponse().with_did_succeed(false));
-
+  OtpAuthenticationResponse response;
   if (result ==
           AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
       result ==
@@ -170,10 +170,14 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     AutofillMetrics::LogOtpAuthResult(
         AutofillMetrics::OtpAuthEvent::
             kSelectedChallengeOptionVirtualCardRetrievalError);
+    response.result =
+        OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
   } else {
     AutofillMetrics::LogOtpAuthResult(
         AutofillMetrics::OtpAuthEvent::kSelectedChallengeOptionGenericError);
+    response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
   }
+  requester_->OnOtpAuthenticationComplete(response);
   Reset();
 }
 
@@ -228,7 +232,8 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
       // Currently we offer OTP authentication only for virtual cards.
       NOTREACHED();
       requester_->OnOtpAuthenticationComplete(
-          OtpAuthenticationResponse().with_did_succeed(false));
+          OtpAuthenticationResponse().with_result(
+              OtpAuthenticationResponse::Result::kGenericError));
       Reset();
       return;
     }
@@ -274,7 +279,8 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     unmask_request_->card.SetExpirationYearFromString(
         base::UTF8ToUTF16(response_details.expiration_year));
 
-    auto response = OtpAuthenticationResponse().with_did_succeed(true);
+    auto response = OtpAuthenticationResponse().with_result(
+        OtpAuthenticationResponse::Result::kSuccess);
     response.card = &(unmask_request_->card);
     response.cvc = base::UTF8ToUTF16(response_details.dcvv);
     requester_->OnOtpAuthenticationComplete(response);
@@ -289,25 +295,26 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the remaining failure
   // cases since currently only virtual card is supported.
-  requester_->OnOtpAuthenticationComplete(
-      OtpAuthenticationResponse().with_did_succeed(false));
-
+  OtpAuthenticationResponse response;
+  if (result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+      result ==
+          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    response.result =
+        OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
+    AutofillMetrics::LogOtpAuthResult(
+        AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
+  } else {
+    response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
+    AutofillMetrics::LogOtpAuthResult(
+        AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError);
+  }
+  requester_->OnOtpAuthenticationComplete(response);
   autofill_client_->OnUnmaskOtpVerificationResult(
       OtpUnmaskResult::kPermanentFailure);
   autofill_client_->ShowVirtualCardErrorDialog(
       /*is_permanent_error=*/result ==
       AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
-
-  if (result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
-      result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
-    AutofillMetrics::LogOtpAuthResult(
-        AutofillMetrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError);
-  } else {
-    AutofillMetrics::LogOtpAuthResult(
-        AutofillMetrics::OtpAuthEvent::kUnmaskCardAuthError);
-  }
   Reset();
 }
 

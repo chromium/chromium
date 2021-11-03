@@ -292,9 +292,9 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::features::IsProjectorEnabled() &&
-      web_app.app_id() == chromeos::kChromeUITrustedProjectorSwaAppId) {
+      web_app.app_id() == ash::kChromeUITrustedProjectorSwaAppId) {
     filters.push_back(CreateIntentFilterForUrlScope(
-        GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl)));
+        GURL(ash::kChromeUIUntrustedProjectorPwaUrl)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

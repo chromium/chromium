@@ -8,7 +8,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 namespace {
@@ -138,4 +138,4 @@ TEST_F(EcheMessageReceiverImplTest, OnSendAppsSetupResponseReceived) {
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

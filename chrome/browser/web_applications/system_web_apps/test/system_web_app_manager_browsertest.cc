@@ -1090,11 +1090,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerUninstallBrowserTest, Uninstall) {
         if (app.AppType() == apps::mojom::AppType::kSystemWeb ||
             app.AppType() == apps::mojom::AppType::kWeb) {
           swa_found = true;
-          EXPECT_EQ(apps::mojom::Readiness::kUninstalledByUser,
-                    app.Readiness());
         }
       });
-  EXPECT_TRUE(swa_found);
+  EXPECT_FALSE(swa_found);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -1629,7 +1627,7 @@ class SystemWebAppManagerContextMenuBrowserTest
     params.page_url = web_contents->GetVisibleURL();
     params.source_type = ui::MENU_SOURCE_NONE;
     auto menu = std::make_unique<TestRenderViewContextMenu>(
-        web_contents->GetMainFrame(), params);
+        *web_contents->GetMainFrame(), params);
     menu->Init();
     return menu;
   }

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <vector>
@@ -49,7 +50,10 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/view_type.mojom.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
@@ -178,7 +182,10 @@ ForceInstallWaiter::ForceInstallWaiter(
     Profile* profile)
     : wait_mode_(wait_mode), extension_id_(extension_id), profile_(profile) {
   DCHECK(crx_file::id_util::IdIsValid(extension_id_));
-  DCHECK(profile_);
+  if (!profile_ && wait_mode_ != ExtensionForceInstallMixin::WaitMode::kNone) {
+    ADD_FAILURE() << "No profile passed to the Init method";
+    return;
+  }
   switch (wait_mode_) {
     case ExtensionForceInstallMixin::WaitMode::kNone:
       break;
@@ -384,7 +391,8 @@ void UpdatePolicyViaLocalPolicyMixin(
     ash::LocalPolicyTestServerMixin* local_policy_mixin,
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
-    const std::string& policy_type) {
+    const std::string& policy_type,
+    bool* success) {
   user_policy_builder->payload()
       .mutable_extensioninstallforcelist()
       ->mutable_value()
@@ -392,16 +400,44 @@ void UpdatePolicyViaLocalPolicyMixin(
           MakeForceInstallPolicyItemValue(extension_id, update_manifest_url));
   user_policy_builder->Build();
 
-  ASSERT_TRUE(local_policy_mixin->server()->UpdatePolicy(
-      policy_type, account_id,
-      user_policy_builder->payload().SerializeAsString()));
+  if (!local_policy_mixin->server()->UpdatePolicy(
+          policy_type, account_id,
+          user_policy_builder->payload().SerializeAsString())) {
+    ADD_FAILURE() << "Local policy test server update failed";
+    return;
+  }
 
   base::RunLoop run_loop;
   g_browser_process->policy_service()->RefreshPolicies(run_loop.QuitClosure());
-  run_loop.Run();
+  ASSERT_NO_FATAL_FAILURE(run_loop.Run());
+
+  // Report the outcome via an output argument instead of the return value,
+  // since ASSERT_NO_FATAL_FAILURE() only works in void functions.
+  *success = true;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Simulates a server error according to the current error mode, or returns no
+// response when no error is configured. Note that this function is called on
+// the IO thread.
+std::unique_ptr<net::test_server::HttpResponse> ErrorSimulatingRequestHandler(
+    std::atomic<ExtensionForceInstallMixin::ServerErrorMode>* server_error_mode,
+    const net::test_server::HttpRequest& /*request*/) {
+  switch (server_error_mode->load()) {
+    case ExtensionForceInstallMixin::ServerErrorMode::kNone: {
+      return nullptr;
+    }
+    case ExtensionForceInstallMixin::ServerErrorMode::kHung: {
+      return std::make_unique<net::test_server::HungResponse>();
+    }
+    case ExtensionForceInstallMixin::ServerErrorMode::kInternalError: {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
+  }
+}
 
 }  // namespace
 
@@ -414,10 +450,11 @@ ExtensionForceInstallMixin::~ExtensionForceInstallMixin() = default;
 void ExtensionForceInstallMixin::InitWithMockPolicyProvider(
     Profile* profile,
     policy::MockConfigurationPolicyProvider* mock_policy_provider) {
-  DCHECK(profile);
   DCHECK(mock_policy_provider);
-  DCHECK(!profile_) << "Init already called";
+  DCHECK(!initialized_) << "Init already called";
+  DCHECK(!profile_);
   DCHECK(!mock_policy_provider_);
+  initialized_ = true;
   profile_ = profile;
   mock_policy_provider_ = mock_policy_provider;
 }
@@ -427,10 +464,11 @@ void ExtensionForceInstallMixin::InitWithMockPolicyProvider(
 void ExtensionForceInstallMixin::InitWithDeviceStateMixin(
     Profile* profile,
     ash::DeviceStateMixin* device_state_mixin) {
-  DCHECK(profile);
   DCHECK(device_state_mixin);
-  DCHECK(!profile_) << "Init already called";
+  DCHECK(!initialized_) << "Init already called";
+  DCHECK(!profile_);
   DCHECK(!device_state_mixin_);
+  initialized_ = true;
   profile_ = profile;
   device_state_mixin_ = device_state_mixin;
 }
@@ -438,10 +476,11 @@ void ExtensionForceInstallMixin::InitWithDeviceStateMixin(
 void ExtensionForceInstallMixin::InitWithDevicePolicyCrosTestHelper(
     Profile* profile,
     policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper) {
-  DCHECK(profile);
   DCHECK(device_policy_cros_test_helper);
-  DCHECK(!profile_) << "Init already called";
+  DCHECK(!initialized_) << "Init already called";
+  DCHECK(!profile_);
   DCHECK(!device_policy_cros_test_helper_);
+  initialized_ = true;
   profile_ = profile;
   device_policy_cros_test_helper_ = device_policy_cros_test_helper;
 }
@@ -452,16 +491,17 @@ void ExtensionForceInstallMixin::InitWithLocalPolicyMixin(
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
     const std::string& policy_type) {
-  DCHECK(profile);
   DCHECK(local_policy_mixin);
   DCHECK(user_policy_builder);
   DCHECK(!account_id.empty());
   DCHECK(!policy_type.empty());
-  DCHECK(!profile_) << "Init already called";
+  DCHECK(!initialized_) << "Init already called";
+  DCHECK(!profile_);
   DCHECK(!local_policy_mixin_);
   DCHECK(!user_policy_builder_);
   DCHECK(account_id_.empty());
   DCHECK(policy_type_.empty());
+  initialized_ = true;
   profile_ = profile;
   local_policy_mixin_ = local_policy_mixin;
   user_policy_builder_ = user_policy_builder;
@@ -476,7 +516,7 @@ bool ExtensionForceInstallMixin::ForceInstallFromCrx(
     WaitMode wait_mode,
     extensions::ExtensionId* extension_id,
     base::Version* extension_version) {
-  DCHECK(profile_) << "Init not called";
+  DCHECK(initialized_) << "Init not called";
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
   extensions::ExtensionId local_extension_id;
@@ -501,7 +541,7 @@ bool ExtensionForceInstallMixin::ForceInstallFromSourceDir(
     WaitMode wait_mode,
     extensions::ExtensionId* extension_id,
     base::Version* extension_version) {
-  DCHECK(profile_) << "Init not called";
+  DCHECK(initialized_) << "Init not called";
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
   base::Version local_extension_version;
@@ -522,7 +562,11 @@ bool ExtensionForceInstallMixin::ForceInstallFromSourceDir(
 
 const extensions::Extension* ExtensionForceInstallMixin::GetInstalledExtension(
     const extensions::ExtensionId& extension_id) const {
-  DCHECK(profile_) << "Init not called";
+  DCHECK(initialized_) << "Init not called";
+  if (!profile_) {
+    ADD_FAILURE() << "No profile passed to the Init method";
+    return nullptr;
+  }
 
   const auto* const registry = extensions::ExtensionRegistry::Get(profile_);
   DCHECK(registry);
@@ -531,18 +575,36 @@ const extensions::Extension* ExtensionForceInstallMixin::GetInstalledExtension(
 
 const extensions::Extension* ExtensionForceInstallMixin::GetEnabledExtension(
     const extensions::ExtensionId& extension_id) const {
-  DCHECK(profile_) << "Init not called";
+  DCHECK(initialized_) << "Init not called";
+  if (!profile_) {
+    ADD_FAILURE() << "No profile passed to the Init method";
+    return nullptr;
+  }
 
   const auto* const registry = extensions::ExtensionRegistry::Get(profile_);
   DCHECK(registry);
   return registry->enabled_extensions().GetByID(extension_id);
 }
 
+void ExtensionForceInstallMixin::SetServerErrorMode(
+    ServerErrorMode server_error_mode) {
+  server_error_mode_.store(server_error_mode);
+}
+
 void ExtensionForceInstallMixin::SetUpOnMainThread() {
+  // Create a temporary directory for keeping served and auxiliary files.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   const base::FilePath served_dir_path =
       temp_dir_.GetPath().AppendASCII(kServedDirName);
   ASSERT_TRUE(base::CreateDirectory(served_dir_path));
+
+  // Start the embedded test server. The first request handler is a handler for
+  // simulating errors as configured (note that the error mode is shared via an
+  // atomic variable, so that its changes on the main thread are correctly
+  // picked up by the handler on the IO thread). The default handler is serving
+  // files from the directory created above.
+  embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
+      &ErrorSimulatingRequestHandler, base::Unretained(&server_error_mode_)));
   embedded_test_server_.ServeFilesFromDirectory(served_dir_path);
   ASSERT_TRUE(embedded_test_server_.Start());
 }
@@ -575,11 +637,28 @@ bool ExtensionForceInstallMixin::ServeExistingCrx(
     const base::Version& extension_version) {
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  // First copy the CRX into a temporary location.
+  base::FilePath temp_crx_path;
+  if (!base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_crx_path)) {
+    ADD_FAILURE() << "Failed to create a temporary file.";
+    return false;
+  }
+  if (!base::CopyFile(source_crx_path, temp_crx_path)) {
+    ADD_FAILURE() << "Failed to copy CRX from " << source_crx_path.value()
+                  << " to " << temp_crx_path.value();
+    return false;
+  }
+
+  // Then atomically move the created file into the served directory. This is
+  // important as the embedded test server is reading files on a different
+  // thread (IO) and, for example, we can be asked to re-serve the same version
+  // again.
   const base::FilePath served_crx_path =
       GetPathInServedDir(GetServedCrxFileName(extension_id, extension_version));
-  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-  if (!base::CopyFile(source_crx_path, served_crx_path)) {
-    ADD_FAILURE() << "Failed to copy CRX from " << source_crx_path.value()
+  if (!base::Move(temp_crx_path, served_crx_path)) {
+    ADD_FAILURE() << "Failed to move CRX from " << temp_crx_path.value()
                   << " to " << served_crx_path.value();
     return false;
   }
@@ -627,7 +706,7 @@ bool ExtensionForceInstallMixin::ForceInstallFromServedCrx(
     const extensions::ExtensionId& extension_id,
     const base::Version& extension_version,
     WaitMode wait_mode) {
-  DCHECK(profile_) << "Init not called";
+  DCHECK(initialized_) << "Init not called";
   DCHECK(embedded_test_server_.Started()) << "Called before setup";
 
   if (!CreateAndServeUpdateManifestFile(extension_id, extension_version))
@@ -664,7 +743,7 @@ bool ExtensionForceInstallMixin::CreateAndServeUpdateManifestFile(
 bool ExtensionForceInstallMixin::UpdatePolicy(
     const extensions::ExtensionId& extension_id,
     const GURL& update_manifest_url) {
-  DCHECK(profile_) << "Init not called";
+  DCHECK(initialized_) << "Init not called";
 
   if (mock_policy_provider_) {
     UpdatePolicyViaMockPolicyProvider(extension_id, update_manifest_url,
@@ -683,10 +762,11 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
     return true;
   }
   if (local_policy_mixin_) {
+    bool success = false;
     UpdatePolicyViaLocalPolicyMixin(extension_id, update_manifest_url,
                                     local_policy_mixin_, user_policy_builder_,
-                                    account_id_, policy_type_);
-    return true;
+                                    account_id_, policy_type_, &success);
+    return success;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED() << "Init not called";

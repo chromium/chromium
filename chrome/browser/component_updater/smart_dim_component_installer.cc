@@ -96,7 +96,7 @@ SmartDimComponentInstallerPolicy::~SmartDimComponentInstallerPolicy() = default;
 
 bool SmartDimComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool SmartDimComponentInstallerPolicy::RequiresNetworkEncryption() const {

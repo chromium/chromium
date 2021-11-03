@@ -39,6 +39,9 @@ class PepperRendererConnection : public BrowserMessageFilter {
                            BrowserContext* browser_context,
                            StoragePartition* storage_partition);
 
+  PepperRendererConnection(const PepperRendererConnection&) = delete;
+  PepperRendererConnection& operator=(const PepperRendererConnection&) = delete;
+
   // BrowserMessageFilter overrides.
   void OverrideThreadForMessage(const IPC::Message& message,
                                 content::BrowserThread::ID* thread) override;
@@ -95,8 +98,6 @@ class PepperRendererConnection : public BrowserMessageFilter {
 
   PluginServiceImpl* const plugin_service_;
   const base::FilePath profile_data_directory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperRendererConnection);
 };
 
 }  // namespace content

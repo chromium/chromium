@@ -30,18 +30,14 @@ namespace {
 
 using test::AppListTestViewDelegate;
 
-void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+void AddSearchResultToModel(const std::string& id,
+                            AppListSearchResultType type,
+                            SearchModel* model) {
   auto result = std::make_unique<TestSearchResult>();
   result->set_result_id(id);
   result->set_result_type(type);
   result->set_display_type(SearchResultDisplayType::kContinue);
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
-      std::move(result));
-}
-
-void RemoveSearchResultAt(size_t index) {
-  Shell::Get()->app_list_controller()->GetSearchModel()->results()->RemoveAt(
-      index);
+  model->results()->Add(std::move(result));
 }
 
 void ShowAppList() {
@@ -62,8 +58,17 @@ class ContinueSectionViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetContinueSectionView();
   }
 
+  void AddSearchResult(const std::string& id, AppListSearchResultType type) {
+    AddSearchResultToModel(id, type,
+                           AppListModelProvider::Get()->search_model());
+  }
+
+  void RemoveSearchResultAt(size_t index) {
+    GetAppListTestHelper()->GetSearchResults()->RemoveAt(index);
+  }
+
   SearchModel::SearchResults* GetResults() {
-    return Shell::Get()->app_list_controller()->GetSearchModel()->results();
+    return GetAppListTestHelper()->GetSearchResults();
   }
 
   SearchBoxView* GetSearchBoxView() {
@@ -72,6 +77,15 @@ class ContinueSectionViewTest : public AshTestBase {
 
   ContinueTaskView* GetResultViewAt(int index) {
     return GetContinueSectionView()->GetTaskViewAtForTesting(index);
+  }
+
+  std::vector<std::string> GetResultIds() {
+    const size_t result_count =
+        GetContinueSectionView()->GetTasksSuggestionsCount();
+    std::vector<std::string> ids;
+    for (size_t i = 0; i < result_count; ++i)
+      ids.push_back(GetResultViewAt(i)->result()->id());
+    return ids;
   }
 
   void VerifyResultViewsUpdated() {
@@ -294,6 +308,47 @@ TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   VerifyResultViewsUpdated();
 
   EXPECT_FALSE(continue_task_view->IsMenuShowing());
+}
+
+TEST_F(ContinueSectionViewTest, UpdateAppsOnModelChange) {
+  AddSearchResult("id11", AppListSearchResultType::kFileChip);
+  AddSearchResult("id12", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id13", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id14", AppListSearchResultType::kFileChip);
+  ShowAppList();
+
+  EXPECT_EQ(std::vector<std::string>({"id11", "id12", "id13", "id14"}),
+            GetResultIds());
+
+  // Update active model, and make sure the shown results view get updated
+  // accordingly.
+  auto model_override = std::make_unique<test::AppListTestModel>();
+  auto search_model_override = std::make_unique<SearchModel>();
+
+  AddSearchResultToModel("id21", AppListSearchResultType::kFileChip,
+                         search_model_override.get());
+  AddSearchResultToModel("id22", AppListSearchResultType::kFileChip,
+                         search_model_override.get());
+  AddSearchResultToModel("id23", AppListSearchResultType::kFileChip,
+                         search_model_override.get());
+
+  Shell::Get()->app_list_controller()->SetActiveModel(
+      model_override.get(), search_model_override.get());
+  GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(std::vector<std::string>({"id21", "id22", "id23"}), GetResultIds());
+
+  // Tap a result, and verify it gets activated.
+  GetEventGenerator()->GestureTapAt(
+      GetResultViewAt(2)->GetBoundsInScreen().CenterPoint());
+
+  // The item was activated.
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ("id23", client->last_opened_search_result());
+
+  // Results should be cleared if app list models get reset.
+  Shell::Get()->app_list_controller()->SetActiveModel(nullptr, nullptr);
+  EXPECT_EQ(std::vector<std::string>{}, GetResultIds());
 }
 
 }  // namespace

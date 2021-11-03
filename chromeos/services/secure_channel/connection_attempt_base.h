@@ -45,6 +45,10 @@ class AuthenticatedChannel;
 // connection.
 template <typename FailureDetailType>
 class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
+ public:
+  ConnectionAttemptBase(const ConnectionAttemptBase&) = delete;
+  ConnectionAttemptBase& operator=(const ConnectionAttemptBase&) = delete;
+
  protected:
   ConnectionAttemptBase(
       ConnectionAttemptDelegate* delegate,
@@ -174,8 +178,6 @@ class ConnectionAttemptBase : public ConnectionAttempt<FailureDetailType> {
 
   base::WeakPtrFactory<ConnectionAttemptBase<FailureDetailType>>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionAttemptBase);
 };
 
 }  // namespace secure_channel

@@ -101,12 +101,16 @@ struct ServiceWorkerContainerHostAndInfo {
   ServiceWorkerContainerHostAndInfo(
       base::WeakPtr<ServiceWorkerContainerHost> host,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr);
+
+  ServiceWorkerContainerHostAndInfo(const ServiceWorkerContainerHostAndInfo&) =
+      delete;
+  ServiceWorkerContainerHostAndInfo& operator=(
+      const ServiceWorkerContainerHostAndInfo&) = delete;
+
   ~ServiceWorkerContainerHostAndInfo();
 
   base::WeakPtr<ServiceWorkerContainerHost> host;
   blink::mojom::ServiceWorkerContainerInfoForClientPtr info;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerContainerHostAndInfo);
 };
 
 // Creates a container host that finished navigation. Test code can typically

@@ -162,8 +162,7 @@ ScreenOrientationProvider::GetNaturalLockType() const {
   if (!rwh)
     return device::mojom::ScreenOrientationLockType::DEFAULT;
 
-  display::ScreenInfo screen_info;
-  rwh->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = rwh->GetScreenInfo();
 
   switch (screen_info.orientation_type) {
     case display::mojom::ScreenOrientation::kPortraitPrimary:
@@ -195,8 +194,7 @@ bool ScreenOrientationProvider::LockMatchesCurrentOrientation(
   if (!rwh)
     return false;
 
-  display::ScreenInfo screen_info;
-  rwh->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = rwh->GetScreenInfo();
 
   switch (lock) {
     case device::mojom::ScreenOrientationLockType::PORTRAIT_PRIMARY:

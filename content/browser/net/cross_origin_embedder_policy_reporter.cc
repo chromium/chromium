@@ -45,6 +45,11 @@ CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
 CrossOriginEmbedderPolicyReporter::~CrossOriginEmbedderPolicyReporter() =
     default;
 
+void CrossOriginEmbedderPolicyReporter::set_reporting_source(
+    const base::UnguessableToken& reporting_source) {
+  reporting_source_ = reporting_source;
+}
+
 void CrossOriginEmbedderPolicyReporter::QueueCorpViolationReport(
     const GURL& blocked_url,
     network::mojom::RequestDestination destination,

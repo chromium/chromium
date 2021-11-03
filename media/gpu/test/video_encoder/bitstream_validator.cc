@@ -154,7 +154,7 @@ BitstreamValidator::~BitstreamValidator() {
 
 void BitstreamValidator::ConstructSpatialIndices(
     const std::vector<gfx::Size>& spatial_layer_resolutions) {
-  SEQUENCE_CHECKER(validator_thread_sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   CHECK(!spatial_layer_resolutions.empty());
   CHECK_LE(spatial_layer_resolutions.size(), spatial_layer_resolutions_.size());
 

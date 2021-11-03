@@ -112,7 +112,7 @@ Vector<mojom::blink::DataElementPtr> BlobData::ReleaseElements() {
 std::unique_ptr<BlobData> BlobData::CreateForFileWithUnknownSize(
     const String& path) {
   std::unique_ptr<BlobData> data = base::WrapUnique(
-      new BlobData(FileCompositionStatus::SINGLE_UNKNOWN_SIZE_FILE));
+      new BlobData(FileCompositionStatus::kSingleUnknownSizeFile));
   data->elements_.push_back(DataElement::NewFile(DataElementFile::New(
       WebStringToFilePath(path), 0, BlobData::kToEndOfFile, base::Time())));
   return data;
@@ -122,7 +122,7 @@ std::unique_ptr<BlobData> BlobData::CreateForFileWithUnknownSize(
     const String& path,
     const absl::optional<base::Time>& expected_modification_time) {
   std::unique_ptr<BlobData> data = base::WrapUnique(
-      new BlobData(FileCompositionStatus::SINGLE_UNKNOWN_SIZE_FILE));
+      new BlobData(FileCompositionStatus::kSingleUnknownSizeFile));
   data->elements_.push_back(DataElement::NewFile(
       DataElementFile::New(WebStringToFilePath(path), 0, BlobData::kToEndOfFile,
                            expected_modification_time)));
@@ -133,7 +133,7 @@ std::unique_ptr<BlobData> BlobData::CreateForFileSystemURLWithUnknownSize(
     const KURL& file_system_url,
     const absl::optional<base::Time>& expected_modification_time) {
   std::unique_ptr<BlobData> data = base::WrapUnique(
-      new BlobData(FileCompositionStatus::SINGLE_UNKNOWN_SIZE_FILE));
+      new BlobData(FileCompositionStatus::kSingleUnknownSizeFile));
   data->elements_.push_back(DataElement::NewFileFilesystem(
       DataElementFilesystemURL::New(file_system_url, 0, BlobData::kToEndOfFile,
                                     expected_modification_time)));
@@ -166,7 +166,7 @@ void BlobData::AppendFile(
     int64_t offset,
     int64_t length,
     const absl::optional<base::Time>& expected_modification_time) {
-  DCHECK_EQ(file_composition_, FileCompositionStatus::NO_UNKNOWN_SIZE_FILES)
+  DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";
   DCHECK_NE(length, BlobData::kToEndOfFile)
       << "It is illegal to append file items that have an unknown size. To "
@@ -184,7 +184,7 @@ void BlobData::AppendFile(
 void BlobData::AppendBlob(scoped_refptr<BlobDataHandle> data_handle,
                           int64_t offset,
                           int64_t length) {
-  DCHECK_EQ(file_composition_, FileCompositionStatus::NO_UNKNOWN_SIZE_FILES)
+  DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";
   DCHECK(!data_handle->IsSingleUnknownSizeFile())
       << "It is illegal to append an unknown size file blob.";
@@ -200,7 +200,7 @@ void BlobData::AppendFileSystemURL(
     int64_t offset,
     int64_t length,
     const absl::optional<base::Time>& expected_modification_time) {
-  DCHECK_EQ(file_composition_, FileCompositionStatus::NO_UNKNOWN_SIZE_FILES)
+  DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";
   DCHECK_GE(length, 0);
   // Skip zero-byte items, as they don't matter for the contents of the blob.
@@ -213,7 +213,7 @@ void BlobData::AppendFileSystemURL(
 
 void BlobData::AppendText(const String& text,
                           bool do_normalize_line_endings_to_native) {
-  DCHECK_EQ(file_composition_, FileCompositionStatus::NO_UNKNOWN_SIZE_FILES)
+  DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";
   std::string utf8_text = UTF8Encoding().Encode(text, WTF::kNoUnencodables);
 
@@ -263,7 +263,7 @@ uint64_t BlobData::length() const {
 
 void BlobData::AppendDataInternal(base::span<const char> data,
                                   scoped_refptr<RawData> raw_data) {
-  DCHECK_EQ(file_composition_, FileCompositionStatus::NO_UNKNOWN_SIZE_FILES)
+  DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";
   // Skip zero-byte items, as they don't matter for the contents of the blob.
   if (data.empty())

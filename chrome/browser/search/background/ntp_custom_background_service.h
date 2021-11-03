@@ -59,7 +59,8 @@ class NtpCustomBackgroundService : public KeyedService,
   // Invoked when a user selected the "Upload an image" option on the NTP.
   void SelectLocalBackgroundImage(const base::FilePath& path);
 
-  void RefreshBackgroundIfNeeded();
+  // Virtual for testing.
+  virtual void RefreshBackgroundIfNeeded();
 
   // Virtual for testing.
   virtual absl::optional<CustomBackground> GetCustomBackground();

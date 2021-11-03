@@ -302,7 +302,7 @@ class ReadableStream::PipeToEngine final
 
   v8::Local<v8::Promise> AbortAlgorithmAction() {
     v8::Local<v8::Value> error =
-        shutdown_error_.NewLocal(script_state_->GetIsolate());
+        shutdown_error_.Get(script_state_->GetIsolate());
 
     // ii. Let actions be an empty ordered set.
     HeapVector<ScriptPromise> actions;
@@ -388,7 +388,7 @@ class ReadableStream::PipeToEngine final
     }
     const auto write =
         WritableStreamDefaultWriter::Write(script_state_, writer_, value);
-    last_write_.Set(isolate, write);
+    last_write_.Reset(isolate, write);
     ThenPromise(write, nullptr, &PipeToEngine::WritableError);
     HandleNextEvent(Undefined());
     return Undefined();
@@ -519,7 +519,7 @@ class ReadableStream::PipeToEngine final
     // Store |original_error| as |shutdown_error_| if it was supplied.
     v8::Local<v8::Value> original_error_local;
     if (original_error.ToLocal(&original_error_local)) {
-      shutdown_error_.Set(script_state_->GetIsolate(), original_error_local);
+      shutdown_error_.Reset(script_state_->GetIsolate(), original_error_local);
     }
     v8::Local<v8::Promise> p;
 
@@ -561,7 +561,7 @@ class ReadableStream::PipeToEngine final
       // Finalize() asynchronously.
       v8::Local<v8::Value> error;
       if (error_maybe.ToLocal(&error)) {
-        shutdown_error_.Set(script_state_->GetIsolate(), error);
+        shutdown_error_.Reset(script_state_->GetIsolate(), error);
       }
 
       //  i. If any chunks have been read but not yet written, write them to
@@ -582,7 +582,7 @@ class ReadableStream::PipeToEngine final
   v8::Local<v8::Value> FinalizeWithOriginalErrorIfSet(v8::Local<v8::Value>) {
     v8::MaybeLocal<v8::Value> error_maybe;
     if (!shutdown_error_.IsEmpty()) {
-      error_maybe = shutdown_error_.NewLocal(script_state_->GetIsolate());
+      error_maybe = shutdown_error_.Get(script_state_->GetIsolate());
     }
     Finalize(error_maybe);
     return Undefined();
@@ -631,8 +631,8 @@ class ReadableStream::PipeToEngine final
       // This implies that we behave the same whether the promise fulfills or
       // rejects. IgnoreErrors() will convert a rejection into a successful
       // resolution.
-      return ThenPromise(last_write_.NewLocal(script_state_->GetIsolate()),
-                         nullptr, &PipeToEngine::IgnoreErrors);
+      return ThenPromise(last_write_.Get(script_state_->GetIsolate()), nullptr,
+                         &PipeToEngine::IgnoreErrors);
     }
     return PromiseResolveWithUndefined(script_state_);
   }
@@ -653,7 +653,7 @@ class ReadableStream::PipeToEngine final
 
   v8::Local<v8::Value> ShutdownError() const {
     DCHECK(!shutdown_error_.IsEmpty());
-    return shutdown_error_.NewLocal(script_state_->GetIsolate());
+    return shutdown_error_.Get(script_state_->GetIsolate());
   }
 
   v8::Local<v8::Promise> WritableStreamAbortAction() {
@@ -908,15 +908,15 @@ class ReadableStream::TeeEngine::CancelAlgorithm final
     DCHECK_EQ(argc, 1);
 
     // b. Set reason1 to reason.
-    engine_->reason_[branch_].Set(isolate, argv[0]);
+    engine_->reason_[branch_].Reset(isolate, argv[0]);
 
     const int other_branch = 1 - branch_;
 
     // c. If canceled2 is true,
     if (engine_->canceled_[other_branch]) {
       // i. Let compositeReason be ! CreateArrayFromList(« reason1, reason2 »).
-      v8::Local<v8::Value> reason[] = {engine_->reason_[0].NewLocal(isolate),
-                                       engine_->reason_[1].NewLocal(isolate)};
+      v8::Local<v8::Value> reason[] = {engine_->reason_[0].Get(isolate),
+                                       engine_->reason_[1].Get(isolate)};
       v8::Local<v8::Value> composite_reason =
           v8::Array::New(script_state->GetIsolate(), reason, 2);
 
@@ -1648,7 +1648,7 @@ ScriptPromise ReadableStream::PipeTo(ScriptState* script_state,
 
 v8::Local<v8::Value> ReadableStream::GetStoredError(
     v8::Isolate* isolate) const {
-  return stored_error_.NewLocal(isolate);
+  return stored_error_.Get(isolate);
 }
 
 std::unique_ptr<ReadableStreamTransferringOptimizer>
@@ -1875,7 +1875,7 @@ void ReadableStream::Error(ScriptState* script_state,
   stream->state_ = kErrored;
 
   // 3. Set stream.[[storedError]] to e.
-  stream->stored_error_.Set(isolate, e);
+  stream->stored_error_.Reset(isolate, e);
 
   // 4. Let reader be stream.[[reader]].
   ReadableStreamGenericReader* reader = stream->reader_;

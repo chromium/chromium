@@ -21,13 +21,15 @@ namespace content {
 
 class WebUIExtension {
  public:
+  WebUIExtension() = delete;
+  WebUIExtension(const WebUIExtension&) = delete;
+  WebUIExtension& operator=(const WebUIExtension&) = delete;
+
   static void Install(blink::WebLocalFrame* frame);
 
  private:
   static void Send(gin::Arguments* args);
   static std::string GetVariableValue(const std::string& name);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebUIExtension);
 };
 
 }  // namespace content

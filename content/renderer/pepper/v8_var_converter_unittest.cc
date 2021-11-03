@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/renderer/pepper/resource_converter.h"
+#include "gin/public/isolate_holder.h"
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/array_var.h"
@@ -182,7 +183,10 @@ bool Equals(const PP_Var& var, v8::Local<v8::Value> val) {
 class V8VarConverterTest : public testing::Test {
  public:
   V8VarConverterTest()
-      : isolate_(v8::Isolate::GetCurrent()) {
+      : isolate_holder_(task_environment_.GetMainThreadTaskRunner(),
+                        gin::IsolateHolder::IsolateType::kTest),
+        isolate_scope_(isolate_holder_.isolate()) {
+    isolate_ = isolate_holder_.isolate();
     PP_Instance dummy = 1234;
     converter_ = std::make_unique<V8VarConverter>(
         dummy, std::unique_ptr<ResourceConverter>(new MockResourceConverter));
@@ -252,6 +256,8 @@ class V8VarConverterTest : public testing::Test {
  private:
   // Required to receive callbacks.
   base::test::TaskEnvironment task_environment_;
+  gin::IsolateHolder isolate_holder_;
+  v8::Isolate::Scope isolate_scope_;
 
   TestGlobals globals_;
 };

@@ -236,9 +236,7 @@ def _ReadReachedOffsets(filename):
 def _CreateArgumentParser():
   parser = argparse.ArgumentParser(
       description='Creates an orderfile from profiles.')
-  parser.add_argument('--target-arch', required=False, default='arm',
-                      choices=['arm', 'arm64', 'x86', 'x86_64', 'x64', 'mips'],
-                      help='The target architecture for libchrome.so')
+  parser.add_argument('--target-arch', help='Unused')
   parser.add_argument('--reached-offsets', type=str, required=True,
                       help='Path to the reached offsets')
   parser.add_argument('--native-library', type=str, required=True,
@@ -251,8 +249,6 @@ def _CreateArgumentParser():
 def main():
   parser = _CreateArgumentParser()
   args = parser.parse_args()
-
-  symbol_extractor.SetArchitecture(args.target_arch)
 
   offsets = _ReadReachedOffsets(args.reached_offsets)
   assert offsets

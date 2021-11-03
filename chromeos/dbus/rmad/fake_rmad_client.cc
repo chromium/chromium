@@ -163,6 +163,7 @@ void FakeRmadClient::GetCurrentState(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
   }
+  TriggerHardwareVerificationResultObservation(true, "");
 }
 
 void FakeRmadClient::TransitionNextState(
@@ -291,10 +292,13 @@ void FakeRmadClient::TriggerCalibrationOverallProgressObservation(
 }
 
 void FakeRmadClient::TriggerProvisioningProgressObservation(
-    rmad::ProvisionDeviceState::ProvisioningStep step,
+    rmad::ProvisionStatus::Status status,
     double progress) {
+  rmad::ProvisionStatus status_proto;
+  status_proto.set_status(status);
+  status_proto.set_progress(progress);
   for (auto& observer : observers_)
-    observer.ProvisioningProgress(step, progress);
+    observer.ProvisioningProgress(status_proto);
 }
 
 void FakeRmadClient::TriggerHardwareWriteProtectionStateObservation(
@@ -316,6 +320,16 @@ void FakeRmadClient::TriggerHardwareVerificationResultObservation(
   verificationStatus.set_error_str(error_str);
   for (auto& observer : observers_)
     observer.HardwareVerificationResult(verificationStatus);
+}
+
+void FakeRmadClient::TriggerFinalizationProgressObservation(
+    rmad::FinalizeStatus::Status status,
+    double progress) {
+  rmad::FinalizeStatus finalizationStatus;
+  finalizationStatus.set_status(status);
+  finalizationStatus.set_progress(progress);
+  for (auto& observer : observers_)
+    observer.FinalizationProgress(finalizationStatus);
 }
 
 const rmad::GetStateReply& FakeRmadClient::GetStateReply() const {

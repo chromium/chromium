@@ -520,6 +520,11 @@ class TestSimpleBrowserInterfaceBrokerImpl
         interface_name_(interface_name),
         binder_callback_(binder_callback) {}
 
+  TestSimpleBrowserInterfaceBrokerImpl(
+      const TestSimpleBrowserInterfaceBrokerImpl&) = delete;
+  TestSimpleBrowserInterfaceBrokerImpl& operator=(
+      const TestSimpleBrowserInterfaceBrokerImpl&) = delete;
+
   void BindAndFlush(
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
     ASSERT_FALSE(receiver_.is_bound());
@@ -538,8 +543,6 @@ class TestSimpleBrowserInterfaceBrokerImpl
 
   std::string interface_name_;
   BinderCallback binder_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSimpleBrowserInterfaceBrokerImpl);
 };
 
 class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
@@ -580,6 +583,11 @@ class FrameHostTestInterfaceRequestIssuer : public RenderFrameObserver {
   explicit FrameHostTestInterfaceRequestIssuer(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame) {}
 
+  FrameHostTestInterfaceRequestIssuer(
+      const FrameHostTestInterfaceRequestIssuer&) = delete;
+  FrameHostTestInterfaceRequestIssuer& operator=(
+      const FrameHostTestInterfaceRequestIssuer&) = delete;
+
   void RequestTestInterfaceOnFrameEvent(const std::string& event) {
     mojo::Remote<mojom::FrameHostTestInterface> remote;
     blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
@@ -613,8 +621,6 @@ class FrameHostTestInterfaceRequestIssuer : public RenderFrameObserver {
   void DidFinishSameDocumentNavigation() override {
     RequestTestInterfaceOnFrameEvent(kFrameEventDidCommitSameDocumentLoad);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHostTestInterfaceRequestIssuer);
 };
 
 // RenderFrameObserver that can be used to wait for the next commit in a frame.
@@ -622,6 +628,9 @@ class FrameCommitWaiter : public RenderFrameObserver {
  public:
   explicit FrameCommitWaiter(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame) {}
+
+  FrameCommitWaiter(const FrameCommitWaiter&) = delete;
+  FrameCommitWaiter& operator=(const FrameCommitWaiter&) = delete;
 
   void Wait() {
     if (did_commit_)
@@ -640,8 +649,6 @@ class FrameCommitWaiter : public RenderFrameObserver {
 
   base::RunLoop run_loop_;
   bool did_commit_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameCommitWaiter);
 };
 
 // Testing ContentRendererClient implementation that fires the |callback|

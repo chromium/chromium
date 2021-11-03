@@ -297,18 +297,18 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
   }
 }
 
-void WebAppInstallManager::UninstallFromSyncBeforeRegistryUpdate(
-    std::vector<AppId> web_apps) {
-  DCHECK(started_);
-  finalizer_->UninstallFromSyncBeforeRegistryUpdate(std::move(web_apps));
-}
-
-void WebAppInstallManager::UninstallFromSyncAfterRegistryUpdate(
-    std::vector<std::unique_ptr<WebApp>> web_apps,
+void WebAppInstallManager::UninstallWithoutRegistryUpdateFromSync(
+    const std::vector<AppId>& web_apps,
     RepeatingUninstallCallback callback) {
   DCHECK(started_);
-  finalizer_->UninstallFromSyncAfterRegistryUpdate(std::move(web_apps),
-                                                   std::move(callback));
+  finalizer_->UninstallWithoutRegistryUpdateFromSync(std::move(web_apps),
+                                                     std::move(callback));
+}
+
+void WebAppInstallManager::RetryIncompleteUninstalls(
+    const std::vector<AppId>& apps_to_uninstall) {
+  DCHECK(started_);
+  finalizer_->RetryIncompleteUninstalls(apps_to_uninstall);
 }
 
 void WebAppInstallManager::SetDataRetrieverFactoryForTesting(

@@ -354,17 +354,20 @@ TEST_F(AutocompleteResultTest, AlternateNavUrl) {
       ->registry()
       ->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
 
-  // Against search matches, we should generate an alternate nav URL.
+  // Against search matches, we should not generate an alternate nav URL, unless
+  // overriden by policy, tested in AlternateNavUrl_IntranetRedirectPolicy
+  // below.
   {
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::SEARCH_SUGGEST;
     match.destination_url = GURL("http://www.foo.com/s?q=foo");
     GURL alternate_nav_url =
         AutocompleteResult::ComputeAlternateNavUrl(input, match, &client);
-    EXPECT_EQ("http://a/", alternate_nav_url.spec());
+    EXPECT_FALSE(alternate_nav_url.is_valid());
   }
 
-  // Against matching URL matches, we should NOT generate an alternate nav URL.
+  // Against matching URL matches, we should never generate an alternate nav
+  // URL.
   {
     AutocompleteMatch match;
     match.type = AutocompleteMatchType::SEARCH_SUGGEST;

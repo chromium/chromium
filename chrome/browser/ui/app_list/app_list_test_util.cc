@@ -14,11 +14,11 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
 
-const char AppListTestBase::kHostedAppId[] =
-    "dceacbkfkmllgmjmbhgkpjegnodmildf";
+const char AppListTestBase::kHostedAppId[] = "dceacbkfkmllgmjmbhgkpjegnodmildf";
 const char AppListTestBase::kPackagedApp1Id[] =
     "emfkafnhnpcmabnnkckkchdilgeoekbo";
 const char AppListTestBase::kPackagedApp2Id[] =
@@ -38,9 +38,8 @@ void AppListTestBase::SetUp() {
   // - 1 hosted extension app
   base::FilePath source_install_dir =
       data_dir().AppendASCII("app_list").AppendASCII("Extensions");
-  base::FilePath pref_path = source_install_dir
-      .DirName()
-      .Append(chrome::kPreferencesFilename);
+  base::FilePath pref_path =
+      source_install_dir.DirName().Append(chrome::kPreferencesFilename);
   InitializeInstalledExtensionService(pref_path, source_install_dir);
   service_->Init();
 
@@ -67,4 +66,34 @@ void AppListTestBase::ConfigureWebAppProvider() {
   provider->SetExternallyManagedAppManager(
       std::move(externally_managed_app_manager));
   web_app::test::AwaitStartWebAppProviderAndSubsystems(profile);
+}
+
+// Test util functions----------------------------------------------------------
+
+scoped_refptr<extensions::Extension> MakeApp(
+    const std::string& name,
+    const std::string& id,
+    extensions::Extension::InitFromValueFlags flags) {
+  std::string err;
+  base::DictionaryValue value;
+  value.SetString("name", name);
+  value.SetString("version", "0.0");
+  value.SetString("app.launch.web_url", "http://google.com");
+  scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
+      base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
+      flags, id, &err);
+  EXPECT_EQ(err, "");
+  return app;
+}
+
+std::string CreateNextAppId(const std::string& app_id) {
+  DCHECK(crx_file::id_util::IdIsValid(app_id));
+  std::string next_app_id = app_id;
+  size_t index = next_app_id.length() - 1;
+  while (index > 0 && next_app_id[index] == 'p')
+    next_app_id[index--] = 'a';
+  DCHECK_NE(next_app_id[index], 'p');
+  next_app_id[index]++;
+  DCHECK(crx_file::id_util::IdIsValid(next_app_id));
+  return next_app_id;
 }

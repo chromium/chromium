@@ -41,6 +41,9 @@ void bind_xdg_shell(wl_client* client,
 ShellSurfaceBase* GetShellSurfaceFromToplevelResource(
     wl_resource* surface_resource);
 
+ShellSurfaceBase* GetShellSurfaceFromPopupResource(
+    wl_resource* surface_resource);
+
 }  // namespace wayland
 }  // namespace exo
 

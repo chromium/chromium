@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -143,31 +142,6 @@ public class PersistedTabDataTest {
         }
     }
 
-    @SmallTest
-    @Test
-    public void testVerifyPersistedTabDataDeserializationBackgroundThread()
-            throws TimeoutException {
-        ThreadUtils.setThreadAssertsDisabledForTesting(false);
-        CallbackHelper helper = new CallbackHelper();
-        int count = helper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = MockTab.createAndInitialize(1, false);
-            tab.setIsTabSaveEnabled(true);
-            DeserializeAndLogCheckerMockPersistedTabData mockPersistedTabData =
-                    new DeserializeAndLogCheckerMockPersistedTabData(tab, INITIAL_VALUE);
-            registerObserverSupplier(mockPersistedTabData);
-            mockPersistedTabData.save();
-            PersistedTabData.from(tab,
-                    (storage, id, factoryCallback)
-                            -> {
-                        factoryCallback.onResult(
-                                new DeserializeAndLogCheckerMockPersistedTabData(tab, storage, id));
-                    },
-                    null, MockPersistedTabData.class, (res) -> { helper.notifyCalled(); });
-        });
-        helper.waitForCallback(count);
-    }
-
     static class OutOfMemoryMockPersistedTabData extends MockPersistedTabData {
         OutOfMemoryMockPersistedTabData(Tab tab) {
             super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
@@ -177,23 +151,6 @@ public class PersistedTabDataTest {
             return () -> {
                 throw new OutOfMemoryError("Out of memory error");
             };
-        }
-    }
-
-    static class DeserializeAndLogCheckerMockPersistedTabData extends MockPersistedTabData {
-        DeserializeAndLogCheckerMockPersistedTabData(Tab tab, int field) {
-            super(tab, field);
-        }
-
-        DeserializeAndLogCheckerMockPersistedTabData(Tab tab,
-                PersistedTabDataStorage persistedTabDataStorage, String persistedTabDataId) {
-            super(tab, persistedTabDataStorage, persistedTabDataId);
-        }
-
-        @Override
-        protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
-            ThreadUtils.assertOnBackgroundThread();
-            super.deserializeAndLog(bytes);
         }
     }
 

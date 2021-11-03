@@ -36,11 +36,14 @@ export let BackdropState;
 
 /**
  * Stores Google Photos state.
+ * |count| is the count of Google Photos photos. It is undefined only until it
+ * has been initialized, then either null (in error state) or a valid integer.
  * |albums| is the list of Google Photos albums. It is undefined only until it
  * has been initialized, then either null (in error state) or a valid Array.
  * |photos| is the list of Google Photos photos. It is undefined only until it
  * has been initialized, then either null (in error state) or a valid Array.
  * @typedef {{
+ *  count: (?number|undefined),
  *  albums: (?Array<undefined>|undefined),
  *  photos: (?Array<undefined>|undefined),
  * }}
@@ -76,6 +79,7 @@ export let GooglePhotosState;
  *   selected: boolean,
  *   setImage: number,
  *   googlePhotos: {
+ *    count: boolean,
  *    albums: boolean,
  *    photos: boolean,
  *   },
@@ -132,7 +136,7 @@ export function emptyState() {
       refreshWallpaper: false,
       selected: false,
       setImage: 0,
-      googlePhotos: {albums: false, photos: false},
+      googlePhotos: {count: false, albums: false, photos: false},
     },
     local: {images: null, data: {}},
     currentSelected: null,
@@ -140,7 +144,7 @@ export function emptyState() {
     dailyRefresh: {collectionId: null},
     error: null,
     fullscreen: false,
-    googlePhotos: {albums: undefined, photos: undefined},
+    googlePhotos: {count: undefined, albums: undefined, photos: undefined},
   };
 }
 
@@ -294,6 +298,22 @@ function loadingReducer(state, action) {
         googlePhotos: {
           ...state.googlePhotos,
           albums: false,
+        },
+      });
+    case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_COUNT:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          count: true,
+        },
+      });
+    case ActionName.SET_GOOGLE_PHOTOS_COUNT:
+      return /** @type {!LoadingState} */ ({
+        ...state,
+        googlePhotos: {
+          ...state.googlePhotos,
+          count: false,
         },
       });
     case ActionName.BEGIN_LOAD_GOOGLE_PHOTOS_PHOTOS:
@@ -475,6 +495,11 @@ function googlePhotosReducer(state, action) {
       return /** @type {!GooglePhotosState} */ ({
         ...state,
         albums: (/** @type {{albums: ?Array<undefined>}} */ (action)).albums,
+      });
+    case ActionName.SET_GOOGLE_PHOTOS_COUNT:
+      return /** @type {!GooglePhotosState} */ ({
+        ...state,
+        count: (/** @type {{count: ?number}} */ (action)).count,
       });
     case ActionName.SET_GOOGLE_PHOTOS_PHOTOS:
       return /** @type {!GooglePhotosState} */ ({

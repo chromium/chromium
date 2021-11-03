@@ -201,6 +201,28 @@ class SendTestReportsAtNavigationFinishObserver : public WebContentsObserver {
 };
 
 IN_PROC_BROWSER_TEST_F(CrossOriginOpenerPolicyReportingBrowserTest,
+                       BasicReportingEndpointsReportSucceedOnOpener) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL(kReportingHost, "/coop-reporting")));
+  GURL first_popup(https_server()->GetURL(kReportingHost, "/echo"));
+  GURL second_popup(https_server()->GetURL("a.com", "/echo"));
+
+  // Open a popup so we have more active top level documents in browsing context
+  // group. This ensures second popup will generate a report.
+  OpenPopup(shell(), first_popup, "first");
+
+  // Create a second popup to trigger coop enforcement.
+  OpenPopup(shell(), second_popup, "second");
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    new Promise(r => setTimeout(r, 1000));
+  )"));
+  // Opening second popup should produce one navigation-from-response report
+  // queued by opener's reporter.
+  EXPECT_THAT(reports_uploaded(), Eq(1));
+}
+
+IN_PROC_BROWSER_TEST_F(CrossOriginOpenerPolicyReportingBrowserTest,
                        ParseReportingEndpointsDuringNavigation) {
   EXPECT_TRUE(NavigateToURL(shell(), https_server()->GetURL("a.com", "/echo")));
 

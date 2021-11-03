@@ -62,6 +62,10 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
  public:
   WebUINavigationBrowserTest() = default;
 
+  WebUINavigationBrowserTest(const WebUINavigationBrowserTest&) = delete;
+  WebUINavigationBrowserTest& operator=(const WebUINavigationBrowserTest&) =
+      delete;
+
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -202,8 +206,6 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
   ui::TestUntrustedWebUIControllerFactory untrusted_factory_;
   ScopedWebUIControllerFactoryRegistration untrusted_factory_registration_{
       &untrusted_factory_};
-
-  DISALLOW_COPY_AND_ASSIGN(WebUINavigationBrowserTest);
 };
 
 // Verify that a chrome: scheme document can add iframes with web content, as

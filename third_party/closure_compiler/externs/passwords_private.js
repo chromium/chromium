@@ -340,6 +340,14 @@ chrome.passwordsPrivate.stopPasswordCheck = function(callback) {};
 chrome.passwordsPrivate.getPasswordCheckStatus = function(callback) {};
 
 /**
+ * Requests whether the account store is a default location for saving
+ * passwords. False means the device store is a default one. Must be called when
+ * the current user has already opted-in for account storage.
+ * @param {function(boolean): void} callback
+ */
+chrome.passwordsPrivate.isAccountStoreDefault = function(callback) {};
+
+/**
  * Requests whether the given |url| meets the requirements to save a password
  * for it (e.g. valid, has proper scheme etc.) and returns the corresponding
  * URLCollection on success. Otherwise it raises an error.

@@ -18,6 +18,9 @@ class Size;
 
 namespace gpu {
 struct MailboxHolder;
+namespace raster {
+class RasterInterface;
+}  // namespace raster
 }  // namespace gpu
 
 namespace media {
@@ -37,6 +40,8 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   explicit WebGraphicsContext3DVideoFramePool(
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> weak_context_provider);
   ~WebGraphicsContext3DVideoFramePool();
+
+  gpu::raster::RasterInterface* GetRasterInterface() const;
 
   using FrameReadyCallback =
       base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;

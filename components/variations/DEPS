@@ -8,6 +8,7 @@ include_rules = [
   "+components/metrics",
   "+components/prefs",
   "+components/variations",
+  "+components/version_info",
   "+crypto",
   "-net",
   "+third_party/protobuf",

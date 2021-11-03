@@ -172,6 +172,12 @@ export class FakeFileSystemFileHandle extends FakeFileSystemHandle {
 
     /** @type {!DOMException|!Error|undefined} */
     this.nextCreateWritableError;
+
+    /**
+     * Used simulate an error thrown from directory traversal.
+     * @type {?DOMException|undefined}
+     */
+    this.errorToFireOnIterate;
   }
   /** @override */
   async createWritable(options) {
@@ -282,6 +288,11 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle {
    */
   async * values() {
     for (const file of this.files) {
+      if (file.errorToFireOnIterate) {
+        const error = file.errorToFireOnIterate;
+        file.errorToFireOnIterate = null;
+        throw error;
+      }
       yield file;
     }
   }

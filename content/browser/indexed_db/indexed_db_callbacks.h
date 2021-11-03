@@ -46,6 +46,9 @@ class CONTENT_EXPORT IndexedDBCallbacks
                          pending_callbacks,
                      scoped_refptr<base::SequencedTaskRunner> idb_runner);
 
+  IndexedDBCallbacks(const IndexedDBCallbacks&) = delete;
+  IndexedDBCallbacks& operator=(const IndexedDBCallbacks&) = delete;
+
   virtual void OnError(const IndexedDBDatabaseError& error);
 
   // IndexedDBFactory::databases
@@ -102,8 +105,6 @@ class CONTENT_EXPORT IndexedDBCallbacks
   mojo::AssociatedRemote<blink::mojom::IDBCallbacks> callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBCallbacks);
 };
 
 }  // namespace content

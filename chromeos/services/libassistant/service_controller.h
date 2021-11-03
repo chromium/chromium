@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
+#include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom-forward.h"
@@ -32,7 +33,8 @@ class LibassistantFactory;
 // Component managing the lifecycle of Libassistant,
 // exposing methods to start/stop and configure Libassistant.
 class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
-    : public mojom::ServiceController {
+    : public mojom::ServiceController,
+      public ServicesStatusObserver {
  public:
   explicit ServiceController(LibassistantFactory* factory);
   ServiceController(ServiceController&) = delete;
@@ -51,6 +53,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void ResetAllDataAndStop() override;
   void AddAndFireStateObserver(
       mojo::PendingRemote<mojom::StateObserver> observer) override;
+
+  // ServicesStatusObserver implementation:
+  void OnServicesStatusChanged(ServicesStatus status) override;
 
   void AddAndFireAssistantClientObserver(AssistantClientObserver* observer);
   void RemoveAssistantClientObserver(AssistantClientObserver* observer);
@@ -72,6 +77,8 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
  private:
   // Will be invoked when all Libassistant services are ready to query.
   void OnAllServicesReady();
+  // Will be invoked when Libassistant services are started.
+  void OnServicesBootingUp();
 
   void SetStateAndInformObservers(mojom::ServiceState new_state);
 

@@ -55,8 +55,9 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                int corner_radius)
     : LabelButton(base::BindRepeating(&DeskButtonBase::OnButtonPressed,
                                       base::Unretained(this)),
-                  text),
+                  std::u16string()),
       corner_radius_(corner_radius) {
+  DCHECK(!text.empty());
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
@@ -91,11 +92,8 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   SetFocusPainter(nullptr);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
-  const std::u16string tooltip_text =
-      text.empty() ? l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON)
-                   : text;
-  SetAccessibleName(tooltip_text);
-  SetTooltipText(tooltip_text);
+  SetAccessibleName(text);
+  SetTooltipText(text);
 
   auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
   border_ptr_ = border.get();
@@ -146,8 +144,7 @@ void DeskButtonBase::OnViewUnhighlighted() {
 }
 
 void DeskButtonBase::UpdateBorderState() {
-  border_ptr_->SetFocused(IsViewHighlighted() &&
-                          DesksController::Get()->CanCreateDesks());
+  border_ptr_->SetFocused(IsViewHighlighted() && GetEnabled());
   SchedulePaint();
 }
 
@@ -222,8 +219,9 @@ END_METADATA
 // ZeroStateIconButton:
 
 ZeroStateIconButton::ZeroStateIconButton(const gfx::VectorIcon* button_icon,
+                                         const std::u16string& text,
                                          base::RepeatingClosure callback)
-    : DeskButtonBase(std::u16string()),
+    : DeskButtonBase(text),
       button_icon_(button_icon),
       button_callback_(callback) {
   should_paint_background_ = false;

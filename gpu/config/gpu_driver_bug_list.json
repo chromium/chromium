@@ -3229,18 +3229,19 @@
     },
     {
       "id": 337,
-      "description": "Disable hardware MFT H264 encoder on older NVIDIA drivers",
-      "cr_bugs": [1058583],
+      "description": "Disable hardware MFT H.264 encoder on older NVIDIA drivers",
+      "cr_bugs": [1058583, 1263058],
       "os": {
         "type": "win"
       },
       "vendor_id": "0x10de",
+      "multi_gpu_category": "any",
       "driver_version": {
-        "op": "<",
-        "value": "24.21.13.9827"
+        "op": "<=",
+        "value": "24.21.13.9858"
       },
       "features": [
-        "disable_media_foundation_async_h264_encoding"
+        "disable_accelerated_h264_encode"
       ]
     },
     {
@@ -3815,6 +3816,22 @@
       "gl_vendor": "Intel.*",
       "features": [
         "check_egl_fence_before_wait"
+      ]
+    },
+    {
+      "id": 382,
+      "description": "Disable hardware MFT H.264 encoder on older Intel drivers",
+      "cr_bugs": [1251071],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<=",
+        "value": "6.15.7.7"
+      },
+      "features": [
+        "disable_accelerated_h264_encode"
       ]
     }
   ]

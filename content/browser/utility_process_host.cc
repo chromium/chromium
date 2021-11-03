@@ -293,7 +293,7 @@ bool UtilityProcessHost::StartProcess() {
 #endif
       network::switches::kUseFirstPartySet,
       network::switches::kIpAddressSpaceOverrides,
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
       switches::kSchedulerBoostUrgent,
 #endif
     };

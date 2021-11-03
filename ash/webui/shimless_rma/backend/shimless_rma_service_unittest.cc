@@ -2638,15 +2638,13 @@ TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibrationAfterSignal) {
 
 class FakeProvisioningObserver : public mojom::ProvisioningObserver {
  public:
-  void OnProvisioningUpdated(rmad::ProvisionDeviceState_ProvisioningStep step,
+  void OnProvisioningUpdated(rmad::ProvisionStatus::Status step,
                              float progress) override {
     observations.push_back(
-        std::pair<rmad::ProvisionDeviceState_ProvisioningStep, float>(
-            step, progress));
+        std::pair<rmad::ProvisionStatus_Status, float>(step, progress));
   }
 
-  std::vector<std::pair<rmad::ProvisionDeviceState_ProvisioningStep, float>>
-      observations;
+  std::vector<std::pair<rmad::ProvisionStatus_Status, float>> observations;
   mojo::Receiver<mojom::ProvisioningObserver> receiver{this};
 };
 
@@ -2656,14 +2654,14 @@ TEST_F(ShimlessRmaServiceTest, ObserveProvisioning) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.75);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.75);
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveProvisioningAfterSignal) {
   fake_rmad_client_()->TriggerProvisioningProgressObservation(
-      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.75);
+      rmad::ProvisionStatus::RMAD_PROVISION_STATUS_IN_PROGRESS, 0.75);
   FakeProvisioningObserver fake_observer;
   shimless_rma_provider_->ObserveProvisioningProgress(
       fake_observer.receiver.BindNewPipeAndPassRemote());
@@ -2733,7 +2731,8 @@ TEST_F(ShimlessRmaServiceTest, ObservePowerCableStateAfterSignal) {
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
-class FakeFinalizationObserver : public mojom::FinalizationObserver {
+class FakeHardwareVerificationStatusObserver
+    : public mojom::HardwareVerificationStatusObserver {
  public:
   struct Observation {
     bool is_compliant;
@@ -2749,12 +2748,12 @@ class FakeFinalizationObserver : public mojom::FinalizationObserver {
   }
 
   std::vector<Observation> observations;
-  mojo::Receiver<mojom::FinalizationObserver> receiver{this};
+  mojo::Receiver<mojom::HardwareVerificationStatusObserver> receiver{this};
 };
 
-TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
-  FakeFinalizationObserver fake_observer;
-  shimless_rma_provider_->ObserveFinalizationStatus(
+TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerification) {
+  FakeHardwareVerificationStatusObserver fake_observer;
+  shimless_rma_provider_->ObserveHardwareVerificationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
@@ -2764,16 +2763,64 @@ TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
   EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
 }
 
+TEST_F(ShimlessRmaServiceTest, ObserveHardwareVerificationAfterSignal) {
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true,
+                                                                    "also ok");
+  FakeHardwareVerificationStatusObserver fake_observer;
+  shimless_rma_provider_->ObserveHardwareVerificationStatus(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
+  EXPECT_EQ(fake_observer.observations[0].error_message, "also ok");
+}
+
+class FakeFinalizationObserver : public mojom::FinalizationObserver {
+ public:
+  struct Observation {
+    rmad::FinalizeStatus::Status status;
+    float progress;
+  };
+
+  void OnFinalizationUpdated(rmad::FinalizeStatus::Status status,
+                             float progress) override {
+    Observation observation;
+    observation.status = status;
+    observation.progress = progress;
+    observations.push_back(observation);
+  }
+
+  std::vector<Observation> observations;
+  mojo::Receiver<mojom::FinalizationObserver> receiver{this};
+};
+
+TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
+  FakeFinalizationObserver fake_observer;
+  shimless_rma_provider_->ObserveFinalizationStatus(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  fake_rmad_client_()->TriggerFinalizationProgressObservation(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS, 0.5);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].status,
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_IN_PROGRESS);
+  EXPECT_EQ(fake_observer.observations[0].progress, 0.5f);
+}
+
 TEST_F(ShimlessRmaServiceTest, ObserveFinalizationAfterSignal) {
-  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  fake_rmad_client_()->TriggerFinalizationProgressObservation(
+      rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING, 0.75);
   FakeFinalizationObserver fake_observer;
   shimless_rma_provider_->ObserveFinalizationStatus(
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
-  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
-  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+  EXPECT_EQ(fake_observer.observations[0].status,
+            rmad::FinalizeStatus::RMAD_FINALIZE_STATUS_FAILED_BLOCKING);
+  EXPECT_EQ(fake_observer.observations[0].progress, 0.75f);
 }
 
 }  // namespace shimless_rma

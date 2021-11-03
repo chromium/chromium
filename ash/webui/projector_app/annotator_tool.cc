@@ -10,7 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -93,4 +93,4 @@ bool AnnotatorTool::operator==(const AnnotatorTool& rhs) const {
   return rhs.color == color && rhs.size == size && rhs.type == type;
 }
 
-}  // namespace chromeos
+}  // namespace ash

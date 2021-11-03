@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/browser/extension_registry_factory.h"
 
 namespace extensions {
 
@@ -26,9 +27,43 @@ int32_t NewRequestId() {
 
 WebAuthenticationProxyService::WebAuthenticationProxyService(
     content::BrowserContext* browser_context)
-    : event_router_(EventRouter::Get(browser_context)) {}
+    : event_router_(EventRouter::Get(browser_context)),
+      extension_registry_(ExtensionRegistry::Get(browser_context)) {
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context));
+}
 
 WebAuthenticationProxyService::~WebAuthenticationProxyService() = default;
+
+const Extension* WebAuthenticationProxyService::GetActiveRequestProxy() {
+  if (!active_request_proxy_extension_id_) {
+    return nullptr;
+  }
+  const Extension* extension =
+      extension_registry_->enabled_extensions().GetByID(
+          *active_request_proxy_extension_id_);
+  DCHECK(extension);
+  return extension;
+}
+
+void WebAuthenticationProxyService::ClearActiveRequestProxy() {
+  if (!active_request_proxy_extension_id_) {
+    return;
+  }
+  CancelPendingCallbacks();
+  active_request_proxy_extension_id_.reset();
+}
+
+void WebAuthenticationProxyService::SetActiveRequestProxy(
+    const Extension* extension) {
+  DCHECK(extension);
+  DCHECK(extension_registry_->enabled_extensions().Contains(extension->id()));
+  // Callers must explicitly clear the active request proxy first.
+  DCHECK(!active_request_proxy_extension_id_)
+      << "SetActiveRequestProxy() called with an active proxy";
+
+  active_request_proxy_extension_id_ = extension->id();
+}
 
 bool WebAuthenticationProxyService::CompleteIsUvpaaRequest(EventId event_id,
                                                            bool is_uvpaa) {
@@ -42,13 +77,22 @@ bool WebAuthenticationProxyService::CompleteIsUvpaaRequest(EventId event_id,
   return true;
 }
 
+void WebAuthenticationProxyService::CancelPendingCallbacks() {
+  DCHECK(IsActive());
+  for (auto& pair : pending_is_uvpaa_callbacks_) {
+    std::move(pair.second).Run(/*is_uvpaa=*/false);
+  }
+  pending_is_uvpaa_callbacks_.clear();
+}
+
 bool WebAuthenticationProxyService::IsActive() {
-  return event_router_->HasEventListener(
-      api::web_authentication_proxy::OnIsUvpaaRequest::kEventName);
+  return active_request_proxy_extension_id_.has_value();
 }
 
 void WebAuthenticationProxyService::SignalIsUvpaaRequest(
     IsUvpaaCallback callback) {
+  DCHECK(IsActive());
+
   int32_t request_id = NewRequestId();
   // Technically, this could spin forever if there are 4 billion active
   // requests. However, there's no real risk to this happening (no security or
@@ -58,12 +102,26 @@ void WebAuthenticationProxyService::SignalIsUvpaaRequest(
     request_id = NewRequestId();
   }
   pending_is_uvpaa_callbacks_.emplace(request_id, std::move(callback));
+  base::Value request(base::Value::Type::DICTIONARY);
+  request.SetIntKey("requestId", request_id);
   base::Value args(base::Value::Type::LIST);
-  args.Append(request_id);
-  event_router_->BroadcastEvent(std::make_unique<Event>(
-      events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST,
-      api::web_authentication_proxy::OnIsUvpaaRequest::kEventName,
-      std::move(args).TakeList()));
+  args.Append(std::move(request));
+  event_router_->DispatchEventToExtension(
+      *active_request_proxy_extension_id_,
+      std::make_unique<Event>(
+          events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST,
+          api::web_authentication_proxy::OnIsUvpaaRequest::kEventName,
+          std::move(args).TakeList()));
+}
+
+void WebAuthenticationProxyService::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  if (extension->id() != active_request_proxy_extension_id_) {
+    return;
+  }
+  ClearActiveRequestProxy();
 }
 
 WebAuthenticationProxyServiceFactory*
@@ -77,6 +135,7 @@ WebAuthenticationProxyServiceFactory::WebAuthenticationProxyServiceFactory()
           "WebAuthentcationProxyService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(EventRouterFactory::GetInstance());
+  DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
 WebAuthenticationProxyServiceFactory::~WebAuthenticationProxyServiceFactory() =

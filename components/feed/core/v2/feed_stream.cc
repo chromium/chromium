@@ -1285,16 +1285,43 @@ void FeedStream::ReportOtherUserAction(const StreamType& stream_type,
   metrics_reporter_->OtherUserAction(stream_type, action_type);
 }
 
-void FeedStream::ReportNoticeViewed(const std::string& key) {
-  GetNoticeCardTracker(key).OnViewed();
+void FeedStream::ReportNoticeCreated(const StreamType& stream_type,
+                                     const std::string& key) {
+  metrics_reporter_->OnNoticeCreated(stream_type, key);
 }
 
-void FeedStream::ReportNoticeOpenAction(const std::string& key) {
-  GetNoticeCardTracker(key).OnOpenAction();
+void FeedStream::ReportNoticeViewed(const StreamType& stream_type,
+                                    const std::string& key) {
+  metrics_reporter_->OnNoticeViewed(stream_type, key);
+  NoticeCardTracker& tracker = GetNoticeCardTracker(key);
+  bool was_acknowledged = tracker.HasAcknowledged();
+  tracker.OnViewed();
+  if (!was_acknowledged && tracker.HasAcknowledged()) {
+    metrics_reporter_->OnNoticeAcknowledged(
+        stream_type, key, NoticeAcknowledgementPath::kViaViewing);
+  }
 }
 
-void FeedStream::ReportNoticeDismissed(const std::string& key) {
-  GetNoticeCardTracker(key).OnDismissed();
+void FeedStream::ReportNoticeOpenAction(const StreamType& stream_type,
+                                        const std::string& key) {
+  metrics_reporter_->OnNoticeOpenAction(stream_type, key);
+  NoticeCardTracker& tracker = GetNoticeCardTracker(key);
+  bool was_acknowledged = tracker.HasAcknowledged();
+  tracker.OnOpenAction();
+  if (!was_acknowledged && tracker.HasAcknowledged())
+    metrics_reporter_->OnNoticeAcknowledged(
+        stream_type, key, NoticeAcknowledgementPath::kViaOpenAction);
+}
+
+void FeedStream::ReportNoticeDismissed(const StreamType& stream_type,
+                                       const std::string& key) {
+  metrics_reporter_->OnNoticeDismissed(stream_type, key);
+  NoticeCardTracker& tracker = GetNoticeCardTracker(key);
+  bool was_acknowledged = tracker.HasAcknowledged();
+  tracker.OnDismissed();
+  if (!was_acknowledged && tracker.HasAcknowledged())
+    metrics_reporter_->OnNoticeAcknowledged(
+        stream_type, key, NoticeAcknowledgementPath::kViaDismissal);
 }
 
 NoticeCardTracker& FeedStream::GetNoticeCardTracker(const std::string& key) {

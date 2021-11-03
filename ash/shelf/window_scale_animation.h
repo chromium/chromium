@@ -41,6 +41,10 @@ class ASH_EXPORT WindowScaleAnimation {
 
   ~WindowScaleAnimation();
 
+  // Starts animating and creating animation observers for all window(s) in the
+  // transient tree of `window_` in a descending order,
+  void Start();
+
   // For tests only:
   static base::AutoReset<bool>
   EnableScopedFastAnimationForTransientChildForTest();

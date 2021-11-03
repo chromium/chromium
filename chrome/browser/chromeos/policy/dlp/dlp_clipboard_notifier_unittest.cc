@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -183,6 +184,7 @@ class DlpClipboardNotifierTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
 };
 
 TEST_F(DlpClipboardNotifierTest, BlinkWarn) {

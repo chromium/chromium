@@ -159,8 +159,9 @@ class ASH_EXPORT ShellDelegate {
   // Fetches the favicon for `page_url` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
   virtual void GetFaviconForUrl(const std::string& page_url,
-                                favicon_base::FaviconImageCallback callback,
-                                base::CancelableTaskTracker* tracker) const = 0;
+                                int desired_icon_size,
+                                favicon_base::FaviconRawBitmapCallback callback,
+                                base::CancelableTaskTracker* teacker) const = 0;
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.

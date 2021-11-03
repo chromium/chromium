@@ -224,7 +224,8 @@ public class MediaSessionHelper implements MediaImageCallback {
                                 .setNotificationLargeIcon(mCurrentMediaImage)
                                 .setMediaSessionImage(mPageMediaImage)
                                 .setActions(MediaNotificationInfo.ACTION_PLAY_PAUSE
-                                        | MediaNotificationInfo.ACTION_SWIPEAWAY)
+                                        | MediaNotificationInfo.ACTION_SWIPEAWAY
+                                        | MediaNotificationInfo.ACTION_STOP)
                                 .setContentIntent(contentIntent)
                                 .setListener(mControlsListener)
                                 .setMediaSessionActions(mMediaSessionActions)

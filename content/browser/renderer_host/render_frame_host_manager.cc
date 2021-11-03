@@ -2963,7 +2963,8 @@ void RenderFrameHostManager::SwapOuterDelegateFrame(
   // false to |is_loading| below.
   // TODO(lazyboy): This |is_loading| behavior might not be what we want,
   // investigate and fix.
-  DCHECK_EQ(render_frame_host->GetSiteInstance(), proxy->GetSiteInstance());
+  DCHECK_EQ(render_frame_host->GetSiteInstance()->group(),
+            proxy->site_instance_group());
   render_frame_host->SwapOuterDelegateFrame(proxy);
   proxy->SetRenderFrameProxyCreated(true);
 }
@@ -3324,10 +3325,8 @@ void RenderFrameHostManager::CommitPending(
     for (auto& proxy : proxy_hosts_to_restore) {
       // We only cache pages when swapping BrowsingInstance, so we should never
       // be reusing SiteInstanceGroups.
-      CHECK(!base::Contains(proxy_hosts_, static_cast<SiteInstanceImpl*>(
-                                              proxy.second->GetSiteInstance())
-                                              ->group()
-                                              ->GetId()));
+      CHECK(!base::Contains(proxy_hosts_,
+                            proxy.second->site_instance_group()->GetId()));
       static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
           ->AddObserver(this);
       TRACE_EVENT_INSTANT(
@@ -3344,8 +3343,11 @@ void RenderFrameHostManager::CommitPending(
           blink::EventPageShowPersisted::
               kYesInBrowser_RenderFrameHostManager_CommitPending);
       for (RenderViewHostImpl* rvh : render_view_hosts_to_restore) {
+        bool restoring_main_frame_from_back_forward_cache =
+            render_frame_host_->render_view_host() == rvh;
         rvh->LeaveBackForwardCache(
-            pending_stored_page->page_restore_params.Clone());
+            pending_stored_page->page_restore_params.Clone(),
+            restoring_main_frame_from_back_forward_cache);
       }
     } else {
       DCHECK_EQ(prev_state,

@@ -931,10 +931,6 @@ scoped_refptr<DOMWrapperWorld> InspectorPageAgent::EnsureDOMWrapperWorld(
 }
 
 void InspectorPageAgent::DidClearDocumentOfWindowObject(LocalFrame* frame) {
-  EvaluateScriptsOnNewDocument(frame);
-}
-
-void InspectorPageAgent::EvaluateScriptsOnNewDocument(LocalFrame* frame) {
   if (!GetFrontend())
     return;
   Vector<WTF::String> keys = scripts_to_evaluate_on_load_.Keys();
@@ -1033,15 +1029,11 @@ void InspectorPageAgent::DidRestoreFromBackForwardCache(LocalFrame* frame) {
       protocol::Page::NavigationTypeEnum::BackForwardCacheRestore);
 }
 
-void InspectorPageAgent::DidOpenDocument(
-    LocalFrame* frame,
-    DocumentLoader* loader,
-    bool is_empty_document_opened_first_time) {
+void InspectorPageAgent::DidOpenDocument(LocalFrame* frame,
+                                         DocumentLoader* loader) {
   GetFrontend()->documentOpened(BuildObjectForFrame(loader->GetFrame()));
   LifecycleEvent(frame, loader, "init",
                  base::TimeTicks::Now().since_origin().InSecondsF());
-  if (is_empty_document_opened_first_time)
-    EvaluateScriptsOnNewDocument(frame);
 }
 
 void InspectorPageAgent::FrameAttachedToParent(LocalFrame* frame) {
@@ -1557,7 +1549,7 @@ Response InspectorPageAgent::getLayoutMetrics(
   // pixels. Details: https://crbug.com/1181313
   IntRect css_content_size =
       main_frame->GetPage()->GetChromeClient().ViewportToScreen(
-          IntRect(IntPoint(0, 0), content_size), main_frame->View());
+          IntRect(gfx::Point(0, 0), content_size), main_frame->View());
   *out_css_content_size = protocol::DOM::Rect::create()
                               .setX(css_content_size.x())
                               .setY(css_content_size.y())

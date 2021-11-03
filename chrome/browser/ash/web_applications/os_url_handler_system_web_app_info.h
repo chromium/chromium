@@ -29,6 +29,8 @@ class OsUrlHandlerSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   // capturing the os:// search tearms to be used.
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
+  bool ShouldShowInLauncher() const override;
+  bool ShouldShowInSearch() const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_URL_HANDLER_SYSTEM_WEB_APP_INFO_H_

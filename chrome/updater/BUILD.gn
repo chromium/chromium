@@ -485,6 +485,7 @@ if (is_win || is_mac) {
       "test/integration_tests_impl.h",
       "test/server.cc",
       "test/server.h",
+      "test_scope.h",
       "unittest_util_unittest.cc",
       "update_service_unittest.cc",
       "updater_scope_unittest.cc",
@@ -632,17 +633,16 @@ if (is_win || is_mac) {
     sources = [
       "run_all_unittests.cc",
       "test/integration_test_commands_factory_user.cc",
+      "test_scope_user.cc",
     ]
 
     deps = [
+      ":base",
       ":updater_test_sources",
       "//base/test:test_support",
       "//chrome/common:constants",
       "//testing/gtest",
     ]
-    if (is_win) {
-      deps += [ ":base" ]
-    }
 
     if (is_mac) {
       data_deps = [ "//chrome/updater/mac:updater_bundle_test" ]
@@ -658,17 +658,16 @@ if (is_win || is_mac) {
     sources = [
       "run_all_unittests.cc",
       "test/integration_test_commands_factory_system.cc",
+      "test_scope_system.cc",
     ]
 
     deps = [
+      ":base",
       ":updater_test_sources",
       "//base/test:test_support",
       "//chrome/common:constants",
       "//testing/gtest",
     ]
-    if (is_win) {
-      deps += [ ":base" ]
-    }
 
     data_deps = [ ":updater_integration_tests_helper" ]
     if (is_mac) {
@@ -697,6 +696,7 @@ if (is_win || is_mac) {
     sources = [
       "test/integration_test_commands_factory_system.cc",
       "test/integration_tests_helper.cc",
+      "test_scope_system.cc",
     ]
 
     deps = [

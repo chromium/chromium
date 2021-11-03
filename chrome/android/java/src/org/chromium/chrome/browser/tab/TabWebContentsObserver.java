@@ -255,13 +255,13 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didFinishLoad(GlobalRenderFrameHostId frameId, GURL url, boolean isKnownValid,
-                boolean isMainFrame, @LifecycleState int frameLifecycleState) {
+                boolean isInPrimaryMainFrame, @LifecycleState int frameLifecycleState) {
             assert isKnownValid;
             if (frameLifecycleState == LifecycleState.ACTIVE) {
                 if (mTab.getNativePage() != null) {
                     mTab.pushNativePageStateToNavigationEntry();
                 }
-                if (isMainFrame) mTab.didFinishPageLoad(url);
+                if (isInPrimaryMainFrame) mTab.didFinishPageLoad(url);
             }
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
             auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
@@ -269,9 +269,9 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingGurl,
+        public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingGurl,
                 @LifecycleState int frameLifecycleState) {
-            if (frameLifecycleState == LifecycleState.ACTIVE && isMainFrame) {
+            if (isInPrimaryMainFrame) {
                 mTab.didFailPageLoad(errorCode);
             }
 

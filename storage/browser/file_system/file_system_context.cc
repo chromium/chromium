@@ -21,6 +21,8 @@
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -422,6 +424,42 @@ void FileSystemContext::OpenFileSystem(const blink::StorageKey& storage_key,
                             base::File::FILE_ERROR_SECURITY);
     return;
   }
+
+  // Quota manager isn't provided by all tests.
+  if (quota_manager_proxy()) {
+    // Ensure default bucket for `storage_key` exists so that Quota API
+    // is aware of the usage. Bucket type 'temporary' is used even though the
+    // actual storage type of the file system being opened may be different.
+    quota_manager_proxy()->GetOrCreateBucket(
+        storage_key, kDefaultBucketName, io_task_runner_.get(),
+        base::BindOnce(&FileSystemContext::OnGetOrCreateBucket,
+                       weak_factory_.GetWeakPtr(), storage_key, type, mode,
+                       std::move(callback)));
+  } else {
+    ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
+  }
+}
+
+void FileSystemContext::OnGetOrCreateBucket(
+    const blink::StorageKey& storage_key,
+    FileSystemType type,
+    OpenFileSystemMode mode,
+    OpenFileSystemCallback callback,
+    QuotaErrorOr<BucketInfo> result) {
+  if (!result.ok()) {
+    std::move(callback).Run(GURL(), std::string(),
+                            base::File::FILE_ERROR_FAILED);
+    return;
+  }
+  ResolveURLOnOpenFileSystem(storage_key, type, mode, std::move(callback));
+}
+
+void FileSystemContext::ResolveURLOnOpenFileSystem(
+    const blink::StorageKey& storage_key,
+    FileSystemType type,
+    OpenFileSystemMode mode,
+    OpenFileSystemCallback callback) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   FileSystemBackend* backend = GetFileSystemBackend(type);
   if (!backend) {

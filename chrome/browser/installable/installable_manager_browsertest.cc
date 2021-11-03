@@ -270,20 +270,33 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
            embedded_test_server()->GetURL(manifest_url).spec();
   }
 
+  void NavigateAndMaybeWaitForWorker(Browser* browser,
+                                     const std::string& path,
+                                     bool wait_for_worker = true) {
+    GURL test_url = embedded_test_server()->GetURL(path);
+    if (wait_for_worker) {
+      web_app::ServiceWorkerRegistrationWaiter registration_waiter(
+          browser->profile(), test_url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_url));
+      registration_waiter.AwaitRegistration();
+    } else {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_url));
+    }
+  }
+
   void NavigateAndRunInstallableManager(Browser* browser,
                                         CallbackTester* tester,
                                         const InstallableParams& params,
-                                        const std::string& url) {
-    GURL test_url = embedded_test_server()->GetURL(url);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_url));
+                                        const std::string& url,
+                                        bool wait_for_worker = true) {
+    NavigateAndMaybeWaitForWorker(browser, url, wait_for_worker);
     RunInstallableManager(browser, tester, params);
   }
 
   std::vector<content::InstallabilityError>
   NavigateAndGetAllInstallabilityErrors(Browser* browser,
                                         const std::string& url) {
-    GURL test_url = embedded_test_server()->GetURL(url);
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, test_url));
+    NavigateAndMaybeWaitForWorker(browser, url);
     return GetAllInstallabilityErrors(browser);
   }
 
@@ -455,9 +468,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      incognito_browser,
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html")));
+  NavigateAndMaybeWaitForWorker(incognito_browser,
+                                "/banners/manifest_test_page.html");
 
   RunInstallableManager(incognito_browser, tester.get(), GetManifestParams());
   run_loop.Run();
@@ -850,9 +862,8 @@ IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
         new CallbackTester(run_loop.QuitClosure()));
 
     // Navigating resets histogram state, so do it before recording a histogram.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL(
-                       GetPath("/banners/manifest_test_page"))));
+    NavigateAndMaybeWaitForWorker(browser(),
+                                  GetPath("/banners/manifest_test_page"));
     RunInstallableManager(browser(), tester.get(), GetWebAppParams());
     run_loop.Run();
 
@@ -1092,9 +1103,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
     // Expect the call to ManifestAndIconTimeout to kick off an installable
     // check and pass it on an installable page.
     base::HistogramTester histograms;
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
-        embedded_test_server()->GetURL("/banners/manifest_test_page.html")));
+    NavigateAndMaybeWaitForWorker(browser(),
+                                  "/banners/manifest_test_page.html");
 
     InstallableManager* manager = GetManager(browser());
 
@@ -1146,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
 
     NavigateAndRunInstallableManager(
         browser(), tester.get(), GetManifestParams(),
-        "/banners/manifest_no_service_worker.html");
+        "/banners/manifest_no_service_worker.html", /*wait_for_worker=*/false);
     run_loop.Run();
 
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -1780,9 +1790,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
             tester->errors());
 }
 
-// Flake tests: crbug.com/1256938
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       DISABLED_GetAllInstallabilityErrorsNoErrors) {
+                       GetAllInstallabilityErrorsNoErrors) {
   EXPECT_EQ(std::vector<content::InstallabilityError>{},
             NavigateAndGetAllInstallabilityErrors(
                 browser(), "/banners/manifest_test_page.html"));
@@ -1805,31 +1814,20 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
             GetAllInstallabilityErrors(browser()));
 }
 
-// Flake tests: crbug.com/1256938
 IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
-                       DISABLED_GetAllInstallabilityErrorsWithPlayAppManifest) {
+                       GetAllInstallabilityErrorsWithPlayAppManifest) {
+  auto errors = std::vector<content::InstallabilityError>(
+      {GetInstallabilityError(START_URL_NOT_VALID),
+       GetInstallabilityError(MANIFEST_MISSING_NAME_OR_SHORT_NAME),
+       GetInstallabilityError(MANIFEST_DISPLAY_NOT_SUPPORTED),
+       GetInstallabilityError(MANIFEST_MISSING_SUITABLE_ICON)});
   if (IsCheckOfflineCapableFeatureEnabled()) {
-    EXPECT_EQ(std::vector<content::InstallabilityError>(
-                  {GetInstallabilityError(START_URL_NOT_VALID),
-                   GetInstallabilityError(MANIFEST_MISSING_NAME_OR_SHORT_NAME),
-                   GetInstallabilityError(MANIFEST_DISPLAY_NOT_SUPPORTED),
-                   GetInstallabilityError(MANIFEST_MISSING_SUITABLE_ICON),
-                   GetInstallabilityError(NO_URL_FOR_SERVICE_WORKER),
-                   GetInstallabilityError(NO_ACCEPTABLE_ICON)}),
-              NavigateAndGetAllInstallabilityErrors(
-                  browser(), GetURLOfPageWithServiceWorkerAndManifest(
-                                 "/banners/play_app_manifest.json")));
-  } else {
-    EXPECT_EQ(std::vector<content::InstallabilityError>(
-                  {GetInstallabilityError(START_URL_NOT_VALID),
-                   GetInstallabilityError(MANIFEST_MISSING_NAME_OR_SHORT_NAME),
-                   GetInstallabilityError(MANIFEST_DISPLAY_NOT_SUPPORTED),
-                   GetInstallabilityError(MANIFEST_MISSING_SUITABLE_ICON),
-                   GetInstallabilityError(NO_ACCEPTABLE_ICON)}),
-              NavigateAndGetAllInstallabilityErrors(
-                  browser(), GetURLOfPageWithServiceWorkerAndManifest(
-                                 "/banners/play_app_manifest.json")));
+    errors.push_back(GetInstallabilityError(NO_URL_FOR_SERVICE_WORKER));
   }
+  errors.push_back(GetInstallabilityError(NO_ACCEPTABLE_ICON));
+  EXPECT_EQ(errors, NavigateAndGetAllInstallabilityErrors(
+                        browser(), GetURLOfPageWithServiceWorkerAndManifest(
+                                       "/banners/play_app_manifest.json")));
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
@@ -1847,14 +1845,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, NarrowServiceWorker) {
-  const GURL url =
-      embedded_test_server()->GetURL("/banners/scope_c/scope_c.html");
-  {
-    web_app::ServiceWorkerRegistrationWaiter registration_waiter(
-        browser()->profile(), url);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    registration_waiter.AwaitRegistration();
-  }
+  NavigateAndMaybeWaitForWorker(browser(), "/banners/scope_c/scope_c.html");
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
       new CallbackTester(run_loop.QuitClosure()));
@@ -2066,8 +2057,8 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
   manager->ClearOnResetData();
 
   // Loads a page in the prerendering.
-  auto prerender_url =
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html");
+  const std::string path = "/banners/manifest_test_page.html";
+  auto prerender_url = embedded_test_server()->GetURL(path);
   int host_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
@@ -2096,7 +2087,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerInPrerenderingBrowserTest,
     // reset.
     base::RunLoop run_loop;
     manager->SetQuitClosure(run_loop.QuitClosure());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), prerender_url));
+    NavigateAndMaybeWaitForWorker(browser(), path);
     run_loop.Run();
   }
 

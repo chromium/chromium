@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -32,16 +33,18 @@ void TestAppListClient::OpenSearchResult(int profile_id,
   last_opened_search_result_ = result_id;
 }
 
-void TestAppListClient::InvokeSearchResultAction(const std::string& result_id,
-                                                 int action_index) {
-  invoked_result_actions_.push_back(std::make_pair(result_id, action_index));
+void TestAppListClient::InvokeSearchResultAction(
+    const std::string& result_id,
+    SearchResultActionType action) {
+  invoked_result_actions_.push_back(std::make_pair(result_id, action));
 }
 
 void TestAppListClient::OnSetPositionRequested(
     int profile_id,
     std::string id,
-    const syncer::StringOrdinal& new_position) {
-  AppListModel* model = controller_->GetModel();
+    const syncer::StringOrdinal& new_position,
+    RequestPositionUpdateReason reason) {
+  AppListModel* model = AppListModelProvider::Get()->model();
   AppListItem* item = model->FindItem(id);
   std::unique_ptr<AppListItemMetadata> meta_data = item->CloneMetadata();
   meta_data->position = new_position;

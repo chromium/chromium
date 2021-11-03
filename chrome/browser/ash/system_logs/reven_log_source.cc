@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
@@ -246,6 +247,26 @@ void PopulateTpmInfo(std::string* log, const TelemetryInfoPtr& info) {
   base::StrAppend(log, {"\n"});
 }
 
+void PopulateGraphicsInfo(std::string* log, const TelemetryInfoPtr& info) {
+  if (info->graphics_result.is_null() || info->graphics_result->is_error()) {
+    DVLOG(1) << "GraphicsResult not found in croshealthd response";
+    return;
+  }
+  const healthd::GraphicsInfoPtr& graphics_info =
+      info->graphics_result->get_graphics_info();
+
+  base::StrAppend(log, {"graphics_info:"});
+  const healthd::GLESInfoPtr& gles_info = graphics_info->gles_info;
+  AddIndentedLogEntry(log, "gl_version", gles_info->version);
+  AddIndentedLogEntry(log, "gl_shading_version", gles_info->shading_version);
+  AddIndentedLogEntry(log, "gl_vendor", gles_info->vendor);
+  AddIndentedLogEntry(log, "gl_renderer", gles_info->renderer);
+  AddIndentedLogEntry(log, "gl_extensions",
+                      base::JoinString(gles_info->extensions, ", "));
+
+  base::StrAppend(log, {"\n"});
+}
+
 }  // namespace
 
 RevenLogSource::RevenLogSource() : SystemLogsSource("Reven") {
@@ -258,8 +279,9 @@ RevenLogSource::~RevenLogSource() = default;
 void RevenLogSource::Fetch(SysLogsSourceCallback callback) {
   probe_service_->ProbeTelemetryInfo(
       {ProbeCategories::kBluetooth, ProbeCategories::kBus,
-       ProbeCategories::kCpu, ProbeCategories::kMemory,
-       ProbeCategories::kSystem2, ProbeCategories::kTpm},
+       ProbeCategories::kCpu, ProbeCategories::kGraphics,
+       ProbeCategories::kMemory, ProbeCategories::kSystem2,
+       ProbeCategories::kTpm},
       base::BindOnce(&RevenLogSource::OnTelemetryInfoProbeResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -280,6 +302,7 @@ void RevenLogSource::OnTelemetryInfoProbeResponse(
     PopulateMemoryInfo(&log_val, info_ptr);
     PopulateBusDevicesInfo(&log_val, info_ptr);
     PopulateTpmInfo(&log_val, info_ptr);
+    PopulateGraphicsInfo(&log_val, info_ptr);
   }
 
   response->emplace(kRevenLogKey, log_val);

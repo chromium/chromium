@@ -22,20 +22,12 @@ class VideoChannelStateObserver {
   virtual void OnTargetBitrateChanged(int bitrate_kbps) = 0;
   virtual void OnRttUpdate(base::TimeDelta rtt) = 0;
 
-  // Notifies the scheduler that the encoder wants to continue receiving
-  // captured frames even if nothing has changed (so it can re-encode the frame
-  // with increasing quality). If this is false, the scheduler need not send
-  // "empty" frames (no update region) for encoding/sending. The initial
-  // state is false, and the notification is raised whenever the state changes.
-  virtual void OnTopOffActive(bool active) = 0;
-
   // Called when the encoder has finished encoding a frame, and before it is
-  // passed to WebRTC's registered callback. |frame| is non-const so that
-  // WebrtcVideoStream can add timestamps to it before sending.
-  // TODO(crbug.com/1192865): Make |frame| const when standard encoding pipeline
-  // is implemented.
-  virtual void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
-                              WebrtcVideoEncoder::EncodedFrame* frame) = 0;
+  // passed to WebRTC's registered callback. |frame| may be null if encoding
+  // failed.
+  virtual void OnFrameEncoded(
+      WebrtcVideoEncoder::EncodeResult encode_result,
+      const WebrtcVideoEncoder::EncodedFrame* frame) = 0;
 
   // Called after the encoded frame is sent via the WebRTC registered callback.
   // The result contains the frame ID assigned by WebRTC if successfully sent.

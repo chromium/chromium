@@ -33,6 +33,8 @@ NearbyConnectionBroker::NearbyConnectionBroker(
       on_disconnected_callback_(std::move(on_disconnected_callback)) {
   message_sender_receiver_.set_disconnect_handler(base::BindOnce(
       &NearbyConnectionBroker::OnMojoDisconnection, base::Unretained(this)));
+  file_payload_handler_receiver_.set_disconnect_handler(base::BindOnce(
+      &NearbyConnectionBroker::OnMojoDisconnection, base::Unretained(this)));
   message_receiver_remote_.set_disconnect_handler(base::BindOnce(
       &NearbyConnectionBroker::OnMojoDisconnection, base::Unretained(this)));
 }
@@ -41,6 +43,7 @@ NearbyConnectionBroker::~NearbyConnectionBroker() = default;
 
 void NearbyConnectionBroker::InvokeDisconnectedCallback() {
   message_sender_receiver_.reset();
+  file_payload_handler_receiver_.reset();
   message_receiver_remote_.reset();
   std::move(on_disconnected_callback_).Run();
 }

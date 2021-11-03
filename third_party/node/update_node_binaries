@@ -15,7 +15,7 @@ set -eu
 cd "$(dirname "$0")"
 
 BASE_URL="https://nodejs.org/dist"
-NODE_VERSION="v14.15.4"
+NODE_VERSION="v16.13.0"
 
 update_unix() {
   local SUFFIX="$1"
@@ -37,9 +37,10 @@ update_unix() {
     exit 1
   fi
 
-  # Unpack temporarily, delete NPM symlink and re-pack.
+  # Unpack temporarily, delete npm, npx, corepack symlinks and re-pack.
   tar xfz "${FOLDER}/${FILENAME}" -C "${FOLDER}/"
   rm "${FOLDER}/${FILENAME}"
+  rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/corepack"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/npm"
   rm "${FOLDER}/node-${NODE_VERSION}-${SUFFIX}/bin/npx"
 
@@ -87,6 +88,7 @@ rm -f "SHASUMS256.txt"
 wget "https://nodejs.org/dist/${NODE_VERSION}/SHASUMS256.txt"
 
 update_unix "darwin-x64" "mac"
+update_unix "darwin-arm64" "mac"
 update_unix "linux-x64" "linux"
 update_win
 

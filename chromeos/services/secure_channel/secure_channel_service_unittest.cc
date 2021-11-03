@@ -509,6 +509,10 @@ class FakeClientConnectionParametersFactory
 }  // namespace
 
 class SecureChannelServiceTest : public testing::Test {
+ public:
+  SecureChannelServiceTest(const SecureChannelServiceTest&) = delete;
+  SecureChannelServiceTest& operator=(const SecureChannelServiceTest&) = delete;
+
  protected:
   SecureChannelServiceTest()
       : test_devices_(
@@ -1133,8 +1137,6 @@ class SecureChannelServiceTest : public testing::Test {
   bool is_adapter_present_;
 
   mojo::Remote<mojom::SecureChannel> secure_channel_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelServiceTest);
 };
 
 TEST_F(SecureChannelServiceTest, ListenForConnection_MissingPublicKey) {

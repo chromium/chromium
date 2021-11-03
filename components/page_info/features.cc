@@ -16,12 +16,10 @@ const base::Feature kPageInfoStoreInfo{"PageInfoStoreInfo",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if !defined(OS_ANDROID)
-const base::Feature kPageInfoV2Desktop{"PageInfoV2Desktop",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
+                                                  "ShowSampleContent", true};
 
 }  // namespace page_info

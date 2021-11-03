@@ -62,6 +62,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 }  // namespace
 
+@interface BidirectionalCollectionViewTransitionLayout
+    : UICollectionViewTransitionLayout
+@end
+
+@implementation BidirectionalCollectionViewTransitionLayout
+- (BOOL)flipsHorizontallyInOppositeLayoutDirection {
+  return UseRTLLayout() ? YES : NO;
+}
+@end
+
 @interface GridViewController () <GridCellDelegate,
                                   UICollectionViewDataSource,
                                   UICollectionViewDelegate,
@@ -464,6 +474,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   GridCell* cell = base::mac::ObjCCastStrict<GridCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider contextMenuConfigurationForGridCell:cell];
+}
+
+- (UICollectionViewTransitionLayout*)
+                  collectionView:(UICollectionView*)collectionView
+    transitionLayoutForOldLayout:(UICollectionViewLayout*)fromLayout
+                       newLayout:(UICollectionViewLayout*)toLayout {
+  return [[BidirectionalCollectionViewTransitionLayout alloc]
+      initWithCurrentLayout:fromLayout
+                 nextLayout:toLayout];
 }
 
 #pragma mark - UIPointerInteractionDelegate
@@ -931,23 +950,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (CGFloat)offsetPastEndOfScrollView {
   CGFloat offset;
-  if (self.currentLayout == self.horizontalLayout) {
-    if (UseRTLLayout()) {
-      offset = -self.collectionView.contentOffset.x;
-    } else {
-      // Use collectionViewLayout.collectionViwContentSize because it has the
-      // correct size during a batch update.
-      offset = self.collectionView.contentOffset.x +
-               self.collectionView.frame.size.width -
-               self.collectionView.collectionViewLayout
-                   .collectionViewContentSize.width;
-    }
+  if (UseRTLLayout()) {
+    offset = -self.collectionView.contentOffset.x;
   } else {
-    DCHECK_EQ(self.gridLayout, self.currentLayout);
     // Use collectionViewLayout.collectionViwContentSize because it has the
     // correct size during a batch update.
-    offset = self.collectionView.contentOffset.y +
-             self.collectionView.frame.size.height -
+    offset = self.collectionView.contentOffset.x +
+             self.collectionView.frame.size.width -
              self.collectionView.collectionViewLayout.collectionViewContentSize
                  .width;
   }
@@ -959,13 +968,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     return;
   _fractionVisibleOfLastItem = fractionVisibleOfLastItem;
 
-  if (self.currentLayout == self.horizontalLayout) {
-    [self.delegate didChangeLastItemVisibilityInGridViewController:self];
-  } else {
-    DCHECK_EQ(self.gridLayout, self.currentLayout);
-    // No-op because behaviour of the tab grid's bottom toolbar when the plus
-    // sign cell is visible hasn't been decided yet. TODO(crbug.com/1146130)
-  }
+  // TODO(crbug.com/1146130): Behaviour of the tab grid's bottom toolbar when
+  // the plus sign cell is visible hasn't been decided yet.
+  [self.delegate didChangeLastItemVisibilityInGridViewController:self];
 }
 
 - (void)setCurrentLayout:(FlowLayout*)currentLayout {

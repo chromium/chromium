@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_UI_CONTROLLER_ANDROID_UTILS_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_UI_CONTROLLER_ANDROID_UTILS_H_
 
-#include <map>
 #include <string>
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/bottom_sheet_state.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -116,8 +116,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
     JNIEnv* env,
     const std::vector<ChipProto>& chips);
 
-// Creates a std::map from an incoming set of Java string keys and values.
-std::map<std::string, std::string> CreateStringMapFromJava(
+// Creates a base::flat_map from an incoming set of Java string keys and values.
+base::flat_map<std::string, std::string> CreateStringMapFromJava(
     JNIEnv* env,
     const base::android::JavaRef<jobjectArray>& keys,
     const base::android::JavaRef<jobjectArray>& values);

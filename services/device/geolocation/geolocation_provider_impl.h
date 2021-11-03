@@ -62,6 +62,9 @@ class GeolocationProviderImpl : public GeolocationProvider,
   // instantiated on the same thread. Ownership is NOT returned.
   static GeolocationProviderImpl* GetInstance();
 
+  GeolocationProviderImpl(const GeolocationProviderImpl&) = delete;
+  GeolocationProviderImpl& operator=(const GeolocationProviderImpl&) = delete;
+
   // Optional: Provide global configuration to Geolocation. Should be called
   // before using Init() on the singleton GetInstance().
   // |url_loader_factory| : a factory to use for network geolocation requests.
@@ -145,8 +148,6 @@ class GeolocationProviderImpl : public GeolocationProvider,
   std::unique_ptr<LocationProvider> arbitrator_;
 
   mojo::Receiver<mojom::GeolocationControl> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationProviderImpl);
 };
 
 }  // namespace device

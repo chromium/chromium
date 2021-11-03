@@ -23,6 +23,10 @@ class SubresourceWebBundle;
 class Document;
 class ThreadableLoader;
 
+namespace {
+enum LoadState { kInProgress, kFailed, kSuccess };
+}
+
 // A loader which is used to load a resource from webbundle.
 class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
                         public ThreadableLoaderClient,
@@ -35,7 +39,8 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
 
   void Trace(Visitor* visitor) const override;
 
-  bool HasLoaded() const { return !failed_; }
+  bool HasLoaded() const { return load_state_ == kSuccess; }
+  bool HasFailed() const { return load_state_ == kFailed; }
 
   // ThreadableLoaderClient
   void DidStartLoadingResponseBody(BytesConsumer& consumer) override;
@@ -64,7 +69,7 @@ class WebBundleLoader : public GarbageCollected<WebBundleLoader>,
 
   Member<SubresourceWebBundle> subresource_web_bundle_;
   Member<ThreadableLoader> loader_;
-  bool failed_ = false;
+  LoadState load_state_ = kInProgress;
   KURL url_;
   scoped_refptr<SecurityOrigin> security_origin_;
   base::UnguessableToken web_bundle_token_;

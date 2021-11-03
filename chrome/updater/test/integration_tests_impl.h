@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -25,6 +24,9 @@ class Version;
 class GURL;
 
 namespace updater {
+
+enum class UpdaterScope;
+
 namespace test {
 
 class ScopedServer;
@@ -84,10 +86,10 @@ void Uninstall(UpdaterScope scope);
 void RunWake(UpdaterScope scope, int exit_code);
 
 // Invokes the active instance's UpdateService::Update (via RPC) for an app.
-void Update(const std::string& app_id);
+void Update(UpdaterScope scope, const std::string& app_id);
 
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
-void UpdateAll();
+void UpdateAll(UpdaterScope scope);
 
 // Runs the command and waits for it to exit or time out.
 bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
@@ -139,7 +141,7 @@ void ExpectAppVersion(UpdaterScope scope,
                       const std::string& app_id,
                       const base::Version& version);
 
-void RegisterApp(const std::string& app_id);
+void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
 void WaitForServerExit(UpdaterScope scope);
 

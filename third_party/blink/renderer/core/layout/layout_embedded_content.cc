@@ -361,7 +361,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
   absolute_replaced_rect.Move(absolute_location);
   FloatRect absolute_bounding_box =
       transform_state.LastPlanarQuad().BoundingBox();
-  IntRect frame_rect(IntPoint(),
+  IntRect frame_rect(gfx::Point(),
                      PixelSnappedIntRect(absolute_replaced_rect).size());
   // Normally the location of the frame rect is ignored by the painter, but
   // currently it is still used by a family of coordinate conversion function in
@@ -387,7 +387,7 @@ void LayoutEmbeddedContent::UpdateGeometry(
     // which is a float-type but frame_rect in a content view is an IntRect. We
     // may want to reevaluate the use of pixel snapping that since scroll
     // offsets/layout can be fractional.
-    frame_rect.MoveBy(layout_view->PixelSnappedScrolledContentOffset());
+    frame_rect.Offset(layout_view->PixelSnappedScrolledContentOffset());
   }
 
   embedded_content_view.SetFrameRect(frame_rect);

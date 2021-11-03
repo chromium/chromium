@@ -39,6 +39,9 @@ class CONTENT_EXPORT BackgroundSyncContext {
 
   BackgroundSyncContext() = default;
 
+  BackgroundSyncContext(const BackgroundSyncContext&) = delete;
+  BackgroundSyncContext& operator=(const BackgroundSyncContext&) = delete;
+
   // Process any pending Background Sync registrations.
   // This involves firing any sync events ready to be fired, and optionally
   // scheduling a job to wake up the browser when the next event needs to be
@@ -56,8 +59,6 @@ class CONTENT_EXPORT BackgroundSyncContext {
 
  protected:
   virtual ~BackgroundSyncContext() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncContext);
 };
 
 }  // namespace content

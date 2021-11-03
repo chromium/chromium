@@ -47,6 +47,8 @@ class BLINK_PLATFORM_EXPORT WebSurfaceLayerBridge {
   virtual void SetContentsOpaque(bool) = 0;
   virtual void CreateSurfaceLayer() = 0;
   virtual void ClearObserver() = 0;
+  virtual void RegisterFrameSinkHierarchy() = 0;
+  virtual void UnregisterFrameSinkHierarchy() = 0;
 };
 
 }  // namespace blink

@@ -134,7 +134,7 @@ js_library("cr_expand_button_tests") {
 js_library("cr_fingerprint_progress_arc_tests") {
   deps = [
     "..:chai_assert",
-    "..:mock_controller.m",
+    "..:mock_controller",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc.m",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
@@ -200,7 +200,7 @@ js_library("cr_link_row_tests") {
 js_library("cr_lottie_tests") {
   deps = [
     "..:chai_assert",
-    "..:mock_controller.m",
+    "..:mock_controller",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
@@ -344,7 +344,7 @@ js_library("cr_toast_manager_test") {
 js_library("cr_toast_test") {
   deps = [
     "..:chai_assert",
-    "..:mock_timer.m",
+    "..:mock_timer",
     "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]

@@ -6,11 +6,8 @@
   }
 
   #centerContent {
-    --background-gradient-start-color: var(--google-blue-50);
-    
     background: linear-gradient(to top,
-                                var(--background-gradient-start-color) 5%,
-                                transparent 50%);
+        var(--nearby-page-linear-gradient-color-start) 5%, transparent 50%);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -18,13 +15,6 @@
     overflow: hidden;
     padding: 0 32px;
     position: relative;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #centerContent {
-      --background-gradient-start-color:
-          rgba(var(--google-blue-refresh-300-rgb), 0.2);
-    }
   }
 
   #errorSection {

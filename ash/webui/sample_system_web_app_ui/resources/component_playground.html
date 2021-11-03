@@ -18,6 +18,13 @@
     #overridden {
       --button-height: 48px;
     }
+
+    .card {
+      border-radius: 2px;
+      height: 50px;
+      margin: 10px;
+      width: 50px;
+    }
   </style>
 </head>
 <body>
@@ -37,6 +44,13 @@
   <cros-button label="Hidden Label" primary hide-label></cros-button>
   <div>Vanilla MWC</div>
   <mwc-button>Button</mwc-button>
+
+  <div class="card" style="box-shadow: var(--cros-elevation-1-shadow)">+1</div>
+  <div class="card" style="box-shadow: var(--cros-elevation-2-shadow)">+2</div>
+  <div class="card" style="box-shadow: var(--cros-elevation-3-shadow)">+3</div>
+  <div class="card" style="box-shadow: var(--cros-elevation-4-shadow)">+4</div>
+  <div class="card" style="box-shadow: var(--cros-elevation-5-shadow)">+5</div>
+
   <script type="module" src="component_playground.rollup.js"></script>
 </body>
 </html>

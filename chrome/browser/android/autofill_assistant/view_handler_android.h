@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_VIEW_HANDLER_ANDROID_H_
 #define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_VIEW_HANDLER_ANDROID_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
 #include "base/android/jni_android.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +35,8 @@ class ViewHandlerAndroid {
                base::android::ScopedJavaGlobalRef<jobject> jview);
 
  private:
-  std::map<std::string, base::android::ScopedJavaGlobalRef<jobject>> views_;
+  base::flat_map<std::string, base::android::ScopedJavaGlobalRef<jobject>>
+      views_;
   base::WeakPtrFactory<ViewHandlerAndroid> weak_ptr_factory_{this};
 };
 

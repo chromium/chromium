@@ -161,6 +161,10 @@ TEST_F('MediaAppUIGtestBrowserTest', 'LaunchUnopenableFile', () => {
   runMediaAppTest('LaunchUnopenableFile');
 });
 
+TEST_F('MediaAppUIGtestBrowserTest', 'LaunchUnnavigableDirectory', () => {
+  runMediaAppTest('LaunchUnnavigableDirectory');
+});
+
 TEST_F('MediaAppUIGtestBrowserTest', 'NavigateWithUnopenableSibling', () => {
   runMediaAppTest('NavigateWithUnopenableSibling');
 });

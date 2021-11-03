@@ -19,6 +19,8 @@ const base::Feature kIPHDummyFeature{"IPH_Dummy",
 
 #if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+const base::Feature kIPHDesktopSharedHighlightingFeature{
+    "IPH_DesktopSharedHighlighting", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHDesktopTabGroupsNewGroupFeature{
     "IPH_DesktopTabGroupsNewGroup", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHFocusHelpBubbleScreenReaderPromoFeature{

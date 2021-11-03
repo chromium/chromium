@@ -44,9 +44,9 @@ class LayoutSVGText final : public LayoutSVGBlock {
     NOT_DESTROYED();
     needs_text_metrics_update_ = true;
   }
-  FloatRect VisualRectInLocalSVGCoordinates() const override;
-  FloatRect ObjectBoundingBox() const override;
-  FloatRect StrokeBoundingBox() const override;
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override;
+  gfx::RectF ObjectBoundingBox() const override;
+  gfx::RectF StrokeBoundingBox() const override;
   bool IsObjectBoundingBoxValid() const;
 
   void AddOutlineRects(Vector<PhysicalRect>&,

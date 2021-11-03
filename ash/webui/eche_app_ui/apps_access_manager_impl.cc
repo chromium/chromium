@@ -4,13 +4,14 @@
 
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/pref_names.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 // static
@@ -124,6 +125,13 @@ void AppsAccessManagerImpl::OnFeatureStatusChanged() {
 }
 
 void AppsAccessManagerImpl::AttemptAppsAccessStateRequest() {
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kEchePhoneHubPermissionsOnboarding)) {
+    PA_LOG(INFO) << "kEchePhoneHubPermissionsOnboarding flag is false, ignores "
+                    "to get apps access status from phone.";
+    return;
+  }
+
   if (initialized_)
     return;
 
@@ -189,4 +197,4 @@ AppsAccessManager::AccessStatus AppsAccessManagerImpl::ComputeAppsAccessState(
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

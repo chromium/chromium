@@ -38,6 +38,10 @@ namespace {
 // if the constant used internally in the implementation changes.
 constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 
+// TODO(crbug/1205645): Consider consolidating TestVariationsSeedStore and
+// SignatureVerifyingVariationsSeedStore. Outside of tests, signature
+// verification is enabled although prior to crrev.com/c/2181564, signature
+// verification was not done on iOS or Android.
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(
@@ -60,9 +64,6 @@ class TestVariationsSeedStore : public VariationsSeedStore {
   }
 };
 
-// Signature verification is disabled on Android and iOS for performance
-// reasons. This class re-enables it for tests, which don't mind the (small)
-// performance penalty.
 class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit SignatureVerifyingVariationsSeedStore(PrefService* local_state)
@@ -158,6 +159,7 @@ void SetAllSeedPrefsToNonDefaultValues(PrefService* prefs) {
   prefs->SetTime(prefs::kVariationsSafeSeedDate, now - delta * 2);
   prefs->SetTime(prefs::kVariationsSafeSeedFetchTime, now - delta * 3);
   prefs->SetString(prefs::kVariationsSafeSeedLocale, "en-MX");
+  prefs->SetInteger(prefs::kVariationsSafeSeedMilestone, 90);
   prefs->SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry, "mx");
   prefs->SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry, "gt");
   prefs->SetString(prefs::kVariationsSafeSeedSignature, "mustard");
@@ -189,6 +191,7 @@ void CheckSafeSeedPrefsAreSet(const TestingPrefServiceSimple& prefs) {
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedFetchTime));
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedLocale));
+  EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedMilestone));
   EXPECT_FALSE(PrefHasDefaultValue(
       prefs, prefs::kVariationsSafeSeedPermanentConsistencyCountry));
   EXPECT_FALSE(PrefHasDefaultValue(
@@ -201,6 +204,7 @@ void CheckSafeSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs) {
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedDate));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedFetchTime));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedLocale));
+  EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedMilestone));
   EXPECT_TRUE(PrefHasDefaultValue(
       prefs, prefs::kVariationsSafeSeedPermanentConsistencyCountry));
   EXPECT_TRUE(PrefHasDefaultValue(
@@ -209,6 +213,17 @@ void CheckSafeSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs) {
 }
 
 }  // namespace
+
+struct InvalidSafeSeedTestParams {
+  const std::string test_name;
+  const std::string seed;
+  const std::string signature;
+  StoreSeedResult store_seed_result;
+  absl::optional<VerifySignatureResult> verify_signature_result = absl::nullopt;
+};
+
+using StoreInvalidSafeSeedTest =
+    ::testing::TestWithParam<InvalidSafeSeedTestParams>;
 
 TEST(VariationsSeedStoreTest, LoadSeed_ValidSeed) {
   // Store good seed data to test if loading from prefs works.
@@ -600,229 +615,169 @@ TEST(VariationsSeedStoreTest, LoadSafeSeed_EmptySeed) {
                                       LoadSeedResult::kEmpty, 1);
 }
 
-TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSeed) {
-  const VariationsSeed seed = CreateTestSeed();
-  const std::string serialized_seed = SerializeSeed(seed);
-  const std::string signature = "a completely ignored signature";
-  ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-US";
-  client_state.reference_date = WrapTime(12345);
-  client_state.session_consistency_country = "US";
-  client_state.permanent_consistency_country = "CA";
-  const base::Time fetch_time = WrapTime(99999);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    StoreInvalidSafeSeedTest,
+    ::testing::Values(
+        InvalidSafeSeedTestParams{
+            .test_name = "EmptySeed",
+            .seed = "",
+            .signature = "unused signature",
+            .store_seed_result = StoreSeedResult::kFailedEmptyGzipContents},
+        InvalidSafeSeedTestParams{
+            .test_name = "InvalidSeed",
+            .seed = "invalid seed",
+            .signature = "unused signature",
+            .store_seed_result = StoreSeedResult::kFailedParse},
+        InvalidSafeSeedTestParams{
+            .test_name = "InvalidSignature",
+            .seed = SerializeSeed(CreateTestSeed()),
+            // A well-formed signature that does not correspond to the seed.
+            .signature = kTestSeedData.base64_signature,
+            .store_seed_result = StoreSeedResult::kFailedSignature,
+            .verify_signature_result = VerifySignatureResult::INVALID_SEED}),
+    [](const ::testing::TestParamInfo<InvalidSafeSeedTestParams>& params) {
+      return params.param.test_name;
+    });
 
+// Verify that attempting to store an invalid safe seed fails and does not
+// modify Local State's existing safe-seed-related prefs.
+TEST_P(StoreInvalidSafeSeedTest, StoreSafeSeed) {
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
-  TestVariationsSeedStore seed_store(&prefs);
 
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(seed_store.StoreSafeSeed(serialized_seed, signature, client_state,
-                                       fetch_time));
+  // Set a safe seed and its associated prefs to their expected values. Also,
+  // specify different safe seed pref values that are later attempted to be
+  // stored.
+  const std::string expected_seed = "a seed";
+  InvalidSafeSeedTestParams params = GetParam();
+  const std::string seed_to_store = params.seed;
+  prefs.SetString(prefs::kVariationsSafeCompressedSeed, expected_seed);
 
-  // Verify the stored data.
-  std::string loaded_compressed_seed =
-      prefs.GetString(prefs::kVariationsSafeCompressedSeed);
-  std::string decoded_compressed_seed;
-  ASSERT_TRUE(
-      base::Base64Decode(loaded_compressed_seed, &decoded_compressed_seed));
-  EXPECT_EQ(Compress(serialized_seed), decoded_compressed_seed);
-  EXPECT_EQ(signature, prefs.GetString(prefs::kVariationsSafeSeedSignature));
-  EXPECT_EQ("en-US", prefs.GetString(prefs::kVariationsSafeSeedLocale));
-  EXPECT_EQ(WrapTime(12345), prefs.GetTime(prefs::kVariationsSafeSeedDate));
-  EXPECT_EQ(WrapTime(99999),
-            prefs.GetTime(prefs::kVariationsSafeSeedFetchTime));
-  EXPECT_EQ("US", prefs.GetString(
-                      prefs::kVariationsSafeSeedSessionConsistencyCountry));
-  EXPECT_EQ("CA", prefs.GetString(
-                      prefs::kVariationsSafeSeedPermanentConsistencyCountry));
+  const std::string expected_signature = "a signature";
+  const std::string signature_to_store = params.signature;
+  prefs.SetString(prefs::kVariationsSafeSeedSignature, expected_signature);
 
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
-}
+  const int expected_milestone = 90;
+  const int milestone_to_store = 91;
+  prefs.SetInteger(prefs::kVariationsSafeSeedMilestone, expected_milestone);
 
-TEST(VariationsSeedStoreTest, StoreSafeSeed_EmptySeed) {
-  const std::string serialized_seed;
-  const std::string signature = "a completely ignored signature";
+  const base::Time now = base::Time::Now();
+  const base::Time expected_fetch_time = now - base::Hours(3);
+  const base::Time fetch_time_to_store = now - base::Hours(1);
+  prefs.SetTime(prefs::kVariationsSafeSeedFetchTime, expected_fetch_time);
+
   ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-US";
-  client_state.reference_date = WrapTime(54321);
-  client_state.session_consistency_country = "US";
+
+  const std::string expected_locale = "en-US";
+  client_state.locale = "pt-PT";
+  prefs.SetString(prefs::kVariationsSafeSeedLocale, expected_locale);
+
+  const std::string expected_permanent_consistency_country = "US";
   client_state.permanent_consistency_country = "CA";
-  base::Time fetch_time = WrapTime(99999);
+  prefs.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry,
+                  expected_permanent_consistency_country);
 
-  TestingPrefServiceSimple prefs;
-  VariationsSeedStore::RegisterPrefs(prefs.registry());
-  prefs.SetString(prefs::kVariationsSafeCompressedSeed, "a seed");
-  prefs.SetString(prefs::kVariationsSafeSeedSignature, "a signature");
-  prefs.SetString(prefs::kVariationsSafeSeedLocale, "en-US");
-  prefs.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry, "CA");
-  prefs.SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry, "US");
-  prefs.SetTime(prefs::kVariationsSafeSeedDate, WrapTime(12345));
-  prefs.SetTime(prefs::kVariationsSafeSeedFetchTime, WrapTime(34567));
+  const std::string expected_session_consistency_country = "BR";
+  client_state.session_consistency_country = "PT";
+  prefs.SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry,
+                  expected_session_consistency_country);
 
-  TestVariationsSeedStore seed_store(&prefs);
-
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(seed_store.StoreSafeSeed(serialized_seed, signature,
-                                        client_state, fetch_time));
-
-  // Verify that none of the prefs were overwritten.
-  EXPECT_EQ("a seed", prefs.GetString(prefs::kVariationsSafeCompressedSeed));
-  EXPECT_EQ("a signature",
-            prefs.GetString(prefs::kVariationsSafeSeedSignature));
-  EXPECT_EQ("en-US", prefs.GetString(prefs::kVariationsSafeSeedLocale));
-  EXPECT_EQ("CA", prefs.GetString(
-                      prefs::kVariationsSafeSeedPermanentConsistencyCountry));
-  EXPECT_EQ("US", prefs.GetString(
-                      prefs::kVariationsSafeSeedSessionConsistencyCountry));
-  EXPECT_EQ(WrapTime(12345), prefs.GetTime(prefs::kVariationsSafeSeedDate));
-  EXPECT_EQ(WrapTime(34567),
-            prefs.GetTime(prefs::kVariationsSafeSeedFetchTime));
-
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result",
-      StoreSeedResult::FAILED_EMPTY_GZIP_CONTENTS, 1);
-}
-
-TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSeed) {
-  const std::string serialized_seed = "a nonsense seed";
-  const std::string signature = "a completely ignored signature";
-  ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-US";
-  client_state.reference_date = WrapTime(12345);
-  client_state.session_consistency_country = "US";
-  client_state.permanent_consistency_country = "CA";
-  base::Time fetch_time = WrapTime(54321);
-
-  TestingPrefServiceSimple prefs;
-  VariationsSeedStore::RegisterPrefs(prefs.registry());
-  prefs.SetString(prefs::kVariationsSafeCompressedSeed, "a previous seed");
-  prefs.SetString(prefs::kVariationsSafeSeedSignature, "a previous signature");
-  prefs.SetString(prefs::kVariationsSafeSeedLocale, "en-CA");
-  prefs.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry, "IN");
-  prefs.SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry, "MX");
-  prefs.SetTime(prefs::kVariationsSafeSeedDate, WrapTime(67890));
-  prefs.SetTime(prefs::kVariationsSafeSeedFetchTime, WrapTime(13579));
+  const base::Time expected_date = now - base::Days(2);
+  client_state.reference_date = now - base::Days(1);
+  prefs.SetTime(prefs::kVariationsSafeSeedDate, expected_date);
 
   SignatureVerifyingVariationsSeedStore seed_store(&prefs);
-
   base::HistogramTester histogram_tester;
-  EXPECT_FALSE(seed_store.StoreSafeSeed(serialized_seed, signature,
-                                        client_state, fetch_time));
 
-  // Verify that none of the prefs were overwritten.
-  EXPECT_EQ("a previous seed",
-            prefs.GetString(prefs::kVariationsSafeCompressedSeed));
-  EXPECT_EQ("a previous signature",
-            prefs.GetString(prefs::kVariationsSafeSeedSignature));
-  EXPECT_EQ("en-CA", prefs.GetString(prefs::kVariationsSafeSeedLocale));
-  EXPECT_EQ("IN", prefs.GetString(
-                      prefs::kVariationsSafeSeedPermanentConsistencyCountry));
-  EXPECT_EQ("MX", prefs.GetString(
-                      prefs::kVariationsSafeSeedSessionConsistencyCountry));
-  EXPECT_EQ(WrapTime(67890), prefs.GetTime(prefs::kVariationsSafeSeedDate));
-  EXPECT_EQ(WrapTime(13579),
-            prefs.GetTime(prefs::kVariationsSafeSeedFetchTime));
+  // Verify that attempting to store an invalid seed fails.
+  EXPECT_FALSE(seed_store.StoreSafeSeed(seed_to_store, signature_to_store,
+                                        milestone_to_store, client_state,
+                                        fetch_time_to_store));
+
+  // Verify that none of the safe seed prefs were overwritten.
+  EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeCompressedSeed),
+            expected_seed);
+  EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeSeedSignature),
+            expected_signature);
+  EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeSeedLocale), expected_locale);
+  EXPECT_EQ(prefs.GetInteger(prefs::kVariationsSafeSeedMilestone),
+            expected_milestone);
+  EXPECT_EQ(
+      prefs.GetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry),
+      expected_permanent_consistency_country);
+  EXPECT_EQ(
+      prefs.GetString(prefs::kVariationsSafeSeedSessionConsistencyCountry),
+      expected_session_consistency_country);
+  EXPECT_EQ(prefs.GetTime(prefs::kVariationsSafeSeedDate), expected_date);
+  EXPECT_EQ(prefs.GetTime(prefs::kVariationsSafeSeedFetchTime),
+            expected_fetch_time);
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::FAILED_PARSE,
-      1);
-}
-
-TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSignature) {
-  const VariationsSeed seed = CreateTestSeed();
-  const std::string serialized_seed = SerializeSeed(seed);
-  // A valid signature, but for a different seed.
-  const std::string signature = kTestSeedData.base64_signature;
-  ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-US";
-  client_state.reference_date = WrapTime(12345);
-  client_state.session_consistency_country = "US";
-  client_state.permanent_consistency_country = "CA";
-  const base::Time fetch_time = WrapTime(34567);
-
-  TestingPrefServiceSimple prefs;
-  VariationsSeedStore::RegisterPrefs(prefs.registry());
-  prefs.SetString(prefs::kVariationsSafeCompressedSeed, "a previous seed");
-  prefs.SetString(prefs::kVariationsSafeSeedSignature, "a previous signature");
-  prefs.SetString(prefs::kVariationsSafeSeedLocale, "en-CA");
-  prefs.SetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry, "IN");
-  prefs.SetString(prefs::kVariationsSafeSeedSessionConsistencyCountry, "MX");
-  prefs.SetTime(prefs::kVariationsSafeSeedDate, WrapTime(67890));
-  prefs.SetTime(prefs::kVariationsSafeSeedFetchTime, WrapTime(24680));
-
-  SignatureVerifyingVariationsSeedStore seed_store(&prefs);
-
-  base::HistogramTester histogram_tester;
-  EXPECT_FALSE(seed_store.StoreSafeSeed(serialized_seed, signature,
-                                        client_state, fetch_time));
-
-  // Verify that none of the prefs were overwritten.
-  EXPECT_EQ("a previous seed",
-            prefs.GetString(prefs::kVariationsSafeCompressedSeed));
-  EXPECT_EQ("a previous signature",
-            prefs.GetString(prefs::kVariationsSafeSeedSignature));
-  EXPECT_EQ("en-CA", prefs.GetString(prefs::kVariationsSafeSeedLocale));
-  EXPECT_EQ("IN", prefs.GetString(
-                      prefs::kVariationsSafeSeedPermanentConsistencyCountry));
-  EXPECT_EQ("MX", prefs.GetString(
-                      prefs::kVariationsSafeSeedSessionConsistencyCountry));
-  EXPECT_EQ(WrapTime(67890), prefs.GetTime(prefs::kVariationsSafeSeedDate));
-  EXPECT_EQ(WrapTime(24680),
-            prefs.GetTime(prefs::kVariationsSafeSeedFetchTime));
-
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result",
-      StoreSeedResult::FAILED_SIGNATURE, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
-      VerifySignatureResult::INVALID_SEED, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", params.store_seed_result, 1);
+  if (params.verify_signature_result.has_value()) {
+    histogram_tester.ExpectUniqueSample(
+        "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
+        params.verify_signature_result.value(), 1);
+  }
 }
 
 TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSignature) {
-  std::string serialized_seed;
+  std::string expected_seed;
   ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
-                                 &serialized_seed));
-  const std::string signature = kTestSeedData.base64_signature;
+                                 &expected_seed));
+  const std::string expected_signature = kTestSeedData.base64_signature;
+  const int expected_seed_milestone = 92;
+
   ClientFilterableState client_state(base::BindOnce([] { return false; }));
-  client_state.locale = "en-US";
-  client_state.reference_date = WrapTime(12345);
-  client_state.session_consistency_country = "US";
-  client_state.permanent_consistency_country = "CA";
-  const base::Time fetch_time = WrapTime(34567);
+  const std::string expected_locale = "en-US";
+  client_state.locale = expected_locale;
+  const base::Time now = base::Time::Now();
+  const base::Time expected_date = now - base::Days(1);
+  client_state.reference_date = expected_date;
+  const std::string expected_permanent_consistency_country = "US";
+  client_state.permanent_consistency_country =
+      expected_permanent_consistency_country;
+  const std::string expected_session_consistency_country = "CA";
+  client_state.session_consistency_country =
+      expected_session_consistency_country;
+  const base::Time expected_fetch_time = now - base::Hours(6);
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   SignatureVerifyingVariationsSeedStore seed_store(&prefs);
-
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(seed_store.StoreSafeSeed(serialized_seed, signature, client_state,
-                                       fetch_time));
 
-  // Verify the stored data.
-  std::string loaded_compressed_seed =
+  // Verify that storing the safe seed succeeded.
+  EXPECT_TRUE(seed_store.StoreSafeSeed(expected_seed, expected_signature,
+                                       expected_seed_milestone, client_state,
+                                       expected_fetch_time));
+
+  // Verify that safe-seed-related prefs were successfully stored.
+  const std::string safe_seed =
       prefs.GetString(prefs::kVariationsSafeCompressedSeed);
   std::string decoded_compressed_seed;
-  ASSERT_TRUE(
-      base::Base64Decode(loaded_compressed_seed, &decoded_compressed_seed));
-  EXPECT_EQ(Compress(serialized_seed), decoded_compressed_seed);
-  EXPECT_EQ(signature, prefs.GetString(prefs::kVariationsSafeSeedSignature));
-  EXPECT_EQ("en-US", prefs.GetString(prefs::kVariationsSafeSeedLocale));
-  EXPECT_EQ(WrapTime(12345), prefs.GetTime(prefs::kVariationsSafeSeedDate));
-  EXPECT_EQ(WrapTime(34567),
-            prefs.GetTime(prefs::kVariationsSafeSeedFetchTime));
-  EXPECT_EQ("US", prefs.GetString(
-                      prefs::kVariationsSafeSeedSessionConsistencyCountry));
-  EXPECT_EQ("CA", prefs.GetString(
-                      prefs::kVariationsSafeSeedPermanentConsistencyCountry));
+  ASSERT_TRUE(base::Base64Decode(safe_seed, &decoded_compressed_seed));
+  EXPECT_EQ(Compress(expected_seed), decoded_compressed_seed);
+  EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeSeedSignature),
+            expected_signature);
+  EXPECT_EQ(prefs.GetString(prefs::kVariationsSafeSeedLocale), expected_locale);
+  EXPECT_EQ(prefs.GetInteger(prefs::kVariationsSafeSeedMilestone),
+            expected_seed_milestone);
+  EXPECT_EQ(
+      prefs.GetString(prefs::kVariationsSafeSeedPermanentConsistencyCountry),
+      expected_permanent_consistency_country);
+  EXPECT_EQ(
+      prefs.GetString(prefs::kVariationsSafeSeedSessionConsistencyCountry),
+      expected_session_consistency_country);
+  EXPECT_EQ(prefs.GetTime(prefs::kVariationsSafeSeedDate), expected_date);
+  EXPECT_EQ(prefs.GetTime(prefs::kVariationsSafeSeedFetchTime),
+            expected_fetch_time);
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
   histogram_tester.ExpectUniqueSample(
       "Variations.SafeMode.StoreSafeSeed.SignatureValidity",
       VerifySignatureResult::VALID_SIGNATURE, 1);
@@ -835,6 +790,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_IdenticalToLatestSeed) {
   const std::string signature = "a completely ignored signature";
   ClientFilterableState unused_client_state(
       base::BindOnce([] { return false; }));
+  const int unused_seed_milestone = 92;
   const base::Time safe_seed_fetch_time = WrapTime(12345);
 
   TestingPrefServiceSimple prefs;
@@ -846,7 +802,8 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_IdenticalToLatestSeed) {
   TestVariationsSeedStore seed_store(&prefs);
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(seed_store.StoreSafeSeed(
-      serialized_seed, signature, unused_client_state, safe_seed_fetch_time));
+      serialized_seed, signature, unused_seed_milestone, unused_client_state,
+      safe_seed_fetch_time));
 
   // Verify the latest seed value was migrated to a sentinel value, rather than
   // the full string.
@@ -874,7 +831,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_IdenticalToLatestSeed) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
 TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
@@ -894,6 +851,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
   const base::Time fetch_time = WrapTime(12345);
   ClientFilterableState unused_client_state(
       base::BindOnce([] { return false; }));
+  const int unused_seed_milestone = 92;
 
   TestingPrefServiceSimple prefs;
   VariationsSeedStore::RegisterPrefs(prefs.registry());
@@ -904,6 +862,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
   TestVariationsSeedStore seed_store(&prefs);
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(seed_store.StoreSafeSeed(serialized_new_seed, signature,
+                                       unused_seed_milestone,
                                        unused_client_state, fetch_time));
 
   // Verify the latest seed value was copied before the safe seed was
@@ -932,7 +891,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_PreviouslyIdenticalToLatestSeed) {
 
   // Verify metrics.
   histogram_tester.ExpectUniqueSample(
-      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::SUCCESS, 1);
+      "Variations.SafeMode.StoreSafeSeed.Result", StoreSeedResult::kSuccess, 1);
 }
 
 TEST(VariationsSeedStoreTest, StoreSeedData_GzippedEmptySeed) {

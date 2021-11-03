@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests resource tree model on page reload, compares resource tree against golden. Every line is important.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
   await TestRunner.navigatePromise(TestRunner.url('resources/resource-tree-reload.html'));
   await TestRunner.reloadPagePromise();

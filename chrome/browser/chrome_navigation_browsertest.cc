@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest, TestViewFrameSource) {
   content::ContextMenuParams params;
   params.page_url = local_page_with_iframe_url;
   params.frame_url = frame->GetLastCommittedURL();
-  TestRenderViewContextMenu menu(frame, params);
+  TestRenderViewContextMenu menu(*frame, params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, 0);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   ui_test_utils::TabAddedWaiter tab_add(browser());
 
-  TestRenderViewContextMenu menu(web_contents->GetMainFrame(), params);
+  TestRenderViewContextMenu menu(*web_contents->GetMainFrame(), params);
   menu.Init();
   menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
 
@@ -970,7 +970,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests scenario where a blank iframe inside a blank popup (a popup with no
 // navigation entry) does a same document navigation. This test was added as a
-// regression test for crbug.com/1237874.
+// regression test for crbug.com/1237874. The main purpose of this test is to
+// ensure that WebContentsObservers and Chrome features don't crash.
 IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
                        SameDocumentNavigationInIframeInBlankDocument) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -1008,6 +1009,41 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
 
   // Check that same-document navigation doesn't commit a new navigation entry
   // if no entry existed previously.
+  EXPECT_EQ(popup->GetController().GetLastCommittedEntry(), nullptr);
+}
+
+// Test scenario where we attempt a synchronous renderer-initiated same-document
+// navigation inside a blank popup (a popup with no navigation entry).
+// Regression test for crbug.com/1254238. The main purpose of this test is to
+// ensure that WebContentsObservers and Chrome features don't crash.
+IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
+                       SameDocumentNavigationInBlankPopup) {
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+  content::RenderFrameHost* opener =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+
+  // 1. Create a new blank window that won't create a NavigationEntry.
+  content::WebContents* popup = nullptr;
+  {
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(content::ExecJs(
+        opener,
+        content::JsReplace("var w = window.open($1, 'my-popup')", GURL())));
+    popup = popup_observer.GetWebContents();
+  }
+  // Popup shouldn't have a navigation entry.
+  EXPECT_EQ(popup->GetController().GetLastCommittedEntry(), nullptr);
+
+  // 2. Same-document navigation in popup.
+  {
+    const GURL kSameDocUrl("about:blank#foo");
+    content::TestNavigationManager navigation_manager(popup, kSameDocUrl);
+    EXPECT_TRUE(
+        content::ExecJs(opener, "w.history.replaceState({}, '', '#foo');"));
+    navigation_manager.WaitForNavigationFinished();
+  }
+  // Popup still shouldn't have a navigation entry.
   EXPECT_EQ(popup->GetController().GetLastCommittedEntry(), nullptr);
 }
 

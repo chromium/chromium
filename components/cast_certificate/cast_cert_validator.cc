@@ -128,9 +128,9 @@ class CastTrustStore {
   template <size_t N>
   void AddAnchor(const uint8_t (&data)[N]) {
     net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert =
-        net::ParsedCertificate::CreateWithoutCopyingUnsafe(data, N, {},
-                                                           &errors);
+    scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
+        net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(data), {},
+        &errors);
     CHECK(cert) << errors.ToDebugString();
     // Enforce pathlen constraints and policies defined on the root certificate.
     base::AutoLock guard(lock_);

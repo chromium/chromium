@@ -761,7 +761,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
         DCHECK(!script_web_bundle_);
 
         script_web_bundle_ =
-            ScriptWebBundle::CreateOrReuseInline(element_document, source_text);
+            ScriptWebBundle::CreateOrReuseInline(*element_, source_text);
         if (!script_web_bundle_) {
           element_->DispatchErrorEvent();
         }

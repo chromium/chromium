@@ -24,6 +24,7 @@
 <translation id="109942774857561566">Досадно ми е</translation>
 <translation id="1104084341931202936">Прикажи ги поставките за пристапност</translation>
 <translation id="1104621072296271835">Вашите уреди работат уште подобро заедно</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1118549423835582252"><ph name="MANAGER" /> препорачува да го ажурирате овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1119348796022671382">Тематскиот режим во боја користи бои од тапетот за лесно обојување на интерфејсот.</translation>
 <translation id="112308213915226829">Автоматски сокриј полица</translation>
@@ -131,6 +132,7 @@
 <translation id="1882897271359938046">Отсликување во <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Отклучи со отпечаток</translation>
 <translation id="1888656773939766144"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуцијата е променета на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" />). Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
+<translation id="1915307458270490472">Спушти</translation>
 <translation id="1919743966458266018">Кратенката за отворање на управникот со задачи се промени. Користете <ph name="NEW_SHORTCUT" /> наместо <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="1923539912171292317">Автоматско кликнување</translation>
 <translation id="1928739107511554905">За да го добиете ажурирањето, користете го екранот на допир за да го рестартирате Chromebook додека тастатурата е прикачена.</translation>
@@ -372,6 +374,7 @@
 <translation id="3665889125180354336">Микрофон за снимање</translation>
 <translation id="3680908746918359504">Исчисти ги сите означувачи</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ќе се споделуваат помеѓу вашиот телефон и <ph name="DEVICE_NAME" /></translation>
+<translation id="3701206655856637070">Сега може да промените каде се зачувуваат снимките од екранот</translation>
 <translation id="3702809606464356667">Се прикажуваат прозорци од тековната работна површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од сите работни површини</translation>
 <translation id="3702846122927433391">Население во Нигерија</translation>
 <translation id="3705722231355495246">–</translation>
@@ -417,6 +420,7 @@
 <translation id="3969043077941541451">Исклучи</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
 <translation id="3977512764614765090">Батеријата е на <ph name="PERCENTAGE" /> % и се полни.</translation>
+<translation id="3986082989454912832">Одговори</translation>
 <translation id="3995138139523574647">USB-Ц уред (задна порта од десна страна)</translation>
 <translation id="40062176907008878">Ракописно</translation>
 <translation id="4017989525502048489">Ласерски покажувач</translation>
@@ -456,7 +460,6 @@
 <translation id="4274537685965975248">Кратенката од тастатура Ctrl + Alt + Стрелка надолу се промени. За да го користите копчето End, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка надесно.</translation>
 <translation id="4279490309300973883">Отсликување</translation>
 <translation id="4285498937028063278">Откачи</translation>
-<translation id="4292904812939562398">Неодамна користени апликации</translation>
 <translation id="429402653707266969">Вклучи/исклучи локација на алатникот</translation>
 <translation id="4294319844246081198">Добро утро <ph name="GIVEN_NAME" />,</translation>
 <translation id="4296136865091727875">Избриши ги сите <ph name="COUNT" /> известувања</translation>
@@ -562,6 +565,7 @@
         <ph name="NOTIFICATION" />,
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
+<translation id="4945196315133970626">Исклучи известувања</translation>
 <translation id="4946376291507881335">Сликајте</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
 <translation id="4952936045814352993">„Лоцирај го телефонот“ не е достапна кога се оневозможени звуците на алармите</translation>
@@ -905,6 +909,7 @@
 <translation id="7595633564847427181">По</translation>
 <translation id="7600875258240007829">Видете ги сите известувања</translation>
 <translation id="7607002721634913082">Паузирано</translation>
+<translation id="7610198039767537854">Прегледајте ги неодамнешните фотографии од лентата на камерата на вашиот телефон на <ph name="DEVICE_TYPE" /></translation>
 <translation id="7618774594543487847">Неутрална</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7631906263969450674">Пенкало за означување</translation>
@@ -1130,6 +1135,7 @@
 <translation id="925832987464884575">Сокриј ги прегледите</translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
+<translation id="951991426597076286">Одбиј</translation>
 <translation id="98515147261107953">Пејзаж</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>
 </translationbundle>

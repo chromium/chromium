@@ -47,6 +47,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
  public:
   class Observer {
    public:
+    Observer& operator=(const Observer&) = delete;
+
     // Called every time resolving of client certificate patterns finishes,
     // no resolve requests are pending and no tasks are running.
     // |network_properties_changed| will be true if any network properties were
@@ -55,12 +57,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
    protected:
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_ASSIGN(Observer);
   };
 
   ClientCertResolver();
+
+  ClientCertResolver(const ClientCertResolver&) = delete;
+  ClientCertResolver& operator=(const ClientCertResolver&) = delete;
+
   ~ClientCertResolver() override;
 
   void Init(NetworkStateHandler* network_state_handler,
@@ -164,8 +167,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ClientCertResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertResolver);
 };
 
 }  // namespace chromeos

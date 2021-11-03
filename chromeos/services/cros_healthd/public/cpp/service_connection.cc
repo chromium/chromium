@@ -29,6 +29,9 @@ class ServiceConnectionImpl : public ServiceConnection {
  public:
   ServiceConnectionImpl();
 
+  ServiceConnectionImpl(const ServiceConnectionImpl&) = delete;
+  ServiceConnectionImpl& operator=(const ServiceConnectionImpl&) = delete;
+
  protected:
   ~ServiceConnectionImpl() override = default;
 
@@ -158,8 +161,7 @@ class ServiceConnectionImpl : public ServiceConnection {
   void AddPowerObserver(mojo::PendingRemote<mojom::CrosHealthdPowerObserver>
                             pending_observer) override;
   void AddNetworkObserver(
-      mojo::PendingRemote<
-          chromeos::network_health::mojom::NetworkEventsObserver>
+      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
           pending_observer) override;
   void AddAudioObserver(mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
                             pending_observer) override;
@@ -232,8 +234,6 @@ class ServiceConnectionImpl : public ServiceConnection {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ServiceConnectionImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceConnectionImpl);
 };
 
 void ServiceConnectionImpl::GetAvailableRoutines(
@@ -581,7 +581,7 @@ void ServiceConnectionImpl::AddPowerObserver(
 }
 
 void ServiceConnectionImpl::AddNetworkObserver(
-    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+    mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
         pending_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();

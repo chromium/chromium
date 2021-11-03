@@ -24,10 +24,12 @@ public class AssistantTagsForTesting {
     public static final String COLLECT_USER_DATA_TERMS_REQUIRE_REVIEW = "require_review";
     public static final String VERTICAL_EXPANDER_CHEVRON = "chevron";
     public static final String COLLECT_USER_DATA_CHOICE_LIST = "choicelist";
+    public static final String CHOICE_LIST_EDIT_ICON = "edit_icon";
     public static final String RECYCLER_VIEW_TAG = "recycler_view";
     public static final String PROGRESSBAR_ICON_TAG = "progress_icon_%d";
     public static final String PROGRESSBAR_LINE_TAG = "progress_line_%d";
     public static final String PROGRESSBAR_LINE_FOREGROUND_TAG = "progress_line_foreground";
     public static final String TTS_ENABLED_ICON_TAG = "tts_enabled_icon";
+    public static final String TTS_PLAYING_ICON_TAG = "tts_playing_icon";
     public static final String TTS_DISABLED_ICON_TAG = "tts_disabled_icon";
 }

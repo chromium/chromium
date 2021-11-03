@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/ambient/ambient_client_impl.h"
 #include "chrome/browser/ui/ash/ash_shell_init.h"
+#include "chrome/browser/ui/ash/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/chrome_new_window_delegate_provider.h"
@@ -268,6 +269,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
             detector);
   }
 
+  ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
+
   // Initialize TabScrubber after the Ash Shell has been initialized.
   TabScrubber::GetInstance();
 }
@@ -294,6 +297,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
+  ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();
   media_client_.reset();

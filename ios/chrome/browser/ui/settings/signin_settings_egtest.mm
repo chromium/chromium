@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/policy_constants.h"
+#import "ios/chrome/browser/policy/policy_app_interface.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
+#import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/signin_settings_app_interface.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -32,6 +38,12 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 @end
 
 @implementation SigninSettingsTestCase
+
+- (void)tearDown {
+  [PolicyAppInterface clearPolicies];
+
+  [super tearDown];
+}
 
 // Tests the primary button with no accounts on the device.
 - (void)testSignInPromoWithNoAccountsOnDeviceUsingPrimaryButton {
@@ -160,6 +172,77 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSkipSigninAccessibilityIdentifier)]
       performAction:grey_tap()];
+}
+
+// Tests the Settings UI when Sync is disabled and the user is not signed in.
+- (void)testSyncDisabled {
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  // Dismiss the popup.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+
+  // Check that the cell contains a button
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kTableViewCellInfoButtonViewId),
+                                          grey_ancestor(grey_accessibilityID(
+                                              kSettingsSignInDisabledCellId)),
+                                          nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the cell opens the popup menu.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSettingsSignInDisabledCellId)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_SETTINGS_SIGNIN_DISABLED_POPOVER_TEXT))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the Settings UI when Sync is disabled and the user is signed in.
+- (void)testSyncDisabledSignedIn {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+
+  // Disable Sync
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+
+  id<GREYMatcher> syncCell =
+      grey_allOf(grey_accessibilityID(kSettingsGoogleSyncAndServicesCellId),
+                 grey_sufficientlyVisible(), nil);
+  // Check that the cell contains a button
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kTableViewCellInfoButtonViewId),
+                                          grey_ancestor(syncCell), nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the cell opens the popup menu.
+  [[EarlGrey selectElementWithMatcher:syncCell] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_SYNC_SETTINGS_DISABLED_POPOVER_TEXT))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

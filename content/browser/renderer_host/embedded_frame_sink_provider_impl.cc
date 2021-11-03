@@ -137,4 +137,24 @@ void EmbeddedFrameSinkProviderImpl::DestroyEmbeddedFrameSink(
   frame_sink_map_.erase(frame_sink_id);
 }
 
+void EmbeddedFrameSinkProviderImpl::RegisterFrameSinkHierarchy(
+    const viz::FrameSinkId& frame_sink_id) {
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    DLOG(ERROR) << "No EmbeddedFrameSinkImpl for " << frame_sink_id;
+    return;
+  }
+  iter->second->RegisterFrameSinkHierarchy();
+}
+
+void EmbeddedFrameSinkProviderImpl::UnregisterFrameSinkHierarchy(
+    const viz::FrameSinkId& frame_sink_id) {
+  auto iter = frame_sink_map_.find(frame_sink_id);
+  if (iter == frame_sink_map_.end()) {
+    DLOG(ERROR) << "No EmbeddedFrameSinkImpl for " << frame_sink_id;
+    return;
+  }
+  iter->second->UnregisterFrameSinkHierarchy();
+}
+
 }  // namespace content

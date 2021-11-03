@@ -95,8 +95,8 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
           mojom::Feature::kPhoneHub,         mojom::Feature::kSmartLock,
           mojom::Feature::kWifiSync,         mojom::Feature::kEche,
       };
-      for (mojom::Feature feature : kTopLevelFeaturesInSuite) {
-        if (IsFeatureAllowed(feature, pref_service))
+      for (mojom::Feature top_level_feature : kTopLevelFeaturesInSuite) {
+        if (IsFeatureAllowed(top_level_feature, pref_service))
           return true;
       }
       return false;

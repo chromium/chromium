@@ -137,6 +137,10 @@ void WindowElement::InitSources() {
   AddSource("ui/aura/window.h", 0);
 }
 
+int WindowElement::GetBackingElementID() {
+  return window_->GetId();
+}
+
 bool WindowElement::DispatchKeyEvent(protocol::DOM::KeyEvent* event) {
   ui::KeyEvent key_event = ConvertToUIKeyEvent(event);
   // Key events are processed differently based on classes. Character events are

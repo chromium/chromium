@@ -283,7 +283,7 @@ public class AutofillAssistantHeaderUiTest {
             model.set(AssistantHeaderModel.TTS_BUTTON_STATE, AssistantTtsButtonState.PLAYING);
         });
         onView(is(viewHolder.mTtsButton))
-                .check(matches(withTagValue(is(AssistantTagsForTesting.TTS_ENABLED_ICON_TAG))));
+                .check(matches(withTagValue(is(AssistantTagsForTesting.TTS_PLAYING_ICON_TAG))));
     }
 
     @Test

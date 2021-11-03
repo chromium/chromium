@@ -63,8 +63,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                            input_type.has_audio,
                            std::make_unique<media::LiveWebmMuxerDelegate>(
                                base::BindRepeating(&OnWriteCallback)));
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
+    base::RunLoop().RunUntilIdle();
 
     int num_iterations = kMinNumIterations + rng() % kMaxNumIterations;
     do {
@@ -80,8 +79,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         muxer.OnEncodedVideo(parameters, str,
                              has_alpha_frame ? str : std::string(),
                              base::TimeTicks(), is_key_frame);
-        base::RunLoop run_loop;
-        run_loop.RunUntilIdle();
+        base::RunLoop().RunUntilIdle();
       }
 
       if (input_type.has_audio) {
@@ -95,8 +93,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
         muxer.OnEncodedAudio(params, str, base::TimeTicks());
-        base::RunLoop run_loop;
-        run_loop.RunUntilIdle();
+        base::RunLoop().RunUntilIdle();
       }
     } while (num_iterations--);
   }

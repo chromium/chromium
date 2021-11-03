@@ -398,6 +398,10 @@ class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
       : simulated_cache_dest_(simulated_cache_dest),
         use_text_plain_(use_text_plain) {}
 
+  SimulatedCacheInterceptor(const SimulatedCacheInterceptor&) = delete;
+  SimulatedCacheInterceptor& operator=(const SimulatedCacheInterceptor&) =
+      delete;
+
   std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
       net::URLRequest* request) const override {
     return std::make_unique<URLRequestSimulatedCacheJob>(
@@ -407,7 +411,6 @@ class SimulatedCacheInterceptor : public net::URLRequestInterceptor {
  private:
   scoped_refptr<net::IOBuffer>* simulated_cache_dest_;
   bool use_text_plain_;
-  DISALLOW_COPY_AND_ASSIGN(SimulatedCacheInterceptor);
 };
 
 // Fakes the TransportInfo passed to URLRequest::Delegate::OnConnected().
@@ -4287,6 +4290,9 @@ class TestSSLPrivateKey : public net::SSLPrivateKey {
   explicit TestSSLPrivateKey(scoped_refptr<net::SSLPrivateKey> key)
       : key_(std::move(key)) {}
 
+  TestSSLPrivateKey(const TestSSLPrivateKey&) = delete;
+  TestSSLPrivateKey& operator=(const TestSSLPrivateKey&) = delete;
+
   void set_fail_signing(bool fail_signing) { fail_signing_ = fail_signing; }
   int sign_count() const { return sign_count_; }
 
@@ -4314,8 +4320,6 @@ class TestSSLPrivateKey : public net::SSLPrivateKey {
   scoped_refptr<net::SSLPrivateKey> key_;
   bool fail_signing_ = false;
   int sign_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSSLPrivateKey);
 };
 
 #if !defined(OS_IOS)

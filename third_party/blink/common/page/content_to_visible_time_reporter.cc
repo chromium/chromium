@@ -9,9 +9,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/gfx/presentation_feedback.h"
 
@@ -67,7 +70,9 @@ void UpdateRecordContentToVisibleTimeRequest(
   to.show_reason_bfcache_restore |= from.show_reason_bfcache_restore;
 }
 
-ContentToVisibleTimeReporter::ContentToVisibleTimeReporter() = default;
+ContentToVisibleTimeReporter::ContentToVisibleTimeReporter()
+    : is_tab_switch_metric2_feature_enabled_(
+          base::FeatureList::IsEnabled(blink::features::kTabSwitchMetrics2)) {}
 
 ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 
@@ -178,26 +183,46 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
       tab_switch_duration.InMillisecondsF());
   ++g_num_trace_events_in_process;
 
+  const char* suffix =
+      GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_);
+
   // Record result histogram.
-  base::UmaHistogramEnumeration(
-      std::string("Browser.Tabs.TabSwitchResult.") +
-          GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_),
-      tab_switch_result);
+  if (is_tab_switch_metric2_feature_enabled_) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Browser.Tabs.TabSwitchResult2.", suffix}),
+        tab_switch_result);
+  } else {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Browser.Tabs.TabSwitchResult.", suffix}),
+        tab_switch_result);
+  }
 
   // Record latency histogram.
   switch (tab_switch_result) {
     case TabSwitchResult::kSuccess: {
-      base::UmaHistogramTimes(
-          std::string("Browser.Tabs.TotalSwitchDuration.") +
-              GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_),
-          tab_switch_duration);
+      if (is_tab_switch_metric2_feature_enabled_) {
+        base::UmaHistogramTimes(
+            base::StrCat({"Browser.Tabs.TotalSwitchDuration2.", suffix}),
+            tab_switch_duration);
+      } else {
+        base::UmaHistogramTimes(
+            base::StrCat({"Browser.Tabs.TotalSwitchDuration.", suffix}),
+            tab_switch_duration);
+      }
       break;
     }
     case TabSwitchResult::kIncomplete: {
-      base::UmaHistogramTimes(
-          std::string("Browser.Tabs.TotalIncompleteSwitchDuration.") +
-              GetHistogramSuffix(has_saved_frames_, *tab_switch_start_state_),
-          tab_switch_duration);
+      if (is_tab_switch_metric2_feature_enabled_) {
+        base::UmaHistogramTimes(
+            base::StrCat(
+                {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
+            tab_switch_duration);
+      } else {
+        base::UmaHistogramTimes(
+            base::StrCat(
+                {"Browser.Tabs.TotalIncompleteSwitchDuration.", suffix}),
+            tab_switch_duration);
+      }
       break;
     }
     case TabSwitchResult::kPresentationFailure: {

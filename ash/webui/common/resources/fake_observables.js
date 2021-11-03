@@ -214,6 +214,28 @@ export class FakeObservables {
   }
 
   /**
+   * Start firing the shared observer for |arg| on a fixed interval.
+   * setObservableData() must already have been called.
+   * @param {string} methodName
+   * @param {string} arg
+   * @param {number} intervalMs
+   */
+  startTriggerOnIntervalWithArg(methodName, arg, intervalMs) {
+    this.getObservable_(this.lookupMethodWithArgName_(methodName, arg))
+        .startTriggerOnInterval(intervalMs);
+  }
+
+  /**
+   * Disables the shared observer for |arg| firing automatically on an interval.
+   * @param {string} methodName
+   * @param {string} arg
+   */
+  stopTriggerOnIntervalWithArg(methodName, arg) {
+    this.getObservable_(this.lookupMethodWithArgName_(methodName, arg))
+        .stopTriggerOnInterval();
+  }
+
+  /**
    * Disables all observers firing automatically on an interval.
    */
   stopAllTriggerIntervals() {

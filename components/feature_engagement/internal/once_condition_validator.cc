@@ -19,6 +19,7 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
     const EventModel& event_model,
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
+    const Configuration* configuration,
     uint32_t current_day) const {
   ConditionValidator::Result result(true);
   result.event_model_ready_ok = event_model.IsReady();

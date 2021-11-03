@@ -56,7 +56,7 @@ class SVGRootInlineBox final : public RootInlineBox {
 
  private:
   void ReorderValueLists();
-  FloatRect LayoutInlineBoxes(InlineBox&);
+  gfx::RectF LayoutInlineBoxes(InlineBox&);
 
   LayoutUnit logical_height_;
 };

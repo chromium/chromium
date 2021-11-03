@@ -69,12 +69,20 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     /** Model wrapper for an {@code AutofillContact}. */
     public static class ContactModel extends OptionModel<AutofillContact> {
-        public ContactModel(AutofillContact contact, List<String> errors) {
+        private final boolean mCanEdit;
+
+        public ContactModel(AutofillContact contact, List<String> errors, boolean canEdit) {
             super(contact, errors);
+            mCanEdit = canEdit;
         }
 
         public ContactModel(AutofillContact contact) {
             super(contact);
+            mCanEdit = true;
+        }
+
+        public boolean canEdit() {
+            return mCanEdit;
         }
     }
 
@@ -384,9 +392,10 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setSelectedContactDetails(@Nullable AutofillContact contact, String[] errors) {
+    private void setSelectedContactDetails(
+            @Nullable AutofillContact contact, String[] errors, boolean canEdit) {
         set(SELECTED_CONTACT_DETAILS,
-                contact == null ? null : new ContactModel(contact, Arrays.asList(errors)));
+                contact == null ? null : new ContactModel(contact, Arrays.asList(errors), canEdit));
     }
 
     @CalledByNative
@@ -614,9 +623,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static void addAutofillContact(
-            List<ContactModel> contacts, AutofillContact contact, String[] errors) {
-        contacts.add(new ContactModel(contact, Arrays.asList(errors)));
+    private static void addAutofillContact(List<ContactModel> contacts, AutofillContact contact,
+            String[] errors, boolean canEdit) {
+        contacts.add(new ContactModel(contact, Arrays.asList(errors), canEdit));
     }
 
     @VisibleForTesting

@@ -531,7 +531,7 @@ void AVIFImageDecoder::InitializeNewFrame(wtf_size_t index) {
     buffer.SetPixelFormat(ImageFrame::PixelFormat::kRGBA_F16);
 
   // For AVIFs, the frame always fills the entire image.
-  buffer.SetOriginalFrameRect(IntRect(IntPoint(), Size()));
+  buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
 
   avifImageTiming timing;
   auto ret = avifDecoderNthImageTiming(decoder_.get(), index, &timing);

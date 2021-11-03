@@ -129,26 +129,25 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
   else
     NOTREACHED();
 
-  int min = 0;
-  if (dict->GetInteger("minimum", &min))
-    minimum_ = min;
+  if (absl::optional<int> minimum = dict->FindIntKey("minimum"))
+    minimum_ = *minimum;
+  if (absl::optional<int> maximum = dict->FindIntKey("maximum"))
+    maximum_ = *maximum;
 
-  int max = 0;
-  if (dict->GetInteger("maximum", &max))
-    maximum_ = max;
-
-  int min_length = 0;
-  if (dict->GetInteger("minLength", &min_length) ||
-      dict->GetInteger("minItems", &min_length)) {
-    DCHECK_GE(min_length, 0);
-    min_length_ = min_length;
+  absl::optional<int> min_length = dict->FindIntKey("minLength");
+  if (!min_length)
+    min_length = dict->FindIntKey("minItems");
+  if (min_length) {
+    DCHECK_GE(*min_length, 0);
+    min_length_ = *min_length;
   }
 
-  int max_length = 0;
-  if (dict->GetInteger("maxLength", &max_length) ||
-      dict->GetInteger("maxItems", &max_length)) {
-    DCHECK_GE(max_length, 0);
-    max_length_ = max_length;
+  absl::optional<int> max_length = dict->FindIntKey("maxLength");
+  if (!max_length)
+    max_length = dict->FindIntKey("maxItems");
+  if (max_length) {
+    DCHECK_GE(*max_length, 0);
+    max_length_ = *max_length;
   }
 
   if (type_ == ArgumentType::OBJECT) {

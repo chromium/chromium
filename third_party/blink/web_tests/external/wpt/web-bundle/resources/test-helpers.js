@@ -179,10 +179,8 @@ function addWebBundleElementAndWaitForError(url, resources, options) {
   return addElementAndWaitForError(element);
 }
 
-function changeWebBundleUrl(element, new_url) {
+function changeWebBundleUrlInPlace(element, new_url) {
   if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
-    // TODO(crbug.com/1245166): Support changing the web bundle url for <script
-    // type=webbundle>.
     throw new Error(
         'Changing the URL of web bundle is not supported for : ' +
         window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
@@ -190,10 +188,8 @@ function changeWebBundleUrl(element, new_url) {
   element.href= new_url;
 }
 
-function changeWebBundleScopes(element, scopes) {
+function changeWebBundleScopesInPlace(element, scopes) {
   if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
-    // TODO(crbug.com/1245166): Support changing the web bundle scopes for
-    // <script type=webbundle>.
     throw new Error(
         'Changing the scopes of web bundle is not supported for : ' +
         window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
@@ -204,10 +200,8 @@ function changeWebBundleScopes(element, scopes) {
   }
 }
 
-function changeWebBundleResources(element, resources) {
+function changeWebBundleResourcesInPlace(element, resources) {
   if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
-    // TODO(crbug.com/1245166): Support changing the web bundle resources for
-    // <script type=webbundle>.
     throw new Error(
         'Changing the resources of web bundle is not supported for : ' +
         window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
@@ -216,4 +210,38 @@ function changeWebBundleResources(element, resources) {
   for (const url of resources) {
     element.resources.add(url);
   }
+}
+
+// This function creates a new WebBundle element that has a rule
+// constructed in accordance with a JSON object |new_rule|:
+// 1. Copy over WebBundle rules from an existing element that are
+// not present in |new_rule|, in case of <link> API it is all
+// relevant attributes: href, resources, scopes and crossOrigin;
+// in case of <script> API, it is: source, resources, scopes and
+// credentials.
+// 2. Then create a new WebBundle element from |new_rule| (that now
+// has full information required after 1.) and return it.
+function createNewWebBundleElementWithUpdatedRule(element, new_rule) {
+  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE == 'link') {
+    if (element.resources && !new_rule.resources)
+      new_rule.resources = Array.from(element.resources);
+    if (element.scopes && !new_rule.scopes)
+      new_rule.scopes = Array.from(element.scopes);
+    if (element.crossOrigin && !new_rule.crossOrigin)
+      new_rule.crossOrigin = element.crossOrigin;
+    if (!new_rule.url)
+      new_rule.url = element.href;
+  } else {
+    const rule = JSON.parse(element.textContent);
+    if (rule.resources && !new_rule.resources)
+      new_rule.resources = rule.resources;
+    if (rule.scopes && !new_rule.scopes)
+      new_rule.scopes = rule.scopes;
+    if (rule.credentials && !new_rule.credentials)
+      new_rule.credentials = rule.credentials;
+    if (!new_rule.url)
+      new_rule.url = rule.source;
+  }
+
+  return createWebBundleElement(new_rule.url, new_rule.resources, new_rule);
 }

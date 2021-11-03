@@ -10,7 +10,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace chromeos {
+namespace ash {
 
 // Callback that is going to be called when OAuth token request is resolved.
 // The first argument is the email for which the token request is being made.
@@ -87,6 +87,6 @@ class ProjectorOAuthTokenFetcher {
   base::flat_map<std::string, signin::AccessTokenInfo> fetched_access_tokens_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_PROJECTOR_APP_PROJECTOR_OAUTH_TOKEN_FETCHER_H_

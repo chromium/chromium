@@ -84,7 +84,7 @@
           $i18n{edit}
         </button>
         <button class="dropdown-item" on-click="onDeleteTap_"
-            disabled$="[[!engine.canBeRemoved]]" id="delete">
+            hidden="[[!engine.canBeRemoved]]" id="delete">
           $i18n{delete}
         </button>
       </cr-action-menu>

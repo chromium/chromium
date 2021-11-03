@@ -27,6 +27,10 @@ class TrueTypeFontMessageFilter : public ppapi::host::ResourceMessageFilter {
  public:
   TrueTypeFontMessageFilter();
 
+  TrueTypeFontMessageFilter(const TrueTypeFontMessageFilter&) = delete;
+  TrueTypeFontMessageFilter& operator=(const TrueTypeFontMessageFilter&) =
+      delete;
+
   // ppapi::host::ResourceMessageFilter implementation.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& msg) override;
@@ -41,8 +45,6 @@ class TrueTypeFontMessageFilter : public ppapi::host::ResourceMessageFilter {
   int32_t OnHostMsgGetFontFamilies(ppapi::host::HostMessageContext* context);
   int32_t OnHostMsgGetFontsInFamily(ppapi::host::HostMessageContext* context,
                                     const std::string& family);
-
-  DISALLOW_COPY_AND_ASSIGN(TrueTypeFontMessageFilter);
 };
 
 TrueTypeFontMessageFilter::TrueTypeFontMessageFilter() {}

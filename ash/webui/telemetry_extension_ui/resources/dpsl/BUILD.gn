@@ -36,7 +36,7 @@ js_library("dpsl_types") {
 }
 
 js_library("namespace") {
-  deps = [ "//chromeos/components/system_apps/public/js:message_pipe" ]
+  deps = [ "//ash/webui/system_apps/public/js:message_pipe" ]
 }
 
 js_library("types") {

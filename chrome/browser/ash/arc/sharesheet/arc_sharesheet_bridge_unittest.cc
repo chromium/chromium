@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
 
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/arc/test/connection_holder_util.h"
 #include "components/arc/test/fake_sharesheet_instance.h"
 #include "content/public/test/browser_task_environment.h"

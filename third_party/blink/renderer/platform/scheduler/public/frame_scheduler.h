@@ -46,11 +46,11 @@ class FrameScheduler : public FrameOrWorkerScheduler {
 
     // Notify that the list of active features for this frame has changed.
     // See SchedulingPolicy::Feature for the list of features and the meaning
-    // of individual features.
+    // of individual features that disables back-forward cache.
     // Note that this method is not called when the frame navigates — it is
     // the responsibility of the observer to detect this and act reset features
     // accordingly.
-    virtual void UpdateActiveSchedulerTrackedFeatures(
+    virtual void UpdateBackForwardCacheDisablingFeatures(
         uint64_t features_mask) = 0;
 
     virtual const base::UnguessableToken& GetAgentClusterId() const = 0;

@@ -110,6 +110,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   mojom::PasswordManagerDriver& GetPasswordManagerDriver();
 
+  // Callers should not store the returned value longer than a function scope.
   mojom::PasswordGenerationDriver& GetPasswordGenerationDriver();
 
   // Helper function which takes care of the form processing and collecting the

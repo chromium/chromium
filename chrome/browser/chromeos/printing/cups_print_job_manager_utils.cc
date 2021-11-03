@@ -19,8 +19,8 @@ namespace chromeos {
 namespace {
 
 // The amount of time elapsed from print job creation before a timeout is
-// acknowledged.
-constexpr base::TimeDelta kMinElaspedPrintJobTimeout = base::Milliseconds(5000);
+// acknowledged. CUPS has a timeout of ~25s.
+constexpr base::TimeDelta kMinElaspedPrintJobTimeout = base::Seconds(30);
 
 // Returns the equivalient CupsPrintJob#State from a CupsJob#JobState.
 CupsPrintJob::State ConvertState(::printing::CupsJob::JobState state) {

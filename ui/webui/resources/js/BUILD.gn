@@ -76,7 +76,6 @@ preprocess_if_expr("preprocess_src") {
 
   if (is_chromeos_ash) {
     in_files += [
-      "i18n_template_process.js",
       "post_message_api_client.js",
       "post_message_api_request_handler.js",
       "post_message_api_server.js",
@@ -172,9 +171,6 @@ js_type_check("js_resources") {
     ":web_ui_listener_behavior",
     ":webui_resource_test",
   ]
-  if (is_chromeos_ash) {
-    deps += [ ":i18n_template_process" ]
-  }
   if (is_ios) {
     deps += [ "ios:web_ui" ]
   }
@@ -200,10 +196,6 @@ js_library("event_tracker") {
 
 js_library("i18n_template_no_process") {
   deps = [ ":load_time_data" ]
-}
-
-js_library("i18n_template_process") {
-  deps = [ ":i18n_template_no_process" ]
 }
 
 js_library("i18n_behavior") {

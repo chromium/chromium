@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_UKM_TEST_UTIL_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_UKM_TEST_UTIL_H_
 
-#include <map>
 #include <set>
 #include <string>
 #include <utility>

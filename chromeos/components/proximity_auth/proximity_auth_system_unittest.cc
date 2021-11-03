@@ -129,6 +129,10 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
 }  // namespace
 
 class ProximityAuthSystemTest : public testing::Test {
+ public:
+  ProximityAuthSystemTest(const ProximityAuthSystemTest&) = delete;
+  ProximityAuthSystemTest& operator=(const ProximityAuthSystemTest&) = delete;
+
  protected:
   ProximityAuthSystemTest()
       : user1_local_device_(CreateRemoteDevice(kUser1, "user1_local_device")),
@@ -221,8 +225,6 @@ class ProximityAuthSystemTest : public testing::Test {
  private:
   chromeos::multidevice::ScopedDisableLoggingForTesting disable_logging_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProximityAuthSystemTest);
 };
 
 TEST_F(ProximityAuthSystemTest, SetRemoteDevicesForUser_NotStarted) {

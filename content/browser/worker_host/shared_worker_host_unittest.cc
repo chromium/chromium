@@ -74,6 +74,9 @@ class SharedWorkerHostTest : public testing::Test {
       : service_(nullptr /* storage_partition */,
                  nullptr /* service_worker_context */) {}
 
+  SharedWorkerHostTest(const SharedWorkerHostTest&) = delete;
+  SharedWorkerHostTest& operator=(const SharedWorkerHostTest&) = delete;
+
   base::WeakPtr<SharedWorkerHost> CreateHost() {
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
@@ -168,8 +171,6 @@ class SharedWorkerHostTest : public testing::Test {
   scoped_refptr<SiteInstanceImpl> site_instance_;
 
   SharedWorkerServiceImpl service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedWorkerHostTest);
 };
 
 TEST_F(SharedWorkerHostTest, Normal) {

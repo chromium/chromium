@@ -18,20 +18,19 @@ namespace blink {
 
 P2PAsyncAddressResolver::P2PAsyncAddressResolver(
     P2PSocketDispatcher* dispatcher)
-    : dispatcher_(dispatcher), state_(STATE_CREATED) {
-}
+    : dispatcher_(dispatcher), state_(kStateCreated) {}
 
 P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
-  DCHECK(state_ == STATE_CREATED || state_ == STATE_FINISHED);
+  DCHECK(state_ == kStateCreated || state_ == kStateFinished);
 }
 
 void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(STATE_CREATED, state_);
+  DCHECK_EQ(kStateCreated, state_);
   DCHECK(dispatcher_);
 
-  state_ = STATE_SENT;
+  state_ = kStateSent;
   done_callback_ = std::move(done_callback);
   bool enable_mdns = base::FeatureList::IsEnabled(
       blink::features::kWebRtcHideLocalIpsWithMdns);
@@ -45,8 +44,8 @@ void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
 void P2PAsyncAddressResolver::Cancel() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (state_ != STATE_FINISHED)
-    state_ = STATE_FINISHED;
+  if (state_ != kStateFinished)
+    state_ = kStateFinished;
 
   done_callback_.Reset();
 }
@@ -54,8 +53,8 @@ void P2PAsyncAddressResolver::Cancel() {
 void P2PAsyncAddressResolver::OnResponse(
     const Vector<net::IPAddress>& addresses) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (state_ == STATE_SENT) {
-    state_ = STATE_FINISHED;
+  if (state_ == kStateSent) {
+    state_ = kStateFinished;
     std::move(done_callback_).Run(addresses);
   }
 }

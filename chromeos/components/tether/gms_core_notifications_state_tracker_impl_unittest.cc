@@ -70,6 +70,12 @@ class TestObserver final : public GmsCoreNotificationsStateTracker::Observer {
 }  // namespace
 
 class GmsCoreNotificationsStateTrackerImplTest : public testing::Test {
+ public:
+  GmsCoreNotificationsStateTrackerImplTest(
+      const GmsCoreNotificationsStateTrackerImplTest&) = delete;
+  GmsCoreNotificationsStateTrackerImplTest& operator=(
+      const GmsCoreNotificationsStateTrackerImplTest&) = delete;
+
  protected:
   GmsCoreNotificationsStateTrackerImplTest()
       : test_devices_(CreateTestDevices()) {}
@@ -107,9 +113,6 @@ class GmsCoreNotificationsStateTrackerImplTest : public testing::Test {
 
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl> tracker_;
   std::unique_ptr<TestObserver> observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GmsCoreNotificationsStateTrackerImplTest);
 };
 
 TEST_F(GmsCoreNotificationsStateTrackerImplTest, TestTracking) {

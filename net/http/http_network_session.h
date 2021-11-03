@@ -111,6 +111,12 @@ struct NET_EXPORT HttpNetworkSessionParams {
   // The same setting will be sent on every connection to prevent the retry
   // logic from hiding broken servers.
   spdy::SettingsMap http2_settings;
+  // If true, a setting parameter with reserved identifier will be sent in every
+  // initial SETTINGS frame, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  // The setting identifier and value will be drawn independently for each
+  // connection to prevent tracking of the client.
+  bool enable_http2_settings_grease;
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame.
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.

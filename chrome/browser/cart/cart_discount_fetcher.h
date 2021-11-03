@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
+#include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 
 namespace network {
@@ -19,14 +20,15 @@ class PendingSharedURLLoaderFactory;
 struct MerchantIdAndDiscounts {
  public:
   std::string merchant_id;
-  std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list;
+  std::vector<cart_db::RuleDiscountInfoProto> rule_discounts;
+  std::vector<coupon_db::FreeListingCouponInfoProto> coupon_discounts;
   std::string highest_discount_string;
   bool has_coupons;
-  // TODO(crbug.com/1240341): Include a list of coupon info.
 
   explicit MerchantIdAndDiscounts(
       std::string merchant_id,
-      std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list,
+      std::vector<cart_db::RuleDiscountInfoProto> rule_discounts,
+      std::vector<coupon_db::FreeListingCouponInfoProto> coupon_discounts,
       std::string discount_string,
       bool has_coupons);
   MerchantIdAndDiscounts(const MerchantIdAndDiscounts& other);

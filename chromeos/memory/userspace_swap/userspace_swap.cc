@@ -500,7 +500,7 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
   DCHECK(pool_manager);
 
   for (base::internal::pool_handle ph :
-       {base::internal::PartitionAddressSpace::GetNonBRPPool(),
+       {base::internal::PartitionAddressSpace::GetRegularPool(),
         base::internal::PartitionAddressSpace::GetBRPPool()}) {
     uintptr_t pool_base = pool_manager->GetPoolBaseAddress(ph);
     DCHECK(pool_base);
@@ -508,7 +508,7 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
     uintptr_t current_area = 0;
     uint64_t current_area_length = 0;
 
-    std::bitset<base::kMaxSuperPages> alloc_bitset;
+    std::bitset<base::kMaxSuperPagesInPool> alloc_bitset;
     pool_manager->GetPoolUsedSuperPages(ph, alloc_bitset);
 
     for (size_t i = 0; i < alloc_bitset.size() && superpages_remaining; ++i) {

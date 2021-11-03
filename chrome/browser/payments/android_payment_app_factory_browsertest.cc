@@ -102,6 +102,30 @@ IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,
                     method_name)));
 }
 
+// https://play.google.com/billing payment method.
+IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest, PlayBillingPaymentMethod) {
+  ScopedTestSupport scoped_test_support;
+  (void)scoped_test_support;  // Avoid the "unused variable" warning.
+
+  std::string response = "App store payment method app response for test.";
+  test_controller()->SetTwaPackageName("com.example.app");
+  test_controller()->SetTwaPaymentApp("https://play.google.com/billing",
+                                      "{\"status\": \"" + response + "\"}");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string expected_response = response;
+#else
+  std::string expected_response =
+      "The payment method \"https://play.google.com/billing\" is not "
+      "supported.";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  NavigateTo("b.com", "/payment_handler_status.html");
+  ASSERT_EQ(expected_response,
+            content::EvalJs(GetActiveWebContents(),
+                            "getStatus('https://play.google.com/billing')"));
+}
+
 // Passing a promise into PaymentRequest.show() should skip browser sheet with
 // https://play.google.com/billing payment method.
 IN_PROC_BROWSER_TEST_F(AndroidPaymentAppFactoryTest,

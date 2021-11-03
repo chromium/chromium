@@ -251,3 +251,64 @@ export function sleep(ms) {
 export function getStyleValueInPx(style, prop) {
   return assertInstanceof(style.get(prop), CSSNumericValue).to('px').value;
 }
+
+/**
+ * Trigger callback in fixed interval like |setInterval()| with specified delay
+ * before calling the first callback.
+ */
+export class DelayInterval {
+  /**
+   * @param {function()} callback
+   * @param {number} delayMs Delay milliseconds at start.
+   * @param {number} intervalMs Interval in milliseconds.
+   * @public
+   */
+  constructor(callback, delayMs, intervalMs) {
+    /**
+     * @type {?number}
+     * @private
+     */
+    this.intervalId_ = null;
+
+    /**
+     * @type {number}
+     * @private
+     */
+    this.delayTimeoutId_ = setTimeout(() => {
+      callback();
+      this.intervalId_ = setInterval(() => {
+        callback();
+      }, intervalMs);
+    }, delayMs);
+  }
+
+  /**
+   * Stop the interval.
+   */
+  stop() {
+    if (this.intervalId_ === null) {
+      clearTimeout(this.delayTimeoutId_);
+    } else {
+      clearInterval(this.intervalId_);
+    }
+  }
+}
+
+/**
+ * Share file with share API.
+ * @param {!File} file
+ * @return {!Promise}
+ */
+export async function share(file) {
+  const shareData = {files: [file]};
+  try {
+    if (!navigator.canShare(shareData)) {
+      throw new Error('cannot share');
+    }
+    await navigator.share(shareData);
+  } catch (e) {
+    // TODO(b/191950622): Handles all share error case, e.g. no
+    // share target, share abort... with right treatment like toast
+    // message.
+  }
+}

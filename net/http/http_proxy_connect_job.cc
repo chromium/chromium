@@ -62,17 +62,10 @@ class HttpProxyTimeoutExperiments {
   ~HttpProxyTimeoutExperiments() = default;
 
   void Init() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
     min_proxy_connection_timeout_ =
         base::Seconds(GetInt32Param("min_proxy_connection_timeout_seconds", 8));
     max_proxy_connection_timeout_ = base::Seconds(
         GetInt32Param("max_proxy_connection_timeout_seconds", 30));
-#else
-    min_proxy_connection_timeout_ = base::Seconds(
-        GetInt32Param("min_proxy_connection_timeout_seconds", 30));
-    max_proxy_connection_timeout_ = base::Seconds(
-        GetInt32Param("max_proxy_connection_timeout_seconds", 60));
-#endif
     ssl_http_rtt_multiplier_ = GetInt32Param("ssl_http_rtt_multiplier", 10);
     non_ssl_http_rtt_multiplier_ =
         GetInt32Param("non_ssl_http_rtt_multiplier", 5);

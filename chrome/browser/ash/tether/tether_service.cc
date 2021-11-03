@@ -558,6 +558,9 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       // hosts available, but the multidevice state is unverified.
       FALLTHROUGH;
     case chromeos::multidevice_setup::mojom::FeatureState::
+        kUnavailableNoVerifiedHost_ClientNotReady:
+      FALLTHROUGH;
+    case chromeos::multidevice_setup::mojom::FeatureState::
         kNotSupportedByChromebook:
       // CryptAuth may not yet know that this device supports
       // MAGIC_TETHER_CLIENT (and the local device metadata is reflecting

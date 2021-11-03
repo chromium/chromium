@@ -2109,6 +2109,11 @@ std::string Browser::GetDefaultMediaDeviceID(
       ->GetDefaultDeviceIDForProfile(profile, type);
 }
 
+std::string Browser::GetTitleForMediaControls(WebContents* web_contents) {
+  return app_controller_ ? app_controller_->GetTitleForMediaControls()
+                         : std::string();
+}
+
 #if BUILDFLAG(ENABLE_PRINTING)
 void Browser::PrintCrossProcessSubframe(
     content::WebContents* web_contents,

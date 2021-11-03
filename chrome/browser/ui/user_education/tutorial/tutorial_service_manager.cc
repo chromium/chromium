@@ -14,7 +14,8 @@
 
 TutorialServiceManager::TutorialServiceManager()
     : bubble_factory_registry_(
-          std::make_unique<TutorialBubbleFactoryRegistry>()) {}
+          std::make_unique<TutorialBubbleFactoryRegistry>()),
+      tutorial_registry_(std::make_unique<TutorialRegistry>()) {}
 TutorialServiceManager::~TutorialServiceManager() = default;
 
 TutorialServiceManager* TutorialServiceManager::GetInstance() {

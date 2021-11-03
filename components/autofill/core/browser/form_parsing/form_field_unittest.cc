@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_parsing/form_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using autofill::features::kAutofillFixFillableFieldTypes;
@@ -223,5 +224,35 @@ TEST(FormFieldTest, TestParseableLabels) {
     EXPECT_FALSE(
         FormField::Match(autofill_field.get(), u"First Name", MATCH_LABEL));
   }
+}
+
+// Test that |ParseFormFieldsForPromoCodes| parses single field promo codes.
+TEST(FormFieldTest, ParseFormFieldsForPromoCodes) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      features::kAutofillParseMerchantPromoCodeFields);
+
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  FormFieldData field_data;
+  field_data.form_control_type = "text";
+
+  // Parse single field promo code.
+  field_data.label = u"Promo code";
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
+
+  EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(fields,
+                                                        LanguageCode(""), true)
+                    .size());
+
+  // Don't parse other fields.
+  field_data.label = u"Address line 1";
+  field_data.unique_renderer_id = MakeFieldRendererId();
+  fields.push_back(std::make_unique<AutofillField>(field_data));
+
+  // Still only the promo code field should be parsed.
+  EXPECT_EQ(1u, FormField::ParseFormFieldsForPromoCodes(fields,
+                                                        LanguageCode(""), true)
+                    .size());
 }
 }  // namespace autofill

@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_CONTROLLER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -173,6 +172,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetBrowseModeInvisible(bool invisible) override;
   bool ShouldShowWarning() override;
   void SetShowFeedbackChip(bool show_feedback_chip) override;
+  ProcessedActionStatusDetailsProto& GetLogInfo() override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.
@@ -355,8 +355,14 @@ class Controller : public ScriptExecutorDelegate,
   void OnPeriodicScriptCheck();
 
   // Runs autostart scripts from |runnable_scripts|, if the conditions are
-  // right. Returns true if a script was auto-started.
-  bool MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
+  // right. Nothing happens if an empty vector is passed.
+  // If none of the scripts is autostartable or too many are, it stops the
+  // execution with an error.
+  void MaybeAutostartScript(const std::vector<ScriptHandle>& runnable_scripts);
+
+  // Creates a user action for each script with a direct action and sets the
+  // list as the current user action list.
+  void UpdateDirectActions(const std::vector<ScriptHandle>& runnable_scripts);
 
   void DisableAutostart();
 
@@ -621,6 +627,10 @@ class Controller : public ScriptExecutorDelegate,
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;
 
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_user_interface_;
+
+  // Log information about action execution. Gets reset at the start of every
+  // action and attached to the action result on completion.
+  ProcessedActionStatusDetailsProto log_info_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

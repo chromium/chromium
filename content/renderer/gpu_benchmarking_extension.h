@@ -28,6 +28,10 @@ class RenderFrameImpl;
 class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  GpuBenchmarking(const GpuBenchmarking&) = delete;
+  GpuBenchmarking& operator=(const GpuBenchmarking&) = delete;
+
   static void Install(base::WeakPtr<RenderFrameImpl> frame);
 
  private:
@@ -104,7 +108,6 @@ class GpuBenchmarking : public gin::Wrappable<GpuBenchmarking> {
 
   base::WeakPtr<RenderFrameImpl> render_frame_;
   mojo::Remote<mojom::InputInjector> input_injector_;
-  DISALLOW_COPY_AND_ASSIGN(GpuBenchmarking);
 };
 
 }  // namespace content

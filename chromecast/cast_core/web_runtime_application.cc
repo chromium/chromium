@@ -7,7 +7,6 @@
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/cast_core/bindings_manager_web_runtime.h"
 #include "chromecast/cast_core/grpc_webui_controller_factory.h"
-#include "chromecast/cast_core/url_rewrite_rules_adapter.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -25,47 +24,6 @@ WebRuntimeApplication::~WebRuntimeApplication() {
   StopApplication();
 }
 
-bool WebRuntimeApplication::Load(
-    const cast::runtime::LoadApplicationRequest& request) {
-  if (!RuntimeApplicationBase::Load(request)) {
-    return false;
-  }
-
-  url_rewrite_adapter_ =
-      std::make_unique<UrlRewriteRulesAdapter>(request.url_rewrite_rules());
-  app_url_ = request.application_config().cast_web_app_config().url();
-
-  auto* web_service = cast_web_service();
-  if (web_service) {
-    MojoIdentificationSettings params(request.url_rewrite_rules());
-    web_service->CreateSessionWithSubstitutions(
-        cast_session_id(), std::move(params.substitutable_params));
-    web_service->UpdateAppSettingsForSession(
-        cast_session_id(), std::move(params.application_settings));
-    web_service->UpdateDeviceSettingsForSession(
-        cast_session_id(), std::move(params.device_settings));
-  }
-
-  return true;
-}
-
-void WebRuntimeApplication::SetUrlRewriteRules(
-    const cast::v2::SetUrlRewriteRulesRequest& request,
-    cast::v2::SetUrlRewriteRulesResponse* response,
-    GrpcMethod* callback) {
-  if (cast_session_id().empty()) {
-    callback->StepGRPC(
-        grpc::Status(grpc::StatusCode::NOT_FOUND,
-                     "No active cast session for SetUrlRewriteRules"));
-    return;
-  }
-  if (request.has_rules()) {
-    url_rewrite_adapter_->UpdateRules(request.rules());
-  }
-
-  RuntimeApplicationBase::SetUrlRewriteRules(request, response, callback);
-}
-
 void WebRuntimeApplication::HandleMessage(
     const cast::web::Message& message,
     cast::web::MessagePortStatus* response) {
@@ -79,23 +37,18 @@ void WebRuntimeApplication::RenderFrameCreated(
         chromecast::mojom::IdentificationSettingsManager> settings_manager) {
   mojo::AssociatedRemote<mojom::IdentificationSettingsManager>
       remote_settings_manager(std::move(settings_manager));
-  url_rewrite_adapter_->AddRenderFrame(std::move(remote_settings_manager));
+  url_rewrite_adapter()->AddRenderFrame(std::move(remote_settings_manager));
 }
 
-CastWebView::Scoped WebRuntimeApplication::CreateWebView(
-    CoreApplicationServiceGrpc* grpc_stub) {
+GURL WebRuntimeApplication::InitializeAndGetInitialURL(
+    CoreApplicationServiceGrpc* grpc_stub,
+    CastWebContents* cast_web_contents) {
   // Register GrpcWebUI for handling Cast apps with URLs in the form
   // chrome*://* that use WebUIs.
   const std::vector<std::string> hosts = {"home", "error", "cast_resources"};
   content::WebUIControllerFactory::RegisterFactory(
       new GrpcWebUiControllerFactory(std::move(hosts), *grpc_stub));
 
-  return RuntimeApplicationBase::CreateWebView(grpc_stub);
-}
-
-GURL WebRuntimeApplication::ProcessWebView(
-    CoreApplicationServiceGrpc* grpc_stub,
-    CastWebContents* cast_web_contents) {
   cast::bindings::GetAllResponse bindings_response;
   {
     grpc::ClientContext context;
@@ -118,7 +71,7 @@ GURL WebRuntimeApplication::ProcessWebView(
 
   SetApplicationStarted();
 
-  return GURL(app_url_);
+  return GURL(app_config().cast_web_app_config().url());
 }
 
 }  // namespace chromecast

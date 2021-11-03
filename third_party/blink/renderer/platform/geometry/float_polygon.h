@@ -30,12 +30,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POLYGON_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_POLYGON_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -55,7 +55,7 @@ class PLATFORM_EXPORT FloatPolygon {
   const FloatPolygonEdge& EdgeAt(unsigned index) const { return edges_[index]; }
   unsigned NumberOfEdges() const { return edges_.size(); }
 
-  FloatRect BoundingBox() const { return bounding_box_; }
+  gfx::RectF BoundingBox() const { return bounding_box_; }
   bool OverlappingEdges(float min_y,
                         float max_y,
                         Vector<const FloatPolygonEdge*>& result) const;
@@ -66,7 +66,7 @@ class PLATFORM_EXPORT FloatPolygon {
   typedef WTF::PODIntervalTree<float, FloatPolygonEdge*> EdgeIntervalTree;
 
   Vector<gfx::PointF> vertices_;
-  FloatRect bounding_box_;
+  gfx::RectF bounding_box_;
   bool empty_;
   Vector<FloatPolygonEdge> edges_;
   EdgeIntervalTree edge_tree_;  // Each EdgeIntervalTree node stores minY, maxY,

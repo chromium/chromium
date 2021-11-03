@@ -14,7 +14,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/extensions/policy_extension_reinstaller.h"
+#include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/content_verify_job.h"
@@ -107,7 +107,7 @@ class DelayTracker {
  private:
   std::vector<base::TimeDelta> calls_;
   absl::optional<base::OnceClosure> saved_callback_;
-  PolicyExtensionReinstaller::ReinstallCallback action_;
+  CorruptedExtensionReinstaller::ReinstallCallback action_;
 };
 
 }  // namespace content_verifier_test

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
-#include "components/page_info/features.h"
 #include "components/page_info/page_info.h"
 #include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/permissions/permission_util.h"
@@ -306,8 +305,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                ? info.default_setting
                                : info.setting;
   const bool show_blocked_badge =
-      base::FeatureList::IsEnabled(page_info::kPageInfoV2Desktop) &&
-              !permissions::PermissionUtil::IsGuardContentSetting(info.type)
+      !permissions::PermissionUtil::IsGuardContentSetting(info.type)
           ? setting == CONTENT_SETTING_BLOCK || setting == CONTENT_SETTING_ASK
           : setting == CONTENT_SETTING_BLOCK;
   return ui::ImageModel::FromVectorIcon(

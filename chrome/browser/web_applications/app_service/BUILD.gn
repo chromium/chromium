@@ -6,6 +6,8 @@ import("//chrome/common/features.gni")
 
 source_set("app_service") {
   sources = [
+    "link_capturing_migration_manager.cc",
+    "link_capturing_migration_manager.h",
     "web_app_publisher_helper.cc",
     "web_app_publisher_helper.h",
     "web_apps.cc",
@@ -24,6 +26,7 @@ source_set("app_service") {
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:publisher",
+    "//components/services/app_service/public/cpp:types",
     "//components/sessions",
     "//components/webapps/browser",
     "//url",

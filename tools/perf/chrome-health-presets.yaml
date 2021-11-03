@@ -176,6 +176,9 @@ presets:
           - android-pixel4-perf
         stories:
           - Speedometer2
+          - Speedometer2
+          - Speedometer2
+          - Speedometer2
   chrome_health_limited:
     telemetry_batch_experiment:
       - benchmark: loading.desktop
@@ -225,6 +228,9 @@ presets:
           - android-pixel2-perf
           - android-pixel4-perf
         stories:
+          - Speedometer2
+          - Speedometer2
+          - Speedometer2
           - Speedometer2
   chrome_health_summary_report:
     batch_summary_report_spec:

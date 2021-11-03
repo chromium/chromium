@@ -5,9 +5,6 @@
 // clang-format off
 
 // <include src="../screens/oobe/enable_debugging.js">
-// <include src="../oobe_welcome_dialog.js">
-// <include src="../oobe_welcome.js">
 // <include src="../screens/oobe/oobe_network.js">
 // <include src="../oobe_update.js">
-// <include src="../screens/oobe/demo_preferences.js">
 // <include src="../enterprise_enrollment.js">

@@ -19,17 +19,15 @@ class NavigationHandle;
 
 namespace apps {
 
-// Allows navigation to be routed to an installed app, and provides
-// a static method for showing an intent picker for the current URL to display
-// any handling apps. This is a common throttle that work with the App Service.
-// This only works with Chrome OS at the moment and will work with all platforms
-// after the App Service supports apps for all platforms.
+// Allows navigation to be routed to an installed app. This is a common
+// throttle that work with the App Service. This only works with Chrome OS at
+// the moment and will work with all platforms after the App Service supports
+// apps for all platforms.
 // TODO(crbug.com/853604): Add metrics, add ARC auto pop up, add persistency.
 class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
  public:
   // Possibly creates a navigation throttle that checks if any installed apps
-  // can handle the URL being navigated to. The user is prompted if they wish to
-  // open the app or remain in the browser.
+  // can handle the URL being navigated to.
   static std::unique_ptr<apps::AppsNavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
 

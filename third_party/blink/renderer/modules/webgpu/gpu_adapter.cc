@@ -34,6 +34,10 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
   // subset of the adapter's feature set.
   requested_device_properties.textureCompressionBC =
       feature_set.Contains("texture-compression-bc");
+  requested_device_properties.textureCompressionETC2 =
+      feature_set.Contains("texture-compression-etc2");
+  requested_device_properties.textureCompressionASTC =
+      feature_set.Contains("texture-compression-astc");
   requested_device_properties.shaderFloat16 =
       feature_set.Contains("shader-float16");
   requested_device_properties.pipelineStatisticsQuery =
@@ -117,6 +121,12 @@ void GPUAdapter::InitializeFeatureNameList() {
   DCHECK(features_->FeatureNameSet().IsEmpty());
   if (adapter_properties_.textureCompressionBC) {
     features_->AddFeatureName("texture-compression-bc");
+  }
+  if (adapter_properties_.textureCompressionETC2) {
+    features_->AddFeatureName("texture-compression-etc2");
+  }
+  if (adapter_properties_.textureCompressionASTC) {
+    features_->AddFeatureName("texture-compression-astc");
   }
   if (adapter_properties_.shaderFloat16) {
     features_->AddFeatureName("shader-float16");

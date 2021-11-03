@@ -69,6 +69,11 @@ const base::Feature kAudioServiceSandbox {
 #endif
 };
 
+// When enabled, the browser process will only ask the renderer process to run
+// beforeunload handlers if it knows such handlers are registered.
+const base::Feature kAvoidUnnecessaryBeforeUnloadCheck{
+    "AvoidUnnecessaryBeforeUnloadCheck", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Kill switch for Background Fetch.
 const base::Feature kBackgroundFetch{"BackgroundFetch",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
@@ -850,8 +855,7 @@ const base::Feature kTouchpadAsyncPinchEvents{"TouchpadAsyncPinchEvents",
 // only enabled by default on CrOS, LaCrOS and Windows.
 const base::Feature kTouchpadOverscrollHistoryNavigation {
   "TouchpadOverscrollHistoryNavigation",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(OS_WIN)
+#if defined(OS_CHROMEOS) || defined(OS_WIN)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -1141,16 +1145,6 @@ const base::FeatureParam<bool>
     kWebUIJavaScriptErrorReportsSendToProductionParam{
         &kSendWebUIJavaScriptErrorReports,
         kSendWebUIJavaScriptErrorReportsSendToProductionVariation, true};
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Controls whether the new subtree capture path is used for window capturing on
-// ChromeOS Ash, instead of the legacy SlowWindowCapturerChromeOS
-// implementation.
-// TODO(crbug.com/1210549): remove once we have determined the new path is
-// stable.
-const base::Feature kAuraWindowSubtreeCapture{"AuraWindowSubtreeCapture",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if defined(WEBRTC_USE_PIPEWIRE)

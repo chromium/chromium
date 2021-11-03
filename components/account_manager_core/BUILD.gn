@@ -66,12 +66,12 @@ source_set("test_support") {
     "mock_account_manager_facade.h",
   ]
 
-  public_deps = [ "//testing/gmock" ]
-
-  deps = [
-    ":account_manager_core",
+  public_deps = [
     "//google_apis",
+    "//testing/gmock",
   ]
+
+  deps = [ ":account_manager_core" ]
 }
 
 source_set("unit_tests") {

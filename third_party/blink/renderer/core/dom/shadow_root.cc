@@ -221,13 +221,6 @@ StyleSheetList& ShadowRoot::StyleSheets() {
   return *style_sheet_list_;
 }
 
-void ShadowRoot::SetDocumentShadowCascade() {
-  DCHECK(IsUserAgent());
-  // Mark that the document contains a shadow tree since we rely on slotchange
-  // events.
-  GetDocument().SetShadowCascadeOrder(ShadowCascadeOrder::kShadowCascade);
-}
-
 void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);

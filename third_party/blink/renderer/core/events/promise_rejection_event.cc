@@ -16,10 +16,10 @@ PromiseRejectionEvent::PromiseRejectionEvent(
     const PromiseRejectionEventInit* initializer)
     : Event(type, initializer), world_(&script_state->World()) {
   DCHECK(initializer->hasPromise());
-  promise_.Set(initializer->promise().GetIsolate(),
-               initializer->promise().V8Value());
+  promise_.Reset(initializer->promise().GetIsolate(),
+                 initializer->promise().V8Value());
   if (initializer->hasReason()) {
-    reason_.Set(script_state->GetIsolate(), initializer->reason().V8Value());
+    reason_.Reset(script_state->GetIsolate(), initializer->reason().V8Value());
   }
 }
 
@@ -30,8 +30,7 @@ ScriptPromise PromiseRejectionEvent::promise(ScriptState* script_state) const {
   // world that created the promise.
   if (!CanBeDispatchedInWorld(script_state->World()))
     return ScriptPromise();
-  return ScriptPromise(script_state,
-                       promise_.NewLocal(script_state->GetIsolate()));
+  return ScriptPromise(script_state, promise_.Get(script_state->GetIsolate()));
 }
 
 ScriptValue PromiseRejectionEvent::reason(ScriptState* script_state) const {
@@ -42,7 +41,7 @@ ScriptValue PromiseRejectionEvent::reason(ScriptState* script_state) const {
                        v8::Undefined(script_state->GetIsolate()));
   }
   return ScriptValue(script_state->GetIsolate(),
-                     reason_.NewLocal(script_state->GetIsolate()));
+                     reason_.Get(script_state->GetIsolate()));
 }
 
 const AtomicString& PromiseRejectionEvent::InterfaceName() const {

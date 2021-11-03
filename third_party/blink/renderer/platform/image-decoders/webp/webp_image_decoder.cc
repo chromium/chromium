@@ -399,7 +399,7 @@ void WEBPImageDecoder::OnInitFrameBuffer(wtf_size_t frame_index) {
       buffer.RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
     frame_background_has_alpha_ =
-        !buffer.OriginalFrameRect().Contains(IntRect(IntPoint(), Size()));
+        !buffer.OriginalFrameRect().Contains(IntRect(gfx::Point(), Size()));
   } else {
     const ImageFrame& prev_buffer =
         frame_buffer_cache_[required_previous_frame_index];
@@ -628,7 +628,7 @@ void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
   IntRect frame_rect(animated_frame.x_offset, animated_frame.y_offset,
                      animated_frame.width, animated_frame.height);
   buffer->SetOriginalFrameRect(
-      IntersectRects(frame_rect, IntRect(IntPoint(), Size())));
+      IntersectRects(frame_rect, IntRect(gfx::Point(), Size())));
   buffer->SetDuration(base::Milliseconds(animated_frame.duration));
   buffer->SetDisposalMethod(animated_frame.dispose_method ==
                                     WEBP_MUX_DISPOSE_BACKGROUND
@@ -762,7 +762,7 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
     // is loading. The correct alpha value for the frame will be set when
     // it is fully decoded.
     buffer.SetHasAlpha(true);
-    buffer.SetOriginalFrameRect(IntRect(IntPoint(), Size()));
+    buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
   }
 
   const IntRect& frame_rect = buffer.OriginalFrameRect();

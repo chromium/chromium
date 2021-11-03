@@ -427,7 +427,7 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) override {
       ScriptState* script_state = GetScriptState();
       return target_->DoWrite(script_state,
-                              chunk_.NewLocal(script_state->GetIsolate()));
+                              chunk_.Get(script_state->GetIsolate()));
     }
 
     void Trace(Visitor* visitor) const override {

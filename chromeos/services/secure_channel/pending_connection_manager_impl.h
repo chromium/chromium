@@ -63,6 +63,10 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
     static Factory* test_factory_;
   };
 
+  PendingConnectionManagerImpl(const PendingConnectionManagerImpl&) = delete;
+  PendingConnectionManagerImpl& operator=(const PendingConnectionManagerImpl&) =
+      delete;
+
   ~PendingConnectionManagerImpl() override;
 
  private:
@@ -144,8 +148,6 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
   BleConnectionManager* ble_connection_manager_;
   NearbyConnectionManager* nearby_connection_manager_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingConnectionManagerImpl);
 };
 
 }  // namespace secure_channel

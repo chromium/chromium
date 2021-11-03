@@ -24,9 +24,8 @@ namespace {
 // factor.
 gfx::Rect ScaleRectByDeviceScaleFactor(const gfx::Rect& rect,
                                        content::WebContents* web_contents) {
-  display::ScreenInfo screen_info;
-  web_contents->GetRenderWidgetHostView()->GetScreenInfo(&screen_info);
-  return gfx::ScaleToRoundedRect(rect, screen_info.device_scale_factor);
+  return gfx::ScaleToRoundedRect(
+      rect, web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
 }
 
 // Navigates to |url| in |web_contents| and waits for |event|.

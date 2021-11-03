@@ -4,6 +4,9 @@
 
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
+#include "base/check.h"
+#include "chromeos/components/multidevice/logging/logging.h"
+
 namespace chromeos {
 
 namespace multidevice_setup {
@@ -17,23 +20,34 @@ MultiDeviceSetupClient::GenerateDefaultHostStatusWithDevice() {
 
 // static
 MultiDeviceSetupClient::FeatureStatesMap
-MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap() {
-  return FeatureStatesMap{
-      {mojom::Feature::kBetterTogetherSuite,
-       mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kInstantTethering,
-       mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kMessages, mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kSmartLock, mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kPhoneHub, mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kPhoneHubNotifications,
-       mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kPhoneHubCameraRoll,
-       mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kPhoneHubTaskContinuation,
-       mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kWifiSync, mojom::FeatureState::kProhibitedByPolicy},
-      {mojom::Feature::kEche, mojom::FeatureState::kProhibitedByPolicy}};
+MultiDeviceSetupClient::GenerateDefaultFeatureStatesMap(
+    mojom::FeatureState default_value) {
+  // The default feature state map can be either kProhibitedByPolicy or
+  // kUnavailableNoVerifiedHost_ClientNotReady. There are two options for the
+  // default. The first is kProhibitedByPolicy for the MultideviceHandler
+  // because if the MultideviceSetupClient is null, then the feature suite is
+  // prohibited, since the MultideviceSetupClient is only created when the
+  // Multidevice suite is allowed. The second applies to situations otherwise
+  // where the default is kUnavailableNoVerifiedHost_ClientNotReady while we
+  // wait for device sync.
+  DCHECK(default_value ==
+             mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady ||
+         default_value == mojom::FeatureState::kProhibitedByPolicy);
+  MultiDeviceSetupClient::FeatureStatesMap map =
+      MultiDeviceSetupClient::FeatureStatesMap{
+          {mojom::Feature::kBetterTogetherSuite, default_value},
+          {mojom::Feature::kInstantTethering, default_value},
+          {mojom::Feature::kMessages, default_value},
+          {mojom::Feature::kSmartLock, default_value},
+          {mojom::Feature::kPhoneHub, default_value},
+          {mojom::Feature::kPhoneHubNotifications, default_value},
+          {mojom::Feature::kPhoneHubTaskContinuation, default_value},
+          {mojom::Feature::kWifiSync, default_value},
+          {mojom::Feature::kEche, default_value},
+          {mojom::Feature::kPhoneHubCameraRoll, default_value}};
+
+  DCHECK(map.size() == static_cast<int32_t>(mojom::Feature::kMaxValue) + 1);
+  return map;
 }
 
 MultiDeviceSetupClient::MultiDeviceSetupClient() = default;

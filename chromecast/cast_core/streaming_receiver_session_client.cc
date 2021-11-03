@@ -199,21 +199,29 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-    Handler* handler)
+    Handler* handler,
+    bool supports_audio,
+    bool supports_video)
     : StreamingReceiverSessionClient(
           std::move(task_runner),
           std::move(network_context_getter),
           base::BindOnce(&CreateReceiverSession, std::move(message_port)),
-          handler) {}
+          handler,
+          supports_audio,
+          supports_video) {}
 
 StreamingReceiverSessionClient::StreamingReceiverSessionClient(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     cast_streaming::NetworkContextGetter network_context_getter,
     ReceiverSessionFactory receiver_session_factory,
-    Handler* handler)
+    Handler* handler,
+    bool supports_audio,
+    bool supports_video)
     : handler_(handler),
       task_runner_(std::move(task_runner)),
       receiver_session_factory_(std::move(receiver_session_factory)),
+      supports_audio_(supports_audio),
+      supports_video_(supports_video),
       weak_factory_(this) {
   DCHECK(handler_);
   DCHECK(task_runner_);
@@ -338,6 +346,14 @@ bool StreamingReceiverSessionClient::OnMessage(
   }
 
   auto constraints = CreateConstraints(*deserializer);
+  if (!supports_audio_) {
+    constraints.audio_codecs.clear();
+    constraints.audio_limits.clear();
+  }
+  if (!supports_video_) {
+    constraints.video_codecs.clear();
+  }
+
   streaming_state_ |= LaunchState::kAVSettingsReceived;
   if (!has_streaming_launched()) {
     av_constraints_ = std::move(constraints);

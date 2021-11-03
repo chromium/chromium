@@ -15,8 +15,8 @@ class UkmInternalsUI : public WebUIController {
  public:
   explicit UkmInternalsUI(WebUI* web_ui);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UkmInternalsUI);
+  UkmInternalsUI(const UkmInternalsUI&) = delete;
+  UkmInternalsUI& operator=(const UkmInternalsUI&) = delete;
 };
 
 }  // namespace content

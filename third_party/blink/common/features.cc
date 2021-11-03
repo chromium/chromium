@@ -18,6 +18,11 @@ namespace features {
 const base::Feature kAutomaticLazyFrameLoadingToEmbeds{
     "AutomaticLazyFrameLoadingToEmbeds", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows pages with DedicatedWorker to stay eligible for the back/forward
+// cache.
+const base::Feature kBackForwardCacheDedicatedWorker{
+    "BackForwardCacheDedicatedWorker", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 const base::Feature kBlockingDownloadsInAdFrameWithoutUserActivation{
@@ -54,8 +59,16 @@ const base::Feature kPaintHolding{"PaintHolding",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable defer commits to avoid flash of unstyled content, for all navigation.
-const base::Feature kPaintHoldingCrossOrigin{"PaintHoldingCrossOrigin",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+// Disabled on Mobile to allow for a delayed Finch roll-out. Enabled on
+// Desktop platforms.
+const base::Feature kPaintHoldingCrossOrigin {
+  "PaintHoldingCrossOrigin",
+#if defined(OS_ANDROID)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enable eagerly setting up a CacheStorage interface pointer and
 // passing it to service workers on startup as an optimization.
@@ -349,7 +362,7 @@ const base::Feature kServiceWorkerUpdateDelay{
 // Enable the use of Speculation Rules in access the private prefetch proxy
 // (chrome/browser/prefetch/prefetch_proxy/).
 // https://crbug.com/1190167
-const base::Feature kSpeculationRulesPrefetchProxy{
+const base::Feature kSpeculationRulesPrefetchProxy {
   "SpeculationRulesPrefetchProxy",
 #if defined(OS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -1095,16 +1108,33 @@ bool IsSetTimeoutWithoutClampEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kSetTimeoutWithoutClamp);
 }
 
+const base::Feature kTabSwitchMetrics2{"TabSwitchMetrics2",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls where third_party/blink/renderer/core/frame/deprecation.cc logs to.
 const base::Feature kDeprecationWillLogToConsole{
     "DeprecationWillLogToConsole", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDeprecationWillLogToDevToolsIssue{
-    "DeprecationWillLogToDevToolsIssue", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DeprecationWillLogToDevToolsIssue", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables reporting and web-exposure (respectively) of the time the first frame
 // of an animated image was painted.
 const base::Feature kLCPAnimatedImagesReporting{
     "LCPAnimatedImagesReporting", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Throws when `kWebSQLInThirdPartyContextEnabled` is disabled.
+const base::Feature kWebSQLInThirdPartyContextThrowsWhenDisabled{
+    "WebSQLInThirdPartyContextThrowsWhenDisabled",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// https://blog.whatwg.org/newline-normalizations-in-form-submission
+const base::Feature kLateFormNewlineNormalization{
+    "LateFormNewlineNormalization", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// TODO(crbug.com/1185950): Remove this flag when the feature is fully launched
+// and released to stable with no issues.
+const base::Feature kAutoExpandDetailsElement{"AutoExpandDetailsElement",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace blink

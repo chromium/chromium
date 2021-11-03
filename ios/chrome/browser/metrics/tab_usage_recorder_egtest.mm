@@ -494,7 +494,7 @@ void SwitchToNormalMode() {
     // Wait for the page starting to load. It is possible that the page finish
     // loading before this test. In that case the wait will timeout. Ignore the
     // result.
-    bool unused =
+    unused =
         base::test::ios::WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
           return [ChromeEarlGrey isLoading];
         });

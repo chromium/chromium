@@ -16,7 +16,8 @@ std::unique_ptr<CastRuntimeService> CastRuntimeService::Create(
     CastWindowManager* window_manager,
     media::MediaPipelineBackendManager* media_pipeline_backend_manager,
     CastRuntimeService::NetworkContextGetter network_context_getter,
-    PrefService* pref_service) {
+    PrefService* pref_service,
+    media::VideoPlaneController* video_plane_controller) {
   return std::make_unique<CastRuntimeService>();
 }
 

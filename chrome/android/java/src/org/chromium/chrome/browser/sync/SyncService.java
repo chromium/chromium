@@ -123,12 +123,6 @@ public abstract class SyncService {
 
     public abstract boolean getDecoupledFromAndroidMasterSync();
 
-    // TODO(crbug.com/1254280): Remove this method once it's fully unused.
-    @Deprecated
-    public @Nullable CoreAccountInfo getAuthenticatedAccountInfo() {
-        return getAccountInfo();
-    }
-
     public abstract @Nullable CoreAccountInfo getAccountInfo();
 
     public abstract boolean hasSyncConsent();

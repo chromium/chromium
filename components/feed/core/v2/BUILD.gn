@@ -230,6 +230,7 @@ source_set("core_unit_tests") {
     "//components/leveldb_proto:test_support",
     "//components/offline_pages/core:test_support",
     "//components/prefs:test_support",
+    "//components/reading_list/features:flags",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/variations:test_support",

@@ -72,6 +72,9 @@ class MediaSessionData : public base::SupportsUserData::Data {
  public:
   MediaSessionData() = default;
 
+  MediaSessionData(const MediaSessionData&) = delete;
+  MediaSessionData& operator=(const MediaSessionData&) = delete;
+
   static MediaSessionData* GetOrCreate(BrowserContext* context) {
     auto* data = static_cast<MediaSessionData*>(
         context->GetUserData(kMediaSessionDataName));
@@ -89,8 +92,6 @@ class MediaSessionData : public base::SupportsUserData::Data {
 
  private:
   base::UnguessableToken source_id_ = base::UnguessableToken::Create();
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionData);
 };
 
 size_t ComputeFrameDepth(RenderFrameHost* rfh,
@@ -1692,8 +1693,8 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
   ContentClient* content_client = content::GetContentClient();
   const GURL& url = web_contents()->GetLastCommittedURL();
 
-  // If |url| wraps a chrome extension ID, we can display the extension
-  // name instead, which is more human-readable.
+  // If |url| wraps a chrome extension ID or System Web App, we can display the
+  // extension or app name instead, which is more human-readable.
   std::u16string source_title;
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
   if (delegate) {

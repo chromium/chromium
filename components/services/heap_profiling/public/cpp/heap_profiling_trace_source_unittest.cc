@@ -18,7 +18,8 @@ namespace {
 class HeapProfilingProtoExporterTest : public testing::Test {
  public:
   void SetUp() override {
-    test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
+    tracing::PerfettoTracedProcess::ResetTaskRunnerForTesting();
+    tracing::PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
 
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
@@ -30,6 +31,7 @@ class HeapProfilingProtoExporterTest : public testing::Test {
   void TearDown() override {
     // Be sure there is no pending/running tasks.
     task_environment_.RunUntilIdle();
+    tracing::PerfettoTracedProcess::TearDownForTesting();
   }
 
   void BeginTrace() {
@@ -51,7 +53,6 @@ class HeapProfilingProtoExporterTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<tracing::PerfettoTracedProcess::TestHandle> test_handle_;
 };
 
 using Sample = base::SamplingHeapProfiler::Sample;

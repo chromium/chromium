@@ -36,7 +36,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/highlight/highlight.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
@@ -266,6 +268,7 @@ void AXInlineTextBox::SerializeMarkerAttributes(
   const auto ax_range = AXRange::RangeOfContents(*this);
 
   std::vector<int32_t> marker_types;
+  std::vector<int32_t> highlight_types;
   std::vector<int32_t> marker_starts;
   std::vector<int32_t> marker_ends;
 
@@ -337,7 +340,16 @@ void AXInlineTextBox::SerializeMarkerAttributes(
         end_position.TextOffset() - start_text_offset_in_parent, text_length);
     DCHECK_GE(local_end_offset, 0);
 
+    int32_t highlight_type =
+        static_cast<int32_t>(ax::mojom::blink::HighlightType::kNone);
+    if (marker->GetType() == DocumentMarker::kHighlight) {
+      const auto& highlight_marker = To<HighlightMarker>(*marker);
+      highlight_type =
+          ToAXHighlightType(highlight_marker.GetHighlight()->type());
+    }
+
     marker_types.push_back(int32_t{ToAXMarkerType(marker->GetType())});
+    highlight_types.push_back(static_cast<int32_t>(highlight_type));
     marker_starts.push_back(local_start_offset);
     marker_ends.push_back(local_end_offset);
   }
@@ -350,6 +362,8 @@ void AXInlineTextBox::SerializeMarkerAttributes(
 
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerTypes, marker_types);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kHighlightTypes, highlight_types);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kMarkerStarts, marker_starts);
   node_data->AddIntListAttribute(

@@ -27,6 +27,11 @@ const char kHideOnboardingUi[] =
 const char kIsAwaitingVerifiedHost[] =
     "cros.phonehub.is_awaiting_verified_host";
 
+// Whether the Camera Roll onboarding dialog in the PhoneHub UI has
+// been dismissed.
+const char kHasDismissedCameraRollOnboardingUi[] =
+    "cros.phonehub.has_dismissed_camera_roll_onboarding_ui";
+
 // Whether the Notification access setup banner in the PhoneHub UI has
 // been dismissed.
 const char kHasDismissedSetupRequiredUi[] =

@@ -57,6 +57,10 @@ class MODULES_EXPORT WebRtcAudioDeviceNotImpl
   int32_t MaxSpeakerVolume(uint32_t* max_volume) const override;
   int32_t MinSpeakerVolume(uint32_t* min_volume) const override;
   int32_t MicrophoneVolumeIsAvailable(bool* available) override;
+  int32_t SetMicrophoneVolume(uint32_t volume) override;
+  int32_t MicrophoneVolume(uint32_t* volume) const override;
+  int32_t MaxMicrophoneVolume(uint32_t* max_volume) const override;
+  int32_t MinMicrophoneVolume(uint32_t* min_volume) const override;
   int32_t SpeakerMuteIsAvailable(bool* available) override;
   int32_t SetSpeakerMute(bool enable) override;
   int32_t SpeakerMute(bool* enabled) const override;

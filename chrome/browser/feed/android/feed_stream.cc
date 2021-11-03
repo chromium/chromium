@@ -272,13 +272,22 @@ jlong FeedStream::GetLastFetchTimeMs(
   return feed_stream_api_->GetLastFetchTime(GetStreamType()).ToDoubleT() * 1000;
 }
 
+void FeedStream::ReportNoticeCreated(JNIEnv* env,
+                                     const JavaParamRef<jobject>& obj,
+                                     const JavaParamRef<jstring>& key) {
+  if (!feed_stream_api_)
+    return;
+  feed_stream_api_->ReportNoticeCreated(
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
+}
+
 void FeedStream::ReportNoticeViewed(JNIEnv* env,
                                     const JavaParamRef<jobject>& obj,
                                     const JavaParamRef<jstring>& key) {
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportNoticeViewed(
-      base::android::ConvertJavaStringToUTF8(env, key));
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
 }
 
 void FeedStream::ReportNoticeOpenAction(JNIEnv* env,
@@ -287,7 +296,7 @@ void FeedStream::ReportNoticeOpenAction(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportNoticeOpenAction(
-      base::android::ConvertJavaStringToUTF8(env, key));
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
 }
 
 void FeedStream::ReportNoticeDismissed(JNIEnv* env,
@@ -296,7 +305,7 @@ void FeedStream::ReportNoticeDismissed(JNIEnv* env,
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportNoticeDismissed(
-      base::android::ConvertJavaStringToUTF8(env, key));
+      GetStreamType(), base::android::ConvertJavaStringToUTF8(env, key));
 }
 
 }  // namespace android

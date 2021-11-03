@@ -211,6 +211,10 @@ void FakeScriptExecutorDelegate::RequireUI() {
   require_ui_ = true;
 }
 
+ProcessedActionStatusDetailsProto& FakeScriptExecutorDelegate::GetLogInfo() {
+  return log_info_;
+}
+
 void FakeScriptExecutorDelegate::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.insert(listener);

@@ -13,7 +13,8 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 
-#if defined(ARCH_CPU_ARM64) && (defined(OS_LINUX) || defined(OS_ANDROID))
+#if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
+    (defined(OS_LINUX) || defined(OS_ANDROID))
 #define HAS_MEMORY_TAGGING 1
 #endif
 

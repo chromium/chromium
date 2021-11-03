@@ -158,7 +158,7 @@ struct CORE_EXPORT PhysicalRect {
 
   // TODO(crbug.com/962299): These functions should upgraded to force correct
   // pixel snapping in a type-safe way.
-  IntPoint PixelSnappedOffset() const { return RoundedIntPoint(offset); }
+  gfx::Point PixelSnappedOffset() const { return ToRoundedPoint(offset); }
   int PixelSnappedWidth() const {
     return SnapSizeToPixel(size.width, offset.left);
   }
@@ -183,11 +183,17 @@ struct CORE_EXPORT PhysicalRect {
   LayoutRect ToLayoutFlippedRect(const ComputedStyle&,
                                  const PhysicalSize&) const;
 
+  constexpr explicit operator gfx::RectF() const {
+    return gfx::RectF(offset.left, offset.top, size.width, size.height);
+  }
   constexpr explicit operator FloatRect() const {
     return FloatRect(offset.left, offset.top, size.width, size.height);
   }
 
   static PhysicalRect EnclosingRect(const FloatRect& rect) {
+    return EnclosingRect(ToGfxRectF(rect));
+  }
+  static PhysicalRect EnclosingRect(const gfx::RectF& rect) {
     PhysicalOffset offset(LayoutUnit::FromFloatFloor(rect.x()),
                           LayoutUnit::FromFloatFloor(rect.y()));
     PhysicalSize size(LayoutUnit::FromFloatCeil(rect.right()) - offset.left,
@@ -199,6 +205,10 @@ struct CORE_EXPORT PhysicalRect {
   // prefer performance to accuracy and haven't observed problems caused by the
   // tiny error (< LayoutUnit::Epsilon()).
   static PhysicalRect FastAndLossyFromFloatRect(const FloatRect& rect) {
+    return PhysicalRect(LayoutUnit(rect.x()), LayoutUnit(rect.y()),
+                        LayoutUnit(rect.width()), LayoutUnit(rect.height()));
+  }
+  static PhysicalRect FastAndLossyFromRectF(const gfx::RectF& rect) {
     return PhysicalRect(LayoutUnit(rect.x()), LayoutUnit(rect.y()),
                         LayoutUnit(rect.width()), LayoutUnit(rect.height()));
   }
@@ -227,9 +237,9 @@ inline PhysicalRect Intersection(const PhysicalRect& a, const PhysicalRect& b) {
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
 inline IntRect EnclosingIntRect(const PhysicalRect& r) {
-  IntPoint location = FlooredIntPoint(r.offset);
-  IntPoint max_point = CeiledIntPoint(r.MaxXMaxYCorner());
-  return IntRect(location, max_point - location);
+  gfx::Point location = ToFlooredPoint(r.offset);
+  gfx::Point max_point = ToCeiledPoint(r.MaxXMaxYCorner());
+  return IntRect(location, IntSize(max_point - location));
 }
 inline IntRect PixelSnappedIntRect(const PhysicalRect& r) {
   return {r.PixelSnappedOffset(), r.PixelSnappedSize()};

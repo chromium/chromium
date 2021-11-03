@@ -999,8 +999,8 @@ TEST_F(DeviceSettingsProviderTest, DeviceWilcoDtcAllowedSetting) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDockMacAddressSourceSetting) {
-  // Policy should not be set by default
-  VerifyPolicyValue(kDeviceDockMacAddressSource, nullptr);
+  const base::Value default_value(3);
+  VerifyPolicyValue(kDeviceDockMacAddressSource, &default_value);
 
   SetDeviceDockMacAddressSourceSetting(
       em::DeviceDockMacAddressSourceProto::DEVICE_DOCK_MAC_ADDRESS);

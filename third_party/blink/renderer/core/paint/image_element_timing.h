@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -52,13 +51,13 @@ class CORE_EXPORT ImageElementTiming final
       const LayoutObject&,
       const ImageResourceContent& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-      const IntRect& image_border);
+      const gfx::Rect& image_border);
 
   void NotifyBackgroundImagePainted(
       Node&,
       const StyleFetchedImage& background_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
-      const IntRect& image_border);
+      const gfx::Rect& image_border);
 
   void NotifyImageRemoved(const LayoutObject*,
                           const ImageResourceContent* image);
@@ -74,7 +73,7 @@ class CORE_EXPORT ImageElementTiming final
       const ImageResourceContent& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       base::TimeTicks load_time,
-      const IntRect& image_border);
+      const gfx::Rect& image_border);
 
   // Callback for the presentation promise. Reports paint timestamps.
   void ReportImagePaintPresentationTime(base::TimeTicks timestamp);
@@ -83,10 +82,10 @@ class CORE_EXPORT ImageElementTiming final
   class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
    public:
     ElementTimingInfo(const String& url,
-                      const FloatRect& rect,
+                      const gfx::RectF& rect,
                       const base::TimeTicks& response_end,
                       const AtomicString& identifier,
-                      const IntSize& intrinsic_size,
+                      const gfx::Size& intrinsic_size,
                       const AtomicString& id,
                       Element* element)
         : url(url),
@@ -103,10 +102,10 @@ class CORE_EXPORT ImageElementTiming final
     void Trace(Visitor* visitor) const { visitor->Trace(element); }
 
     String url;
-    FloatRect rect;
+    gfx::RectF rect;
     base::TimeTicks response_end;
     AtomicString identifier;
-    IntSize intrinsic_size;
+    gfx::Size intrinsic_size;
     AtomicString id;
     Member<Element> element;
   };

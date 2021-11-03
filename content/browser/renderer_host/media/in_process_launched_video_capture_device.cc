@@ -7,10 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/bind_post_task.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !defined(OS_ANDROID)
@@ -109,6 +114,21 @@ void InProcessLaunchedVideoCaptureDevice::ResumeDevice() {
   device_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&media::VideoCaptureDevice::Resume,
                                 base::Unretained(device_.get())));
+}
+
+void InProcessLaunchedVideoCaptureDevice::Crop(
+    const base::Token& crop_id,
+    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  // Unretained() is safe to use here because |device| would be null if it
+  // was scheduled for shutdown and destruction, and because this task is
+  // guaranteed to run before the task that destroys the |device|.
+  device_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&media::VideoCaptureDevice::Crop,
+                     base::Unretained(device_.get()), crop_id,
+                     base::BindPostTask(content::GetIOThreadTaskRunner({}),
+                                        std::move(callback))));
 }
 
 void InProcessLaunchedVideoCaptureDevice::RequestRefreshFrame() {

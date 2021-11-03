@@ -14,7 +14,7 @@
 // Browser test using device_event_log to ensure that no device related error
 // events are generated during startup and after login.
 
-namespace chromeos {
+namespace ash {
 
 class DeviceEventLogErrorBrowserTest : public LoginManagerTest {
  public:
@@ -46,4 +46,4 @@ IN_PROC_BROWSER_TEST_F(DeviceEventLogErrorBrowserTest, LoginUser) {
   EXPECT_EQ(GetErrors(), 0);
 }
 
-}  // namespace chromeos
+}  // namespace ash

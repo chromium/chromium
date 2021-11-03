@@ -31,7 +31,6 @@ class CastWebViewFactory {
   virtual ~CastWebViewFactory();
 
   virtual std::unique_ptr<CastWebView> CreateWebView(
-      const CastWebView::CreateParams& create_params,
       mojom::CastWebViewParamsPtr params,
       CastWebService* web_service);
 

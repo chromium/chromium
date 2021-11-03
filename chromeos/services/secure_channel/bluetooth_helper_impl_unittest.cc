@@ -90,6 +90,12 @@ multidevice::RemoteDeviceRef CreateLocalDevice(int id) {
 }  // namespace
 
 class SecureChannelBluetoothHelperImplTest : public testing::Test {
+ public:
+  SecureChannelBluetoothHelperImplTest(
+      const SecureChannelBluetoothHelperImplTest&) = delete;
+  SecureChannelBluetoothHelperImplTest& operator=(
+      const SecureChannelBluetoothHelperImplTest&) = delete;
+
  protected:
   SecureChannelBluetoothHelperImplTest()
       : test_local_device_1_(CreateLocalDevice(1)),
@@ -166,9 +172,6 @@ class SecureChannelBluetoothHelperImplTest : public testing::Test {
   DeviceIdPairSet device_id_pair_set_;
 
   DataWithTimestamp fake_advertisement_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBluetoothHelperImplTest);
 };
 
 TEST_F(SecureChannelBluetoothHelperImplTest,

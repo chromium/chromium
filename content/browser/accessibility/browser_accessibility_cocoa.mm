@@ -40,8 +40,6 @@
 
 #import "ui/accessibility/platform/ax_platform_node_mac.h"
 
-using AXTextMarkerRangeRef = CFTypeRef;
-using AXTextMarkerRef = CFTypeRef;
 using StringAttribute = ax::mojom::StringAttribute;
 using content::AccessibilityMatchPredicate;
 using content::BrowserAccessibility;
@@ -69,7 +67,6 @@ NSString* const NSAccessibilityARIARowCountAttribute = @"AXARIARowCount";
 NSString* const NSAccessibilityARIARowIndexAttribute = @"AXARIARowIndex";
 NSString* const NSAccessibilityARIASetSizeAttribute = @"AXARIASetSize";
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
-NSString* const NSAccessibilityDetailsElementsAttribute = @"AXDetailsElements";
 NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
 NSString* const NSAccessibilityDOMIdentifierAttribute = @"AXDOMIdentifier";
 NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
@@ -198,22 +195,6 @@ NSString* const
 NSString* const NSAccessibilityLengthForTextMarkerRangeParameterizedAttribute =
     @"AXLengthForTextMarkerRange";
 
-// MathML attributes.
-NSString* const NSAccessibilityMathFractionNumeratorAttribute =
-    @"AXMathFractionNumerator";
-NSString* const NSAccessibilityMathFractionDenominatorAttribute =
-    @"AXMathFractionDenominator";
-NSString* const NSAccessibilityMathRootRadicandAttribute =
-    @"AXMathRootRadicand";
-NSString* const NSAccessibilityMathRootIndexAttribute = @"AXMathRootIndex";
-NSString* const NSAccessibilityMathBaseAttribute = @"AXMathBase";
-NSString* const NSAccessibilityMathSubscriptAttribute = @"AXMathSubscript";
-NSString* const NSAccessibilityMathSuperscriptAttribute = @"AXMathSuperscript";
-NSString* const NSAccessibilityMathUnderAttribute = @"AXMathUnder";
-NSString* const NSAccessibilityMathOverAttribute = @"AXMathOver";
-NSString* const NSAccessibilityMathPostscriptsAttribute = @"AXMathPostscripts";
-NSString* const NSAccessibilityMathPrescriptsAttribute = @"AXMathPrescripts";
-
 // Private attributes that can be used for testing text markers, e.g. in dump
 // tree tests.
 NSString* const
@@ -249,33 +230,29 @@ NSDictionary* attributeToMethodNameMap = nil;
 // VoiceOver uses -1 to mean "no limit" for AXResultsLimit.
 const int kAXResultsLimitNoLimit = -1;
 
-extern "C" {
-
 // The following are private accessibility APIs required for cursor navigation
 // and text selection. VoiceOver started relying on them in Mac OS X 10.11.
+// They are public as of the 12.0 SDK.
+#if !defined(MAC_OS_VERSION_12_0) || \
+    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_12_0
+using AXTextMarkerRangeRef = CFTypeRef;
+using AXTextMarkerRef = CFTypeRef;
+extern "C" {
 CFTypeID AXTextMarkerGetTypeID();
-
-AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef allocator,
+AXTextMarkerRef AXTextMarkerCreate(CFAllocatorRef,
                                    const UInt8* bytes,
                                    CFIndex length);
-
-const UInt8* AXTextMarkerGetBytePtr(AXTextMarkerRef text_marker);
-
-size_t AXTextMarkerGetLength(AXTextMarkerRef text_marker);
+size_t AXTextMarkerGetLength(AXTextMarkerRef);
+const UInt8* AXTextMarkerGetBytePtr(AXTextMarkerRef);
 
 CFTypeID AXTextMarkerRangeGetTypeID();
-
-AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef allocator,
-                                             AXTextMarkerRef start_marker,
-                                             AXTextMarkerRef end_marker);
-
-AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(
-    AXTextMarkerRangeRef text_marker_range);
-
-AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(
-    AXTextMarkerRangeRef text_marker_range);
-
+AXTextMarkerRangeRef AXTextMarkerRangeCreate(CFAllocatorRef,
+                                             AXTextMarkerRef start,
+                                             AXTextMarkerRef end);
+AXTextMarkerRef AXTextMarkerRangeCopyStartMarker(AXTextMarkerRangeRef);
+AXTextMarkerRef AXTextMarkerRangeCopyEndMarker(AXTextMarkerRangeRef);
 }  // extern "C"
+#endif
 
 // AXTextMarkerCreate is a system function that makes a copy of the data buffer
 // given to it.
@@ -803,7 +780,8 @@ id content::AXTextMarkerFrom(const BrowserAccessibilityCocoa* anchor,
 
 id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   AXTextMarkerRangeRef cf_marker_range = AXTextMarkerRangeCreate(
-      kCFAllocatorDefault, anchor_textmarker, focus_textmarker);
+      kCFAllocatorDefault, static_cast<AXTextMarkerRef>(anchor_textmarker),
+      static_cast<AXTextMarkerRef>(focus_textmarker));
   return [static_cast<id>(cf_marker_range) autorelease];
 }
 
@@ -824,11 +802,9 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityChildrenAttribute, @"children"},
       {NSAccessibilityIdentifierChromeAttribute, @"internalId"},
       {NSAccessibilityColumnsAttribute, @"columns"},
-      {NSAccessibilityColumnHeaderUIElementsAttribute, @"columnHeaders"},
       {NSAccessibilityColumnIndexRangeAttribute, @"columnIndexRange"},
       {NSAccessibilityContentsAttribute, @"contents"},
       {NSAccessibilityDescriptionAttribute, @"descriptionForAccessibility"},
-      {NSAccessibilityDetailsElementsAttribute, @"detailsElements"},
       {NSAccessibilityDisclosingAttribute, @"disclosing"},
       {NSAccessibilityDisclosedByRowAttribute, @"disclosedByRow"},
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
@@ -859,20 +835,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
       {NSAccessibilityLoadingProgressAttribute, @"loadingProgress"},
       {NSAccessibilityKeyShortcutsValueAttribute, @"keyShortcutsValue"},
-      // MathML attributes.
-      {NSAccessibilityMathBaseAttribute, @"mathBase"},
-      {NSAccessibilityMathFractionDenominatorAttribute,
-       @"mathFractionDenominator"},
-      {NSAccessibilityMathFractionNumeratorAttribute, @"mathFractionNumerator"},
-      {NSAccessibilityMathOverAttribute, @"mathOver"},
-      {NSAccessibilityMathPostscriptsAttribute, @"mathPostscripts"},
-      {NSAccessibilityMathPrescriptsAttribute, @"mathPrescripts"},
-      {NSAccessibilityMathRootIndexAttribute, @"mathRootIndex"},
-      {NSAccessibilityMathRootRadicandAttribute, @"mathRootRadicand"},
-      {NSAccessibilityMathSubscriptAttribute, @"mathSubscript"},
-      {NSAccessibilityMathSuperscriptAttribute, @"mathSuperscript"},
-      {NSAccessibilityMathUnderAttribute, @"mathUnder"},
-      // End of MathML attributes.
       {NSAccessibilityMaxValueAttribute, @"maxValue"},
       {NSAccessibilityMinValueAttribute, @"minValue"},
       {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
@@ -1020,206 +982,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return @(level);
 }
 
-// MathML attributes.
-// TODO(crbug.com/1051115): The MathML aam considers only in-flow children.
-// TODO(crbug.com/1051115): When/if it is needed to expose this for other a11y
-// APIs, then some of the logic below should probably be moved to the
-// platform-independent classes. This could also help implement these attributes
-// in ax_platform_node_cocoa.mm, if that turns out to be necessary.
-
-- (id)mathFractionNumerator {
-  if (![self instanceActive] ||
-      [self internalRole] != ax::mojom::Role::kMathMLFraction) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([children count] >= 1)
-    return children[0];
-  return nil;
-}
-
-- (id)mathFractionDenominator {
-  if (![self instanceActive] ||
-      [self internalRole] != ax::mojom::Role::kMathMLFraction) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([children count] >= 2)
-    return children[1];
-  return nil;
-}
-
-- (id)mathRootRadicand {
-  if (![self instanceActive] ||
-      !([self internalRole] == ax::mojom::Role::kMathMLRoot ||
-        [self internalRole] == ax::mojom::Role::kMathMLSquareRoot)) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([self internalRole] == ax::mojom::Role::kMathMLRoot) {
-    if ([children count] >= 1)
-      return [[NSArray arrayWithObjects:children[0], nil] autorelease];
-    return nil;
-  }
-  return children;
-}
-
-- (id)mathRootIndex {
-  if (![self instanceActive] ||
-      [self internalRole] != ax::mojom::Role::kMathMLRoot) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([children count] >= 2)
-    return children[1];
-  return nil;
-}
-
-- (id)mathBase {
-  if (![self instanceActive] ||
-      !([self internalRole] == ax::mojom::Role::kMathMLSub ||
-        [self internalRole] == ax::mojom::Role::kMathMLSup ||
-        [self internalRole] == ax::mojom::Role::kMathMLSubSup ||
-        [self internalRole] == ax::mojom::Role::kMathMLUnder ||
-        [self internalRole] == ax::mojom::Role::kMathMLOver ||
-        [self internalRole] == ax::mojom::Role::kMathMLUnderOver ||
-        [self internalRole] == ax::mojom::Role::kMathMLMultiscripts)) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([children count] >= 1)
-    return children[0];
-  return nil;
-}
-
-- (id)mathUnder {
-  if (![self instanceActive] ||
-      !([self internalRole] == ax::mojom::Role::kMathMLUnder ||
-        [self internalRole] == ax::mojom::Role::kMathMLUnderOver)) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([children count] >= 2)
-    return children[1];
-  return nil;
-}
-
-- (id)mathOver {
-  if (![self instanceActive] ||
-      !([self internalRole] == ax::mojom::Role::kMathMLOver ||
-        [self internalRole] == ax::mojom::Role::kMathMLUnderOver)) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([self internalRole] == ax::mojom::Role::kMathMLOver &&
-      [children count] >= 2) {
-    return children[1];
-  }
-  if ([self internalRole] == ax::mojom::Role::kMathMLUnderOver &&
-      [children count] >= 3) {
-    return children[2];
-  }
-  return nil;
-}
-
-- (id)mathSubscript {
-  if (![self instanceActive] ||
-      !([self internalRole] == ax::mojom::Role::kMathMLSub ||
-        [self internalRole] == ax::mojom::Role::kMathMLSubSup)) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([children count] >= 2)
-    return children[1];
-  return nil;
-}
-
-- (id)mathSuperscript {
-  if (![self instanceActive] ||
-      !([self internalRole] == ax::mojom::Role::kMathMLSup ||
-        [self internalRole] == ax::mojom::Role::kMathMLSubSup)) {
-    return nil;
-  }
-  NSArray* children = [self children];
-  if ([self internalRole] == ax::mojom::Role::kMathMLSup &&
-      [children count] >= 2) {
-    return children[1];
-  }
-  if ([self internalRole] == ax::mojom::Role::kMathMLSubSup &&
-      [children count] >= 3) {
-    return children[2];
-  }
-  return nil;
-}
-
-static NSDictionary* createMathSubSupScriptsPair(
-    BrowserAccessibilityCocoa* subscript,
-    BrowserAccessibilityCocoa* superscript) {
-  BrowserAccessibilityCocoa* nodes[2];
-  NSString* keys[2];
-  NSUInteger count = 0;
-  if (subscript) {
-    nodes[count] = subscript;
-    keys[count] = NSAccessibilityMathSubscriptAttribute;
-    count++;
-  }
-  if (superscript) {
-    nodes[count] = superscript;
-    keys[count] = NSAccessibilityMathSuperscriptAttribute;
-    count++;
-  }
-  return [[NSDictionary alloc] initWithObjects:nodes forKeys:keys count:count];
-}
-
-- (NSArray*)mathPostscripts {
-  if (![self instanceActive] ||
-      [self internalRole] != ax::mojom::Role::kMathMLMultiscripts)
-    return nil;
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-  bool foundBaseElement = false;
-  BrowserAccessibilityCocoa* subscript = nullptr;
-  for (BrowserAccessibilityCocoa* child in [self children]) {
-    if ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter)
-      break;
-    if (!foundBaseElement) {
-      foundBaseElement = true;
-      continue;
-    }
-    if (!subscript) {
-      subscript = child;
-      continue;
-    }
-    BrowserAccessibilityCocoa* superscript = child;
-    [ret addObject:createMathSubSupScriptsPair(subscript, superscript)];
-    subscript = nullptr;
-  }
-  return [ret count] ? ret : nil;
-}
-
-- (NSArray*)mathPrescripts {
-  if (![self instanceActive] ||
-      [self internalRole] != ax::mojom::Role::kMathMLMultiscripts)
-    return nil;
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-  bool foundPrescriptDelimiter = false;
-  BrowserAccessibilityCocoa* subscript = nullptr;
-  for (BrowserAccessibilityCocoa* child in [self children]) {
-    if (!foundPrescriptDelimiter) {
-      foundPrescriptDelimiter =
-          ([child internalRole] == ax::mojom::Role::kMathMLPrescriptDelimiter);
-      continue;
-    }
-    if (!subscript) {
-      subscript = child;
-      continue;
-    }
-    BrowserAccessibilityCocoa* superscript = child;
-    [ret addObject:createMathSubSupScriptsPair(subscript, superscript)];
-    subscript = nullptr;
-  }
-  return [ret count] ? ret : nil;
-}
-
 - (NSArray*)AXChildren {
   return [self children];
 }
@@ -1275,43 +1037,6 @@ static NSDictionary* createMathSubSupScriptsPair(
     if (parent)
       [ToBrowserAccessibilityCocoa(parent) childrenChanged];
   }
-}
-
-- (NSArray*)columnHeaders {
-  if (![self instanceActive])
-    return nil;
-
-  bool is_cell_or_table_header = ui::IsCellOrTableHeader(_owner->GetRole());
-  bool is_table_like = ui::IsTableLike(_owner->GetRole());
-  if (!is_table_like && !is_cell_or_table_header)
-    return nil;
-  BrowserAccessibility* table = [self containingTable];
-  if (!table)
-    return nil;
-
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-  if (is_table_like) {
-    // If this is a table, return all column headers.
-    for (int32_t id : table->GetColHeaderNodeIds()) {
-      BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
-      if (cell)
-        [ret addObject:ToBrowserAccessibilityCocoa(cell)];
-    }
-  } else {
-    // Otherwise this is a cell, return the column headers for this cell.
-    absl::optional<int> column = _owner->GetTableCellColIndex();
-    if (!column)
-      return nil;
-
-    std::vector<int32_t> colHeaderIds = table->GetColHeaderNodeIds(*column);
-    for (int32_t id : colHeaderIds) {
-      BrowserAccessibility* cell = _owner->manager()->GetFromID(id);
-      if (cell)
-        [ret addObject:ToBrowserAccessibilityCocoa(cell)];
-    }
-  }
-
-  return [ret count] ? ret : nil;
 }
 
 - (NSValue*)columnIndexRange {
@@ -1427,25 +1152,6 @@ static NSDictionary* createMathSubSupScriptsPair(
   }
 
   return @"";
-}
-
-- (NSArray*)detailsElements {
-  if (![self instanceActive])
-    return nil;
-
-  NSMutableArray* elements = [[[NSMutableArray alloc] init] autorelease];
-  const std::vector<int32_t>& detailsIds =
-      _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds);
-  for (size_t i = 0; i < detailsIds.size(); ++i) {
-    if (BrowserAccessibility* element =
-            _owner->manager()->GetFromID(detailsIds[i])) {
-      id cocoa_element = ToBrowserAccessibilityCocoa(element);
-      if ([cocoa_element instanceActive])
-        [elements addObject:cocoa_element];
-    }
-  }
-
-  return [elements count] ? elements : nil;
 }
 
 - (NSNumber*)disclosing {
@@ -1805,29 +1511,13 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSString*)invalid {
   if (![self instanceActive])
     return nil;
-  int invalidState;
-  if (!_owner->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState,
-                               &invalidState))
-    return @"false";
-
-  switch (static_cast<ax::mojom::InvalidState>(invalidState)) {
+  switch (_owner->GetData().GetInvalidState()) {
+    case ax::mojom::InvalidState::kNone:
     case ax::mojom::InvalidState::kFalse:
       return @"false";
     case ax::mojom::InvalidState::kTrue:
       return @"true";
-    case ax::mojom::InvalidState::kOther: {
-      std::string ariaInvalidValue;
-      if (_owner->GetStringAttribute(
-              ax::mojom::StringAttribute::kAriaInvalidValue, &ariaInvalidValue))
-        return base::SysUTF8ToNSString(ariaInvalidValue);
-      // Return @"true" since we cannot be more specific about the value.
-      return @"true";
-    }
-    default:
-      NOTREACHED();
   }
-
-  return @"false";
 }
 
 - (NSNumber*)isMultiSelectable {
@@ -1905,6 +1595,10 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSNumber*)maxValue {
   if (![self instanceActive])
     return nil;
+
+  if (!_owner->HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange))
+    return @0;  // Indeterminate value exposes AXMinValue/AXMaxValue of 0.
+
   float floatValue =
       _owner->GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
   return @(floatValue);
@@ -1913,6 +1607,10 @@ static NSDictionary* createMathSubSupScriptsPair(
 - (NSNumber*)minValue {
   if (![self instanceActive])
     return nil;
+
+  if (!_owner->HasFloatAttribute(ax::mojom::FloatAttribute::kValueForRange))
+    return @0;  // Indeterminate value exposes AXMinValue/AXMaxValue of 0.
+
   float floatValue =
       _owner->GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
   return @(floatValue);
@@ -3603,7 +3301,7 @@ static NSDictionary* createMathSubSupScriptsPair(
   if ([self internalRole] == ax::mojom::Role::kStaticText)
     [ret addObject:NSAccessibilityBoundsForRangeParameterizedAttribute];
 
-  if (_owner->IsPlatformDocument()) {
+  if (ui::IsPlatformDocument(_owner->GetRole())) {
     [ret addObjectsFromArray:@[
       NSAccessibilityTextMarkerIsValidParameterizedAttribute,
       NSAccessibilityIndexForTextMarkerParameterizedAttribute,
@@ -3693,7 +3391,6 @@ static NSDictionary* createMathSubSupScriptsPair(
       NSAccessibilityVisibleRowsAttribute,
       NSAccessibilityVisibleCellsAttribute,
       NSAccessibilityHeaderAttribute,
-      NSAccessibilityColumnHeaderUIElementsAttribute,
       NSAccessibilityRowHeaderUIElementsAttribute,
       NSAccessibilityARIAColumnCountAttribute,
       NSAccessibilityARIARowCountAttribute,
@@ -3711,8 +3408,6 @@ static NSDictionary* createMathSubSupScriptsPair(
       NSAccessibilityARIARowIndexAttribute,
       @"AXSortDirection",
     ]];
-    if ([self internalRole] != ax::mojom::Role::kColumnHeader)
-      [ret addObject:NSAccessibilityColumnHeaderUIElementsAttribute];
     if ([self internalRole] != ax::mojom::Role::kRowHeader)
       [ret addObject:NSAccessibilityRowHeaderUIElementsAttribute];
   } else if ([role isEqualToString:@"AXWebArea"]) {
@@ -3755,60 +3450,15 @@ static NSDictionary* createMathSubSupScriptsPair(
     ]];
   } else if ([role isEqualToString:NSAccessibilityOutlineRole]) {
     [ret addObjectsFromArray:@[
-      NSAccessibilitySelectedRowsAttribute,
-      NSAccessibilityRowsAttribute,
-      NSAccessibilityColumnsAttribute,
-      NSAccessibilityOrientationAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLFraction) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathFractionNumeratorAttribute,
-      NSAccessibilityMathFractionDenominatorAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLSquareRoot) {
-    [ret addObject:NSAccessibilityMathRootRadicandAttribute];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLRoot) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathRootRadicandAttribute,
-      NSAccessibilityMathRootIndexAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLSub) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathBaseAttribute, NSAccessibilityMathSubscriptAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLSup) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathBaseAttribute, NSAccessibilityMathSuperscriptAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLSubSup) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathBaseAttribute, NSAccessibilityMathSubscriptAttribute,
-      NSAccessibilityMathSuperscriptAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLUnder) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathBaseAttribute, NSAccessibilityMathUnderAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLOver) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathBaseAttribute, NSAccessibilityMathOverAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLUnderOver) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathBaseAttribute, NSAccessibilityMathUnderAttribute,
-      NSAccessibilityMathOverAttribute
-    ]];
-  } else if ([self internalRole] == ax::mojom::Role::kMathMLMultiscripts) {
-    [ret addObjectsFromArray:@[
-      NSAccessibilityMathPostscriptsAttribute,
-      NSAccessibilityMathPrescriptsAttribute
+      NSAccessibilitySelectedRowsAttribute, NSAccessibilityRowsAttribute,
+      NSAccessibilityColumnsAttribute, NSAccessibilityOrientationAttribute
     ]];
   }
 
   // Caret navigation and text selection attributes.
   if (_owner->HasState(ax::mojom::State::kEditable)) {
     // Add ancestor attributes if not a web area.
-    if (!_owner->IsPlatformDocument()) {
+    if (!ui::IsPlatformDocument(_owner->GetRole())) {
       [ret addObjectsFromArray:@[
         NSAccessibilityEditableAncestorAttribute,
         NSAccessibilityFocusableAncestorAttribute,
@@ -3903,11 +3553,6 @@ static NSDictionary* createMathSubSupScriptsPair(
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds)
               .size() > 0) {
     [ret addObject:NSAccessibilityTitleUIElementAttribute];
-  }
-
-  if (!_owner->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)
-           .empty()) {
-    [ret addObject:NSAccessibilityDetailsElementsAttribute];
   }
 
   if ([self shouldExposeTitleUIElement])

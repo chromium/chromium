@@ -19,6 +19,7 @@
 #include "chromecast/browser/lru_renderer_cache.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "chromecast/chromecast_buildflags.h"
+#include "chromecast/graphics/cast_screen.h"
 #include "content/public/browser/media_capture_devices.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
@@ -76,16 +77,18 @@ scoped_refptr<content::SiteInstance> Prelaunch(
   return prelauncher->site_instance();
 }
 
+#if defined(USE_AURA)
+constexpr gfx::Rect k720pDimensions(0, 0, 1280, 720);
+#endif
+
 }  // namespace
 
 CastWebViewDefault::CastWebViewDefault(
-    const CreateParams& create_params,
     mojom::CastWebViewParamsPtr params,
     CastWebService* web_service,
     content::BrowserContext* browser_context,
     std::unique_ptr<CastContentWindow> cast_content_window)
-    : delegate_(create_params.delegate),
-      params_(std::move(params)),
+    : params_(std::move(params)),
       web_service_(web_service),
       renderer_prelauncher_(TakeOrCreatePrelauncher(params_->prelaunch_url,
                                                     params_->renderer_pool,
@@ -96,14 +99,27 @@ CastWebViewDefault::CastWebViewDefault(
       cast_web_contents_(web_contents_.get(), params_->Clone()),
       window_(cast_content_window
                   ? std::move(cast_content_window)
-                  : web_service->CreateWindow(create_params.window_delegate,
-                                              params_->Clone())) {
+                  : web_service->CreateWindow(params_->Clone())) {
   DCHECK(web_service_);
   DCHECK(window_);
   window_->SetCastWebContents(&cast_web_contents_);
   web_contents_->SetDelegate(this);
 #if defined(USE_AURA)
   web_contents_->GetNativeView()->SetName(params_->activity_id);
+  if (params_->force_720p_resolution) {
+    const auto primary_display =
+        display::Screen::GetScreen()->GetPrimaryDisplay();
+
+    // Force scale factor to 1.0 and screen bounds to 720p.
+    // When performed prior to the creation of the web view this causes blink to
+    // render at a 1.0 pixel ratio but the compositor still scales out at 1.5,
+    // increasing performance on 1080p displays (at the expense of visual
+    // quality).
+    shell::CastBrowserProcess::GetInstance()
+        ->cast_screen()
+        ->OverridePrimaryDisplaySettings(k720pDimensions, 1.0,
+                                         primary_display.rotation());
+  }
 #endif
 }
 
@@ -129,6 +145,16 @@ CastWebContents* CastWebViewDefault::cast_web_contents() {
 
 base::TimeDelta CastWebViewDefault::shutdown_delay() const {
   return params_->shutdown_delay;
+}
+
+void CastWebViewDefault::OwnerDestroyed() {
+#if defined(USE_AURA)
+  if (params_->force_720p_resolution) {
+    shell::CastBrowserProcess::GetInstance()
+        ->cast_screen()
+        ->RestorePrimaryDisplaySettings();
+  }
+#endif
 }
 
 void CastWebViewDefault::CloseContents(content::WebContents* source) {

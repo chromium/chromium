@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
   auto initial_result = std::vector<base::Value>();
   initial_result.emplace_back(801);
   auto* initial_script = R"(
-      var screensInterface;
+      var screenDetails;
       var promiseForEvent = (target, evt) => {
         return new Promise((resolve) => {
           const handler = (e) => {
@@ -121,14 +121,14 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnScreensChangeEvent) {
         });
       }
       var makeScreensChangePromise = () => {
-        return promiseForEvent(screensInterface, 'screenschange');
+        return promiseForEvent(screenDetails, 'screenschange');
       };
       var getScreenWidths = () => {
-        return screensInterface.screens.map((d) => d.width).sort();
+        return screenDetails.screens.map((d) => d.width).sort();
       };
 
       (async () => {
-          screensInterface = await self.getScreens();
+          screenDetails = await self.getScreenDetails();
           return getScreenWidths();
       })();
   )";
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
   content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
 
   auto* initial_script = R"(
-      var screensInterface;
+      var screenDetails;
       var promiseForEvent = (target, evt) => {
         return new Promise((resolve) => {
           const handler = (e) => {
@@ -264,11 +264,11 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
         });
       }
       var makeCurrentScreenChangePromise = () => {
-        return promiseForEvent(screensInterface, 'currentscreenchange');
+        return promiseForEvent(screenDetails, 'currentscreenchange');
       };
       (async () => {
-          screensInterface = await self.getScreens();
-          return screensInterface.currentScreen.width;
+          screenDetails = await self.getScreenDetails();
+          return screenDetails.currentScreen.width;
       })();
   )";
   EXPECT_EQ(801, EvalJs(tab, initial_script));
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
   auto* await_change_width = R"(
       (async () => {
           await change;
-          return screensInterface.currentScreen.width;
+          return screenDetails.currentScreen.width;
       })();
   )";
   EXPECT_EQ(802, EvalJs(tab, await_change_width));
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
   auto* await_change_height = R"(
       (async () => {
           await change;
-          return screensInterface.currentScreen.height;
+          return screenDetails.currentScreen.height;
       })();
   )";
   EXPECT_EQ(300, EvalJs(tab, await_change_height));
@@ -324,13 +324,13 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
 // SetScreenInstance and observers not being notified.
 // TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ScreenAdvancedOnChange DISABLED_ScreenAdvancedOnChange
+#define MAYBE_ScreenDetailedOnChange DISABLED_ScreenDetailedOnChange
 #else
-#define MAYBE_ScreenAdvancedOnChange ScreenAdvancedOnChange
+#define MAYBE_ScreenDetailedOnChange ScreenDetailedOnChange
 #endif
 // Test that onchange events for individual screens in the screen list are
 // supported.
-IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
+IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenDetailedOnChange) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
   content::RenderFrameHost* remote_child = ChildFrameAt(tab->GetMainFrame(), 1);
 
   auto* initial_script = R"(
-      var screensInterface;
+      var screenDetails;
       var promiseForEvent = (target, evt) => {
         return new Promise((resolve) => {
           const handler = (e) => {
@@ -363,14 +363,14 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
       var screenChanges0 = 0;
       var screenChanges1 = 0;
       (async () => {
-        screensInterface = await self.getScreens();
-        if (screensInterface.screens.length !== 2)
+        screenDetails = await self.getScreenDetails();
+        if (screenDetails.screens.length !== 2)
           return false;
         // Add some event listeners for individual screens.
-        screensInterface.screens[0].addEventListener('change', () => {
+        screenDetails.screens[0].addEventListener('change', () => {
           screenChanges0++;
         });
-        screensInterface.screens[1].addEventListener('change', () => {
+        screenDetails.screens[1].addEventListener('change', () => {
           screenChanges1++;
         });
         return true;
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
 
   // Update only the first display to have a different height.
   auto* add_change0 = R"(
-    var change0 = promiseForEvent(screensInterface.screens[0], 'change');
+    var change0 = promiseForEvent(screenDetails.screens[0], 'change');
   )";
   EXPECT_TRUE(ExecJs(tab, add_change0));
   EXPECT_TRUE(ExecJs(local_child, add_change0));
@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
             return -1;
           if (screenChanges1 !== 0)
             return -2;
-          return screensInterface.screens[0].height;
+          return screenDetails.screens[0].height;
       })();
   )";
   EXPECT_EQ(301, EvalJs(tab, await_change0_height));
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
 
   // Update only the second display to have a different height.
   auto* add_change1 = R"(
-    var change1 = promiseForEvent(screensInterface.screens[1], 'change');
+    var change1 = promiseForEvent(screenDetails.screens[1], 'change');
   )";
   EXPECT_TRUE(ExecJs(tab, add_change1));
   EXPECT_TRUE(ExecJs(local_child, add_change1));
@@ -435,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
             return -1;
           if (screenChanges1 !== 1)
             return -2;
-          return screensInterface.screens[1].height;
+          return screenDetails.screens[1].height;
       })();
   )";
   EXPECT_EQ(302, EvalJs(tab, await_change1_height));
@@ -444,8 +444,8 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
 
   // Change the width of both displays at the same time.
   auto* add_both_changes = R"(
-    var change0 = promiseForEvent(screensInterface.screens[0], 'change');
-    var change1 = promiseForEvent(screensInterface.screens[1], 'change');
+    var change0 = promiseForEvent(screenDetails.screens[0], 'change');
+    var change1 = promiseForEvent(screenDetails.screens[1], 'change');
   )";
   EXPECT_TRUE(ExecJs(tab, add_both_changes));
   EXPECT_TRUE(ExecJs(local_child, add_both_changes));
@@ -470,9 +470,9 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
             return false;
           if (screenChanges1 !== 2)
             return false;
-          if (screensInterface.screens[0].width !== 401)
+          if (screenDetails.screens[0].width !== 401)
             return false;
-          if (screensInterface.screens[1].width !== 402)
+          if (screenDetails.screens[1].width !== 402)
             return false;
           return true;
       })();

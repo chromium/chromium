@@ -594,8 +594,12 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
         AwBrowserProcess::GetInstance()
             ->browser_policy_connector()
             ->GetPolicyService()));
-    throttles.push_back(
-        std::make_unique<AwSafeBrowsingNavigationThrottle>(navigation_handle));
+
+    std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
+        AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
+            navigation_handle);
+    if (safe_browsing_throttle)
+      throttles.push_back(std::move(safe_browsing_throttle));
   }
   return throttles;
 }
@@ -800,7 +804,7 @@ AwContentBrowserClient::CreateLoginDelegate(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
     const content::GlobalRequestID& request_id,
-    bool is_main_frame,
+    bool is_request_for_primary_main_frame,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,

@@ -114,6 +114,10 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   if (!data.ReadPermissions(&permissions))
     return false;
 
+  apps::mojom::OptionalBool allow_uninstall;
+  if (!data.ReadAllowUninstall(&allow_uninstall))
+    return false;
+
   auto app = apps::mojom::App::New();
   app->app_type = std::move(app_type);
   app->app_id = app_id;
@@ -140,6 +144,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   app->intent_filters = std::move(intent_filters);
   app->window_mode = window_mode;
   app->permissions = std::move(permissions);
+  app->allow_uninstall = allow_uninstall;
   *out = std::move(app);
   return true;
 }

@@ -173,11 +173,11 @@ static void TestAtkObjectIntAttribute(
   };
 
   for (const auto& test : tests) {
-    AXNodeData new_data = AXNodeData();
-    new_data.role = role.value_or(ax::mojom::Role::kApplication);
-    new_data.id = ax_node->id();
-    new_data.AddIntAttribute(mojom_attribute, test.first);
-    ax_node->SetData(new_data);
+    AXNodeData newer_data = AXNodeData();
+    newer_data.role = role.value_or(ax::mojom::Role::kApplication);
+    newer_data.id = ax_node->id();
+    newer_data.AddIntAttribute(mojom_attribute, test.first);
+    ax_node->SetData(newer_data);
     EnsureAtkObjectHasAttributeWithValue(atk_object, attribute_name,
                                          test.second);
   }

@@ -51,6 +51,10 @@ namespace protocol {
 class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
  public:
   CONTENT_EXPORT explicit TracingHandler(DevToolsIOContext* io_context);
+
+  TracingHandler(const TracingHandler&) = delete;
+  TracingHandler& operator=(const TracingHandler&) = delete;
+
   CONTENT_EXPORT ~TracingHandler() override;
 
   static std::vector<TracingHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
@@ -164,7 +168,6 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   FRIEND_TEST_ALL_PREFIXES(TracingHandlerTest,
                            GetTraceConfigFromDevToolsConfig);
-  DISALLOW_COPY_AND_ASSIGN(TracingHandler);
 };
 
 }  // namespace protocol

@@ -54,6 +54,10 @@ class MockOperationObserver : public KeepAliveOperation::Observer {
 }  // namespace
 
 class KeepAliveOperationTest : public testing::Test {
+ public:
+  KeepAliveOperationTest(const KeepAliveOperationTest&) = delete;
+  KeepAliveOperationTest& operator=(const KeepAliveOperationTest&) = delete;
+
  protected:
   KeepAliveOperationTest()
       : local_device_(multidevice::RemoteDeviceRefBuilder()
@@ -118,9 +122,6 @@ class KeepAliveOperationTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   MockOperationObserver mock_observer_;
   base::HistogramTester histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveOperationTest);
 };
 
 // Tests that the KeepAliveTickle message is sent to the remote device once the

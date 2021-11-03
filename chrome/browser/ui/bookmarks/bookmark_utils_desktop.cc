@@ -183,10 +183,10 @@ void OpenAllIfAllowed(
       }
 
       if (!tab_indices.empty()) {
-        tab_groups::TabGroupId newGroupId = model->AddToNewGroup(tab_indices);
+        tab_groups::TabGroupId new_group_id = model->AddToNewGroup(tab_indices);
 
         // Use the bookmark folder's title as the group's title.
-        TabGroup* group = model->group_model()->GetTabGroup(newGroupId);
+        TabGroup* group = model->group_model()->GetTabGroup(new_group_id);
         const tab_groups::TabGroupVisualData* current_visual_data =
             group->visual_data();
         tab_groups::TabGroupVisualData new_visual_data(
@@ -194,7 +194,7 @@ void OpenAllIfAllowed(
             current_visual_data->is_collapsed());
         group->SetVisualData(new_visual_data);
 
-        model->OpenTabGroupEditor(newGroupId);
+        model->OpenTabGroupEditor(new_group_id);
       }
     }
   };

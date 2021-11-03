@@ -741,4 +741,24 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_FALSE(urls.has_value());
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, IsAccountStoreDefault) {
+  // This enables uses of TestWebContents.
+  content::RenderViewHostTestEnabler test_render_host_factories;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+  PasswordsPrivateDelegateImpl delegate(&profile_);
+
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
+      .WillOnce(Return(password_manager::PasswordForm::Store::kAccountStore));
+  EXPECT_TRUE(delegate.IsAccountStoreDefault(web_contents.get()));
+
+  EXPECT_CALL(*(client->GetPasswordFeatureManager()), GetDefaultPasswordStore)
+      .WillOnce(Return(password_manager::PasswordForm::Store::kProfileStore));
+  EXPECT_FALSE(delegate.IsAccountStoreDefault(web_contents.get()));
+}
+
 }  // namespace extensions

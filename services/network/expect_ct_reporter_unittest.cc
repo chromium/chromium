@@ -282,6 +282,10 @@ class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
  public:
   TestExpectCTNetworkDelegate() = default;
 
+  TestExpectCTNetworkDelegate(const TestExpectCTNetworkDelegate&) = delete;
+  TestExpectCTNetworkDelegate& operator=(const TestExpectCTNetworkDelegate&) =
+      delete;
+
   using OnBeforeURLRequestCallback =
       base::RepeatingCallback<void(net::URLRequest* request)>;
 
@@ -311,8 +315,6 @@ class TestExpectCTNetworkDelegate : public net::NetworkDelegateImpl {
  private:
   OnBeforeURLRequestCallback on_before_url_request_callback_;
   base::RepeatingClosure url_request_destroyed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExpectCTNetworkDelegate);
 };
 
 // A test fixture that allows tests to send a report and wait until the
@@ -321,6 +323,9 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
  public:
   ExpectCTReporterWaitTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
+
+  ExpectCTReporterWaitTest(const ExpectCTReporterWaitTest&) = delete;
+  ExpectCTReporterWaitTest& operator=(const ExpectCTReporterWaitTest&) = delete;
 
   void SetUp() override {
     // Initializes URLRequestContext after the thread is set up.
@@ -357,8 +362,6 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
   TestExpectCTNetworkDelegate network_delegate_;
   std::unique_ptr<net::TestURLRequestContext> context_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTReporterWaitTest);
 };
 
 std::unique_ptr<net::test_server::HttpResponse> ReplyToPostWith200(

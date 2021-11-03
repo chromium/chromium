@@ -203,6 +203,12 @@ class CORE_EXPORT MatchResult {
   bool DependsOnContainerQueries() const {
     return depends_on_container_queries_;
   }
+  void SetDependsOnViewportContainerQueries() {
+    depends_on_viewport_container_queries_ = true;
+  }
+  bool DependsOnViewportContainerQueries() const {
+    return depends_on_viewport_container_queries_;
+  }
   void SetConditionallyAffectsAnimations() {
     conditionally_affects_animations_ = true;
   }
@@ -230,6 +236,7 @@ class CORE_EXPORT MatchResult {
   HeapVector<Member<const TreeScope>, 4> tree_scopes_;
   bool is_cacheable_{true};
   bool depends_on_container_queries_{false};
+  bool depends_on_viewport_container_queries_{false};
   bool conditionally_affects_animations_{false};
   CascadeOrigin current_origin_{CascadeOrigin::kUserAgent};
   uint16_t current_tree_order_{0};

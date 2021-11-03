@@ -28,6 +28,7 @@ CONTENT_EXPORT extern const base::Feature kAudioProcessHighPriorityWin;
 CONTENT_EXPORT extern const base::Feature kAudioServiceLaunchOnStartup;
 CONTENT_EXPORT extern const base::Feature kAudioServiceOutOfProcess;
 CONTENT_EXPORT extern const base::Feature kAudioServiceSandbox;
+CONTENT_EXPORT extern const base::Feature kAvoidUnnecessaryBeforeUnloadCheck;
 CONTENT_EXPORT extern const base::Feature kBackgroundFetch;
 CONTENT_EXPORT extern const base::Feature kBackForwardCache;
 CONTENT_EXPORT extern const base::Feature kBackForwardCacheSameSiteForBots;
@@ -301,10 +302,6 @@ CONTENT_EXPORT extern const char
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kWebUIJavaScriptErrorReportsSendToProductionParam;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-CONTENT_EXPORT extern const base::Feature kAuraWindowSubtreeCapture;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
 CONTENT_EXPORT extern const base::Feature kWebRtcPipeWireCapturer;

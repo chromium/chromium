@@ -69,7 +69,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
   SearchResultListView* list_view() const { return list_view_; }
 
   SearchModel::SearchResults* GetResults() const {
-    return delegate_->GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
  private:

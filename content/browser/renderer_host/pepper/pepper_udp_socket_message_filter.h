@@ -68,6 +68,10 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
                                PP_Instance instance,
                                bool private_api);
 
+  PepperUDPSocketMessageFilter(const PepperUDPSocketMessageFilter&) = delete;
+  PepperUDPSocketMessageFilter& operator=(const PepperUDPSocketMessageFilter&) =
+      delete;
+
   using CreateUDPSocketCallback = base::RepeatingCallback<void(
       network::mojom::NetworkContext* network_context,
       mojo::PendingReceiver<network::mojom::UDPSocket> socket_receiver,
@@ -233,8 +237,6 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   base::WeakPtrFactory<PepperUDPSocketMessageFilter>
       firewall_hole_weak_ptr_factory_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(PepperUDPSocketMessageFilter);
 };
 
 }  // namespace content

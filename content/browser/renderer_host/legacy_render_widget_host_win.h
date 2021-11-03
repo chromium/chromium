@@ -75,6 +75,10 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // in.
   static LegacyRenderWidgetHostHWND* Create(HWND parent);
 
+  LegacyRenderWidgetHostHWND(const LegacyRenderWidgetHostHWND&) = delete;
+  LegacyRenderWidgetHostHWND& operator=(const LegacyRenderWidgetHostHWND&) =
+      delete;
+
   // Destroys the HWND managed by this class.
   void Destroy();
 
@@ -203,8 +207,6 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
 
   base::WeakPtrFactory<LegacyRenderWidgetHostHWND> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyRenderWidgetHostHWND);
 };
 
 }  // namespace content

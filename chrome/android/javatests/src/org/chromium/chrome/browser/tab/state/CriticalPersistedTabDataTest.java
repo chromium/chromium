@@ -17,7 +17,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
@@ -98,6 +98,12 @@ public class CriticalPersistedTabDataTest {
     private MockPersistedTabDataStorage mStorage;
     private EmbeddedTestServer mTestServer;
 
+    // Tell R8 not to break the ability to mock these classes.
+    @Mock
+    private TabImpl mUnused1;
+    @Mock
+    private CriticalPersistedTabData mUnused2;
+
     private static Tab mockTab(int id, boolean isEncrypted) {
         Tab tab = MockTab.createAndInitialize(id, isEncrypted);
         tab.setIsTabSaveEnabled(true);
@@ -106,7 +112,6 @@ public class CriticalPersistedTabDataTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         mStorage = (MockPersistedTabDataStorage) PersistedTabDataConfiguration.getTestConfig()
                            .getStorage();
@@ -284,8 +289,7 @@ public class CriticalPersistedTabDataTest {
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
-                new CriticalPersistedTabData(tab, config.getStorage(), config.getId());
-        deserialized.deserializeAndLog(serialized);
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertNotNull(deserialized);
         Assert.assertEquals(PARENT_ID, deserialized.getParentId());
         Assert.assertEquals(ROOT_ID, deserialized.getRootId());
@@ -312,9 +316,8 @@ public class CriticalPersistedTabDataTest {
             ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
             PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                     ShoppingPersistedTabData.class, tab.isIncognito());
-            CriticalPersistedTabData deserialized =
-                    new CriticalPersistedTabData(tab, config.getStorage(), config.getId());
-            deserialized.deserializeAndLog(serialized);
+            CriticalPersistedTabData deserialized = new CriticalPersistedTabData(
+                    tab, serialized, config.getStorage(), config.getId());
             Assert.assertEquals(
                     EXPECTED_TITLE, deserialized.getWebContentsState().getDisplayTitleFromState());
             Assert.assertEquals(url, deserialized.getWebContentsState().getVirtualUrlFromState());
@@ -333,8 +336,7 @@ public class CriticalPersistedTabDataTest {
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
-                new CriticalPersistedTabData(tab, config.getStorage(), config.getId());
-        deserialized.deserializeAndLog(serialized);
+                new CriticalPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertEquals(null, deserialized.getOpenerAppId());
     }
 

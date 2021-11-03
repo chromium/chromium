@@ -10,7 +10,9 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -174,10 +176,10 @@ class StartSurfaceToolbarView extends RelativeLayout {
 
     /**
      * Set the logo image.
-     * @param logoImageDrawable The logo image in drawable format.
+     * @param logoImage The logo image in bitmap format.
      */
-    void setLogoImage(Drawable logoImageDrawable) {
-        mLogo.setImageDrawable(logoImageDrawable);
+    void setLogoImage(Bitmap logoImage) {
+        mLogo.setImageDrawable(new BitmapDrawable(getResources(), logoImage));
     }
 
     /**

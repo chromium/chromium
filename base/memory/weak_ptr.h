@@ -334,8 +334,13 @@ class BASE_EXPORT WeakPtrFactoryBase {
 template <class T>
 class WeakPtrFactory : public internal::WeakPtrFactoryBase {
  public:
+  WeakPtrFactory() = delete;
+
   explicit WeakPtrFactory(T* ptr)
       : WeakPtrFactoryBase(reinterpret_cast<uintptr_t>(ptr)) {}
+
+  WeakPtrFactory(const WeakPtrFactory&) = delete;
+  WeakPtrFactory& operator=(const WeakPtrFactory&) = delete;
 
   ~WeakPtrFactory() = default;
 
@@ -368,9 +373,6 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
     DCHECK(ptr_);
     return weak_reference_owner_.HasRefs();
   }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WeakPtrFactory);
 };
 
 // A class may extend from SupportsWeakPtr to let others take weak pointers to

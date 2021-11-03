@@ -11,14 +11,9 @@
 #include "ash/ash_export.h"
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-
-namespace views {
-class View;
-}
 
 namespace ash {
+class OverviewHighlightableView;
 class OverviewItem;
 class OverviewSession;
 
@@ -27,49 +22,8 @@ class OverviewSession;
 // overview items with arrow keys and trackpad swipes, or when tab dragging.
 class ASH_EXPORT OverviewHighlightController {
  public:
-  // An interface that must be implemented by classes that want to be
-  // highlighted in overview.
-  class OverviewHighlightableView {
-   public:
-    // Get the view class associated with |this|.
-    virtual views::View* GetView() = 0;
-
-    // Attempts to activate or close this view. Overriders may do nothing.
-    virtual void MaybeActivateHighlightedView() = 0;
-    virtual void MaybeCloseHighlightedView() = 0;
-
-    // Attempts to swap the view with its neighbor views. (Mainly used for
-    // |DeskMiniView|).
-    virtual void MaybeSwapHighlightedView(bool right) = 0;
-
-    // Activates highlighted view when exiting overview. Currently, it is only
-    // used for the case of exiting overview by using 3-finger vertical swipes.
-    // Note that not all the highlighted views support this behavior. Return
-    // true means the highlighted view is activated and the overview is exited.
-    virtual bool MaybeActivateHighlightedViewOnOverviewExit(
-        OverviewSession* overview_session);
-
-    void SetHighlightVisibility(bool visible);
-
-    // Returns true if this is the current highlighted view.
-    bool IsViewHighlighted() { return is_highlighted_; }
-
-    // Returns the point the accessibility magnifiers should focus when this is
-    // highlighted. If not overridden, this will return the centerpoint.
-    virtual gfx::Point GetMagnifierFocusPointInScreen();
-
-   protected:
-    virtual ~OverviewHighlightableView() = default;
-
-    // Highlights or unhighlights this view.
-    virtual void OnViewHighlighted() = 0;
-    virtual void OnViewUnhighlighted() = 0;
-
-   private:
-    bool is_highlighted_ = false;
-  };
-
   // TestApi is used for tests to get internal implementation details.
+  // TODO(dandersson): Move this class out.
   class ASH_EXPORT TestApi {
    public:
     explicit TestApi(OverviewHighlightController* highlight_controller);

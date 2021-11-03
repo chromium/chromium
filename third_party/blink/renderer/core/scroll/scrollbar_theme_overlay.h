@@ -82,7 +82,7 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
                         int thumb_thickness_thin_dip,
                         int scrollbar_margin_thin_dip);
 
-  ScrollbarPart HitTest(const Scrollbar&, const IntPoint&) override;
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) override;
 
  private:
   int thumb_thickness_default_dip_;

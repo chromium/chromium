@@ -257,7 +257,7 @@ std::unique_ptr<ProcessInspector> ProcessInspector::Create(
   std::unique_ptr<ProcessInspector> inspector;
 #if !defined(_WIN64)
   using base::win::OSInfo;
-  if (OSInfo::GetInstance()->wow64_status() == OSInfo::WOW64_ENABLED)
+  if (OSInfo::GetInstance()->IsWowX86OnAMD64())
     inspector = std::make_unique<Inspector<Wow64Traits>>();
 #endif
   if (!inspector)

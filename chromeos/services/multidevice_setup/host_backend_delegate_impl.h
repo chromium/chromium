@@ -51,6 +51,9 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  HostBackendDelegateImpl(const HostBackendDelegateImpl&) = delete;
+  HostBackendDelegateImpl& operator=(const HostBackendDelegateImpl&) = delete;
+
   ~HostBackendDelegateImpl() override;
 
  private:
@@ -102,8 +105,6 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   absl::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
 
   base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostBackendDelegateImpl);
 };
 
 }  // namespace multidevice_setup

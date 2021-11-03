@@ -12,10 +12,8 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_forwarder.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -111,7 +109,6 @@ AppServiceProxyLacros::AppServiceProxyLacros(Profile* profile)
         std::make_unique<apps::BrowserAppInstanceForwarder>(
             *browser_app_instance_tracker_, registry);
   }
-  Initialize();
 }
 
 AppServiceProxyLacros::~AppServiceProxyLacros() = default;
@@ -127,11 +124,9 @@ void AppServiceProxyLacros::Initialize() {
       std::make_unique<web_app::WebAppsPublisherHost>(profile_);
   web_apps_publisher_host_->Init();
 
-  // Asynchronously add app icon source, so we don't do too much work in the
-  // constructor.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&AppServiceProxyLacros::AddAppIconSource,
-                                weak_ptr_factory_.GetWeakPtr(), profile_));
+  // Make the chrome://app-icon/ resource available.
+  content::URLDataSource::Add(profile_,
+                              std::make_unique<apps::AppIconSource>(profile_));
 
   auto* service = chromeos::LacrosService::Get();
 
@@ -468,12 +463,6 @@ void AppServiceProxyLacros::RemoveSupportedLinksPreference(
 void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
                                           apps::mojom::WindowMode window_mode) {
   NOTIMPLEMENTED();
-}
-
-void AppServiceProxyLacros::AddAppIconSource(Profile* profile) {
-  // Make the chrome://app-icon/ resource available.
-  content::URLDataSource::Add(profile,
-                              std::make_unique<apps::AppIconSource>(profile));
 }
 
 void AppServiceProxyLacros::OnApps(std::vector<apps::mojom::AppPtr> deltas,

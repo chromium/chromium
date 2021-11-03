@@ -61,20 +61,8 @@ extern NSString* const
 // centered.
 @property(nonatomic) BOOL topAlignedLayout;
 
-// The accessibility label for the image view. If nil, the image won't be
-// accessible.
-@property(nonatomic, copy) NSString* imageAccessibilityLabel;
-
 // Value to determine whether or not the image's size should be scaled.
 @property(nonatomic) BOOL imageHasFixedSize;
-
-// Controls if, when we run out of view space, we should hide the action button
-// instead of the image.
-@property(nonatomic) BOOL alwaysShowImage;
-
-// The style of the primary action button added to the toolbar. Must be set if
-// both alwaysShowImage is set to YES and primaryActionString is set.
-@property(nonatomic) UIBarButtonSystemItem primaryActionBarButtonStyle;
 
 // Controls if there is a help button in the view. Must be set before the
 // view is loaded.
@@ -97,12 +85,6 @@ extern NSString* const
 
 // The action handler for interactions in this View Controller.
 @property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
-
-// Returns an image generated from the content of this view controller.
-@property(nonatomic, readonly) UIImage* content;
-
-// The button for the primary action. Nil if not available.
-@property(nonatomic, readonly) UIButton* primaryActionButton;
 
 @end
 

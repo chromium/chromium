@@ -263,7 +263,9 @@ v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
 }
 
 ModuleSystemTest::ModuleSystemTest()
-    : isolate_(v8::Isolate::GetCurrent()),
+    : isolate_holder_(task_environment_.GetMainThreadTaskRunner(),
+                      gin::IsolateHolder::IsolateType::kTest),
+      isolate_(isolate_holder_.isolate()),
       context_set_(&extension_ids_),
       should_assertions_be_made_(true) {}
 
@@ -271,6 +273,7 @@ ModuleSystemTest::~ModuleSystemTest() {
 }
 
 void ModuleSystemTest::SetUp() {
+  isolate_->Enter();
   extension_ = CreateExtension();
   env_ = CreateEnvironment();
   base::CommandLine::ForCurrentProcess()->AppendSwitch("test-type");
@@ -297,6 +300,7 @@ void ModuleSystemTest::TearDown() {
         v8::Isolate::kFullGarbageCollection);
     isolate_->GetHeapStatistics(&stats);
   }
+  isolate_->Exit();
 }
 
 scoped_refptr<const Extension> ModuleSystemTest::CreateExtension() {

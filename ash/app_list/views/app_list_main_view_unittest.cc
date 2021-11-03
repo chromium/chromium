@@ -23,6 +23,7 @@
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
@@ -51,8 +52,10 @@ class AppListMainViewTest : public views::ViewsTestBase,
 
   // testing::Test overrides:
   void SetUp() override {
-    AppListView::SetShortAnimationForTesting(true);
     views::ViewsTestBase::SetUp();
+    zero_duration_mode_ =
+        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     // Allow TEST_F for tests that don't need to be parameterized.
     if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
       feature_list_.InitWithFeatureState(
@@ -70,8 +73,8 @@ class AppListMainViewTest : public views::ViewsTestBase,
 
   void TearDown() override {
     app_list_view_->GetWidget()->Close();
+    zero_duration_mode_.reset();
     views::ViewsTestBase::TearDown();
-    AppListView::SetShortAnimationForTesting(false);
   }
 
   // |point| is in |grid_view|'s coordinates.
@@ -177,6 +180,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
     AppListFolderItem* folder_item =
         delegate_->GetTestModel()->CreateSingleItemFolder("single_item_folder",
                                                           "single");
+    GetRootGridView()->Layout();
     EXPECT_EQ(folder_item,
               delegate_->GetTestModel()->FindFolderItem("single_item_folder"));
     EXPECT_EQ(AppListFolderItem::kItemType, folder_item->GetItemType());
@@ -246,6 +250,7 @@ class AppListMainViewTest : public views::ViewsTestBase,
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
@@ -284,7 +289,6 @@ TEST_P(AppListMainViewTest, ModelChanged) {
 
   const int kReplacementItems = 5;
   delegate_->ReplaceTestModel(kReplacementItems);
-  main_view()->ModelChanged();
   EXPECT_EQ(kReplacementItems, GetRootViewModel()->view_size());
 }
 
@@ -298,6 +302,7 @@ TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   // 20).
   const int kNumApps = 30;
   delegate_->GetTestModel()->PopulateApps(kNumApps);
+  GetRootGridView()->Layout();
 
   EXPECT_EQ(1, GetFolderViewModel()->view_size());
   EXPECT_EQ(kNumApps + 1, GetRootViewModel()->view_size());

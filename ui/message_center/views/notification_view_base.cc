@@ -41,22 +41,13 @@
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/message_center/views/notification_header_view.h"
-#include "ui/message_center/views/notification_view.h"
-#include "ui/message_center/views/padded_button.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/animation/flood_fill_ink_drop_ripple.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
-#include "ui/views/animation/ink_drop_host_view.h"
-#include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/button/radio_button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
@@ -80,9 +71,6 @@ constexpr gfx::Insets kStatusTextPadding(4, 0, 0, 0);
 constexpr gfx::Insets kActionsRowPadding(8);
 constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
 constexpr int kLargeImageMaxHeight = 218;
-constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
-constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18);
-constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
 constexpr int kCompactTitleMessageViewSpacing = 12;
 
@@ -255,87 +243,9 @@ gfx::Size LargeImageView::GetResizedImageSize() {
   return resized_size;
 }
 
-// InlineSettingsRadioButton ///////////////////////////////////////////////////
-
-class InlineSettingsRadioButton : public views::RadioButton {
- public:
-  explicit InlineSettingsRadioButton(const std::u16string& label_text)
-      : views::RadioButton(label_text, 1 /* group */) {
-    label()->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-    label()->SetSubpixelRenderingEnabled(false);
-  }
-
-  void OnThemeChanged() override {
-    RadioButton::OnThemeChanged();
-    SetEnabledTextColors(GetTextColor());
-    label()->SetAutoColorReadabilityEnabled(true);
-    label()->SetBackgroundColor(
-        GetColorProvider()->GetColor(ui::kColorNotificationBackgroundActive));
-  }
-
- private:
-  SkColor GetTextColor() const {
-    return GetColorProvider()->GetColor(ui::kColorLabelForeground);
-  }
-};
-
-// NotificationInkDropImpl /////////////////////////////////////////////////////
-
-class NotificationInkDropImpl : public views::InkDropImpl {
- public:
-  NotificationInkDropImpl(views::InkDropHost* ink_drop_host,
-                          const gfx::Size& host_size)
-      : views::InkDropImpl(
-            ink_drop_host,
-            host_size,
-            views::InkDropImpl::AutoHighlightMode::SHOW_ON_RIPPLE) {}
-
-  void HostSizeChanged(const gfx::Size& new_size) override {
-    // Prevent a call to InkDropImpl::HostSizeChanged which recreates the ripple
-    // and stops the currently active animation: http://crbug.com/915222.
-  }
-};
-
 // ////////////////////////////////////////////////////////////
 // NotificationViewBase
 // ////////////////////////////////////////////////////////////
-
-class NotificationViewBase::NotificationViewPathGenerator
-    : public views::HighlightPathGenerator {
- public:
-  explicit NotificationViewPathGenerator(gfx::Insets insets)
-      : insets_(std::move(insets)) {}
-  NotificationViewPathGenerator(const NotificationViewPathGenerator&) = delete;
-  NotificationViewPathGenerator& operator=(
-      const NotificationViewPathGenerator&) = delete;
-
-  // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    gfx::RectF bounds = rect;
-    if (!preferred_size_.IsEmpty())
-      bounds.set_size(gfx::SizeF(preferred_size_));
-    bounds.Inset(insets_);
-    gfx::RoundedCornersF corner_radius(top_radius_, top_radius_, bottom_radius_,
-                                       bottom_radius_);
-    return gfx::RRectF(bounds, corner_radius);
-  }
-
-  void set_top_radius(int val) { top_radius_ = val; }
-  void set_bottom_radius(int val) { bottom_radius_ = val; }
-  void set_preferred_size(const gfx::Size& val) { preferred_size_ = val; }
-
- private:
-  int top_radius_ = 0;
-  int bottom_radius_ = 0;
-  gfx::Insets insets_;
-
-  // This custom PathGenerator is used for the ink drop clipping bounds. By
-  // setting |preferred_size_| we set the correct clip bounds in
-  // GetRoundRect(). This is needed as the correct bounds for the ink drop are
-  // required before a Layout() on the view is run. See
-  // http://crbug.com/915222.
-  gfx::Size preferred_size_;
-};
 
 void NotificationViewBase::CreateOrUpdateViews(
     const Notification& notification) {
@@ -359,37 +269,7 @@ void NotificationViewBase::CreateOrUpdateViews(
 }
 
 NotificationViewBase::NotificationViewBase(const Notification& notification)
-    : MessageView(notification),
-      ink_drop_container_(new views::InkDropContainerView()) {
-  views::InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
-  views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
-  views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
-      [](NotificationViewBase* host) -> std::unique_ptr<views::InkDrop> {
-        auto ink_drop = std::make_unique<NotificationInkDropImpl>(
-            views::InkDrop::Get(host), host->size());
-        // This code assumes that `ink_drop`'s observer list is unchecked, and
-        // that `host` outlives `ink_drop`.
-        ink_drop->AddObserver(host);
-        return ink_drop;
-      },
-      this));
-  views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
-      [](NotificationViewBase* host) -> std::unique_ptr<views::InkDropRipple> {
-        return std::make_unique<views::FloodFillInkDropRipple>(
-            host->GetPreferredSize(),
-            views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            views::InkDrop::Get(host)->GetBaseColor(),
-            views::InkDrop::Get(host)->GetVisibleOpacity());
-      },
-      this));
-  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-      [](NotificationViewBase* host) {
-        return host->GetColorProvider()->GetColor(
-            ui::kColorNotificationBackgroundActive);
-      },
-      this));
-  AddChildView(ink_drop_container_);
-
+    : MessageView(notification) {
   SetNotifyEnterExitOnChild(true);
 
   click_activator_ = std::make_unique<ClickActivator>(this);
@@ -399,12 +279,6 @@ NotificationViewBase::NotificationViewBase(const Notification& notification)
   // - To make it look similar to ArcNotificationContentView::EventForwarder.
   AddPreTargetHandler(click_activator_.get());
 
-  auto highlight_path_generator =
-      std::make_unique<NotificationViewPathGenerator>(GetInsets());
-  highlight_path_generator_ = highlight_path_generator.get();
-  views::HighlightPathGenerator::Install(this,
-                                         std::move(highlight_path_generator));
-
   DCHECK(views::FocusRing::Get(this));
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<MessageView::HighlightPathGenerator>());
@@ -413,27 +287,7 @@ NotificationViewBase::NotificationViewBase(const Notification& notification)
 }
 
 NotificationViewBase::~NotificationViewBase() {
-  // InkDrop is explicitly removed as it can have `this` as an observer
-  // installed. This is currently also required because RemoveLayerBeneathView()
-  // gets called in the destructor of InkDrop which would've called the wrong
-  // override if it destroys in a parent destructor.
-  views::InkDrop::Remove(this);
-
   RemovePreTargetHandler(click_activator_.get());
-}
-
-void NotificationViewBase::AddLayerBeneathView(ui::Layer* layer) {
-  for (auto* child : GetChildrenForLayerAdjustment()) {
-    child->SetPaintToLayer();
-    child->layer()->SetFillsBoundsOpaquely(false);
-  }
-  ink_drop_container_->AddLayerBeneathView(layer);
-}
-
-void NotificationViewBase::RemoveLayerBeneathView(ui::Layer* layer) {
-  ink_drop_container_->RemoveLayerBeneathView(layer);
-  for (auto* child : GetChildrenForLayerAdjustment())
-    child->DestroyLayer();
 }
 
 void NotificationViewBase::Layout() {
@@ -461,9 +315,6 @@ void NotificationViewBase::Layout() {
     action_buttons_row_->SetClipPath(path);
     inline_reply_->SetClipPath(path);
   }
-
-  // The animation is needed to run inside of the border.
-  ink_drop_container_->SetBoundsRect(GetLocalBounds());
 }
 
 void NotificationViewBase::OnFocus() {
@@ -530,11 +381,6 @@ void NotificationViewBase::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   MessageView::OnGestureEvent(event);
-}
-
-void NotificationViewBase::PreferredSizeChanged() {
-  highlight_path_generator_->set_preferred_size(GetPreferredSize());
-  MessageView::PreferredSizeChanged();
 }
 
 void NotificationViewBase::UpdateWithNotification(
@@ -609,8 +455,6 @@ NotificationViewBase::CreateInlineSettingsBuilder() {
   DCHECK(!settings_row_);
   return views::Builder<views::BoxLayoutView>()
       .CopyAddressTo(&settings_row_)
-      .SetOrientation(views::BoxLayout::Orientation::kVertical)
-      .SetInsideBorderInsets(kSettingsRowPadding)
       .SetVisible(false);
 }
 
@@ -923,80 +767,6 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
   }
 }
 
-void NotificationViewBase::CreateOrUpdateInlineSettingsViews(
-    const Notification& notification) {
-  if (inline_settings_enabled_) {
-    DCHECK_EQ(SettingsButtonHandler::INLINE,
-              notification.rich_notification_data().settings_button_handler);
-    return;
-  }
-
-  inline_settings_enabled_ =
-      notification.rich_notification_data().settings_button_handler ==
-      SettingsButtonHandler::INLINE;
-
-  if (!inline_settings_enabled_) {
-    return;
-  }
-
-  int block_notifications_message_id = 0;
-  switch (notification.notifier_id().type) {
-    case NotifierType::APPLICATION:
-    case NotifierType::ARC_APPLICATION:
-      block_notifications_message_id =
-          IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS_APP;
-      break;
-    case NotifierType::WEB_PAGE:
-      block_notifications_message_id =
-          IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS_SITE;
-      break;
-    case NotifierType::SYSTEM_COMPONENT:
-      block_notifications_message_id =
-          IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS;
-      break;
-    case NotifierType::CROSTINI_APPLICATION:
-      FALLTHROUGH;
-    // PhoneHub notifications do not have inline settings.
-    case NotifierType::PHONE_HUB:
-      NOTREACHED();
-      break;
-  }
-  DCHECK_NE(block_notifications_message_id, 0);
-
-  settings_row_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kSettingsRowPadding, 0));
-
-  auto block_all_button = std::make_unique<InlineSettingsRadioButton>(
-      l10n_util::GetStringUTF16(block_notifications_message_id));
-  block_all_button->SetBorder(
-      views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  block_all_button_ = settings_row_->AddChildView(std::move(block_all_button));
-
-  auto dont_block_button = std::make_unique<InlineSettingsRadioButton>(
-      l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_DONT_BLOCK_NOTIFICATIONS));
-  dont_block_button->SetBorder(
-      views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  dont_block_button_ =
-      settings_row_->AddChildView(std::move(dont_block_button));
-
-  settings_row_->SetVisible(false);
-
-  auto settings_done_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&NotificationViewBase::ToggleInlineSettings,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_SETTINGS_DONE));
-
-  auto settings_button_row = std::make_unique<views::View>();
-  auto settings_button_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kSettingsButtonRowPadding, 0);
-  settings_button_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-  settings_button_row->SetLayoutManager(std::move(settings_button_layout));
-  settings_done_button_ =
-      settings_button_row->AddChildView(std::move(settings_done_button));
-  settings_row_->AddChildView(std::move(settings_button_row));
-}
-
 void NotificationViewBase::ReorderViewInLeftContent(views::View* view) {
   left_content_->ReorderChildView(view, left_content_count_++);
 }
@@ -1101,13 +871,6 @@ void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
   PreferredSizeChanged();
 }
 
-void NotificationViewBase::UpdateCornerRadius(int top_radius,
-                                              int bottom_radius) {
-  MessageView::UpdateCornerRadius(top_radius, bottom_radius);
-  highlight_path_generator_->set_top_radius(top_radius);
-  highlight_path_generator_->set_bottom_radius(bottom_radius);
-}
-
 NotificationControlButtonsView* NotificationViewBase::GetControlButtonsView()
     const {
   return control_buttons_view_;
@@ -1147,12 +910,6 @@ void NotificationViewBase::OnSettingsButtonPressed(const ui::Event& event) {
 void NotificationViewBase::Activate() {
   GetWidget()->widget_delegate()->SetCanActivate(true);
   GetWidget()->Activate();
-}
-
-std::vector<views::View*> NotificationViewBase::GetChildrenForLayerAdjustment()
-    const {
-  return {header_row_, block_all_button_, dont_block_button_,
-          settings_done_button_};
 }
 
 void NotificationViewBase::InkDropAnimationStarted() {

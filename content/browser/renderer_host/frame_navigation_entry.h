@@ -58,6 +58,9 @@ class CONTENT_EXPORT FrameNavigationEntry
           subresource_web_bundle_navigation_info,
       std::unique_ptr<PolicyContainerPolicies> policy_container_policies);
 
+  FrameNavigationEntry(const FrameNavigationEntry&) = delete;
+  FrameNavigationEntry& operator=(const FrameNavigationEntry&) = delete;
+
   // Creates a copy of this FrameNavigationEntry that can be modified
   // independently from the original.
   scoped_refptr<FrameNavigationEntry> Clone() const;
@@ -280,8 +283,6 @@ class CONTENT_EXPORT FrameNavigationEntry
 
   // TODO(https://crbug.com/1140393): Persist these policies.
   std::unique_ptr<PolicyContainerPolicies> policy_container_policies_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameNavigationEntry);
 };
 
 }  // namespace content

@@ -65,4 +65,11 @@ class FakeConnectionManager : public secure_channel::ConnectionManager {
 }  // namespace secure_channel
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::FakeConnectionManager;
+}  // namespace secure_channel
+}  // namespace ash
+
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_CONNECTION_MANAGER_H_

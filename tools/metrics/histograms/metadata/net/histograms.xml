@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -286,13 +287,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.CertificateTransparency.SCT.VerificationTime"
-    units="microseconds" expires_after="M70">
+    units="microseconds" expires_after="2022-05-01">
   <owner>estark@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
     Time to verify the SCTs (Signed Certificate Timestamps) when setting up a
     TLS connection. Recorded on each connection setup where at least one SCT is
-    verified.
+    verified. Histogram was expired between M70 and M97. Histogram is only
+    reported for clients with high resolution clocks.
   </summary>
 </histogram>
 
@@ -330,7 +332,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.CertVerifier.NameNormalizationPrivateRoots"
-    enum="NetCertificateNameNormalization" expires_after="2021-12-12">
+    enum="NetCertificateNameNormalization" expires_after="2022-05-11">
   <owner>mattm@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -1971,6 +1973,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpJob.ProxyTypeFailed" enum="ProxyScheme"
+    expires_after="2022-05-11">
+  <owner>rch@chromium.org</owner>
+  <summary>
+    Scheme of the proxy server used by an HTTP job that failed, or SCHEME_DIRECT
+    if not proxy was used.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.ProxyTypeSuccess" enum="ProxyScheme"
+    expires_after="2022-05-11">
+  <owner>rch@chromium.org</owner>
+  <summary>
+    Scheme of the proxy server used by an HTTP job that succeeded, or
+    SCHEME_DIRECT if not proxy was used.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.TotalTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
@@ -3052,7 +3072,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ClosedDuringInitializeSession" enum="Boolean"
-    expires_after="2021-12-12">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3216,7 +3236,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplicationGoogle"
-    enum="QuicHttp3ErrorCodes" expires_after="2021-12-12">
+    enum="QuicHttp3ErrorCodes" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3441,7 +3461,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.EncryptionEstablishedTime"
-    units="Milliseconds" expires_after="2021-12-12">
+    units="Milliseconds" expires_after="2022-05-11">
   <owner>fayang@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4933,6 +4953,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
+    enum="Boolean" expires_after="2022-10-01">
+  <owner>dylancutler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Logged whenever a partitioned cookie is set from a renderer process, which
+    can be from either document.cookie or the CookieStore API. True if the
+    partition key was set with the FromScript constructor (used by the
+    CookieStore API) or if the partition key matches the
+    RestrictedCookieManager's internal partition key (which is the case for
+    cookies set/modified by document.cookie).
+  </summary>
+</histogram>
+
 <histogram name="Net.RestrictedCookieManager.SiteForCookiesOK" enum="Boolean"
     expires_after="2022-04-10">
   <owner>morlovich@chromium.org</owner>
@@ -4984,6 +5018,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SiteDomainIsSafe" enum="Boolean" expires_after="M95">
+  <obsolete>
+    Removed November 2021.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -5386,7 +5423,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.SSLNegotiatedAlpnProtocol"
-    enum="SSLNegotiatedAlpnProtocol" expires_after="2021-12-12">
+    enum="SSLNegotiatedAlpnProtocol" expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>

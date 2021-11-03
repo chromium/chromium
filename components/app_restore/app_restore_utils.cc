@@ -109,6 +109,25 @@ void ModifyWidgetParams(int32_t restore_window_id,
   }
 }
 
+int32_t FetchRestoreWindowId(const std::string& app_id) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return 0;
+
+  // If full restore is not running, check if desk templates can get a viable
+  // window id, otherwise default to checking full restore.
+  auto* full_restore_read_handler =
+      full_restore::FullRestoreReadHandler::GetInstance();
+  if (!full_restore_read_handler->IsFullRestoreRunning()) {
+    const int32_t desk_template_restore_window_id =
+        DeskTemplateReadHandler::Get()->FetchRestoreWindowId(app_id);
+    if (desk_template_restore_window_id > 0)
+      return desk_template_restore_window_id;
+  }
+
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->FetchRestoreWindowId(app_id);
+}
+
 int32_t GetArcSessionId() {
   return full_restore::FullRestoreReadHandler::GetInstance()->GetArcSessionId();
 }

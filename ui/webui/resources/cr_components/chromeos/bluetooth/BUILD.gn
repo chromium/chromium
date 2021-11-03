@@ -19,6 +19,7 @@ js_type_check("closure_compile_module") {
     ":bluetooth_pairing_confirm_code_page",
     ":bluetooth_pairing_device_item",
     ":bluetooth_pairing_device_selection_page",
+    ":bluetooth_pairing_enter_code_page",
     ":bluetooth_pairing_request_code_page",
     ":bluetooth_pairing_ui",
     ":bluetooth_spinner_page",
@@ -107,12 +108,21 @@ js_library("bluetooth_pairing_confirm_code_page") {
   ]
 }
 
+js_library("bluetooth_pairing_enter_code_page") {
+  deps = [
+    ":bluetooth_base_page",
+    ":bluetooth_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("bluetooth_pairing_ui") {
   deps = [
     ":bluetooth_pairing_confirm_code_page",
     ":bluetooth_pairing_device_selection_page",
     ":bluetooth_pairing_request_code_page",
     ":cros_bluetooth_config",
+    "//chromeos/services/bluetooth_config/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
@@ -154,6 +164,7 @@ html_to_js("polymer3_elements") {
     "bluetooth_icon.js",
     "bluetooth_icons.js",
     "bluetooth_pairing_confirm_code_page.js",
+    "bluetooth_pairing_enter_code_page.js",
     "bluetooth_pairing_device_selection_page.js",
     "bluetooth_pairing_request_code_page.js",
     "bluetooth_pairing_device_item.js",

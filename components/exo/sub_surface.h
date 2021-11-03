@@ -83,7 +83,6 @@ class SubSurface : public SurfaceDelegate, public SurfaceObserver {
   void SetInitialWorkspace(const char* initial_workspace) override {}
   void Pin(bool trusted) override {}
   void Unpin() override {}
-  void SetClientSubmitsSurfacesInPixelCoordinates(bool enabled) override {}
 
   // Overridden from SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;

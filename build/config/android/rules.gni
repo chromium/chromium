@@ -4733,6 +4733,43 @@ if (enable_java_templates) {
       # If this Bundle uses a static library, the static library APK will
       # create the synchronized dex file path.
       if (!_uses_static_library_synchronized_proguard) {
+        if (_add_view_trace_events) {
+          _trace_event_rewriter_target =
+              "//build/android/bytecode:trace_event_adder"
+          _rewritten_jar_target_name = "${target_name}__trace_event_rewritten"
+          _rewriter_path = root_build_dir + "/bin/helper/trace_event_adder"
+          _stamp = "${target_gen_dir}/${target_name}.trace_event_rewrite.stamp"
+          action_with_pydeps(_rewritten_jar_target_name) {
+            script = "//build/android/gyp/trace_event_bytecode_rewriter.py"
+            inputs = [
+              _rewriter_path,
+              _build_config,
+            ]
+            outputs = [ _stamp ]
+            depfile = "$target_gen_dir/$_rewritten_jar_target_name.d"
+            args = [
+              "--stamp",
+              rebase_path(_stamp, root_build_dir),
+              "--depfile",
+              rebase_path(depfile, root_build_dir),
+              "--script",
+              rebase_path(_rewriter_path, root_build_dir),
+              "--classpath",
+              "@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
+              "--classpath",
+              "@FileArg($_rebased_build_config:android:sdk_jars)",
+              "--input-jars",
+              "@FileArg($_rebased_build_config:deps_info:device_classpath)",
+              "--output-jars",
+              "@FileArg($_rebased_build_config:deps_info:trace_event_rewritten_device_classpath)",
+            ]
+            deps = [
+                     _trace_event_rewriter_target,
+                     ":$_build_config_target",
+                   ] + _module_java_targets
+          }
+        }
+
         dex(_dex_target) {
           forward_variables_from(invoker,
                                  [
@@ -4752,6 +4789,9 @@ if (enable_java_templates) {
           build_config = _build_config
 
           deps = _module_java_targets + [ ":$_build_config_target" ]
+          if (_add_view_trace_events) {
+            deps += [ ":${_rewritten_jar_target_name}" ]
+          }
           modules = _modules
         }
       }

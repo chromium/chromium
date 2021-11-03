@@ -19,8 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
@@ -33,7 +32,6 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/url_formatter/url_formatter.h"
-#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -313,7 +311,8 @@ void SharesheetHeaderView::ShowTextPreview() {
   if (intent_->files.has_value() && !intent_->files.value().empty()) {
     std::vector<std::u16string> file_names;
     for (const auto& file : intent_->files.value()) {
-      const auto& file_path = GetFilePathFromFileSystemUrl(file->url);
+      auto file_path =
+          apps::GetFileSystemURL(profile_, file->url).path();
       file_names.push_back(file_path.BaseName().LossyDisplayName());
     }
     std::u16string file_text;
@@ -427,10 +426,11 @@ void SharesheetHeaderView::ResolveImages() {
 }
 
 void SharesheetHeaderView::ResolveImage(size_t index) {
-  const auto& file_path =
-      GetFilePathFromFileSystemUrl(intent_->files.value()[index]->url);
+  auto file_path =
+      apps::GetFileSystemURL(profile_, intent_->files.value()[index]->url)
+          .path();
 
-  const auto& size = GetImagePreviewSize(index, intent_->files.value().size());
+  auto size = GetImagePreviewSize(index, intent_->files.value().size());
   auto image = std::make_unique<HoldingSpaceImage>(
       size, file_path,
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
@@ -465,15 +465,6 @@ void SharesheetHeaderView::OnImageLoaded(const gfx::Size& size, size_t index) {
   DCHECK_GT(image_preview_->GetImageViewCount(), index);
   image_preview_->GetImageViewAt(index)->SetImage(
       images_[index]->GetImageSkia(size));
-}
-
-const base::FilePath SharesheetHeaderView::GetFilePathFromFileSystemUrl(
-    const GURL& file_system_url) {
-  storage::FileSystemContext* fs_context =
-      file_manager::util::GetFileManagerFileSystemContext(profile_);
-  storage::FileSystemURL fs_url =
-      fs_context->CrackURLInFirstPartyContext(file_system_url);
-  return fs_url.path();
 }
 
 BEGIN_METADATA(SharesheetHeaderView, views::View)

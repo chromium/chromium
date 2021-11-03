@@ -13,6 +13,7 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/mediacapture-fromelement/capture.html [ Crash ]
 crbug.com/626703 external/wpt/media-capabilities/encodingInfo.any.worker.html [ Crash ]
 crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add-2.html [ Timeout ]
@@ -237,6 +238,8 @@ crbug.com/998423 external/wpt/css/css-multicol/with-custom-layout-on-same-elemen
 ### external/wpt/css/css-position/
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-004.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-center-005.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-position/position-absolute-center-006.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-crash-chrome-006.html [ Crash ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-dynamic-overflow-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-fit-content.html [ Failure ]

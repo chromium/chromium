@@ -135,7 +135,9 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
             same_party_bool, /*partition_key=*/absl::nullopt,
             net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
     // If the unique_ptr is null, it means the cookie was not canonical.
-    if (new_cookie) {
+    // FromStorage() also uses a less strict version of IsCanonical(), we need
+    // to check the stricter version as well here.
+    if (new_cookie && new_cookie->IsCanonical()) {
       cookies_.push_back(std::move(*new_cookie));
     } else {
       LOG(ERROR) << "Non-canonical cookie found.";

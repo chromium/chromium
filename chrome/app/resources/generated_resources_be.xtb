@@ -123,6 +123,7 @@
 <translation id="1122068467107743258">Праца</translation>
 <translation id="1122198203221319518">&amp;Інструменты</translation>
 <translation id="1122242684574577509">Памылка аўтэнтыфікацыі. Націсніце тут, каб перайсці на старонку ўваходу для сеткі Wi-Fi, якой вы карыстаецеся (<ph name="NETWORK_ID" />).</translation>
+<translation id="1122913801042512795">Даныя для ўваходу ва ўліковы запіс устарэлі. Выйдзіце з уліковага запісу і ўвайдзіце ў яго зноў.</translation>
 <translation id="1122960773616686544">Назва закладкі</translation>
 <translation id="1124772482545689468">Карыстальнік</translation>
 <translation id="1125550662859510761">Здаецца, гэта <ph name="WIDTH" /> × <ph name="HEIGHT" /> (уласная)</translation>
@@ -712,7 +713,7 @@
 <translation id="1719312230114180055">Заўвага. Выкарыстанне адбітка пальца можа быць менш бяспечным, чым надзейны пароль або PIN-код.</translation>
 <translation id="1720318856472900922">Аўтэнтыфікацыя сервера TLS WWW</translation>
 <translation id="1720941539803966190">Закрыць дапаможнік</translation>
-<translation id="172123215662733643">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="172123215662733643">Шукаць праз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="1721312023322545264">Каб наведаць гэты сайт, вам патрабуецца дазвол ад карыстальніка <ph name="NAME" /></translation>
 <translation id="1722460139690167654">Ваша <ph name="BEGIN_LINK" />прылада <ph name="DEVICE_TYPE" /> знаходзіцца пад кіраваннем<ph name="END_LINK" /> дамена <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Новае акно</translation>
@@ -1304,7 +1305,6 @@
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
 <translation id="2314774579020744484">Мова, якая выкарыстоўваецца для перакладу</translation>
-<translation id="2315414688463285945">Памылка канфігурацыі файлаў Linux. Паўтарыце спробу.</translation>
 <translation id="2315587498123194634">Адправіць спасылку на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2316129865977710310">Не, дзякуй</translation>
 <translation id="2317842250900878657">Гатова <ph name="PROGRESS_PERCENT" /> %</translation>
@@ -1573,7 +1573,7 @@
 <translation id="2602501489742255173">Каб пачаць, правядзіце пальцам уверх</translation>
 <translation id="2603115962224169880">Ачыстка камп'ютара</translation>
 <translation id="2603355571917519942">Функцыя Voice Match гатовая да работы</translation>
-<translation id="2604138917550693049">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
+<translation id="2604138917550693049">Шукаць праз Аб'ектыў</translation>
 <translation id="2604255671529671813">Памылка падключэння да сеткі</translation>
 <translation id="2605668923777146443">Каб прагледзець параметры функцыі Better Together, перайдзіце ў <ph name="LINK_BEGIN" />Налады<ph name="LINK_END" />.</translation>
 <translation id="2606246518223360146">Звязаць даныя</translation>
@@ -2353,7 +2353,6 @@
 <translation id="3424969259347320884">Апішыце, што вы рабілі, калі ўкладка дала збой</translation>
 <translation id="3427092606871434483">Дазволіць (стандартна)</translation>
 <translation id="3428419049384081277">Вы ўвайшлі!</translation>
-<translation id="3428747202529429621">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс</translation>
 <translation id="3429086384982427336">Пералічаныя ніжэй праграмы ніколі не будуць апрацоўваць спасылкі пратаколаў.</translation>
 <translation id="3429160811076349561">Пробныя функцыі выключаны</translation>
 <translation id="3429271624041785769">Мовы вэб-змесціва</translation>
@@ -3872,7 +3871,7 @@
 <translation id="5051836348807686060">Праверка правапісу для выбраных моў не падтрымліваецца</translation>
 <translation id="5052499409147950210">Рэдагаванне сайта</translation>
 <translation id="505347685865235222">Група без назвы – <ph name="GROUP_CONTENT_STRING" /></translation>
-<translation id="5053962746715621840">Выканаць пошук па відарысе з дапамогай Google Аб'ектыва</translation>
+<translation id="5053962746715621840">Шукаць праз Аб'ектыў</translation>
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
 <translation id="505776528429481161">Лёгкае падключэнне і наладжванне прылад паблізу</translation>
@@ -5117,7 +5116,6 @@
 <translation id="6410328738210026208">Змяніць версію і прымяніць Powerwash</translation>
 <translation id="6410390304316730527">Функцыя "Бяспечны прагляд" абараняе ад зламыснікаў, якія могуць падмануць вас і прымусіць да небяспечных дзеянняў – напрыклад, усталяваць шкоднае праграмнае забеспячэнне або выдаць асабістую інфармацыю (паролі, нумары тэлефонаў або даныя крэдытных картак і падобнае). Калі вы выключыце гэту функцыю, будзьце асабліва ўважлівымі пры наведванні незнаёмых сайтаў і сайтаў з няпэўнай рэпутацыяй.</translation>
 <translation id="6410668567036790476">Дадаванне пошукавай сістэмы</translation>
-<translation id="6412673304250309937">Правярае, ці знаходзяцца URL-адрасы ў спісе небяспечных сайтаў, захаваным у Chrome. Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chrome можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі.</translation>
 <translation id="641469293210305670">Усталяванне абнаўленняў і праграм</translation>
 <translation id="6414878884710400018">Адкрыць налады сістэмы</translation>
 <translation id="6414888972213066896">Вы спыталі бацьку ці маці, ці можна наведваць гэты сайт</translation>
@@ -5526,7 +5524,6 @@
 <translation id="6843264316370513305">Адладка сеткі</translation>
 <translation id="6843423766595476978">"Ok Google" наладжаны</translation>
 <translation id="6845038076637626672">Адкрыць у разгорнутым выглядзе</translation>
-<translation id="6845325883481699275">Дапамагаць павысіць бяспеку Chrome</translation>
 <translation id="6846178040388691741">Пашырэнне "<ph name="EXTENSION_NAME" />" запытвае дазвол надрукаваць файл "<ph name="FILE_NAME" />" на прынтары "<ph name="PRINTER_NAME" />".</translation>
 <translation id="6847125920277401289">Каб працягнуць, вызваліце месца</translation>
 <translation id="6848388270925200958">Зараз у вас ёсць карткі, якія могуць выкарыстоўвацца толькі на гэтай прыладзе</translation>
@@ -5877,7 +5874,7 @@
 <translation id="7230222852462421043">Аднавіць акно</translation>
 <translation id="7230787553283372882">Наладжванне памеру тэксту</translation>
 <translation id="7232750842195536390">Не ўдалося перайменаваць</translation>
-<translation id="723343421145275488">Пошук відарысаў з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
+<translation id="723343421145275488">Шукаць праз <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Ідзе скасаванне аднаўлення кантэйнера Linux</translation>
 <translation id="7235716375204803342">Ідзе атрыманне дзеянняў...</translation>
 <translation id="7235737137505019098">На вашым ключы бяспекі недастаткова месца для стварэння іншых уліковых запісаў.</translation>
@@ -6977,7 +6974,6 @@
 <translation id="8324784016256120271">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу</translation>
 <translation id="8325413836429495820">Не дазволена праглядаць буфер абмену</translation>
 <translation id="8326478304147373412">PKCS #7, ланцужок сертыфікатаў</translation>
-<translation id="8327039559959785305">Памылка падключэння файлаў Linux. Паўтарыце спробу.</translation>
 <translation id="8327676037044516220">Дазволы і налады змесціва</translation>
 <translation id="833256022891467078">Абагуленыя папкі Crostini</translation>
 <translation id="8335587457941836791">Адмацаваць з паліцы</translation>
@@ -7502,6 +7498,7 @@
 <translation id="8879284080359814990">&amp;Паказаць як укладку</translation>
 <translation id="8879921471468674457">Запомніць уліковыя даныя</translation>
 <translation id="8880054210564666174">Не ўдалося спампаваць спіс кантактаў. Праверце падключэнне да сеткі і <ph name="LINK_BEGIN" />паўтарыце спробу<ph name="LINK_END" />.</translation>
+<translation id="8880344290593529089">Каб падключыць прыладу "<ph name="USB_DEVICE_NAME" />" да Linux або Parallels Desktop, адкрыйце Налады</translation>
 <translation id="8881020143150461183">Паўтарыце спробу. Па тэхнічную падтрымку звяртайцеся да аператара <ph name="CARRIER_NAME" />.</translation>
 <translation id="8883273463630735858">Уключыць паскарэнне сэнсарнай панэлі</translation>
 <translation id="8884570509232205463">Ваша прылада цяпер блакіруецца ў <ph name="UNLOCK_TIME" />.</translation>

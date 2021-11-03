@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
 
@@ -256,6 +257,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   void set_heap_profiler_tag(const char* heap_profiler_tag) {
     heap_profiler_tag_ = heap_profiler_tag;
   }
+
+  // Get a global trace id identifying this message. Used for connecting the
+  // sender and the receiver in traces.
+  uint64_t GetTraceId() const;
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
 #if defined(ENABLE_IPC_FUZZER)
   const char* interface_name() const { return interface_name_; }

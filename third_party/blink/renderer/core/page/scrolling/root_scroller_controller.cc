@@ -71,7 +71,7 @@ bool FillsViewport(const Element& element) {
       bounding_box.size() != controls_hidden_size)
     return false;
 
-  return bounding_box.origin() == IntPoint::Zero();
+  return bounding_box.origin().IsOrigin();
 }
 
 // If the element is an iframe this grabs the ScrollableArea for the owned

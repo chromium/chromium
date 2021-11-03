@@ -5,27 +5,20 @@
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 
 #include "base/callback_helpers.h"
-#include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/values.h"
-#include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_test_helper.h"
-#include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
 #include "chrome/browser/printing/test_print_preview_dialog_cloned_observer.h"
 #include "chrome/browser/printing/test_print_view_manager_for_request_preview.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,7 +26,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/policy/policy_constants.h"
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -59,9 +51,6 @@ const DlpContentRestrictionSet kScreenshotWarned(
 const DlpContentRestrictionSet kScreenshotReported(
     DlpContentRestriction::kScreenshot,
     DlpRulesManager::Level::kReport);
-const DlpContentRestrictionSet kPrivacyScreenEnforced(
-    DlpContentRestriction::kPrivacyScreen,
-    DlpRulesManager::Level::kBlock);
 const DlpContentRestrictionSet kPrintAllowed(DlpContentRestriction::kPrint,
                                              DlpRulesManager::Level::kAllow);
 const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
@@ -80,6 +69,7 @@ const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kBlock);
 
+constexpr char kScreenShareBlockedNotificationId[] = "screen_share_dlp_blocked";
 constexpr char kScreenSharePausedNotificationId[] =
     "screen_share_dlp_paused-label";
 constexpr char kScreenShareResumedNotificationId[] =
@@ -87,10 +77,6 @@ constexpr char kScreenShareResumedNotificationId[] =
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
 constexpr char kExampleUrl[] = "https://example.com";
-constexpr char kUrl1[] = "https://example1.com";
-constexpr char kUrl2[] = "https://example2.com";
-constexpr char kUrl3[] = "https://example3.com";
-constexpr char kUrl4[] = "https://example4.com";
 constexpr char kSrcPattern[] = "example.com";
 }  // namespace
 
@@ -148,8 +134,7 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
   SetupReporting();
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -230,8 +215,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -283,8 +267,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
   SetupReporting();
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -356,8 +339,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -390,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Check that capture was requested to be stopped via callback.
   run_loop.Run();
 
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
@@ -406,8 +388,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -439,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
 
   // Check that capture was not requested to be stopped via callback.
   run_loop.RunUntilIdle();
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 
   browser2->window()->Close();
   histogram_tester_.ExpectBucketCount(
@@ -457,8 +438,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -491,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Check that capture was requested to be stopped via callback.
   run_loop.Run();
 
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
   browser2->window()->Close();
   histogram_tester_.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
@@ -508,8 +488,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   // Open first browser window.
   Browser* browser1 = browser();
   chrome::NewTab(browser1);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser1, GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
 
@@ -541,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
   // Check that capture was not requested to be stopped via callback.
   run_loop.RunUntilIdle();
-  capture_mode_delegate->StopObservingRestrictedContent();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 
   browser2->window()->Close();
   histogram_tester_.ExpectTotalCount(
@@ -554,8 +533,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
   DlpContentManager* manager = helper_.GetContentManager();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   aura::Window* root_window =
@@ -610,6 +588,40 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareNotification) {
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kBlock, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
+                       ScreenShareDisabledNotification) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  DlpContentManager* manager = helper_.GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  manager->CheckScreenShareRestriction(media_id, u"example.com",
+                                       base::DoNothing());
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false, 1);
+
+  helper_.ChangeConfidentiality(web_contents, kScreenShareRestricted);
+
+  manager->CheckScreenShareRestriction(media_id, u"example.com",
+                                       base::DoNothing());
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+  EXPECT_TRUE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
+
+  helper_.ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
@@ -839,93 +851,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarn) {
   EXPECT_TRUE(
       helper_.GetContentManager()->ShouldWarnBeforePrinting(web_contents));
   EXPECT_FALSE(helper_.GetContentManager()->IsPrintingRestricted(web_contents));
-}
-
-class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
- public:
-  DlpContentManagerPolicyBrowserTest() = default;
-
-  void SetDlpRulesPolicy(const base::Value& rules) {
-    std::string json;
-    base::JSONWriter::Write(rules, &json);
-
-    base::DictionaryValue policy;
-    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
-    user_policy_helper()->SetPolicyAndWait(
-        policy, /*recommended=*/base::DictionaryValue(),
-        ProfileManager::GetActiveUserProfile());
-  }
-
- protected:
-  DlpContentManagerTestHelper helper_;
-};
-
-IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
-                       GetRestrictionSetForURL) {
-  SkipToLoginScreen();
-  LogIn();
-
-  base::Value rules(base::Value::Type::LIST);
-
-  base::Value src_urls1(base::Value::Type::LIST);
-  src_urls1.Append(kUrl1);
-  base::Value restrictions1(base::Value::Type::LIST);
-  restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls1),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions1)));
-
-  base::Value src_urls2(base::Value::Type::LIST);
-  src_urls2.Append(kUrl2);
-  base::Value restrictions2(base::Value::Type::LIST);
-  restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kPrivacyScreenRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #2", "Block", std::move(src_urls2),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions2)));
-
-  base::Value src_urls3(base::Value::Type::LIST);
-  src_urls3.Append(kUrl3);
-  base::Value restrictions3(base::Value::Type::LIST);
-  restrictions3.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kPrintingRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #3", "Block", std::move(src_urls3),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions3)));
-
-  base::Value src_urls4(base::Value::Type::LIST);
-  src_urls4.Append(kUrl4);
-  base::Value restrictions4(base::Value::Type::LIST);
-  restrictions4.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenShareRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #4", "Block", std::move(src_urls4),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions4)));
-
-  SetDlpRulesPolicy(rules);
-
-  DlpContentRestrictionSet screenshot_and_videocapture(kScreenshotRestricted);
-  screenshot_and_videocapture.SetRestriction(
-      DlpContentRestriction::kVideoCapture, DlpRulesManager::Level::kBlock,
-      GURL());
-  EXPECT_EQ(screenshot_and_videocapture,
-            helper_.GetRestrictionSetForURL(GURL(kUrl1)));
-  EXPECT_EQ(kPrivacyScreenEnforced,
-            helper_.GetRestrictionSetForURL(GURL(kUrl2)));
-  EXPECT_EQ(kPrintRestricted, helper_.GetRestrictionSetForURL(GURL(kUrl3)));
-  EXPECT_EQ(kScreenShareRestricted,
-            helper_.GetRestrictionSetForURL(GURL(kUrl4)));
-  EXPECT_EQ(DlpContentRestrictionSet(),
-            helper_.GetRestrictionSetForURL(GURL(kExampleUrl)));
 }
 
 }  // namespace policy

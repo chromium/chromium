@@ -414,6 +414,10 @@ class ActionDelegate {
   // detected, depending on the current settings.
   virtual void MaybeShowSlowConnectionWarning() = 0;
 
+  // Get modifiable log information gathered while executing the action. This
+  // gets attached to the action's response if non empty.
+  virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
+
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
  protected:

@@ -2319,8 +2319,10 @@ void DocumentLoader::CommitNavigation() {
       document->SetBaseURLOverride(main_resource_url);
   }
 
-  // appHistory is not set on the initial about:blank document.
-  if (commit_reason_ != CommitReason::kInitialization) {
+  // appHistory is not set on the initial about:blank document or opaque-origin
+  // documents.
+  if (commit_reason_ != CommitReason::kInitialization &&
+      !frame_->DomWindow()->GetSecurityOrigin()->IsOpaque()) {
     if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
       app_history->InitializeForNewWindow(
           *history_item_, load_type_, commit_reason_,

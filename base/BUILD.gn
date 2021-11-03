@@ -95,7 +95,7 @@ if (is_fuchsia) {
 }
 
 config("memory_tagging") {
-  if (current_cpu == "arm64" &&
+  if (current_cpu == "arm64" && is_clang &&
       (is_linux || is_chromeos || is_android || is_fuchsia)) {
     # base/ has access to the MTE intrinsics because it needs to use them,
     # but they're not backwards compatible. Use base::CPU::has_mte()
@@ -648,8 +648,12 @@ component("base") {
     "task/common/task_annotator.h",
     "task/current_thread.cc",
     "task/current_thread.h",
+    "task/default_delayed_task_handle_delegate.cc",
+    "task/default_delayed_task_handle_delegate.h",
     "task/deferred_sequenced_task_runner.cc",
     "task/deferred_sequenced_task_runner.h",
+    "task/delayed_task_handle.cc",
+    "task/delayed_task_handle.h",
     "task/lazy_thread_pool_task_runner.cc",
     "task/lazy_thread_pool_task_runner.h",
     "task/post_job.cc",
@@ -675,6 +679,7 @@ component("base") {
     "task/sequence_manager/sequence_manager.h",
     "task/sequence_manager/sequence_manager_impl.cc",
     "task/sequence_manager/sequence_manager_impl.h",
+    "task/sequence_manager/sequenced_task_source.cc",
     "task/sequence_manager/sequenced_task_source.h",
     "task/sequence_manager/task_queue.cc",
     "task/sequence_manager/task_queue.h",
@@ -1110,6 +1115,7 @@ component("base") {
       "win/variant_vector.h",
       "win/vector.cc",
       "win/vector.h",
+      "win/win_handle_types_list.inc",
       "win/win_util.cc",
       "win/win_util.h",
       "win/wincrypt_shim.h",
@@ -1888,6 +1894,8 @@ component("base") {
         # PartitionAlloc uses SpinLock, which doesn't work in NaCl (see below).
         "allocator/partition_alloc_features.cc",
         "allocator/partition_alloc_features.h",
+        "allocator/partition_alloc_support.cc",
+        "allocator/partition_alloc_support.h",
         "allocator/partition_allocator/address_pool_manager.cc",
         "allocator/partition_allocator/address_pool_manager.h",
         "allocator/partition_allocator/address_pool_manager_bitmap.cc",
@@ -1961,6 +1969,7 @@ component("base") {
         "allocator/partition_allocator/starscan/state_bitmap.h",
         "allocator/partition_allocator/starscan/stats_collector.cc",
         "allocator/partition_allocator/starscan/stats_collector.h",
+        "allocator/partition_allocator/starscan/stats_reporter.h",
         "allocator/partition_allocator/starscan/write_protector.cc",
         "allocator/partition_allocator/starscan/write_protector.h",
         "allocator/partition_allocator/thread_cache.cc",
@@ -3133,7 +3142,9 @@ test("base_unittests") {
     "task/common/checked_lock_unittest.cc",
     "task/common/operations_controller_unittest.cc",
     "task/common/task_annotator_unittest.cc",
+    "task/default_delayed_task_handle_delegate_unittest.cc",
     "task/deferred_sequenced_task_runner_unittest.cc",
+    "task/delayed_task_handle_unittest.cc",
     "task/lazy_thread_pool_task_runner_unittest.cc",
     "task/post_job_unittest.cc",
     "task/post_task_unittest.cc",
@@ -3612,6 +3623,7 @@ test("base_unittests") {
       "fuchsia/filtered_service_directory_unittest.cc",
       "fuchsia/fuchsia_logging_unittest.cc",
       "fuchsia/intl_profile_watcher_unittest.cc",
+      "fuchsia/mem_buffer_util_unittest.cc",
       "fuchsia/scoped_service_binding_unittest.cc",
       "fuchsia/scoped_service_publisher_unittest.cc",
       "fuchsia/service_directory_test_base.cc",
@@ -3633,6 +3645,7 @@ test("base_unittests") {
       ":testfidl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/async-default",

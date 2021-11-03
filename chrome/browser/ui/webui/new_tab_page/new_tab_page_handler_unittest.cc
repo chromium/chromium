@@ -76,6 +76,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
  public:
   explicit MockNtpCustomBackgroundService(Profile* profile)
       : NtpCustomBackgroundService(profile) {}
+  MOCK_METHOD0(RefreshBackgroundIfNeeded, void());
   MOCK_METHOD0(GetCustomBackground, absl::optional<CustomBackground>());
   MOCK_METHOD1(AddObserver, void(NtpCustomBackgroundServiceObserver*));
 };
@@ -110,6 +111,8 @@ class NewTabPageHandlerTest : public testing::Test {
         .WillOnce(
             testing::SaveArg<0>(&ntp_custom_background_service_observer_));
     EXPECT_CALL(mock_page_, SetTheme).Times(1);
+    EXPECT_CALL(mock_ntp_custom_background_service_, RefreshBackgroundIfNeeded)
+        .Times(1);
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), &profile_,
@@ -120,6 +123,8 @@ class NewTabPageHandlerTest : public testing::Test {
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
+    testing::Mock::VerifyAndClearExpectations(
+        &mock_ntp_custom_background_service_);
   }
 
   new_tab_page::mojom::DoodlePtr GetDoodle(

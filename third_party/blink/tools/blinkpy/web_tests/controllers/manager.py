@@ -39,7 +39,9 @@ The Manager object has a constructor and one main method called run.
 import fnmatch
 import json
 import logging
+import os
 import random
+import signal
 import sys
 import time
 
@@ -165,6 +167,11 @@ class Manager(object):
         should_retry_failures = self._options.num_retries > 0
 
         try:
+            _is_win = self._port.host.platform.is_win()
+            if not _is_win:
+                def sighandler(signum, frame):
+                    os.killpg(os.getpgrp(), signal.SIGINT)
+                signal.signal(signal.SIGTERM, sighandler)
             self._start_servers(tests_to_run)
             if self._options.watch:
                 run_results = self._run_test_loop(tests_to_run, tests_to_skip)
@@ -173,6 +180,7 @@ class Manager(object):
                                                   should_retry_failures)
             initial_results, all_retry_results = run_results
         finally:
+            _log.info("Finally stop servers and clean up")
             self._stop_servers()
             self._clean_up_run()
 

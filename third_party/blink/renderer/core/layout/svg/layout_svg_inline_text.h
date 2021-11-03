@@ -64,7 +64,7 @@ class LayoutSVGInlineText final : public LayoutText {
 
   // Preserves floating point precision for the use in DRT. It knows how to
   // round and does a better job than enclosingIntRect.
-  FloatRect FloatLinesBoundingBox() const;
+  gfx::RectF FloatLinesBoundingBox() const;
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -80,7 +80,7 @@ class LayoutSVGInlineText final : public LayoutText {
 
   void AddMetricsFromRun(const TextRun&, bool& last_character_was_white_space);
 
-  FloatRect ObjectBoundingBox() const override;
+  gfx::RectF ObjectBoundingBox() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
@@ -96,7 +96,7 @@ class LayoutSVGInlineText final : public LayoutText {
   InlineTextBox* CreateTextBox(int start, uint16_t length) override;
 
   PhysicalRect VisualRectInDocument(VisualRectFlags) const final;
-  FloatRect VisualRectInLocalSVGCoordinates() const final;
+  gfx::RectF VisualRectInLocalSVGCoordinates() const final;
 
   float scaling_factor_;
   Font scaled_font_;

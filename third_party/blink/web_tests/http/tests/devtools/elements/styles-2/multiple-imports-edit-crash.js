@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that modifying stylesheet text with multiple @import at-rules does not crash.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <head>

@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #import "content/browser/renderer_host/text_input_client_mac.h"
 #import "content/browser/renderer_host/ui_events_helper.h"
+#include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -423,10 +424,6 @@ RenderWidgetHostImpl* RenderWidgetHostViewMac::GetWidgetForIme() {
   return GetActiveWidget();
 }
 
-void RenderWidgetHostViewMac::GetScreenInfo(display::ScreenInfo* screen_info) {
-  *screen_info = screen_infos_.current();
-}
-
 void RenderWidgetHostViewMac::Show() {
   is_visible_ = true;
   ns_view_->SetVisible(is_visible_);
@@ -450,7 +447,11 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
   bool has_saved_frame =
       browser_compositor_->has_saved_frame_before_state_transition();
 
-  auto tab_switch_start_state = TakeRecordContentToVisibleTimeRequest();
+  auto* visible_time_request_trigger = host()->GetVisibleTimeRequestTrigger();
+  // The only way this should be null is if there is no RenderWidgetHostView.
+  DCHECK(visible_time_request_trigger);
+  auto tab_switch_start_state =
+      visible_time_request_trigger->TakeRecordContentToVisibleTimeRequest();
 
   const bool renderer_should_record_presentation_time = !has_saved_frame;
   host()->WasShown(renderer_should_record_presentation_time
@@ -731,15 +732,6 @@ void RenderWidgetHostViewMac::UpdateTooltipUnderCursor(
 void RenderWidgetHostViewMac::UpdateTooltip(
     const std::u16string& tooltip_text) {
   SetTooltipText(tooltip_text);
-}
-
-display::ScreenInfos RenderWidgetHostViewMac::GetScreenInfos() {
-  // Return cached screen infos, which may originate from a remote process that
-  // hosts the associated NSWindow. The latest display::Screen info observed
-  // directly in this process may be intermittently out-of-sync with that info.
-  // Also, RenderWidgetHostViewMac does not update its cached screen info
-  // during auto-resize.
-  return screen_infos_;
 }
 
 void RenderWidgetHostViewMac::UpdateScreenInfo() {

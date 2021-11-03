@@ -294,7 +294,12 @@ TaskTracker::TaskTracker()
       can_run_policy_(CanRunPolicy::kAll),
       flush_cv_(flush_lock_.CreateConditionVariable()),
       shutdown_lock_(&flush_lock_),
-      tracked_ref_factory_(this) {}
+      tracked_ref_factory_(this) {
+  // |flush_cv_| is only waited upon in FlushForTesting(), avoid instantiating a
+  // ScopedBlockingCallWithBaseSyncPrimitives from test threads intentionally
+  // idling themselves to wait on the ThreadPool.
+  flush_cv_->declare_only_used_while_idle();
+}
 
 TaskTracker::~TaskTracker() = default;
 
@@ -342,7 +347,7 @@ void TaskTracker::CompleteShutdown() {
   // when shutdown completes.
   {
     CheckedAutoLock auto_lock(flush_lock_);
-    flush_cv_->Signal();
+    flush_cv_->Broadcast();
   }
   CallFlushCallbackForTesting();
 }
@@ -656,7 +661,7 @@ void TaskTracker::DecrementNumIncompleteTaskSources() {
   if (prev_num_incomplete_task_sources == 1) {
     {
       CheckedAutoLock auto_lock(flush_lock_);
-      flush_cv_->Signal();
+      flush_cv_->Broadcast();
     }
     CallFlushCallbackForTesting();
   }

@@ -9,7 +9,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 namespace {
 
@@ -73,4 +73,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

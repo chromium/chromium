@@ -10,15 +10,12 @@
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/notification_click_handler.h"
 #include "chromeos/components/phonehub/notification_interaction_handler.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/phonehub/phone_hub_manager.h"
 #include "chromeos/components/phonehub/recent_app_click_observer.h"
 #include "chromeos/components/phonehub/recent_apps_interaction_handler.h"
 
-namespace chromeos {
-
-namespace phonehub {
-class PhoneHubManager;
-}
-
+namespace ash {
 namespace eche_app {
 
 class LaunchAppHelper;
@@ -60,6 +57,6 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
 };
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_WEBUI_ECHE_APP_UI_ECHE_RECENT_APP_CLICK_HANDLER_H_

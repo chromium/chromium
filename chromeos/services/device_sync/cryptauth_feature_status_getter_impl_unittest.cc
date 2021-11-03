@@ -107,6 +107,12 @@ cryptauthv2::DeviceFeatureStatus ConvertDeviceToDeviceFeatureStatus(
 class DeviceSyncCryptAuthFeatureStatusGetterImplTest
     : public testing::Test,
       public MockCryptAuthClientFactory::Observer {
+ public:
+  DeviceSyncCryptAuthFeatureStatusGetterImplTest(
+      const DeviceSyncCryptAuthFeatureStatusGetterImplTest&) = delete;
+  DeviceSyncCryptAuthFeatureStatusGetterImplTest& operator=(
+      const DeviceSyncCryptAuthFeatureStatusGetterImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthFeatureStatusGetterImplTest()
       : client_factory_(std::make_unique<MockCryptAuthClientFactory>(
@@ -253,8 +259,6 @@ class DeviceSyncCryptAuthFeatureStatusGetterImplTest
   base::MockOneShotTimer* timer_;
 
   std::unique_ptr<CryptAuthFeatureStatusGetter> feature_status_getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthFeatureStatusGetterImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthFeatureStatusGetterImplTest, Success) {

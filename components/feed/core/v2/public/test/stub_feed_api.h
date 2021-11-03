@@ -84,9 +84,14 @@ class StubFeedApi : public FeedApi {
   void ReportStreamScrollStart() override {}
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override {}
-  void ReportNoticeViewed(const std::string& key) override {}
-  void ReportNoticeOpenAction(const std::string& key) override {}
-  void ReportNoticeDismissed(const std::string& key) override {}
+  void ReportNoticeCreated(const StreamType& stream_type,
+                           const std::string& key) override {}
+  void ReportNoticeViewed(const StreamType& stream_type,
+                          const std::string& key) override {}
+  void ReportNoticeOpenAction(const StreamType& stream_type,
+                              const std::string& key) override {}
+  void ReportNoticeDismissed(const StreamType& stream_type,
+                             const std::string& key) override {}
   DebugStreamData GetDebugStreamData() override;
   void ForceRefreshForDebugging(const StreamType& stream_type) override {}
   std::string DumpStateForDebugging() override;

@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/metrics.h"
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill_assistant/browser/features.h"
@@ -11,32 +12,32 @@
 #include "components/ukm/content/source_url_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-#include <map>
-
 namespace autofill_assistant {
 
 // Intent not set constant.
 const char* const kIntentNotSet = "NotSet";
 
 namespace {
-const char kDropOutEnumName[] = "Android.AutofillAssistant.DropOutReason";
-const char kOnboardingEnumName[] = "Android.AutofillAssistant.OnBoarding";
-const char kTtsButtonActionEnumName[] =
+const char kDropOut[] = "Android.AutofillAssistant.DropOutReason";
+const char kOnboarding[] = "Android.AutofillAssistant.OnBoarding";
+const char kTtsButtonAction[] =
     "Android.AutofillAssistant.TextToSpeech.ButtonAction";
-const char kTtsEngineEventEnumName[] =
+const char kTtsEngineEvent[] =
     "Android.AutofillAssistant.TextToSpeech.EngineEvent";
-const char kFeatureModuleInstallationEnumName[] =
+const char kFeatureModuleInstallation[] =
     "Android.AutofillAssistant.FeatureModuleInstallation";
-const char kPaymentRequestPrefilledName[] =
+const char kPaymentRequestPrefilled[] =
     "Android.AutofillAssistant.PaymentRequest.Prefilled";
-const char kPaymentRequestAutofillInfoChangedName[] =
+const char kPaymentRequestAutofillInfoChanged[] =
     "Android.AutofillAssistant.PaymentRequest.AutofillChanged";
 const char kPaymentRequestFirstNameOnly[] =
     "Android.AutofillAssistant.PaymentRequest.FirstNameOnly";
+const char kDependenciesInvalidated[] =
+    "Android.AutofillAssistant.DependenciesInvalidated";
 static bool DROPOUT_RECORDED = false;
 
 std::string GetSuffixForIntent(const std::string& intent) {
-  std::map<std::string, std::string> histogramsSuffixes = {
+  base::flat_map<std::string, std::string> histogramsSuffixes = {
       {kBuyMovieTicket, ".BuyMovieTicket"},
       {kFlightsCheckin, ".FlightsCheckin"},
       {kFoodOrdering, ".FoodOrdering"},
@@ -68,8 +69,8 @@ void Metrics::RecordDropOut(DropOutReason reason, const std::string& intent) {
   }
 
   auto suffix = GetSuffixForIntent(intent.empty() ? kIntentNotSet : intent);
-  base::UmaHistogramEnumeration(kDropOutEnumName + suffix, reason);
-  base::UmaHistogramEnumeration(kDropOutEnumName, reason);
+  base::UmaHistogramEnumeration(kDropOut + suffix, reason);
+  base::UmaHistogramEnumeration(kDropOut, reason);
   if (reason != DropOutReason::AA_START) {
     DVLOG(3) << "Drop out with reason: " << reason;
     DROPOUT_RECORDED = true;
@@ -80,18 +81,18 @@ void Metrics::RecordDropOut(DropOutReason reason, const std::string& intent) {
 void Metrics::RecordPaymentRequestPrefilledSuccess(bool initially_complete,
                                                    bool success) {
   if (initially_complete && success) {
-    base::UmaHistogramEnumeration(kPaymentRequestPrefilledName,
+    base::UmaHistogramEnumeration(kPaymentRequestPrefilled,
                                   PaymentRequestPrefilled::PREFILLED_SUCCESS);
   } else if (initially_complete && !success) {
-    base::UmaHistogramEnumeration(kPaymentRequestPrefilledName,
+    base::UmaHistogramEnumeration(kPaymentRequestPrefilled,
                                   PaymentRequestPrefilled::PREFILLED_FAILURE);
   } else if (!initially_complete && success) {
     base::UmaHistogramEnumeration(
-        kPaymentRequestPrefilledName,
+        kPaymentRequestPrefilled,
         PaymentRequestPrefilled::NOTPREFILLED_SUCCESS);
   } else if (!initially_complete && !success) {
     base::UmaHistogramEnumeration(
-        kPaymentRequestPrefilledName,
+        kPaymentRequestPrefilled,
         PaymentRequestPrefilled::NOTPREFILLED_FAILURE);
   }
 }
@@ -100,19 +101,19 @@ void Metrics::RecordPaymentRequestPrefilledSuccess(bool initially_complete,
 void Metrics::RecordPaymentRequestAutofillChanged(bool changed, bool success) {
   if (changed && success) {
     base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChangedName,
+        kPaymentRequestAutofillInfoChanged,
         PaymentRequestAutofillInfoChanged::CHANGED_SUCCESS);
   } else if (changed && !success) {
     base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChangedName,
+        kPaymentRequestAutofillInfoChanged,
         PaymentRequestAutofillInfoChanged::CHANGED_FAILURE);
   } else if (!changed && success) {
     base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChangedName,
+        kPaymentRequestAutofillInfoChanged,
         PaymentRequestAutofillInfoChanged::NOTCHANGED_SUCCESS);
   } else if (!changed && !success) {
     base::UmaHistogramEnumeration(
-        kPaymentRequestAutofillInfoChangedName,
+        kPaymentRequestAutofillInfoChanged,
         PaymentRequestAutofillInfoChanged::NOTCHANGED_FAILURE);
   }
 }
@@ -218,25 +219,25 @@ void Metrics::RecordInChromeTriggerAction(ukm::UkmRecorder* ukm_recorder,
 // static
 void Metrics::RecordOnboardingResult(OnBoarding event) {
   DCHECK_LE(event, OnBoarding::kMaxValue);
-  base::UmaHistogramEnumeration(kOnboardingEnumName, event);
+  base::UmaHistogramEnumeration(kOnboarding, event);
 }
 
 // static
 void Metrics::RecordTtsButtonAction(TtsButtonAction action) {
   DCHECK_LE(action, TtsButtonAction::kMaxValue);
-  base::UmaHistogramEnumeration(kTtsButtonActionEnumName, action);
+  base::UmaHistogramEnumeration(kTtsButtonAction, action);
 }
 
 // static
 void Metrics::RecordTtsEngineEvent(TtsEngineEvent event) {
   DCHECK_LE(event, TtsEngineEvent::kMaxValue);
-  base::UmaHistogramEnumeration(kTtsEngineEventEnumName, event);
+  base::UmaHistogramEnumeration(kTtsEngineEvent, event);
 }
 
 // static
 void Metrics::RecordFeatureModuleInstallation(FeatureModuleInstallation event) {
   DCHECK_LE(event, FeatureModuleInstallation::kMaxValue);
-  base::UmaHistogramEnumeration(kFeatureModuleInstallationEnumName, event);
+  base::UmaHistogramEnumeration(kFeatureModuleInstallation, event);
 }
 
 // static
@@ -247,6 +248,14 @@ void Metrics::RecordTriggerConditionEvaluationTime(
   ukm::builders::AutofillAssistant_Timing(source_id)
       .SetTriggerConditionEvaluationMs(evaluation_time.InMilliseconds())
       .Record(ukm_recorder);
+}
+
+// static
+void Metrics::RecordDependenciesInvalidated(
+    DependenciesInvalidated dependencies_invalidated) {
+  DCHECK_LE(dependencies_invalidated, DependenciesInvalidated::kMaxValue);
+  base::UmaHistogramEnumeration(kDependenciesInvalidated,
+                                dependencies_invalidated);
 }
 
 }  // namespace autofill_assistant

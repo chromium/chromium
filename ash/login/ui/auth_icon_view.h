@@ -5,6 +5,7 @@
 #ifndef ASH_LOGIN_UI_AUTH_ICON_VIEW_H_
 #define ASH_LOGIN_UI_AUTH_ICON_VIEW_H_
 
+#include "ash/ash_export.h"
 #include "ash/login/ui/animated_rounded_image_view.h"
 #include "base/callback.h"
 
@@ -18,7 +19,7 @@ namespace ash {
 // to show auth factors (e.g. Fingerprint, Smart Lock) in the
 // LoginAuthFactorsView.
 // TODO(crbug.com/1252880): Add progress animation.
-class AuthIconView : public AnimatedRoundedImageView {
+class ASH_EXPORT AuthIconView : public AnimatedRoundedImageView {
  public:
   AuthIconView();
   AuthIconView(AuthIconView&) = delete;
@@ -27,6 +28,9 @@ class AuthIconView : public AnimatedRoundedImageView {
 
   // Show a static icon.
   void SetIcon(const gfx::VectorIcon& icon);
+
+  // TODO(crbug.com/1233614): Add additional convenience methods here so that
+  // calling classes don't have to provide colors and sizes.
 
   void set_on_tap_or_click_callback(base::RepeatingClosure on_tap_or_click) {
     on_tap_or_click_callback_ = on_tap_or_click;

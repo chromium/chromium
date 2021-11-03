@@ -515,6 +515,16 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(
   return func_result;
 }
 
+void AuctionV8Helper::MaybeTriggerInstrumentationBreakpoint(
+    int context_group_id,
+    const std::string& name) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (devtools_agent_) {
+    devtools_agent_->MaybeTriggerInstrumentationBreakpoint(context_group_id,
+                                                           name);
+  }
+}
+
 void AuctionV8Helper::set_script_timeout_for_testing(
     base::TimeDelta script_timeout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

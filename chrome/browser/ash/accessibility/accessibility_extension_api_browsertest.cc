@@ -98,10 +98,10 @@ class AccessibilityPrivateApiFeatureTest : public AccessibilityPrivateApiTest {
   AccessibilityPrivateApiFeatureTest() {
     if (enabled) {
       scoped_feature_list_.InitAndEnableFeature(
-          ::features::kSelectToSpeakNavigationControl);
+          ::features::kEnhancedNetworkVoices);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          ::features::kSelectToSpeakNavigationControl);
+          ::features::kEnhancedNetworkVoices);
     }
   }
   ~AccessibilityPrivateApiFeatureTest() override = default;

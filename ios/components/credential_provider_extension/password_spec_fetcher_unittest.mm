@@ -60,8 +60,6 @@ TEST_F(PasswordSpecFetcherTest, DefaultSpecInvalidFetch) {
   // The missing host will have and invalid response.
   PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""
                                                                     APIKey:@""];
-  PasswordRequirementsSpec spec;
-
   __block bool block_ran = false;
   [fetcher fetchSpecWithCompletion:^(autofill::PasswordRequirementsSpec spec) {
     EXPECT_EQ(fetcher.spec.SerializeAsString(), spec.SerializeAsString());

@@ -616,9 +616,8 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(2, NumberOfItemsInSection(2));
-  // TODO(crbug.com/1226006): Use i18n string.
   CheckSectionFooter(
-      @"Make sure you're saving your current password for this site", 3);
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION), 3);
 }
 
 // Tests the layout of the view controller when adding a new credential with

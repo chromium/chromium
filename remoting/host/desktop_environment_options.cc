@@ -124,8 +124,9 @@ const absl::optional<size_t>& DesktopEnvironmentOptions::clipboard_size()
   return clipboard_size_;
 }
 
-void DesktopEnvironmentOptions::set_clipboard_size(size_t clipboard_size) {
-  clipboard_size_ = clipboard_size;
+void DesktopEnvironmentOptions::set_clipboard_size(
+    absl::optional<size_t> clipboard_size) {
+  clipboard_size_ = std::move(clipboard_size);
 }
 
 void DesktopEnvironmentOptions::ApplySessionOptions(

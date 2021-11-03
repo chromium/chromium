@@ -81,6 +81,7 @@ blink_modules_sources("webcodecs") {
     "webcodecs_logger.h",
   ]
   deps = [
+    "//build:os_buildflags",
     "//media",
     "//media/mojo:buildflags",
     "//media/mojo/clients",

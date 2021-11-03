@@ -13,14 +13,14 @@ namespace scheduler {
 
 namespace {
 
-enum class PolicyOverride { NO_OVERRIDE, FORCE_DISABLE, FORCE_ENABLE };
+enum class PolicyOverride { kNoOverride, kForceDisable, kForceEnable };
 
 bool g_intensive_wake_up_throttling_policy_override_cached_ = false;
 
 // Returns the IntensiveWakeUpThrottling policy settings. This is checked once
 // on first access and cached. Note that that this is *not* thread-safe!
 PolicyOverride GetIntensiveWakeUpThrottlingPolicyOverride() {
-  static PolicyOverride policy = PolicyOverride::NO_OVERRIDE;
+  static PolicyOverride policy = PolicyOverride::kNoOverride;
   if (g_intensive_wake_up_throttling_policy_override_cached_)
     return policy;
 
@@ -32,13 +32,13 @@ PolicyOverride GetIntensiveWakeUpThrottlingPolicyOverride() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kIntensiveWakeUpThrottlingPolicy);
   if (value == switches::kIntensiveWakeUpThrottlingPolicy_ForceEnable) {
-    policy = PolicyOverride::FORCE_ENABLE;
+    policy = PolicyOverride::kForceEnable;
   } else if (value == switches::kIntensiveWakeUpThrottlingPolicy_ForceDisable) {
-    policy = PolicyOverride::FORCE_DISABLE;
+    policy = PolicyOverride::kForceDisable;
   } else {
     // Necessary in testing configurations, as the policy can be parsed
     // repeatedly.
-    policy = PolicyOverride::NO_OVERRIDE;
+    policy = PolicyOverride::kNoOverride;
   }
 
   return policy;
@@ -53,8 +53,8 @@ void ClearIntensiveWakeUpThrottlingPolicyOverrideCacheForTesting() {
 bool IsIntensiveWakeUpThrottlingEnabled() {
   // If policy is present then respect it.
   auto policy = GetIntensiveWakeUpThrottlingPolicyOverride();
-  if (policy != PolicyOverride::NO_OVERRIDE)
-    return policy == PolicyOverride::FORCE_ENABLE;
+  if (policy != PolicyOverride::kNoOverride)
+    return policy == PolicyOverride::kForceEnable;
   // Otherwise respect the base::Feature.
   return base::FeatureList::IsEnabled(features::kIntensiveWakeUpThrottling);
 }
@@ -74,7 +74,7 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
 
   int seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds_Default;
   if (GetIntensiveWakeUpThrottlingPolicyOverride() ==
-      PolicyOverride::NO_OVERRIDE) {
+      PolicyOverride::kNoOverride) {
     seconds = kIntensiveWakeUpThrottling_GracePeriodSeconds.Get();
   }
   return base::Seconds(seconds);

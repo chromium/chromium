@@ -203,6 +203,9 @@ void NetInternalsMessageHandler::ResolveCallbackWithResult(
 }
 
 void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
+  const auto list_view = list->GetList();
+  DCHECK_GE(2u, list_view.size());
+
   // |list| should be: [<domain to query>, <STS include subdomains>]
   std::string domain;
   bool result = list->GetString(0, &domain);
@@ -212,9 +215,7 @@ void NetInternalsMessageHandler::OnHSTSAdd(const base::ListValue* list) {
     // name.
     return;
   }
-  bool sts_include_subdomains;
-  result = list->GetBoolean(1, &sts_include_subdomains);
-  DCHECK(result);
+  const bool sts_include_subdomains = list_view[1].GetBool();
 
   base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddHSTS(domain, expiry, sts_include_subdomains,

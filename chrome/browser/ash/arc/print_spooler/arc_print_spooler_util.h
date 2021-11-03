@@ -19,7 +19,7 @@ namespace arc {
 void DeletePrintDocument(const base::FilePath& file_path);
 
 // Uses the provided scoped handle to save a print document from ARC and returns
-// the document's file path.
+// the document's absolute file path.
 base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle);
 
 }  // namespace arc

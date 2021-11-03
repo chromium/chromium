@@ -197,7 +197,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
 
   // We use the adjusted position so the application isn't surprised to see a
   // event with co-ordinates outside the target's bounds.
-  IntPoint adjusted_point = frame_view->ConvertFromRootFrame(
+  gfx::Point adjusted_point = frame_view->ConvertFromRootFrame(
       FlooredIntPoint(gesture_event.PositionInRootFrame()));
 
   const unsigned modifiers = gesture_event.GetModifiers();
@@ -236,7 +236,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
   }
 
   // Capture data for showUnhandledTapUIIfNeeded.
-  IntPoint tapped_position =
+  gfx::Point tapped_position =
       FlooredIntPoint(gesture_event.PositionInRootFrame());
   Node* tapped_node = current_hit_test.InnerNode();
   Element* tapped_element = current_hit_test.InnerElement();
@@ -355,7 +355,7 @@ WebInputEventResult GestureManager::HandleGestureTap(
     bool style_changed =
         pre_dispatch_style_version != frame_->GetDocument()->StyleVersion();
 
-    IntPoint tapped_position_in_viewport =
+    gfx::Point tapped_position_in_viewport =
         frame_->GetPage()->GetVisualViewport().RootFrameToViewport(
             tapped_position);
     ShowUnhandledTapUIIfNeeded(dom_tree_changed, style_changed, tapped_node,
@@ -517,7 +517,7 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
     bool style_changed,
     Node* tapped_node,
     Element* tapped_element,
-    const IntPoint& tapped_position_in_viewport) {
+    const gfx::Point& tapped_position_in_viewport) {
 #if BUILDFLAG(ENABLE_UNHANDLED_TAP)
   WebNode web_node(tapped_node);
   // TODO(donnd): roll in ML-identified signals for suppression once identified.
@@ -548,7 +548,7 @@ void GestureManager::ShowUnhandledTapUIIfNeeded(
 
     // Notify the Browser.
     auto tapped_info = mojom::blink::UnhandledTapInfo::New(
-        ToGfxPoint(tapped_position_in_viewport), font_size, text_run_length);
+        tapped_position_in_viewport, font_size, text_run_length);
     provider->ShowUnhandledTapUIIfNeeded(std::move(tapped_info));
   }
 #endif  // BUILDFLAG(ENABLE_UNHANDLED_TAP)

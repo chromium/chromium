@@ -79,6 +79,8 @@ def _package_dmg(paths, config):
         config.app_product,
         '--copy',
         '{}:/'.format(app_path),
+        '--copy',
+        '{}/chrome/updater/.install:/'.format(paths.input),
     ]
     commands.run_command(pkg_dmg)
     return dmg_path

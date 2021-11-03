@@ -116,11 +116,11 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   // For the new USS-based system only. SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
                                RepeatingInstallCallback callback) override;
-  void UninstallFromSyncBeforeRegistryUpdate(
-      std::vector<AppId> web_apps) override;
-  void UninstallFromSyncAfterRegistryUpdate(
-      std::vector<std::unique_ptr<WebApp>> web_apps,
+  void UninstallWithoutRegistryUpdateFromSync(
+      const std::vector<AppId>& web_apps,
       RepeatingUninstallCallback callback) override;
+  void RetryIncompleteUninstalls(
+      const std::vector<AppId>& apps_to_uninstall) override;
 
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals

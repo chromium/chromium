@@ -21,8 +21,10 @@ import {DeviceInfoUpdater} from '../device/device_info_updater.js';
 import {StreamConstraints} from '../device/stream_constraints.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
+import {Flag} from '../flag.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
+import {Filenamer} from '../models/file_namer.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
 // eslint-disable-next-line no-unused-vars
@@ -44,6 +46,7 @@ import {
   MimeType,
   Mode,
   Resolution,
+  Rotation,
   ViewName,
 } from '../type.js';
 import * as util from '../util.js';
@@ -410,6 +413,9 @@ export class Camera extends View {
     state.addObserver(state.State.SCREEN_OFF_AUTO, handleScreenStateChange);
     state.addObserver(state.State.HAS_EXTERNAL_SCREEN, handleScreenStateChange);
 
+    state.addObserver(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT, () => {
+      this.start();
+    });
     state.addObserver(state.State.ENABLE_MULTISTREAM_RECORDING, () => {
       this.start();
     });
@@ -709,39 +715,12 @@ export class Camera extends View {
    * @override
    */
   async handleResultDocument({blob, resolution, mimeType}, name) {
-    let docResult;
-    if (mimeType === MimeType.JPEG) {
-      docResult = metrics.DocResultType.SAVE_AS_PHOTO;
-    } else if (mimeType === MimeType.PDF) {
-      docResult = metrics.DocResultType.SAVE_AS_PDF;
-    } else {
-      throw new Error(`Unrecognized document mimeType: ${mimeType}`);
-    }
-
-    metrics.sendCaptureEvent({
-      facing: this.facingMode_,
-      resolution,
-      shutterType: this.shutterType_,
-      docResult,
-    });
     try {
       await this.resultSaver_.savePhoto(blob, name);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
-  }
-
-  /**
-   * @override
-   */
-  handleCancelDocument({resolution}) {
-    metrics.sendCaptureEvent({
-      facing: this.facingMode_,
-      resolution,
-      shutterType: this.shutterType_,
-      docResult: metrics.DocResultType.CANCELED,
-    });
   }
 
   /**
@@ -771,23 +750,76 @@ export class Camera extends View {
    * @override
    */
   async reviewDocument(originImage, refCorners) {
+    const needFirstRecrop = refCorners === null;
+    const allowRecrop = loadTimeData.getChromeFlag(Flag.DOCUMENT_MANUAL_CROP);
+    if (needFirstRecrop && !allowRecrop) {
+      const message = loadTimeData.getI18nMessage(
+          I18nString.DOCUMENT_MODE_DIALOG_NOT_DETECTED_TITLE);
+      nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
+      throw new CanceledError(`Couldn't detect a document`);
+    }
+
     nav.open(ViewName.FLASH);
     const helper = await ChromeHelper.getInstance();
     let result = null;
     try {
       await this.prepareReview_(async () => {
-        const doCrop = (blob, corners) =>
-            helper.convertToDocument(blob, corners, MimeType.JPEG);
-        const needFirstRecrop = refCorners === null;
+        const doCrop = (blob, corners, rotation) => {
+          // Do rotation by rotating the index in corners array.
+          const rotatedCorns = [...corners];
+          for (const r
+                   of [Rotation.ANGLE_0, Rotation.ANGLE_270, Rotation.ANGLE_180,
+                       Rotation.ANGLE_90]) {
+            if (r === rotation) {
+              break;
+            }
+            const popped = rotatedCorns.pop();
+            rotatedCorns.unshift(popped);
+          }
+          return helper.convertToDocument(blob, rotatedCorns, MimeType.JPEG);
+        };
         let corners =
             refCorners || getDefaultScanCorners(originImage.resolution);
         let docBlob;
+        let fixType = metrics.DocFixType.NONE;
+        const sendEvent = (docResult) => {
+          metrics.sendCaptureEvent({
+            facing: this.facingMode_,
+            resolution: originImage.resolution,
+            shutterType: this.shutterType_,
+            docResult,
+            docFixType: fixType,
+          });
+        };
+
         const doRecrop = async () => {
-          corners = await this.cropDocument_.reviewCropArea(corners);
+          const {corners: newCorners, rotation} =
+              await this.cropDocument_.reviewCropArea(corners);
+
+          fixType = (() => {
+            const isFixRotation = rotation !== Rotation.ANGLE_0;
+            const isFixPosition = newCorners.some(({x, y}, idx) => {
+              const {x: oldX, y: oldY} = corners[idx];
+              return Math.abs(x - oldX) * originImage.resolution.width > 1 ||
+                  Math.abs(y - oldY) * originImage.resolution.height > 1;
+            });
+            if (isFixRotation && isFixPosition) {
+              return metrics.DocFixType.FIX_BOTH;
+            }
+            if (isFixRotation) {
+              return metrics.DocFixType.FIX_ROTATION;
+            }
+            if (isFixPosition) {
+              return metrics.DocFixType.FIX_POSITION;
+            }
+            return metrics.DocFixType.NO_FIX;
+          })();
+
+          corners = newCorners;
           docBlob = await (async () => {
             nav.open(ViewName.FLASH);
             try {
-              return await doCrop(originImage.blob, corners);
+              return await doCrop(originImage.blob, corners, rotation);
             } finally {
               nav.close(ViewName.FLASH);
             }
@@ -800,25 +832,50 @@ export class Camera extends View {
           nav.close(ViewName.FLASH);
           await doRecrop();
         } else {
-          docBlob = await doCrop(originImage.blob, corners);
+          docBlob = await doCrop(originImage.blob, corners, Rotation.ANGLE_0);
           await this.review_.setReviewPhoto(docBlob);
           nav.close(ViewName.FLASH);
         }
 
         const positive = new review.Options(
-            new review.Option(
-                I18nString.LABEL_SAVE_PDF_DOCUMENT, {exitValue: MimeType.PDF}),
-            new review.Option(
-                I18nString.LABEL_SAVE_PHOTO_DOCUMENT,
-                {exitValue: MimeType.JPEG}),
-        );
-        const negative = new review.Options(
-            new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
-              callback: doRecrop,
-              hasPopup: true,
+            new review.Option(I18nString.LABEL_SAVE_PDF_DOCUMENT, {
+              callback: () => {
+                sendEvent(metrics.DocResultType.SAVE_AS_PDF);
+              },
+              exitValue: MimeType.PDF,
             }),
-            new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}),
+            new review.Option(I18nString.LABEL_SAVE_PHOTO_DOCUMENT, {
+              callback: () => {
+                sendEvent(metrics.DocResultType.SAVE_AS_PHOTO);
+              },
+              exitValue: MimeType.JPEG,
+            }),
+            new review.Option(I18nString.LABEL_SHARE, {
+              callback: async () => {
+                sendEvent(metrics.DocResultType.SHARE);
+                const type = MimeType.JPEG;
+                const name = (new Filenamer()).newDocumentName(type);
+                await util.share(new File([docBlob], name, {type}));
+              },
+            }),
         );
+
+        const optionsArgs = [
+          new review.Option(I18nString.LABEL_RETAKE, {
+            callback: () => {
+              sendEvent(metrics.DocResultType.CANCELED);
+            },
+            exitValue: null,
+          }),
+        ];
+        if (allowRecrop) {
+          optionsArgs.unshift(new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
+            callback: doRecrop,
+            hasPopup: true,
+          }));
+        }
+        const negative = new review.Options(...optionsArgs);
+
         const mimeType = await this.review_.startReview({positive, negative});
         assert(mimeType !== undefined);
         if (mimeType !== null) {
@@ -898,25 +955,14 @@ export class Camera extends View {
     };
 
     let result = false;
-    this.prepareReview_(async () => {
+    await this.prepareReview_(async () => {
       await this.review_.setReviewPhoto(blob);
       const positive = new review.Options(
           new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
           new review.Option(I18nString.LABEL_SHARE, {
             callback: async () => {
               sendEvent(metrics.GifResultType.SHARE);
-              const file = new File([blob], name, {type: MimeType.GIF});
-              const shareData = {files: [file]};
-              try {
-                if (!navigator.canShare(shareData)) {
-                  throw new Error('cannot share');
-                }
-                await navigator.share(shareData);
-              } catch (e) {
-                // TODO(b/191950622): Handles all share error case, e.g. no
-                // share target, share abort... with right treatment like toast
-                // message.
-              }
+              await util.share(new File([blob], name, {type: MimeType.GIF}));
             },
           }),
       );
@@ -998,18 +1044,27 @@ export class Camera extends View {
     const deviceOperator = await DeviceOperator.getInstance();
     state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
     let resolCandidates;
+    let photoRs;
     if (deviceOperator) {
       resolCandidates = this.modes_.getResolutionCandidates(mode, deviceId);
+      photoRs = await deviceOperator.getPhotoResolutions(deviceId);
     } else {
       resolCandidates = this.modes_.getFakeResolutionCandidates(mode, deviceId);
+      photoRs = resolCandidates;
     }
+    const maxResolution =
+        photoRs.reduce((maxR, r) => r.area > maxR.area ? r : maxR);
     for (const {resolution: captureR, previewCandidates} of resolCandidates) {
       for (const constraints of previewCandidates) {
         if (this.isSuspended()) {
           throw new CameraSuspendedError();
         }
-        this.modes_.setCaptureParams(mode, constraints, captureR);
-
+        const videoSnapshotResolution =
+            state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
+            maxResolution :
+            captureR;
+        this.modes_.setCaptureParams(
+            mode, constraints, captureR, videoSnapshotResolution);
         try {
           await this.modes_.prepareDevice();
           const factory = this.modes_.getModeFactory(mode);

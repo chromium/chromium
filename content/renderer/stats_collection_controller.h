@@ -23,6 +23,10 @@ class StatsCollectionController
  public:
   static gin::WrapperInfo kWrapperInfo;
 
+  StatsCollectionController(const StatsCollectionController&) = delete;
+  StatsCollectionController& operator=(const StatsCollectionController&) =
+      delete;
+
   static void Install(blink::WebLocalFrame* frame);
 
  private:
@@ -42,8 +46,6 @@ class StatsCollectionController
 
   // Returns JSON representation of tab timing information for the current tab.
   std::string GetTabLoadTiming();
-
-  DISALLOW_COPY_AND_ASSIGN(StatsCollectionController);
 };
 
 }  // namespace content

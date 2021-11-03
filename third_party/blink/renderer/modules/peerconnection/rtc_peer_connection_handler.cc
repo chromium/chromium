@@ -1114,19 +1114,19 @@ RTCPeerConnectionHandler::RTCPeerConnectionHandler(
 // Constructor to be used for creating mocks only.
 RTCPeerConnectionHandler::RTCPeerConnectionHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : is_unregistered_(true),  // Avoid StopAndUnregister in destructor
+    : is_unregistered_(true),  // Avoid CloseAndUnregister in destructor
       task_runner_(std::move(task_runner)) {}
 
 RTCPeerConnectionHandler::~RTCPeerConnectionHandler() {
   if (!is_unregistered_) {
-    StopAndUnregister();
+    CloseAndUnregister();
   }
 }
 
-void RTCPeerConnectionHandler::StopAndUnregister() {
+void RTCPeerConnectionHandler::CloseAndUnregister() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  Stop();
+  Close();
 
   GetPeerConnectionHandlers()->erase(this);
   if (peer_connection_tracker_)
@@ -2212,7 +2212,7 @@ scoped_refptr<DataChannelInterface> RTCPeerConnectionHandler::CreateDataChannel(
   return base::WrapRefCounted<DataChannelInterface>(webrtc_channel.get());
 }
 
-void RTCPeerConnectionHandler::Stop() {
+void RTCPeerConnectionHandler::Close() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DVLOG(1) << "RTCPeerConnectionHandler::stop";
 
@@ -2220,7 +2220,7 @@ void RTCPeerConnectionHandler::Stop() {
     return;  // Already stopped.
 
   if (peer_connection_tracker_)
-    peer_connection_tracker_->TrackStop(this);
+    peer_connection_tracker_->TrackClose(this);
 
   native_peer_connection_->Close();
   DCHECK(dependency_factory_);

@@ -11,10 +11,11 @@ along with a detailed description for each histogram.
 For best practices on writing histogram descriptions, see
 https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
 
-Please send CLs to chromium-metrics-reviews@google.com rather than to specific
-individuals. These CLs will be automatically reassigned to a reviewer within
-about 5 minutes. This approach helps the metrics team to load-balance incoming
-reviews. Googlers can read more about this at go/gwsq-gerrit.
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
 -->
 
 <histogram-configuration>
@@ -731,13 +732,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     visible (after a click, or keyboard-shortcut to switch tabs), until the tab
     is requested to become visible. The time it takes to actually make the tab
     visible and show on screen is measured in a separate metric, in
-    RWH_TabSwitchPaintDuration.
+    Browser.Tabs.TotalSwitchDuration2.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES so only users with
+    high resolution clocks will report this metric.
   </summary>
 </histogram>
 
-<histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
-    enum="TabSwitchResult" expires_after="2021-11-14">
+<histogram name="Browser.Tabs.TabSwitchResult2{TabSwitchingType}"
+    enum="TabSwitchResult" expires_after="2022-04-26">
   <owner>fdoray@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     Whether a frame was presented after a tab switch event. {TabSwitchingType}
   </summary>
@@ -750,10 +756,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
-    units="ms" expires_after="2022-01-02">
+<histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
+    enum="TabSwitchResult" expires_after="2022-04-26">
+  <owner>fdoray@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Whether a frame was presented after a tab switch event. Not recorded in
+    several cases described at http://shortn/_1wrMKYQjzu. {TabSwitchingType}
+  </summary>
+  <token key="TabSwitchingType" variants="TabSwitchingType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration2{TabSwitchingType}"
+    units="ms" expires_after="2022-04-26">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The time between a tab switch input event timestamp and when the tab is
     hidden, if no frame is presented in the meantime. {TabSwitchingType}
@@ -767,13 +793,55 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
-    expires_after="2022-01-02">
+<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
+    units="ms" expires_after="2022-04-26">
+  <owner>fdoray@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time between a tab switch input event timestamp and when the tab is
+    hidden, if no frame is presented in the meantime. Not recorded in several
+    cases described at http://shortn/_1wrMKYQjzu. {TabSwitchingType}
+  </summary>
+  <token key="TabSwitchingType" variants="TabSwitchingType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Browser.Tabs.TotalSwitchDuration2{TabSwitchingType}"
+    units="ms" expires_after="2022-04-26">
   <owner>ejoe@google.com</owner>
   <owner>jonross@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
   <summary>
     The time between the input event timestamp and the frame presentation time
     on a tab switch. {TabSwitchingType}
+  </summary>
+  <token key="TabSwitchingType" variants="TabSwitchingType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
+    expires_after="2022-04-26">
+  <owner>ejoe@google.com</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time between the input event timestamp and the frame presentation time
+    on a tab switch. Not recorded in several cases described at
+    http://shortn/_1wrMKYQjzu. {TabSwitchingType}
   </summary>
   <token key="TabSwitchingType" variants="TabSwitchingType">
     <variant name="">

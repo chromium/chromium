@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -22,7 +22,7 @@
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -172,6 +172,8 @@ class CastWebContents : public mojom::CastWebContents {
                         const std::vector<int32_t>& feature_permissions,
                         const std::vector<std::string>&
                             additional_feature_permission_origins) override = 0;
+  void SetGroupInfo(const std::string& session_id,
+                    bool is_multizone_launch) override = 0;
   void AddRendererFeatures(base::Value features) override = 0;
   void SetInterfacesForRenderer(mojo::PendingRemote<mojom::RemoteInterfaces>
                                     remote_interfaces) override = 0;
@@ -187,14 +189,6 @@ class CastWebContents : public mojom::CastWebContents {
   void AddObserver(
       mojo::PendingRemote<mojom::CastWebContentsObserver> observer) override;
   void GetMainFramePid(GetMainFramePidCallback cb) override = 0;
-
-  // ===========================================================================
-  // Initialization and Setup
-  // ===========================================================================
-
-  // TODO(b/149041392): This can be an initialization parameter.
-  virtual void AllowWebAndMojoWebUiBindings() = 0;
-  virtual void ClearRenderWidgetHostView() = 0;
 
   // ===========================================================================
   // Page Lifetime
@@ -259,14 +253,6 @@ class CastWebContents : public mojom::CastWebContents {
   // Locally-registered interfaces which are exposed to render frames.
   virtual InterfaceBundle* local_interfaces() = 0;
 
-  // Used for owner to pass its |InterfaceProvider| pointers to CastWebContents.
-  // It is owner's responsibility to make sure each |InterfaceProvider| pointer
-  // has distinct mojo interface set.
-  using InterfaceSet = base::flat_set<std::string>;
-  virtual void RegisterInterfaceProvider(
-      const InterfaceSet& interface_set,
-      service_manager::InterfaceProvider* interface_provider) = 0;
-
   // Returns true if WebSQL database is configured enabled for this
   // CastWebContents.
   virtual bool is_websql_enabled() = 0;
@@ -277,8 +263,12 @@ class CastWebContents : public mojom::CastWebContents {
   // Binds a receiver for remote control of CastWebContents.
   void BindReceiver(mojo::PendingReceiver<mojom::CastWebContents> receiver);
 
+  // |cb| is called when |receiver_| is disconnected. This allows the web
+  // service to destroy CastWebContents which are owned via a remote handle.
+  void SetDisconnectCallback(base::OnceClosure cb);
+
  protected:
-  mojo::ReceiverSet<mojom::CastWebContents> receivers_;
+  mojo::Receiver<mojom::CastWebContents> receiver_{this};
   mojo::RemoteSet<mojom::CastWebContentsObserver> observers_;
   base::ObserverList<Observer> sync_observers_;
 
@@ -289,6 +279,10 @@ class CastWebContents : public mojom::CastWebContents {
   // valid sequence, enforced via SequenceChecker.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  void OnDisconnect();
+
+  base::OnceClosure disconnect_cb_;
 };
 
 }  // namespace chromecast

@@ -5,18 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 
+#include <limits>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/rect.h"
 
-#include <limits>
+namespace gfx {
+class RectF;
+}
 
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
 class LayoutRect;
 class LayoutUnit;
 class PropertyTreeState;
@@ -38,7 +41,7 @@ class PLATFORM_EXPORT CullRect {
   }
 
   bool Intersects(const gfx::Rect&) const;
-  bool IntersectsTransformed(const AffineTransform&, const FloatRect&) const;
+  bool IntersectsTransformed(const AffineTransform&, const gfx::RectF&) const;
   bool IntersectsHorizontalRange(LayoutUnit lo, LayoutUnit hi) const;
   bool IntersectsVerticalRange(LayoutUnit lo, LayoutUnit hi) const;
 

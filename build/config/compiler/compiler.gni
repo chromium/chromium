@@ -73,7 +73,7 @@ declare_args() {
   # Chrome's clang. crbug.com/1033839
   use_thin_lto =
       is_cfi ||
-      (is_official_build && chrome_pgo_phase != 1 &&
+      (is_clang && is_official_build && chrome_pgo_phase != 1 &&
        (is_linux || is_win || (is_android && target_os != "chromeos") ||
         ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)))
 
@@ -213,7 +213,8 @@ declare_args() {
   # lld doesn't support).
   # The default linker everywhere else.
   use_lld = is_clang && !(is_ios && is_cronet_build) &&
-            !(is_mac && is_gpu_fyi_bot) && !use_xcode_clang
+            !(is_mac && is_gpu_fyi_bot) && !use_xcode_clang &&
+            current_os != "zos"
 }
 
 declare_args() {
@@ -264,8 +265,7 @@ if (use_debug_fission == "default") {
 assert(symbol_level >= -1 && symbol_level <= 2, "Invalid symbol_level")
 if (symbol_level == -1) {
   if (is_android && !is_component_build && !use_debug_fission) {
-    # Reduce symbol level when it will cause invalid elf files to be created
-    # (due to file size). https://crbug.com/648948.
+    # Prefer faster & smaller release builds.
     symbol_level = 1
   } else if (is_chromeos_device) {
     # Use lower symbol level in Simple Chrome build for faster link time.
@@ -306,19 +306,8 @@ use_debug_fission = use_debug_fission && symbol_level == 2
 # the build (like nacl) and we don't want to assert on those.
 # iOS does not support component builds so add an exception for this platform.
 if (forbid_non_component_debug_builds) {
-  assert(symbol_level != 2 || current_toolchain != default_toolchain ||
-             is_component_build || !is_debug || is_ios,
-         "Can't do non-component debug builds at symbol_level=2")
+  assert(
+      symbol_level != 2 || current_toolchain != default_toolchain ||
+          is_component_build || !is_debug || is_ios || use_debug_fission,
+      "Can't do non-component debug builds at symbol_level=2 without use_debug_fission=true")
 }
-
-# Assert that the configuration isn't going to hit https://crbug.com/648948.
-# An exception is made when target_os == "chromeos" as we only use the Android
-# toolchain there to build relatively small binaries.
-assert(
-    ignore_elf32_limitations || !is_android || target_os == "chromeos" ||
-        is_component_build || symbol_level < 2 || use_debug_fission ||
-        (android_64bit_target_cpu && skip_secondary_abi_for_cq),
-    "Android 32-bit non-component builds without DWARF Fission cannot " +
-        "have symbol_level=2 due to 4GiB file size limit, see " +
-        "https://crbug.com/648948. " + "If you really want to try this out, " +
-        "set ignore_elf32_limitations=true.")

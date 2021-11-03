@@ -146,6 +146,19 @@ export const DocResultType = {
   CANCELED: 'canceled',
   SAVE_AS_PHOTO: 'save-as-photo',
   SAVE_AS_PDF: 'save-as-pdf',
+  SHARE: 'share',
+};
+
+/**
+ * Types of user interaction with fix document page.
+ * @enum {number}
+ */
+export const DocFixType = {
+  NONE: 0,
+  NO_FIX: 1,
+  FIX_ROTATION: 2,
+  FIX_POSITION: 3,
+  FIX_BOTH: 4,
 };
 
 /**
@@ -235,6 +248,11 @@ export class CaptureEventParam {
     this.docResult;
 
     /**
+     * @type {!DocFixType|undefined}
+     */
+    this.docFixType;
+
+    /**
      * @type {!GifResultType|undefined}
      */
     this.gifResult;
@@ -259,6 +277,7 @@ export function sendCaptureEvent({
   isVideoSnapshot = false,
   everPaused = false,
   docResult = DocResultType.NOT_DOCUMENT,
+  docFixType,
   recordType = RecordType.NOT_RECORDING,
   gifResult = GifResultType.NOT_GIF_RESULT,
 }) {
@@ -308,6 +327,8 @@ export function sendCaptureEvent({
         [28, recordType],
         [29, gifResult],
         [30, duration],
+        // [31, SCHEMA_VERSION]
+        [32, docFixType ?? ''],
       ]));
 }
 

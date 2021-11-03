@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`This test verifies that auto-appended spaces are removed on consequent enters.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
 <pre id="codeSnippet">function (){}

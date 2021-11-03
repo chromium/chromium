@@ -69,8 +69,6 @@ class LocalWindowProxy final : public WindowProxy {
   void SetAbortScriptExecution(
       v8::Context::AbortScriptExecutionCallback callback);
 
-  static int TotalNumberV8ContextsCreated() { return v8_context_count_; }
-
  private:
   // LocalWindowProxy overrides:
   bool IsLocal() const override { return true; }

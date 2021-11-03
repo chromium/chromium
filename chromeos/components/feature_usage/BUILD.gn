@@ -20,7 +20,6 @@ source_set("unit_tests") {
   deps = [
     ":feature_usage",
     "//base/test:test_support",
-    "//components/prefs:test_support",
     "//testing/gtest",
   ]
 }

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
+#include "third_party/blink/renderer/platform/geometry/cg_conversions.h"
 #include "third_party/blink/renderer/platform/mac/block_exceptions.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
@@ -96,7 +97,7 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
   if (!_scrollableArea)
     return NSZeroPoint;
 
-  return _scrollableArea->LastKnownMousePosition();
+  return blink::PointToCGPoint(_scrollableArea->LastKnownMousePosition());
 }
 
 - (NSPoint)scrollerImpPair:(id)scrollerImpPair
@@ -119,8 +120,9 @@ ScrollbarPainter ScrollbarPainterForScrollbar(blink::Scrollbar& scrollbar) {
 
   DCHECK_EQ(scrollerImp, ScrollbarPainterForScrollbar(*scrollbar));
 
-  return scrollbar->ConvertFromContainingEmbeddedContentView(
-      blink::IntPoint(pointInContentArea));
+  return blink::PointToCGPoint(
+      scrollbar->ConvertFromContainingEmbeddedContentView(
+          gfx::Point(pointInContentArea)));
 }
 
 - (void)scrollerImpPair:(id)scrollerImpPair
@@ -408,8 +410,9 @@ class BlinkScrollbarPartAnimationTimer {
 
   DCHECK_EQ(scrollerImp, ScrollbarPainterForScrollbar(*_scrollbar));
 
-  return _scrollbar->ConvertFromContainingEmbeddedContentView(
-      _scrollbar->GetScrollableArea()->LastKnownMousePosition());
+  return blink::PointToCGPoint(
+      _scrollbar->ConvertFromContainingEmbeddedContentView(
+          _scrollbar->GetScrollableArea()->LastKnownMousePosition()));
 }
 
 - (void)setUpAlphaAnimation:

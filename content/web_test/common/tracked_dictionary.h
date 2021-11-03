@@ -20,6 +20,9 @@ class TrackedDictionary {
  public:
   TrackedDictionary();
 
+  TrackedDictionary(const TrackedDictionary&) = delete;
+  TrackedDictionary& operator=(const TrackedDictionary&) = delete;
+
   // Current value of the tracked dictionary.
   const base::DictionaryValue& current_values() const {
     return current_values_;
@@ -48,8 +51,6 @@ class TrackedDictionary {
  private:
   base::DictionaryValue current_values_;
   base::DictionaryValue changed_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackedDictionary);
 };
 
 }  // namespace content

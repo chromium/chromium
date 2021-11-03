@@ -14,7 +14,7 @@ stage_folder = "$target_gen_dir/stage"
 copy("stage_static") {
   sources = [
     "../../../../../ui/file_manager/image_loader/piex_loader.js",
-    "//chromeos/components/system_apps/public/js/sandboxed_load_time_data.js",
+    "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
     "app_context_test_support.js",
     "error_reporter.js",
     "launch.js",
@@ -30,7 +30,7 @@ copy("stage_static") {
 # This is for files that are generated in "gen/".
 copy("stage_generated") {
   sources = [
-    "$target_gen_dir/../../../../../chromeos/components/system_apps/public/js/message_pipe.m.js",
+    "$target_gen_dir/../../../system_apps/public/js/message_pipe.m.js",
     "$target_gen_dir/../../media_app_ui.mojom-lite.js",
   ]
 
@@ -38,7 +38,7 @@ copy("stage_generated") {
 
   deps = [
     "//ash/webui/media_app_ui:mojo_bindings_js",
-    "//chromeos/components/system_apps/public/js:modulize",
+    "//ash/webui/system_apps/public/js:modulize",
   ]
 }
 
@@ -129,7 +129,7 @@ js_library("launch") {
     ":error_reporter",
     ":message_types",
     ":mojo_api_bootstrap",
-    "//chromeos/components/system_apps/public/js:message_pipe.m",
+    "//ash/webui/system_apps/public/js:message_pipe.m",
   ]
 }
 
@@ -153,8 +153,8 @@ js_library("receiver") {
     ":app_context_test_support",
     ":message_types",
     ":piex_module_loader",
-    "//chromeos/components/system_apps/public/js:message_pipe.m",
-    "//chromeos/components/system_apps/public/js:sandboxed_load_time_data",
+    "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//ash/webui/system_apps/public/js:sandboxed_load_time_data",
   ]
 }
 

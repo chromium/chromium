@@ -15,12 +15,12 @@
 #include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace eche_app {
 
 UntrustedEcheAppUIConfig::UntrustedEcheAppUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  eche_app::kChromeUIEcheAppGuestHost) {}
+                  kChromeUIEcheAppGuestHost) {}
 
 UntrustedEcheAppUIConfig::~UntrustedEcheAppUIConfig() = default;
 
@@ -32,7 +32,7 @@ UntrustedEcheAppUIConfig::CreateWebUIController(content::WebUI* web_ui) {
 UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
     : ui::UntrustedWebUIController(web_ui) {
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::Create(eche_app::kChromeUIEcheAppGuestURL);
+      content::WebUIDataSource::Create(kChromeUIEcheAppGuestURL);
 
   html_source->AddResourcePath("untrusted_index.html",
                                IDR_CHROMEOS_ECHE_UNTRUSTED_INDEX_HTML);
@@ -42,7 +42,7 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
                                IDR_CHROMEOS_ECHE_APP_BUNDLE_CSS);
   html_source->AddResourcePath(
       "message_pipe.js",
-      IDR_ASH_ECHE_APP_____________CHROMEOS_COMPONENTS_SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
+      IDR_ASH_ECHE_APP_______SYSTEM_APPS_PUBLIC_JS_MESSAGE_PIPE_JS);
   html_source->AddResourcePath("message_types.js",
                                IDR_ASH_ECHE_APP_MESSAGE_TYPES_JS);
   html_source->AddResourcePath("receiver.js", IDR_ASH_ECHE_APP_RECEIVER_JS);
@@ -50,7 +50,7 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
   html_source->AddResourcePaths(base::make_span(
       kChromeosEcheBundleResources, kChromeosEcheBundleResourcesSize));
 
-  html_source->AddFrameAncestor(GURL(eche_app::kChromeUIEcheAppURL));
+  html_source->AddFrameAncestor(GURL(kChromeUIEcheAppURL));
 
   // DisableTrustedTypesCSP to support TrustedTypePolicy named 'goog#html'.
   // It is the Closure templating system that renders our UI, as it does many
@@ -67,4 +67,4 @@ UntrustedEcheAppUI::UntrustedEcheAppUI(content::WebUI* web_ui)
 UntrustedEcheAppUI::~UntrustedEcheAppUI() = default;
 
 }  // namespace eche_app
-}  // namespace chromeos
+}  // namespace ash

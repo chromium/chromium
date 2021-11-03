@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.content_creation.reactions.scene;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -16,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -26,7 +26,7 @@ class ReactionLayout extends RelativeLayout {
     private ChromeImageButton mAdjustButton;
     private ChromeImageButton mCopyButton;
     private ChromeImageButton mDeleteButton;
-    private Drawable mDrawable;
+    private ReactionGifDrawable mDrawable;
     private ImageView mReaction;
     private SceneEditorDelegate mSceneEditorDelegate;
     private boolean mIsActive;
@@ -39,14 +39,19 @@ class ReactionLayout extends RelativeLayout {
 
     /**
      * Initialize the ReactionLayout outside of the constructor since the Layout is inflated.
-     * @param drawable {@link Drawable} of the reaction.
+     * @param drawable {@link ReactionGifDrawable} of the reaction.
      * @param sceneEditorDelegate {@link SceneEditorDelegate} to call scene editing methods.
      */
-    void init(Drawable drawable, SceneEditorDelegate sceneEditorDelegate) {
-        mDrawable = drawable;
+    void init(ReactionGifDrawable drawable, SceneEditorDelegate sceneEditorDelegate) {
+        setDrawable(drawable);
         mSceneEditorDelegate = sceneEditorDelegate;
         mIsActive = true;
         setUpReactionView();
+    }
+
+    void setDrawable(ReactionGifDrawable drawable) {
+        mDrawable = drawable;
+        mReaction.setImageDrawable(mDrawable);
     }
 
     @Override
@@ -75,13 +80,12 @@ class ReactionLayout extends RelativeLayout {
         }
     }
 
-    Drawable getReaction() {
+    ReactionGifDrawable getReaction() {
         return mDrawable;
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private void setUpReactionView() {
-        mReaction.setImageDrawable(mDrawable);
         GestureDetector gestureDetector =
                 new GestureDetector(mContext, new GestureDetector.SimpleOnGestureListener() {
                     @Override

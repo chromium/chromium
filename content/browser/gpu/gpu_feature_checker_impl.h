@@ -20,6 +20,9 @@ class CONTENT_EXPORT GpuFeatureCheckerImpl : public GpuFeatureChecker,
   GpuFeatureCheckerImpl(gpu::GpuFeatureType feature,
                         FeatureAvailableCallback callback);
 
+  GpuFeatureCheckerImpl(const GpuFeatureCheckerImpl&) = delete;
+  GpuFeatureCheckerImpl& operator=(const GpuFeatureCheckerImpl&) = delete;
+
   // GpuFeatureChecker implementation.
   void CheckGpuFeatureAvailability() override;
 
@@ -32,8 +35,6 @@ class CONTENT_EXPORT GpuFeatureCheckerImpl : public GpuFeatureChecker,
   gpu::GpuFeatureType feature_;
   FeatureAvailableCallback callback_;
   bool checking_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GpuFeatureCheckerImpl);
 };
 
 }  // namespace content

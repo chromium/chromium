@@ -408,7 +408,7 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       }
     }
 
-    return RouteObserverMixin;
+    return /** @type {?} */ (RouteObserverMixin);
   });
 
   /** @interface */

@@ -29,6 +29,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
  public:
   static TracedProcessImpl* GetInstance();
 
+  TracedProcessImpl(const TracedProcessImpl&) = delete;
+  TracedProcessImpl& operator=(const TracedProcessImpl&) = delete;
+
   void ResetTracedProcessReceiver();
   void OnTracedProcessRequest(
       mojo::PendingReceiver<mojom::TracedProcess> receiver);
@@ -63,7 +66,6 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(TracedProcessImpl);
 };
 
 }  // namespace tracing

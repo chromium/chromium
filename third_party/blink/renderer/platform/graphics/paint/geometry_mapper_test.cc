@@ -63,15 +63,14 @@ class GeometryMapperTest : public testing::Test,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(GeometryMapperTest);
 
-#define EXPECT_CLIP_RECT_EQ(expected, actual)                                \
-  do {                                                                       \
-    SCOPED_TRACE("EXPECT_CLIP_RECT_EQ: " #expected " vs " #actual);          \
-    EXPECT_EQ((expected).IsInfinite(), (actual).IsInfinite());               \
-    EXPECT_EQ((expected).HasRadius(), (actual).HasRadius());                 \
-    EXPECT_EQ((expected).IsTight(), (actual).IsTight());                     \
-    if (!(expected).IsInfinite()) {                                          \
-      EXPECT_EQ(ToGfxRectF((expected).Rect()), ToGfxRectF((actual).Rect())); \
-    }                                                                        \
+#define EXPECT_CLIP_RECT_EQ(expected, actual)                       \
+  do {                                                              \
+    SCOPED_TRACE("EXPECT_CLIP_RECT_EQ: " #expected " vs " #actual); \
+    EXPECT_EQ((expected).IsInfinite(), (actual).IsInfinite());      \
+    EXPECT_EQ((expected).HasRadius(), (actual).HasRadius());        \
+    EXPECT_EQ((expected).IsTight(), (actual).IsTight());            \
+    if (!(expected).IsInfinite())                                   \
+      EXPECT_EQ((expected).Rect(), (actual).Rect());                \
   } while (false)
 
 void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
@@ -325,7 +324,7 @@ TEST_P(GeometryMapperTest, SimpleClip) {
 }
 
 TEST_P(GeometryMapperTest, UsesLayoutClipRect) {
-  auto clip = CreateClip(c0(), t0(), FloatRect(10, 10, 50.5, 50.5),
+  auto clip = CreateClip(c0(), t0(), gfx::RectF(10, 10, 50.5, 50.5),
                          FloatRoundedRect(10, 10, 50, 51));
   local_state.SetClip(*clip);
 
@@ -351,7 +350,7 @@ TEST_P(GeometryMapperTest, SimpleClipWithAlias) {
 }
 
 TEST_P(GeometryMapperTest, SimpleClipOverlayScrollbars) {
-  ClipPaintPropertyNode::State clip_state(&t0(), FloatRect(10, 10, 50, 50),
+  ClipPaintPropertyNode::State clip_state(&t0(), gfx::RectF(10, 10, 50, 50),
                                           FloatRoundedRect(10, 10, 50, 50));
   clip_state.layout_clip_rect_excluding_overlay_scrollbars =
       FloatClipRect(gfx::RectF(10, 10, 45, 43));
@@ -813,13 +812,13 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   auto output = input_rect;
   output.Offset(transform_below_effect->Translation2D());
   // 2. clipBelowEffect
-  output.Intersect(ToGfxRectF(clip_below_effect->LayoutClipRect().Rect()));
+  output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
   // 3. effect (the outset is 3 times of blur amount).
   output = filters.MapRect(output);
   EXPECT_EQ(gfx::RectF(-40, -30, 210, 200), output);
   // 4. clipAboveEffect
-  output.Intersect(ToGfxRectF(clip_above_effect->LayoutClipRect().Rect()));
+  output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(-40, -30, 140, 130), output);
   // 5. transformAboveEffect
   output.Offset(transform_above_effect->Translation2D());
@@ -863,13 +862,13 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   auto output = input_rect;
   output.Offset(transform_below_effect->Translation2D());
   // 2. clipBelowEffect
-  output.Intersect(ToGfxRectF(clip_below_effect->LayoutClipRect().Rect()));
+  output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
   // 3. effect (the outset is 3 times of blur amount).
   output = filters.MapRect(output);
   EXPECT_EQ(gfx::RectF(-40, -30, 210, 200), output);
   // 4. clipAboveEffect
-  output.Intersect(ToGfxRectF(clip_above_effect->LayoutClipRect().Rect()));
+  output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(-40, -30, 140, 130), output);
   // 5. transformAboveEffect
   output.Offset(transform_above_effect->Translation2D());
@@ -898,8 +897,8 @@ TEST_P(GeometryMapperTest,
   input_rect = gfx::RectF(0, 0, 100, 100);
   expected_transformed_rect = input_rect;
   auto output = input_rect;
-  output.Intersect(ToGfxRectF(clip2->LayoutClipRect().Rect()));
-  output.Intersect(ToGfxRectF(clip1->LayoutClipRect().Rect()));
+  output.Intersect(clip2->LayoutClipRect().Rect());
+  output.Intersect(clip1->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(50, 10, 50, 40), output);
   expected_visual_rect = FloatClipRect(output);
   expected_visual_rect.ClearIsTight();
@@ -947,7 +946,7 @@ TEST_P(GeometryMapperTest, InvertedClip) {
   // The "ancestor" clip is below the source clip in this case, so
   // LocalToAncestorVisualRect must fall back to the original rect, mapped
   // into the root space.
-  EXPECT_EQ(FloatRect(0, 0, 10, 200), visual_rect.Rect());
+  EXPECT_EQ(gfx::RectF(0, 0, 10, 200), visual_rect.Rect());
   EXPECT_TRUE(visual_rect.IsTight());
 }
 

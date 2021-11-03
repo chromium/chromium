@@ -23,7 +23,7 @@ public class ToolbarColors {
                 DeviceClassManager.enableAccessibilityLayout(context);
         final boolean isTabGridEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
         final boolean isStartSurfaceEnabled =
-                ReturnToChromeExperimentsUtil.isStartSurfaceHomepageEnabled();
+                ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
         return (isAccessibilityEnabled || isTabGridEnabled || isStartSurfaceEnabled);
     }
 }

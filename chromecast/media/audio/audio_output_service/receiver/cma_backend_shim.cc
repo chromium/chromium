@@ -233,9 +233,7 @@ void CmaBackendShim::SetPlaybackRateOnMediaThread(float playback_rate) {
   }
 
   if (backend_state_ != BackendState::kStopped) {
-    POST_DELEGATE_TASK(&Delegate::UpdateMediaTime,
-                       cma_backend_->GetCurrentPts(),
-                       base::TimeTicks::Now().ToInternalValue());
+    UpdateMediaTimeAndRenderingDelay();
   }
 
   if (playback_rate_ == 0.0f) {
@@ -324,6 +322,18 @@ bool CmaBackendShim::SetAudioConfig() {
   return audio_decoder_->SetConfig(audio_config);
 }
 
+void CmaBackendShim::UpdateMediaTimeAndRenderingDelay() {
+  if (!cma_backend_ || !audio_decoder_) {
+    return;
+  }
+  auto rendering_delay = audio_decoder_->GetRenderingDelay();
+  POST_DELEGATE_TASK(&Delegate::UpdateMediaTimeAndRenderingDelay,
+                     cma_backend_->GetCurrentPts(),
+                     base::TimeTicks::Now().since_origin().InMicroseconds(),
+                     rendering_delay.delay_microseconds,
+                     rendering_delay.timestamp_microseconds);
+}
+
 void CmaBackendShim::OnPushBufferComplete(BufferStatus status) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
@@ -333,8 +343,7 @@ void CmaBackendShim::OnPushBufferComplete(BufferStatus status) {
     return;
   }
   POST_DELEGATE_TASK(&Delegate::OnBufferPushed);
-  POST_DELEGATE_TASK(&Delegate::UpdateMediaTime, cma_backend_->GetCurrentPts(),
-                     base::TimeTicks::Now().ToInternalValue());
+  UpdateMediaTimeAndRenderingDelay();
 }
 
 void CmaBackendShim::OnEndOfStream() {

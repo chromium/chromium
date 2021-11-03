@@ -42,11 +42,6 @@ class COMPONENT_EXPORT(POWER_SCHEDULER) PowerModeVoter {
   static constexpr base::TimeDelta kAnimationTimeout = base::Milliseconds(100);
   static constexpr base::TimeDelta kVideoTimeout = kAnimationTimeout;
 
-  // Software draws can take longer than the rest of animations. We use a
-  // different timeout constant for them to allow individual tweaking.
-  static constexpr base::TimeDelta kSoftwareDrawTimeout =
-      base::Milliseconds(100);
-
   // Give frames an extra second to draw & settle after load completion.
   static constexpr base::TimeDelta kLoadingTimeout = base::Seconds(1);
   // Avoid getting stuck in loading stage forever. More than 99.9% of

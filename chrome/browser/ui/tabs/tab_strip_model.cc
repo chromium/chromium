@@ -1931,19 +1931,14 @@ TabStripSelectionChange TabStripModel::SetSelection(
       (selection.active_tab_changed() || selection.selection_changed())) {
     if (selection.active_tab_changed()) {
       auto now = base::TimeTicks::Now();
-      if (selection.new_contents &&
-          selection.new_contents->GetRenderWidgetHostView()) {
+      if (selection.new_contents) {
         auto input_event_timestamp =
             tab_switch_event_latency_recorder_.input_event_timestamp();
         // input_event_timestamp may be null in some cases, e.g. in tests.
-        selection.new_contents->GetRenderWidgetHostView()
-            ->SetRecordContentToVisibleTimeRequest(
-                !input_event_timestamp.is_null() ? input_event_timestamp : now,
-                resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
-                    selection.new_contents),
-                /*show_reason_tab_switching=*/true,
-                /*show_reason_unoccluded=*/false,
-                /*show_reason_bfcache_restore=*/false);
+        selection.new_contents->SetTabSwitchStartTime(
+            !input_event_timestamp.is_null() ? input_event_timestamp : now,
+            resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
+                selection.new_contents));
       }
       tab_switch_event_latency_recorder_.OnWillChangeActiveTab(now);
     }

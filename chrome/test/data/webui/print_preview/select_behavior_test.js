@@ -5,7 +5,7 @@
 import {SelectMixin} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 window.select_behavior_test = {};
 select_behavior_test.suiteName = 'SelectMixinTest';

@@ -6,9 +6,13 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 
 namespace blink {
+
+using css_parsing_utils::AtIdent;
+using css_parsing_utils::ConsumeIfIdent;
 
 scoped_refptr<MediaQuerySet> MediaQueryParser::ParseMediaQuerySet(
     const String& query_string,
@@ -48,8 +52,6 @@ const MediaQueryParser::State MediaQueryParser::kReadMediaNot =
     &MediaQueryParser::ReadMediaNot;
 const MediaQueryParser::State MediaQueryParser::kReadMediaType =
     &MediaQueryParser::ReadMediaType;
-const MediaQueryParser::State MediaQueryParser::kReadAnd =
-    &MediaQueryParser::ReadAnd;
 const MediaQueryParser::State MediaQueryParser::kReadFeatureStart =
     &MediaQueryParser::ReadFeatureStart;
 const MediaQueryParser::State MediaQueryParser::kSkipUntilComma =
@@ -70,6 +72,35 @@ MediaQueryParser::MediaQueryParser(ParserType parser_type,
 }
 
 MediaQueryParser::~MediaQueryParser() = default;
+
+namespace {
+
+bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
+  // FIXME: it would be more efficient to use lower-case always for tokenValue.
+  return EqualIgnoringASCIICase(token.Value(), "not") ||
+         EqualIgnoringASCIICase(token.Value(), "and") ||
+         EqualIgnoringASCIICase(token.Value(), "or") ||
+         EqualIgnoringASCIICase(token.Value(), "only");
+}
+
+}  // namespace
+
+MediaQuery::RestrictorType MediaQueryParser::ConsumeRestrictor(
+    CSSParserTokenRange& range) {
+  if (ConsumeIfIdent(range, "not"))
+    return MediaQuery::kNot;
+  if (ConsumeIfIdent(range, "only"))
+    return MediaQuery::kOnly;
+  return MediaQuery::kNone;
+}
+
+String MediaQueryParser::ConsumeType(CSSParserTokenRange& range) {
+  if (range.Peek().GetType() != kIdentToken)
+    return g_null_atom;
+  if (IsRestrictorOrLogicalOperator(range.Peek()))
+    return g_null_atom;
+  return range.ConsumeIncludingWhitespace().Value().ToString();
+}
 
 bool MediaQueryParser::ConsumeFeature(CSSParserTokenRange& range) {
   if (range.Peek().GetType() != kLeftParenthesisToken)
@@ -107,6 +138,14 @@ bool MediaQueryParser::ConsumeFeature(CSSParserTokenRange& range) {
   return block.AtEnd() && media_query_data_.LastExpressionValid();
 }
 
+bool MediaQueryParser::ConsumeAnd(CSSParserTokenRange& range) {
+  while (ConsumeIfIdent(range, "and")) {
+    if (!ConsumeFeature(range))
+      return false;
+  }
+  return true;
+}
+
 void MediaQueryParser::SetStateAndRestrict(
     State state,
     MediaQuery::RestrictorType restrictor) {
@@ -114,9 +153,38 @@ void MediaQueryParser::SetStateAndRestrict(
   state_ = state;
 }
 
+void MediaQueryParser::FinishQueryDataAndSetState(bool success,
+                                                  CSSParserTokenRange& range) {
+  if (!success) {
+    state_ = kSkipUntilComma;
+  } else if (range.Peek().GetType() == kCommaToken &&
+             parser_type_ != kMediaConditionParser) {
+    ConsumeToken(range);
+    query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
+    state_ = kReadRestrictor;
+  } else if (range.AtEnd()) {
+    state_ = kDone;
+  } else {
+    state_ = kSkipUntilComma;
+  }
+}
+
 // State machine member functions start here
 void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
-  ReadMediaType(range);
+  DCHECK_EQ(state_, kReadRestrictor);
+
+  if (range.Peek().GetType() == kLeftParenthesisToken) {
+    if (media_query_data_.Restrictor() != MediaQuery::kNone)
+      state_ = kSkipUntilComma;
+    else
+      state_ = kReadFeatureStart;
+  } else if (range.Peek().GetType() == kIdentToken) {
+    SetStateAndRestrict(kReadMediaType, ConsumeRestrictor(range));
+  } else if (range.AtEnd() && !query_set_->QueryVector().size()) {
+    state_ = kDone;
+  } else {
+    state_ = kSkipUntilComma;
+  }
 }
 
 void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
@@ -129,81 +197,39 @@ void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
   }
 }
 
-static bool IsRestrictorOrLogicalOperator(const CSSParserToken& token) {
-  // FIXME: it would be more efficient to use lower-case always for tokenValue.
-  return EqualIgnoringASCIICase(token.Value(), "not") ||
-         EqualIgnoringASCIICase(token.Value(), "and") ||
-         EqualIgnoringASCIICase(token.Value(), "or") ||
-         EqualIgnoringASCIICase(token.Value(), "only");
-}
-
 void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
-  if (range.Peek().GetType() == kLeftParenthesisToken) {
-    if (media_query_data_.Restrictor() != MediaQuery::kNone)
-      state_ = kSkipUntilComma;
-    else
-      state_ = kReadFeatureStart;
-  } else if (range.Peek().GetType() == kIdentToken) {
-    CSSParserToken token = ConsumeToken(range);
-    if (state_ == kReadRestrictor &&
-        EqualIgnoringASCIICase(token.Value(), "not")) {
-      SetStateAndRestrict(kReadMediaType, MediaQuery::kNot);
-    } else if (state_ == kReadRestrictor &&
-               EqualIgnoringASCIICase(token.Value(), "only")) {
-      SetStateAndRestrict(kReadMediaType, MediaQuery::kOnly);
-    } else if (media_query_data_.Restrictor() != MediaQuery::kNone &&
-               IsRestrictorOrLogicalOperator(token)) {
-      state_ = kSkipUntilComma;
-    } else {
-      media_query_data_.SetMediaType(token.Value().ToString());
-      state_ = kReadAnd;
-    }
-  } else if (range.AtEnd() &&
-             (!query_set_->QueryVector().size() || state_ != kReadRestrictor)) {
+  DCHECK_EQ(state_, kReadMediaType);
+
+  String type = ConsumeType(range);
+
+  if (!type.IsNull()) {
+    media_query_data_.SetMediaType(type);
+    FinishQueryDataAndSetState(ConsumeAnd(range), range);
+  } else if (range.AtEnd()) {
     state_ = kDone;
   } else {
     state_ = kSkipUntilComma;
     if (range.Peek().GetType() == kCommaToken)
       SkipUntilComma(range);
     else
-      ConsumeToken(range);
-  }
-}
-
-void MediaQueryParser::ReadAnd(CSSParserTokenRange& range) {
-  CSSParserToken token = ConsumeToken(range);
-
-  if (token.GetType() == kIdentToken &&
-      EqualIgnoringASCIICase(token.Value(), "and")) {
-    state_ = kReadFeatureStart;
-  } else if (token.GetType() == kCommaToken &&
-             parser_type_ != kMediaConditionParser) {
-    query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());
-    state_ = kReadRestrictor;
-  } else if (token.GetType() == kEOFToken) {
-    state_ = kDone;
-  } else {
-    state_ = kSkipUntilComma;
+      range.ConsumeComponentValue();
   }
 }
 
 void MediaQueryParser::ReadFeatureStart(CSSParserTokenRange& range) {
-  if (!ConsumeFeature(range))
-    state_ = kSkipUntilComma;
-  else
-    state_ = kReadAnd;
+  FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range), range);
 }
 
 void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {
-  CSSParserToken token = ConsumeToken(range);
-
-  if ((token.GetType() == kCommaToken && !block_watcher_.BlockLevel()) ||
-      token.GetType() == kEOFToken) {
+  if (range.Peek().GetType() == kCommaToken || range.AtEnd()) {
+    ConsumeToken(range);
     if (parser_type_ == kMediaQuerySetParser) {
       state_ = kReadRestrictor;
       media_query_data_.Clear();
       query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
     }
+  } else {
+    range.ConsumeComponentValue();
   }
 }
 
@@ -213,7 +239,7 @@ void MediaQueryParser::Done(CSSParserTokenRange& range) {
 
 CSSParserToken MediaQueryParser::ConsumeToken(CSSParserTokenRange& range) {
   CSSParserToken token = range.Consume();
-  block_watcher_.HandleToken(token);
+  DCHECK_EQ(token.GetBlockType(), CSSParserToken::kNotBlock);
   return token;
 }
 
@@ -256,8 +282,7 @@ scoped_refptr<MediaQuerySet> MediaQueryParser::ParseImpl(
     ProcessToken(empty);
   }
 
-  if (state_ != kReadAnd && state_ != kReadRestrictor && state_ != kDone &&
-      state_ != kReadMediaNot)
+  if (state_ != kReadRestrictor && state_ != kDone && state_ != kReadMediaNot)
     query_set_->AddMediaQuery(MediaQuery::CreateNotAll());
   else if (media_query_data_.CurrentMediaQueryChanged())
     query_set_->AddMediaQuery(media_query_data_.TakeMediaQuery());

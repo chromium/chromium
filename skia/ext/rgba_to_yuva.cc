@@ -15,10 +15,13 @@ namespace skia {
 
 void BlitRGBAToYUVA(SkImage* src_image,
                     SkSurface* dst_surfaces[SkYUVAInfo::kMaxPlanes],
-                    const SkYUVAInfo& dst_yuva_info) {
+                    const SkYUVAInfo& dst_yuva_info,
+                    const SkRect& dst_region) {
   const SkRect src_rect = SkRect::Make(src_image->bounds());
   const SkRect dst_rect =
-      SkRect::MakeSize(SkSize::Make(dst_yuva_info.dimensions()));
+      dst_region.isEmpty()
+          ? SkRect::MakeSize(SkSize::Make(dst_yuva_info.dimensions()))
+          : dst_region;
 
   // Permutation matrices to select the appropriate YUVA channels for each
   // output plane.
@@ -61,6 +64,9 @@ void BlitRGBAToYUVA(SkImage* src_image,
         SkColorFilters::Matrix(color_matrix),
         SkColorFilters::Blend(SK_ColorBLACK, SkBlendMode::kDstOver)));
 
+    // Subsampling factors are determined by the ratios of the entire image's
+    // width & height to the dimensions of the passed in surfaces (which should
+    // also span the entire logical image):
     float subsampling_factors[2] = {
         static_cast<float>(dst_surfaces[plane]->width()) /
             dst_yuva_info.dimensions().width(),

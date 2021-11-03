@@ -8,7 +8,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -244,6 +244,9 @@ public class BookmarkBridge {
 
         /**@return Whether this bookmark can be moved */
         public boolean isMovable() {
+            if (ReadingListUtils.isSwappableReadingListItem(mId)) {
+                return true;
+            }
             return isEditable() && mId.getType() == BookmarkType.NORMAL;
         }
 
@@ -307,13 +310,9 @@ public class BookmarkBridge {
      * @return {@code true} if the current Tab URL has a bookmark associated with it. If the
      *         bookmark backend is not loaded, return {@code false}.
      */
-    public boolean hasBookmarkIdForTab(@NonNull Tab tab) {
+    public boolean hasBookmarkIdForTab(@Nullable Tab tab) {
         ThreadUtils.assertOnUiThread();
-        assert tab != null;
-        if (tab.isFrozen() || mNativeBookmarkBridge == 0) return false;
-        return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
-                       mNativeBookmarkBridge, this, tab.getWebContents(), false)
-                != null;
+        return getUserBookmarkIdForTab(tab) != null;
     }
 
     /**
@@ -321,10 +320,9 @@ public class BookmarkBridge {
      * @return BookmarkId or {@link null} if bookmark backend is not loaded or the tab is frozen.
      */
     @Nullable
-    public BookmarkId getUserBookmarkIdForTab(@NonNull Tab tab) {
+    public BookmarkId getUserBookmarkIdForTab(@Nullable Tab tab) {
         ThreadUtils.assertOnUiThread();
-        assert tab != null;
-        if (tab.isFrozen()) return null;
+        if (tab == null || tab.isFrozen() || mNativeBookmarkBridge == 0) return null;
         return BookmarkBridgeJni.get().getBookmarkIdForWebContents(
                 mNativeBookmarkBridge, this, tab.getWebContents(), true);
     }
@@ -443,6 +441,14 @@ public class BookmarkBridge {
         return result;
     }
 
+    /** Returns the synthetic reading list folder. */
+    public BookmarkId getReadingListFolder() {
+        ThreadUtils.assertOnUiThread();
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getReadingListFolder(
+                mNativeBookmarkBridge, BookmarkBridge.this);
+    }
+
     /**
      * Populates folderList with BookmarkIds of folders users can move bookmarks
      * to and all folders have corresponding depth value in depthList. Folders
@@ -540,6 +546,22 @@ public class BookmarkBridge {
         assert mIsNativeBookmarkModelLoaded;
         return BookmarkBridgeJni.get().getDesktopFolderId(
                 mNativeBookmarkBridge, BookmarkBridge.this);
+    }
+
+    /**
+     * Gets Bookmark GUID which is immutable and differs from the BookmarkId in that it is
+     * consistent across different clients and stable throughout the lifetime of the bookmark, with
+     * the exception of nodes added to the Managed Bookmarks folder, whose GUIDs are re-assigned at
+     * start-up every time.
+     *
+     * @return Bookmark GUID of the given node.
+     */
+    @VisibleForTesting
+    public String getBookmarkGuidByIdForTesting(BookmarkId id) {
+        ThreadUtils.assertOnUiThread();
+        assert mIsNativeBookmarkModelLoaded;
+        return BookmarkBridgeJni.get().getBookmarkGuidByIdForTesting(
+                mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
 
     /**
@@ -733,6 +755,9 @@ public class BookmarkBridge {
     public boolean isFolderVisible(BookmarkId id) {
         ThreadUtils.assertOnUiThread();
         assert mIsNativeBookmarkModelLoaded;
+        if (ReadingListUtils.isSwappableReadingListItem(id)) {
+            return true;
+        }
         return BookmarkBridgeJni.get().isFolderVisible(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
@@ -1164,6 +1189,7 @@ public class BookmarkBridge {
                 long nativeBookmarkBridge, BookmarkBridge caller, List<BookmarkId> bookmarksList);
         void getTopLevelFolderIDs(long nativeBookmarkBridge, BookmarkBridge caller,
                 boolean getSpecial, boolean getNormal, List<BookmarkId> bookmarksList);
+        BookmarkId getReadingListFolder(long nativeBookmarkBridge, BookmarkBridge caller);
         void getAllFoldersWithDepths(long nativeBookmarkBridge, BookmarkBridge caller,
                 List<BookmarkId> folderList, List<Integer> depthList);
         BookmarkId getRootFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
@@ -1171,6 +1197,8 @@ public class BookmarkBridge {
         BookmarkId getOtherFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
         BookmarkId getDesktopFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
         BookmarkId getPartnerFolderId(long nativeBookmarkBridge, BookmarkBridge caller);
+        String getBookmarkGuidByIdForTesting(
+                long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         int getChildCount(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type);
         void getChildIDs(long nativeBookmarkBridge, BookmarkBridge caller, long id, int type,
                 List<BookmarkId> bookmarksList);

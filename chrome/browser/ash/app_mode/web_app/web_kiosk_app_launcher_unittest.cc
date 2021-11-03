@@ -18,10 +18,7 @@
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
-#include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper_chromeos.h"
@@ -100,25 +97,19 @@ class AppWindowCloser : public BrowserListObserver {
   base::RunLoop waiter;
 };
 
-class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
+class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
  public:
-  WebKioskAppLauncherTest()
-      : ChromeRenderViewHostTestHarness(),
-        local_state_(TestingBrowserProcess::GetGlobal()) {}
+  WebKioskAppLauncherTest() : BrowserWithTestWindowTest() {}
   ~WebKioskAppLauncherTest() override {}
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    BrowserWithTestWindowTest::SetUp();
     app_manager_ = std::make_unique<WebKioskAppManager>();
     delegate_ = std::make_unique<MockAppLauncherDelegate>();
     launcher_ = std::make_unique<WebKioskAppLauncher>(
         profile(), delegate_.get(), AccountId::FromUserEmail(kAppEmail));
 
-    browser_window_ = new TestBrowserWindow();
-    new TestBrowserWindowOwner(browser_window_);
-    browser_window_->SetNativeWindow(new aura::Window(nullptr));
-
-    launcher_->SetBrowserWindowForTesting(browser_window_);
+    launcher_->SetBrowserWindowForTesting(window());
     url_loader_ = new web_app::TestWebAppUrlLoader();
     launcher_->SetUrlLoaderForTesting(
         std::unique_ptr<web_app::TestWebAppUrlLoader>(url_loader_));
@@ -131,7 +122,7 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
     launcher_.reset();
     delegate_.reset();
     app_manager_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   void SetupAppData(bool installed) {
@@ -184,9 +175,7 @@ class WebKioskAppLauncherTest : public ChromeRenderViewHostTestHarness {
 
  private:
   std::unique_ptr<WebKioskAppManager> app_manager_;
-  ScopedTestingLocalState local_state_;
 
-  TestBrowserWindow* browser_window_;
   std::unique_ptr<MockAppLauncherDelegate> delegate_;
   std::unique_ptr<WebKioskAppLauncher> launcher_;
   std::unique_ptr<AppWindowCloser> closer_;

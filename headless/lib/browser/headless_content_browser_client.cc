@@ -4,8 +4,9 @@
 
 #include "headless/lib/browser/headless_content_browser_client.h"
 
-#include <memory>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -37,6 +38,7 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/port_util.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/client_cert_identity.h"
@@ -261,9 +263,6 @@ void HeadlessContentBrowserClient::AppendExtraCommandLineSwitches(
     command_line->AppendSwitch(::switches::kEnableCrashReporter);
 #endif  // defined(HEADLESS_USE_BREAKPAD)
 
-  if (old_command_line.HasSwitch(switches::kExportTaggedPDF))
-    command_line->AppendSwitch(switches::kExportTaggedPDF);
-
   // If we're spawning a renderer, then override the language switch.
   std::string process_type =
       command_line->GetSwitchValueASCII(::switches::kProcessType);
@@ -432,5 +431,28 @@ HeadlessContentBrowserClient::CreateThrottlesForNavigation(
   return throttles;
 }
 #endif  // defined(HEADLESS_USE_POLICY)
+
+void HeadlessContentBrowserClient::OnNetworkServiceCreated(
+    ::network::mojom::NetworkService* network_service) {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kExplicitlyAllowedPorts))
+    return;
+
+  std::string comma_separated_ports =
+      command_line->GetSwitchValueASCII(switches::kExplicitlyAllowedPorts);
+  const auto port_list = base::SplitStringPiece(
+      comma_separated_ports, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<uint16_t> explicitly_allowed_ports;
+  for (const auto port_str : port_list) {
+    int port;
+    if (!base::StringToInt(port_str, &port))
+      continue;
+    if (!net::IsPortValid(port))
+      continue;
+    explicitly_allowed_ports.push_back(port);
+  }
+
+  network_service->SetExplicitlyAllowedPorts(explicitly_allowed_ports);
+}
 
 }  // namespace headless

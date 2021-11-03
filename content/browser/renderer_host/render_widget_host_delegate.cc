@@ -113,6 +113,12 @@ RenderWidgetHostImpl* RenderWidgetHostDelegate::GetKeyboardLockWidget() {
   return nullptr;
 }
 
+bool RenderWidgetHostDelegate::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
+    blink::mojom::FrameVisibility visibility) {
+  return false;
+}
+
 TextInputManager* RenderWidgetHostDelegate::GetTextInputManager() {
   return nullptr;
 }
@@ -124,6 +130,11 @@ RenderViewHostDelegateView* RenderWidgetHostDelegate::GetDelegateView() {
 bool RenderWidgetHostDelegate::IsWidgetForPrimaryMainFrame(
     RenderWidgetHostImpl*) {
   return false;
+}
+
+VisibleTimeRequestTrigger*
+RenderWidgetHostDelegate::GetVisibleTimeRequestTrigger() {
+  return nullptr;
 }
 
 ukm::SourceId RenderWidgetHostDelegate::GetCurrentPageUkmSourceId() {

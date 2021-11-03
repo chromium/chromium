@@ -9,15 +9,27 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.content_public.browser.AttributionReporter;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A ContentProvider used to push Attribution data into Chrome from other Apps.
@@ -25,6 +37,18 @@ import java.util.concurrent.FutureTask;
  */
 public class AttributionReportingProviderImpl extends AttributionReportingProvider.Impl {
     private static final String TAG = "AttributionReporting";
+
+    private ImpressionPersistentStore<DataOutputStream, DataInputStream> mImpressionPersistentStore;
+
+    public AttributionReportingProviderImpl() {
+        this(new ImpressionPersistentStore<>(new ImpressionPersistentStoreFileManagerImpl()));
+    }
+
+    @VisibleForTesting
+    /* package */ AttributionReportingProviderImpl(
+            ImpressionPersistentStore impressionPersistentStore) {
+        mImpressionPersistentStore = impressionPersistentStore;
+    }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
@@ -52,33 +76,74 @@ public class AttributionReportingProviderImpl extends AttributionReportingProvid
                 values.getAsString(AttributionConstants.EXTRA_ATTRIBUTION_REPORT_TO);
         final Long expiry = values.getAsLong(AttributionConstants.EXTRA_ATTRIBUTION_EXPIRY);
 
+        final AttributionParameters parameters = new AttributionParameters(
+                sourcePackageName, sourceEventId, destination, reportTo, expiry);
+
         FutureTask<Uri> insertTask = new FutureTask<>(() -> {
-            // TODO(https://crbug.com/1210171): Handle the attribution data with job scheduler if
-            // Chrome is not started.
             if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                return Uri.EMPTY;
+                return null;
             }
 
-            return insertOnUiThread(
-                    values, sourceEventId, destination, sourcePackageName, reportTo, expiry);
+            // TODO(https://crbug.com/1210171): Do we need to flush the stored metrics here, or
+            // should we wait for a conversion event to flush?
+            return insertOnUiThread(parameters);
         });
 
         // This cannot be BEST_EFFORT as the browser may not yet be started and so BEST_EFFORT tasks
         // will not be run.
         PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, insertTask);
         try {
-            return insertTask.get();
+            Uri result = insertTask.get();
+            if (result == null) {
+                boolean flush = mImpressionPersistentStore.storeImpression(parameters);
+                if (flush) scheduleStorageFlush();
+                return Uri.EMPTY;
+            }
+            return result;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // Note that according to documentation we can only throw IllegalArgumentException and
+            // NullPointerException from ContentProviders as Android needs to be able to communicate
+            // these exceptions across processes.
+            // This is an internal exception, so just return null to indicate an error occurred.
+            Log.e(TAG, "Internal error occured reporting attribution: ", e);
+            return null;
         }
     }
 
-    private Uri insertOnUiThread(final ContentValues values, final String sourceEventId,
-            final String destination, final String sourcePackageName, final String reportTo,
-            final Long expiry) {
+    private void scheduleStorageFlush() throws ExecutionException, InterruptedException {
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        long current = System.currentTimeMillis();
+        long lastStartup =
+                prefs.readLong(ChromePreferenceKeys.ATTRIBUTION_PROVIDER_LAST_BROWSER_START);
+        if (current - lastStartup
+                < TimeUnit.HOURS.toMillis(ImpressionPersistentStore.MIN_REPORTING_INTERVAL_HOURS)) {
+            // We recently already started up the browser to flush storage, so avoid starting up
+            // again so soon.
+            return;
+        }
+        prefs.writeLong(ChromePreferenceKeys.ATTRIBUTION_PROVIDER_LAST_BROWSER_START, current);
+
+        // Schedule a task to perform the storage flush in the background.
+        TaskInfo taskInfo = TaskInfo.createTask(TaskIds.ATTRIBUTION_PROVIDER_FLUSH_JOB_ID,
+                                            TaskInfo.OneOffInfo.create().build())
+                                    .setUpdateCurrent(true)
+                                    .setIsPersisted(true)
+                                    .build();
+
+        FutureTask<Void> scheduleTask = new FutureTask<Void>(() -> {
+            // This will overwrite any existing task with this ID.
+            BackgroundTaskSchedulerFactory.getScheduler().schedule(getContext(), taskInfo);
+            return null;
+        });
+        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, scheduleTask);
+        scheduleTask.get();
+    }
+
+    private Uri insertOnUiThread(final AttributionParameters parameters) {
         AttributionReporter.getInstance().reportAppImpression(Profile.getLastUsedRegularProfile(),
-                sourcePackageName, sourceEventId, destination, reportTo,
-                expiry == null ? 0 : expiry.longValue());
+                parameters.getSourcePackageName(), parameters.getSourceEventId(),
+                parameters.getDestination(), parameters.getReportTo(), parameters.getExpiry(),
+                parameters.getEventTime());
 
         // We don't have a meaningful Uri to return, so just return an empty one to indicate
         // success (in place of null for failure).

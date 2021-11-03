@@ -203,7 +203,7 @@ base::ThreadPool::PostTask(
 ### Posting via a TaskRunner
 
 A parallel
-[`base::TaskRunner`](https://cs.chromium.org/chromium/src/base/task_runner.h) is
+[`base::TaskRunner`](https://cs.chromium.org/chromium/src/base/task/task_runner.h) is
 an alternative to calling `base::ThreadPool::PostTask*()` directly. This is
 mainly useful when it isn’t known in advance whether tasks will be posted in
 parallel, in sequence, or to a single-thread (ref. [Posting a Sequenced
@@ -240,7 +240,7 @@ less invasive ways of controlling tasks in tests).
 
 A sequence is a set of tasks that run one at a time in posting order (not
 necessarily on the same thread). To post tasks as part of a sequence, use a
-[`base::SequencedTaskRunner`](https://cs.chromium.org/chromium/src/base/sequenced_task_runner.h).
+[`base::SequencedTaskRunner`](https://cs.chromium.org/chromium/src/base/task/sequenced_task_runner.h).
 
 ### Posting to a New Sequence
 
@@ -340,7 +340,7 @@ thread/sequence is covered in the PostTask sections above.
 ## Posting Multiple Tasks to the Same Thread
 
 If multiple tasks need to run on the same thread, post them to a
-[`base::SingleThreadTaskRunner`](https://cs.chromium.org/chromium/src/base/single_thread_task_runner.h).
+[`base::SingleThreadTaskRunner`](https://cs.chromium.org/chromium/src/base/task/single_thread_task_runner.h).
 All tasks posted to the same `base::SingleThreadTaskRunner` run on the same thread in
 posting order.
 

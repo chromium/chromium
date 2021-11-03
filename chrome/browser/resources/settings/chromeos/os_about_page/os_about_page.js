@@ -574,6 +574,7 @@ Polymer({
   onCheckUpdatesClick_() {
     this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
     this.aboutBrowserProxy_.requestUpdate();
+    this.$.updateStatusMessageInner.focus();
   },
 
   /**

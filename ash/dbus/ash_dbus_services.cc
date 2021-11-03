@@ -8,6 +8,7 @@
 #include "ash/dbus/display_service_provider.h"
 #include "ash/dbus/gesture_properties_service_provider.h"
 #include "ash/dbus/liveness_service_provider.h"
+#include "ash/dbus/privacy_screen_service_provider.h"
 #include "ash/dbus/url_handler_service_provider.h"
 #include "ash/dbus/user_authentication_service_provider.h"
 #include "base/feature_list.h"
@@ -36,6 +37,11 @@ AshDBusServices::AshDBusServices(dbus::Bus* system_bus) {
       dbus::ObjectPath(chromeos::kLivenessServicePath),
       chromeos::CrosDBusService::CreateServiceProviderList(
           std::make_unique<LivenessServiceProvider>()));
+  privacy_screen_service_ = chromeos::CrosDBusService::Create(
+      system_bus, privacy_screen::kPrivacyScreenServiceName,
+      dbus::ObjectPath(privacy_screen::kPrivacyScreenServicePath),
+      chromeos::CrosDBusService::CreateServiceProviderList(
+          std::make_unique<PrivacyScreenServiceProvider>()));
   url_handler_service_ = chromeos::CrosDBusService::Create(
       system_bus, chromeos::kUrlHandlerServiceName,
       dbus::ObjectPath(chromeos::kUrlHandlerServicePath),
@@ -52,6 +58,7 @@ AshDBusServices::~AshDBusServices() {
   display_service_.reset();
   gesture_properties_service_.reset();
   liveness_service_.reset();
+  privacy_screen_service_.reset();
   url_handler_service_.reset();
   user_authentication_service_.reset();
 }

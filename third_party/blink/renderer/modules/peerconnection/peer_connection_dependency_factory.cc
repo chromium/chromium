@@ -38,6 +38,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/peerconnection/execution_context_metronome_provider.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
@@ -440,6 +441,13 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   if (!metronome_source_ &&
       base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)) {
+    // Store a reference to the context's metronome provider so that it can be
+    // used when cleaning up peer connections, even while the context is being
+    // destroyed.
+    metronome_provider_ =
+        ExecutionContextMetronomeProvider::From(*GetExecutionContext())
+            .metronome_provider();
+    DCHECK(metronome_provider_);
     metronome_source_ = base::MakeRefCounted<MetronomeSource>(
         kWebRtcMetronomeTaskQueueTick.Get());
   }
@@ -578,22 +586,6 @@ bool PeerConnectionDependencyFactory::PeerConnectionFactoryCreated() {
   return !!pc_factory_;
 }
 
-void PeerConnectionDependencyFactory::AddUseMetronomeSourceListener(
-    UseMetronomeSourceListener* use_metronome_source_listener) {
-  use_metronome_source_listeners_.push_back(use_metronome_source_listener);
-  if (open_peer_connections_ && metronome_source_) {
-    use_metronome_source_listener->OnCanUseMetronome(metronome_source_);
-  }
-}
-
-void PeerConnectionDependencyFactory::RemoveUseMetronomeSourceListener(
-    UseMetronomeSourceListener* use_metronome_source_listener) {
-  wtf_size_t pos =
-      use_metronome_source_listeners_.Find(use_metronome_source_listener);
-  DCHECK(pos != kNotFound);
-  use_metronome_source_listeners_.EraseAt(pos);
-}
-
 scoped_refptr<webrtc::PeerConnectionInterface>
 PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
@@ -618,10 +610,7 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   if (pc_or_error.ok()) {
     ++open_peer_connections_;
     if (open_peer_connections_ == 1u && metronome_source_) {
-      for (auto* use_metronome_source_listener :
-           use_metronome_source_listeners_) {
-        use_metronome_source_listener->OnCanUseMetronome(metronome_source_);
-      }
+      metronome_provider_->OnStartUsingMetronome(metronome_source_);
     }
     // Convert from rtc::scoped_refptr to scoped_refptr
     return pc_or_error.value().get();
@@ -640,10 +629,7 @@ void PeerConnectionDependencyFactory::OnPeerConnectionClosed() {
   DCHECK(open_peer_connections_);
   --open_peer_connections_;
   if (!open_peer_connections_ && metronome_source_) {
-    for (auto* use_metronome_source_listener :
-         use_metronome_source_listeners_) {
-      use_metronome_source_listener->OnStopUsingMetronome(metronome_source_);
-    }
+    metronome_provider_->OnStopUsingMetronome();
   }
 }
 

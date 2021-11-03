@@ -229,6 +229,8 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     : container_(container), item_(std::move(item)) {
   DCHECK(container_);
 
+  DCHECK(notification_controls_view);
+
   SetPreferredSize(kMediaNotificationViewBaseSize);
 
   DCHECK(notification_width >= kMediaNotificationViewBaseSize.width())
@@ -421,9 +423,11 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
           std::move(picture_in_picture_button));
     }
 
-    auto* footer_view = util_buttons_container->AddChildView(
-        std::move(notification_footer_view));
-    util_buttons_layout->SetFlexForView(footer_view, 1);
+    if (notification_footer_view) {
+      auto* footer_view = util_buttons_container->AddChildView(
+          std::move(notification_footer_view));
+      util_buttons_layout->SetFlexForView(footer_view, 1);
+    }
 
     if (item_->SourceType() == SourceType::kCast) {
       auto volume_slider = std::make_unique<MediaNotificationVolumeSliderView>(

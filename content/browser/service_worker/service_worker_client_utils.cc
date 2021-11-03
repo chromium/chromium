@@ -71,6 +71,9 @@ class OpenURLObserver : public WebContentsObserver {
         frame_tree_node_id_(frame_tree_node_id),
         callback_(std::move(callback)) {}
 
+  OpenURLObserver(const OpenURLObserver&) = delete;
+  OpenURLObserver& operator=(const OpenURLObserver&) = delete;
+
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (navigation_handle->GetFrameTreeNodeId() != frame_tree_node_id_) {
       // This navigation is not for the frame this observer is interested in,
@@ -117,8 +120,6 @@ class OpenURLObserver : public WebContentsObserver {
 
   int frame_tree_node_id_;
   OpenURLCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenURLObserver);
 };
 
 blink::mojom::ServiceWorkerClientInfoPtr GetWindowClientInfo(

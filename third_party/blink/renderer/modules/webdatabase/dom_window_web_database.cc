@@ -72,6 +72,10 @@ Database* DOMWindowWebDatabase::openDatabase(
     if (window.GetSecurityOrigin()->IsLocal())
       UseCounter::Count(window, WebFeature::kFileAccessedDatabase);
 
+    if (!window.GetExecutionContext()->IsSecureContext()) {
+      UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
+    }
+
     if (window.IsCrossSiteSubframeIncludingScheme()) {
       Deprecation::CountDeprecation(
           &window, WebFeature::kOpenWebDatabaseThirdPartyContext);
@@ -79,8 +83,12 @@ Database* DOMWindowWebDatabase::openDatabase(
               features::kWebSQLInThirdPartyContextEnabled) &&
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               blink::switches::kWebSQLInThirdPartyContextEnabled)) {
-        exception_state.ThrowSecurityError(
-            "Access to the WebDatabase API is denied in third party contexts.");
+        if (base::FeatureList::IsEnabled(
+                features::kWebSQLInThirdPartyContextThrowsWhenDisabled)) {
+          exception_state.ThrowSecurityError(
+              "Access to the WebDatabase API is denied in third party "
+              "contexts.");
+        }
         return nullptr;
       }
     }

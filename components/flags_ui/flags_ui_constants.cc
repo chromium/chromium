@@ -33,5 +33,6 @@ const char kShowOwnerWarning[] = "showOwnerWarning";
 const char kSupportedFeatures[] = "supportedFeatures";
 const char kUnsupportedFeatures[] = "unsupportedFeatures";
 const char kVersion[] = "version";
+const char kShowSystemFlagsLink[] = "showSystemFlagsLink";
 
 }  // namespace flags_ui

@@ -32,6 +32,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -744,8 +745,28 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+class AppBannerManagerMPArchBrowserTest : public AppBannerManagerBrowserTest {
+ public:
+  AppBannerManagerMPArchBrowserTest() = default;
+  ~AppBannerManagerMPArchBrowserTest() override = default;
+  AppBannerManagerMPArchBrowserTest(const AppBannerManagerMPArchBrowserTest&) =
+      delete;
+
+  AppBannerManagerMPArchBrowserTest& operator=(
+      const AppBannerManagerMPArchBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    AppBannerManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+};
+
 class AppBannerManagerPrerenderBrowserTest
-    : public AppBannerManagerBrowserTest {
+    : public AppBannerManagerMPArchBrowserTest {
  public:
   AppBannerManagerPrerenderBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -760,20 +781,11 @@ class AppBannerManagerPrerenderBrowserTest
 
   void SetUp() override {
     prerender_helper_.SetUp(embedded_test_server());
-    AppBannerManagerBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    AppBannerManagerBrowserTest::SetUpOnMainThread();
+    AppBannerManagerMPArchBrowserTest::SetUp();
   }
 
   content::test::PrerenderTestHelper& prerender_test_helper() {
     return prerender_helper_;
-  }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  private:
@@ -801,6 +813,49 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerPrerenderBrowserTest,
   prerender_test_helper().NavigatePrimaryPage(prerender_url);
   EXPECT_TRUE(host_observer.was_activated());
   EXPECT_EQ(manager->state(), AppBannerManager::State::FETCHING_MANIFEST);
+}
+
+class AppBannerManagerFencedFrameBrowserTest
+    : public AppBannerManagerMPArchBrowserTest {
+ public:
+  AppBannerManagerFencedFrameBrowserTest() = default;
+  ~AppBannerManagerFencedFrameBrowserTest() override = default;
+  AppBannerManagerFencedFrameBrowserTest(
+      const AppBannerManagerFencedFrameBrowserTest&) = delete;
+
+  AppBannerManagerFencedFrameBrowserTest& operator=(
+      const AppBannerManagerFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
+                       FencedFrameShouldNotUpdateState) {
+  // Navigate to an initial page.
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  std::unique_ptr<AppBannerManagerTest> manager(
+      CreateAppBannerManager(browser()));
+  EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
+
+  // Create a fenced frame.
+  const GURL fenced_frame_url = GetBannerURL();
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+  EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
+
+  // Navigate the fenced frame.
+  fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
+                                                            fenced_frame_url);
+  EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
 }
 
 }  // namespace

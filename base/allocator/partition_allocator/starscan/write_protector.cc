@@ -80,7 +80,7 @@ UserFaultFDWriteProtector::UserFaultFDWriteProtector()
 
   // Register the giga-cage to listen uffd events.
   struct uffdio_register uffdio_register;
-  uffdio_register.range.start = PartitionAddressSpace::NonBRPPoolBase();
+  uffdio_register.range.start = PartitionAddressSpace::RegularPoolBase();
   uffdio_register.range.len = kPoolMaxSize;
   uffdio_register.mode = UFFDIO_REGISTER_MODE_WP;
   PA_CHECK(-1 != ioctl(uffd_, UFFDIO_REGISTER, &uffdio_register));

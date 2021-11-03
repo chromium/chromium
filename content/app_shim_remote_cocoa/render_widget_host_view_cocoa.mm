@@ -68,6 +68,9 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
  public:
   explicit DummyHostHelper() {}
 
+  DummyHostHelper(const DummyHostHelper&) = delete;
+  DummyHostHelper& operator=(const DummyHostHelper&) = delete;
+
  private:
   // RenderWidgetHostNSViewHostHelper implementation.
   id GetRootBrowserAccessibilityElement() override { return nil; }
@@ -92,8 +95,6 @@ class DummyHostHelper : public RenderWidgetHostNSViewHostHelper {
   void GestureUpdate(blink::WebGestureEvent update_event) override {}
   void GestureEnd(blink::WebGestureEvent end_event) override {}
   void SmartMagnify(const blink::WebGestureEvent& web_event) override {}
-
-  DISALLOW_COPY_AND_ASSIGN(DummyHostHelper);
 };
 
 // Touch bar identifier.
