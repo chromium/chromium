@@ -1343,4 +1343,35 @@ var browserTests = [
     ],
     [true],
     {"inserttext":[false,false,"",false,false,""]}],
+// If selection is after a <br> element in a block and the <br> element follows
+// last visible thing in the block, content should be inserted before the <br>
+// element.
+["<p>a<br>{}<span></span></p>",
+    [["inserttext","b"]],
+    "<p>ab<br><span></span></p>",
+    [true],
+    {"inserttext":[false,false,"",false,false,""]}],
+// In this case, the <span> element after <br> element is visible and  is put in
+// the second line, but for backward compatibility, typing text should be
+// inserted before the <br> element.
+["<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>",
+    [["inserttext","b"]],
+    "<p style=\"white-space:pre-wrap\">ab<br><span style=\"padding:1px\"></span></p>",
+    [true],
+    {"inserttext":[false,false,"",false,false,""]}],
+// Similar case if <br> follows last visible thing and is followed by invisible
+// inline element and a block.  In this case, Chrome inserts text into the
+// following block so that the expectation follows it.
+["<div>a<br>{}<span></span><p>c</p></div>",
+    [["inserttext","b"]],
+    "<div>a<br><span></span><p>bc</p></div>",
+    [true],
+    {"inserttext":[false,false,"",false,false,""]}],
+// And even if the <br> element is followed by visible but empty inline element,
+// should be same as previous test.
+["<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>",
+    [["inserttext","b"]],
+    "<div style=\"white-space:pre-wrap\">a<br><span style=\"padding:1px\"></span><p>bc</p></div>",
+    [true],
+    {"inserttext":[false,false,"",false,false,""]}],
 ]

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 750 tests; 733 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 786 tests; 769 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","false"],["inserttext","a"]] "[foo<a href=http://www.google.com><font color=blue>bar]</font></a>baz" queryCommandValue("stylewithcss") after
 PASS [["stylewithcss","false"],["inserttext","a"]] "[foo<a href=http://www.google.com><font color=blue>bar]</font></a>baz" queryCommandIndeterm("inserttext") before
 PASS [["stylewithcss","false"],["inserttext","a"]] "[foo<a href=http://www.google.com><font color=blue>bar]</font></a>baz" queryCommandState("inserttext") before
@@ -750,5 +750,41 @@ PASS [["inserttext","    "]] "<div style=white-space:nowrap>foo[]</div>" queryCo
 PASS [["inserttext","    "]] "<div style=white-space:nowrap>foo[]</div>" queryCommandIndeterm("inserttext") after
 PASS [["inserttext","    "]] "<div style=white-space:nowrap>foo[]</div>" queryCommandState("inserttext") after
 PASS [["inserttext","    "]] "<div style=white-space:nowrap>foo[]</div>" queryCommandValue("inserttext") after
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>": execCommand("inserttext", false, "b") return value
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" checks for modifications to non-editable content
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" compare innerHTML
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" queryCommandIndeterm("inserttext") before
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" queryCommandState("inserttext") before
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" queryCommandValue("inserttext") before
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" queryCommandIndeterm("inserttext") after
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" queryCommandState("inserttext") after
+PASS [["inserttext","b"]] "<p>a<br>{}<span></span></p>" queryCommandValue("inserttext") after
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>": execCommand("inserttext", false, "b") return value
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" checks for modifications to non-editable content
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" compare innerHTML
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" queryCommandIndeterm("inserttext") before
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" queryCommandState("inserttext") before
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" queryCommandValue("inserttext") before
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" queryCommandIndeterm("inserttext") after
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" queryCommandState("inserttext") after
+PASS [["inserttext","b"]] "<p style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span></p>" queryCommandValue("inserttext") after
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>": execCommand("inserttext", false, "b") return value
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" checks for modifications to non-editable content
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" compare innerHTML
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" queryCommandIndeterm("inserttext") before
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" queryCommandState("inserttext") before
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" queryCommandValue("inserttext") before
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" queryCommandIndeterm("inserttext") after
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" queryCommandState("inserttext") after
+PASS [["inserttext","b"]] "<div>a<br>{}<span></span><p>c</p></div>" queryCommandValue("inserttext") after
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>": execCommand("inserttext", false, "b") return value
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" checks for modifications to non-editable content
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" compare innerHTML
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" queryCommandIndeterm("inserttext") before
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" queryCommandState("inserttext") before
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" queryCommandValue("inserttext") before
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" queryCommandIndeterm("inserttext") after
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" queryCommandState("inserttext") after
+PASS [["inserttext","b"]] "<div style=\"white-space:pre-wrap\">a<br>{}<span style=\"padding:1px\"></span><p>c</p></div>" queryCommandValue("inserttext") after
 Harness: the test ran to completion.
 
