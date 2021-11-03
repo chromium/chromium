@@ -94,7 +94,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
     }
 
     /**
-     * Dismiss the main dialog.
+     * Dismiss the main dialog from top bar.
      */
     @Override
     public void dismiss() {
@@ -167,7 +167,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                     .build();
 
                     // Dismiss current dialog before showing the share sheet.
-                    this.dismiss();
+                    mDialog.dismiss();
                     mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
                 });
     }
@@ -237,7 +237,7 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                            .build();
 
         // Dismiss current dialog before showing the share sheet.
-        this.dismiss();
+        mDialog.dismiss();
         mChromeOptionShareCallback.showShareSheet(params, extras, shareStartTime);
     }
 
