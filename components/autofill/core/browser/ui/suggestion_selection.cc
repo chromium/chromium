@@ -131,11 +131,15 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
         }
       }
 
-      suggestions.push_back(Suggestion(value));
+      suggestions.emplace_back(value);
       suggestions.back().backend_id = profile->guid();
       suggestions.back().match = prefix_matched_suggestion
                                      ? Suggestion::PREFIX_MATCH
                                      : Suggestion::SUBSTRING_MATCH;
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillUseConsistentPopupSettingsIcons)) {
+        suggestions.back().icon = "accountIcon";
+      }
     }
   }
 

@@ -87,6 +87,9 @@ constexpr int kAutofillPopupAdditionalPadding = 16;
 // Vertical spacing between labels in one row.
 constexpr int kAdjacentLabelsVerticalSpacing = 2;
 
+// The default icon size used in the suggestion drop down.
+constexpr int kIconSize = 16;
+
 // Popup footer items that use a leading icon instead of a trailing one.
 constexpr autofill::PopupItemId kItemTypesUsingLeadingIcons[] = {
     autofill::PopupItemId::POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS,
@@ -134,8 +137,8 @@ std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
     const gfx::VectorIcon& vector_icon) {
-  return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      vector_icon, ui::kColorIcon, gfx::kFaviconSize));
+  return std::make_unique<views::ImageView>(
+      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, kIconSize));
 }
 
 std::unique_ptr<views::ImageView> GetIconImageViewByName(
@@ -149,9 +152,8 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(omnibox::kHttpIcon);
 
   if (icon_str == "httpsInvalid") {
-    return ImageViewFromImageSkia(
-        gfx::CreateVectorIcon(vector_icons::kNotSecureWarningIcon,
-                              gfx::kFaviconSize, gfx::kGoogleRed700));
+    return ImageViewFromImageSkia(gfx::CreateVectorIcon(
+        vector_icons::kNotSecureWarningIcon, kIconSize, gfx::kGoogleRed700));
   }
 
   if (icon_str == "keyIcon")
@@ -159,6 +161,10 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 
   if (icon_str == "globeIcon")
     return ImageViewFromVectorIcon(kGlobeIcon);
+
+  if (icon_str == "accountIcon") {
+    return ImageViewFromVectorIcon(kAccountCircleIcon);
+  }
 
   if (icon_str == "settingsIcon") {
     return ImageViewFromVectorIcon(
@@ -177,7 +183,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   if (icon_str == "google") {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     return ImageViewFromImageSkia(gfx::CreateVectorIcon(
-        kGoogleGLogoIcon, gfx::kFaviconSize, gfx::kPlaceholderColor));
+        kGoogleGLogoIcon, kIconSize, gfx::kPlaceholderColor));
 #else
     return nullptr;
 #endif
