@@ -82,6 +82,7 @@ apps::mojom::AppPtr Convert(const app_list::InternalApp& internal_app) {
       internal_app.searchable ? apps::mojom::OptionalBool::kTrue
                               : apps::mojom::OptionalBool::kFalse;
   app->show_in_management = apps::mojom::OptionalBool::kFalse;
+  app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
 
   return app;
 }

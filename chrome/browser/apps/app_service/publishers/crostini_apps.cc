@@ -376,6 +376,11 @@ apps::mojom::AppPtr CrostiniApps::Convert(
   // Management.
   app->show_in_management = apps::mojom::OptionalBool::kFalse;
 
+  app->allow_uninstall =
+      crostini::IsUninstallable(profile_, registration.app_id())
+          ? apps::mojom::OptionalBool::kTrue
+          : apps::mojom::OptionalBool::kFalse;
+
   return app;
 }
 

@@ -1550,6 +1550,10 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
     app->show_in_management = show;
   }
 
+  app->allow_uninstall = (app_info.ready && !app_info.sticky)
+                             ? apps::mojom::OptionalBool::kTrue
+                             : apps::mojom::OptionalBool::kFalse;
+
   app->has_badge = app_notifications_.HasNotification(app_id)
                        ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;

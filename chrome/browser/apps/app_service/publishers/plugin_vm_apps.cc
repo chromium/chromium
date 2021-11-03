@@ -306,6 +306,7 @@ apps::mojom::AppPtr PluginVmApps::Convert(
   app->show_in_search = apps::mojom::OptionalBool::kFalse;
   app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
   app->show_in_management = apps::mojom::OptionalBool::kFalse;
+  app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
 
   return app;
 }

@@ -230,6 +230,14 @@ apps::mojom::AppPtr ExtensionAppsBase::ConvertImpl(
 
   SetShowInFields(app, extension);
 
+  const extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile())->management_policy();
+  DCHECK(policy);
+  app->allow_uninstall = (policy->UserMayModifySettings(extension, nullptr) &&
+                          !policy->MustRemainInstalled(extension, nullptr))
+                             ? apps::mojom::OptionalBool::kTrue
+                             : apps::mojom::OptionalBool::kFalse;
+
   return app;
 }
 

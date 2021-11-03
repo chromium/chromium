@@ -402,6 +402,10 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
   SetWebAppShowInFields(app, web_app);
 
+  app->allow_uninstall = web_app->CanUserUninstallWebApp()
+                             ? apps::mojom::OptionalBool::kTrue
+                             : apps::mojom::OptionalBool::kFalse;
+
   // Add the intent filters for PWAs.
   base::Extend(app->intent_filters,
                apps_util::CreateWebAppIntentFilters(

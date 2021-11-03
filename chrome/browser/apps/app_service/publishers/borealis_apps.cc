@@ -76,6 +76,13 @@ apps::mojom::AppPtr GetBorealisLauncher(Profile* profile, bool allowed) {
       IDR_LOGO_BOREALIS_DEFAULT_192, apps::IconEffects::kNone);
 
   SetAppAllowed(app.get(), allowed);
+
+  app->allow_uninstall = (borealis::BorealisService::GetForProfile(profile)
+                              ->Features()
+                              .IsEnabled())
+                             ? apps::mojom::OptionalBool::kTrue
+                             : apps::mojom::OptionalBool::kFalse;
+
   return app;
 }
 
