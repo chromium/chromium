@@ -504,6 +504,11 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
       bits::AlignUp(root->next_partition_page, slot_span_alignment);
   if (UNLIKELY(adjusted_next_partition_page + slot_span_reservation_size >
                root->next_partition_page_end)) {
+    // AllocNewSuperPage() may crash (e.g. address space exhaustion), put data
+    // on stack.
+    PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
+    PA_DEBUG_DATA_ON_STACK("spansize", slot_span_reservation_size);
+
     // In this case, we can no longer hand out pages from the current super page
     // allocation. Get a new super page.
     if (!AllocNewSuperPage(root, flags)) {
@@ -539,6 +544,10 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   // If lazy commit is enabled, pages will be committed when provisioning slots,
   // in ProvisionMoreSlotsAndAllocOne(), not here.
   if (!root->use_lazy_commit) {
+    PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
+    PA_DEBUG_DATA_ON_STACK("spansize", slot_span_reservation_size);
+    PA_DEBUG_DATA_ON_STACK("spancmt", slot_span_committed_size);
+
     root->RecommitSystemPagesForData(slot_span_start, slot_span_committed_size,
                                      PageUpdatePermissions);
   }
