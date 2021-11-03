@@ -68,7 +68,6 @@ class AutocorrectManager {
   void UndoAutocorrect();
 
  private:
-  void ClearUnderline();
   void LogAssistiveAutocorrectAction(AutocorrectActions action);
 
   SuggestionHandlerInterface* suggestion_handler_;
