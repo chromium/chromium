@@ -66,17 +66,37 @@ class NET_EXPORT CookiePartitionKey {
     return CookiePartitionKey(site);
   }
 
+  // Create a new CookiePartitionKey in a script running in a renderer. We do
+  // not trust the renderer to provide us with a cookie partition key, so we let
+  // the renderer use this method to indicate the cookie is partitioned but the
+  // key still needs to be determined.
+  //
+  // When the browser is ingesting cookie partition keys from the renderer,
+  // either the `from_script_` flag should be set or the cookie partition key
+  // should match the browser's. Otherwise the renderer may be compromised.
+  //
+  // TODO(crbug.com/1225444) Consider removing this factory method and
+  // `from_script_` flag when BlinkStorageKey is available in
+  // ServiceWorkerGlobalScope.
+  static absl::optional<CookiePartitionKey> FromScript() {
+    return absl::make_optional(CookiePartitionKey(true));
+  }
+
   // Temporary method, used to mark the places where we need to supply the
   // cookie partition key to CanonicalCookie::Create.
   static absl::optional<CookiePartitionKey> Todo() { return absl::nullopt; }
 
   const SchemefulSite& site() const { return site_; }
 
+  bool from_script() const { return from_script_; }
+
  private:
   explicit CookiePartitionKey(const SchemefulSite& site);
   explicit CookiePartitionKey(const GURL& url);
+  explicit CookiePartitionKey(bool from_script);
 
   SchemefulSite site_;
+  bool from_script_;
 };
 
 }  // namespace net

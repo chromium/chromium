@@ -4953,6 +4953,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
+    enum="Boolean" expires_after="2022-10-01">
+  <owner>dylancutler@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Logged whenever a partitioned cookie is set from a renderer process, which
+    can be from either document.cookie or the CookieStore API. True if the
+    partition key was set with the FromScript constructor (used by the
+    CookieStore API) or if the partition key matches the
+    RestrictedCookieManager's internal partition key (which is the case for
+    cookies set/modified by document.cookie).
+  </summary>
+</histogram>
+
 <histogram name="Net.RestrictedCookieManager.SiteForCookiesOK" enum="Boolean"
     expires_after="2022-04-10">
   <owner>morlovich@chromium.org</owner>
