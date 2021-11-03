@@ -179,20 +179,17 @@ base::flat_set<std::u16string> ExtractPasswords(
 CredentialView::CredentialView(std::string signon_realm,
                                GURL url,
                                std::u16string username,
-                               std::u16string password,
-                               base::Time last_used_time)
+                               std::u16string password)
     : signon_realm(std::move(signon_realm)),
       url(std::move(url)),
       username(std::move(username)),
-      password(std::move(password)),
-      last_used_time(last_used_time) {}
+      password(std::move(password)) {}
 
 CredentialView::CredentialView(const PasswordForm& form)
     : signon_realm(form.signon_realm),
       url(form.url),
       username(form.username_value),
-      password(form.password_value),
-      last_used_time(form.date_last_used) {}
+      password(form.password_value) {}
 
 CredentialView::CredentialView(const CredentialView& credential) = default;
 CredentialView::CredentialView(CredentialView&& credential) = default;
@@ -215,8 +212,7 @@ CredentialWithPassword::CredentialWithPassword(
     : CredentialView(credential.signon_realm,
                      GURL(credential.signon_realm),
                      credential.username,
-                     /*password=*/{},
-                     /*last_used_time=*/base::Time()),
+                     /*password=*/{}),
       create_time(credential.create_time),
       insecure_type(ConvertInsecureType(credential.insecure_type)) {}
 

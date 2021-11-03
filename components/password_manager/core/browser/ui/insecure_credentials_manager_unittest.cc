@@ -907,24 +907,24 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
 
   // Each password should be joined only with compromised credential from
   // their store.
-  EXPECT_THAT(provider().GetSavedPasswordsFor(CredentialView(
-                  kExampleCom, GURL(), kUsername1, kPassword1, base::Time())),
+  EXPECT_THAT(provider().GetSavedPasswordsFor(
+                  CredentialView(kExampleCom, GURL(), kUsername1, kPassword1)),
               IsEmpty());
 
   EXPECT_EQ(provider()
-                .GetSavedPasswordsFor(CredentialView(
-                    kExampleOrg, GURL(), kUsername1, kPassword3, base::Time()))
+                .GetSavedPasswordsFor(
+                    CredentialView(kExampleOrg, GURL(), kUsername1, kPassword3))
                 .size(),
             1u);
 
   EXPECT_EQ(provider()
-                .GetSavedPasswordsFor(CredentialView(
-                    kExampleCom, GURL(), kUsername1, kPassword3, base::Time()))
+                .GetSavedPasswordsFor(
+                    CredentialView(kExampleCom, GURL(), kUsername1, kPassword3))
                 .size(),
             1u);
 
   EXPECT_THAT(provider().GetSavedPasswordsFor(CredentialView(
-                  kExampleOrg, GURL(), kUsername1, kPassword216, base::Time())),
+                  kExampleOrg, GURL(), kUsername1, kPassword216)),
               IsEmpty());
 }
 
@@ -1007,8 +1007,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest,
   RunUntilIdle();
 
   // Now remove the compromised credentials
-  EXPECT_TRUE(provider().RemoveCredential(CredentialView(
-      kExampleCom, GURL(), kUsername1, kPassword1, base::Time())));
+  EXPECT_TRUE(provider().RemoveCredential(
+      CredentialView(kExampleCom, GURL(), kUsername1, kPassword1)));
   RunUntilIdle();
 
   // It should have been removed from both stores.
@@ -1028,8 +1028,8 @@ TEST_F(InsecureCredentialsManagerWithTwoStoresTest, RemoveWeakCredential) {
   RunUntilIdle();
 
   // Now remove the weak credential
-  EXPECT_TRUE(provider().RemoveCredential(CredentialView(
-      kExampleCom, GURL(), kUsername1, kWeakPassword1, base::Time())));
+  EXPECT_TRUE(provider().RemoveCredential(
+      CredentialView(kExampleCom, GURL(), kUsername1, kWeakPassword1)));
   RunUntilIdle();
 
   // It should have been removed from both stores.
