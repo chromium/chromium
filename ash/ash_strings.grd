@@ -4210,6 +4210,15 @@ Here are some things you can try to get started.
       <message name="IDS_SMART_LOCK_LABEL_NO_PHONE" desc="Label for the Smart Lock icon on user's lock screen when a phone eligible to unlock the Chromebook cannot be found after 15 seconds.">
         Can’t find your phone. Make sure your phone’s Bluetooth is on.
       </message>
+      <message name="IDS_SMART_LOCK_LABEL_NO_BLUETOOTH" desc="Label for the Smart Lock icon on user's lock screen when Smart Lock cannot be used because the Chromebook's Bluetooth is turned off.">
+        Your Chromebook’s Bluetooth is off. To unlock your Chromebook, enter password.
+      </message>
+      <message name="IDS_SMART_LOCK_LABEL_NO_PHONE_LOCK_SCREEN" desc="Label for the Smart Lock icon on user's lock screen when Smart Lock cannot be used because the connected phone does not have a lock screen enabled.">
+        Your phone doesn’t have a lock screen. To unlock your Chromebook, enter password.
+      </message>
+      <message name="IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR" desc="Label for the Smart Lock icon on user's lock screen when the connected phone is too far away to use Smart Lock, and must be brought closer.">
+        Your phone is too far away. Bring your phone closer.
+      </message>
       <message name="IDS_AUTH_FACTOR_LABEL_UNLOCK_METHOD_SELECTION" desc="Label for the Smart Lock and Fingerprint icons on user's lock screen to select unlock method.">
         To unlock your Chromebook, use your fingerprint or unlock your phone
       </message>

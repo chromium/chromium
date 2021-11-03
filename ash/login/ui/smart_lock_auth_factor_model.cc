@@ -98,32 +98,31 @@ AuthFactorType SmartLockAuthFactorModel::GetType() {
 int SmartLockAuthFactorModel::GetLabelId() {
   if (auth_result_.has_value()) {
     return auth_result_.value() ? IDS_SMART_LOCK_LABEL_PHONE_LOCKED
-                                : IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+                                : IDS_AUTH_FACTOR_LABEL_CANNOT_UNLOCK;
   }
 
   switch (state_) {
-    // TODO(crbug.com/1233614): ** Add strings for these error states
     case SmartLockState::kDisabled:
       FALLTHROUGH;
     case SmartLockState::kInactive:
       FALLTHROUGH;
-    case SmartLockState::kBluetoothDisabled:  // **
-      FALLTHROUGH;
-    case SmartLockState::kPhoneNotLockable:  // **
-      FALLTHROUGH;
     case SmartLockState::kPasswordReentryRequired:
       FALLTHROUGH;
-    case SmartLockState::kPrimaryUserAbsent:  // **
+    case SmartLockState::kPrimaryUserAbsent:
       FALLTHROUGH;
     case SmartLockState::kPhoneNotAuthenticated:
       return IDS_AUTH_FACTOR_LABEL_UNLOCK_PASSWORD;
+    case SmartLockState::kBluetoothDisabled:
+      return IDS_SMART_LOCK_LABEL_NO_BLUETOOTH;
+    case SmartLockState::kPhoneNotLockable:
+      return IDS_SMART_LOCK_LABEL_NO_PHONE_LOCK_SCREEN;
     case SmartLockState::kConnectingToPhone:
       return IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE;
-    case SmartLockState::kPhoneNotFound:
-      FALLTHROUGH;
-    case SmartLockState::kPhoneFoundLockedAndDistant:  // **
+    case SmartLockState::kPhoneFoundLockedAndDistant:
       FALLTHROUGH;
     case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return IDS_SMART_LOCK_LABEL_PHONE_TOO_FAR;
+    case SmartLockState::kPhoneNotFound:
       return IDS_SMART_LOCK_LABEL_NO_PHONE;
     case SmartLockState::kPhoneFoundLockedAndProximate:
       return IDS_SMART_LOCK_LABEL_PHONE_LOCKED;
