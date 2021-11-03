@@ -313,14 +313,33 @@ struct MenuItems {
 };
 
 struct MenuItem {
-  MenuItemType type;                 // The type of the menu item.
-  int32 command_id;                  // The menu item command id.
-  int32 string_id;                   // The id of the menu item label.
-  array<MenuItem> submenu;           // The optional nested submenu item list.
-  int32 radio_group_id;              // The radio group id.
-  string shortcut_id;                // The shortcut id, may be empty.
-  string label;                      // The string label, may be empty.
-  gfx.mojom.ImageSkia? image;        // The image icon, may be null.
+  // The type of the menu item.
+  MenuItemType type;
+
+  // The menu item command id. Used to identify the command when the menu item
+  // is executed.
+  int32 command_id;
+
+  // The grit id of the menu item label. Used when the menu item's type is
+  // kCommand, kRadio, or kSubmenu.
+  int32 string_id;
+
+  // The optional nested submenu item list.
+  array<MenuItem> submenu;
+
+  // The radio group id. All MenuItems with type kRadio will be grouped by this
+  // ID value in the menu.
+  int32 radio_group_id;
+
+  // Publisher-specific shortcut id. May be empty if not required.
+  string shortcut_id;
+
+  // The string label for this menu item. Used when the menu item's type is
+  // kPublisherCommand.
+  string label;
+
+  // The icon for the menu item. May be null if the item doesn't have an icon.
+  gfx.mojom.ImageSkia? image;
 };
 
 // The types of menu items shown in the app list or shelf.

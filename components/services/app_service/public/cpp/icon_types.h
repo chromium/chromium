@@ -73,6 +73,9 @@ enum class IconType {
   kStandard,
 };
 
+// The return value for the App Service LoadIcon method. The icon will be
+// provided in either an uncompressed representation (gfx::ImageSkia), or a
+// compressed representation (PNG-encoded bytes) depending on |icon_type|.
 struct COMPONENT_EXPORT(APP_UPDATE) IconValue {
   IconValue();
 
@@ -90,8 +93,8 @@ struct COMPONENT_EXPORT(APP_UPDATE) IconValue {
 
   // Specifies whether the icon provided is a placeholder. That field should
   // only be true if the corresponding `LoadIcon` call had
-  // `allow_placeholder_icon` true, which states whether the caller will accept
-  // a placeholder if the real icon can not be provided quickly.
+  // `allow_placeholder_icon` set to true, which states whether the caller will
+  // accept a placeholder if the real icon can not be provided at this time.
   bool is_placeholder_icon = false;
 };
 
