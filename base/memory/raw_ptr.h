@@ -29,6 +29,10 @@
 #include "base/base_export.h"
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace base {
 
 // NOTE: All methods should be ALWAYS_INLINE. raw_ptr is meant to be a
@@ -256,6 +260,65 @@ struct BackupRefPtrImpl {
 
 }  // namespace internal
 
+namespace raw_ptr_traits {
+
+// IsSupportedType<T>::value answers whether raw_ptr<T> 1) compiles and 2) is
+// always safe at runtime.  Templates that may end up using `raw_ptr<T>` should
+// use IsSupportedType to ensure that raw_ptr is not used with unsupported
+// types.  As an example, see how base::internal::StorageTraits uses
+// IsSupportedType as a condition for using base::internal::UnretainedWrapper
+// (which has a `ptr_` field that will become `raw_ptr<T>` after the Big
+// Rewrite).
+template <typename T, typename SFINAE = void>
+struct IsSupportedType {
+  static constexpr bool value = true;
+};
+
+// raw_ptr<SomeFunctionType> does not compile when trying to get the raw pointer
+// value.  This is because CastFromVoidPtr uses a static_cast, which can convert
+// non-function pointer types, but cannot convert to function pointer types.
+template <typename T>
+struct IsSupportedType<T, std::enable_if_t<std::is_function<T>::value>> {
+  static constexpr bool value = false;
+};
+
+#if __OBJC__
+// raw_ptr<ObjCObject> won't compile, because it needs a bridged cast (rather
+// than static_cast) inside CastFromVoidPtr to compile on Apple systems using
+// ARC.
+template <typename T>
+struct IsSupportedType<T*,
+                       std::enable_if_t<std::is_convertible<T*, id>::value>> {
+  static constexpr bool value = false;
+};
+#endif  // __OBJC__
+
+#if defined(OS_WIN)
+// raw_ptr<HWND__> is unsafe at runtime - if the handle happens to also
+// represent a valid pointer into a PartitionAlloc-managed region then it can
+// lead to manipulating random memory when treating it as BackupRefPtr
+// ref-count.  See also https://crbug.com/1262017.
+//
+// TODO(https://crbug.com/1262017): Cover other handle types like HANDLE,
+// HLOCAL, HINTERNET, or HDEVINFO.  Maybe we should avoid using raw_ptr<T> when
+// T=void (as is the case in these handle types).  OTOH, explicit,
+// non-template-based raw_ptr<void> should be allowed.  Maybe this can be solved
+// by having 2 traits: IsPointeeAlwaysSafe (to be used in templates) and
+// IsPointeeUsuallySafe (to be used in the static_assert in raw_ptr).  The
+// upside of this approach is that it will safely handle base::Bind closing over
+// HANDLE.  The downside of this approach is that base::Bind closing over a
+// void* pointer will not get UaF protection.
+#define CHROME_WINDOWS_HANDLE_TYPE(name)   \
+  template <>                              \
+  struct IsSupportedType<name##__, void> { \
+    static constexpr bool value = false;   \
+  };
+#include "base/win/win_handle_types_list.inc"
+#undef CHROME_WINDOWS_HANDLE_TYPE
+#endif
+
+}  // namespace raw_ptr_traits
+
 // DO NOT USE! EXPERIMENTAL ONLY! This is helpful for local testing!
 //
 // raw_ptr<T> (formerly known as CheckedPtr<T>) is meant to be a raw pointer
@@ -280,12 +343,8 @@ template <typename T,
 #endif
 class raw_ptr {
  public:
-  static_assert(!std::is_function<T>::value,
-                "raw_ptr doesn't support function pointers");
-#if __OBJC__
-  static_assert(!std::is_convertible<T*, id>::value,
-                "raw_ptr doesn't support pointers to Objective-C objects");
-#endif
+  static_assert(raw_ptr_traits::IsSupportedType<T>::value,
+                "raw_ptr<T> doesn't work with this kind of pointee type T");
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.

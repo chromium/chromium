@@ -79,21 +79,11 @@ typedef LONG NTSTATUS;
 
 // Forward declare Windows compatible handles.
 
-#define CHROME_DECLARE_HANDLE(name) \
-  struct name##__;                  \
-  typedef struct name##__* name
-CHROME_DECLARE_HANDLE(HDC);
-CHROME_DECLARE_HANDLE(HDESK);
-CHROME_DECLARE_HANDLE(HGLRC);
-CHROME_DECLARE_HANDLE(HICON);
-CHROME_DECLARE_HANDLE(HINSTANCE);
-CHROME_DECLARE_HANDLE(HKEY);
-CHROME_DECLARE_HANDLE(HKL);
-CHROME_DECLARE_HANDLE(HMENU);
-CHROME_DECLARE_HANDLE(HWINSTA);
-CHROME_DECLARE_HANDLE(HWND);
-CHROME_DECLARE_HANDLE(HMONITOR);
-#undef CHROME_DECLARE_HANDLE
+#define CHROME_WINDOWS_HANDLE_TYPE(name) \
+  struct name##__;                       \
+  typedef struct name##__* name;
+#include "base/win/win_handle_types_list.inc"
+#undef CHROME_WINDOWS_HANDLE_TYPE
 
 typedef LPVOID HINTERNET;
 typedef HICON HCURSOR;

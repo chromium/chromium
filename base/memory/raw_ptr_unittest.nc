@@ -82,7 +82,7 @@ void WontCompile() {
   std::ignore = *ptr;
 }
 
-#elif defined(NCTEST_FUNCTION_POINTER) // [r"raw_ptr doesn't support function pointers"]
+#elif defined(NCTEST_FUNCTION_POINTER) // [r"raw_ptr<T> doesn't work with this kind of pointee type T"]
 
 void WontCompile() {
   raw_ptr<void(int)> raw_ptr_var;
