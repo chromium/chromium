@@ -180,12 +180,12 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 
   {
     // MobileIdentityConsistencyFRESynthetic field trial.
-    static constexpr char kMobileIdentityConsistencyFRETrial[] =
-        "MobileIdentityConsistencyFRESynthetic";
+    static constexpr char kFREMobileIdentityConsistencyTrial[] =
+        "FREMobileIdentityConsistencySynthetic";
     const std::string group =
         fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroup();
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kMobileIdentityConsistencyFRETrial, group);
+        kFREMobileIdentityConsistencyTrial, group);
   }
 #endif  // defined(OS_ANDROID)
 }

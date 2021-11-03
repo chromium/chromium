@@ -35,6 +35,7 @@ android_library("java") {
     "//components/browser_ui/util/android:java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   ]

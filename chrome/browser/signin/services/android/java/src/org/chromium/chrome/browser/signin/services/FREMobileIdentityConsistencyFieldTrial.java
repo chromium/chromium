@@ -12,6 +12,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.version_info.Channel;
+import org.chromium.components.version_info.VersionConstants;
 
 import java.util.Random;
 
@@ -26,12 +28,13 @@ import java.util.Random;
  */
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
-    private static final String ENABLED_GROUP = "enabled";
-    private static final String DISABLED_GROUP = "disabled";
-    private static final String DEFAULT_GROUP = "default";
+    private static final String ENABLED_GROUP = "Enabled";
+    private static final String DISABLED_GROUP = "Disabled";
+    private static final String DEFAULT_GROUP = "Default";
 
     @AnyThread
     public static boolean isEnabled() {
+        // Switch used for tests. Disabled by default otherwise.
         return CommandLine.getInstance().hasSwitch(ChromeSwitches.FORCE_ENABLE_SIGNIN_FRE)
                 || ENABLED_GROUP.equals(getFirstRunTrialGroup());
     }
@@ -52,13 +55,26 @@ public class FREMobileIdentityConsistencyFieldTrial {
      *
      * FRE is launched either after first install of chrome or after a power wash. So there is be no
      * previous experiment group information available when this method is called.
+     *
+     * The group information is registered as a synthetic field trial in native code inside
+     * ChromeBrowserFieldTrials::RegisterSyntheticTrials().
      */
     @MainThread
     public static void createFirstRunTrial() {
         // Tweak these values for different builds to create the percentage of enabled population.
         // For A/B testing enabled and disabled group should have the same percentages.
         int enabledPercent = 0;
-        int disabledPercent = enabledPercent;
+        int disabledPercent = 0;
+        switch (VersionConstants.CHANNEL) {
+            case Channel.DEFAULT:
+            case Channel.CANARY:
+            case Channel.DEV:
+                enabledPercent = 50;
+                disabledPercent = 50;
+                break;
+            case Channel.BETA:
+            case Channel.STABLE:
+        }
         assert enabledPercent + disabledPercent <= 100;
 
         int randomBucket = new Random().nextInt(100);
