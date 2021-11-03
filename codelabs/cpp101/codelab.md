@@ -33,17 +33,17 @@ build system to build a simple C++ binary and demonstrates how typical C++
 builds are organized within Chromium.
 
 Create a new target in `base/BUILD.gn` for a new executable
-named `codelab_helloworld`. Then write the classic "Hello, world!" program in
+named `codelab_hello_world`. Then write the classic "Hello, world!" program in
 C++. You should be able to build it with
-`autoninja -C out/Default codelab_helloworld` and execute it directly by
+`autoninja -C out/Default codelab_hello_world` and execute it directly by
 finding the binary within `out/Default`.
 
 Sample execution:
 ```shell
 $ cd /path/to/chromium/src
 $ gclient runhooks
-$ autoninja -C out/Default codelab_helloworld
-$ out/Default/codelab_helloworld
+$ autoninja -C out/Default codelab_hello_world
+$ out/Default/codelab_hello_world
 Hello, world!
 [0923/185218.645640:INFO:hello_world.cc(27)] Hello, world!
 ```
@@ -58,7 +58,7 @@ and [Git Cookbook](https://chromium.googlesource.com/chromium/src.git/+/main/doc
 
 ## Part 1: Using command-line arguments
 
-We will augment our `codelab_helloworld` binary to parse command-line flags and
+We will augment our `codelab_hello_world` binary to parse command-line flags and
 use those values to print messages to the user.
 
 Command-line arguments within Chromium are processed by the
@@ -85,7 +85,7 @@ use `GetSwitchValueASCII()` and friends to retrieve values passed in.
 
 ### Exercise 1: Using command-line arguments
 
-Change `codelab_helloworld` to take a `--greeting` and a `--name` switch.
+Change `codelab_hello_world` to take a `--greeting` and a `--name` switch.
 The greeting, if not specified, should default to "Hello",
 and the name, if not specified, should default to "World".
 
