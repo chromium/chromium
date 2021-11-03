@@ -59,8 +59,10 @@ class TestQuietNotificationPermissionUiSelector
 class PermissionChipInteractiveTest : public InProcessBrowserTest {
  public:
   PermissionChipInteractiveTest() {
-    feature_list_.InitWithFeatureState(permissions::features::kPermissionChip,
-                                       true);
+    scoped_feature_list_.InitWithFeatures(
+        {permissions::features::kPermissionChip},
+        {permissions::features::kPermissionChipGestureSensitive,
+         permissions::features::kPermissionChipRequestTypeSensitive});
   }
 
   PermissionChipInteractiveTest(const PermissionChipInteractiveTest&) = delete;
@@ -142,9 +144,255 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
         });
   }
 
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
+
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
+                       ChipAutoPopupBubbleDisabled) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipGestureSensitive));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipRequestTypeSensitive));
+
+  RequestPermission(permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kNotifications);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kMidiSysex);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+}
+
+class ChipGestureSensitiveEnabledInteractiveTest
+    : public PermissionChipInteractiveTest {
+ public:
+  ChipGestureSensitiveEnabledInteractiveTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kPermissionChipGestureSensitive);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
+                       ChipAutoPopupBubbleEnabled) {
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipGestureSensitive));
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipRequestTypeSensitive));
+
+  RequestPermission(permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kNotifications);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kMidiSysex);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+}
+
+class ChipRequestTypeSensitiveEnabledInteractiveTest
+    : public PermissionChipInteractiveTest {
+ public:
+  ChipRequestTypeSensitiveEnabledInteractiveTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::kPermissionChipRequestTypeSensitive);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// `kGeolocation` and `kNotifications` are excluded from the sensitive request
+// type experiment.
+IN_PROC_BROWSER_TEST_F(ChipRequestTypeSensitiveEnabledInteractiveTest,
+                       ChipAutoPopupBubbleEnabled) {
+  ASSERT_FALSE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipGestureSensitive));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipRequestTypeSensitive));
+
+  RequestPermission(permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kNotifications);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kMidiSysex);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+}
+
+class ChipDisabledInteractiveTest : public PermissionChipInteractiveTest {
+ public:
+  ChipDisabledInteractiveTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {permissions::features::kPermissionChipGestureSensitive,
+         permissions::features::kPermissionChipRequestTypeSensitive},
+        {permissions::features::kPermissionChip});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChipDisabledInteractiveTest,
+                       ChipAutoPopupBubbleEnabled) {
+  ASSERT_FALSE(
+      base::FeatureList::IsEnabled(permissions::features::kPermissionChip));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipGestureSensitive));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipRequestTypeSensitive));
+
+  RequestPermission(permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kNotifications);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kMidiSysex);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::ANCHORED_BUBBLE);
+}
+
+class QuietChipAutoPopupBubbleInteractiveTest
+    : public PermissionChipInteractiveTest {
+ public:
+  QuietChipAutoPopupBubbleInteractiveTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {permissions::features::kPermissionChip,
+         features::kQuietNotificationPrompts,
+         permissions::features::kPermissionQuietChip,
+         permissions::features::kPermissionChipGestureSensitive,
+         permissions::features::kPermissionChipRequestTypeSensitive},
+        {});
+  }
+
+ protected:
+  using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
+  using WarningReason = permissions::PermissionUiSelector::WarningReason;
+
+  void SetCannedUiDecision(absl::optional<QuietUiReason> quiet_ui_reason,
+                           absl::optional<WarningReason> warning_reason) {
+    test_api_->manager()->set_permission_ui_selector_for_testing(
+        std::make_unique<TestQuietNotificationPermissionUiSelector>(
+            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
+                                                        warning_reason)));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
+                       QuietChipAutoPopupBubbleEnabled) {
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(permissions::features::kPermissionChip));
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionQuietChip));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipGestureSensitive));
+  ASSERT_TRUE(base::FeatureList::IsEnabled(
+      permissions::features::kPermissionChipRequestTypeSensitive));
+
+  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
+                      absl::nullopt);
+
+  RequestPermission(permissions::RequestType::kGeolocation);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kNotifications);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
+
+  test_api_->manager()->Accept();
+  base::RunLoop().RunUntilIdle();
+
+  RequestPermission(permissions::RequestType::kMidiSysex);
+
+  EXPECT_EQ(
+      test_api_->manager()->current_request_prompt_disposition_for_testing(),
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
+}
 
 class QuietUIPromoInteractiveTest : public PermissionChipInteractiveTest {
  public:
