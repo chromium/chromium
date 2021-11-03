@@ -16,7 +16,7 @@ def main(request, response):
     value = request.GET.get(b"value")
 
     # Store the value.
-    # We have to ways to check the truthiness of `value`:
+    # We have two ways to check the truthiness of `value`:
     #   1. `if value`
     #   2. `if value != None`
     # While (1) is the most intuitive, we actually need (2), which is a looser

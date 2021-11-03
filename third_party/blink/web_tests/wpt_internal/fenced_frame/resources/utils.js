@@ -49,6 +49,9 @@ const KEYS = {
 
   "focus-changed"                               : "00000000-0000-0000-0000-000000000016",
   "focus-ready"                                 : "00000000-0000-0000-0000-000000000017",
+
+  "navigate_ancestor"                           : "00000000-0000-0000-0000-000000000018",
+  "navigate_ancestor_from_nested"               : "00000000-0000-0000-0000-000000000019",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
