@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
 #include "components/url_formatter/elide_url.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/class_property.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -81,6 +82,10 @@ constexpr int kProgressBarHeight = 4;
 // However, it is not preferable that we completely omit the title, so
 // the ratio of the message width is limited to this value.
 constexpr double kProgressNotificationMessageRatio = 0.7;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr int kLargeImageCornerRadius = 8;
+#endif  // IS_CHROMEOS_ASH
 
 class ClickActivator : public ui::EventHandler {
  public:
@@ -214,6 +219,24 @@ void LargeImageView::OnPaint(gfx::Canvas* canvas) {
   gfx::ImageSkia drawn_image = gfx::ImageSkiaOperations::ExtractSubset(
       resized_image, gfx::Rect(drawn_size));
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    SkPath path;
+    const SkScalar corner_radius = SkIntToScalar(kLargeImageCornerRadius);
+    const SkScalar kRadius[8] = {corner_radius, corner_radius, corner_radius,
+                                 corner_radius, corner_radius, corner_radius,
+                                 corner_radius, corner_radius};
+    path.addRoundRect(gfx::RectToSkRect(drawn_bounds), kRadius);
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+
+    canvas->DrawImageInPath(drawn_image, drawn_bounds.x(), drawn_bounds.y(),
+                            path, flags);
+    return;
+  }
+#endif  // IS_CHROMEOS_ASH
+
   canvas->DrawImageInt(drawn_image, drawn_bounds.x(), drawn_bounds.y());
 }
 
@@ -223,6 +246,13 @@ const char* LargeImageView::GetClassName() const {
 
 void LargeImageView::OnThemeChanged() {
   View::OnThemeChanged();
+  bool set_background = true;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  set_background = !ash::features::IsNotificationsRefreshEnabled();
+#endif  // IS_CHROMEOS_ASH
+  if (!set_background)
+    return;
+
   SetBackground(views::CreateSolidBackground(
       GetColorProvider()->GetColor(ui::kColorNotificationImageBackground)));
 }
@@ -230,7 +260,7 @@ void LargeImageView::OnThemeChanged() {
 // Returns expected size of the image right after resizing.
 // The GetResizedImageSize().width() <= max_size_.width() holds, but
 // GetResizedImageSize().height() may be larger than max_size_.height().
-// In this case, the overflown part will be just cutted off from the view.
+// In this case, the overflown part will be just cut off from the view.
 gfx::Size LargeImageView::GetResizedImageSize() {
   gfx::Size original_size = image_.size();
   if (original_size.width() <= max_size_.width())
