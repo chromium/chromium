@@ -99,6 +99,7 @@ class StartSurfaceMediator
     private final SecondaryTasksSurfaceInitializer mSecondaryTasksSurfaceInitializer;
     private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
+    private final boolean mHadWarmStart;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -152,7 +153,7 @@ class StartSurfaceMediator
      */
     @Nullable
     private Boolean mFeedVisibilityInSharedPreferenceOnStartUp;
-    private boolean mHadWarmStart;
+    private boolean mHasFeedPlaceholderShown;
     private final JankTracker mJankTracker;
     private boolean mHideMVForNewSurface;
     private boolean mHideTabCarouselForNewSurface;
@@ -567,7 +568,7 @@ class StartSurfaceMediator
                     && mExploreSurfaceCoordinatorFactory != null) {
                 mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR,
                         mExploreSurfaceCoordinatorFactory.create(ColorUtils.inNightMode(mContext),
-                                shouldShowFeedPlaceholder(), mLaunchOrigin));
+                                mHasFeedPlaceholderShown, mLaunchOrigin));
             }
             mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
@@ -734,12 +735,17 @@ class StartSurfaceMediator
 
         return mIsStartSurfaceEnabled
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart;
+                && StartSurfaceConfiguration.getFeedArticlesVisibility() && !mHadWarmStart
+                && !mHasFeedPlaceholderShown;
     }
 
     public void setSecondaryTasksSurfaceController(
             TabSwitcher.Controller secondaryTasksSurfaceController) {
         mSecondaryTasksSurfaceController = secondaryTasksSurfaceController;
+    }
+
+    void setFeedPlaceholderHasShown() {
+        mHasFeedPlaceholderShown = true;
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */
@@ -751,7 +757,7 @@ class StartSurfaceMediator
                 && !mActivityStateChecker.isFinishingOrDestroyed()) {
             mPropertyModel.set(EXPLORE_SURFACE_COORDINATOR,
                     mExploreSurfaceCoordinatorFactory.create(ColorUtils.inNightMode(mContext),
-                            shouldShowFeedPlaceholder(), mLaunchOrigin));
+                            mHasFeedPlaceholderShown, mLaunchOrigin));
         }
 
         mPropertyModel.set(IS_EXPLORE_SURFACE_VISIBLE, isVisible);
