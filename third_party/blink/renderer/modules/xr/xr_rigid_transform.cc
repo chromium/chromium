@@ -94,6 +94,14 @@ XRRigidTransform* XRRigidTransform::Create(DOMPointInit* position,
       exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                         "Orientation's length cannot be 0");
       return nullptr;
+    } else if (!std::isfinite(sq_len)) {
+      // If the orientation has any large numbers that cause us to overflow when
+      // calculating the length, we won't be able to generate a valid normalized
+      // quaternion.
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "Orientation is too large to normalize");
+      return nullptr;
     }
   }
 
@@ -160,8 +168,15 @@ void XRRigidTransform::EnsureInverse() {
   // the caching is safe.
   if (!inverse_) {
     EnsureMatrix();
-    DCHECK(matrix_->IsInvertible());
-    inverse_ = MakeGarbageCollected<XRRigidTransform>(matrix_->Inverse());
+    if (matrix_->IsInvertible()) {
+      inverse_ = MakeGarbageCollected<XRRigidTransform>(matrix_->Inverse());
+    } else {
+      DLOG(ERROR) << "Matrix was not invertible: " << matrix_->ToString();
+      // TODO(https://crbug.com/1258611): Define behavior for non-invertible
+      // matrices. Note that this is consistent with earlier behavior, which
+      // just always passed matrix_->Inverse() whether it was invertible or not.
+      inverse_ = MakeGarbageCollected<XRRigidTransform>(TransformationMatrix());
+    }
     inverse_->inverse_ = this;
   }
 }
