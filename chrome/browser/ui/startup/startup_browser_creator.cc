@@ -370,8 +370,6 @@ bool CanOpenWebApp(Profile* profile) {
 bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
                                   const base::FilePath& cur_dir,
                                   Profile* profile) {
-  DCHECK(CanOpenWebApp(profile));
-
   if (!command_line.HasSwitch(switches::kApp))
     return false;
 
@@ -1041,6 +1039,16 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
   }
 
+  // Try a shortcut app launch (--app is present).
+  // When running in incognito or guest mode, there typically won't be an
+  // AppServiceProxyFactory available. The --app command line switch does not
+  // require the AppServiceProxyFactory. This also allows the --app parameter
+  // to work in conjunction with the --incognito command line parameter.
+  if (MaybeLaunchAppShortcutWindow(command_line, cur_dir,
+                                   privacy_safe_profile)) {
+    return true;
+  }
+
   // Launch the browser if the profile is unable to open web apps.
   if (!CanOpenWebApp(privacy_safe_profile)) {
     return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
@@ -1051,9 +1059,7 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   bool handled_as_app =
       // Try a web app launch (--app-id is present).
       web_app::startup::MaybeHandleWebAppLaunch(command_line, cur_dir,
-                                                privacy_safe_profile) ||
-      // Try an shortcut app launch (--app is present).
-      MaybeLaunchAppShortcutWindow(command_line, cur_dir, privacy_safe_profile);
+                                                privacy_safe_profile);
 
 #if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
   handled_as_app = handled_as_app ||

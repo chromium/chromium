@@ -510,6 +510,52 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
             web_contents->GetLastCommittedURL().ExtractFileName());
 }
 
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlIncognitoShortcut) {
+  // Add --app=<url> and --incognito to the command line. Tests launching
+  // legacy apps which may have been created by "Add to Desktop" in old versions
+  // of Chrome. Some existing workflows (especially testing scenarios) also
+  // use the --incognito command line.
+  // TODO(mgiuca): Delete this feature (https://crbug.com/751029). We are
+  // keeping it for now to avoid disrupting existing workflows.
+  // IMPORTANT NOTE: This is being committed because it is an easy fix, but
+  // this use case is not officially supported. If a future refactor or
+  // feature launch causes this to break again, we have no formal
+  // responsibility to make this continue working. If you rely on the
+  // combination of these two flags, you WILL be broken in the future.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  GURL url = ui_test_utils::GetTestUrl(
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(FILE_PATH_LITERAL("title2.html")));
+  command_line.AppendSwitchASCII(switches::kApp, url.spec());
+  command_line.AppendSwitch(switches::kIncognito);
+
+  Browser* incognito = CreateIncognitoBrowser();
+
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), /*process_startup=*/false,
+      incognito->profile(), {}));
+
+  Browser* new_browser = FindOneOtherBrowser(incognito);
+  ASSERT_TRUE(new_browser);
+
+  // The new window should be an app window.
+  EXPECT_TRUE(new_browser->is_type_app());
+
+  TabStripModel* tab_strip = new_browser->tab_strip_model();
+  ASSERT_EQ(1, tab_strip->count());
+  content::WebContents* web_contents = tab_strip->GetWebContentsAt(0);
+  // At this stage, the web contents' URL should be the one passed in to --app
+  // (but it will not yet be committed into the navigation controller).
+  EXPECT_EQ("title2.html", web_contents->GetVisibleURL().ExtractFileName());
+
+  // Wait until the navigation is complete. Then the URL will be committed to
+  // the navigation controller.
+  content::TestNavigationObserver observer(web_contents, 1);
+  observer.Wait();
+  EXPECT_EQ("title2.html",
+            web_contents->GetLastCommittedURL().ExtractFileName());
+}
+
 namespace {
 
 enum class ChromeAppDeprecationFeatureValue {
