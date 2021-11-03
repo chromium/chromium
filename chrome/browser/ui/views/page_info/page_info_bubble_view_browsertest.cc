@@ -804,8 +804,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   EXPECT_TRUE(web_contents_focus_tracker.focused());
 }
 
-#if defined(OS_MAC)
-// https://crbug.com/1029882
+#if defined(OS_MAC) || defined(OS_WIN)
+// https://crbug.com/1029882, https://crbug.com/1266254
 #define MAYBE_FocusDoesNotReturnToContentsOnReloadPrompt \
   DISABLED_FocusDoesNotReturnToContentsOnReloadPrompt
 #else

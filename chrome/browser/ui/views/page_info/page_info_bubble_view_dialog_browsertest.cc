@@ -507,7 +507,14 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
+// This test is flaky on Windows. https://crbug.com/1266256
+#if defined(OS_WIN)
+#define MAYBE_InvokeUi_AboutThisSiteSubpage \
+  DISABLED_InvokeUi_AboutThisSiteSubpage
+#else
+#define MAYBE_InvokeUi_AboutThisSiteSubpage InvokeUi_AboutThisSiteSubpage
+#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
-                       InvokeUi_AboutThisSiteSubpage) {
+                       MAYBE_InvokeUi_AboutThisSiteSubpage) {
   ShowAndVerifyUi();
 }
