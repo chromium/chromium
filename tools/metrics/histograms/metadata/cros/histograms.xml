@@ -66,10 +66,25 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="CrosDisks.Fuse.Archivemount" enum="ArchivemountError"
     expires_after="2022-04-17">
+  <obsolete>
+    Deprecated 10/2021. This feature (using the older archivemount program
+    instead of newer fuse-archive) was never enabled-by-default, although some
+    people opted into the chrome://flags/#files-archivemount flag anyway.
+  </obsolete>
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The error code returned by the archivemount program, which is called every
+    time a user opens various archive files in ChromeOS Files App.
+  </summary>
+</histogram>
+
+<histogram name="CrosDisks.Fuse.FuseArchive" enum="FuseArchiveError"
+    expires_after="2022-04-17">
+  <owner>fdegros@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    The error code returned by the fuse-archive program, which is called every
     time a user opens various archive files in ChromeOS Files App.
   </summary>
 </histogram>

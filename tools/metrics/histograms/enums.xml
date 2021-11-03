@@ -3873,6 +3873,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="ArchivemountError">
+  <obsolete>
+    Deprecated 10/2021. Replaced by FuseArchiveError.
+  </obsolete>
   <int value="0" label="Success">EXIT_SUCCESS</int>
   <int value="1" label="Failure">EXIT_FAILURE</int>
   <int value="132" label="Terminated by SIGILL">
@@ -37484,6 +37487,33 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Ok"/>
   <int value="1" label="NotFound"/>
   <int value="2" label="UnknownError"/>
+</enum>
+
+<enum name="FuseArchiveError">
+  <int value="0" label="EXIT_SUCCESS"/>
+  <int value="1" label="EXIT_CODE_GENERIC_FAILURE"/>
+  <int value="10" label="EXIT_CODE_LIBARCHIVE_CONTRACT_VIOLATION"/>
+  <int value="20" label="EXIT_CODE_PASSPHRASE_REQUIRED"/>
+  <int value="21" label="EXIT_CODE_PASSPHRASE_INCORRECT"/>
+  <int value="22" label="EXIT_CODE_PASSPHRASE_NOT_SUPPORTED"/>
+  <int value="30" label="EXIT_CODE_INVALID_RAW_ARCHIVE"/>
+  <int value="31" label="EXIT_CODE_INVALID_ARCHIVE_HEADER"/>
+  <int value="32" label="EXIT_CODE_INVALID_ARCHIVE_CONTENTS"/>
+  <int value="132" label="Terminated by SIGILL">
+    MINIJAIL_ERR_SIG_BASE + SIGILL from libminijail
+  </int>
+  <int value="134" label="Terminated by SIGABRT">
+    MINIJAIL_ERR_SIG_BASE + SIGABRT from libminijail
+  </int>
+  <int value="139" label="Terminated by SIGSEGV">
+    MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
+  </int>
+  <int value="251" label="Cannot mount file in mount namespace">
+    MINIJAIL_ERR_MOUNT from libminijail
+  </int>
+  <int value="253" label="Seccomp violation">
+    MINIJAIL_ERR_JAIL from libminijail
+  </int>
 </enum>
 
 <enum name="FuseZipError">
