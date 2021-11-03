@@ -81,7 +81,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        getSupportFragmentManager().setFragmentFactory(SplitCompatUtils.createFragmentFactory());
+        SplitCompatUtils.restoreLoadedSplits(savedInstanceState);
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
         initializeNightModeStateProvider();
@@ -103,6 +103,21 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             mModalDialogManagerSupplier.set(null);
         }
         super.onDestroy();
+    }
+
+    @Override
+    public ClassLoader getClassLoader() {
+        // Replace the default ClassLoader with a custom SplitAware one so that
+        // LayoutInflaters that use this ClassLoader can find view classes that
+        // live inside splits. Very useful when FragmentManger tries to inflate
+        // the UI automatically on restore.
+        return SplitCompatUtils.getSplitCompatClassLoader();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        SplitCompatUtils.saveLoadedSplits(outState);
     }
 
     @Override
