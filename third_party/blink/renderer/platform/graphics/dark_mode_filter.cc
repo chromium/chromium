@@ -132,21 +132,13 @@ sk_sp<SkColorFilter> DarkModeFilter::GetImageFilter() const {
 absl::optional<cc::PaintFlags> DarkModeFilter::ApplyToFlagsIfNeeded(
     const cc::PaintFlags& flags,
     ElementRole role) {
-  if (!immutable_.color_filter)
+  if (!immutable_.color_filter || flags.HasShader() ||
+      !ShouldApplyToColor(flags.getColor(), role))
     return absl::nullopt;
 
   cc::PaintFlags dark_mode_flags = flags;
-  if (flags.HasShader()) {
-    PaintShader::Type shader_type = flags.getShader()->shader_type();
-    if (shader_type != PaintShader::Type::kImage &&
-        shader_type != PaintShader::Type::kPaintRecord) {
-      dark_mode_flags.setColorFilter(
-          immutable_.color_filter->ToSkColorFilter());
-    }
-  } else if (ShouldApplyToColor(flags.getColor(), role)) {
-    dark_mode_flags.setColor(inverted_color_cache_->GetInvertedColor(
-        immutable_.color_filter.get(), flags.getColor()));
-  }
+  dark_mode_flags.setColor(inverted_color_cache_->GetInvertedColor(
+      immutable_.color_filter.get(), flags.getColor()));
 
   return absl::make_optional<cc::PaintFlags>(std::move(dark_mode_flags));
 }

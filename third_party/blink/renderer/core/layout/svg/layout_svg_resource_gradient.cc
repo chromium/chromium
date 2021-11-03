@@ -124,6 +124,8 @@ bool LayoutSVGResourceGradient::ApplyShader(
   if (additional_transform)
     transform = *additional_transform * transform;
   ImageDrawOptions draw_options;
+  // TODO(linn): Using style of the SVGResourceClient should be more accurate
+  draw_options.apply_dark_mode = StyleRef().ForceDark();
   gradient_data->gradient->ApplyToFlags(
       flags, AffineTransformToSkMatrix(transform), draw_options);
   return true;
