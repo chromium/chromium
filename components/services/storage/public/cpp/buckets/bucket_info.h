@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -43,6 +44,10 @@ struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
 
   COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT)
   friend bool operator<(const BucketInfo& lhs, const BucketInfo& rhs);
+
+  BucketLocator ToBucketLocator() const {
+    return BucketLocator(id, storage_key, type, name == kDefaultBucketName);
+  }
 
   bool is_default() const { return name == kDefaultBucketName; }
 

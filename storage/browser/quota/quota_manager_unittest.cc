@@ -86,11 +86,6 @@ StorageKey ToStorageKey(const std::string& url) {
   return StorageKey::CreateFromStringForTesting(url);
 }
 
-BucketLocator ToBucketLocator(const BucketInfo& bucket) {
-  return BucketLocator(bucket.id, bucket.storage_key, bucket.type,
-                       bucket.name == kDefaultBucketName);
-}
-
 MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
   return testing::ExplainMatchResult(storage_key, arg.storage_key,
                                      result_listener) &&
@@ -1807,7 +1802,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_.ok());
 
-  EvictBucketData(ToBucketLocator(bucket_.value()));
+  EvictBucketData(bucket_->ToBucketLocator());
   task_environment_.RunUntilIdle();
 
   DumpBucketTable();
@@ -1849,7 +1844,7 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
   ASSERT_TRUE(bucket_.ok());
   BucketInfo created_bucket = bucket_.value();
 
-  EvictBucketData(ToBucketLocator(created_bucket));
+  EvictBucketData(created_bucket.ToBucketLocator());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(QuotaStatusCode::kOk, status());
@@ -1873,7 +1868,7 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
   ASSERT_TRUE(bucket_.ok());
   BucketInfo default_bucket = bucket_.value();
 
-  EvictBucketData(ToBucketLocator(default_bucket));
+  EvictBucketData(default_bucket.ToBucketLocator());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(QuotaStatusCode::kOk, status());
@@ -1902,7 +1897,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
   CreateBucketForTesting(kStorageKey, kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_.ok());
 
-  EvictBucketData(ToBucketLocator(bucket_.value()));
+  EvictBucketData(bucket_->ToBucketLocator());
   task_environment_.RunUntilIdle();
 
   // Ensure use count and time since access are recorded.
@@ -1922,7 +1917,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
 
   GetGlobalUsage(kTemp);
 
-  EvictBucketData(ToBucketLocator(bucket_.value()));
+  EvictBucketData(bucket_->ToBucketLocator());
   task_environment_.RunUntilIdle();
 
   // The new use count should be logged.
@@ -1967,7 +1962,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
 
   for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted + 1;
        ++i) {
-    EvictBucketData(ToBucketLocator(bucket_.value()));
+    EvictBucketData(bucket_->ToBucketLocator());
     task_environment_.RunUntilIdle();
     EXPECT_EQ(QuotaStatusCode::kErrorInvalidModification, status());
   }
@@ -2250,7 +2245,7 @@ TEST_F(QuotaManagerImplTest, DeleteBucketNoClients) {
                          kTemp);
   ASSERT_TRUE(bucket_.ok());
 
-  DeleteBucketData(ToBucketLocator(bucket_.value()), AllQuotaClientTypes());
+  DeleteBucketData(bucket_->ToBucketLocator(), AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 }
@@ -2310,9 +2305,9 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   task_environment_.RunUntilIdle();
 
   reset_status_callback_count();
-  DeleteBucketData(ToBucketLocator(foo_temp_bucket), AllQuotaClientTypes());
-  DeleteBucketData(ToBucketLocator(bar_temp_bucket), AllQuotaClientTypes());
-  DeleteBucketData(ToBucketLocator(foo_temp_bucket), AllQuotaClientTypes());
+  DeleteBucketData(foo_temp_bucket.ToBucketLocator(), AllQuotaClientTypes());
+  DeleteBucketData(bar_temp_bucket.ToBucketLocator(), AllQuotaClientTypes());
+  DeleteBucketData(foo_temp_bucket.ToBucketLocator(), AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(3, status_callback_count());
@@ -2404,8 +2399,8 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   task_environment_.RunUntilIdle();
 
   reset_status_callback_count();
-  DeleteBucketData(ToBucketLocator(foo_perm_bucket), AllQuotaClientTypes());
-  DeleteBucketData(ToBucketLocator(bar_perm_bucket), AllQuotaClientTypes());
+  DeleteBucketData(foo_perm_bucket.ToBucketLocator(), AllQuotaClientTypes());
+  DeleteBucketData(bar_perm_bucket.ToBucketLocator(), AllQuotaClientTypes());
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(2, status_callback_count());
@@ -2614,13 +2609,13 @@ TEST_F(QuotaManagerImplTest, GetLRUBucket) {
 
   GetEvictionBucket(kTemp);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(ToBucketLocator(bucket_a), eviction_bucket());
+  EXPECT_EQ(bucket_a.ToBucketLocator(), eviction_bucket());
 
   // Notify that the `bucket_a` is accessed.
   NotifyBucketAccessed(bucket_a.id);
   GetEvictionBucket(kTemp);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(ToBucketLocator(bucket_b), eviction_bucket());
+  EXPECT_EQ(bucket_b.ToBucketLocator(), eviction_bucket());
 
   // Notify that the `bucket_b` is accessed while GetEvictionBucket is running.
   GetEvictionBucket(kTemp);
@@ -2776,23 +2771,24 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   GetHostUsageWithBreakdown("foo.com", kTemp);
   const int64_t predelete_foo_tmp = usage();
 
-  DeleteBucketData(ToBucketLocator(foo_bucket), {QuotaClientType::kFileSystem});
+  DeleteBucketData(foo_bucket.ToBucketLocator(),
+                   {QuotaClientType::kFileSystem});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
-  DeleteBucketData(ToBucketLocator(foo_bucket),
+  DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
 
-  DeleteBucketData(ToBucketLocator(foo_bucket), {QuotaClientType::kDatabase});
+  DeleteBucketData(foo_bucket.ToBucketLocator(), {QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
 
-  DeleteBucketData(ToBucketLocator(foo_bucket),
+  DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
@@ -2875,13 +2871,13 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   GetHostUsageWithBreakdown("foo.com", kTemp);
   const int64_t predelete_foo_tmp = usage();
 
-  DeleteBucketData(ToBucketLocator(foo_bucket),
+  DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kFileSystem, QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 4 - 1, usage());
 
-  DeleteBucketData(ToBucketLocator(foo_bucket),
+  DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kServiceWorkerCache,
                     QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
