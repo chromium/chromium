@@ -1386,6 +1386,13 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
 
 PositionWithAffinity NGPhysicalBoxFragment::PositionForPointByClosestChild(
     PhysicalOffset point_in_contents) const {
+  if (layout_object_->ChildPaintBlockedByDisplayLock()) {
+    // If this node is DisplayLocked, then Children() will have invalid layout
+    // information.
+    return AdjustForEditingBoundary(
+        FirstPositionInOrBeforeNode(*layout_object_->GetNode()));
+  }
+
   NGLink closest_child = {nullptr};
   LayoutUnit shortest_distance = LayoutUnit::Max();
   bool found_hit_test_candidate = false;
@@ -1461,6 +1468,14 @@ NGPhysicalBoxFragment::PositionForPointInBlockFlowDirection(
   DCHECK(!layout_object_->IsTable()) << this;
   DCHECK(ShouldUsePositionForPointInBlockFlowDirection(*layout_object_))
       << this;
+
+  if (layout_object_->ChildPaintBlockedByDisplayLock()) {
+    // If this node is DisplayLocked, then Children() will have invalid layout
+    // information.
+    return AdjustForEditingBoundary(
+        FirstPositionInOrBeforeNode(*layout_object_->GetNode()));
+  }
+
   const bool blocks_are_flipped = Style().IsFlippedBlocksWritingMode();
   WritingModeConverter converter(Style().GetWritingDirection(), Size());
   const LogicalOffset logical_point_in_contents =
