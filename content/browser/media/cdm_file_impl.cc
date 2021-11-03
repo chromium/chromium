@@ -645,7 +645,7 @@ void CdmFileImpl::WriteDone(bool success) {
            << dest_file_url.DebugString();
   file_util->MoveFileLocal(
       std::move(operation_context), src_file_url, dest_file_url,
-      storage::FileSystemOperation::OPTION_NONE,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindOnce(&CdmFileImpl::OnFileRenamed, weak_factory_.GetWeakPtr()));
 }
 

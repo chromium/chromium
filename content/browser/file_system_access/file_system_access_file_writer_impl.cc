@@ -250,7 +250,9 @@ void FileSystemAccessFileWriterImpl::CloseImpl(CloseCallback callback) {
       manager()->AsWeakPtr(), context(),
       /*source_url=*/swap_url(),
       /*dest_url=*/url(),
-      FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS,
+      FileSystemOperation::CopyOrMoveOptionSet(
+          FileSystemOperation::CopyOrMoveOption::
+              kPreserveDestinationPermissions),
       std::move(quarantine_connection_callback_),
       has_transient_user_activation_);
   // Allows the unique pointer to be bound to the callback so the helper stays

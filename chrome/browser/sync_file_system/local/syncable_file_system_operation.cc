@@ -122,7 +122,7 @@ void SyncableFileSystemOperation::CreateDirectory(const FileSystemURL& url,
 void SyncableFileSystemOperation::Copy(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
@@ -138,7 +138,7 @@ void SyncableFileSystemOperation::Copy(
       weak_factory_.GetWeakPtr(),
       base::BindOnce(
           &FileSystemOperation::Copy, base::Unretained(impl_.get()), src_url,
-          dest_url, option, error_behavior, progress_callback,
+          dest_url, options, error_behavior, progress_callback,
           base::BindOnce(&self::DidFinish, weak_factory_.GetWeakPtr())));
   operation_runner_->PostOperationTask(std::move(task));
 }
@@ -146,7 +146,7 @@ void SyncableFileSystemOperation::Copy(
 void SyncableFileSystemOperation::Move(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
@@ -163,7 +163,7 @@ void SyncableFileSystemOperation::Move(
       weak_factory_.GetWeakPtr(),
       base::BindOnce(
           &FileSystemOperation::Move, base::Unretained(impl_.get()), src_url,
-          dest_url, option, error_behavior, progress_callback,
+          dest_url, options, error_behavior, progress_callback,
           base::BindOnce(&self::DidFinish, weak_factory_.GetWeakPtr())));
   operation_runner_->PostOperationTask(std::move(task));
 }
@@ -347,20 +347,20 @@ void SyncableFileSystemOperation::RemoveDirectory(const FileSystemURL& url,
 void SyncableFileSystemOperation::CopyFileLocal(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     const CopyFileProgressCallback& progress_callback,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->CopyFileLocal(src_url, dest_url, option, progress_callback,
+  impl_->CopyFileLocal(src_url, dest_url, options, progress_callback,
                        std::move(callback));
 }
 
 void SyncableFileSystemOperation::MoveFileLocal(const FileSystemURL& src_url,
                                                 const FileSystemURL& dest_url,
-                                                CopyOrMoveOption option,
+                                                CopyOrMoveOptionSet options,
                                                 StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  impl_->MoveFileLocal(src_url, dest_url, option, std::move(callback));
+  impl_->MoveFileLocal(src_url, dest_url, options, std::move(callback));
 }
 
 base::File::Error SyncableFileSystemOperation::SyncGetPlatformPath(

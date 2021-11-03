@@ -164,7 +164,9 @@ class SafeMoveHelperTest : public testing::Test {
         FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
                                                     kFrameId),
         test_source_url_, test_dest_url_,
-        storage::FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS,
+        storage::FileSystemOperation::CopyOrMoveOptionSet(
+            storage::FileSystemOperation::CopyOrMoveOption::
+                kPreserveDestinationPermissions),
         quarantine_callback_,
         /*has_transient_user_activation=*/false);
   }

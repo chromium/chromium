@@ -356,7 +356,7 @@ ObfuscatedFileUtilMemoryDelegate::CopyOrMoveModeForDestination(
 base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFile(
     const base::FilePath& src_path,
     const base::FilePath& dest_path,
-    FileSystemOperation::CopyOrMoveOption option,
+    FileSystemOperation::CopyOrMoveOptionSet options,
     NativeFileUtil::CopyOrMoveMode mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   absl::optional<DecomposedPath> src_dp = ParsePath(src_path);
@@ -409,11 +409,12 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFile(
       break;
   }
 
-  if (option == FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED) {
+  if (options.Has(
+          FileSystemOperation::CopyOrMoveOption::kPreserveLastModified)) {
     Touch(dest_path, last_modified, last_modified);
   }
 
-  // Don't bother with the OPTION_PRESERVE_DESTINATION_PERMISSIONS option, since
+  // Don't bother with the kPreserveDestinationPermissions option, since
   // this is not relevant to in-memory files.
 
   return base::File::FILE_OK;
@@ -596,7 +597,7 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CreateFileForTesting(
 base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyInForeignFile(
     const base::FilePath& src_path,
     const base::FilePath& dest_path,
-    FileSystemOperation::CopyOrMoveOption /* option */,
+    FileSystemOperation::CopyOrMoveOptionSet /* options */,
     NativeFileUtil::CopyOrMoveMode /* mode */) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   absl::optional<DecomposedPath> dest_dp = ParsePath(dest_path);

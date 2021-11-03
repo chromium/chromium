@@ -94,11 +94,11 @@ void CallTouchFile(
 void CallMove(scoped_refptr<storage::FileSystemContext> file_system_context,
               const storage::FileSystemURL& src_path,
               const storage::FileSystemURL& dest_path,
-              storage::FileSystemOperationRunner::CopyOrMoveOption option,
+              storage::FileSystemOperationRunner::CopyOrMoveOptionSet options,
               storage::FileSystemOperationRunner::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   file_system_context->operation_runner()->Move(
-      src_path, dest_path, option,
+      src_path, dest_path, options,
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       std::move(callback));
@@ -281,12 +281,13 @@ int32_t PepperInternalFileRefBackend::Rename(
   if (!new_url.IsInSameFileSystem(GetFileSystemURL()))
     return PP_ERROR_FAILED;
 
-  storage::FileSystemOperationRunner::CopyOrMoveOption option =
-      storage::FileSystemOperation::OPTION_NONE;
+  storage::FileSystemOperationRunner::CopyOrMoveOptionSet options =
+      storage::FileSystemOperation::CopyOrMoveOptionSet();
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          CallMove, GetFileSystemContext(), GetFileSystemURL(), new_url, option,
+          CallMove, GetFileSystemContext(), GetFileSystemURL(), new_url,
+          options,
           base::BindOnce(&PepperInternalFileRefBackend::DidFinishOnIOThread,
                          weak_factory_.GetWeakPtr(), reply_context,
                          PpapiPluginMsg_FileRef_RenameReply())));

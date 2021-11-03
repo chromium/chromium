@@ -437,7 +437,7 @@ void DeviceMediaAsyncFileUtil::CopyFileLocal(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -469,7 +469,7 @@ void DeviceMediaAsyncFileUtil::MoveFileLocal(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 

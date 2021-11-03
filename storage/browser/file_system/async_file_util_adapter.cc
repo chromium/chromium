@@ -283,7 +283,7 @@ void AsyncFileUtilAdapter::CopyFileLocal(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   // TODO(hidehiko): Support progress_callback.
@@ -292,7 +292,7 @@ void AsyncFileUtilAdapter::CopyFileLocal(
       context_ptr->task_runner(), FROM_HERE,
       base::BindOnce(&FileSystemFileUtil::CopyOrMoveFile,
                      Unretained(sync_file_util_.get()),
-                     base::Owned(context_ptr), src_url, dest_url, option,
+                     base::Owned(context_ptr), src_url, dest_url, options,
                      true /* copy */),
       std::move(callback));
   DCHECK(success);
@@ -302,14 +302,14 @@ void AsyncFileUtilAdapter::MoveFileLocal(
     std::unique_ptr<FileSystemOperationContext> context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   FileSystemOperationContext* context_ptr = context.release();
   const bool success = base::PostTaskAndReplyWithResult(
       context_ptr->task_runner(), FROM_HERE,
       base::BindOnce(&FileSystemFileUtil::CopyOrMoveFile,
                      Unretained(sync_file_util_.get()),
-                     base::Owned(context_ptr), src_url, dest_url, option,
+                     base::Owned(context_ptr), src_url, dest_url, options,
                      false /* copy */),
       std::move(callback));
   DCHECK(success);

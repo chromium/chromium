@@ -49,7 +49,7 @@ class CopyOperation {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      storage::AsyncFileUtil::CopyOrMoveOption option,
+      storage::AsyncFileUtil::CopyOrMoveOptionSet options,
       storage::AsyncFileUtil::CopyFileProgressCallback progress_callback,
       storage::AsyncFileUtil::StatusCallback callback,
       scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
@@ -58,7 +58,7 @@ class CopyOperation {
         context_(std::move(context)),
         src_url_(src_url),
         dest_url_(dest_url),
-        option_(option),
+        options_(options),
         progress_callback_(std::move(progress_callback)),
         callback_(std::move(callback)),
         origin_task_runner_(std::move(origin_task_runner)),
@@ -124,7 +124,7 @@ class CopyOperation {
       return;
     }
     async_file_util_->AsyncFileUtilAdapter::CopyFileLocal(
-        std::move(context_), src_url_, dest_url_, option_,
+        std::move(context_), src_url_, dest_url_, options_,
         std::move(progress_callback_), std::move(callback_));
     delete this;
   }
@@ -133,7 +133,7 @@ class CopyOperation {
   std::unique_ptr<storage::FileSystemOperationContext> context_;
   const storage::FileSystemURL src_url_;
   const storage::FileSystemURL dest_url_;
-  const storage::AsyncFileUtil::CopyOrMoveOption option_;
+  const storage::AsyncFileUtil::CopyOrMoveOptionSet options_;
   storage::AsyncFileUtil::CopyFileProgressCallback progress_callback_;
   storage::AsyncFileUtil::StatusCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
@@ -210,7 +210,7 @@ void DriveFsAsyncFileUtil::CopyFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -218,7 +218,7 @@ void DriveFsAsyncFileUtil::CopyFileLocal(
       base::BindOnce(
           &CopyOperation::Start,
           base::Unretained(new CopyOperation(
-              profile_, std::move(context), src_url, dest_url, option,
+              profile_, std::move(context), src_url, dest_url, options,
               std::move(progress_callback), std::move(callback),
               base::SequencedTaskRunnerHandle::Get(),
               weak_factory_.GetWeakPtr()))));

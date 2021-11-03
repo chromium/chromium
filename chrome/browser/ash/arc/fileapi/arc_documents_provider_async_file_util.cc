@@ -386,7 +386,7 @@ void ArcDocumentsProviderAsyncFileUtil::CopyFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -402,7 +402,7 @@ void ArcDocumentsProviderAsyncFileUtil::MoveFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(storage::kFileSystemTypeArcDocumentsProvider, src_url.type());

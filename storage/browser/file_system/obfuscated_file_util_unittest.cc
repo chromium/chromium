@@ -700,7 +700,8 @@ class ObfuscatedFileUtilTest : public testing::Test,
     context = NewContext(nullptr);
     EXPECT_EQ(base::File::FILE_OK,
               ofu()->CopyOrMoveFile(context.get(), src_file_url, dest_file_url,
-                                    FileSystemOperation::OPTION_NONE, copy));
+                                    FileSystemOperation::CopyOrMoveOptionSet(),
+                                    copy));
     if (copy)
       EXPECT_EQ(base::Time(), GetModifiedTime(src_dir_url));
     else
@@ -1305,14 +1306,14 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyOrMoveFileNotFound) {
   bool is_copy_not_move = false;
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             ofu()->CopyOrMoveFile(context.get(), source_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE,
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
                                   is_copy_not_move));
   EXPECT_TRUE(change_observer()->HasNoChange());
   context = NewContext(nullptr);
   is_copy_not_move = true;
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             ofu()->CopyOrMoveFile(context.get(), source_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE,
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
                                   is_copy_not_move));
   EXPECT_TRUE(change_observer()->HasNoChange());
   source_url = CreateURLFromUTF8("dir/dir/file");
@@ -1327,14 +1328,14 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyOrMoveFileNotFound) {
   is_copy_not_move = false;
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             ofu()->CopyOrMoveFile(context.get(), source_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE,
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
                                   is_copy_not_move));
   EXPECT_TRUE(change_observer()->HasNoChange());
   context = NewContext(nullptr);
   is_copy_not_move = true;
   EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
             ofu()->CopyOrMoveFile(context.get(), source_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE,
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
                                   is_copy_not_move));
   EXPECT_TRUE(change_observer()->HasNoChange());
 }
@@ -1394,7 +1395,7 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyOrMoveFileSuccess) {
     context = NewContext(nullptr);
     EXPECT_EQ(base::File::FILE_OK,
               ofu()->CopyOrMoveFile(context.get(), source_url, dest_url,
-                                    FileSystemOperation::OPTION_NONE,
+                                    FileSystemOperation::CopyOrMoveOptionSet(),
                                     test_case.is_copy_not_move));
 
     if (test_case.is_copy_not_move) {
@@ -1439,20 +1440,23 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyPathQuotas) {
       ObfuscatedFileUtil::ComputeFilePathCost(dest_url.path()) - 1);
   EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
   context = NewContext(nullptr);
   context->set_allowed_bytes_growth(
       ObfuscatedFileUtil::ComputeFilePathCost(dest_url.path()));
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
 
   // Copy, with overwrite.
   context = NewContext(nullptr);
   context->set_allowed_bytes_growth(0);
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestMovePathQuotasWithRename) {
@@ -1471,14 +1475,16 @@ TEST_P(ObfuscatedFileUtilTest, TestMovePathQuotasWithRename) {
       ObfuscatedFileUtil::ComputeFilePathCost(src_url.path()) - 1);
   EXPECT_EQ(base::File::FILE_ERROR_NO_SPACE,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
   context = NewContext(nullptr);
   context->set_allowed_bytes_growth(
       ObfuscatedFileUtil::ComputeFilePathCost(dest_url.path()) -
       ObfuscatedFileUtil::ComputeFilePathCost(src_url.path()));
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
 
   context = NewContext(nullptr);
   ASSERT_EQ(base::File::FILE_OK,
@@ -1489,7 +1495,8 @@ TEST_P(ObfuscatedFileUtilTest, TestMovePathQuotasWithRename) {
   context->set_allowed_bytes_growth(0);
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
 }
 
 TEST_P(ObfuscatedFileUtilTest, TestMovePathQuotasWithoutRename) {
@@ -1515,7 +1522,8 @@ TEST_P(ObfuscatedFileUtilTest, TestMovePathQuotasWithoutRename) {
   context->set_allowed_bytes_growth(allowed_bytes_growth);
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
   EXPECT_EQ(allowed_bytes_growth, context->allowed_bytes_growth());
 
   // Move, no rename, with overwrite.
@@ -1526,7 +1534,8 @@ TEST_P(ObfuscatedFileUtilTest, TestMovePathQuotasWithoutRename) {
   context->set_allowed_bytes_growth(allowed_bytes_growth);
   EXPECT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), src_url, dest_url,
-                                  FileSystemOperation::OPTION_NONE, is_copy));
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  is_copy));
   EXPECT_EQ(allowed_bytes_growth +
                 ObfuscatedFileUtil::ComputeFilePathCost(src_url.path()),
             context->allowed_bytes_growth());
@@ -1753,10 +1762,10 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
 
   // Copy from sound `kPath1` to broken `kPath2`.
   context = NewContext(nullptr);
-  EXPECT_EQ(
-      base::File::FILE_OK,
-      ofu()->CopyOrMoveFile(context.get(), kPath1, kPath2,
-                            FileSystemOperation::OPTION_NONE, true /* copy */));
+  EXPECT_EQ(base::File::FILE_OK,
+            ofu()->CopyOrMoveFile(context.get(), kPath1, kPath2,
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
+                                  true /* copy */));
 
   ofu()->DestroyDirectoryDatabase(storage_key(), type_string());
   context = NewContext(nullptr);
@@ -2081,7 +2090,7 @@ TEST_P(ObfuscatedFileUtilTest, MAYBE_TestQuotaOnCopyFile) {
       base::File::FILE_OK,
       ofu()->CopyOrMoveFile(
           AllowUsageIncrease(PathCost(to_file1) + to_file1_size)->context(),
-          from_file, to_file1, FileSystemOperation::OPTION_NONE,
+          from_file, to_file1, FileSystemOperation::CopyOrMoveOptionSet(),
           true /* copy */));
   ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
 
@@ -2089,7 +2098,7 @@ TEST_P(ObfuscatedFileUtilTest, MAYBE_TestQuotaOnCopyFile) {
       base::File::FILE_ERROR_NO_SPACE,
       ofu()->CopyOrMoveFile(
           DisallowUsageIncrease(PathCost(to_file2) + from_file_size)->context(),
-          from_file, to_file2, FileSystemOperation::OPTION_NONE,
+          from_file, to_file2, FileSystemOperation::CopyOrMoveOptionSet(),
           true /* copy */));
   ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
 
@@ -2100,8 +2109,8 @@ TEST_P(ObfuscatedFileUtilTest, MAYBE_TestQuotaOnCopyFile) {
             ofu()->CopyOrMoveFile(
                 AllowUsageIncrease(obstacle_file_size - old_obstacle_file_size)
                     ->context(),
-                from_file, obstacle_file, FileSystemOperation::OPTION_NONE,
-                true /* copy */));
+                from_file, obstacle_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), true /* copy */));
   ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
 
   int64_t old_from_file_size = from_file_size;
@@ -2125,7 +2134,7 @@ TEST_P(ObfuscatedFileUtilTest, MAYBE_TestQuotaOnCopyFile) {
         helper->context()->allowed_bytes_growth() - 1);
     ASSERT_EQ(base::File::FILE_OK,
               ofu()->CopyOrMoveFile(helper->context(), from_file, obstacle_file,
-                                    FileSystemOperation::OPTION_NONE,
+                                    FileSystemOperation::CopyOrMoveOptionSet(),
                                     true /* copy */));
     ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
   }
@@ -2157,7 +2166,7 @@ TEST_P(ObfuscatedFileUtilTest, TestQuotaOnMoveFile) {
             ofu()->CopyOrMoveFile(
                 AllowUsageIncrease(-PathCost(from_file) + PathCost(to_file))
                     ->context(),
-                from_file, to_file, FileSystemOperation::OPTION_NONE,
+                from_file, to_file, FileSystemOperation::CopyOrMoveOptionSet(),
                 false /* move */));
   ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
 
@@ -2198,7 +2207,7 @@ TEST_P(ObfuscatedFileUtilTest, TestQuotaOnMoveFile) {
       ofu()->CopyOrMoveFile(
           AllowUsageIncrease(-old_obstacle_file_size - PathCost(from_file))
               ->context(),
-          from_file, obstacle_file, FileSystemOperation::OPTION_NONE,
+          from_file, obstacle_file, FileSystemOperation::CopyOrMoveOptionSet(),
           false /* move */));
   ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
 
@@ -2225,7 +2234,7 @@ TEST_P(ObfuscatedFileUtilTest, TestQuotaOnMoveFile) {
       LimitedContext(-old_obstacle_file_size - PathCost(from_file) - 1);
   ASSERT_EQ(base::File::FILE_OK,
             ofu()->CopyOrMoveFile(context.get(), from_file, obstacle_file,
-                                  FileSystemOperation::OPTION_NONE,
+                                  FileSystemOperation::CopyOrMoveOptionSet(),
                                   false /* move */));
   ASSERT_EQ(expected_total_file_size, ComputeTotalFileSize());
   context.reset();

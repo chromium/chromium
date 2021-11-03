@@ -58,7 +58,9 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   return file_system_context->operation_runner()->Copy(
       source_url, destination_url,
-      storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(
+          storage::FileSystemOperation::CopyOrMoveOption::
+              kPreserveLastModified),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
       std::move(complete_callback));
 }
@@ -77,7 +79,9 @@ storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
   // moves is available in the storage layer.
   return file_system_context->operation_runner()->Move(
       source_url, destination_url,
-      storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(
+          storage::FileSystemOperation::CopyOrMoveOption::
+              kPreserveLastModified),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
       std::move(complete_callback));
 }

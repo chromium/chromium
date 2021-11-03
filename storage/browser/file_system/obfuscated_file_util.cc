@@ -518,7 +518,7 @@ base::File::Error ObfuscatedFileUtil::CopyOrMoveFile(
     FileSystemOperationContext* context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     bool copy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Cross-filesystem copies and moves should be handled via CopyInForeignFile.
@@ -603,7 +603,7 @@ base::File::Error ObfuscatedFileUtil::CopyOrMoveFile(
   if (copy) {
     if (overwrite) {
       error = delegate_->CopyOrMoveFile(
-          src_local_path, dest_local_path, option,
+          src_local_path, dest_local_path, options,
           delegate_->CopyOrMoveModeForDestination(dest_url, true /* copy */));
     } else {  // non-overwrite
       error = CreateFile(context, src_local_path, false /* foreign_source */,
@@ -707,7 +707,8 @@ base::File::Error ObfuscatedFileUtil::CopyInForeignFile(
     base::FilePath dest_local_path =
         DataPathToLocalPath(dest_url, dest_file_info.data_path);
     error = delegate_->CopyInForeignFile(
-        src_file_path, dest_local_path, FileSystemOperation::OPTION_NONE,
+        src_file_path, dest_local_path,
+        FileSystemOperation::CopyOrMoveOptionSet(),
         delegate_->CopyOrMoveModeForDestination(dest_url, true /* copy */));
   } else {
     error = CreateFile(context, src_file_path, true /* foreign_source */,
@@ -1129,11 +1130,13 @@ base::File::Error ObfuscatedFileUtil::CreateFile(
   } else {
     if (foreign_source) {
       error = delegate_->CopyInForeignFile(
-          src_file_path, dest_local_path, FileSystemOperation::OPTION_NONE,
+          src_file_path, dest_local_path,
+          FileSystemOperation::CopyOrMoveOptionSet(),
           delegate_->CopyOrMoveModeForDestination(dest_url, true /* copy */));
     } else {
       error = delegate_->CopyOrMoveFile(
-          src_file_path, dest_local_path, FileSystemOperation::OPTION_NONE,
+          src_file_path, dest_local_path,
+          FileSystemOperation::CopyOrMoveOptionSet(),
           delegate_->CopyOrMoveModeForDestination(dest_url, true /* copy */));
     }
     created = true;

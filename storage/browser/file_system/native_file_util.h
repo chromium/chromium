@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) NativeFileUtil {
   static base::File::Error CopyOrMoveFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       CopyOrMoveMode mode);
   static base::File::Error DeleteFile(const base::FilePath& path);
   static base::File::Error DeleteDirectory(const base::FilePath& path);

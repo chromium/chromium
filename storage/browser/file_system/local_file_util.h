@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) LocalFileUtil
   base::File::Error CopyOrMoveFile(FileSystemOperationContext* context,
                                    const FileSystemURL& src_url,
                                    const FileSystemURL& dest_url,
-                                   CopyOrMoveOption option,
+                                   CopyOrMoveOptionSet options,
                                    bool copy) override;
   base::File::Error CopyInForeignFile(FileSystemOperationContext* context,
                                       const base::FilePath& src_file_path,

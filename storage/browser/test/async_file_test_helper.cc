@@ -112,10 +112,10 @@ base::File::Error AsyncFileTestHelper::CopyWithProgress(
     const CopyOrMoveProgressCallback& progress_callback) {
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
-  context->operation_runner()->Copy(src, dest, FileSystemOperation::OPTION_NONE,
-                                    FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                                    progress_callback,
-                                    AssignAndQuitCallback(&run_loop, &result));
+  context->operation_runner()->Copy(
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(),
+      FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
+      AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
   return result;
 }
@@ -127,7 +127,7 @@ base::File::Error AsyncFileTestHelper::CopyFileLocal(
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
   context->operation_runner()->CopyFileLocal(
-      src, dest, FileSystemOperation::OPTION_NONE,
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(),
       FileSystemOperation::CopyFileProgressCallback(),
       AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
@@ -140,7 +140,7 @@ base::File::Error AsyncFileTestHelper::Move(FileSystemContext* context,
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
   context->operation_runner()->Move(
-      src, dest, FileSystemOperation::OPTION_NONE,
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       AssignAndQuitCallback(&run_loop, &result));
@@ -155,10 +155,10 @@ base::File::Error AsyncFileTestHelper::MoveWithProgress(
     const CopyOrMoveProgressCallback& progress_callback) {
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
-  context->operation_runner()->Move(src, dest, FileSystemOperation::OPTION_NONE,
-                                    FileSystemOperation::ERROR_BEHAVIOR_ABORT,
-                                    progress_callback,
-                                    AssignAndQuitCallback(&run_loop, &result));
+  context->operation_runner()->Move(
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(),
+      FileSystemOperation::ERROR_BEHAVIOR_ABORT, progress_callback,
+      AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
   return result;
 }
@@ -170,7 +170,7 @@ base::File::Error AsyncFileTestHelper::MoveFileLocal(
   base::File::Error result = base::File::FILE_ERROR_FAILED;
   base::RunLoop run_loop;
   context->operation_runner()->MoveFileLocal(
-      src, dest, FileSystemOperation::OPTION_NONE,
+      src, dest, FileSystemOperation::CopyOrMoveOptionSet(),
       AssignAndQuitCallback(&run_loop, &result));
   run_loop.Run();
   return result;

@@ -300,7 +300,7 @@ TEST_F(NativeMediaFileUtilTest, CopySourceFiltering) {
         expectation = base::File::FILE_ERROR_INVALID_OPERATION;
       }
       operation_runner()->Copy(
-          url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+          url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
@@ -363,7 +363,7 @@ TEST_F(NativeMediaFileUtilTest, CopyDestFiltering) {
         }
       }
       operation_runner()->Copy(
-          src_url, url, storage::FileSystemOperation::OPTION_NONE,
+          src_url, url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
@@ -402,7 +402,7 @@ TEST_F(NativeMediaFileUtilTest, MoveSourceFiltering) {
         expectation = base::File::FILE_ERROR_INVALID_OPERATION;
       }
       operation_runner()->Move(
-          url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+          url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));
@@ -466,7 +466,7 @@ TEST_F(NativeMediaFileUtilTest, MoveDestFiltering) {
         }
       }
       operation_runner()->Move(
-          src_url, url, storage::FileSystemOperation::OPTION_NONE,
+          src_url, url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
           storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
           storage::FileSystemOperation::CopyOrMoveProgressCallback(),
           base::BindOnce(&ExpectEqHelper, test_name, expectation));

@@ -135,12 +135,12 @@ ObservableFileSystemOperationImpl::~ObservableFileSystemOperationImpl() =
 void ObservableFileSystemOperationImpl::Copy(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Copy(
-      src, dst, option, error_behavior, progress_callback,
+      src, dst, options, error_behavior, progress_callback,
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileCopiedOnUiThread, account_id_, src, dst)),
@@ -150,11 +150,11 @@ void ObservableFileSystemOperationImpl::Copy(
 void ObservableFileSystemOperationImpl::CopyFileLocal(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     const CopyFileProgressCallback& progress_callback,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::CopyFileLocal(
-      src, dst, option, progress_callback,
+      src, dst, options, progress_callback,
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileCopiedOnUiThread, account_id_, src, dst)),
@@ -164,12 +164,12 @@ void ObservableFileSystemOperationImpl::CopyFileLocal(
 void ObservableFileSystemOperationImpl::Move(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::Move(
-      src, dst, option, error_behavior, progress_callback,
+      src, dst, options, error_behavior, progress_callback,
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileMovedOnUiThread, account_id_, src, dst)),
@@ -179,10 +179,10 @@ void ObservableFileSystemOperationImpl::Move(
 void ObservableFileSystemOperationImpl::MoveFileLocal(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   storage::FileSystemOperationImpl::MoveFileLocal(
-      src, dst, option,
+      src, dst, options,
       RunInOrderCallback(
           RunOnUiThreadOnSuccessCallback(base::BindOnce(
               &NotifyFileMovedOnUiThread, account_id_, src, dst)),

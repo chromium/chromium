@@ -286,7 +286,7 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
   }
 
   operation_runner()->Move(
-      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+      src_url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
       FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),
@@ -319,7 +319,7 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
   }
 
   operation_runner()->Copy(
-      src_url, dest_url, storage::FileSystemOperation::OPTION_NONE,
+      src_url, dest_url, storage::FileSystemOperation::CopyOrMoveOptionSet(),
       FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       base::BindOnce(&FileSystemManagerImpl::DidFinish, GetWeakPtr(),

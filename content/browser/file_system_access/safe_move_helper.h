@@ -31,7 +31,7 @@ class CONTENT_EXPORT SafeMoveHelper {
       const FileSystemAccessManagerImpl::BindingContext& context,
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& dest_url,
-      storage::FileSystemOperation::CopyOrMoveOption option,
+      storage::FileSystemOperation::CopyOrMoveOptionSet options,
       download::QuarantineConnectionCallback quarantine_connection_callback,
       bool has_transient_user_activation);
   SafeMoveHelper(const SafeMoveHelper&) = delete;
@@ -82,7 +82,7 @@ class CONTENT_EXPORT SafeMoveHelper {
   const storage::FileSystemURL source_url_;
   const storage::FileSystemURL dest_url_;
 
-  storage::FileSystemOperation::CopyOrMoveOption option_;
+  storage::FileSystemOperation::CopyOrMoveOptionSet options_;
 
   download::QuarantineConnectionCallback quarantine_connection_callback_;
 

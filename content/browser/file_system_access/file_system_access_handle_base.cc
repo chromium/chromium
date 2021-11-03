@@ -354,7 +354,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
 
   auto safe_move_helper = std::make_unique<SafeMoveHelper>(
       manager()->AsWeakPtr(), context(), url(), dest_url,
-      storage::FileSystemOperation::OPTION_NONE,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       GetContentClient()->browser()->GetQuarantineConnectionCallback(),
       has_transient_user_activation);
   // Allows the unique pointer to be bound to the callback so the helper stays

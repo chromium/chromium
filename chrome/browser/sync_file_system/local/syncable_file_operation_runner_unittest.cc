@@ -261,12 +261,14 @@ TEST_F(SyncableFileOperationRunnerTest, CopyAndMove) {
   // (since the source directory is in syncing).
   ResetCallbackStatus();
   file_system_.operation_runner()->Copy(
-      URL(kDir), URL("dest-copy"), storage::FileSystemOperation::OPTION_NONE,
+      URL(kDir), URL("dest-copy"),
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       ExpectStatus(FROM_HERE, File::FILE_OK));
   file_system_.operation_runner()->Move(
-      URL(kDir), URL("dest-move"), storage::FileSystemOperation::OPTION_NONE,
+      URL(kDir), URL("dest-move"),
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       ExpectStatus(FROM_HERE, File::FILE_OK));
@@ -285,7 +287,8 @@ TEST_F(SyncableFileOperationRunnerTest, CopyAndMove) {
   // Now the destination is also locked copying kDir should be queued.
   ResetCallbackStatus();
   file_system_.operation_runner()->Copy(
-      URL(kDir), URL("dest-copy2"), storage::FileSystemOperation::OPTION_NONE,
+      URL(kDir), URL("dest-copy2"),
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback(),
       ExpectStatus(FROM_HERE, File::FILE_OK));

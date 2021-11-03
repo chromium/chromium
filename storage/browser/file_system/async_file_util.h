@@ -75,7 +75,7 @@ class AsyncFileUtil {
 
   using CopyFileProgressCallback = base::RepeatingCallback<void(int64_t size)>;
 
-  using CopyOrMoveOption = FileSystemOperation::CopyOrMoveOption;
+  using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
   using GetMetadataField = FileSystemOperation::GetMetadataField;
 
   // Creates an AsyncFileUtil instance which performs file operations on local
@@ -227,7 +227,7 @@ class AsyncFileUtil {
       std::unique_ptr<FileSystemOperationContext> context,
       const FileSystemURL& src_url,
       const FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       CopyFileProgressCallback progress_callback,
       StatusCallback callback) = 0;
 
@@ -250,7 +250,7 @@ class AsyncFileUtil {
       std::unique_ptr<FileSystemOperationContext> context,
       const FileSystemURL& src_url,
       const FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       StatusCallback callback) = 0;
 
   // Copies in a single file from a different filesystem.

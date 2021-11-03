@@ -92,7 +92,7 @@ OperationID FileSystemOperationRunner::CreateDirectory(
 OperationID FileSystemOperationRunner::Copy(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
@@ -109,7 +109,7 @@ OperationID FileSystemOperationRunner::Copy(
   PrepareForWrite(id, dest_url);
   PrepareForRead(id, src_url);
   operation_raw->Copy(
-      src_url, dest_url, option, error_behavior,
+      src_url, dest_url, options, error_behavior,
       progress_callback.is_null()
           ? CopyOrMoveProgressCallback()
           : base::BindRepeating(&FileSystemOperationRunner::OnCopyProgress,
@@ -122,7 +122,7 @@ OperationID FileSystemOperationRunner::Copy(
 OperationID FileSystemOperationRunner::Move(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
@@ -139,7 +139,7 @@ OperationID FileSystemOperationRunner::Move(
   PrepareForWrite(id, dest_url);
   PrepareForWrite(id, src_url);
   operation_raw->Move(
-      src_url, dest_url, option, error_behavior,
+      src_url, dest_url, options, error_behavior,
       progress_callback.is_null()
           ? CopyOrMoveProgressCallback()
           : base::BindRepeating(&FileSystemOperationRunner::OnCopyProgress,
@@ -498,7 +498,7 @@ OperationID FileSystemOperationRunner::RemoveDirectory(
 OperationID FileSystemOperationRunner::CopyFileLocal(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     const CopyFileProgressCallback& progress_callback,
     StatusCallback callback) {
   base::File::Error error = base::File::FILE_OK;
@@ -514,7 +514,7 @@ OperationID FileSystemOperationRunner::CopyFileLocal(
   PrepareForRead(id, src_url);
   PrepareForWrite(id, dest_url);
   operation_raw->CopyFileLocal(
-      src_url, dest_url, option, progress_callback,
+      src_url, dest_url, options, progress_callback,
       base::BindOnce(&FileSystemOperationRunner::DidFinish, weak_ptr_, id,
                      std::move(callback)));
   return id;
@@ -523,7 +523,7 @@ OperationID FileSystemOperationRunner::CopyFileLocal(
 OperationID FileSystemOperationRunner::MoveFileLocal(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   base::File::Error error = base::File::FILE_OK;
   std::unique_ptr<FileSystemOperation> operation =
@@ -538,7 +538,7 @@ OperationID FileSystemOperationRunner::MoveFileLocal(
   PrepareForWrite(id, src_url);
   PrepareForWrite(id, dest_url);
   operation_raw->MoveFileLocal(
-      src_url, dest_url, option,
+      src_url, dest_url, options,
       base::BindOnce(&FileSystemOperationRunner::DidFinish, weak_ptr_, id,
                      std::move(callback)));
   return id;

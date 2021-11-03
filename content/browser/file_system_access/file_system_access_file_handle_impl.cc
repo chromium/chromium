@@ -636,7 +636,9 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
                      weak_factory_.GetWeakPtr(), swap_url, auto_close,
                      std::move(lock), std::move(callback)),
       url(), swap_url,
-      storage::FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(
+          storage::FileSystemOperation::CopyOrMoveOption::
+              kPreserveLastModified),
       storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback());
 }

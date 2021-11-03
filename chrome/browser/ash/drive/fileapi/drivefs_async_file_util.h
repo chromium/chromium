@@ -32,7 +32,7 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       CopyFileProgressCallback progress_callback,
       StatusCallback callback) override;
   void DeleteRecursively(

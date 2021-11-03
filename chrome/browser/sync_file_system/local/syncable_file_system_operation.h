@@ -54,13 +54,13 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
                        StatusCallback callback) override;
   void Copy(const storage::FileSystemURL& src_url,
             const storage::FileSystemURL& dest_url,
-            CopyOrMoveOption option,
+            CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
             const CopyOrMoveProgressCallback& progress_callback,
             StatusCallback callback) override;
   void Move(const storage::FileSystemURL& src_url,
             const storage::FileSystemURL& dest_url,
-            CopyOrMoveOption option,
+            CopyOrMoveOptionSet options,
             ErrorBehavior error_behavior,
             const CopyOrMoveProgressCallback& progress_callback,
             StatusCallback callback) override;
@@ -106,12 +106,12 @@ class SyncableFileSystemOperation : public storage::FileSystemOperation {
                        StatusCallback callback) override;
   void CopyFileLocal(const storage::FileSystemURL& src_url,
                      const storage::FileSystemURL& dest_url,
-                     CopyOrMoveOption option,
+                     CopyOrMoveOptionSet options,
                      const CopyFileProgressCallback& progress_callback,
                      StatusCallback callback) override;
   void MoveFileLocal(const storage::FileSystemURL& src_url,
                      const storage::FileSystemURL& dest_url,
-                     CopyOrMoveOption option,
+                     CopyOrMoveOptionSet options,
                      StatusCallback callback) override;
   base::File::Error SyncGetPlatformPath(const storage::FileSystemURL& url,
                                         base::FilePath* platform_path) override;

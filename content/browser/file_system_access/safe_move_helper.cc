@@ -126,14 +126,14 @@ SafeMoveHelper::SafeMoveHelper(
     const FileSystemAccessManagerImpl::BindingContext& context,
     const storage::FileSystemURL& source_url,
     const storage::FileSystemURL& dest_url,
-    storage::FileSystemOperation::CopyOrMoveOption option,
+    storage::FileSystemOperation::CopyOrMoveOptionSet options,
     download::QuarantineConnectionCallback quarantine_connection_callback,
     bool has_transient_user_activation)
     : manager_(std::move(manager)),
       context_(context),
       source_url_(source_url),
       dest_url_(dest_url),
-      option_(option),
+      options_(options),
       quarantine_connection_callback_(
           std::move(quarantine_connection_callback)),
       has_transient_user_activation_(has_transient_user_activation) {}
@@ -247,7 +247,7 @@ void SafeMoveHelper::DidAfterWriteCheck(
   }
   manager_->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::Move,
-      std::move(result_callback), source_url(), dest_url(), option_,
+      std::move(result_callback), source_url(), dest_url(), options_,
       storage::FileSystemOperationRunner::ErrorBehavior::ERROR_BEHAVIOR_ABORT,
       storage::FileSystemOperation::CopyOrMoveProgressCallback());
 }

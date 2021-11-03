@@ -253,7 +253,7 @@ bool NativeFileUtil::DirectoryExists(const base::FilePath& path) {
 base::File::Error NativeFileUtil::CopyOrMoveFile(
     const base::FilePath& src_path,
     const base::FilePath& dest_path,
-    FileSystemOperation::CopyOrMoveOption option,
+    FileSystemOperation::CopyOrMoveOptionSet options,
     CopyOrMoveMode mode) {
   base::File::Info info;
   base::File::Error error = NativeFileUtil::GetFileInfo(src_path, &info);
@@ -290,14 +290,16 @@ base::File::Error NativeFileUtil::CopyOrMoveFile(
   bool should_retain_file_permissions = false;
 #if defined(OS_POSIX)
   int dest_mode;
-  if (option == FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS) {
+  if (options.Has(FileSystemOperation::CopyOrMoveOption::
+                      kPreserveDestinationPermissions)) {
     // Will be false if the destination file doesn't exist.
     should_retain_file_permissions =
         base::GetPosixFilePermissions(dest_path, &dest_mode);
   }
 #elif defined(OS_WIN)
   DWORD dest_attributes;
-  if (option == FileSystemOperation::OPTION_PRESERVE_DESTINATION_PERMISSIONS) {
+  if (options.Has(FileSystemOperation::CopyOrMoveOption::
+                      kPreserveDestinationPermissions)) {
     dest_attributes = ::GetFileAttributes(dest_path.value().c_str());
     should_retain_file_permissions = dest_attributes != INVALID_FILE_ATTRIBUTES;
   }
@@ -320,7 +322,8 @@ base::File::Error NativeFileUtil::CopyOrMoveFile(
 
   // Preserve the last modified time. Do not return error here even if
   // the setting is failed, because the copy itself is successfully done.
-  if (option == FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED) {
+  if (options.Has(
+          FileSystemOperation::CopyOrMoveOption::kPreserveLastModified)) {
     base::TouchFile(dest_path, last_modified, last_modified);
   }
 

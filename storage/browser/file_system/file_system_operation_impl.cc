@@ -101,7 +101,7 @@ void FileSystemOperationImpl::CreateDirectory(const FileSystemURL& url,
 void FileSystemOperationImpl::Copy(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
@@ -110,7 +110,7 @@ void FileSystemOperationImpl::Copy(
 
   recursive_operation_delegate_ = std::make_unique<CopyOrMoveOperationDelegate>(
       file_system_context(), src_url, dest_url,
-      CopyOrMoveOperationDelegate::OPERATION_COPY, option, error_behavior,
+      CopyOrMoveOperationDelegate::OPERATION_COPY, options, error_behavior,
       progress_callback,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -120,7 +120,7 @@ void FileSystemOperationImpl::Copy(
 void FileSystemOperationImpl::Move(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     ErrorBehavior error_behavior,
     const CopyOrMoveProgressCallback& progress_callback,
     StatusCallback callback) {
@@ -128,7 +128,7 @@ void FileSystemOperationImpl::Move(
   DCHECK(!recursive_operation_delegate_);
   recursive_operation_delegate_ = std::make_unique<CopyOrMoveOperationDelegate>(
       file_system_context(), src_url, dest_url,
-      CopyOrMoveOperationDelegate::OPERATION_MOVE, option, error_behavior,
+      CopyOrMoveOperationDelegate::OPERATION_MOVE, options, error_behavior,
       progress_callback,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -332,7 +332,7 @@ void FileSystemOperationImpl::RemoveDirectory(const FileSystemURL& url,
 void FileSystemOperationImpl::CopyFileLocal(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     const CopyFileProgressCallback& progress_callback,
     StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationCopy));
@@ -347,7 +347,7 @@ void FileSystemOperationImpl::CopyFileLocal(
   GetUsageAndQuotaThenRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoCopyFileLocal,
-                     weak_factory_.GetWeakPtr(), src_url, dest_url, option,
+                     weak_factory_.GetWeakPtr(), src_url, dest_url, options,
                      progress_callback, std::move(split_callback.first)),
       base::BindOnce(std::move(split_callback.second),
                      base::File::FILE_ERROR_FAILED));
@@ -355,7 +355,7 @@ void FileSystemOperationImpl::CopyFileLocal(
 
 void FileSystemOperationImpl::MoveFileLocal(const FileSystemURL& src_url,
                                             const FileSystemURL& dest_url,
-                                            CopyOrMoveOption option,
+                                            CopyOrMoveOptionSet options,
                                             StatusCallback callback) {
   DCHECK(SetPendingOperationType(kOperationMove));
   // Don't just DCHECK src_url.IsInSameFileSystem(dest_url). We don't care if
@@ -369,7 +369,7 @@ void FileSystemOperationImpl::MoveFileLocal(const FileSystemURL& src_url,
   GetUsageAndQuotaThenRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoMoveFileLocal,
-                     weak_factory_.GetWeakPtr(), src_url, dest_url, option,
+                     weak_factory_.GetWeakPtr(), src_url, dest_url, options,
                      std::move(split_callback.first)),
       base::BindOnce(std::move(split_callback.second),
                      base::File::FILE_ERROR_FAILED));
@@ -469,11 +469,11 @@ void FileSystemOperationImpl::DoCreateDirectory(const FileSystemURL& url,
 void FileSystemOperationImpl::DoCopyFileLocal(
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     const CopyFileProgressCallback& progress_callback,
     StatusCallback callback) {
   async_file_util_->CopyFileLocal(
-      std::move(operation_context_), src_url, dest_url, option,
+      std::move(operation_context_), src_url, dest_url, options,
       progress_callback,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation, weak_ptr_,
                      std::move(callback)));
@@ -481,10 +481,10 @@ void FileSystemOperationImpl::DoCopyFileLocal(
 
 void FileSystemOperationImpl::DoMoveFileLocal(const FileSystemURL& src_url,
                                               const FileSystemURL& dest_url,
-                                              CopyOrMoveOption option,
+                                              CopyOrMoveOptionSet options,
                                               StatusCallback callback) {
   async_file_util_->MoveFileLocal(
-      std::move(operation_context_), src_url, dest_url, option,
+      std::move(operation_context_), src_url, dest_url, options,
       base::BindOnce(&FileSystemOperationImpl::DidFinishOperation, weak_ptr_,
                      std::move(callback)));
 }

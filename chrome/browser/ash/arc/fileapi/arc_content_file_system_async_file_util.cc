@@ -119,7 +119,7 @@ void ArcContentFileSystemAsyncFileUtil::CopyFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     CopyFileProgressCallback progress_callback,
     StatusCallback callback) {
   NOTIMPLEMENTED();
@@ -132,7 +132,7 @@ void ArcContentFileSystemAsyncFileUtil::MoveFileLocal(
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& src_url,
     const storage::FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     StatusCallback callback) {
   NOTIMPLEMENTED();
   base::ThreadTaskRunnerHandle::Get()->PostTask(

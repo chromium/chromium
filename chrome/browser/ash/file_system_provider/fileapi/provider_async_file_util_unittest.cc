@@ -341,7 +341,7 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CopyFileLocal) {
       CreateOperationContext(),
       file_url_,  // src_url
       file_url_,  // dst_url
-      storage::FileSystemOperation::OPTION_NONE,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindRepeating(&EventLogger::OnCopyFileProgress,
                           base::Unretained(&logger)),
       base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
@@ -358,7 +358,7 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, MoveFileLocal) {
       CreateOperationContext(),
       file_url_,  // src_url
       file_url_,  // dst_url
-      storage::FileSystemOperation::OPTION_NONE,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 
