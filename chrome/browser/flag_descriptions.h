@@ -2415,6 +2415,12 @@ extern const char kCrosLanguageSettingsUpdate2Description[];
 extern const char kCrosOnDeviceGrammarCheckName[];
 extern const char kCrosOnDeviceGrammarCheckDescription[];
 
+extern const char kCrosRegionsModeName[];
+extern const char kCrosRegionsModeDescription[];
+extern const char kCrosRegionsModeDefault[];
+extern const char kCrosRegionsModeOverride[];
+extern const char kCrosRegionsModeHide[];
+
 extern const char kSystemExtensionsName[];
 extern const char kSystemExtensionsDescription[];
 

@@ -926,6 +926,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "cros-regions-mode",
+    "owners": [ "alemate" ],
+    "expiry_milestone": 80
+  },
+  {
     "name": "crosh-swa",
     "owners": [ "joelhockey", "benwells" ],
     "expiry_milestone": 100
