@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_EXTENSION_FORCE_INSTALL_MIXIN_H_
 
 #include <atomic>
+#include <map>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -74,8 +75,6 @@ class DevicePolicyCrosTestHelper;
 // * "/<extension_id>.xml" - update manifests referred to by policies,
 // * "/<extension_id>-<version>.crx" - CRX packages referred to by the update
 //   manifests.
-//
-// TODO(crbug.com/1090941): Add auto update.
 class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
  public:
   // The type of the waiting mode for the force installation operation.
@@ -88,6 +87,13 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
     kLoad,
     // Wait until the extension's background page is loaded for the first time.
     kBackgroundPageFirstLoad,
+  };
+
+  // The type of the waiting mode for the force-installed extension update.
+  enum class UpdateWaitMode {
+    // Don't wait, and return immediately.
+    kNone,
+    // TODO(crbug.com/1090941): Add other wait modes as necessary.
   };
 
   // The type of the server error that should be simulated.
@@ -156,6 +162,24 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
       extensions::ExtensionId* extension_id = nullptr,
       base::Version* extension_version = nullptr) WARN_UNUSED_RESULT;
 
+  // Updates the served extension to the new version from |crx_path|. It's
+  // expected that a ForceInstallFromCrx() call was done previously for this
+  // extension.
+  // |extension_version| - if non-null, will be set to the CRX'es version.
+  bool UpdateFromCrx(const base::FilePath& crx_path,
+                     UpdateWaitMode wait_mode,
+                     base::Version* extension_version = nullptr)
+      WARN_UNUSED_RESULT;
+  // Updates the served |extension_id| extension to the new version from
+  // |extension_dir_path|. It's expected that a ForceInstallFromSourceDir() call
+  // was done previously for this extension.
+  // |extension_version| - if non-null, will be set to the extension's version.
+  bool UpdateFromSourceDir(const base::FilePath& extension_dir_path,
+                           const extensions::ExtensionId& extension_id,
+                           UpdateWaitMode wait_mode,
+                           base::Version* extension_version = nullptr)
+      WARN_UNUSED_RESULT;
+
   // Returns the extension, or null if it's not installed yet.
   const extensions::Extension* GetInstalledExtension(
       const extensions::ExtensionId& extension_id) const;
@@ -205,6 +229,11 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   // manifest URL.
   bool UpdatePolicy(const extensions::ExtensionId& extension_id,
                     const GURL& update_manifest_url);
+  // Waits until the extension's given version is installed and gets into the
+  // requested mode. Does nothing if |wait_mode| is |kNone|.
+  bool WaitForExtensionUpdate(const extensions::ExtensionId& extension_id,
+                              const base::Version& extension_version,
+                              UpdateWaitMode wait_mode);
 
   base::ScopedTempDir temp_dir_;
   net::EmbeddedTestServer embedded_test_server_;
@@ -220,6 +249,10 @@ class ExtensionForceInstallMixin final : public InProcessBrowserTestMixin {
   std::string account_id_;
   std::string policy_type_;
 #endif
+  // Mapping from the extension ID to the PEM file (the supplied or a randomly
+  // generated one). It's not populated for extensions installed from CRX files,
+  // since there's no PEM file available in that case.
+  std::map<extensions::ExtensionId, base::FilePath> extension_id_to_pem_path_;
   // The current error mode. Stored in an atomic variable, as the server's
   // request handlers are reading from it on IO thread.
   std::atomic<ServerErrorMode> server_error_mode_{ServerErrorMode::kNone};

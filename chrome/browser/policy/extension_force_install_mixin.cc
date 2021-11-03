@@ -560,6 +560,67 @@ bool ExtensionForceInstallMixin::ForceInstallFromSourceDir(
                                    wait_mode);
 }
 
+bool ExtensionForceInstallMixin::UpdateFromCrx(
+    const base::FilePath& crx_path,
+    UpdateWaitMode wait_mode,
+    base::Version* extension_version) {
+  DCHECK(initialized_) << "Init not called";
+  DCHECK(embedded_test_server_.Started()) << "Called before setup";
+
+  extensions::ExtensionId extension_id;
+  if (!ParseCrxOuterData(crx_path, &extension_id))
+    return false;
+  base::Version local_extension_version;
+  if (!ParseCrxInnerData(crx_path, &local_extension_version))
+    return false;
+  if (extension_version)
+    *extension_version = local_extension_version;
+  return ServeExistingCrx(crx_path, extension_id, local_extension_version) &&
+         CreateAndServeUpdateManifestFile(extension_id,
+                                          local_extension_version) &&
+         WaitForExtensionUpdate(extension_id, local_extension_version,
+                                wait_mode);
+}
+
+bool ExtensionForceInstallMixin::UpdateFromSourceDir(
+    const base::FilePath& extension_dir_path,
+    const extensions::ExtensionId& extension_id,
+    UpdateWaitMode wait_mode,
+    base::Version* extension_version) {
+  DCHECK(initialized_) << "Init not called";
+  DCHECK(embedded_test_server_.Started()) << "Called before setup";
+
+  // Get the PEM path that was used for packing the extension last time, so that
+  // packing results in the same extension ID.
+  auto pem_path_iter = extension_id_to_pem_path_.find(extension_id);
+  if (pem_path_iter == extension_id_to_pem_path_.end()) {
+    ADD_FAILURE() << "Requested update of extension that wasn't installed via "
+                     "ForceInstallFromSourceDir()";
+    return false;
+  }
+  const base::FilePath pem_path = pem_path_iter->second;
+
+  base::Version local_extension_version;
+  if (!ParseExtensionManifestData(extension_dir_path, &local_extension_version))
+    return false;
+  if (extension_version)
+    *extension_version = local_extension_version;
+  extensions::ExtensionId packed_extension_id;
+  if (!CreateAndServeCrx(extension_dir_path, pem_path, local_extension_version,
+                         &packed_extension_id)) {
+    return false;
+  }
+  if (packed_extension_id != extension_id) {
+    ADD_FAILURE() << "Unexpected extension ID after packing: "
+                  << packed_extension_id << ", expected: " << extension_id;
+    return false;
+  }
+  return CreateAndServeUpdateManifestFile(extension_id,
+                                          local_extension_version) &&
+         WaitForExtensionUpdate(extension_id, local_extension_version,
+                                wait_mode);
+}
+
 const extensions::Extension* ExtensionForceInstallMixin::GetInstalledExtension(
     const extensions::ExtensionId& extension_id) const {
   DCHECK(initialized_) << "Init not called";
@@ -679,10 +740,23 @@ bool ExtensionForceInstallMixin::CreateAndServeCrx(
   const base::FilePath temp_crx_path =
       temp_dir_.GetPath().AppendASCII(kTempCrxFileName);
   base::DeleteFile(temp_crx_path);
+
+  // Use the specified PEM file, if any. Otherwise, create a file in the temp
+  // dir and let the extension creator populate it with a random key.
+  base::FilePath final_pem_path;
+  if (pem_path) {
+    final_pem_path = *pem_path;
+  } else if (!base::CreateTemporaryFileInDir(temp_dir_.GetPath(),
+                                             &final_pem_path)) {
+    ADD_FAILURE() << "Failed to create a temp PEM file";
+    return false;
+  }
+
   extensions::ExtensionCreator extension_creator;
   if (!extension_creator.Run(extension_dir_path, temp_crx_path,
                              pem_path.value_or(base::FilePath()),
-                             /*private_key_output_path=*/base::FilePath(),
+                             /*private_key_output_path=*/
+                             pem_path ? base::FilePath() : final_pem_path,
                              /*run_flags=*/0)) {
     ADD_FAILURE() << "Failed to pack extension: "
                   << extension_creator.error_message();
@@ -699,6 +773,7 @@ bool ExtensionForceInstallMixin::CreateAndServeCrx(
     return false;
   }
 
+  extension_id_to_pem_path_[*extension_id] = final_pem_path;
   return true;
 }
 
@@ -771,4 +846,14 @@ bool ExtensionForceInstallMixin::UpdatePolicy(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED() << "Init not called";
   return false;
+}
+
+bool ExtensionForceInstallMixin::WaitForExtensionUpdate(
+    const extensions::ExtensionId& extension_id,
+    const base::Version& extension_version,
+    UpdateWaitMode wait_mode) {
+  switch (wait_mode) {
+    case UpdateWaitMode::kNone:
+      return true;
+  }
 }

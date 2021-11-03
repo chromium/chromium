@@ -42,9 +42,6 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
-#include "net/http/http_status_code.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -86,17 +83,18 @@ const char kNotAllowlistedExtensionPemPath[] =
 // * An extension which is NOT allowlisted for running in the sign-in profile
 //   and that suppresses its immediate auto updates:
 const char kNoImmediateUpdateExtensionId[] = "noidlplbgmdmbccnafgibfgokggdpncj";
-const char kNoImmediateUpdateExtensionUpdateManifestPathFormat[] =
-    "/extensions/no_immediate_update_extension/crx/%s/update_manifest.xml";
+const char kNoImmediateUpdateExtensionPathTemplate[] =
+    "extensions/no_immediate_update_extension/src-%s";
+const char kNoImmediateUpdateExtensionPemPath[] =
+    "extensions/no_immediate_update_extension/key.pem";
 const char kNoImmediateUpdateExtensionLatestVersion[] = "2.0";
 const char kNoImmediateUpdateExtensionOlderVersion[] = "1.0";
 
-// Returns the update manifest path for the no_immediate_update_extension with
-// the given version.
-std::string GetNoImmediateUpdateExtensionUpdateManifestPath(
-    const std::string& version) {
-  return base::StringPrintf(kNoImmediateUpdateExtensionUpdateManifestPathFormat,
-                            version.c_str());
+// Returns the path to the no_immediate_update_extension with the given version.
+base::FilePath GetNoImmediateUpdateExtensionPath(const std::string& version) {
+  return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+      .AppendASCII(base::StringPrintf(kNoImmediateUpdateExtensionPathTemplate,
+                                      version.c_str()));
 }
 
 // Observer that allows waiting for an installation failure of a specific
@@ -435,7 +433,7 @@ class SigninProfileExtensionsPolicyCorruptCacheTest
     test_extension_registry_observer_->WaitForExtensionLoaded();
   }
 
-  const base::FilePath GetCachedCrxFilePath() {
+  base::FilePath GetCachedCrxFilePath() const {
     const base::FilePath cache_file_path =
         base::PathService::CheckedGet(chromeos::DIR_SIGNIN_PROFILE_EXTENSIONS);
     const std::string file_name =
@@ -481,9 +479,13 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
     : public SigninProfileExtensionsPolicyTest {
  public:
   SigninProfileExtensionsAutoUpdatePolicyTest() {
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &SigninProfileExtensionsAutoUpdatePolicyTest::HandleTestServerRequest,
-        base::Unretained(this)));
+    // Initially block the server that hosts the extension. This is to let the
+    // test bodies simulate the offline scenario or to let them make the updated
+    // manifest seen by the extension system quickly (background: once it
+    // fetches a manifest for the first time, the next check will happen after a
+    // very long delay, which would make the test time out).
+    extension_force_install_mixin_.SetServerErrorMode(
+        ExtensionForceInstallMixin::ServerErrorMode::kInternalError);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -507,20 +509,20 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
             GetInitialProfile(), kNoImmediateUpdateExtensionId,
             base::Version(kNoImmediateUpdateExtensionLatestVersion));
 
-    AddExtensionForForceInstallation(kNoImmediateUpdateExtensionId,
-                                     kRedirectingUpdateManifestPath);
+    const std::string version = content::IsPreTest()
+                                    ? kNoImmediateUpdateExtensionOlderVersion
+                                    : kNoImmediateUpdateExtensionLatestVersion;
+    EXPECT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
+        GetNoImmediateUpdateExtensionPath(version),
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .AppendASCII(kNoImmediateUpdateExtensionPemPath),
+        ExtensionForceInstallMixin::WaitMode::kNone));
   }
 
   void TearDownOnMainThread() override {
     test_extension_latest_version_update_available_observer_.reset();
     test_extension_registry_observer_.reset();
     SigninProfileExtensionsPolicyTest::TearDownOnMainThread();
-  }
-
-  // Enables serving the test extension's update manifest at the specified
-  // version.
-  void StartServingTestExtension(const std::string& extension_version) {
-    served_extension_version_ = extension_version;
   }
 
   void WaitForTestExtensionLoaded() {
@@ -531,51 +533,16 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
     test_extension_latest_version_update_available_observer_->Wait();
   }
 
-  base::Version GetTestExtensionVersion() {
+  base::Version GetTestExtensionVersion() const {
     const extensions::Extension* const extension =
-        extensions::ExtensionRegistry::Get(GetInitialProfile())
-            ->enabled_extensions()
-            .GetByID(kNoImmediateUpdateExtensionId);
+        extension_force_install_mixin_.GetEnabledExtension(
+            kNoImmediateUpdateExtensionId);
     if (!extension)
       return base::Version();
     return extension->version();
   }
 
  private:
-  // Path on the embedded test server that redirects to the update manifest of
-  // the test extension for the version that is currently served.
-  const std::string kRedirectingUpdateManifestPath =
-      "/redirecting-update-manifest-path.xml";
-
-  // Handler for the embedded test server. Provides special behavior for the
-  // test extension's update manifest URL in accordance to
-  // |served_extension_version_|.
-  std::unique_ptr<net::test_server::HttpResponse> HandleTestServerRequest(
-      const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != kRedirectingUpdateManifestPath)
-      return nullptr;
-    if (served_extension_version_.empty()) {
-      // No extension is served now, so return an error.
-      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-      return response;
-    }
-    // Redirect to the XML file for the corresponding version.
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_TEMPORARY_REDIRECT);
-    response->AddCustomHeader(
-        "Location",
-        embedded_test_server()
-            ->GetURL(GetNoImmediateUpdateExtensionUpdateManifestPath(
-                served_extension_version_))
-            .spec());
-    return response;
-  }
-
-  // Specifies which version of the test extension needs to be served. An empty
-  // string means that no version is served.
-  std::string served_extension_version_;
-
   std::unique_ptr<extensions::TestExtensionRegistryObserver>
       test_extension_registry_observer_;
   std::unique_ptr<ExtensionUpdateAvailabilityObserver>
@@ -583,17 +550,20 @@ class SigninProfileExtensionsAutoUpdatePolicyTest
 };
 
 // This is the first preparation step for the actual test. Here the old version
-// of the app is served, and it gets installed into the sign-in profile.
+// of the extension is served, and it gets installed into the sign-in profile.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest,
                        PRE_PRE_Test) {
-  StartServingTestExtension(kNoImmediateUpdateExtensionOlderVersion);
+  // Unblock the server hosting the extension immediately.
+  extension_force_install_mixin_.SetServerErrorMode(
+      ExtensionForceInstallMixin::ServerErrorMode::kNone);
+
   WaitForTestExtensionLoaded();
   EXPECT_EQ(GetTestExtensionVersion(),
             base::Version(kNoImmediateUpdateExtensionOlderVersion));
 }
 
 // This is the second preparation step for the actual test. Here the new version
-// of the app is served, and it gets fetched and cached.
+// of the extension is served, and it gets fetched and cached.
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   // Let the extensions system load the previously fetched version before
   // starting to serve the newer version, to avoid hitting flaky DCHECKs in the
@@ -606,7 +576,13 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
   // fetch this version due to the retry mechanism when the fetch request to the
   // update servers was failing. We verify that the new version eventually gets
   // fetched and becomes available for an update.
-  StartServingTestExtension(kNoImmediateUpdateExtensionLatestVersion);
+  EXPECT_TRUE(extension_force_install_mixin_.UpdateFromSourceDir(
+      GetNoImmediateUpdateExtensionPath(
+          kNoImmediateUpdateExtensionLatestVersion),
+      kNoImmediateUpdateExtensionId,
+      ExtensionForceInstallMixin::UpdateWaitMode::kNone));
+  extension_force_install_mixin_.SetServerErrorMode(
+      ExtensionForceInstallMixin::ServerErrorMode::kNone);
   WaitForTestExtensionLatestVersionUpdateAvailable();
 
   // The running extension should stay at the older version, since it ignores
@@ -620,9 +596,10 @@ IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, PRE_Test) {
             base::Version(kNoImmediateUpdateExtensionOlderVersion));
 }
 
-// This is the actual test. Here we verify that the new version of the app, as
-// fetched in the PRE_Test, gets launched even in the "offline" mode (since
-// we're not serving any version of the extension in this part of the test).
+// This is the actual test. Here we verify that the new version of the
+// extension, as fetched in the PRE_Test, gets launched even in the "offline"
+// mode (since the server hosting the extension stays in the error mode
+// throughout this part).
 IN_PROC_BROWSER_TEST_F(SigninProfileExtensionsAutoUpdatePolicyTest, Test) {
   WaitForTestExtensionLoaded();
   EXPECT_EQ(GetTestExtensionVersion(),
