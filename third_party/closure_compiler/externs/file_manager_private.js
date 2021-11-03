@@ -1334,6 +1334,13 @@ chrome.fileManagerPrivate.openWindow = function(params, callback) {};
  */
 chrome.fileManagerPrivate.startIOTask = function(type, entries, params) {};
 
+/**
+ * Cancels an I/O task by id. Task ids are communicated to the Files App in
+ * each I/O task's progress status.
+ * @param {number} taskId
+ */
+chrome.fileManagerPrivate.cancelIOTask = function (taskId) { };
+
 /** @type {!ChromeEvent} */
 chrome.fileManagerPrivate.onMountCompleted;
 

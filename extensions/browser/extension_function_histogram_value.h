@@ -1660,6 +1660,7 @@ enum HistogramValue {
   PASSWORDSPRIVATE_ISACCOUNTSTOREDEFAULT = 1597,
   WEB_AUTHENTICATION_PROXY_ATTACH = 1598,
   WEB_AUTHENTICATION_PROXY_DETACH = 1599,
+  FILEMANAGERPRIVATE_CANCELIOTASK = 1600,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

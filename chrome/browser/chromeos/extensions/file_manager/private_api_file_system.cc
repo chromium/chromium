@@ -1444,4 +1444,26 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+FileManagerPrivateCancelIOTaskFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private::CancelIOTask::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  auto* const volume_manager = file_manager::VolumeManager::Get(
+      Profile::FromBrowserContext(browser_context()));
+  if (!volume_manager || !volume_manager->io_task_controller()) {
+    return RespondNow(Error("Invalid state"));
+  }
+
+  if (params->task_id <= 0) {
+    return RespondNow(Error("Invalid task id"));
+  }
+
+  volume_manager->io_task_controller()->Cancel(params->task_id);
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

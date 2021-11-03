@@ -1592,6 +1592,10 @@ interface Functions {
       IOTaskType type,
       [instanceof=Entry] object[] entries,
       IOTaskParams params);
+
+  // Cancels an I/O task by id. Task ids are communicated to the Files App in
+  // each I/O task's progress status.
+  static void cancelIOTask(long taskId);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
