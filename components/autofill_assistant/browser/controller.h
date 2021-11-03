@@ -446,6 +446,9 @@ class Controller : public ScriptExecutorDelegate,
   std::string GetDisplayStringsLocale();
   void SetTtsButtonState(TtsButtonState state);
 
+  // Resets the controller to the initial state.
+  void ResetState();
+
   ClientSettings settings_;
   Client* const client_;
   const base::TickClock* const tick_clock_;

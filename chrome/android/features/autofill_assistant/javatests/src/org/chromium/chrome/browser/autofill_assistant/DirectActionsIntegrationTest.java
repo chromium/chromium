@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 
@@ -36,10 +40,17 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.DirectActionProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.InfoBoxProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.ShowInfoBoxProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.StopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.TellProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.directactions.DirectActionHandler;
 import org.chromium.chrome.browser.directactions.FakeDirectActionReporter;
@@ -227,5 +238,80 @@ public class DirectActionsIntegrationTest {
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_one"));
         verify(mDirectActionResultCallback)
                 .onResult(argThat(bundle -> bundle.getBoolean("success")));
+    }
+
+    /**
+     * Regression test for b/195417453.
+     */
+    @Test
+    @MediumTest
+    @Features.
+    EnableFeatures({ChromeFeatureList.DIRECT_ACTIONS, ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_DIRECT_ACTIONS})
+    public void
+    testStatusMessageResetsBetweenRuns() {
+        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Prompt"))))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setShowInfoBox(ShowInfoBoxProto.newBuilder().setInfoBox(
+                                 InfoBoxProto.newBuilder().setExplanation(
+                                         "InfoBox message from previous run")))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setTell(TellProto.newBuilder().setMessage(
+                                 "Status message from previous run"))
+                         .build());
+        list.add(ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("autofill_assistant_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setDirectAction(
+                                DirectActionProto.newBuilder()
+                                        .addNames("some_direct_action")
+                                        .build()))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.scheduleForInjection();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions"));
+            mDirectActionHandler.performDirectAction(
+                    "fetch_website_actions", new Bundle(), mDirectActionResultCallback);
+            verify(mDirectActionResultCallback)
+                    .onResult(argThat(bundle -> bundle.getBoolean("success")));
+
+            mDirectActionHandler.reportAvailableDirectActions(mDirectActionReporter);
+            Assert.assertThat(mDirectActionReporter.getDirectActions(),
+                    containsInAnyOrder("fetch_website_actions", "some_direct_action"));
+            mDirectActionHandler.performDirectAction(
+                    "some_direct_action", new Bundle(), mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("Prompt"), isDisplayed());
+
+        // Changes the status message, shows the info box, then gracefully stops the script.
+        onView(withText("Prompt")).perform(click());
+
+        // Run the same direct action again, but don't accept the prompt. The script won't run the
+        // showInfoBox and tell actions, thus the UI should be left at startup-default.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mDirectActionHandler.performDirectAction(
+                    "some_direct_action", new Bundle(), mDirectActionResultCallback);
+        });
+        waitUntilViewMatchesCondition(withText("Prompt"), isDisplayed());
+        onView(withText("InfoBox message from previous run")).check(doesNotExist());
+        onView(withId(R.id.info_box_explanation)).check(matches(not(isDisplayed())));
+        onView(withText("Status message from previous run")).check(doesNotExist());
     }
 }

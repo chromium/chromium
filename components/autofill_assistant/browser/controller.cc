@@ -1138,6 +1138,14 @@ void Controller::ExecuteScript(const std::string& script_path,
                                AutofillAssistantState end_state) {
   DCHECK(!script_tracker()->running());
 
+  // To prevent state from persisting across direct actions, we need to
+  // explicitly clear it each time before we run a script (b/195417453). Note
+  // that for cases where a JITT script transitions into a regular script,
+  // preserving state is important, so we can't clear this indiscriminately.
+  if (context->GetDirectAction()) {
+    ResetState();
+  }
+
   if (!start_message.empty())
     SetStatusMessage(start_message);
 
@@ -1151,8 +1159,7 @@ void Controller::ExecuteScript(const std::string& script_path,
   // the script.
   script_tracker_->ClearRunnableScripts();
   SetUserActions(nullptr);
-  // TODO(crbug.com/806868): Consider making ClearRunnableScripts part of
-  // ExecuteScripts to simplify the controller.
+
   script_tracker()->ExecuteScript(
       script_path, &user_data_, std::move(context),
       base::BindOnce(&Controller::OnScriptExecuted,
@@ -1218,6 +1225,25 @@ void Controller::OnScriptExecuted(const std::string& script_path,
       break;
   }
   EnterState(end_state);
+}
+
+void Controller::ResetState() {
+  // TODO(b/204963552): this list is incomplete. It would be much better if,
+  // instead of selectively clearing fields, we'd solve this in a more holistic
+  // way.
+  bubble_message_.clear();
+  tts_message_.clear();
+  status_message_.clear();
+  details_.clear();
+  info_box_.reset();
+  progress_bar_error_state_ = false;
+  progress_active_step_ = 0;
+  step_progress_bar_configuration_ =
+      ShowProgressBarProto::StepProgressBarConfiguration();
+  viewport_mode_ = ViewportMode::NO_RESIZE;
+  peek_mode_ = ConfigureBottomSheetProto::HANDLE;
+  overlay_behavior_ = ConfigureUiStateProto::DEFAULT;
+  touchable_element_area()->Clear();
 }
 
 void Controller::MaybeAutostartScript(
