@@ -192,6 +192,8 @@ class FileSystemChooseEntryFunction : public FileSystemEntryFunction {
   void ShowPicker(const ui::SelectFileDialog::FileTypeInfo& file_type_info,
                   ui::SelectFileDialog::Type picker_type,
                   const base::FilePath& initial_path);
+  void MaybeUseManagedSavePath(base::OnceClosure fallback_file_picker_callback,
+                               const base::FilePath& path);
 
   // FilesSelected and FileSelectionCanceled are called by the file picker.
   void FilesSelected(const std::vector<base::FilePath>& paths);

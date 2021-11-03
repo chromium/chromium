@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/filename_generation/filename_generation.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -219,6 +220,44 @@ content::WebContents* GetWebContentsForRenderFrameHost(
                  ->GetAppWindowForWebContents(web_contents)
              ? web_contents
              : nullptr;
+}
+
+// Creates a unique filename by appending a uniquifier if needed. Returns the
+// generated file path on success, or an empty path on failure.
+base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
+  int limit = base::GetMaximumPathComponentLength(path.DirName());
+  if (limit < 0)
+    return base::FilePath();
+
+  for (int i = 0; i <= base::kMaxUniqueFiles + 1; ++i) {
+    base::FilePath unique_path;
+    if (i == 0) {
+      // Try the original path.
+      unique_path = path;
+    } else if (i <= base::kMaxUniqueFiles) {
+      // Try a number suffix, like base::GetUniquePath().
+      std::string suffix = base::StringPrintf(" (%d)", i);
+      unique_path = path.InsertBeforeExtensionASCII(suffix);
+    } else {
+      // Try a timestamp suffix.
+      // Generate an ISO8601 compliant local timestamp suffix that avoids
+      // reserved characters that are forbidden on some OSes like Windows.
+      base::Time::Exploded exploded;
+      base::Time::Now().LocalExplode(&exploded);
+      std::string suffix = base::StringPrintf(
+          " - %04d-%02d-%02dT%02d%02d%02d.%03d", exploded.year, exploded.month,
+          exploded.day_of_month, exploded.hour, exploded.minute,
+          exploded.second, exploded.millisecond);
+      unique_path = path.InsertBeforeExtensionASCII(suffix);
+    }
+    if (!filename_generation::TruncateFilename(&unique_path, limit))
+      return base::FilePath();
+
+    if (!base::PathExists(unique_path))
+      return unique_path;
+  }
+
+  return base::FilePath();
 }
 
 }  // namespace
@@ -724,6 +763,15 @@ void FileSystemChooseEntryFunction::CalculateInitialPathAndShowPicker(
   ShowPicker(file_type_info, picker_type, initial_path);
 }
 
+void FileSystemChooseEntryFunction::MaybeUseManagedSavePath(
+    base::OnceClosure fallback_file_picker_callback,
+    const base::FilePath& path) {
+  if (path.empty())
+    std::move(fallback_file_picker_callback).Run();
+  else
+    FilesSelected({path});
+}
+
 FileSystemChooseEntryFunction::~FileSystemChooseEntryFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
@@ -776,6 +824,31 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
+
+  if (picker_type == ui::SelectFileDialog::SELECT_SAVEAS_FILE &&
+      !suggested_name.empty()) {
+    FileSystemDelegate* delegate =
+        ExtensionsAPIClient::Get()->GetFileSystemDelegate();
+    base::FilePath managed_saveas_dir =
+        delegate->GetManagedSaveAsDirectory(browser_context(), *extension());
+    if (!managed_saveas_dir.empty()) {
+      base::OnceClosure file_picker_callback = base::BindOnce(
+          &FileSystemChooseEntryFunction::CalculateInitialPathAndShowPicker,
+          this,
+          /*previous_path=*/base::FilePath(), suggested_name, file_type_info,
+          picker_type,
+          /*is_previous_path_directory=*/false);
+
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&GenerateUniqueSavePath,
+                         managed_saveas_dir.Append(suggested_name)),
+          base::BindOnce(
+              &FileSystemChooseEntryFunction::MaybeUseManagedSavePath, this,
+              std::move(file_picker_callback)));
+      return RespondLater();
+    }
+  }
 
   base::FilePath previous_path;
   if (extension_->is_extension()) {
