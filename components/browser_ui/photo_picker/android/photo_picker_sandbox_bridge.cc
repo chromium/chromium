@@ -16,7 +16,7 @@
 
 void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
   auto* info = base::android::BuildInfo::GetInstance();
-  sandbox::SeccompStarterAndroid starter(info->sdk_int(), info->device());
+  sandbox::SeccompStarterAndroid starter(info->sdk_int());
 
 #if BUILDFLAG(USE_SECCOMP_BPF)
   // The policy compiler is only available if USE_SECCOMP_BPF is enabled.

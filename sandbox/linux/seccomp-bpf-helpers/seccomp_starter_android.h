@@ -32,13 +32,13 @@ enum class SeccompSandboxStatus {
 };
 
 // This helper class can be used to start a Seccomp-BPF sandbox on Android. It
-// helps by doing compile- and run-time checks to see if Seccomp should be
-// supported on the given device.
+// helps by doing compile- and run-time checks to see if Seccomp is supported
+// on the given device.
 class SANDBOX_EXPORT SeccompStarterAndroid {
  public:
-  // Constructs a sandbox starter helper. The |build_sdk_int| and |device| are
-  // used to detect whether Seccomp is supported.
-  SeccompStarterAndroid(int build_sdk_int, const char* device);
+  // Constructs a sandbox starter helper. The |build_sdk_int| is used for run-
+  // time checks.
+  explicit SeccompStarterAndroid(int build_sdk_int);
 
   SeccompStarterAndroid(const SeccompStarterAndroid&) = delete;
   SeccompStarterAndroid& operator=(const SeccompStarterAndroid&) = delete;
@@ -60,12 +60,7 @@ class SANDBOX_EXPORT SeccompStarterAndroid {
   SeccompSandboxStatus status() const { return status_; }
 
  private:
-  // Determines if the running device should support Seccomp, based on the
-  // Android SDK version.
-  bool IsSupportedBySDK() const;
-
   const int sdk_int_;
-  const char* const device_;
   SeccompSandboxStatus status_ = SeccompSandboxStatus::NOT_SUPPORTED;
   std::unique_ptr<bpf_dsl::Policy> policy_;
 };
