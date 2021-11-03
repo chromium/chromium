@@ -53,7 +53,6 @@ class ShellBrowserMainParts : public content::BrowserMainParts {
 
   // BrowserMainParts overrides.
   int PreEarlyInitialization() override;
-  void PreCreateMainMessageLoop() override;
   void PostCreateMainMessageLoop() override;
   int PreCreateThreads() override;
   int PreMainMessageLoopRun() override;
