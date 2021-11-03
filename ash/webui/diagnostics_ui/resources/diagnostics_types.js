@@ -428,6 +428,19 @@ export let RoutineProperties;
 export let TroubleshootingInfo;
 
 /**
+ * Type alias for ash::diagnostics::metrics::NavigationView to support message
+ * handler logic and metric recording. Enum values need to be kept in sync with
+ * "ash/webui/diagnostics_ui/diagnostics_metrics_message_handler.h".
+ * @enum {number}
+ */
+export const NavigationView = {
+  kSystem: 0,
+  kConnectivity: 1,
+  kInput: 2,
+  kMaxValue: 2,
+};
+
+/**
  * Type alias for ConnectionType.
  * @typedef {ash.diagnostics.mojom.ConnectionType}
  */
