@@ -26,9 +26,17 @@ TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
 }
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
-       ValidChromeOSSystemExtension) {
+       ValidChromeOSSystemExtension_Allowlisted_1) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess("chromeos_system_extension.json"));
+  EXPECT_TRUE(extension->is_chromeos_system_extension());
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+
+TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
+       ValidChromeOSSystemExtension_Allowlisted_2) {
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess("chromeos_system_extension_2.json"));
   EXPECT_TRUE(extension->is_chromeos_system_extension());
   EXPECT_TRUE(extension->install_warnings().empty());
 }
