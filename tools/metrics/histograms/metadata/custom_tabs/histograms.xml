@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.CloseButton.ChildTab.ScopeAlgorithm.ClosesOneTab"
-    enum="BooleanCloseJustCurrentTab" expires_after="M98">
+    enum="BooleanCloseJustCurrentTab" expires_after="M104">
   <owner>peconn@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
@@ -98,7 +98,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.NonGSA"
-    enum="CustomTabsConnection" expires_after="2021-12-12">
+    enum="CustomTabsConnection" expires_after="M104">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
