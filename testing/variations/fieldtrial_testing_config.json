@@ -564,6 +564,10 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "save_card_message_use_followup_button_text": "false",
+                        "save_card_message_use_gpay_icon": "true"
+                    },
                     "enable_features": [
                         "MessagesForAndroidSaveCard"
                     ]
