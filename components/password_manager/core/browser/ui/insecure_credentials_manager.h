@@ -89,7 +89,8 @@ struct CredentialView {
   CredentialView(std::string signon_realm,
                  GURL url,
                  std::u16string username,
-                 std::u16string password);
+                 std::u16string password,
+                 base::Time last_used_time);
   // Enable explicit construction from PasswordForm for convenience.
   explicit CredentialView(const PasswordForm& form);
   CredentialView(const CredentialView& credential);
@@ -102,6 +103,7 @@ struct CredentialView {
   GURL url;
   std::u16string username;
   std::u16string password;
+  base::Time last_used_time;
 };
 
 // All information needed by UI to represent InsecureCredential. It's a result

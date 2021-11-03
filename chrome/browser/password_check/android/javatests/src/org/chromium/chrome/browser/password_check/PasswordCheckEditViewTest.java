@@ -68,7 +68,7 @@ import java.util.concurrent.ExecutionException;
 public class PasswordCheckEditViewTest {
     private static final CompromisedCredential ANA = new CompromisedCredential(
             "https://some-url.com/signin", new GURL("https://some-url.com/"), "Ana", "some-url.com",
-            "Ana", "password", "https://some-url.com/.well-known/change-password", "", 1, true,
+            "Ana", "password", "https://some-url.com/.well-known/change-password", "", 1, 1, true,
             false, true, true);
     private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON =
             "PasswordManager.AutomaticChange.AcceptanceWithAutoButton";

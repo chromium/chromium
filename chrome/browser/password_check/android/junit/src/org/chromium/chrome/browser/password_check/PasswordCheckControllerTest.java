@@ -86,14 +86,14 @@ import org.chromium.url.GURL;
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
             new CompromisedCredential("https://m.a.xyz/signin", mock(GURL.class), "Ana", "m.a.xyz",
-                    "Ana", "password", "", "xyz.a.some.package", 2, true, false, false, false);
-    private static final CompromisedCredential BOB =
-            new CompromisedCredential("http://www.b.ch/signin", mock(GURL.class), "",
-                    "http://www.b.ch", "(No username)", "DoneSth",
-                    "http://www.b.ch/.well-known/change-password", "", 1, true, false, true, true);
+                    "Ana", "password", "", "xyz.a.some.package", 2, 2, true, false, false, false);
+    private static final CompromisedCredential BOB = new CompromisedCredential(
+            "http://www.b.ch/signin", mock(GURL.class), "", "http://www.b.ch", "(No username)",
+            "DoneSth", "http://www.b.ch/.well-known/change-password", "", 1, 1, true, false, true,
+            true);
     private static final CompromisedCredential CHARLIE = new CompromisedCredential(
             "http://www.c.de/login", mock(GURL.class), "", "http://www.c.de", "user1", "secret",
-            "http://www.c.de/.well-known/change-password", "", 1, true, false, true, false);
+            "http://www.c.de/.well-known/change-password", "", 1, 1, true, false, true, false);
     private static final Pair<Integer, Integer> PROGRESS_UPDATE = new Pair<>(2, 19);
     private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITH_AUTO_BUTTON =
             "PasswordManager.AutomaticChange.AcceptanceWithAutoButton";
@@ -476,10 +476,13 @@ public class PasswordCheckControllerTest {
     public void testSortsInitialSetOfCredentals() {
         mMediator.onPasswordCheckStatusChanged(IDLE);
 
-        CompromisedCredential phishedEarly = makeCredential("example.com", "alice", 1, false, true);
-        CompromisedCredential phishedLeakedLate = makeCredential("test.com", "bob", 3, true, true);
-        CompromisedCredential leakedEarly = makeCredential("example.org", "alice", 2, true, false);
-        CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, true, false);
+        CompromisedCredential phishedEarly =
+                makeCredential("example.com", "alice", 1, 1, false, true);
+        CompromisedCredential phishedLeakedLate =
+                makeCredential("test.com", "bob", 3, 3, true, true);
+        CompromisedCredential leakedEarly =
+                makeCredential("example.org", "alice", 2, 2, true, false);
+        CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, 4, true, false);
 
         when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentials())
@@ -499,10 +502,13 @@ public class PasswordCheckControllerTest {
     public void testSortsAppendedCredentials() {
         mMediator.onPasswordCheckStatusChanged(IDLE);
 
-        CompromisedCredential phishedEarly = makeCredential("example.com", "alice", 1, false, true);
-        CompromisedCredential phishedLeakedLate = makeCredential("test.com", "bob", 3, true, true);
-        CompromisedCredential leakedEarly = makeCredential("example.org", "alice", 2, true, false);
-        CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, true, false);
+        CompromisedCredential phishedEarly =
+                makeCredential("example.com", "alice", 1, 1, false, true);
+        CompromisedCredential phishedLeakedLate =
+                makeCredential("test.com", "bob", 3, 3, true, true);
+        CompromisedCredential leakedEarly =
+                makeCredential("example.org", "alice", 2, 2, true, false);
+        CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, 4, true, false);
 
         when(mPasswordCheck.areScriptsRefreshed()).thenReturn(true);
 
@@ -514,9 +520,11 @@ public class PasswordCheckControllerTest {
 
         // Send an updated list simulating credentials found in the current check.
         CompromisedCredential leakedNewEarly1 =
-                makeCredential("example.com", "john", 5, true, false);
-        CompromisedCredential leakedNewEarly2 = makeCredential("test.com", "john", 5, true, false);
-        CompromisedCredential leakedNewLate = makeCredential("site.org", "alice", 6, true, false);
+                makeCredential("example.com", "john", 5, 5, true, false);
+        CompromisedCredential leakedNewEarly2 =
+                makeCredential("test.com", "john", 5, 5, true, false);
+        CompromisedCredential leakedNewLate =
+                makeCredential("site.org", "alice", 6, 6, true, false);
         when(mPasswordCheck.getCompromisedCredentials())
                 .thenReturn(new CompromisedCredential[] {phishedEarly, leakedEarly, leakedLate,
                         leakedNewEarly2, leakedNewLate, leakedNewEarly1, phishedLeakedLate});
@@ -914,10 +922,11 @@ public class PasswordCheckControllerTest {
         assertNotNull(header.model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION));
     }
 
-    private CompromisedCredential makeCredential(
-            String origin, String username, long creationTime, boolean leaked, boolean phished) {
+    private CompromisedCredential makeCredential(String origin, String username, long creationTime,
+            long lastUsedTime, boolean leaked, boolean phished) {
         return new CompromisedCredential(origin, mock(GURL.class), username, origin, username,
-                "password", origin, new String(), creationTime, leaked, phished, false, false);
+                "password", origin, new String(), creationTime, lastUsedTime, leaked, phished,
+                false, false);
     }
 
     private PropertyModel getHeaderModel() {
