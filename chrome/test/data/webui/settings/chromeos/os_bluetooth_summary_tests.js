@@ -227,4 +227,30 @@ suite('OsBluetoothSummaryTest', function() {
 
     await toggleBluetoothPairingUiPromise;
   });
+
+  test('Secondary user', async function() {
+    const primaryUserEmail = 'test@gmail.com';
+    loadTimeData.overrideValues({
+      isSecondaryUser: true,
+      primaryUserEmail,
+    });
+    init();
+
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+    await flushAsync();
+    const bluetoothSummaryPrimary = bluetoothSummary.$$('#bluetoothSummary');
+    const bluetoothSummarySecondary =
+        bluetoothSummary.$$('#bluetoothSummarySeconday');
+    const bluetoothSummarySecondaryText =
+        bluetoothSummary.$$('#bluetoothSummarySecondayText');
+
+    assertFalse(!!bluetoothSummaryPrimary);
+    assertTrue(!!bluetoothSummarySecondary);
+
+    assertEquals(
+        bluetoothSummary.i18n(
+            'bluetoothPrimaryUserControlled', primaryUserEmail),
+        bluetoothSummarySecondaryText.textContent.trim());
+  });
+
 });

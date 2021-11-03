@@ -10,6 +10,7 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -76,7 +77,31 @@ class SettingsBluetoothSummaryElement extends
       LabelType: {
         type: Object,
         value: LabelType,
-      }
+      },
+
+      /**
+       * Whether the user is a secondary user.
+       * @private
+       */
+      isSecondaryUser_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isSecondaryUser');
+        },
+        readOnly: true,
+      },
+
+      /**
+       * Email address for the primary user.
+       * @private
+       */
+      primaryUserEmail_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('primaryUserEmail');
+        },
+        readOnly: true,
+      },
     };
   }
 
