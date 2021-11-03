@@ -419,6 +419,17 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools sidebar pane was shown.</summary>
 </histogram>
 
+<histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
+    expires_after="2022-09-21">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records whether syncing DevTools settings via Chrome Sync is enabled or why
+    it's disabled. Logged once per DevTools session when DevTools is booted up.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -20730,6 +20730,13 @@ Called by update_debug_scenarios.py.-->
   <int value="7" label="Elements - Accessibility"/>
 </enum>
 
+<enum name="DevToolsSyncSetting">
+  <int value="1" label="Chrome Sync disabled"/>
+  <int value="2" label="Chrome Sync 'Settings' ModelType disabled"/>
+  <int value="3" label="DevTools settings sync disabled"/>
+  <int value="4" label="DevTools settings sync enabled"/>
+</enum>
+
 <enum name="DexFixerReason">
   <int value="0" label="Os.stat() failed"/>
   <int value="1" label="Runtime.exec() failed"/>
