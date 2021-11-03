@@ -159,7 +159,6 @@ def GetPlatformUrlPrefix(host_os):
       'mac': 'Mac',
       'mac-arm64': 'Mac_arm64',
       'win': 'Win',
-      'zos': 'zos_s390x',
   }
   return CDS_URL + '/' + _HOST_OS_URL_MAP[host_os] + '/'
 
