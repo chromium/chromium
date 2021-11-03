@@ -482,7 +482,9 @@ void ApplyNetworkRequestOverrides(
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
     absl::optional<std::vector<net::SourceStream::SourceType>>*
-        devtools_accepted_stream_types) {
+        devtools_accepted_stream_types,
+    bool* devtools_user_agent_overridden) {
+  *devtools_user_agent_overridden = false;
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
       RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
@@ -511,8 +513,11 @@ void ApplyNetworkRequestOverrides(
                             &disable_cache, devtools_accepted_stream_types);
   }
 
-  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host))
-    emulation->ApplyOverrides(&headers);
+  for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    bool ua_overridden = false;
+    emulation->ApplyOverrides(&headers, &ua_overridden);
+    *devtools_user_agent_overridden |= ua_overridden;
+  }
 
   if (disable_cache) {
     begin_params->load_flags &=

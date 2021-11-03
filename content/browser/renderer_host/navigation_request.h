@@ -1496,6 +1496,9 @@ class CONTENT_EXPORT NavigationRequest
   // true, except for 204/205 responses and downloads.
   bool response_should_be_rendered_ = false;
 
+  // Whether devtools overrides were applied on the User-Agent request header.
+  bool devtools_user_agent_override_ = false;
+
   // The type of SiteInstance associated with this navigation.
   AssociatedSiteInstanceType associated_site_instance_type_ =
       AssociatedSiteInstanceType::NONE;

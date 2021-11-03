@@ -3670,7 +3670,7 @@ void NavigationRequest::OnStartChecksComplete(
       devtools_accepted_stream_types;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, begin_params_.get(), &report_raw_headers,
-      &devtools_accepted_stream_types);
+      &devtools_accepted_stream_types, &devtools_user_agent_override_);
   devtools_instrumentation::OnNavigationRequestWillBeSent(*this);
 
   // Merge headers with embedder's headers.
@@ -3885,11 +3885,14 @@ void NavigationRequest::OnRedirectChecksComplete(
         client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
         commit_params_->frame_policy.container_policy);
     modified_headers.MergeFrom(client_hints_extra_headers);
-    // On a redirect, if the Critical-CH header has Sec-CH-UA-Reduced, then we
-    // should send the reduced User-Agent string.
-    modified_headers.SetHeader(
-        net::HttpRequestHeaders::kUserAgent,
-        ComputeUserAgentValue(modified_headers, GetUserAgentOverride()));
+    // On a redirect, unless devtools has overridden the User-Agent header, if
+    // the Critical-CH header has Sec-CH-UA-Reduced, then we should send the
+    // reduced User-Agent string.
+    if (!devtools_user_agent_override_) {
+      modified_headers.SetHeader(
+          net::HttpRequestHeaders::kUserAgent,
+          ComputeUserAgentValue(modified_headers, GetUserAgentOverride()));
+    }
   }
 
   net::HttpRequestHeaders cors_exempt_headers;
