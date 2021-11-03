@@ -6,4 +6,5 @@
 -GLRendererPixelTestWithBackdropFilter.*
 -SkiaOutputSurfaceImplTest.*
 -SkiaReadbackPixelTestNV12.*
+-SkiaReadbackPixelTestNV12WithBlit.ExecutesCopyRequestWithBlit*
 -YUVReadbackTest.*
