@@ -17,80 +17,77 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
+#include "ui/views/view_class_properties.h"
 
 SecurityInformationView::SecurityInformationView(int side_margin) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const int icon_label_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  const int label_column_status = 1;
-  views::ColumnSet* column_set = layout->AddColumnSet(label_column_status);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
-  column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::CENTER,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize,
-                               icon_label_spacing);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  column_set->AddPaddingColumn(views::GridLayout::kFixedSize, side_margin);
-
-  // Add padding before the title so that it's in the same position as when
-  // this control is a hover button.
   auto hover_button_insets = layout_provider->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize,
-                        hover_button_insets.top());
-  layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
-  icon_ = layout->AddView(std::make_unique<NonAccessibleImageView>());
 
-  auto security_summary_label = std::make_unique<views::StyledLabel>();
+  views::TableLayout* layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
+  layout->AddPaddingColumn(views::TableLayout::kFixedSize, side_margin)
+      .AddColumn(views::LayoutAlignment::kCenter,
+                 views::LayoutAlignment::kCenter,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStart, 1.0f,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, side_margin)
+      // Add padding before the title so that it's in the same position as when
+      // this control is a hover button.
+      .AddPaddingRow(views::TableLayout::kFixedSize, hover_button_insets.top())
+      .AddRows(1, views::TableLayout::kFixedSize);
+
+  icon_ = AddChildView(std::make_unique<NonAccessibleImageView>());
+
+  security_summary_label_ =
+      AddChildView(std::make_unique<views::StyledLabel>());
   // TODO(olesiamarukhno): Check padding between summary and description
   // labels after more UI is implemented.
-  security_summary_label->SetTextContext(
+  security_summary_label_->SetTextContext(
       views::style::CONTEXT_DIALOG_BODY_TEXT);
-  security_summary_label->SetID(
+  security_summary_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
-  security_summary_label_ =
-      layout->AddView(std::move(security_summary_label), 1.0, 1.0,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
 
   auto start_secondary_row = [=]() {
-    layout->StartRow(views::GridLayout::kFixedSize, label_column_status);
-    // Skipping the icon's column.
-    layout->SkipColumns(1);
+    layout->AddRows(1, views::TableLayout::kFixedSize);
+    AddChildView(std::make_unique<views::View>());  // Skipping the icon column.
   };
 
   start_secondary_row();
-  auto security_details_label = std::make_unique<views::StyledLabel>();
-  security_details_label->SetID(
-      PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
   security_details_label_ =
-      layout->AddView(std::move(security_details_label), 1.0, 1.0,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
+      AddChildView(std::make_unique<views::StyledLabel>());
+  security_details_label_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
   security_details_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+  // The label defaults to a single line, which would force the dialog wider;
+  // instead give it a width that's the minimum we want it to have.  Then the
+  // TableLayout will stretch it back out into any additional space available.
+  security_details_label_->SizeToFit(
+      PageInfoViewFactory::kMinBubbleWidth - side_margin * 2 -
+      PageInfoViewFactory::GetConnectionSecureIcon().Size().width() -
+      icon_label_spacing);
 
   start_secondary_row();
-  auto reset_decisions_label_container = std::make_unique<views::View>();
-  reset_decisions_label_container->SetLayoutManager(
+  reset_decisions_label_container_ =
+      AddChildView(std::make_unique<views::View>());
+  reset_decisions_label_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
-  reset_decisions_label_container_ =
-      layout->AddView(std::move(reset_decisions_label_container), 1.0, 1.0,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
 
   start_secondary_row();
   password_reuse_button_container_ =
-      layout->AddView(std::make_unique<views::View>(), 1, 1,
-                      views::GridLayout::FILL, views::GridLayout::LEADING);
+      AddChildView(std::make_unique<views::View>());
 
   const int end_padding =
       layout_provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL);
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, end_padding);
+  layout->AddPaddingRow(views::TableLayout::kFixedSize, end_padding);
 }
 
 SecurityInformationView::~SecurityInformationView() = default;
@@ -164,9 +161,8 @@ void SecurityInformationView::AddResetDecisionsLabel(
   const int between_paragraphs_distance =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_CONTROL_VERTICAL);
-  reset_decisions_label_container_->SetBorder(views::CreateEmptyBorder(
-      between_paragraphs_distance, views::GridLayout::kFixedSize,
-      views::GridLayout::kFixedSize, 0));
+  reset_decisions_label_container_->SetBorder(
+      views::CreateEmptyBorder(between_paragraphs_distance, 0, 0, 0));
 
   InvalidateLayout();
 }
@@ -244,7 +240,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
 
   // Add padding at the top.
   password_reuse_button_container_->SetBorder(
-      views::CreateEmptyBorder(8, views::GridLayout::kFixedSize, 0, 0));
+      views::CreateEmptyBorder(8, 0, 0, 0));
 
   InvalidateLayout();
 }
