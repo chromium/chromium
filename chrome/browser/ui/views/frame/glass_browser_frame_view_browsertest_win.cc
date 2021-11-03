@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_browser_caption_button_container.h"
+#include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
@@ -282,4 +283,70 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
 
   // ClientView should be covering the entire screen.
   EXPECT_EQ(glass_frame_view_->GetBoundsForClientView().y(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       CaptionButtonsTooltip) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  auto* caption_button_container =
+      glass_frame_view_->caption_button_container_for_testing();
+  auto* minimize_button = static_cast<const Windows10CaptionButton*>(
+      caption_button_container->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
+  auto* maximize_button = static_cast<const Windows10CaptionButton*>(
+      caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
+  auto* restore_button = static_cast<const Windows10CaptionButton*>(
+      caption_button_container->GetViewByID(VIEW_ID_RESTORE_BUTTON));
+  auto* close_button = static_cast<const Windows10CaptionButton*>(
+      caption_button_container->GetViewByID(VIEW_ID_CLOSE_BUTTON));
+
+  // Verify tooltip text was first empty.
+  EXPECT_EQ(minimize_button->GetTooltipText(), u"");
+  EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+  EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  EXPECT_EQ(close_button->GetTooltipText(), u"");
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify tooltip text has been updated.
+  EXPECT_EQ(minimize_button->GetTooltipText(),
+            minimize_button->GetAccessibleName());
+  EXPECT_EQ(maximize_button->GetTooltipText(),
+            maximize_button->GetAccessibleName());
+  EXPECT_EQ(restore_button->GetTooltipText(),
+            restore_button->GetAccessibleName());
+  EXPECT_EQ(close_button->GetTooltipText(), close_button->GetAccessibleName());
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify tooltip text has been cleared when the feature is toggled off.
+  EXPECT_EQ(minimize_button->GetTooltipText(), u"");
+  EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+  EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  EXPECT_EQ(close_button->GetTooltipText(), u"");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+                       CaptionButtonHitTest) {
+  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
+    return;
+
+  glass_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Avoid the top right resize corner.
+  constexpr int kInset = 10;
+  const gfx::Point kPoint(glass_frame_view_->width() - kInset, kInset);
+
+  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify the component updates on toggle.
+  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLIENT);
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify the component clears when the feature is turned off.
+  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 }

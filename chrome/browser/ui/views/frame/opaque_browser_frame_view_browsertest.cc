@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -275,3 +276,141 @@ IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewTest, Fullscreen) {
               child->GetVisible());
   }
 }
+
+#if defined(OS_WIN)
+class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
+    : public InProcessBrowserTest {
+ public:
+  WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kWebAppWindowControlsOverlay);
+  }
+  WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest(
+      const WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest&) = delete;
+  WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest& operator=(
+      const WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest&) = delete;
+
+  ~WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    InProcessBrowserTest::SetUp();
+  }
+
+  void InstallAndLaunchWebAppWithWindowControlsOverlay() {
+    GURL start_url = web_app_frame_toolbar_helper_
+                         .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
+                             embedded_test_server(), &temp_dir_);
+
+    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+    web_app_info->title = u"A Web App";
+    web_app_info->display_override = {
+        blink::mojom::DisplayMode::kWindowControlsOverlay};
+
+    web_app::AppId app_id = web_app::test::InstallWebApp(
+        browser()->profile(), std::move(web_app_info));
+
+    Browser* app_browser =
+        web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+
+    web_app::NavigateToURLAndWait(app_browser, start_url);
+
+    browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser);
+    views::NonClientFrameView* frame_view =
+        browser_view_->GetWidget()->non_client_view()->frame_view();
+
+    opaque_browser_frame_view_ =
+        static_cast<OpaqueBrowserFrameView*>(frame_view);
+    auto* web_app_frame_toolbar =
+        opaque_browser_frame_view_->web_app_frame_toolbar_for_testing();
+    DCHECK(web_app_frame_toolbar);
+    DCHECK(web_app_frame_toolbar->GetVisible());
+  }
+
+  void ToggleWindowControlsOverlayEnabledAndWait() {
+    auto* web_contents = browser_view_->GetActiveWebContents();
+    web_app_frame_toolbar_helper_.SetupGeometryChangeCallback(web_contents);
+    browser_view_->ToggleWindowControlsOverlayEnabled();
+    content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
+    ignore_result(title_watcher.WaitAndGetTitle());
+  }
+
+  BrowserView* browser_view_ = nullptr;
+  OpaqueBrowserFrameView* opaque_browser_frame_view_ = nullptr;
+  WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
+                       CaptionButtonsTooltip) {
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
+
+  auto* minimize_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
+  auto* maximize_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
+  auto* restore_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_RESTORE_BUTTON));
+  auto* close_button = static_cast<const views::Button*>(
+      opaque_browser_frame_view_->GetViewByID(VIEW_ID_CLOSE_BUTTON));
+
+  // Verify tooltip text was first empty.
+  EXPECT_EQ(minimize_button->GetTooltipText(), u"");
+  EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+  EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  EXPECT_EQ(close_button->GetTooltipText(), u"");
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify tooltip text has been updated.
+  EXPECT_EQ(minimize_button->GetTooltipText(),
+            minimize_button->GetAccessibleName());
+  EXPECT_EQ(maximize_button->GetTooltipText(),
+            maximize_button->GetAccessibleName());
+  EXPECT_EQ(restore_button->GetTooltipText(),
+            restore_button->GetAccessibleName());
+  EXPECT_EQ(close_button->GetTooltipText(), close_button->GetAccessibleName());
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify tooltip text has been cleared when the feature is toggled off.
+  EXPECT_EQ(minimize_button->GetTooltipText(), u"");
+  EXPECT_EQ(maximize_button->GetTooltipText(), u"");
+  EXPECT_EQ(restore_button->GetTooltipText(), u"");
+  EXPECT_EQ(close_button->GetTooltipText(), u"");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest,
+                       CaptionButtonHitTest) {
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
+
+  opaque_browser_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Avoid the top right resize corner.
+  constexpr int kInset = 10;
+  const gfx::Point kPoint(opaque_browser_frame_view_->width() - kInset, kInset);
+
+  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify the component updates on toggle.
+  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLIENT);
+
+  ToggleWindowControlsOverlayEnabledAndWait();
+
+  // Verify the component clears when the feature is turned off.
+  EXPECT_EQ(opaque_browser_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
+}
+#endif

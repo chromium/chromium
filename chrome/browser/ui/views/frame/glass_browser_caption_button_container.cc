@@ -86,6 +86,9 @@ GlassBrowserCaptionButtonContainer::GlassBrowserCaptionButtonContainer(
                                    views::MaximumFlexSizeRule::kPreferred,
                                    /* adjust_width_for_height */ false,
                                    views::MinimumFlexSizeRule::kScaleToZero));
+
+  if (frame_view_->browser_view()->AppUsesWindowControlsOverlay())
+    UpdateButtonToolTipsForWindowControlsOverlay();
 }
 
 GlassBrowserCaptionButtonContainer::~GlassBrowserCaptionButtonContainer() {}
@@ -95,6 +98,16 @@ int GlassBrowserCaptionButtonContainer::NonClientHitTest(
   DCHECK(HitTestPoint(point))
       << "should only be called with a point inside this view's bounds";
   if (tab_search_button_ && HitTestCaptionButton(tab_search_button_, point))
+    return HTCLIENT;
+  // BrowserView covers the frame view when Window Controls Overlay is enabled.
+  // The native window that encompasses Web Contents gets the mouse events meant
+  // for the caption buttons, so returning HTClient allows these buttons to be
+  // highlighted on hover.
+  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled() &&
+      (HitTestCaptionButton(minimize_button_, point) ||
+       HitTestCaptionButton(maximize_button_, point) ||
+       HitTestCaptionButton(restore_button_, point) ||
+       HitTestCaptionButton(close_button_, point)))
     return HTCLIENT;
   if (HitTestCaptionButton(minimize_button_, point))
     return HTMINBUTTON;
@@ -120,6 +133,7 @@ void GlassBrowserCaptionButtonContainer::
     SetBackground(nullptr);
     DestroyLayer();
   }
+  UpdateButtonToolTipsForWindowControlsOverlay();
 }
 
 TabSearchBubbleHost*
@@ -185,6 +199,21 @@ void GlassBrowserCaptionButtonContainer::UpdateButtons() {
   restore_button_->SetEnabled(!is_touch);
   maximize_button_->SetEnabled(!is_touch);
   InvalidateLayout();
+}
+
+void GlassBrowserCaptionButtonContainer::
+    UpdateButtonToolTipsForWindowControlsOverlay() {
+  if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
+    minimize_button_->SetTooltipText(minimize_button_->GetAccessibleName());
+    maximize_button_->SetTooltipText(maximize_button_->GetAccessibleName());
+    restore_button_->SetTooltipText(restore_button_->GetAccessibleName());
+    close_button_->SetTooltipText(close_button_->GetAccessibleName());
+  } else {
+    minimize_button_->SetTooltipText(u"");
+    maximize_button_->SetTooltipText(u"");
+    restore_button_->SetTooltipText(u"");
+    close_button_->SetTooltipText(u"");
+  }
 }
 
 BEGIN_METADATA(GlassBrowserCaptionButtonContainer, views::View)

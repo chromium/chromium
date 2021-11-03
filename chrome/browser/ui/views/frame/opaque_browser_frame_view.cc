@@ -111,6 +111,11 @@ class CaptionButtonBackgroundImageSource : public gfx::CanvasImageSource {
   bool draw_mirrored_;
 };
 
+bool HitTestCaptionButton(views::Button* button, const gfx::Point& point) {
+  return button && button->GetVisible() &&
+         button->GetMirroredBounds().Contains(point);
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -217,6 +222,11 @@ void OpaqueBrowserFrameView::InitViews() {
   window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   window_title_->SetID(VIEW_ID_WINDOW_TITLE);
   AddChildView(window_title_);
+
+#if defined(OS_WIN)
+  if (browser_view()->AppUsesWindowControlsOverlay())
+    UpdateCaptionButtonToolTipsForWindowControlsOverlay();
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -252,6 +262,10 @@ void OpaqueBrowserFrameView::WindowControlsOverlayEnabledChanged() {
     RemoveChildViewT(caption_button_placeholder_container_);
     caption_button_placeholder_container_ = nullptr;
   }
+
+#if defined(OS_WIN)
+  UpdateCaptionButtonToolTipsForWindowControlsOverlay();
+#endif
 
   web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
   layout_->SetWindowControlsOverlayEnabled(enabled, this);
@@ -314,18 +328,25 @@ int OpaqueBrowserFrameView::NonClientHitTest(const gfx::Point& point) {
   if (frame_component != HTNOWHERE)
     return frame_component;
 
+  // BrowserView covers the frame view when Window Controls Overlay is enabled.
+  // The native window that encompasses Web Contents gets the mouse events meant
+  // for the caption buttons, so returning HTClient allows these buttons to be
+  // highlighted on hover.
+  if (browser_view()->IsWindowControlsOverlayEnabled() &&
+      (HitTestCaptionButton(minimize_button_, point) ||
+       HitTestCaptionButton(maximize_button_, point) ||
+       HitTestCaptionButton(restore_button_, point) ||
+       HitTestCaptionButton(close_button_, point)))
+    return HTCLIENT;
+
   // Then see if the point is within any of the window controls.
-  if (close_button_ && close_button_->GetVisible() &&
-      close_button_->GetMirroredBounds().Contains(point))
+  if (HitTestCaptionButton(close_button_, point))
     return HTCLOSE;
-  if (restore_button_ && restore_button_->GetVisible() &&
-      restore_button_->GetMirroredBounds().Contains(point))
+  if (HitTestCaptionButton(restore_button_, point))
     return HTMAXBUTTON;
-  if (maximize_button_ && maximize_button_->GetVisible() &&
-      maximize_button_->GetMirroredBounds().Contains(point))
+  if (HitTestCaptionButton(maximize_button_, point))
     return HTMAXBUTTON;
-  if (minimize_button_ && minimize_button_->GetVisible() &&
-      minimize_button_->GetMirroredBounds().Contains(point))
+  if (HitTestCaptionButton(minimize_button_, point))
     return HTMINBUTTON;
 
   if (browser_view()->IsWindowControlsOverlayEnabled() &&
@@ -819,6 +840,23 @@ void OpaqueBrowserFrameView::
         views::CreateSolidBackground(GetFrameColor()));
   }
 }
+
+#if defined(OS_WIN)
+void OpaqueBrowserFrameView::
+    UpdateCaptionButtonToolTipsForWindowControlsOverlay() {
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    minimize_button_->SetTooltipText(minimize_button_->GetAccessibleName());
+    maximize_button_->SetTooltipText(maximize_button_->GetAccessibleName());
+    restore_button_->SetTooltipText(restore_button_->GetAccessibleName());
+    close_button_->SetTooltipText(close_button_->GetAccessibleName());
+  } else {
+    minimize_button_->SetTooltipText(u"");
+    maximize_button_->SetTooltipText(u"");
+    restore_button_->SetTooltipText(u"");
+    close_button_->SetTooltipText(u"");
+  }
+}
+#endif
 
 BEGIN_METADATA(OpaqueBrowserFrameView, BrowserNonClientFrameView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, IconBounds)

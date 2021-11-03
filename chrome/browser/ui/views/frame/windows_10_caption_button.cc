@@ -30,6 +30,7 @@ Windows10CaptionButton::Windows10CaptionButton(
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   SetAccessibleName(accessible_name);
+  SetID(button_type);
 }
 
 gfx::Size Windows10CaptionButton::CalculatePreferredSize() const {

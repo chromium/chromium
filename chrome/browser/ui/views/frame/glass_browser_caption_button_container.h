@@ -60,6 +60,12 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   // time, and both are disabled in tablet UI mode.
   void UpdateButtons();
 
+  // Sets caption button's accessible name as its tooltip when it's in a PWA
+  // with window-controls-overlay display override and resets it otherwise. In
+  // this mode, the web contents covers the frame view and so does it's legacy
+  // hwnd which prevent tooltips being shown for the caption buttons.
+  void UpdateButtonToolTipsForWindowControlsOverlay();
+
   GlassBrowserFrameView* const frame_view_;
   Windows10TabSearchCaptionButton* tab_search_button_ = nullptr;
   Windows10CaptionButton* const minimize_button_;
