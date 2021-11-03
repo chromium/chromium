@@ -7,11 +7,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.profile_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutofillAddressEnabled": false
         },
         "prefs": {
-          "autofill.profile_enabled": {}
+          "autofill.profile_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -23,11 +34,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutofillCreditCardEnabled": false
         },
         "prefs": {
-          "autofill.credit_card_enabled": {}
+          "autofill.credit_card_enabled": {
+            "value": false
+          }
         }
       }
     ]

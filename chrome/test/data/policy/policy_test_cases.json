@@ -1795,11 +1795,58 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value for the deprecated policy (AutoFillEnabled) sets policy values correctly for AutoFillEnabled, AutofillAddressEnabled and AutofillCreditCardEnabled.",
         "policies": {
           "AutoFillEnabled": false
         },
         "prefs": {
-          "autofill.enabled": {}
+          "autofill.profile_enabled": {
+            "value": false
+          },
+          "autofill.enabled": {
+            "value": false
+          },
+          "autofill.credit_card_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "If AutofillAddressEnabled is set, deprecated AutoFillEnabled is ignored.",
+        "policies": {
+          "AutoFillEnabled": true,
+          "AutofillAddressEnabled": false
+        },
+        "prefs": {
+          "autofill.profile_enabled": {
+            "value": false
+          },
+          "autofill.enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "If AutofillCreditCardEnabled is set, deprecated AutoFillEnabled is ignored.",
+        "policies": {
+          "AutoFillEnabled": true,
+          "AutofillCreditCardEnabled": false
+        },
+        "prefs": {
+          "autofill.enabled": {
+            "default_value": true
+          },
+          "autofill.credit_card_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -1816,11 +1863,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.profile_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutofillAddressEnabled": false
         },
         "prefs": {
-          "autofill.profile_enabled": {}
+          "autofill.profile_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -1837,11 +1895,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutofillCreditCardEnabled": false
         },
         "prefs": {
-          "autofill.credit_card_enabled": {}
+          "autofill.credit_card_enabled": {
+            "value": false
+          }
         }
       }
     ]
@@ -8090,12 +8159,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "hardware.audio_output_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "AudioOutputAllowed": true
+          "AudioOutputAllowed": false
         },
         "prefs": {
           "hardware.audio_output_enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }
@@ -9039,11 +9119,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.a11y.autoclick": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutoclickEnabled": true
         },
         "prefs": {
-          "settings.a11y.autoclick": {}
+          "settings.a11y.autoclick": {
+            "value": true
+          }
         }
       }
     ]
@@ -9278,11 +9369,21 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "attestation.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
         "policies": {
           "AttestationEnabledForUser": true
         },
         "prefs": {
-          "attestation.enabled": {}
+          "attestation.enabled": {
+            "value": true
+          }
         }
       }
     ]
@@ -9294,14 +9395,28 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "attestation.extension_allowlist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "AttestationExtensionAllowlist": [
             "abcdefghijklmnopabcdefghijklmnop",
-            "aabbccddeeffgghhiijjkkllmmnnoopp"
+            "aabbccddeeffgghhiijjkkllmmnnoopp",
+            "non-32-char-long-a-p-string-gets-filtered-out"
           ]
         },
         "prefs": {
-          "attestation.extension_allowlist": {}
+          "attestation.extension_allowlist": {
+            "value": [
+              "abcdefghijklmnopabcdefghijklmnop",
+              "aabbccddeeffgghhiijjkkllmmnnoopp"
+            ]
+          }
         }
       }
     ]
@@ -9313,14 +9428,28 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "attestation.extension_allowlist": {
+            "default_value": []
+          }
+        }
+      },
+      {
         "policies": {
           "AttestationExtensionWhitelist": [
             "abcdefghijklmnopabcdefghijklmnop",
-            "aabbccddeeffgghhiijjkkllmmnnoopp"
+            "aabbccddeeffgghhiijjkkllmmnnoopp",
+            "non-32-char-long-a-p-string-gets-filtered-out"
           ]
         },
         "prefs": {
-          "attestation.extension_allowlist": {}
+          "attestation.extension_allowlist": {
+            "value": [
+              "abcdefghijklmnopabcdefghijklmnop",
+              "aabbccddeeffgghhiijjkkllmmnnoopp"
+            ]
+          }
         }
       }
     ]
@@ -13108,12 +13237,32 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.assistant.onboarding_mode": {
+            "default_value": "Default"
+          }
+        }
+      },
+      {
+        "note": "Simple value: Default",
         "policies": {
           "AssistantOnboardingMode": "Default"
         },
         "prefs": {
           "settings.assistant.onboarding_mode": {
             "value": "Default"
+          }
+        }
+      },
+      {
+        "note": "Simple value: Education",
+        "policies": {
+          "AssistantOnboardingMode": "Education"
+        },
+        "prefs": {
+          "settings.assistant.onboarding_mode": {
+            "value": "Education"
           }
         }
       }
