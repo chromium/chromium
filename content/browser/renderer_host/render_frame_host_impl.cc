@@ -4118,6 +4118,15 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   std::unique_ptr<NavigationRequest> owned_request = std::move(request->second);
   navigation_requests_.erase(committing_navigation_request);
 
+  // Copy the prerendering frame replication state to have it available after
+  // the navigation commit to be able to check that it didn't change, as the
+  // navigation request will be destroyed by that point.
+  blink::mojom::FrameReplicationState prerender_main_frame_replication_state;
+  if (is_prerender_page_activation) {
+    prerender_main_frame_replication_state =
+        committing_navigation_request->prerender_main_frame_replication_state();
+  }
+
 #if DCHECK_IS_ON()
   // We do not support activating a page while subframes have any ongoing
   // NavigationRequest with a NavigationEntry (this would happen on a navigation
@@ -4161,6 +4170,13 @@ void RenderFrameHostImpl::DidCommitPageActivation(
     // Record metric to check navigation time with prerender activation.
     base::TimeDelta delta = base::TimeTicks::Now() - navigation_start;
     UMA_HISTOGRAM_TIMES("Navigation.TimeToActivatePrerender", delta);
+
+    // We haven't sent any updates to the proxies during prerendering
+    // activation, so we need to ensure that the new frame replication being
+    // stored in the browser is the same as the old and consistent with the
+    // state we've sent to the renderers.
+    DCHECK(prerender_main_frame_replication_state ==
+           frame_tree()->root()->current_replication_state());
   }
 }
 

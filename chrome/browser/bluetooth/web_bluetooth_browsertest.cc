@@ -1225,18 +1225,14 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* prerendered_frame_host =
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
-  // Runs JS asynchronously since Mojo calls is deferred on the prerendering.
-  content::ExecuteScriptAsync(prerendered_frame_host, R"((async() => {
-          try {
-            let device = await navigator.bluetooth.requestDevice({
-              filters: [{name: 'Test Device'}]});
-            let gatt = await device.gatt.connect();
-            let service = await gatt.getPrimaryService('heart_rate');
-            return service.uuid;
-          } catch(e) {
-            return `${e.name}: ${e.message}`;
-          }
-        })())");
+  constexpr char kUserGestureError[] =
+      "Must be handling a user gesture to show a permission request.";
+  auto result =
+      content::EvalJs(prerendered_frame_host, R"(
+      navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
 
   // In the prerendering, the connection of Web Bluetooth is deferred and
   // `observer` doesn't have any update.
@@ -1248,14 +1244,12 @@ IN_PROC_BROWSER_TEST_F(
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
 
-  // Waits for the deferred Mojo call.
-  observer.WaitUntilConnectionIsUpdated(3);
-
-  // After the prerendering activation, the connection of Web Bluetooth is
-  // updated.
-  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 3);
+  // During prerendering activation, the connection from the previous
+  // RenderFrameHost to Web Bluetooth is closed, while the connection attempt
+  // from the prerendering RenderFrameHost was refused.
+  EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 2);
   EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().has_value());
-  EXPECT_TRUE(observer.last_is_connected_to_bluetooth_device().value());
+  EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().value());
 }
 
 }  // namespace
