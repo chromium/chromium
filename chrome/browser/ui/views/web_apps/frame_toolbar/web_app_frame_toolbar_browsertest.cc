@@ -780,29 +780,39 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
-  constexpr gfx::Point kDraggablePoint(50, 50);
+  views::NonClientFrameView* frame_view =
+      helper()->browser_view()->GetWidget()->non_client_view()->frame_view();
 
-  EXPECT_EQ(helper()
-                ->browser_view()
-                ->GetWidget()
-                ->non_client_view()
-                ->frame_view()
-                ->NonClientHitTest(kDraggablePoint),
-            HTCAPTION);
+  // Validate that a point marked "app-region: drag" is draggable. The draggable
+  // region is defined in the kTestHTML of WebAppFrameToolbarTestHelper's
+  // LoadWindowControlsOverlayTestPageWithDataAndGetURL.
+  gfx::Point draggable_point(100, 100);
+  views::View::ConvertPointToTarget(
+      helper()->browser_view()->contents_web_view(), frame_view,
+      &draggable_point);
+
+  EXPECT_EQ(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
 
   EXPECT_FALSE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
-      helper()->browser_view()->GetWidget()->GetNativeView(), kDraggablePoint));
+      helper()->browser_view()->GetWidget()->GetNativeView(), draggable_point));
+
+  // Validate that a point marked "app-region: no-drag" within a draggable
+  // region is not draggable.
+  gfx::Point non_draggable_point(105, 105);
+  views::View::ConvertPointToTarget(
+      helper()->browser_view()->contents_web_view(), frame_view,
+      &non_draggable_point);
+
+  EXPECT_EQ(frame_view->NonClientHitTest(non_draggable_point), HTCLIENT);
+
+  EXPECT_TRUE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
+      helper()->browser_view()->GetWidget()->GetNativeView(),
+      non_draggable_point));
 
   // Validate that a point at the border that does not intersect with the
   // overlays is not marked as draggable.
   constexpr gfx::Point kBorderPoint(100, 1);
-  EXPECT_NE(helper()
-                ->browser_view()
-                ->GetWidget()
-                ->non_client_view()
-                ->frame_view()
-                ->NonClientHitTest(kBorderPoint),
-            HTCAPTION);
+  EXPECT_NE(frame_view->NonClientHitTest(kBorderPoint), HTCAPTION);
   EXPECT_TRUE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
       helper()->browser_view()->GetWidget()->GetNativeView(), kBorderPoint));
 
@@ -810,15 +820,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // no longer draggable.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->browser_view()->browser(),
                                            GURL("http://example.test/")));
-  EXPECT_NE(helper()
-                ->browser_view()
-                ->GetWidget()
-                ->non_client_view()
-                ->frame_view()
-                ->NonClientHitTest(kDraggablePoint),
-            HTCAPTION);
+  EXPECT_NE(frame_view->NonClientHitTest(draggable_point), HTCAPTION);
   EXPECT_TRUE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
-      helper()->browser_view()->GetWidget()->GetNativeView(), kDraggablePoint));
+      helper()->browser_view()->GetWidget()->GetNativeView(), draggable_point));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
