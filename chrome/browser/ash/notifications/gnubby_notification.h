@@ -50,10 +50,4 @@ class GnubbyNotification : public chromeos::GnubbyClient::Observer {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::GnubbyNotification;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_GNUBBY_NOTIFICATION_H_

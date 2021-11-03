@@ -156,4 +156,9 @@ class COMPONENT_EXPORT(CHROMEOS_METRICS) LoginEventRecorder {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::LoginEventRecorder;
+}
+
 #endif  // CHROMEOS_METRICS_LOGIN_EVENT_RECORDER_H_

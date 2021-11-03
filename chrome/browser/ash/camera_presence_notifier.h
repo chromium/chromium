@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 
-namespace chromeos {
+namespace ash {
 
 // Camera presence status dispatcher.
 class CameraPresenceNotifier {
@@ -51,6 +51,11 @@ class CameraPresenceNotifier {
   base::WeakPtrFactory<CameraPresenceNotifier> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos {
+using ::ash::CameraPresenceNotifier;
+}
 
 #endif  // CHROME_BROWSER_ASH_CAMERA_PRESENCE_NOTIFIER_H_

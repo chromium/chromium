@@ -101,4 +101,10 @@ class SystemTokenCertDBInitializer : public TpmManagerClient::Observer {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::SystemTokenCertDBInitializer;
+}
+
 #endif  // CHROME_BROWSER_ASH_SYSTEM_TOKEN_CERT_DB_INITIALIZER_H_

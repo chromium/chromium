@@ -7,58 +7,21 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "ash/components/power/dark_resume_controller.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "ash/components/device_activity/device_activity_controller.h"
 #include "base/macros.h"
 #include "base/task/cancelable_task_tracker.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/events/event_rewriter_delegate_impl.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/login/login_screen_extensions_lifetime_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/net/network_pref_state_observer.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/net/network_throttling_observer.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/notifications/gnubby_notification.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/notifications/low_disk_notification.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/power/auto_screen_brightness/controller.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/power/idle_action_warning_observer.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/power/ml/adaptive_screen_brightness_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/power/power_metrics_reporter.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/power/renderer_freezer.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/power/smart_charging/smart_charging_manager.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/system/breakpad_consent_watcher.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chrome/browser/ash/usb/cros_usb_detector.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/external_metrics.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/network_change_manager_client.h"
 #include "chrome/browser/ash/pcie_peripheral/ash_usb_detector.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chromeos/login/session/session_termination_manager.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chromeos/network/fast_transition_observer.h"
 
 class AssistantBrowserDelegateImpl;
 class AssistantStateClient;
@@ -73,18 +36,11 @@ class ArcDataSnapshotdManager;
 class ArcServiceLauncher;
 }  // namespace arc
 
-namespace ash {
-class AccessibilityEventRewriterDelegateImpl;
-class BulkPrintersCalculatorFactory;
-class DebugdNotificationHandler;
-class FirmwareUpdateManager;
-namespace quick_pair {
-class QuickPairBrowserDelegateImpl;
+namespace chromeos {
+namespace default_app_order {
+class ExternalLoader;
 }
-namespace platform_keys {
-class KeyPermissionsManager;
-}
-}  // namespace ash
+}  // namespace chromeos
 
 namespace crosapi {
 class BrowserManager;
@@ -104,20 +60,58 @@ namespace policy {
 class LockToSingleUserManager;
 }  // namespace policy
 
-namespace chromeos {
+namespace ash {
+class AccessibilityEventRewriterDelegateImpl;
+class ArcKioskAppManager;
+class BluetoothPrefStateObserver;
+class BulkPrintersCalculatorFactory;
+class CrosUsbDetector;
+class DebugdNotificationHandler;
+class DemoModeResourcesRemover;
+class EventRewriterDelegateImpl;
+class FirmwareUpdateManager;
+class GnubbyNotification;
+class IdleActionWarningObserver;
+class LoginScreenExtensionsLifetimeManager;
+class LoginScreenExtensionsStorageCleaner;
+class LowDiskNotification;
+class NetworkPrefStateObserver;
+class NetworkThrottlingObserver;
+class PowerMetricsReporter;
+class RendererFreezer;
+class ShutdownPolicyForwarder;
+class WebKioskAppManager;
 
-class FastTransitionObserver;
-class NetworkChangeManagerClient;
-class SessionTerminationManager;
-class SystemTokenCertDBInitializer;
-
-namespace default_app_order {
-class ExternalLoader;
+namespace device_activity {
+class DeviceActivityController;
 }
 
 namespace internal {
 class DBusServices;
-}  // namespace internal
+}
+
+namespace platform_keys {
+class KeyPermissionsManager;
+}
+
+namespace power {
+class SmartChargingManager;
+namespace auto_screen_brightness {
+class Controller;
+}
+namespace ml {
+class AdaptiveScreenBrightnessManager;
+}
+}  // namespace power
+
+namespace quick_pair {
+class QuickPairBrowserDelegateImpl;
+}
+
+namespace system {
+class BreakpadConsentWatcher;
+class DarkResumeController;
+}  // namespace system
 
 // ChromeBrowserMainParts implementation for chromeos specific code.
 // NOTE: Chromeos UI (Ash) support should be added to
@@ -153,7 +147,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   void PostDestroyThreads() override;
 
  private:
-  std::unique_ptr<default_app_order::ExternalLoader> app_order_loader_;
+  std::unique_ptr<chromeos::default_app_order::ExternalLoader>
+      app_order_loader_;
   std::unique_ptr<NetworkPrefStateObserver> network_pref_state_observer_;
   std::unique_ptr<BluetoothPrefStateObserver> bluetooth_pref_state_observer_;
   std::unique_ptr<IdleActionWarningObserver> idle_action_warning_observer_;
@@ -162,7 +157,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<FastTransitionObserver> fast_transition_observer_;
   std::unique_ptr<NetworkThrottlingObserver> network_throttling_observer_;
   std::unique_ptr<NetworkChangeManagerClient> network_change_manager_client_;
-  std::unique_ptr<ash::DebugdNotificationHandler> debugd_notification_handler_;
+  std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
 
@@ -174,10 +169,10 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
 
   // Handles event dispatch to the accessibility component extensions.
-  std::unique_ptr<ash::AccessibilityEventRewriterDelegateImpl>
+  std::unique_ptr<AccessibilityEventRewriterDelegateImpl>
       accessibility_event_rewriter_delegate_;
 
-  scoped_refptr<chromeos::ExternalMetrics> external_metrics_;
+  scoped_refptr<ExternalMetrics> external_metrics_;
 
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
 
@@ -210,19 +205,18 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<DemoModeResourcesRemover> demo_mode_resources_remover_;
   std::unique_ptr<crostini::CrosvmMetrics> crosvm_metrics_;
 
-  std::unique_ptr<ash::AshUsbDetector> ash_usb_detector_;
+  std::unique_ptr<AshUsbDetector> ash_usb_detector_;
   std::unique_ptr<CrosUsbDetector> cros_usb_detector_;
 
-  std::unique_ptr<ash::device_activity::DeviceActivityController>
+  std::unique_ptr<device_activity::DeviceActivityController>
       device_activity_controller_;
 
   std::unique_ptr<crostini::CrostiniUnsupportedActionNotifier>
       crostini_unsupported_action_notifier_;
 
-  std::unique_ptr<chromeos::system::DarkResumeController>
-      dark_resume_controller_;
+  std::unique_ptr<system::DarkResumeController> dark_resume_controller_;
 
-  std::unique_ptr<ash::BulkPrintersCalculatorFactory>
+  std::unique_ptr<BulkPrintersCalculatorFactory>
       bulk_printers_calculator_factory_;
 
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
@@ -239,7 +233,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<LoginScreenExtensionsStorageCleaner>
       login_screen_extensions_storage_cleaner_;
 
-  std::unique_ptr<ash::FirmwareUpdateManager> firmware_update_manager_;
+  std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
   std::unique_ptr<system::BreakpadConsentWatcher> breakpad_consent_watcher_;
@@ -247,13 +241,13 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<arc::data_snapshotd::ArcDataSnapshotdManager>
       arc_data_snapshotd_manager_;
 
-  std::unique_ptr<ash::platform_keys::KeyPermissionsManager>
+  std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;
 
-  std::unique_ptr<ash::quick_pair::QuickPairBrowserDelegateImpl>
+  std::unique_ptr<quick_pair::QuickPairBrowserDelegateImpl>
       quick_pair_delegate_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHROME_BROWSER_MAIN_PARTS_ASH_H_

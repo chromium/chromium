@@ -40,9 +40,4 @@ class BluetoothPrefStateObserver
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::BluetoothPrefStateObserver;
-}
-
 #endif  // CHROME_BROWSER_ASH_NET_BLUETOOTH_PREF_STATE_OBSERVER_H_

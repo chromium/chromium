@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_CONTEXT_KEYED_SERVICE_FACTORIES_H_
 #define CHROME_BROWSER_ASH_BROWSER_CONTEXT_KEYED_SERVICE_FACTORIES_H_
 
-namespace chromeos {
+namespace ash {
 
 // Ensures the existence of any BrowserContextKeyedServiceFactory provided by
 // the Chrome OS code.
 void EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_BROWSER_CONTEXT_KEYED_SERVICE_FACTORIES_H_

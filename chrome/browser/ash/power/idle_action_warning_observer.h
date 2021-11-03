@@ -46,9 +46,4 @@ class IdleActionWarningObserver : public PowerManagerClient::Observer,
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::IdleActionWarningObserver;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_IDLE_ACTION_WARNING_OBSERVER_H_

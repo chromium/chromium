@@ -202,10 +202,4 @@ class DemoModeResourcesRemover
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::DemoModeResourcesRemover;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_MODE_RESOURCES_REMOVER_H_

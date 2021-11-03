@@ -51,16 +51,14 @@
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
 
-namespace chromeos {
-
-using ::ash::AuthPolicyCredentialsManagerFactory;
+namespace ash {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   android_sms::AndroidSmsServiceFactory::GetInstance();
   arc::ArcAccessibilityHelperBridge::CreateFactory();
-  ash::CalendarKeyedServiceFactory::GetInstance();
-  ash::full_restore::FullRestoreServiceFactory::GetInstance();
-  ash::HoldingSpaceKeyedServiceFactory::GetInstance();
+  CalendarKeyedServiceFactory::GetInstance();
+  full_restore::FullRestoreServiceFactory::GetInstance();
+  HoldingSpaceKeyedServiceFactory::GetInstance();
   AuthPolicyCredentialsManagerFactory::GetInstance();
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
@@ -68,10 +66,10 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   CroshLoaderFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
 #if defined(USE_CUPS)
-  CupsProxyServiceManagerFactory::GetInstance();
+  chromeos::CupsProxyServiceManagerFactory::GetInstance();
 #endif
-  CupsPrintersManagerFactory::GetInstance();
-  CupsPrintJobManagerFactory::GetInstance();
+  chromeos::CupsPrintersManagerFactory::GetInstance();
+  chromeos::CupsPrintJobManagerFactory::GetInstance();
   EasyUnlockServiceFactory::GetInstance();
   eche_app::EcheAppManagerFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
@@ -98,12 +96,12 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   policy::PolicyCertServiceFactory::GetInstance();
   policy::UserCloudPolicyTokenForwarderFactory::GetInstance();
   policy::UserNetworkConfigurationUpdaterFactory::GetInstance();
-  ash::printing::print_management::PrintingManagerFactory::GetInstance();
-  ash::PrintJobHistoryServiceFactory::GetInstance();
+  printing::print_management::PrintingManagerFactory::GetInstance();
+  PrintJobHistoryServiceFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
-  ash::SyncedPrintersManagerFactory::GetInstance();
-  ash::tether::TetherServiceFactory::GetInstance();
+  SyncedPrintersManagerFactory::GetInstance();
+  tether::TetherServiceFactory::GetInstance();
 }
 
-}  // namespace chromeos
+}  // namespace ash

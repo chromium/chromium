@@ -29,10 +29,4 @@ class ShutdownPolicyForwarder : public ShutdownPolicyHandler::Delegate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-using ::ash::ShutdownPolicyForwarder;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_SETTINGS_SHUTDOWN_POLICY_FORWARDER_H_

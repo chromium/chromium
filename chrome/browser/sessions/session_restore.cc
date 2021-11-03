@@ -366,8 +366,8 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-End",
-                                                           false);
+    ash::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-End",
+                                                      false);
 #endif
     return browser;
   }
@@ -387,7 +387,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       SessionID active_window_id,
       bool read_error) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
+    ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-GotSession", false);
 #endif
 
@@ -506,7 +506,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
+    ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-CreatingTabs-Start", false);
 #endif
 
@@ -560,7 +560,7 @@ class SessionRestoreImpl : public BrowserListObserver {
         browser = browser_;
       } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
+        ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-Start", false);
 #endif
         // Change the initial show state of the created browser to
@@ -575,7 +575,7 @@ class SessionRestoreImpl : public BrowserListObserver {
             (*i)->visible_on_all_workspaces, show_state, (*i)->app_name,
             (*i)->user_title, (*i)->window_id.id());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
+        ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
             "SessionRestore-CreateRestoredBrowser-End", false);
 #endif
       }
@@ -661,7 +661,7 @@ class SessionRestoreImpl : public BrowserListObserver {
     if (last_normal_browser && !urls_to_open_.empty())
       AppendURLsToBrowser(last_normal_browser, urls_to_open_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
+    ash::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-CreatingTabs-End", false);
 #endif
     if (browser_to_activate)
@@ -987,8 +987,8 @@ Browser* SessionRestore::RestoreSession(
     SessionRestore::BehaviorBitmask behavior,
     const std::vector<GURL>& urls_to_open) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-Start",
-                                                         false);
+  ash::BootTimesRecorder::Get()->AddLoginTimeMarker("SessionRestore-Start",
+                                                    false);
 #endif
   DCHECK(profile);
   DCHECK(SessionServiceFactory::GetForProfile(profile));

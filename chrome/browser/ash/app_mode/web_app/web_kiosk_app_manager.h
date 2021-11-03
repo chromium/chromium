@@ -74,10 +74,4 @@ class WebKioskAppManager : public KioskAppManagerBase {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
-// source migration is finished.
-namespace chromeos {
-using ::ash::WebKioskAppManager;
-}
-
 #endif  // CHROME_BROWSER_ASH_APP_MODE_WEB_APP_WEB_KIOSK_APP_MANAGER_H_

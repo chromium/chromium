@@ -140,6 +140,7 @@ namespace network_portal_detector {
 using ::chromeos::network_portal_detector::GetInstance;
 using ::chromeos::network_portal_detector::InitializeForTesting;
 using ::chromeos::network_portal_detector::IsInitialized;
+using ::chromeos::network_portal_detector::SetForTesting;
 using ::chromeos::network_portal_detector::SetNetworkPortalDetector;
 using ::chromeos::network_portal_detector::Shutdown;
 }  // namespace network_portal_detector

@@ -45,4 +45,9 @@ class FileChangeServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::FileChangeServiceFactory;
+}
+
 #endif  // CHROME_BROWSER_CHROMEOS_FILEAPI_FILE_CHANGE_SERVICE_FACTORY_H_

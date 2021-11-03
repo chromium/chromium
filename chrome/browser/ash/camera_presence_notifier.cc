@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/camera_detector.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -66,4 +66,4 @@ void CameraPresenceNotifier::OnCameraPresenceCheckDone() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

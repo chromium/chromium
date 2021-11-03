@@ -40,4 +40,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::FastTransitionObserver;
+}
+
 #endif  // CHROMEOS_NETWORK_FAST_TRANSITION_OBSERVER_H_

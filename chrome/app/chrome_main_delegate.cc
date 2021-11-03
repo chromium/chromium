@@ -735,7 +735,7 @@ bool ChromeMainDelegate::ShouldHandleConsoleControlEvents() {
 
 bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::BootTimesRecorder::Get()->SaveChromeMainStats();
+  ash::BootTimesRecorder::Get()->SaveChromeMainStats();
 #endif
 
   const base::CommandLine& command_line =

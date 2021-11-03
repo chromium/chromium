@@ -46,10 +46,4 @@ class LoginScreenExtensionsStorageCleaner {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
-// migration is finished.
-namespace chromeos {
-using ::ash::LoginScreenExtensionsStorageCleaner;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_SCREEN_EXTENSIONS_STORAGE_CLEANER_H_

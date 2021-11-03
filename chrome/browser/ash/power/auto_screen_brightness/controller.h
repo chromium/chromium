@@ -63,14 +63,4 @@ class Controller : public session_manager::SessionManagerObserver {
 }  // namespace power
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
-// done.
-namespace chromeos {
-namespace power {
-namespace auto_screen_brightness {
-using ::ash::power::auto_screen_brightness::Controller;
-}  // namespace auto_screen_brightness
-}  // namespace power
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_AUTO_SCREEN_BRIGHTNESS_CONTROLLER_H_

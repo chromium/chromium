@@ -16,7 +16,7 @@
 #include "components/storage_monitor/udev_util_linux.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -89,4 +89,4 @@ bool CameraDetector::CheckPresence() {
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

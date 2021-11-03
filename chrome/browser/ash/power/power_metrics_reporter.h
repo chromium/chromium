@@ -79,9 +79,4 @@ class PowerMetricsReporter : public PowerManagerClient::Observer {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PowerMetricsReporter;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_POWER_POWER_METRICS_REPORTER_H_

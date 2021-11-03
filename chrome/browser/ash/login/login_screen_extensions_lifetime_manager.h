@@ -33,10 +33,4 @@ class LoginScreenExtensionsLifetimeManager final
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the Chrome OS source code
-// migration is finished.
-namespace chromeos {
-using ::ash::LoginScreenExtensionsLifetimeManager;
-}
-
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOGIN_SCREEN_EXTENSIONS_LIFETIME_MANAGER_H_

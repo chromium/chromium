@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 
 // Class used to check for camera presence.
 class CameraDetector {
@@ -46,6 +46,6 @@ class CameraDetector {
   static bool presence_check_in_progress_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CAMERA_DETECTOR_H_

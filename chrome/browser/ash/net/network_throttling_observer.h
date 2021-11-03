@@ -41,9 +41,4 @@ class NetworkThrottlingObserver {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace chromeos {
-using ::ash::NetworkThrottlingObserver;
-}
-
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_THROTTLING_OBSERVER_H_

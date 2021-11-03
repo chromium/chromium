@@ -214,8 +214,8 @@ ShutdownType GetShutdownType() {
 #if !defined(OS_ANDROID)
 bool ShutdownPreThreadsStop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker(
-      "BrowserShutdownStarted", false);
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserShutdownStarted",
+                                                     false);
 #endif
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Shutdown the IPC channel to the service processes.
@@ -275,8 +275,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   ProfileManager::NukeDeletedProfilesFromDisk();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted",
-                                                          true);
+  ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted", true);
 #endif
 
 #if defined(OS_WIN)

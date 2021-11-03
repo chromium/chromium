@@ -32,13 +32,15 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
-using content::BrowserThread;
-using content::NavigationController;
-using content::RenderWidgetHost;
-using content::RenderWidgetHostView;
-using content::WebContents;
+namespace ash {
 
 namespace {
+
+using ::content::BrowserThread;
+using ::content::NavigationController;
+using ::content::RenderWidgetHost;
+using ::content::RenderWidgetHostView;
+using ::content::WebContents;
 
 RenderWidgetHost* GetRenderWidgetHost(NavigationController* tab) {
   WebContents* web_contents = tab->DeprecatedGetWebContents();
@@ -75,8 +77,6 @@ const std::string GetTabUrl(RenderWidgetHost* rwh) {
 }
 
 }  // namespace
-
-namespace chromeos {
 
 #define FPL(value) FILE_PATH_LITERAL(value)
 
@@ -282,4 +282,4 @@ void BootTimesRecorder::RenderWidgetHostDestroyed(
   render_widget_host_observations_.RemoveObservation(widget_host);
 }
 
-}  // namespace chromeos
+}  // namespace ash
