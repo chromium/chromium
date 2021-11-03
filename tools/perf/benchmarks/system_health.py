@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 import logging
 
+import os
+
 from benchmarks import loading_metrics_category
 
 from core import perf_benchmark
@@ -86,11 +88,20 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     # Using the software fallback can skew the rendering related metrics. So
     # disable that (unless explicitly run with --allow-software-compositing).
-    if self.allow_software_compositing:
+    if self.allow_software_compositing or self._NeedsSoftwareCompositing():
       logging.warning('Allowing software compositing. Some of the reported '
                       'metrics will have unreliable values.')
     else:
       options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
+
+  def _NeedsSoftwareCompositing(self):
+    # We have to run with software compositing under xvfb or
+    # chrome remote desktop.
+    if 'CHROME_REMOTE_DESKTOP_SESSION' in os.environ:
+      return True
+    if 'XVFB_DISPLAY' in os.environ:
+      return True
+    return False
 
   def CreateStorySet(self, options):
     return page_sets.SystemHealthStorySet(platform=self.PLATFORM)
