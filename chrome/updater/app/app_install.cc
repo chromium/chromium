@@ -23,6 +23,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/update_service.h"
@@ -96,7 +97,7 @@ void AppInstall::FirstTaskRun() {
 
   // Capture `update_service` to manage the object lifetime.
   scoped_refptr<UpdateService> update_service =
-      CreateUpdateService(updater_scope());
+      CreateUpdateServiceProxy(updater_scope());
   update_service->GetVersion(
       base::BindOnce(&AppInstall::GetVersionDone, this, update_service));
 }
@@ -144,7 +145,7 @@ void AppInstall::WakeCandidate() {
   // |UpdateServiceInternal| instance has sequence affinity. Bind it in the
   // closure to ensure it is released in this sequence.
   scoped_refptr<UpdateServiceInternal> update_service_internal =
-      CreateUpdateServiceInternal(updater_scope());
+      CreateUpdateServiceInternalProxy(updater_scope());
   update_service_internal->InitializeUpdateService(base::BindOnce(
       [](scoped_refptr<UpdateServiceInternal> /*update_service_internal*/,
          scoped_refptr<AppInstall> app_install) {
@@ -160,7 +161,7 @@ void AppInstall::RegisterUpdater() {
   // update_service is bound in the callback to ensure it is released in this
   // sequence.
   scoped_refptr<UpdateService> update_service =
-      CreateUpdateService(updater_scope());
+      CreateUpdateServiceProxy(updater_scope());
   update_service->RegisterApp(
       request, base::BindOnce(
                    [](scoped_refptr<UpdateService> /*update_service*/,

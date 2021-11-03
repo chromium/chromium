@@ -108,6 +108,7 @@ if (is_win || is_mac) {
       "prefs_impl.h",
       "registration_data.cc",
       "registration_data.h",
+      "service_proxy_factory.h",
       "setup.h",
       "splash_screen.h",
       "tag.cc",
@@ -198,7 +199,6 @@ if (is_win || is_mac) {
         "policy/mac/managed_preference_policy_manager_impl.h",
         "policy/mac/managed_preference_policy_manager_impl.mm",
         "prefs_mac.mm",
-        "service_factory_mac.mm",
         "setup_mac.mm",
         "update_block_check_mac.cc",
         "util_mac.mm",
@@ -237,7 +237,6 @@ if (is_win || is_mac) {
         "policy/win/group_policy_manager.cc",
         "policy/win/group_policy_manager.h",
         "prefs_win.cc",
-        "service_factory_win.cc",
         "setup_win.cc",
         "update_block_check_win.cc",
         "util_win.cc",
@@ -290,6 +289,7 @@ if (is_win || is_mac) {
         "win/win_constants.h",
         "win/win_util.cc",
         "win/win_util.h",
+        "win/wrl_module_initializer.h",
       ]
       deps += [
         "//chrome/installer/util:with_no_strings",

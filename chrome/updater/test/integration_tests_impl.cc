@@ -42,6 +42,7 @@
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
@@ -111,7 +112,7 @@ int CountDirectoryFiles(const base::FilePath& dir) {
 }
 
 void RegisterApp(UpdaterScope scope, const std::string& app_id) {
-  scoped_refptr<UpdateService> update_service = CreateUpdateService(scope);
+  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   RegistrationRequest registration;
   registration.app_id = app_id;
   registration.version = base::Version("0.1");
@@ -195,7 +196,7 @@ void RunWake(UpdaterScope scope, int expected_exit_code) {
 }
 
 void Update(UpdaterScope scope, const std::string& app_id) {
-  scoped_refptr<UpdateService> update_service = CreateUpdateService(scope);
+  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
   update_service->Update(
       app_id, UpdateService::Priority::kForeground, base::DoNothing(),
@@ -205,7 +206,7 @@ void Update(UpdaterScope scope, const std::string& app_id) {
 }
 
 void UpdateAll(UpdaterScope scope) {
-  scoped_refptr<UpdateService> update_service = CreateUpdateService(scope);
+  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
   base::RunLoop loop;
   update_service->UpdateAll(
       base::DoNothing(),
@@ -440,7 +441,7 @@ void StressUpdateService(UpdaterScope scope) {
         service_task_runner->PostDelayedTask(
             FROM_HERE,
             base::BindLambdaForTesting([scope, task_runner, loop_closure]() {
-              auto update_service = CreateUpdateService(scope);
+              auto update_service = CreateUpdateServiceProxy(scope);
               update_service->GetVersion(
                   base::BindOnce(GetVersionCallback, scope, update_service,
                                  task_runner, loop_closure));

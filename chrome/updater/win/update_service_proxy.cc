@@ -30,6 +30,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/wrl_module_initializer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
@@ -438,11 +439,18 @@ void UpdaterCallback::OnRunOnSTA(LONG status_code) {
                              base::BindOnce(std::move(callback_), status_code));
 }
 
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceProxy>(updater_scope);
+}
+
 UpdateServiceProxy::UpdateServiceProxy(UpdaterScope updater_scope)
     : scope_(updater_scope),
       main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       com_task_runner_(
-          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {}
+          base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
+  WRLModuleInitializer::Get();
+}
 
 UpdateServiceProxy::~UpdateServiceProxy() = default;
 

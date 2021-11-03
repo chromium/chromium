@@ -245,9 +245,6 @@ inline std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os,
                          const UpdateService::UpdateState& update_state);
 
-// A factory method to create an UpdateService class instance.
-scoped_refptr<UpdateService> CreateUpdateService(UpdaterScope updater_scope);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UPDATE_SERVICE_H_

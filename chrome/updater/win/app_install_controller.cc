@@ -25,6 +25,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
+#include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
@@ -477,7 +478,7 @@ void AppInstallControllerImpl::DoInstallApp() {
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
 
-  update_service_ = CreateUpdateService(GetUpdaterScope());
+  update_service_ = CreateUpdateServiceProxy(GetUpdaterScope());
 
   install_progress_observer_ipc_ =
       std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());

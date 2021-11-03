@@ -94,6 +94,11 @@
 
 namespace updater {
 
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
+}
+
 UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
     : callback_runner_(base::SequencedTaskRunnerHandle::Get()) {
   client_.reset(

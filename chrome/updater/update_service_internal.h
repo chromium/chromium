@@ -40,10 +40,6 @@ class UpdateServiceInternal
   virtual ~UpdateServiceInternal() = default;
 };
 
-// A factory method to create a UpdateServiceInternal class instance.
-scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternal(
-    UpdaterScope updater_scope);
-
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UPDATE_SERVICE_INTERNAL_H_
