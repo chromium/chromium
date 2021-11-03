@@ -430,7 +430,7 @@ ChromeExtensionsAPIClient::GetNonNativeFileSystemDelegate() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
-    const std::vector<char>& image_data,
+    std::vector<uint8_t> image_data,
     api::clipboard::ImageType type,
     AdditionalDataItemList additional_items,
     base::OnceClosure success_callback,
@@ -438,7 +438,7 @@ void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
   if (!clipboard_extension_helper_)
     clipboard_extension_helper_ = std::make_unique<ClipboardExtensionHelper>();
   clipboard_extension_helper_->DecodeAndSaveImageData(
-      image_data, type, std::move(additional_items),
+      std::move(image_data), type, std::move(additional_items),
       std::move(success_callback), std::move(error_callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

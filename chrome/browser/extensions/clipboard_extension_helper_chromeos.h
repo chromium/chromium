@@ -29,7 +29,7 @@ class ClipboardExtensionHelper {
 
   // Decodes and saves the image data on clipboard. Must run on UI thread.
   void DecodeAndSaveImageData(
-      const std::vector<char>& data,
+      std::vector<uint8_t> data,
       api::clipboard::ImageType type,
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,

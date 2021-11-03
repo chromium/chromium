@@ -93,7 +93,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SaveImageDataToClipboard(
-      const std::vector<char>& image_data,
+      std::vector<uint8_t> image_data,
       api::clipboard::ImageType type,
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,

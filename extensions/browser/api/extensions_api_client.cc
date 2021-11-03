@@ -166,7 +166,7 @@ ExtensionsAPIClient::GetMediaPerceptionAPIDelegate() {
 
 #if defined(OS_CHROMEOS)
 void ExtensionsAPIClient::SaveImageDataToClipboard(
-    const std::vector<char>& image_data,
+    std::vector<uint8_t> image_data,
     api::clipboard::ImageType type,
     AdditionalDataItemList additional_items,
     base::OnceClosure success_callback,
