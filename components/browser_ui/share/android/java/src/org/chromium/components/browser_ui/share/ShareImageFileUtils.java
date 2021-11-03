@@ -349,34 +349,36 @@ public class ShareImageFileUtils {
             saveImageCallback.onResult(uri);
         };
 
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            FileOutputStream fOut = null;
-            File destFile = null;
-            try {
-                String filePath = filePathProvider == null ? "" : filePathProvider.getPath();
-                destFile = createFile(fileName, filePath, isTemporary, fileExtension);
-                if (destFile != null && destFile.exists()) {
-                    fOut = new FileOutputStream(destFile);
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, new Runnable() {
+            FileOutputStream mFileOut;
+            File mDestFile;
 
-                    // Finalize local variables for use in the lambda.
-                    final FileOutputStream fOutFinal = fOut;
-                    final File destFileFinal = destFile;
-                    writer.write(fOut, (success) -> {
-                        StreamUtil.closeQuietly(fOutFinal);
-                        if (success) {
-                            outputStreamWriteCallback.onResult(destFileFinal);
-                        } else {
-                            saveImageCallback.onResult(null);
-                        }
-                    });
-                } else {
-                    Log.w(TAG, "Share failed -- Unable to create or write to destination file.");
-                    StreamUtil.closeQuietly(fOut);
+            @Override
+            public void run() {
+                try {
+                    String filePath = filePathProvider == null ? "" : filePathProvider.getPath();
+                    mDestFile = createFile(fileName, filePath, isTemporary, fileExtension);
+                    if (mDestFile != null && mDestFile.exists()) {
+                        mFileOut = new FileOutputStream(mDestFile);
+
+                        writer.write(mFileOut, (success) -> {
+                            StreamUtil.closeQuietly(mFileOut);
+                            if (success) {
+                                outputStreamWriteCallback.onResult(mDestFile);
+                            } else {
+                                saveImageCallback.onResult(null);
+                            }
+                        });
+                    } else {
+                        Log.w(TAG,
+                                "Share failed -- Unable to create or write to destination file.");
+                        StreamUtil.closeQuietly(mFileOut);
+                        saveImageCallback.onResult(null);
+                    }
+                } catch (IOException ie) {
+                    StreamUtil.closeQuietly(mFileOut);
                     saveImageCallback.onResult(null);
                 }
-            } catch (IOException ie) {
-                StreamUtil.closeQuietly(fOut);
-                saveImageCallback.onResult(null);
             }
         });
     }
