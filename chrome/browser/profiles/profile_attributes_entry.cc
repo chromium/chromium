@@ -565,10 +565,8 @@ base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
   if (!accounts || !accounts->is_dict())
     return base::flat_set<std::string>();
 
-  std::vector<std::string> gaia_ids;
-  for (const auto it : accounts->DictItems())
-    gaia_ids.push_back(it.first);
-  return base::flat_set<std::string>(std::move(gaia_ids));
+  return base::MakeFlatSet<std::string>(
+      accounts->DictItems(), {}, [](const auto& it) { return it.first; });
 }
 
 void ProfileAttributesEntry::SetGaiaIds(

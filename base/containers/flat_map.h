@@ -352,6 +352,36 @@ void flat_map<Key, Mapped, Compare, Container>::swap(flat_map& other) noexcept {
   tree::swap(other);
 }
 
+// ----------------------------------------------------------------------------
+// Utility functions.
+
+// Utility function to simplify constructing a flat_set from a fixed list of
+// keys and values. The key/value pairs are obtained by applying |proj| to the
+// |unprojected_elements|. The map's keys are sorted by |comp|.
+//
+// Example usage (creates a set {{16, "4"}, {9, "3"}, {4, "2"}, {1, "1"}}):
+//   auto map = base::MakeFlatMap<int, std::string>(
+//       std::vector<int>{1, 2, 3, 4},
+//       [](int i, int j) { return i > j; },
+//       [](int i) { return std::make_pair(i * i, base::NumberToString(i)); });
+template <class Key,
+          class Mapped,
+          class KeyCompare = std::less<>,
+          class Container = std::vector<std::pair<Key, Mapped>>,
+          class InputContainer,
+          class Projection = base::identity>
+constexpr flat_map<Key, Mapped, KeyCompare, Container> MakeFlatMap(
+    const InputContainer& unprojected_elements,
+    const KeyCompare& comp = KeyCompare(),
+    const Projection& proj = Projection()) {
+  Container elements;
+  internal::ReserveIfSupported(elements, unprojected_elements);
+  base::ranges::transform(unprojected_elements, std::back_inserter(elements),
+                          proj);
+  return flat_map<Key, Mapped, KeyCompare, Container>(std::move(elements),
+                                                      comp);
+}
+
 }  // namespace base
 
 #endif  // BASE_CONTAINERS_FLAT_MAP_H_

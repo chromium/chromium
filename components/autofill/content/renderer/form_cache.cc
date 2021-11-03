@@ -136,13 +136,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   parsed_forms_by_renderer_id_.clear();
 
   UpdateFormCacheResult r;
-  r.removed_forms = [&old_parsed_forms] {
-    std::vector<FormRendererId> vec;
-    vec.reserve(old_parsed_forms.size());
-    for (const auto& p : old_parsed_forms)
-      vec.push_back(p.first);
-    return base::flat_set<FormRendererId>(std::move(vec));
-  }();
+  r.removed_forms = base::MakeFlatSet<FormRendererId>(
+      old_parsed_forms, {}, &std::pair<const FormRendererId, FormData>::first);
 
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
@@ -250,13 +245,8 @@ FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
   }
 
   UpdateFormCacheResult r;
-  r.removed_forms = [this] {
-    std::vector<FormRendererId> vec;
-    vec.reserve(parsed_forms_.size());
-    for (const FormData& form : parsed_forms_)
-      vec.push_back(form.unique_renderer_id);
-    return base::flat_set<FormRendererId>(std::move(vec));
-  }();
+  r.removed_forms = base::MakeFlatSet<FormRendererId>(
+      parsed_forms_, {}, &FormData::unique_renderer_id);
 
   WebDocument document = frame_->GetDocument();
   if (document.IsNull()) {

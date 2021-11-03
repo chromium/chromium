@@ -165,12 +165,8 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 base::flat_set<std::u16string> ExtractPasswords(
     SavedPasswordsPresenter::SavedPasswordsView password_forms) {
-  std::vector<std::u16string> passwords;
-  passwords.reserve(password_forms.size());
-  for (const auto& form : password_forms) {
-    passwords.push_back(form.password_value);
-  }
-  return base::flat_set<std::u16string>(std::move(passwords));
+  return base::MakeFlatSet<std::u16string>(password_forms, {},
+                                           &PasswordForm::password_value);
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 

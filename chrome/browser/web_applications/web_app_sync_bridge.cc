@@ -565,15 +565,8 @@ void WebAppSyncBridge::ReportErrorToChangeProcessor(
 void WebAppSyncBridge::MergeLocalAppsToSync(
     const syncer::EntityChangeList& entity_data,
     syncer::MetadataChangeList* metadata_change_list) {
-  // Build a helper set of the sync server apps to speed up lookups. The
-  // flat_set will reuse the underlying memory of this vector. app_id is storage
-  // key.
-  std::vector<AppId> storage_keys;
-  storage_keys.reserve(entity_data.size());
-  for (const auto& change : entity_data)
-    storage_keys.push_back(change->storage_key());
-  // Sort only once.
-  base::flat_set<AppId> sync_server_apps(std::move(storage_keys));
+  auto sync_server_apps = base::MakeFlatSet<AppId>(
+      entity_data, {}, &syncer::EntityChange::storage_key);
 
   for (const WebApp& app : registrar_->GetAppsIncludingStubs()) {
     if (!app.IsSynced())

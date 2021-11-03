@@ -51,14 +51,13 @@ void ManagedConfigurationServiceImpl::GetManagedConfiguration(
       base::BindOnce(
           [](GetManagedConfigurationCallback callback,
              std::unique_ptr<base::DictionaryValue> result) {
-            if (!result) {
+            if (!result)
               return std::move(callback).Run(absl::nullopt);
-            }
-            std::vector<std::pair<std::string, std::string>> items;
-            for (auto it : result->DictItems())
-              items.emplace_back(it.first, it.second.GetString());
-            std::move(callback).Run(
-                base::flat_map<std::string, std::string>(std::move(items)));
+            std::move(callback).Run(base::MakeFlatMap<std::string, std::string>(
+                result->DictItems(), {},
+                [](const auto& it) -> std::pair<std::string, std::string> {
+                  return {it.first, it.second.GetString()};
+                }));
           },
           std::move(callback)));
 }

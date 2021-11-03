@@ -75,10 +75,7 @@ bool UrlMatcherForSerializedNavigationEntry(
 }
 
 base::flat_set<GURL> CreateUrlSet(const history::URLRows& deleted_rows) {
-  std::vector<GURL> urls;
-  for (const history::URLRow& row : deleted_rows)
-    urls.push_back(row.url());
-  return base::flat_set<GURL>(std::move(urls));
+  return base::MakeFlatSet<GURL>(deleted_rows, {}, &history::URLRow::url);
 }
 
 void DeleteNavigationEntries(

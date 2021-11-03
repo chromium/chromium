@@ -83,17 +83,9 @@ base::flat_set<std::string> GetIMEsFromPref(PrefService* prefs,
 base::flat_set<std::string> GetAllowedLanguages(PrefService* prefs) {
   const auto& allowed_languages_values =
       prefs->GetList(prefs::kAllowedLanguages)->GetList();
-
-  // Uses the O(n log n) base::flat_set constructor by pushing back to a vector
-  // instead of inserting into a set.
-  std::vector<std::string> allowed_languages;
-  allowed_languages.reserve(allowed_languages_values.size());
-
-  for (const base::Value& locale_value : allowed_languages_values) {
-    allowed_languages.push_back(locale_value.GetString());
-  }
-
-  return allowed_languages;
+  return base::MakeFlatSet<std::string>(
+      allowed_languages_values, {},
+      [](const auto& locale_value) { return locale_value.GetString(); });
 }
 
 // Sorts the input methods by the order of their associated languages. For

@@ -256,12 +256,8 @@ void PaintPreviewTabService::DeleteTask(int tab_id) {
 void PaintPreviewTabService::InitializeCache(
     const base::flat_set<DirectoryKey>& in_use_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<int> tab_ids;
-  tab_ids.reserve(in_use_keys.size());
-  for (const auto& key : in_use_keys)
-    tab_ids.push_back(TabIdFromDirectoryKey(key));
-
-  captured_tab_ids_ = base::flat_set<int>(std::move(tab_ids));
+  captured_tab_ids_ =
+      base::MakeFlatSet<int>(in_use_keys, {}, &TabIdFromDirectoryKey);
   cache_ready_ = true;
 }
 
@@ -371,11 +367,9 @@ void PaintPreviewTabService::RunAudit(
     const base::flat_set<DirectoryKey>& in_use_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto file_manager = GetFileMixin()->GetFileManager();
-  std::vector<DirectoryKey> keys;
-  keys.reserve(active_tab_ids.size());
-  for (const auto& tab_id : active_tab_ids)
-    keys.push_back(file_manager->CreateKey(tab_id));
-  base::flat_set<DirectoryKey> active_tab_keys(std::move(keys));
+  auto active_tab_keys = base::MakeFlatSet<DirectoryKey>(
+      active_tab_ids, {},
+      [&](const auto& tab_id) { return file_manager->CreateKey(tab_id); });
 
   std::vector<DirectoryKey> keys_to_delete(active_tab_keys.size() +
                                            in_use_keys.size());

@@ -401,10 +401,10 @@ void KeepAccountStorageSettingsOnlyForUsers(
   DCHECK(pref_service);
 
   // Build a set of hashes of all the Gaia IDs.
-  std::vector<std::string> hashes_to_keep_list;
-  for (const std::string& gaia_id : gaia_ids)
-    hashes_to_keep_list.push_back(GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
-  base::flat_set<std::string> hashes_to_keep(std::move(hashes_to_keep_list));
+  auto hashes_to_keep =
+      base::MakeFlatSet<std::string>(gaia_ids, {}, [](const auto& gaia_id) {
+        return GaiaIdHash::FromGaiaId(gaia_id).ToBase64();
+      });
 
   // Now remove any settings for account that are *not* in the set of hashes.
   // DictionaryValue doesn't allow removing elements while iterating, so first

@@ -28,7 +28,7 @@ void InvokeCallbackWithCombinedStatus(base::OnceCallback<void(bool)> completion,
   std::move(completion).Run(base::ranges::all_of(statuses, base::identity()));
 }
 
-// Records the difference metrics between |result1| and |result2|.
+// Records the difference metrics between |main_result| and |backend_result|.
 void RecordMetrics(const LoginsResult& main_result,
                    const LoginsResult& backend_result) {
   struct IsLess {
@@ -37,25 +37,17 @@ void RecordMetrics(const LoginsResult& main_result,
     }
   };
 
-  using PasswordFormSet = base::flat_set<const PasswordForm*, IsLess>;
+  auto main_logins = base::MakeFlatSet<const PasswordForm*, IsLess>(
+      main_result, {}, &std::unique_ptr<PasswordForm>::get);
+  auto shadow_logins = base::MakeFlatSet<const PasswordForm*, IsLess>(
+      backend_result, {}, &std::unique_ptr<PasswordForm>::get);
 
-  auto BuildPasswordFormSet = [](const LoginsResult& result) {
-    std::vector<const PasswordForm*> vec;
-    vec.reserve(result.size());
-    for (const auto& login : result)
-      vec.push_back(login.get());
-    return PasswordFormSet(std::move(vec));
-  };
-
-  PasswordFormSet main_logins = BuildPasswordFormSet(main_result);
-  PasswordFormSet shadow_logins = BuildPasswordFormSet(backend_result);
-
-  PasswordFormSet common_logins = [&] {
+  auto common_logins = [&] {
     std::vector<const PasswordForm*> vec;
     vec.reserve(main_logins.size());
     base::ranges::set_intersection(main_logins, shadow_logins,
                                    std::back_inserter(vec), IsLess());
-    return PasswordFormSet(std::move(vec));
+    return base::flat_set<const PasswordForm*, IsLess>(std::move(vec));
   }();
 
   // The cardinalities from which we compute the metrics.

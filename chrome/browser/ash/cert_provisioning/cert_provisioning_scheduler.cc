@@ -223,18 +223,9 @@ void CertProvisioningSchedulerImpl::DeleteCertsWithoutPolicy() {
     return;
   }
 
-  base::flat_set<CertProfileId> cert_profile_ids_to_keep;
-  {
-    std::vector<CertProfile> profiles = GetCertProfiles();
-    std::vector<CertProfileId> ids;
-    for (auto& profile : profiles) {
-      ids.emplace_back(std::move(profile.profile_id));
-    }
-    cert_profile_ids_to_keep = base::flat_set<CertProfileId>(std::move(ids));
-  }
-
   cert_deleter_.DeleteCerts(
-      cert_profile_ids_to_keep,
+      base::MakeFlatSet<CertProfileId>(GetCertProfiles(), {},
+                                       &CertProfile::profile_id),
       base::BindOnce(
           &CertProvisioningSchedulerImpl::OnDeleteCertsWithoutPolicyDone,
           weak_factory_.GetWeakPtr()));
