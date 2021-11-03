@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_view.h"
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -54,8 +55,9 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
@@ -74,19 +76,10 @@ constexpr size_t kMaxAppResults = 3;
 // main component sizes were also mostly copied over to share the
 // same layout.
 // Main components sizes
-constexpr int kIntentPickerCheckBoxColumnWidth = 288;
 constexpr int kMaxIntentPickerWidth = 320;
 constexpr int kRowHeight = 32;
 constexpr int kTitlePadding = 16;
 constexpr gfx::Insets kSeparatorPadding(0, 0, 16, 0);
-constexpr SkColor kSeparatorColor = SkColorSetARGB(0x1F, 0x0, 0x0, 0x0);
-
-std::unique_ptr<views::Separator> CreateHorizontalSeparator() {
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetColor(kSeparatorColor);
-  separator->SetBorder(views::CreateEmptyBorder(kSeparatorPadding));
-  return separator;
-}
 
 void RecordDialogState(
     WebAppUrlHandlerIntentPickerView::DialogState dialog_state) {
@@ -237,27 +230,36 @@ void WebAppUrlHandlerIntentPickerView::OnClosed() {
 }
 
 void WebAppUrlHandlerIntentPickerView::Initialize() {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  // Creates a view to hold the views for each app.
-  auto scrollable_view = std::make_unique<views::View>();
-  scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  auto builder =
+      views::Builder<WebAppUrlHandlerIntentPickerView>(this).SetLayoutManager(
+          std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical));
 
   // size+1 for the browser entry.
   size_t total_buttons = launch_params_list_.size() + 1;
   hover_buttons_.reserve(total_buttons);
-  // Create a WebAppUrlHandlerHoverButton to open the link in browser and
-  // list it as the first choice.
-  auto app_button =
-      std::make_unique<WebAppUrlHandlerHoverButton>(base::BindRepeating(
-          &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
-          base::Unretained(this), 0));
-  app_button->set_tag(0);
-  app_button->GetViewAccessibility().OverridePosInSet(1, total_buttons);
-  hover_buttons_.push_back(app_button.get());
-  scrollable_view->AddChildViewAt(std::move(app_button), 0);
+  size_t button_index = hover_buttons_.size();
+
+  // Creates a view to hold the views for each app.
+  auto scrollable_view_builder =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .AddChildAt(
+              views::Builder<WebAppUrlHandlerHoverButton>(
+                  std::make_unique<
+                      WebAppUrlHandlerHoverButton>(base::BindRepeating(
+                      &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
+                      base::Unretained(this), 0)))
+                  .SetTag(0)
+                  .CustomConfigure(base::BindOnce(
+                      [](HoverButtons& hover_buttons, int total_buttons,
+                         WebAppUrlHandlerHoverButton* view) {
+                        view->GetViewAccessibility().OverridePosInSet(
+                            1, total_buttons);
+                        hover_buttons.push_back(view);
+                      },
+                      std::ref(hover_buttons_), total_buttons)),
+              button_index++);
 
   for (const auto& launch_params : launch_params_list_) {
     Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
@@ -279,69 +281,66 @@ void WebAppUrlHandlerIntentPickerView::Initialize() {
                   IDS_URL_HANDLER_INTENT_PICKER_APP_TITLE, app_name,
                   profile_name);
 
-    const size_t button_index = hover_buttons_.size();
+    const size_t this_button_index = button_index++;
     // TODO(crbug.com/1072058): Make sure the UI is reasonable when
     // |app_title| is long.
-    auto button = std::make_unique<WebAppUrlHandlerHoverButton>(
-        base::BindRepeating(
-            &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
-            base::Unretained(this), button_index),
-        launch_params, provider, app_title,
-        registrar.GetAppStartUrl(launch_params.app_id));
-    button->set_tag(button_index);
-    button->GetViewAccessibility().OverridePosInSet(button_index + 1,
-                                                    total_buttons);
-    hover_buttons_.push_back(button.get());
-    scrollable_view->AddChildViewAt(std::move(button), button_index);
+    scrollable_view_builder.AddChildAt(
+        views::Builder<WebAppUrlHandlerHoverButton>(
+            std::make_unique<WebAppUrlHandlerHoverButton>(
+                base::BindRepeating(
+                    &WebAppUrlHandlerIntentPickerView::SetSelectedAppIndex,
+                    base::Unretained(this), button_index),
+                launch_params, provider, app_title,
+                registrar.GetAppStartUrl(launch_params.app_id)))
+            .SetTag(button_index)
+            .CustomConfigure(base::BindOnce(
+                [](HoverButtons& hover_buttons, size_t this_button_index,
+                   size_t total_buttons, WebAppUrlHandlerHoverButton* view) {
+                  view->GetViewAccessibility().OverridePosInSet(
+                      this_button_index + 1, total_buttons);
+                  hover_buttons.push_back(view);
+                },
+                std::ref(hover_buttons_), this_button_index, total_buttons)),
+        this_button_index);
   }
 
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetBackgroundThemeColorId(ui::kColorBubbleBackground);
-  scroll_view->SetContents(std::move(scrollable_view));
-  // This part gives the scroll a fixed width and height. The height depends on
-  // how many app candidates we got and how many we actually want to show.
-  // The added 0.5 on the else block allow us to let the user know there are
-  // more than |kMaxAppResults| apps accessible by scrolling the list.
-  scroll_view->ClipHeightTo(kRowHeight, (kMaxAppResults + 0.5) * kRowHeight);
-  scroll_view->GetViewAccessibility().OverrideRole(
-      ax::mojom::Role::kRadioGroup);
-
-  constexpr int kColumnSetId = 0;
-  views::ColumnSet* cs = layout->AddColumnSet(kColumnSetId);
-  cs->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize,
-                views::GridLayout::ColumnSize::kFixed, kMaxIntentPickerWidth,
-                0);
-
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetId,
-                              views::GridLayout::kFixedSize, kTitlePadding);
-  scroll_view_ = layout->AddView(std::move(scroll_view));
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId, 0);
-
-  // The checkbox allows the user to opt-in to relaxed security
-  // (i.e. skipping future prompts) for this url.
-  layout->AddView(CreateHorizontalSeparator());
-  // This second ColumnSet has a padding column in order to manipulate the
-  // Checkbox positioning freely.
-  constexpr int kColumnSetIdPadded = 2;
-  views::ColumnSet* cs_padded = layout->AddColumnSet(kColumnSetIdPadded);
-  cs_padded->AddPaddingColumn(views::GridLayout::kFixedSize, kTitlePadding);
-  cs_padded->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kFixed,
-                       kIntentPickerCheckBoxColumnWidth, 0);
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnSetIdPadded,
-                              views::GridLayout::kFixedSize, 0);
+  builder.AddChildren(
+      views::Builder<views::ScrollView>()
+          .CopyAddressTo(&scroll_view_)
+          .SetBackgroundThemeColorId(ui::kColorBubbleBackground)
+          // This part gives the scroll a fixed width and height. The height
+          // depends on how many app candidates we got and how many we actually
+          // want to show. The added 0.5 on the else block allow us to let the
+          // user know there are more than |kMaxAppResults| apps accessible by
+          // scrolling the list.
+          .ClipHeightTo(kRowHeight, (kMaxAppResults + 0.5) * kRowHeight)
+          .CustomConfigure(base::BindOnce([](views::ScrollView* view) {
+            view->GetViewAccessibility().OverrideRole(
+                ax::mojom::Role::kRadioGroup);
+          }))
+          .SetContents(std::move(scrollable_view_builder))
+          .SetProperty(views::kMarginsKey, gfx::Insets(kTitlePadding, 0, 0, 0)),
+      views::Builder<views::Separator>().SetBorder(
+          views::CreateEmptyBorder(kSeparatorPadding)));
 
   enable_remember_checkbox_ =
       base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers);
 
   if (enable_remember_checkbox_) {
-    remember_selection_checkbox_ = layout->AddView(
-        std::make_unique<views::Checkbox>(l10n_util::GetStringUTF16(
-            IDS_URL_HANDLER_INTENT_PICKER_REMEMBER_SELECTION)));
-    layout->AddPaddingRow(views::GridLayout::kFixedSize, kRowHeight);
+    // The checkbox allows the user to opt-in to relaxed security (i.e. skipping
+    // future prompts) for this url.
+    builder.AddChild(
+        views::Builder<views::Checkbox>()
+            .CopyAddressTo(&remember_selection_checkbox_)
+            .SetText(l10n_util::GetStringUTF16(
+                IDS_URL_HANDLER_INTENT_PICKER_REMEMBER_SELECTION))
+            // Here we use the margins key to align the position of the checkbox
+            // with the items in the scroll view and provide a padding space
+            // below.
+            .SetProperty(views::kMarginsKey,
+                         gfx::Insets(0, kTitlePadding, kRowHeight, 0)));
   }
+  std::move(builder).BuildChildren();
 }
 
 void WebAppUrlHandlerIntentPickerView::RunCloseCallback(bool accepted) {

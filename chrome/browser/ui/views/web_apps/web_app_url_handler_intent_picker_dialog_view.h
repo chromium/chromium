@@ -14,6 +14,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -75,6 +76,8 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
       chrome::WebAppUrlHandlerAcceptanceCallback dialog_close_callback);
 
  private:
+  using HoverButtons = std::vector<WebAppUrlHandlerHoverButton*>;
+
   void Initialize();
   // views::DialogDelegateView:
   gfx::Size CalculatePreferredSize() const override;
@@ -108,7 +111,7 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   chrome::WebAppUrlHandlerAcceptanceCallback close_callback_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 
-  std::vector<WebAppUrlHandlerHoverButton*> hover_buttons_;
+  HoverButtons hover_buttons_;
   // Allow the checkbox to be enabled or disabled. Enabled if the URL Handling
   // feature flag is enabled, disabled otherwise.
   // TODO(crbug.com/1072058): Remove when settings are implemented.
@@ -119,5 +122,12 @@ class WebAppUrlHandlerIntentPickerView : public views::DialogDelegateView {
   // No default selection. Not null if selected by user.
   absl::optional<int> selected_app_tag_ = absl::nullopt;
 };
+
+BEGIN_VIEW_BUILDER(,
+                   WebAppUrlHandlerIntentPickerView,
+                   views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, WebAppUrlHandlerIntentPickerView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_URL_HANDLER_INTENT_PICKER_DIALOG_VIEW_H_
