@@ -1241,6 +1241,7 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
         processed++;
     }
     event_status.num_remaining_items = status.sources.size() - processed;
+    event_status.item_count = status.sources.size();
 
     // Get the last error occurrence in the `sources`.
     for (auto it = status.sources.rbegin(); it != status.sources.rend(); it++) {

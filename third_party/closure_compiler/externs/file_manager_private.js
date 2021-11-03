@@ -668,6 +668,7 @@ chrome.fileManagerPrivate.IOTaskParams;
  *   type: !chrome.fileManagerPrivate.IOTaskType,
  *   state: !chrome.fileManagerPrivate.IOTaskState,
  *   numRemainingItems: number,
+ *   itemCount: number,
  *   bytesTransferred: number,
  *   sourceName: string,
  *   destinationName: string,

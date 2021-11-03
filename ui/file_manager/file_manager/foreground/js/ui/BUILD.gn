@@ -602,6 +602,7 @@ js_library("progress_center_panel") {
     "//ui/file_manager/file_manager/common/js:progress_center_common",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:progress_center_panel",
+    "//ui/file_manager/file_manager/foreground/elements:xf_display_panel",
     "//ui/webui/resources/js:assert.m",
   ]
 }

@@ -944,6 +944,9 @@ dictionary ProgressStatus {
   // Number of remaining entries to be processed.
   long numRemainingItems;
 
+  // Total number of entries to be processed.
+  long itemCount;
+
   // Name of the destination folder for operations that transfer files to a
   // directory (e.g. copy or move).
   DOMString destinationName;
