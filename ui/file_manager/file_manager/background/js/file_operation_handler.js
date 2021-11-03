@@ -70,6 +70,9 @@ export class FileOperationHandler {
       item.id = taskId;
       item.type = getTypeFromIOTaskType_(event.type);
       item.itemCount = event.itemCount;
+      item.cancelCallback = () => {
+        chrome.fileManagerPrivate.cancelIOTask(event.taskId);
+      };
     }
     item.message = getMessageFromProgressEvent_(event);
 
@@ -79,11 +82,6 @@ export class FileOperationHandler {
         item.destinationMessage = event.destinationName;
         item.progressMax = event.totalBytes;
         item.progressValue = event.bytesTransferred;
-        item.cancelCallback = () => {
-          const taskId = String(event.taskId);
-          console.log(`TODO: Cancel IOTask, taskId: ${taskId}`);
-          // chrome.fileManagerPrivate.cancelIOTask(event.taskId);
-        };
         item.remainingTime = event.remainingSeconds;
         break;
 
