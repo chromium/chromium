@@ -48,7 +48,7 @@ void ExpectResult(T expected_value,
 
   EXPECT_NO_FATAL_FAILURE(run_loop.Run())
       << (tag.empty() ? tag : tag + ": ")
-      << "Failed waiting for expected result.\n"
+      << "Bored waiting for expected result.\n"
       << "Expected \"" << expected_value << "\"\n"
       << "Got \"" << value_callback.Run() << "\"";
 }
