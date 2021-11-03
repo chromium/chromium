@@ -705,6 +705,8 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
   bool is_range_spanning_intrinsic_track = false;
   bool is_range_spanning_auto_minimum_track = false;
   bool is_range_spanning_auto_maximum_track = false;
+  bool is_range_spanning_fixed_minimum_track = false;
+  bool is_range_spanning_fixed_maximum_track = false;
 
   for (wtf_size_t i = 0; i < new_range.set_count; ++i) {
     const auto& set_track_size =
@@ -722,6 +724,10 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
         set_track_size.HasAutoMinTrackBreadth();
     is_range_spanning_auto_maximum_track |=
         set_track_size.HasAutoMaxTrackBreadth();
+    is_range_spanning_fixed_minimum_track |=
+        set_track_size.HasFixedMinTrackBreadth();
+    is_range_spanning_fixed_maximum_track |=
+        set_track_size.HasFixedMaxTrackBreadth();
 
     is_spanning_only_definite_tracks_ &=
         set_track_size.HasFixedMinTrackBreadth() &&
@@ -738,6 +744,15 @@ void NGGridLayoutAlgorithmTrackCollection::AppendTrackRange(
     new_range.properties.SetProperty(TrackSpanProperties::kHasIntrinsicTrack);
   if (is_range_spanning_auto_minimum_track)
     new_range.properties.SetProperty(TrackSpanProperties::kHasAutoMinimumTrack);
+  if (is_range_spanning_fixed_minimum_track) {
+    new_range.properties.SetProperty(
+        TrackSpanProperties::kHasFixedMinimumTrack);
+  }
+  if (is_range_spanning_fixed_maximum_track) {
+    new_range.properties.SetProperty(
+        TrackSpanProperties::kHasFixedMaximumTrack);
+  }
+
   ranges_.push_back(new_range);
 
   if (direction_ == kForColumns) {

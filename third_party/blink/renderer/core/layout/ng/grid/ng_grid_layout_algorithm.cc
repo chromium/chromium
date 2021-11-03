@@ -187,6 +187,9 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
       grid_item.ComputeSetIndices(row_track_collection);
     }
 
+    CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
+    CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
+
     // TODO(layout-dev): When we support variable inline-size fragments we'll
     // need to re-run |ComputeGridGeometry| for the different inline-size.
     // When doing this, we'll need to make sure that we don't recalculate the
@@ -437,6 +440,18 @@ bool GridItemData::IsSpanningAutoMinimumTrack(
     const GridTrackSizingDirection track_direction) const {
   return GetTrackSpanProperties(track_direction)
       .HasProperty(TrackSpanProperties::kHasAutoMinimumTrack);
+}
+
+bool GridItemData::IsSpanningFixedMinimumTrack(
+    const GridTrackSizingDirection track_direction) const {
+  return GetTrackSpanProperties(track_direction)
+      .HasProperty(TrackSpanProperties::kHasFixedMinimumTrack);
+}
+
+bool GridItemData::IsSpanningFixedMaximumTrack(
+    const GridTrackSizingDirection track_direction) const {
+  return GetTrackSpanProperties(track_direction)
+      .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
 }
 
 bool GridItemData::IsBaselineAlignedForDirection(
@@ -1740,6 +1755,10 @@ void NGGridLayoutAlgorithm::CacheGridItemsTrackSpanProperties(
                              TrackSpanProperties::kHasIntrinsicTrack);
       CacheTrackSpanProperty(grid_item, range_indices.begin,
                              TrackSpanProperties::kHasAutoMinimumTrack);
+      CacheTrackSpanProperty(grid_item, range_indices.begin,
+                             TrackSpanProperties::kHasFixedMinimumTrack);
+      CacheTrackSpanProperty(grid_item, range_indices.begin,
+                             TrackSpanProperties::kHasFixedMaximumTrack);
     } else {
       grid_items_spanning_multiple_ranges.emplace_back(&grid_item);
     }
@@ -1808,6 +1827,10 @@ void NGGridLayoutAlgorithm::CacheGridItemsTrackSpanProperties(
       TrackSpanProperties::kHasIntrinsicTrack);
   CacheTrackSpanPropertyForAllGridItems(
       TrackSpanProperties::kHasAutoMinimumTrack);
+  CacheTrackSpanPropertyForAllGridItems(
+      TrackSpanProperties::kHasFixedMinimumTrack);
+  CacheTrackSpanPropertyForAllGridItems(
+      TrackSpanProperties::kHasFixedMaximumTrack);
 }
 
 bool NGGridLayoutAlgorithm::CanLayoutGridItem(
@@ -3287,7 +3310,8 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
     const LogicalSize& containing_grid_area_size,
     NGCacheSlot cache_slot,
     absl::optional<LayoutUnit> opt_fixed_block_size,
-    absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
+    absl::optional<LayoutUnit> opt_fragment_relative_block_offset,
+    bool opt_min_block_size_should_encompass_intrinsic_size) const {
   NGConstraintSpaceBuilder builder(
       ConstraintSpace(), grid_item.node.Style().GetWritingDirection(),
       /* is_new_fc */ true, /* adjust_inline_size_if_needed */ false);
@@ -3306,6 +3330,8 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
 
   if (opt_fragment_relative_block_offset) {
+    if (opt_min_block_size_should_encompass_intrinsic_size)
+      builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
     SetupSpaceBuilderForFragmentation(ConstraintSpace(), grid_item.node,
                                       *opt_fragment_relative_block_offset,
                                       &builder,
@@ -3319,7 +3345,8 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
     const NGGridGeometry& grid_geometry,
     const GridItemData& grid_item,
     LogicalRect* containing_grid_area,
-    absl::optional<LayoutUnit> opt_fragment_relative_block_offset) const {
+    absl::optional<LayoutUnit> opt_fragment_relative_block_offset,
+    bool opt_min_block_size_should_encompass_intrinsic_size) const {
   ComputeGridItemOffsetAndSize(grid_item, grid_geometry.column_geometry,
                                kForColumns,
                                &containing_grid_area->offset.inline_offset,
@@ -3327,10 +3354,11 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
   ComputeGridItemOffsetAndSize(grid_item, grid_geometry.row_geometry, kForRows,
                                &containing_grid_area->offset.block_offset,
                                &containing_grid_area->size.block_size);
-  return CreateConstraintSpace(grid_item, containing_grid_area->size,
-                               NGCacheSlot::kLayout,
-                               /* opt_fixed_block_size */ absl::nullopt,
-                               opt_fragment_relative_block_offset);
+  return CreateConstraintSpace(
+      grid_item, containing_grid_area->size, NGCacheSlot::kLayout,
+      /* opt_fixed_block_size */ absl::nullopt,
+      opt_fragment_relative_block_offset,
+      opt_min_block_size_should_encompass_intrinsic_size);
 }
 
 const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForMeasure(
@@ -3514,6 +3542,42 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   const auto container_writing_direction =
       ConstraintSpace().GetWritingDirection();
 
+  // The following roughly comes from:
+  // https://drafts.csswg.org/css-grid-1/#fragmentation-alg
+  //
+  // We are interested in cases where the grid-item *may* expand due to
+  // fragmentation (lines pushed down by a fragmentation line, etc).
+  auto MinBlockSizeShouldEncompassIntrinsicSize =
+      [&](const GridItemData& grid_item) -> bool {
+    if (grid_item.node.IsMonolithic())
+      return false;
+
+    const auto& item_style = grid_item.node.Style();
+
+    // NOTE: We currently assume that writing-mode roots are monolithic, but
+    // this may change in the future.
+    DCHECK_EQ(container_writing_direction.GetWritingMode(),
+              item_style.GetWritingMode());
+
+    // Only allow growth on "auto" block-size items, (a fixed block-size item
+    // can't grow).
+    if (!item_style.LogicalHeight().IsAutoOrContentOrIntrinsic())
+      return false;
+
+    // Only allow growth on items which only span a single row.
+    if (grid_item.SpanSize(kForRows) > 1)
+      return false;
+
+    // If we have a fixed maximum track, we assume that we've hit this maximum,
+    // and as such shouldn't grow.
+    if (grid_item.IsSpanningFixedMaximumTrack(kForRows) &&
+        !grid_item.IsSpanningIntrinsicTrack(kForRows))
+      return false;
+
+    return !grid_item.IsSpanningFixedMinimumTrack(kForRows) ||
+           Style().LogicalHeight().IsAutoOrContentOrIntrinsic();
+  };
+
   BaselineAccumulator baseline_accumulator;
 
   LayoutUnit previous_consumed_block_size =
@@ -3549,9 +3613,12 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         FragmentainerSpaceAtBfcStart(ConstraintSpace()))
       continue;
 
+    const bool min_block_size_should_encompass_intrinsic_size =
+        MinBlockSizeShouldEncompassIntrinsicSize(grid_item);
     LogicalRect unused;
     const NGConstraintSpace space = CreateConstraintSpaceForLayout(
-        grid_geometry, grid_item, &unused, fragment_relative_block_offset);
+        grid_geometry, grid_item, &unused, fragment_relative_block_offset,
+        min_block_size_should_encompass_intrinsic_size);
 
     // TODO(ikilpatrick): Use |BreakBeforeChildIfNeeded|.
     //  - what to set for has_container_separation?
@@ -3561,6 +3628,9 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         *result,
         {item_offsets.offset.inline_offset, fragment_relative_block_offset},
         item_offsets.relative_offset);
+
+    // TODO(ikilpatrick): Record the maximum row expansion if
+    // |min_block_size_should_encompass_intrinsic_size| is set.
 
     const NGBoxFragment fragment(
         container_writing_direction,

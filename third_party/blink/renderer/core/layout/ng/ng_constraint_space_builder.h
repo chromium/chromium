@@ -193,6 +193,11 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
 
   void SetIsInColumnBfc() { space_.EnsureRareData()->is_in_column_bfc = true; }
 
+  void SetMinBlockSizeShouldEncompassIntrinsicSize() {
+    space_.EnsureRareData()->min_block_size_should_encompass_intrinsic_size =
+        true;
+  }
+
   void SetMinBreakAppeal(NGBreakAppeal min_break_appeal) {
     if (!space_.HasRareData() && min_break_appeal == kBreakAppealLastResort)
       return;

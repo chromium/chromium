@@ -81,6 +81,10 @@ struct GridItemIndices {
         const GridTrackSizingDirection track_direction) const;
     bool IsSpanningAutoMinimumTrack(
         const GridTrackSizingDirection track_direction) const;
+    bool IsSpanningFixedMinimumTrack(
+        const GridTrackSizingDirection track_direction) const;
+    bool IsSpanningFixedMaximumTrack(
+        const GridTrackSizingDirection track_direction) const;
 
     bool IsBaselineAlignedForDirection(
         const GridTrackSizingDirection track_direction) const;
@@ -375,14 +379,16 @@ struct GridItemIndices {
         NGCacheSlot cache_slot,
         absl::optional<LayoutUnit> opt_fixed_block_size,
         absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
-            absl::nullopt) const;
+            absl::nullopt,
+        bool opt_min_block_size_should_encompass_intrinsic_size = false) const;
 
     const NGConstraintSpace CreateConstraintSpaceForLayout(
         const NGGridGeometry& grid_geometry,
         const GridItemData& grid_item,
         LogicalRect* containing_grid_area,
         absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
-            absl::nullopt) const;
+            absl::nullopt,
+        bool opt_min_block_size_should_encompass_intrinsic_size = false) const;
 
     const NGConstraintSpace CreateConstraintSpaceForMeasure(
         const GridItemData& grid_item,

@@ -675,6 +675,9 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
   MinMaxSizes min_max = ComputeMinMaxBlockSizes(
       space, style, border_padding, available_block_size_adjustment);
 
+  if (space.MinBlockSizeShouldEncompassIntrinsicSize())
+    min_max.Encompass(intrinsic_size);
+
   // Scrollable percentage-sized children of table cells (sometimes) are sized
   // to their min-size.
   // See: https://drafts.csswg.org/css-tables-3/#row-layout

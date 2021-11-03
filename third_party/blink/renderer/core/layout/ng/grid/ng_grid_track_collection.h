@@ -75,8 +75,10 @@ struct CORE_EXPORT TrackSpanProperties {
     kHasIntrinsicTrack = 1 << 0,
     kHasFlexibleTrack = 1 << 1,
     kHasAutoMinimumTrack = 1 << 2,
-    kIsCollapsed = 1 << 3,
-    kIsImplicit = 1 << 4
+    kHasFixedMinimumTrack = 1 << 3,
+    kHasFixedMaximumTrack = 1 << 4,
+    kIsCollapsed = 1 << 5,
+    kIsImplicit = 1 << 6,
   };
 
   inline bool HasProperty(PropertyId id) const { return bitmask_ & id; }

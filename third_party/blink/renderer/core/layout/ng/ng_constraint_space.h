@@ -519,6 +519,19 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() && rare_data_->is_in_column_bfc;
   }
 
+  // Return true if we would be at least our intrinsic block-size.
+  //
+  // During fragmentation we may have a stretch block-size (or similar) set,
+  // which is determined without considering fragmentation. Without this flag
+  // we may have content overflow which doesn't match web developers
+  // expectations.
+  // Grid (for example) will set this flag, and expand the row with this item in
+  // order to accommodate the overflow.
+  bool MinBlockSizeShouldEncompassIntrinsicSize() const {
+    return HasRareData() &&
+           rare_data_->min_block_size_should_encompass_intrinsic_size;
+  }
+
   // Return the minimum break appeal allowed. This is used by multicol nested
   // inside another fragmentation context, if we're at a column row when there's
   // already content progress in the outer fragmentainer. The idea is that we
@@ -691,7 +704,9 @@ class CORE_EXPORT NGConstraintSpace final {
       return false;
     if (!HasRareData() && !other.HasRareData())
       return true;
-    return TableCellAlignmentBaseline() == other.TableCellAlignmentBaseline();
+    return TableCellAlignmentBaseline() == other.TableCellAlignmentBaseline() &&
+           MinBlockSizeShouldEncompassIntrinsicSize() ==
+               other.MinBlockSizeShouldEncompassIntrinsicSize();
   }
 
   bool AreSizesEqual(const NGConstraintSpace& other) const {
@@ -790,6 +805,7 @@ class CORE_EXPORT NGConstraintSpace final {
               static_cast<unsigned>(kFragmentNone)),
           is_inside_balanced_columns(false),
           is_in_column_bfc(false),
+          min_block_size_should_encompass_intrinsic_size(false),
           min_break_appeal(kBreakAppealLastResort),
           should_cache_result(true) {}
     RareData(const RareData& other)
@@ -810,6 +826,8 @@ class CORE_EXPORT NGConstraintSpace final {
               other.block_direction_fragmentation_type),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
           is_in_column_bfc(other.is_in_column_bfc),
+          min_block_size_should_encompass_intrinsic_size(
+              other.min_block_size_should_encompass_intrinsic_size),
           min_break_appeal(other.min_break_appeal),
           should_cache_result(other.should_cache_result) {
       switch (data_union_type) {
@@ -1151,6 +1169,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned block_direction_fragmentation_type : 2;
     unsigned is_inside_balanced_columns : 1;
     unsigned is_in_column_bfc : 1;
+    unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
     unsigned should_cache_result : 1;
 
