@@ -652,43 +652,48 @@ void RTCVideoDecoderStreamAdapter::InitializeOnMediaThread(
 void RTCVideoDecoderStreamAdapter::OnInitializeDone(base::TimeTicks start_time,
                                                     bool success) {
   RecordInitializationLatency(base::TimeTicks::Now() - start_time);
-  base::AutoLock auto_lock(lock_);
-  init_complete_ = true;
+  {
+    base::AutoLock auto_lock(lock_);
+    init_complete_ = true;
 
-  if (!success) {
-    has_error_ = true;
-    // TODO(crbug.com/1150103): Is it guaranteed that there will be a next
-    // decode call to signal the error?  If not, then we should use the decode
-    // callback if we have one yet.
-  } else {
-    AdjustQueueLength_Locked();
-    AttemptRead_Locked();
+    if (!success) {
+      has_error_ = true;
+      // TODO(crbug.com/1150103): Is it guaranteed that there will be a next
+      // decode call to signal the error?  If not, then we should use the decode
+      // callback if we have one yet.
+    } else {
+      AdjustQueueLength_Locked();
+    }
+
+    AttemptLogInitializationState_Locked();
   }
 
-  AttemptLogInitializationState_Locked();
+  if (success)
+    AttemptRead();
 }
 
 void RTCVideoDecoderStreamAdapter::DecodeOnMediaThread(
     std::unique_ptr<PendingBuffer> pending_buffer) {
   DVLOG(4) << __func__;
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
+  {
+    base::AutoLock auto_lock(lock_);
 
-  base::AutoLock auto_lock(lock_);
+    // If we're in the error state, then do nothing.  `Decode()` will notify
+    // about the error.
+    if (has_error_)
+      return;
 
-  // If we're in the error state, then do nothing.  `Decode()` will notify about
-  // the error.
-  if (has_error_)
-    return;
+    // Update the max recorded pending buffers.  This is kept up-to-date on the
+    // decoder thread when the buffer is queued.
+    RecordMaxInFlightDecodesLockedOnMedia();
 
-  // Update the max recorded pending buffers.  This is kept up-to-date on the
-  // decoder thread when the buffer is queued.
-  RecordMaxInFlightDecodesLockedOnMedia();
-
-  // Remember that this timestamp has already been added to the list.
-  demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
+    // Remember that this timestamp has already been added to the list.
+    demuxer_stream_->EnqueueBuffer(std::move(pending_buffer));
+  }
 
   // Kickstart reading output, if we're not already.
-  AttemptRead_Locked();
+  AttemptRead();
 }
 
 void RTCVideoDecoderStreamAdapter::OnFrameReady(
@@ -730,50 +735,58 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
           .set_rotation(webrtc::kVideoRotation_0)
           .build();
 
-  base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock_);
 
-  // Record time to first frame if we haven't yet.
-  if (start_time_) {
-    // We haven't recorded the first frame time yet, so do so now.
-    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
-                            base::TimeTicks::Now() - *start_time_);
-    start_time_.reset();
+    // Record time to first frame if we haven't yet.
+    if (start_time_) {
+      // We haven't recorded the first frame time yet, so do so now.
+      base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
+                              base::TimeTicks::Now() - *start_time_);
+      start_time_.reset();
+    }
+
+    // Update `current_resolution_`, in case it's changed.  This lets us fall
+    // back to software, or avoid doing so, if we're over the decoder limit.
+    current_resolution_ = gfx::Size(rtc_frame.width(), rtc_frame.height());
+
+    // Assumes that Decoded() can be safely called with the lock held, which
+    // apparently it can be because RTCVideoDecoder does the same.
+
+    // Since we can reset the queue length while things are in flight, just
+    // clamp to zero.  We could choose to discard this frame, too, since it was
+    // before a reset was issued.
+    if (pending_buffer_count_ > 0)
+      pending_buffer_count_--;
+    if (decode_complete_callback_)
+      decode_complete_callback_->Decoded(rtc_frame);
+    AdjustQueueLength_Locked();
   }
 
-  // Update `current_resolution_`, in case it's changed.  This lets us fall back
-  // to software, or avoid doing so, if we're over the decoder limit.
-  current_resolution_ = gfx::Size(rtc_frame.width(), rtc_frame.height());
-
   // Try to read the next output, if any, regardless if this succeeded.
-  AttemptRead_Locked();
-
-  // Assumes that Decoded() can be safely called with the lock held, which
-  // apparently it can be because RTCVideoDecoder does the same.
-
-  // Since we can reset the queue length while things are in flight, just clamp
-  // to zero.  We could choose to discard this frame, too, since it was before a
-  // reset was issued.
-  if (pending_buffer_count_ > 0)
-    pending_buffer_count_--;
-  if (decode_complete_callback_)
-    decode_complete_callback_->Decoded(rtc_frame);
-  AdjustQueueLength_Locked();
+  AttemptRead();
 }
 
-void RTCVideoDecoderStreamAdapter::AttemptRead_Locked() {
+void RTCVideoDecoderStreamAdapter::AttemptRead() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
-  lock_.AssertAcquired();
+  {
+    base::AutoLock auto_lock(lock_);
 
-  // Only one read may be in-flight at once.  We'll try again once the previous
-  // read completes.  If a reset is in progress, a read is not allowed to start.
-  // We also may not read until DecoderStream init completes.
-  if (pending_read_ || pending_reset_ || !init_complete_ || has_error_)
-    return;
+    // Only one read may be in-flight at once.  We'll try again once the
+    // previous read completes.  If a reset is in progress, a read is not
+    // allowed to start. We also may not read until DecoderStream init
+    // completes.
+    if (pending_read_ || pending_reset_ || !init_complete_ || has_error_)
+      return;
 
-  // We don't care if there are any pending decodes; keep a read running even if
-  // there aren't any.  This way, we don't have to count correctly.
+    // We don't care if there are any pending decodes; keep a read running even
+    // if there aren't any.  This way, we don't have to count correctly.
 
-  pending_read_ = true;
+    pending_read_ = true;
+  }
+
+  // Do not call this with the lock held, since it might deliver a frame to us
+  // before it returns.
   decoder_stream_->Read(
       base::BindOnce(&RTCVideoDecoderStreamAdapter::OnFrameReady, weak_this_));
 }
@@ -815,12 +828,14 @@ void RTCVideoDecoderStreamAdapter::OnResetCompleteOnMediaThread() {
   DCHECK(pending_reset_);
   DCHECK(!pending_read_);
 
-  base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock_);
 
-  pending_reset_ = false;
+    pending_reset_ = false;
 
-  AdjustQueueLength_Locked();
-  AttemptRead_Locked();
+    AdjustQueueLength_Locked();
+  }
+  AttemptRead();
 }
 
 void RTCVideoDecoderStreamAdapter::AdjustQueueLength_Locked() {

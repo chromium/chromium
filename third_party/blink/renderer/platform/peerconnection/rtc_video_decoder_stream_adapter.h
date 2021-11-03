@@ -144,7 +144,7 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
 
   // If no read is in progress with `decoder_stream_`, and there is undecoded
   // input buffers, then start a read.  Otherwise, do nothing.
-  void AttemptRead_Locked();
+  void AttemptRead();
 
   // Start a `DecoderStream::Reset`.
   void ResetOnMediaThread();
