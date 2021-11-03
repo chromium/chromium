@@ -56,6 +56,13 @@
 # names of just those ones. For now, we'll just keep them all.
 -keepnames class * implements android.os.Parcelable {}
 
+# Keep all enum values and valueOf methods. See
+# http://proguard.sourceforge.net/index.html#manual/examples.html
+# for the reason for this. Also, see http://crbug.com/248037.
+-keepclassmembers enum * {
+    public static **[] values();
+}
+
 # Allows Proguard freedom in removing these log related calls.
 -assumenosideeffects class android.util.Log {
   static int d(...);
