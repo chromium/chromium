@@ -5060,6 +5060,11 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
   it->second.stopping = true;
   it->second.tracker->Stop();
 
+  // Trigger a repaint after ThroughputTracker::Stop() to generate a frame to
+  // ensure the tracker report will be sent back.
+  auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id);
+  root_window->GetHost()->compositor()->ScheduleFullRedraw();
+
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
