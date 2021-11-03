@@ -10,7 +10,8 @@ import './shimless_rma_shared_css.js';
 import './base_page.js';
 import './icons.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
@@ -36,7 +37,17 @@ const operationName = {
   [OsUpdateOperation.kNeedPermissionToUpdate]: 'need permission to update'
 };
 
-export class OnboardingUpdatePageElement extends PolymerElement {
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const OnboardingUpdatePageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class OnboardingUpdatePageElement extends
+    OnboardingUpdatePageElementBase {
   static get is() {
     return 'onboarding-update-page';
   }
@@ -139,8 +150,8 @@ export class OnboardingUpdatePageElement extends PolymerElement {
   getCurrentVersionText_() {
     this.shimlessRmaService_.getCurrentOsVersion().then((res) => {
       this.currentVersion_ = res.version;
-      // TODO(gavindodd): i18n string
-      this.currentVersionText_ = `Current version ${this.currentVersion_}`;
+      this.currentVersionText_ =
+          this.i18n('currentVersionText', this.currentVersion_);
     });
   }
 
@@ -150,14 +161,12 @@ export class OnboardingUpdatePageElement extends PolymerElement {
       if (res && res.updateAvailable) {
         this.updateAvailable_ = true;
         this.updateVersion_ = res.version;
-        // TODO(gavindodd): i18n string
-        this.currentVersionText_ =
-            `Current version ${this.currentVersion_} is out of date`;
-      } else {
-        // TODO(gavindodd): i18n string
-        this.currentVersionText_ =
-            `Current version ${this.currentVersion_} is up to date`;
       }
+
+      this.currentVersionText_ = this.i18n(
+          this.updateAvailable_ ? 'currentVersionOutOfDateText' :
+                                  'currentVersionUpToDateText',
+          this.currentVersion_);
       this.setUpdateNoticeMessage_();
     });
   }
