@@ -253,7 +253,7 @@ are Java (on Android only) and JavaScript or WebAssembly (although we don't
 currently use them in high-privilege processes like the browser). One can
 imagine Swift on iOS or Kotlin on Android, too, although they are not currently
 used in Chromium. (Some of us on Security Team aspire to get more of Chromium in
-safer languages, but that's a long-term, heavy lift.)
+safer languages, and you may be able to [help with our experiments](rust-toolchain.md).)
 
 For an example of image processing, we have the pure-Java class
 [BaseGifImage](https://cs.chromium.org/chromium/src/third_party/gif_player/src/jp/tomorrowkey/android/gifplayer/BaseGifImage.java?rcl=27febd503d1bab047d73df26db83184fff8d6620&l=27).
@@ -276,6 +276,7 @@ Regular expressions ([re2](https://cs.chromium.org/chromium/src/third_party/re2/
 using trustworthy patterns can be used at high privilege to match on
 untrustworthy input strings. This does not automatically turn the matched text
 or captured groups into safe values.
+
 
 ## Safe Types
 
