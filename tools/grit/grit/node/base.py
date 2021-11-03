@@ -34,6 +34,10 @@ class Node(object):
   # Types of files to be compressed by default.
   _COMPRESS_BY_DEFAULT_EXTENSIONS = ('.js', '.html', '.css', '.svg')
 
+  # Types of files to disallow compressing, as it provides no benefit, and can
+  # potentially even make the file larger.
+  _COMPRESS_DISALLOWED_EXTENSIONS = ('.png', '.jpg')
+
   # Default nodes to not allowlist skipped
   _allowlist_marked_as_skip = False
 
@@ -631,6 +635,10 @@ class Node(object):
     '''
 
     compress = self.attrs.get('compress')
+    assert not (
+        compress != 'default' and compress != 'false' and
+        self.attrs.get('file').endswith(self._COMPRESS_DISALLOWED_EXTENSIONS)
+    ), 'Disallowed |compress| attribute found for %s' % self.attrs.get('name')
 
     # Compress JS, HTML, CSS and SVG files by default (gzip), unless |compress|
     # is explicitly specified.

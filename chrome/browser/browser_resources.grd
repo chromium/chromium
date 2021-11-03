@@ -178,8 +178,8 @@
         <include name="IDR_ACCOUNT_MANAGER_ERROR_HTML" file="resources\chromeos\account_manager\account_manager_error.html" allowexternalscript="true" type="BINDATA" preprocess="true"/>
         <include name="IDR_ACCOUNT_MANAGER_ERROR_APP_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\account_manager\account_manager_error_app.js" use_base_dir="false" preprocess="true" type="BINDATA" />
         <if expr="_google_chrome">
-          <include name="IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_1x.png" type="BINDATA" compress="gzip" />
-          <include name="IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_2x.png" type="BINDATA" compress="gzip" />
+          <include name="IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_1x.png" type="BINDATA" />
+          <include name="IDR_ACCOUNT_MANAGER_WELCOME_2X_PNG" file="resources\chromeos\account_manager\account_manager_welcome_2x.png" type="BINDATA" />
           <include name="IDR_ACCOUNT_MANAGER_WELCOME_GOOGLE_LOGO_SVG" file="resources\chromeos\googleg.svg" type="BINDATA" />
         </if>
 
