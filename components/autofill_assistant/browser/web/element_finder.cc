@@ -661,6 +661,7 @@ void ElementFinder::OnGetDocumentElement(
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
   if (!status.ok()) {
     VLOG(1) << __func__ << " Failed to get document root element.";
+    get_document_failed_ = true;
     SendErrorResult(status);
     return;
   }
