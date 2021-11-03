@@ -8,8 +8,13 @@ group("tests") {
   # Build some minimal binaries to exercise the Rust toolchain
   # only if that toolchain is enabled in gn args.
   testonly = true
+
+  # This should build with or without Rust, in different modes
+  deps = [ "test_variable_source_set:test_variable_source_set_demo" ]
+
+  # All the rest require Rust.
   if (toolchain_has_rust) {
-    deps = [
+    deps += [
       "test_cpp_including_rust",
       "test_mixed_source_set",
       "test_rlib_crate",

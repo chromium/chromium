@@ -27,6 +27,7 @@ import("//build/rust/rust_source_set.gni")
 #   rs_epoch
 #   rs_edition
 #   rs_configs
+#   rs_deps
 #   rs_test_deps
 #   rs_skip_unit_tests
 #   rs_unit_test_target
@@ -69,8 +70,8 @@ template("mixed_source_set") {
       if (defined(invoker.rs_cxx_bindings)) {
         cxx_bindings = invoker.rs_cxx_bindings
       }
-      if (defined(invoker.deps)) {
-        deps = invoker.deps
+      if (defined(invoker.rs_deps)) {
+        deps = invoker.rs_deps
       }
       if (defined(invoker.rs_crate_root)) {
         crate_root = invoker.rs_crate_root
@@ -82,6 +83,21 @@ template("mixed_source_set") {
         unit_test_target = invoker.rs_unit_test_target
       }
     }
+  } else {
+    not_needed(invoker,
+               [
+                 "rs_epoch",
+                 "rs_edition",
+                 "rs_configs",
+                 "rs_deps",
+                 "rs_test_deps",
+                 "rs_sources",
+                 "rs_features",
+                 "rs_cxx_bindings",
+                 "rs_crate_root",
+                 "rs_skip_unit_tests",
+                 "rs_unit_test_target",
+               ])
   }
 
   source_set(_target_name) {
