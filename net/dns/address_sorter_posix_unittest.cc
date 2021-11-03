@@ -199,10 +199,10 @@ class TestSocketFactory : public ClientSocketFactory {
 void OnSortComplete(AddressList* result_buf,
                     CompletionOnceCallback callback,
                     bool success,
-                    AddressList result) {
+                    const AddressList& result) {
   EXPECT_TRUE(success);
   if (success)
-    *result_buf = std::move(result);
+    *result_buf = result;
   std::move(callback).Run(OK);
 }
 

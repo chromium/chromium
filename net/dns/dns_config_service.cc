@@ -6,11 +6,8 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
-#include "base/barrier_callback.h"
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
@@ -20,8 +17,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "net/base/address_list.h"
-#include "net/dns/address_sorter.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -104,12 +99,9 @@ DnsConfigService::HostsReader::HostsReader(
 DnsConfigService::HostsReader::~HostsReader() = default;
 
 DnsConfigService::HostsReader::WorkItem::WorkItem(
-    std::unique_ptr<DnsHostsParser> dns_hosts_parser,
-    std::unique_ptr<AddressSorter> address_sorter)
-    : dns_hosts_parser_(std::move(dns_hosts_parser)),
-      address_sorter_(std::move(address_sorter)) {
+    std::unique_ptr<DnsHostsParser> dns_hosts_parser)
+    : dns_hosts_parser_(std::move(dns_hosts_parser)) {
   DCHECK(dns_hosts_parser_);
-  DCHECK(address_sorter_);
 }
 
 DnsConfigService::HostsReader::WorkItem::~WorkItem() = default;
@@ -139,89 +131,10 @@ void DnsConfigService::HostsReader::WorkItem::DoWork() {
     hosts_.reset();
 }
 
-void DnsConfigService::HostsReader::WorkItem::FollowupWork(
-    base::OnceClosure closure) {
-  if (!hosts_.has_value()) {
-    std::move(closure).Run();
-    return;
-  }
-
-  std::vector<const DnsHosts::value_type*> to_sort;
-  for (const auto& host : hosts_.value()) {
-    const std::vector<IPAddress>& addresses = host.second;
-    if (addresses.size() >= 2) {
-      to_sort.push_back(&host);
-    }
-  }
-
-  // This `sort_barrier` is called when each individual sort operation
-  // completes. It accumulates all of the inputs it is given into a vector. When
-  // it is called for the last time (after `to_sort.size()` calls), it invokes
-  // `OnAddressSortComplete()` with that vector of inputs. Should immediately
-  // trigger `OnAddressSortComplete()` if `to_sort` is empty.
-  SortBarrier sort_barrier =
-      base::BarrierCallback<std::pair<DnsHostsKey, AddressList>>(
-          to_sort.size(),
-          base::BindOnce(&WorkItem::OnAddressSortComplete,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(closure)));
-
-  for (const auto* sort_entry : to_sort) {
-    const DnsHostsKey& key = sort_entry->first;
-    const std::vector<IPAddress>& addresses = sort_entry->second;
-    address_sorter_->Sort(
-        AddressList::CreateFromIPAddressList(addresses,
-                                             /*aliases=*/{}),
-        base::BindOnce(&WorkItem::OnIndividualAddressSortComplete,
-                       weak_ptr_factory_.GetWeakPtr(), key, sort_barrier));
-  }
-}
-
-void DnsConfigService::HostsReader::WorkItem::OnIndividualAddressSortComplete(
-    DnsHostsKey key,
-    SortBarrier barrier,
-    bool sort_success,
-    AddressList sorted) {
-  DCHECK(hosts_.has_value());
-  DCHECK(hosts_.value().find(key) != hosts_.value().end());
-  DCHECK_GE(hosts_.value()[key].size(), 2u);
-
-  if (sort_success) {
-    barrier.Run(std::make_pair(std::move(key), std::move(sorted)));
-  } else {
-    barrier.Run(std::make_pair(std::move(key), AddressList()));
-  }
-}
-
-void DnsConfigService::HostsReader::WorkItem::OnAddressSortComplete(
-    base::OnceClosure closure,
-    std::vector<std::pair<DnsHostsKey, AddressList>> sorted) {
-  DCHECK(hosts_.has_value());
-
-  for (const std::pair<DnsHostsKey, AddressList>& sorted_host : sorted) {
-    auto it = hosts_.value().find(sorted_host.first);
-    DCHECK(it != hosts_.value().end());
-    DCHECK_GE(it->second.size(), 2u);
-
-    if (sorted_host.second.empty()) {
-      // Empty list means sort failure. Remove from hosts.
-      hosts_.value().erase(it);
-    } else {
-      // Replace `hosts_` entry with addresses from `sorted_host`.
-      it->second.clear();
-      for (const IPEndPoint& endpoint : sorted_host.second) {
-        it->second.push_back(endpoint.address());
-      }
-    }
-  }
-
-  std::move(closure).Run();
-}
-
 std::unique_ptr<SerialWorker::WorkItem>
 DnsConfigService::HostsReader::CreateWorkItem() {
   return std::make_unique<WorkItem>(
-      std::make_unique<DnsHostsFileParser>(hosts_file_path_),
-      AddressSorter::CreateAddressSorter());
+      std::make_unique<DnsHostsFileParser>(hosts_file_path_));
 }
 
 void DnsConfigService::HostsReader::OnWorkFinished(

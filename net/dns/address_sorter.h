@@ -9,10 +9,11 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "net/base/address_list.h"
 #include "net/base/net_export.h"
 
 namespace net {
+
+class AddressList;
 
 // Sorts AddressList according to RFC3484, by likelihood of successful
 // connection. Depending on the platform, the sort could be performed
@@ -20,7 +21,8 @@ namespace net {
 // AddressSorter does not necessarily preserve port numbers on the sorted list.
 class NET_EXPORT AddressSorter {
  public:
-  using CallbackType = base::OnceCallback<void(bool success, AddressList list)>;
+  using CallbackType =
+      base::OnceCallback<void(bool success, const AddressList& list)>;
 
   AddressSorter(const AddressSorter&) = delete;
   AddressSorter& operator=(const AddressSorter&) = delete;

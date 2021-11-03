@@ -1726,7 +1726,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                       HostCache::Entry results,
                       bool secure,
                       bool success,
-                      AddressList addr_list) {
+                      const AddressList& addr_list) {
     results.set_addresses(addr_list);
 
     if (!success) {
@@ -3385,23 +3385,15 @@ absl::optional<HostCache::Entry> HostResolverManager::ServeFromHosts(
   if (query_type == DnsQueryType::AAAA ||
       query_type == DnsQueryType::UNSPECIFIED) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV6));
-    if (it != hosts->end()) {
-      for (const IPAddress& ip : it->second) {
-        DCHECK(ip.IsIPv6());
-        addresses.push_back(IPEndPoint(ip, 0));
-      }
-    }
+    if (it != hosts->end())
+      addresses.push_back(IPEndPoint(it->second, 0));
   }
 
   if (query_type == DnsQueryType::A ||
       query_type == DnsQueryType::UNSPECIFIED) {
     auto it = hosts->find(DnsHostsKey(effective_hostname, ADDRESS_FAMILY_IPV4));
-    if (it != hosts->end()) {
-      for (const IPAddress& ip : it->second) {
-        DCHECK(ip.IsIPv4());
-        addresses.push_back(IPEndPoint(ip, 0));
-      }
-    }
+    if (it != hosts->end())
+      addresses.push_back(IPEndPoint(it->second, 0));
   }
 
   // If got only loopback addresses and the family was restricted, resolve

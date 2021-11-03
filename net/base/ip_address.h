@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <array>
-#include <ostream>
 #include <string>
 #include <vector>
 
@@ -299,9 +298,6 @@ bool IPAddressStartsWith(const IPAddress& address, const uint8_t (&prefix)[N]) {
     return false;
   return std::equal(prefix, prefix + N, address.bytes().begin());
 }
-
-NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
-                                            const IPAddress& ip_address);
 
 }  // namespace net
 

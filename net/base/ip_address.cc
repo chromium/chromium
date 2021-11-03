@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <climits>
-#include <ostream>
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
@@ -502,10 +501,6 @@ size_t MaskPrefixLength(const IPAddress& mask) {
   all_ones->resize(mask.size(), 0xFF);
   return CommonPrefixLength(mask,
                             IPAddress(all_ones->data(), all_ones->size()));
-}
-
-std::ostream& operator<<(std::ostream& os, const IPAddress& ip_address) {
-  return os << ip_address.ToString();
 }
 
 }  // namespace net

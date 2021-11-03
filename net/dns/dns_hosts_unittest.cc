@@ -5,7 +5,6 @@
 #include "net/dns/dns_hosts.h"
 
 #include "base/cxx17_backports.h"
-#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,10 +23,11 @@ void PopulateExpectedHosts(const ExpectedHostsEntry* entries,
                            DnsHosts* expected_hosts_out) {
   for (size_t i = 0; i < num_entries; ++i) {
     DnsHostsKey key(entries[i].host, entries[i].family);
-    IPAddress ip;
-    ASSERT_TRUE(ip.AssignFromIPLiteral(entries[i].ip));
-    ASSERT_EQ(ip.size(), (entries[i].family == ADDRESS_FAMILY_IPV4) ? 4u : 16u);
-    (*expected_hosts_out)[key].push_back(ip);
+    IPAddress& ip_ref = (*expected_hosts_out)[key];
+    ASSERT_TRUE(ip_ref.empty());
+    ASSERT_TRUE(ip_ref.AssignFromIPLiteral(entries[i].ip));
+    ASSERT_EQ(ip_ref.size(),
+        (entries[i].family == ADDRESS_FAMILY_IPV4) ? 4u : 16u);
   }
 }
 
@@ -35,7 +35,7 @@ TEST(DnsHostsTest, ParseHosts) {
   const std::string kContents =
       "127.0.0.1       localhost # standard\n"
       "\n"
-      "1.0.0.1 localhost\n"
+      "1.0.0.1 localhost # ignored, first hit above\n"
       "fe00::x example company # ignored, malformed IPv6\n"
       "1.0.0.300 company # ignored, malformed IPv4\n"
       "1.0.0.1 # ignored, missing hostname\n"
@@ -43,7 +43,7 @@ TEST(DnsHostsTest, ParseHosts) {
       "::1\tlocalhost ip6-localhost ip6-loopback # comment # within a comment\n"
       "\t fe00::0 ip6-localnet\r\n"
       "2048::2 example\n"
-      "2048::1 company example\n"
+      "2048::1 company example # ignored for 'example' \n"
       "127.0.0.1 cache1\n"
       "127.0.0.1 cache2 # should reuse parsed IP\n"
       "256.0.0.0 cache3 # bogus IP should not clear parsed IP cache\n"
@@ -56,7 +56,6 @@ TEST(DnsHostsTest, ParseHosts) {
 
   const ExpectedHostsEntry kEntries[] = {
       {"localhost", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
-      {"localhost", ADDRESS_FAMILY_IPV4, "1.0.0.1"},
       {"company", ADDRESS_FAMILY_IPV4, "1.0.0.1"},
       {"localhost", ADDRESS_FAMILY_IPV6, "::1"},
       {"ip6-localhost", ADDRESS_FAMILY_IPV6, "::1"},
@@ -64,7 +63,6 @@ TEST(DnsHostsTest, ParseHosts) {
       {"ip6-localnet", ADDRESS_FAMILY_IPV6, "fe00::0"},
       {"company", ADDRESS_FAMILY_IPV6, "2048::1"},
       {"example", ADDRESS_FAMILY_IPV6, "2048::2"},
-      {"example", ADDRESS_FAMILY_IPV6, "2048::1"},
       {"cache1", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
       {"cache2", ADDRESS_FAMILY_IPV4, "127.0.0.1"},
       {"cache4", ADDRESS_FAMILY_IPV4, "127.0.0.1"},

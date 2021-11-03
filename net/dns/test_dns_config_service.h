@@ -16,7 +16,6 @@
 
 namespace net {
 
-class AddressSorter;
 class DnsHostsParser;
 
 // Simple test implementation of DnsConfigService that will trigger
@@ -55,18 +54,15 @@ class TestDnsConfigService : public DnsConfigService {
 };
 
 // Test implementation of `DnsConfigService` that exercises the
-// `DnsConfigService::HostsReader`. Uses an injected `DnsHostsParser` and
-// `AddressSorter`. `Watcher` change notifications are simulated using
-// `TriggerHostsChangeNotification()`.
+// `DnsConfigService::HostsReader`. Uses an injected `DnsHostsParser`. `Watcher`
+// change notifications are simulated using `TriggerHostsChangeNotification()`.
 class HostsReadingTestDnsConfigService : public TestDnsConfigService {
  public:
   using HostsParserFactory =
       base::RepeatingCallback<std::unique_ptr<DnsHostsParser>(void)>;
-  using AddressSorterFactory =
-      base::RepeatingCallback<std::unique_ptr<AddressSorter>(void)>;
 
-  HostsReadingTestDnsConfigService(HostsParserFactory hosts_parser_factory,
-                                   AddressSorterFactory address_sorter_factory);
+  explicit HostsReadingTestDnsConfigService(
+      HostsParserFactory hosts_parser_factory);
   ~HostsReadingTestDnsConfigService() override;
 
   // Simulate a `Watcher` change notification for the HOSTS file.
@@ -82,8 +78,7 @@ class HostsReadingTestDnsConfigService : public TestDnsConfigService {
   class HostsReader : public DnsConfigService::HostsReader {
    public:
     HostsReader(TestDnsConfigService& service,
-                HostsParserFactory hosts_parser_factory,
-                AddressSorterFactory address_sorter_factory);
+                HostsParserFactory hosts_parser_factory);
     ~HostsReader() override;
 
     // DnsConfigService::HostsReader:
@@ -91,7 +86,6 @@ class HostsReadingTestDnsConfigService : public TestDnsConfigService {
 
    private:
     HostsParserFactory hosts_parser_factory_;
-    AddressSorterFactory address_sorter_factory_;
   };
 
   class Watcher : public DnsConfigService::Watcher {

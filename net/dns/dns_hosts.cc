@@ -165,7 +165,10 @@ void ParseHostsWithCommaMode(const std::string& contents,
       if (!IsValidDNSDomain(key.first))
         continue;
       key.first = base::ToLowerASCII(key.first);
-      (*dns_hosts)[key].push_back(ip);
+      IPAddress* mapped_ip = &(*dns_hosts)[key];
+      if (mapped_ip->empty())
+        *mapped_ip = ip;
+      // else ignore this entry (first hit counts)
     }
   }
 }

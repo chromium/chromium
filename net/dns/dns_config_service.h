@@ -7,9 +7,7 @@
 
 #include <map>
 #include <memory>
-#include <utility>
 
-#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -17,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
-#include "net/dns/address_sorter.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_hosts.h"
 #include "net/dns/serial_worker.h"
@@ -25,8 +22,6 @@
 #include "url/gurl.h"
 
 namespace net {
-
-class AddressList;
 
 // Service for reading system DNS settings, on demand or when signalled by
 // internal watchers and NetworkChangeNotifier. This object is not thread-safe
@@ -136,8 +131,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
    protected:
     class NET_EXPORT_PRIVATE WorkItem : public SerialWorker::WorkItem {
      public:
-      WorkItem(std::unique_ptr<DnsHostsParser> dns_hosts_parser,
-               std::unique_ptr<AddressSorter> address_sorter);
+      explicit WorkItem(std::unique_ptr<DnsHostsParser> dns_hosts_parser);
       ~WorkItem() override;
 
       // Override if needed to implement platform-specific behavior, e.g. for a
@@ -152,28 +146,12 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
       // SerialWorker::WorkItem:
       void DoWork() final;
-      void FollowupWork(base::OnceClosure closure) final;
 
      private:
       friend HostsReader;
 
-      using SortBarrier =
-          base::RepeatingCallback<void(std::pair<DnsHostsKey, AddressList>)>;
-
-      void OnIndividualAddressSortComplete(DnsHostsKey key,
-                                           SortBarrier barrier,
-                                           bool success,
-                                           AddressList sorted);
-      void OnAddressSortComplete(
-          base::OnceClosure closure,
-          std::vector<std::pair<DnsHostsKey, AddressList>> sorted);
-
       absl::optional<DnsHosts> hosts_;
-
       std::unique_ptr<DnsHostsParser> dns_hosts_parser_;
-      std::unique_ptr<AddressSorter> address_sorter_;
-
-      base::WeakPtrFactory<WorkItem> weak_ptr_factory_{this};
     };
 
     // SerialWorker:

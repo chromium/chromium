@@ -43,12 +43,14 @@ enum ParseHostsCommaMode {
 // Parsed results of a Hosts file.
 //
 // Although Hosts files map IP address to a list of domain names, for name
-// resolution the desired mapping direction is: (domain name, address family) to
-// IP address. A (domain name, address family) pair may match with multiple IP
-// addresses (stored as a `std::vector`) if the same name appears in multiple
-// (IP address) -> hostname mapping entries for the same family.
-using DnsHosts =
-    std::unordered_map<DnsHostsKey, std::vector<IPAddress>, DnsHostsKeyHash>;
+// resolution the desired mapping direction is: domain name to IP address.
+// When parsing Hosts, we apply the "first hit" rule as Windows and glibc do.
+// With a Hosts file of:
+// 300.300.300.300 localhost # bad ip
+// 127.0.0.1 localhost
+// 10.0.0.1 localhost
+// The expected resolution of localhost is 127.0.0.1.
+using DnsHosts = std::unordered_map<DnsHostsKey, IPAddress, DnsHostsKeyHash>;
 
 // Parses |contents| (as read from /etc/hosts or equivalent) and stores results
 // in |dns_hosts|. Invalid lines are ignored (as in most implementations).
@@ -60,8 +62,7 @@ void NET_EXPORT_PRIVATE ParseHostsWithCommaModeForTesting(
     ParseHostsCommaMode comma_mode);
 
 // Parses |contents| (as read from /etc/hosts or equivalent) and stores results
-// in |dns_hosts|, with addresses in the order in which they were read. Invalid
-// lines are ignored (as in most implementations).
+// in |dns_hosts|. Invalid lines are ignored (as in most implementations).
 void NET_EXPORT_PRIVATE ParseHosts(const std::string& contents,
                                    DnsHosts* dns_hosts);
 
