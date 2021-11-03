@@ -286,6 +286,7 @@ class TestingProfile : public Profile {
   bool IsOffTheRecord() const final;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool IsMainProfile() const override;
+  void SetIsMainProfile(bool is_main_profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   const OTRProfileID& GetOTRProfileID() const override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
@@ -437,6 +438,10 @@ class TestingProfile : public Profile {
   bool allows_browser_windows_ = true;
 
   bool is_new_profile_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_main_profile_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::string supervised_user_id_;
 

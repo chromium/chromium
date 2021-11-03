@@ -7,20 +7,22 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "chrome/browser/net/nss_context.h"
 
 class CertDbInitializer {
  public:
-  using ReadyCallback = base::OnceCallback<void(bool is_success)>;
-
   virtual ~CertDbInitializer() = default;
 
-  // Registers `callback` to be notified once initialization is complete.
-  // If initialization has already been completed, `callback` will be
-  // synchronously invoked and an empty subscription returned; otherwise,
-  // `callback` will be invoked when initialization is completed, as long
-  // as the subscription is still live.
+  // Registers `callback` to be notified once initialization is complete (as
+  // long as the subscription is still live).
   virtual base::CallbackListSubscription WaitUntilReady(
-      ReadyCallback callback) = 0;
+      base::OnceClosure callback) = 0;
+
+  // Must be called on the UI thread. Returns a Getter that may only be invoked
+  // on the IO thread. To avoid UAF, the getter must be immediately posted to
+  // the IO thread and then invoked.
+  // TODO(crbug.com/1186373): Rework the getter interface.
+  virtual NssCertDatabaseGetter CreateNssCertDatabaseGetterForIOThread() = 0;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CERT_DB_INITIALIZER_H_

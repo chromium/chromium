@@ -1173,7 +1173,7 @@ component("net") {
     ]
   }
 
-  if (is_chromeos_ash && use_nss_certs) {
+  if ((is_chromeos_ash || is_chromeos_lacros) && use_nss_certs) {
     sources += [
       "cert/nss_cert_database_chromeos.cc",
       "cert/nss_cert_database_chromeos.h",

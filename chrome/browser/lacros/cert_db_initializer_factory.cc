@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 
+#include "base/system/sys_info.h"
 #include "chrome/browser/lacros/cert_db_initializer_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -11,7 +12,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 class CertDbInitializer;
-class Profile;
 
 // static
 CertDbInitializerFactory* CertDbInitializerFactory::GetInstance() {
@@ -20,10 +20,10 @@ CertDbInitializerFactory* CertDbInitializerFactory::GetInstance() {
 }
 
 // static
-CertDbInitializer* CertDbInitializerFactory::GetForProfileIfExists(
-    Profile* profile) {
+CertDbInitializer* CertDbInitializerFactory::GetForBrowserContext(
+    content::BrowserContext* context) {
   return static_cast<CertDbInitializerImpl*>(
-      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/false));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
 }
 
 CertDbInitializerFactory::CertDbInitializerFactory()
@@ -34,18 +34,19 @@ CertDbInitializerFactory::CertDbInitializerFactory()
 }
 
 bool CertDbInitializerFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
+  // Here `IsRunningOnChromeOS()` is equivalent to "is not running in a test".
+  // In production the service must be created together with its profile. But
+  // most tests don't need it. If they do, this still allows to create it
+  // manually.
+  // TODO(b/202098971): When certificate verification is blocked on the NSS
+  // database being loaded in lacros, there will need to be a
+  // FakeCertDbInitializer in lacros tests by default.
+  return base::SysInfo::IsRunningOnChromeOS();
 }
 
 KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-
-  if (!chromeos::LacrosService::Get() ||
-      !chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::CertDatabase>()) {
-    return nullptr;
-  }
 
   CertDbInitializerImpl* result = new CertDbInitializerImpl(profile);
   result->Start();

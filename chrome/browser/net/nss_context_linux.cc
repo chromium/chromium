@@ -18,12 +18,6 @@ net::NSSCertDatabase* GetNSSCertDatabaseForResourceContext(
   // is only run on a single thread.
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1147032): remove the CHECK after the certificates settings
-  // page is updated.
-  CHECK(false) << "Currently disabled for Lacros-Chrome.";
-#endif
-
   if (!g_nss_cert_database) {
     // Linux has only a single persistent slot compared to ChromeOS's separate
     // public and private slot.

@@ -261,6 +261,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
+#include "chrome/browser/ui/webui/certificates_handler.h"
 #if defined(USE_CUPS)
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif  // defined(USE_CUPS)
@@ -364,7 +365,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_app_reinstall_search_provider.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
-#include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_ui.h"
@@ -982,7 +982,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(first_run::kTosDialogBehavior, 0);
   registry->RegisterBooleanPref(lens::kLensCameraAssistedSearchEnabled, true);
-#else  // defined(OS_ANDROID)
+#else   // defined(OS_ANDROID)
   gcm::RegisterPrefs(registry);
   IntranetRedirectDetector::RegisterPrefs(registry);
   media_router::RegisterLocalStatePrefs(registry);
@@ -1273,7 +1273,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   video_tutorials::RegisterPrefs(registry);
   feed::prefs::RegisterFeedSharedProfilePrefs(registry);
   feed::RegisterProfilePrefs(registry);
-#else  // defined(OS_ANDROID)
+#else   // defined(OS_ANDROID)
   AppShortcutManager::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   captions::LiveCaptionController::RegisterProfilePrefs(registry);
@@ -1312,6 +1312,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if defined(OS_CHROMEOS)
   extensions::platform_keys::RegisterProfilePrefs(registry);
+  certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
 #if defined(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // defined(USE_CUPS)
@@ -1324,7 +1325,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   apps::webapk_prefs::RegisterProfilePrefs(registry);
   arc::prefs::RegisterProfilePrefs(registry);
   ArcAppListPrefs::RegisterProfilePrefs(registry);
-  certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
   account_manager::AccountManager::RegisterPrefs(registry);
   ash::ApkWebAppService::RegisterProfilePrefs(registry);
   ash::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);

@@ -39,10 +39,7 @@ void ClientCertStoreLacros::WaitForCertDb() {
       &ClientCertStoreLacros::OnCertDbReady, weak_factory_.GetWeakPtr()));
 }
 
-void ClientCertStoreLacros::OnCertDbReady(bool /*is_cert_db_ready*/) {
-  // Ignore the initialization result. Even if it failed, some certificates
-  // could be accessible.
-
+void ClientCertStoreLacros::OnCertDbReady() {
   // Ensure any new requests (e.g. that result from invoking the
   // callbacks) aren't queued.
   are_certs_loaded_ = true;

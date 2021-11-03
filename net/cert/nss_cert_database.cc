@@ -133,7 +133,7 @@ void NSSCertDatabase::ListCertsInfo(ListCertsInfoCallback callback) {
       std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 crypto::ScopedPK11Slot NSSCertDatabase::GetSystemSlot() const {
   return crypto::ScopedPK11Slot();
 }
@@ -146,7 +146,7 @@ bool NSSCertDatabase::IsCertificateOnSlot(CERTCertificate* cert,
 
   return PK11_FindCertInSlot(slot, cert, nullptr) != CK_INVALID_HANDLE;
 }
-#endif
+#endif  // defined(OS_CHROMEOS)
 
 crypto::ScopedPK11Slot NSSCertDatabase::GetPublicSlot() const {
   return crypto::ScopedPK11Slot(PK11_ReferenceSlot(public_slot_.get()));

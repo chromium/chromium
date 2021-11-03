@@ -475,6 +475,12 @@ struct DefaultPaths {
   // compatibility, to avoid assumptions about where on disk the directory is
   // located.
   [MinVersion=23] mojo_base.mojom.FilePath? drivefs@2;
+
+  // The (non-configurable) path of the software user NSS database. For
+  // example, /home/chronos/u-<hash>/.pki/nssdb. We send the full path for
+  // future compatibility, to avoid assumptions about where on disk the
+  // directory is located.
+  [MinVersion=30] mojo_base.mojom.FilePath? user_nss_database@3;
 };
 
 // The device specific data needed in Lacros.
@@ -588,7 +594,7 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 30
+// Next version: 31
 // Next id: 30
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {

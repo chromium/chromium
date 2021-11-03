@@ -43,7 +43,7 @@ export class CertificateListElement extends CertificateListElementBase {
       certificateType: String,
       importAllowed: Boolean,
 
-      // <if expr="chromeos">
+      // <if expr="chromeos or lacros">
       isGuest_: {
         type: Boolean,
         value() {
@@ -66,7 +66,7 @@ export class CertificateListElement extends CertificateListElementBase {
   certificates: Array<CertificatesOrgGroup>;
   certificateType: CertificateType;
   importAllowed: boolean;
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   private isGuest_: boolean;
   // </if>
   private isKiosk_: boolean;
@@ -95,7 +95,7 @@ export class CertificateListElement extends CertificateListElementBase {
         this.importAllowed;
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   private canImportAndBind_(): boolean {
     return !this.isGuest_ &&
         this.certificateType === CertificateType.PERSONAL && this.importAllowed;
@@ -141,7 +141,7 @@ export class CertificateListElement extends CertificateListElementBase {
     this.handleImport_(false, e.target as HTMLElement);
   }
 
-  // <if expr="chromeos">
+  // <if expr="chromeos or lacros">
   private onImportAndBindTap_(e: Event) {
     this.handleImport_(true, e.target as HTMLElement);
   }

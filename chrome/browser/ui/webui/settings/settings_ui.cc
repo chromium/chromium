@@ -173,9 +173,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   AddSettingsPageUIHandler(std::make_unique<AppearanceHandler>(web_ui));
 
-// TODO(crbug.com/1147032): The certificates settings page is temporarily
-// disabled for Lacros-Chrome until a better solution is found.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 #if defined(USE_NSS_CERTS)
   AddSettingsPageUIHandler(
       std::make_unique<certificate_manager::CertificatesHandler>());
@@ -187,7 +184,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       chromeos::cert_provisioning::CertificateProvisioningUiHandler::
           CreateForProfile(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   AddSettingsPageUIHandler(std::make_unique<AccessibilityMainHandler>());
   AddSettingsPageUIHandler(std::make_unique<BrowserLifetimeHandler>());

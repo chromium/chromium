@@ -226,8 +226,7 @@ class ChromeOSTokenManager {
       tpm_args->chaps_module = LoadChaps();
     }
     if (tpm_args->chaps_module) {
-      tpm_args->tpm_slot =
-          GetTPMSlotForIdInThreadPool(tpm_args->chaps_module, token_slot_id);
+      tpm_args->tpm_slot = GetChapsSlot(tpm_args->chaps_module, token_slot_id);
     }
   }
 
@@ -275,24 +274,6 @@ class ChromeOSTokenManager {
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        /*is_tpm_enabled=*/(state_ == State::kTpmTokenEnabled)));
-  }
-
-  // Note that CK_SLOT_ID is an unsigned long, but cryptohome gives us the slot
-  // id as an int. This should be safe since this is only used with chaps, which
-  // we also control.
-  static ScopedPK11Slot GetTPMSlotForIdInThreadPool(SECMODModule* chaps_module,
-                                                    CK_SLOT_ID slot_id) {
-    DCHECK(chaps_module);
-
-    DVLOG(3) << "Poking chaps module.";
-    SECStatus rv = SECMOD_UpdateSlotList(chaps_module);
-    if (rv != SECSuccess)
-      PLOG(ERROR) << "SECMOD_UpdateSlotList failed: " << PORT_GetError();
-
-    PK11SlotInfo* slot = SECMOD_LookupSlot(chaps_module->moduleID, slot_id);
-    if (!slot)
-      LOG(ERROR) << "TPM slot " << slot_id << " not found.";
-    return ScopedPK11Slot(slot);
   }
 
   bool InitializeNSSForChromeOSUser(const std::string& username_hash,

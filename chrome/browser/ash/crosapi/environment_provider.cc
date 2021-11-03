@@ -18,6 +18,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "crypto/nss_util_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
@@ -80,6 +81,8 @@ mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
     // Typically /home/chronos/u-<hash>/MyFiles/Downloads.
     default_paths->downloads =
         file_manager::util::GetDownloadsFolderForProfile(profile);
+    default_paths->user_nss_database =
+        crypto::GetSoftwareNSSDBPath(profile->GetPath());
     auto* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile);
     if (integration_service && integration_service->is_enabled() &&

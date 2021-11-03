@@ -818,12 +818,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIBluetoothPairingHost)
     return &NewWebUI<chromeos::BluetoothPairingDialogUI>;
-// TODO(crbug.com/1147032): The certificates settings page is temporarily
-// disabled for Lacros-Chrome until a better solution is found.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (url.host_piece() == chrome::kChromeUICertificateManagerHost)
     return &NewWebUI<chromeos::CertificateManagerDialogUI>;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (url.host_piece() == ash::kChromeUIConnectivityDiagnosticsHost)
     return &NewWebUI<ash::ConnectivityDiagnosticsUI>;
   if (url.host_piece() == chrome::kChromeUICrostiniInstallerHost)

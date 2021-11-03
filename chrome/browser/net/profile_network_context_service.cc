@@ -590,14 +590,14 @@ ProfileNetworkContextService::CreateClientCertStore() {
           base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
                               kCryptoModulePasswordClientAuth));
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CertDbInitializer* cert_db_initializer =
-      CertDbInitializerFactory::GetForProfileIfExists(profile_);
-  if (!cert_db_initializer || !profile_->IsMainProfile()) {
+  if (!profile_->IsMainProfile()) {
     // TODO(crbug.com/1148298): return some cert store for secondary profiles in
     // Lacros-Chrome.
     return nullptr;
   }
 
+  CertDbInitializer* cert_db_initializer =
+      CertDbInitializerFactory::GetForBrowserContext(profile_);
   store = std::make_unique<ClientCertStoreLacros>(cert_db_initializer,
                                                   std::move(store));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

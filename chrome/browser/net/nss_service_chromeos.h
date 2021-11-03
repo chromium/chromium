@@ -26,6 +26,7 @@ class NssServiceChromeOS : public KeyedService {
   // then invoked.  While the returned getter must be invoked on the IO thread,
   // this method itself may only be invoked on the UI thread, where the
   // NssServiceChromeOS lives.
+  // TODO(crbug.com/1186373): Rework the getter interface.
   NssCertDatabaseGetter CreateNSSCertDatabaseGetterForIOThread();
 
  private:

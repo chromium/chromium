@@ -778,12 +778,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif  // !defined(OS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  { key::kClientCertificateManagementAllowed,
-    prefs::kClientCertificateManagementAllowed,
-    base::Value::Type::INTEGER },
-  { key::kCACertificateManagementAllowed,
-    prefs::kCACertificateManagementAllowed,
-    base::Value::Type::INTEGER },
   { key::kChromeOsLockOnIdleSuspend,
     ash::prefs::kEnableAutoScreenLock,
     base::Value::Type::BOOLEAN },
@@ -1404,6 +1398,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLacrosSecondaryProfilesAllowed,
     prefs::kLacrosSecondaryProfilesAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kClientCertificateManagementAllowed,
+    prefs::kClientCertificateManagementAllowed,
+    base::Value::Type::INTEGER },
+  { key::kCACertificateManagementAllowed,
+    prefs::kCACertificateManagementAllowed,
+    base::Value::Type::INTEGER },
 #endif // defined(OS_CHROMEOS)
 
 #if !defined(OS_MAC) && !defined(OS_CHROMEOS)
@@ -1817,7 +1817,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kPrintingAPIExtensionsAllowlist,
       prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false));
 #endif  // defined(USE_CUPS)
-#else  // defined(OS_CHROMEOS)
+#else   // defined(OS_CHROMEOS)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
       signin_legacy_policies;
   signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(

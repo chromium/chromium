@@ -159,14 +159,14 @@ class NET_EXPORT NSSCertDatabase {
   // deleted.
   virtual void ListCertsInfo(ListCertsInfoCallback callback);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Get the slot for system-wide key data. May be NULL if the system token was
   // not enabled for this database.
   virtual crypto::ScopedPK11Slot GetSystemSlot() const;
 
   // Checks whether |cert| is stored on |slot|.
   static bool IsCertificateOnSlot(CERTCertificate* cert, PK11SlotInfo* slot);
-#endif
+#endif  // defined(OS_CHROMEOS)
 
   // Get the default slot for public key data.
   crypto::ScopedPK11Slot GetPublicSlot() const;

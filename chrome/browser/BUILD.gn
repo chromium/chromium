@@ -5061,6 +5061,8 @@ static_library("browser") {
       "lacros/cert_db_initializer_factory.h",
       "lacros/cert_db_initializer_impl.cc",
       "lacros/cert_db_initializer_impl.h",
+      "lacros/cert_db_initializer_io_impl.cc",
+      "lacros/cert_db_initializer_io_impl.h",
       "lacros/chrome_browser_main_extra_parts_lacros.cc",
       "lacros/chrome_browser_main_extra_parts_lacros.h",
       "lacros/client_cert_store_lacros.cc",
@@ -7069,8 +7071,11 @@ static_library("browser") {
         "net/nss_service_chromeos_factory.h",
       ]
     }
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       sources += [ "net/nss_context_linux.cc" ]
+    }
+    if (is_chromeos_lacros) {
+      sources += [ "net/nss_context_lacros.cc" ]
     }
   }
 

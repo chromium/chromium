@@ -1101,7 +1101,7 @@ extern const char kAllowSyncXHRInPageDismissal[];
 extern const char kUsageStatsEnabled[];
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 extern const char kClientCertificateManagementAllowed[];
 extern const char kCACertificateManagementAllowed[];
 #endif

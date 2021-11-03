@@ -3173,7 +3173,7 @@ const char kSignedHTTPExchangeEnabled[] = "web_package.signed_exchange.enabled";
 // TODO(https://crbug.com/1003101): Remove this in Chrome 88.
 const char kAllowSyncXHRInPageDismissal[] = "allow_sync_xhr_in_page_dismissal";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 // Enum that specifies client certificate management permissions for user. It
 // can have one of the following values.
 // 0: Users can manage all certificates.
