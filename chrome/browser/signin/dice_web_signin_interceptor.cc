@@ -154,8 +154,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
   // is mandatory, return `absl::nullopt` so that more information on the
   // account is fetched.
   if (!policy::BrowserPolicyConnector::IsNonEnterpriseUser(email) &&
-      profile_->GetPrefs()->HasPrefPath(
-          prefs::kManagedAccountsSigninRestriction)) {
+      signin_util::ProfileSeparationEnforcedByPolicy(
+          profile_, /*account_level_policy_value=*/std::string())) {
     return absl::nullopt;
   }
 
@@ -357,8 +357,11 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(intercepted_account_info.IsValid());
 
-  if (!signin_util::ProfileSeparationEnforcedByPolicy(profile_))
+  if (!signin_util::ProfileSeparationEnforcedByPolicy(
+          profile_,
+          /*account_level_policy_value=*/std::string())) {
     return false;
+  }
   if (new_account_interception_)
     return intercepted_account_info.IsManaged();
 
@@ -637,7 +640,9 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
             kDiceTurnOnSyncHelper_Abort);
   }
   signin_util::RecordEnterpriseProfileCreationUserChoice(
-      profile_, create == SigninInterceptionResult::kAccepted);
+      /*enforced_by_policy=*/signin_util::ProfileSeparationEnforcedByPolicy(
+          profile_, /*account_level_policy_value=*/std::string()),
+      /*created=*/create == SigninInterceptionResult::kAccepted);
 }
 
 void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 
+#include <string>
+
 #include "build/build_config.h"
 
 class Profile;
@@ -56,11 +58,14 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile);
 
 #if !defined(OS_ANDROID)
 // Returns true if profile separation is enforced by policy.
-bool ProfileSeparationEnforcedByPolicy(Profile* profile);
+bool ProfileSeparationEnforcedByPolicy(
+    Profile* profile,
+    const std::string& intercepted_account_level_policy_value);
 
 // Records a UMA metric if the user accepts or not to create an enterprise
 // profile.
-void RecordEnterpriseProfileCreationUserChoice(Profile* profile, bool created);
+void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
+                                               bool created);
 #endif
 
 }  // namespace signin_util

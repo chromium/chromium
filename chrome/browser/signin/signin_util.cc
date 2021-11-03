@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
@@ -275,19 +276,35 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
 }
 
 #if !defined(OS_ANDROID)
-bool ProfileSeparationEnforcedByPolicy(Profile* profile) {
+bool ProfileSeparationEnforcedByPolicy(
+    Profile* profile,
+    const std::string& intercepted_account_level_policy_value) {
   if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
     return false;
-  std::string account_restriction =
+  std::string current_profile_account_restriction =
       profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
 
-  // TODO(crbug/1163117) Look for the policy value for the intercepted account.
-  return !account_restriction.empty() && account_restriction != "none";
+  bool is_machine_level_policy = profile->GetPrefs()->GetBoolean(
+      prefs::kManagedAccountsSigninRestrictionScopeMachine);
+
+  // Enforce profile separation for all new signins if any restriction is
+  // applied at a machine level.
+  if (is_machine_level_policy) {
+    return !current_profile_account_restriction.empty() &&
+           current_profile_account_restriction != "none";
+  }
+
+  // Enforce profile separation for all new signins if "primary_account_strict"
+  // is set at the user account level.
+  return current_profile_account_restriction == "primary_account_strict" ||
+         base::StartsWith(intercepted_account_level_policy_value,
+                          "primary_account");
 }
 
-void RecordEnterpriseProfileCreationUserChoice(Profile* profile, bool created) {
+void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
+                                               bool created) {
   base::UmaHistogramBoolean(
-      signin_util::ProfileSeparationEnforcedByPolicy(profile)
+      enforced_by_policy
           ? "Signin.Enterprise.WorkProfile.ProfileCreatedWithPolicySet"
           : "Signin.Enterprise.WorkProfile.ProfileCreatedwithPolicyUnset",
       created);
