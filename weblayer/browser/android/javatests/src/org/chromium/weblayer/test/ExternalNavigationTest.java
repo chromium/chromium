@@ -922,6 +922,113 @@ public class ExternalNavigationTest {
     }
 
     /**
+     * Tests that a direct navigation to an external intent is blocked if the client calls
+     * Navigation#disableIntentProcessing() from the onNavigationStarted() callback.
+     */
+    @Test
+    @SmallTest
+    public void
+    testExternalIntentWithNoRedirectBlockedIfIntentProcessingDisabledOnNavigationStarted()
+            throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        CallbackHelper onNavigationToIntentFailedCallbackHelper = new CallbackHelper();
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationStarted(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_SELF_URL)) {
+                    navigation.disableIntentProcessing();
+                }
+            }
+            @Override
+            public void onNavigationFailed(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_SELF_URL)) {
+                    onNavigationToIntentFailedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+
+        Tab tab = mActivityTestRule.getActivity().getTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.getNavigationController().registerNavigationCallback(navigationCallback);
+            tab.getNavigationController().navigate(Uri.parse(INTENT_TO_SELF_URL));
+        });
+
+        // The navigation should fail...
+        onNavigationToIntentFailedCallbackHelper.waitForFirst();
+
+        // ...the intent should not have been launched.
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // As there was no fallback Url, there should be only the initial navigation in the tab.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return browser.getActiveTab().getNavigationController().getNavigationListSize();
+        });
+        Assert.assertEquals(1, numNavigationsInTab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.getNavigationController().unregisterNavigationCallback(navigationCallback);
+        });
+    }
+
+    /**
+     * Tests that a navigation to an external intent after a server redirect is blocked if the
+     * client calls Navigation#disableIntentProcessing() from the onNavigationStarted()
+     * callback.
+     */
+    @Test
+    @SmallTest
+    public void
+    testExternalIntentAfterRedirectBlockedIfIntentProcessingDisabledOnNavigationStarted()
+            throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(ABOUT_BLANK_URL);
+        IntentInterceptor intentInterceptor = new IntentInterceptor();
+        activity.setIntentInterceptor(intentInterceptor);
+
+        CallbackHelper onNavigationToIntentFailedCallbackHelper = new CallbackHelper();
+        NavigationCallback navigationCallback = new NavigationCallback() {
+            @Override
+            public void onNavigationStarted(Navigation navigation) {
+                if (navigation.getUri().toString().equals(mRedirectToIntentToSelfURL)) {
+                    navigation.disableIntentProcessing();
+                }
+            }
+            @Override
+            public void onNavigationFailed(Navigation navigation) {
+                if (navigation.getUri().toString().equals(INTENT_TO_SELF_URL)) {
+                    onNavigationToIntentFailedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+
+        Tab tab = mActivityTestRule.getActivity().getTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.getNavigationController().registerNavigationCallback(navigationCallback);
+            tab.getNavigationController().navigate(Uri.parse(mRedirectToIntentToSelfURL));
+        });
+
+        // The navigation should fail...
+        onNavigationToIntentFailedCallbackHelper.waitForFirst();
+
+        // ...the intent should not have been launched.
+        Assert.assertNull(intentInterceptor.mLastIntent);
+
+        // As there was no fallback Url, there should be only the initial navigation in the tab.
+        Browser browser = mActivityTestRule.getActivity().getBrowser();
+        int numNavigationsInTab = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return browser.getActiveTab().getNavigationController().getNavigationListSize();
+        });
+        Assert.assertEquals(1, numNavigationsInTab);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.getNavigationController().unregisterNavigationCallback(navigationCallback);
+        });
+    }
+
+    /**
      * Tests that external intent-related navigation params are not set on browser navigations.
      */
     @Test

@@ -104,6 +104,13 @@ jboolean NavigationImpl::DisableNetworkErrorAutoReload(JNIEnv* env) {
   return true;
 }
 
+jboolean NavigationImpl::DisableIntentProcessing(JNIEnv* env) {
+  if (!safe_to_disable_intent_processing_)
+    return false;
+  disable_intent_processing_ = true;
+  return true;
+}
+
 jboolean NavigationImpl::AreIntentLaunchesAllowedInBackground(JNIEnv* env) {
   NavigationUIDataImpl* navigation_ui_data = static_cast<NavigationUIDataImpl*>(
       navigation_handle_->GetNavigationUIData());

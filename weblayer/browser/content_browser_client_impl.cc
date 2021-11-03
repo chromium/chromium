@@ -774,15 +774,16 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
     navigation_controller =
         static_cast<NavigationControllerImpl*>(tab->GetNavigationController());
   }
+
+  NavigationImpl* navigation_impl = nullptr;
+  if (navigation_controller) {
+    navigation_impl =
+        navigation_controller->GetNavigationImplFromHandle(handle);
+  }
+
   if (handle->IsInMainFrame()) {
     NavigationUIDataImpl* navigation_ui_data =
         static_cast<NavigationUIDataImpl*>(handle->GetNavigationUIData());
-
-    NavigationImpl* navigation_impl = nullptr;
-    if (navigation_controller) {
-      navigation_impl =
-          navigation_controller->GetNavigationImplFromHandle(handle);
-    }
 
     if ((!navigation_ui_data ||
          !navigation_ui_data->disable_network_error_auto_reload()) &&
@@ -851,12 +852,14 @@ ContentBrowserClientImpl::CreateThrottlesForNavigation(
       throttles.push_back(std::move(safe_browsing_throttle));
   }
 
-  std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
-      navigation_interception::InterceptNavigationDelegate::
-          MaybeCreateThrottleFor(
-              handle, navigation_interception::SynchronyMode::kAsync);
-  if (intercept_navigation_throttle)
-    throttles.push_back(std::move(intercept_navigation_throttle));
+  if (!navigation_impl || !navigation_impl->disable_intent_processing()) {
+    std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
+        navigation_interception::InterceptNavigationDelegate::
+            MaybeCreateThrottleFor(
+                handle, navigation_interception::SynchronyMode::kAsync);
+    if (intercept_navigation_throttle)
+      throttles.push_back(std::move(intercept_navigation_throttle));
+  }
 #endif
   return throttles;
 }

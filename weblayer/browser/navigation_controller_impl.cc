@@ -405,6 +405,7 @@ void NavigationControllerImpl::DidStartNavigation(
                                               navigation);
   navigation->set_safe_to_set_request_headers(true);
   navigation->set_safe_to_disable_network_error_auto_reload(true);
+  navigation->set_safe_to_disable_intent_processing(true);
 
 #if defined(OS_ANDROID)
   // Desktop mode and per-navigation UA use the same mechanism and so don't
@@ -447,6 +448,7 @@ void NavigationControllerImpl::DidStartNavigation(
   navigation->set_safe_to_set_user_agent(false);
   navigation->set_safe_to_set_request_headers(false);
   navigation->set_safe_to_disable_network_error_auto_reload(false);
+  navigation->set_safe_to_disable_intent_processing(false);
 }
 
 void NavigationControllerImpl::DidRedirectNavigation(

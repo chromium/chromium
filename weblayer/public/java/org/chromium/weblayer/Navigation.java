@@ -305,6 +305,28 @@ public class Navigation extends IClientNavigation.Stub {
     }
 
     /**
+     * Disables intent processing for the lifetime of this navigation (including following
+     * redirects). This method may only be called from
+     * {@link NavigationCallback.onNavigationStarted}.
+     *
+     * @throws IllegalStateException If not called during start.
+     *
+     * @since 97
+     */
+    public void disableIntentProcessing() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.shouldPerformVersionChecks()
+                && WebLayer.getSupportedMajorVersionInternal() < 97) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mNavigationImpl.disableIntentProcessing();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Sets the user-agent string that applies to the current navigation. This user-agent is not
      * sticky, it applies to this navigation only (and any redirects or resources that are loaded).
      * This method may only be called from {@link NavigationCallback.onNavigationStarted}.

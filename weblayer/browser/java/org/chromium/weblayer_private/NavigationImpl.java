@@ -213,6 +213,13 @@ public final class NavigationImpl extends INavigation.Stub {
     }
 
     @Override
+    public void disableIntentProcessing() {
+        if (!NavigationImplJni.get().disableIntentProcessing(mNativeNavigationImpl)) {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
     public boolean isFormSubmission() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
@@ -320,6 +327,7 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean isReload(long nativeNavigationImpl);
         boolean isServedFromBackForwardCache(long nativeNavigationImpl);
         boolean disableNetworkErrorAutoReload(long nativeNavigationImpl);
+        boolean disableIntentProcessing(long nativeNavigationImpl);
         boolean areIntentLaunchesAllowedInBackground(long nativeNavigationImpl);
         boolean isFormSubmission(long nativeNavigationImpl);
         String getReferrer(long nativeNavigationImpl);
