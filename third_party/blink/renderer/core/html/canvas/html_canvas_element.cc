@@ -40,6 +40,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "build/os_buildflags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
@@ -118,7 +119,8 @@ const base::Feature kOneCopyCanvasCapture{"OneCopyCanvasCapture",
 const base::Feature kTwoCopyCanvasCapture {
   "TwoCopyCanvasCapture",
 // For ChromeOS, currently just enable this feature on X86 CPU, see b/203695564.
-#if defined(OS_MAC) || (defined(OS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "build/os_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -160,7 +161,7 @@ WebRtcVideoFrameAdapter::SharedResources::GetRasterContextProvider() {
 
 const base::Feature kWebRTCGpuMemoryBufferReadback {
   "WebRTCGpuMemoryBufferReadback",
-#if BUILDFLAG(IS_MAC) || \
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else

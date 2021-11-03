@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/os_buildflags.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -369,7 +370,7 @@ VideoEncoderConfig* CopyConfig(const VideoEncoderConfig& config) {
 
 const base::Feature kWebCodecsEncoderGpuMemoryBufferReadback {
   "WebCodecsEncoderGpuMemoryBufferReadback",
-#if BUILDFLAG(IS_MAC) || \
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     (BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY))
       base::FEATURE_ENABLED_BY_DEFAULT
 #else

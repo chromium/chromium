@@ -303,6 +303,7 @@ component("core") {
   deps = [
     ":generated_settings_macros",
     "//build:chromeos_buildflags",
+    "//build:os_buildflags",
     "//components/paint_preview/common",
     "//components/performance_manager/public/mojom:mojom_blink",
     "//components/power_scheduler",
