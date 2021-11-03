@@ -32,6 +32,7 @@
 
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 
@@ -171,11 +172,13 @@ void MediaStreamSource::SetReadyState(ReadyState ready_state) {
     ready_state_ = ready_state;
 
     // Observers may dispatch events which create and add new Observers;
-    // take a snapshot so as to safely iterate.
+    // take a snapshot so as to safely iterate. Wrap the observers in
+    // weak persistents to allow cancelling callbacks in case they are reclaimed
+    // until the callback is executed.
     Vector<base::OnceClosure> observer_callbacks;
-    for (auto it = observers_.begin(); it != observers_.end(); ++it) {
-      observer_callbacks.push_back(
-          base::BindOnce(&Observer::SourceChangedState, *it));
+    for (const auto& it : observers_) {
+      observer_callbacks.push_back(WTF::Bind(&Observer::SourceChangedState,
+                                             WrapWeakPersistent(it.Get())));
     }
     for (auto& observer_callback : observer_callbacks) {
       std::move(observer_callback).Run();
