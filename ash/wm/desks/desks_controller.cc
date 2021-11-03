@@ -697,8 +697,11 @@ bool DesksController::MoveWindowFromActiveDeskTo(
 }
 
 void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
-  const bool added = visible_on_all_desks_windows_.emplace(window).second;
-  DCHECK(added);
+  // Now that WorkspaceLayoutManager requests Add/MaybeRemoveVisibleOnAllDesksWindow
+  // when a child window is added in OnWindowAddedToLayout, the window could be
+  // the one that has already been added.
+  if (!visible_on_all_desks_windows_.emplace(window).second)
+    return;
   NotifyAllDesksForContentChanged();
   UMA_HISTOGRAM_ENUMERATION(
       kMoveWindowFromActiveDeskHistogramName,

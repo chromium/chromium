@@ -167,6 +167,9 @@ class ASH_EXPORT WorkspaceLayoutManager : public aura::LayoutManager,
   // event.
   void NotifyAccessibilityWorkspaceChanged();
 
+  // Updates the window workspace.
+  void UpdateWindowWorkspace(aura::Window* window);
+
   aura::Window* window_;
   aura::Window* root_window_;
   RootWindowController* root_window_controller_;
