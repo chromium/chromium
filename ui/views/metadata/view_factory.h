@@ -26,6 +26,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   using ViewClass_ = typename internal::ViewClassTrait<Builder>::ViewClass_;
   using ConfigureCallback = base::OnceCallback<void(ViewClass_*)>;
   BaseViewBuilderT() { view_ = std::make_unique<ViewClass_>(); }
+  explicit BaseViewBuilderT(std::unique_ptr<ViewClass_> view) {
+    view_ = std::move(view);
+  }
   explicit BaseViewBuilderT(ViewClass_* root_view) : root_view_(root_view) {}
   BaseViewBuilderT(BaseViewBuilderT&&) = default;
   BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
@@ -236,20 +239,25 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // BEGIN_VIEW_BUILDER, END_VIEW_BUILDER and VIEW_BUILDER_XXXX macros should
 // be placed into the same namespace as the 'view_class' parameter.
 
-#define BEGIN_VIEW_BUILDER(export, view_class, ancestor)                    \
-  template <typename BuilderT>                                              \
-  class export view_class##BuilderT : public ancestor##BuilderT<BuilderT> { \
-   private:                                                                 \
-    using ViewClass_ = view_class;                                          \
-                                                                            \
-   public:                                                                  \
-    view_class##BuilderT() = default;                                       \
-    explicit view_class##BuilderT(                                          \
-        typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_*   \
-            root_view)                                                      \
-        : ancestor##BuilderT<BuilderT>(root_view) {}                        \
-    view_class##BuilderT(view_class##BuilderT&&) = default;                 \
-    view_class##BuilderT& operator=(view_class##BuilderT&&) = default;      \
+#define BEGIN_VIEW_BUILDER(export, view_class, ancestor)                      \
+  template <typename BuilderT>                                                \
+  class export view_class##BuilderT : public ancestor##BuilderT<BuilderT> {   \
+   private:                                                                   \
+    using ViewClass_ = view_class;                                            \
+                                                                              \
+   public:                                                                    \
+    view_class##BuilderT() = default;                                         \
+    explicit view_class##BuilderT(                                            \
+        typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_*     \
+            root_view)                                                        \
+        : ancestor##BuilderT<BuilderT>(root_view) {}                          \
+    explicit view_class##BuilderT(                                            \
+        std::unique_ptr<                                                      \
+            typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_> \
+            view)                                                             \
+        : ancestor##BuilderT<BuilderT>(std::move(view)) {}                    \
+    view_class##BuilderT(view_class##BuilderT&&) = default;                   \
+    view_class##BuilderT& operator=(view_class##BuilderT&&) = default;        \
     ~view_class##BuilderT() override = default;
 
 #define VIEW_BUILDER_PROPERTY(property_type, property_name)                   \
@@ -333,25 +341,27 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // namespace. Unless 'view_class' is already in the 'views' namespace, it should
 // be fully qualified with the namespace in which it lives.
 
-#define DEFINE_VIEW_BUILDER(export, view_class)                       \
-namespace views {                                                     \
-  template <>                                                         \
-  class export Builder<view_class>                                    \
-      : public view_class##BuilderT<Builder<view_class>> {            \
-   private:                                                           \
-    using ViewClass_ = view_class;                                    \
-   public:                                                            \
-    Builder<ViewClass_>() = default;                                  \
-    explicit Builder<ViewClass_>(ViewClass_* root_view)               \
-        : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}     \
-    Builder<ViewClass_>(Builder&&) = default;                         \
-    Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default;  \
-    ~Builder<ViewClass_>() = default;                                 \
-    std::unique_ptr<internal::ViewBuilderCore> Release() override     \
-        WARN_UNUSED_RESULT {                                          \
-      return std::make_unique<Builder<view_class>>(std::move(*this)); \
-    }                                                                 \
-  };                                                                  \
+#define DEFINE_VIEW_BUILDER(export, view_class)                         \
+namespace views {                                                       \
+  template <>                                                           \
+  class export Builder<view_class>                                      \
+      : public view_class##BuilderT<Builder<view_class>> {              \
+   private:                                                             \
+    using ViewClass_ = view_class;                                      \
+   public:                                                              \
+    Builder<ViewClass_>() = default;                                    \
+    explicit Builder<ViewClass_>(ViewClass_* root_view)                 \
+        : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}       \
+    explicit Builder<ViewClass_>(std::unique_ptr<ViewClass_> view)      \
+        : view_class##BuilderT<Builder<ViewClass_>>(std::move(view)) {} \
+    Builder<ViewClass_>(Builder&&) = default;                           \
+    Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default;    \
+    ~Builder<ViewClass_>() = default;                                   \
+    std::unique_ptr<internal::ViewBuilderCore> Release() override       \
+        WARN_UNUSED_RESULT {                                            \
+      return std::make_unique<Builder<view_class>>(std::move(*this));   \
+    }                                                                   \
+  };                                                                    \
 }  // namespace views
 
 // clang-format on
