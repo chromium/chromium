@@ -6101,10 +6101,6 @@ crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.
 # Timing out on Fuchsia
 crbug.com/1171283 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen-zoom-out-slow.html [ Pass Timeout ]
 
-# Timing out on WebKit Linux Leak
-crbug.com/1176286 [ Linux ] http/tests/devtools/network/network-serviceworker-timing-view.js [ Failure Pass ]
-crbug.com/1176286 [ Linux ] http/tests/devtools/network/subresource-integrity-number-of-requests-for-stylesheet.js [ Failure Pass ]
-
 # Sheriff 2021-02-11
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause.js [ Failure Pass ]
 crbug.com/1177573 http/tests/inspector-protocol/animation/animation-pause-infinite.js [ Failure Pass ]
