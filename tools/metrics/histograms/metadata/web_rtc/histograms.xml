@@ -303,6 +303,71 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.ApmAnalogGainDecreaseAverage" units="level"
+    expires_after="2022-10-05">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The analog gain average decrease measured over 60 seconds in
+    AudioProcessingImpl. A log call is made every 60 seconds during an active
+    WebRTC call.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.ApmAnalogGainDecreaseRate" units="changes/minute"
+    expires_after="2022-10-05">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The analog gain decrease rate measured over 60 seconds in
+    AudioProcessingImpl. A log call is made every 60 seconds during an active
+    WebRTC call.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.ApmAnalogGainIncreaseAverage" units="level"
+    expires_after="2022-10-05">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The analog gain average increase measured over 60 seconds in
+    AudioProcessingImpl. A log call is made every 60 seconds during an active
+    WebRTC call.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.ApmAnalogGainIncreaseRate" units="changes/minute"
+    expires_after="2022-10-05">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The analog gain increase rate measured over 60 seconds in
+    AudioProcessingImpl. A log call is made every 60 seconds during an active
+    WebRTC call.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.ApmAnalogGainUpdateAverage" units="level"
+    expires_after="2022-10-05">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The analog gain average update measured over 60 seconds in
+    AudioProcessingImpl. A log call is made every 60 seconds during an active
+    WebRTC call.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Audio.ApmAnalogGainUpdateRate" units="changes/minute"
+    expires_after="2022-10-05">
+  <owner>silen@chromium.org</owner>
+  <owner>alessiob@chromium.org</owner>
+  <summary>
+    The analog gain update rate measured over 60 seconds in AudioProcessingImpl.
+    A log call is made every 60 seconds during an active WebRTC call.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
     units="dBFS (negated)" expires_after="2022-04-10">
   <owner>hlundin@chromium.org</owner>
