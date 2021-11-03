@@ -26,7 +26,6 @@ class ComboboxModel;
 }
 
 namespace views {
-class GridLayout;
 class Label;
 class Textfield;
 class View;
@@ -188,13 +187,13 @@ class EditorViewController : public PaymentRequestSheetController,
   // encompasses all the input fields created by CreateInputField().
   std::unique_ptr<views::View> CreateEditorView();
 
-  // Adds some views to |layout|, to represent an input field and its labels.
-  // |field| is the field definition, which contains the label and the hint
-  // about the length of the input field. A placeholder error label is also
+  // Adds some views to `editor_view`, to represent an input field and its
+  // labels. |field| is the field definition, which contains the label and the
+  // hint about the length of the input field. A placeholder error label is also
   // added (see implementation). Returns the input view for this field that
   // could be used as the initial focused and set |valid| with false if the
   // initial value of the field is not valid.
-  views::View* CreateInputField(views::GridLayout* layout,
+  views::View* CreateInputField(views::View* editor_view,
                                 const EditorField& field,
                                 bool* valid);
 
