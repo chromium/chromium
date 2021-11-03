@@ -225,7 +225,7 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
   // shutdown is not required.
   if (!parameters().ui_task) {
     lifecycle_ = std::make_unique<base::ProcessLifecycle>(
-        base::BindOnce(&chrome::CloseAllBrowsersAndQuit));
+        base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
   }
 
   return ChromeBrowserMainParts::PreMainMessageLoopRun();
