@@ -114,7 +114,7 @@ export {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from '.
 export {AppHandlerEntry, AppProtocolEntry, HandlerEntry, ProtocolEntry} from './site_settings/protocol_handlers.js';
 export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings_category_default_radio_group.js';
 export {SiteListElement} from './site_settings/site_list.js';
-export {ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
+export {ContentSettingProvider, CookiePrimarySetting, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export {SettingsRecentSitePermissionsElement} from './site_settings_page/recent_site_permissions.js';
 export {defaultSettingLabel} from './site_settings_page/site_settings_list.js';

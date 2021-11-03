@@ -8,14 +8,6 @@ import {FakeChromeEvent} from '../fake_chrome_event.js';
 // clang-format on
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */
-/**
- * @typedef {{
- *   key: string,
- *   type: chrome.settingsPrivate.PrefType,
- *   values: !Array<*>
- * }}
- */
-export let FakeSettingsPrivatePref;
 
 /**
  * Creates a deep copy of the object.
@@ -33,7 +25,7 @@ function deepCopy(obj) {
    * @implements {SettingsPrivate}
    */
 export class FakeSettingsPrivate {
-  /** @param {Array<!FakeSettingsPrivatePref>=} opt_initialPrefs */
+  /** @param {Array<!chrome.settingsPrivate.PrefObject>=} opt_initialPrefs */
   constructor(opt_initialPrefs) {
     this.disallowSetPref_ = false;
     this.failNextSetPref_ = false;

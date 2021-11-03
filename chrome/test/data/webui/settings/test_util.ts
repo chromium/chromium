@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {Route, Router} from 'chrome://settings/settings.js';
 // clang-format on
 
@@ -12,47 +12,41 @@ import {Route, Router} from 'chrome://settings/settings.js';
  * Helper to create an object containing a ContentSettingsType key to array or
  * object value. This is a convenience function that can eventually be
  * replaced with ES6 computed properties.
- * @param {ContentSettingsTypes} contentType The ContentSettingsType
- *     to use as the key.
- * @param {Object} value The value to map to |contentType|.
- * @return {Object<ContentSettingsTypes, Object>}
+ * @param contentType The ContentSettingsType to use as the key.
+ * @param value The value to map to |contentType|.
  */
-export function createContentSettingTypeToValuePair(contentType, value) {
+export function createContentSettingTypeToValuePair(
+    contentType: ContentSettingsTypes,
+    value: Object): {setting: ContentSettingsTypes, value: Object} {
   return {setting: contentType, value: value};
 }
 
 /**
  * Helper to create a mock DefaultContentSetting.
- * @param {!Object=} override An object with a subset of the properties of
+ * @param override An object with a subset of the properties of
  *     DefaultContentSetting. Properties defined in |override| will
- * overwrite the defaults in this function's return value.
- * @return {!DefaultContentSetting}
+ *     overwrite the defaults in this function's return value.
  */
-export function createDefaultContentSetting(override) {
-  if (override === undefined) {
-    override = {};
-  }
-  return /** @type {!DefaultContentSetting} */ (Object.assign(
+export function createDefaultContentSetting(
+    override?: Partial<DefaultContentSetting>): DefaultContentSetting {
+  return Object.assign(
       {
         setting: ContentSetting.ASK,
         source: SiteSettingSource.PREFERENCE,
       },
-      override));
+      override || {});
 }
 
 /**
  * Helper to create a mock RawSiteException.
- * @param {!string} origin The origin to use for this RawSiteException.
- * @param {!Object=} override An object with a subset of the properties of
+ * @param origin The origin to use for this RawSiteException.
+ * @param override An object with a subset of the properties of
  *     RawSiteException. Properties defined in |override| will overwrite the
  *     defaults in this function's return value.
- * @return {!RawSiteException}
  */
-export function createRawSiteException(origin, override) {
-  if (override === undefined) {
-    override = {};
-  }
-  return /** @type {!RawSiteException} */ (Object.assign(
+export function createRawSiteException(
+    origin: string, override?: Partial<RawSiteException>): RawSiteException {
+  return Object.assign(
       {
         embeddingOrigin: origin,
         incognito: false,
@@ -60,69 +54,71 @@ export function createRawSiteException(origin, override) {
         displayName: '',
         setting: ContentSetting.ALLOW,
         source: SiteSettingSource.PREFERENCE,
+        isEmbargoed: false,
+        settingDetail: null,
+        type: '',
       },
-      override));
+      override || {});
 }
 
 /**
  * Helper to create a mock RawChooserException.
- * @param {!ChooserType} chooserType The chooser exception type.
- * @param {Array<!RawSiteException>} sites A list of SiteExceptions
- *     corresponding to the chooser exception.
- * @param {!Object=} override An object with a subset of the properties of
+ * @param chooserType The chooser exception type.
+ * @param sites A list of SiteExceptions corresponding to the chooser exception.
+ * @param override An object with a subset of the properties of
  *     RawChooserException. Properties defined in |override| will overwrite
  *     the defaults in this function's return value.
- * @return {!RawChooserException}
  */
-export function createRawChooserException(chooserType, sites, override) {
-  return /** @type {!RawChooserException} */ (Object.assign(
+export function createRawChooserException(
+    chooserType: ChooserType, sites: RawSiteException[],
+    override?: Partial<RawChooserException>): RawChooserException {
+  return Object.assign(
       {
         chooserType: chooserType,
         displayName: '',
         object: {},
         sites: sites,
       },
-      override));
+      override || {});
 }
 
 /**
  * In the real (non-test) code, this data comes from the C++ handler.
  * Only used for tests.
- * @typedef {{
- *   defaults: !Object<ContentSettingsTypes, !DefaultContentSetting>,
- *   exceptions: !Object<ContentSettingsTypes, !Array<!RawSiteException>>,
- *   chooserExceptions: !Object<ContentSettingsTypes,
- * !Array<!RawChooserException>>
- * }}
  */
-export let SiteSettingsPref;
+export type SiteSettingsPref = {
+  defaults: {[key in ContentSettingsTypes]: DefaultContentSetting},
+  exceptions: {[key in ContentSettingsTypes]: RawSiteException[]},
+  chooserExceptions: {[key in ContentSettingsTypes]: RawChooserException[]},
+};
 
 /**
  * Helper to create a mock SiteSettingsPref.
- * @param {!Array<{setting: ContentSettingsTypes,
- *                 value: DefaultContentSetting}>} defaultsList A list of
- *     DefaultContentSettings and the content settings they apply to, which
- *     will overwrite the defaults in the SiteSettingsPref returned by this
- *     function.
- * @param {!Array<{setting: ContentSettingsTypes,
- *                 value: !Array<RawSiteException>}>} exceptionsList A list of
- *     RawSiteExceptions and the content settings they apply to, which will
- *     overwrite the exceptions in the SiteSettingsPref returned by this
- *     function.
- * @param {!Array<{setting: ContentSettingsTypes,
- *                 value: !Array<RawChooserException>}>} chooserExceptionsList
- *     A list of RawChooserExceptions and the chooser type that they apply to,
- *     which will overwrite the exceptions in the SiteSettingsPref returned by
- *     this function.
- * @return {SiteSettingsPref}
+ * @param defaultsList A list of DefaultContentSettings and the content settings
+ *     they apply to, which will overwrite the defaults in the SiteSettingsPref
+ *     returned by this function.
+ * @param exceptionsList A list of RawSiteExceptions and the content settings
+ *     they apply to, which will overwrite the exceptions in the
+ *     SiteSettingsPref returned by this function.
+ * @param chooserExceptionsList A list of RawChooserExceptions and the chooser
+ *     type that they apply to, which will overwrite the exceptions in the
+ *     SiteSettingsPref returned by this function.
  */
 export function createSiteSettingsPrefs(
-    defaultsList, exceptionsList, chooserExceptionsList = []) {
+    defaultsList:
+        Array<{setting: ContentSettingsTypes, value: DefaultContentSetting}>,
+    exceptionsList:
+        Array<{setting: ContentSettingsTypes, value: RawSiteException[]}>,
+    chooserExceptionsList:
+        Array<{setting: ContentSettingsTypes, value: RawChooserException[]}> =
+            []): SiteSettingsPref {
   // These test defaults reflect the actual defaults assigned to each
   // ContentSettingType, but keeping these in sync shouldn't matter for tests.
-  const defaults = {};
+  const defaults: {[key in ContentSettingsTypes]: DefaultContentSetting} = {} as
+      any;
   for (const type in ContentSettingsTypes) {
-    defaults[ContentSettingsTypes[type]] = createDefaultContentSetting({});
+    defaults[ContentSettingsTypes[type as keyof typeof ContentSettingsTypes]] =
+        createDefaultContentSetting({});
   }
   defaults[ContentSettingsTypes.COOKIES].setting = ContentSetting.ALLOW;
   defaults[ContentSettingsTypes.IMAGES].setting = ContentSetting.ALLOW;
@@ -139,9 +135,12 @@ export function createSiteSettingsPrefs(
     defaults[override.setting] = override.value;
   });
 
-  const chooserExceptions = {};
-  const exceptions = {};
-  for (const type in ContentSettingsTypes) {
+  const chooserExceptions:
+      {[key in ContentSettingsTypes]: RawChooserException[]} = {} as any;
+  const exceptions: {[key in ContentSettingsTypes]: RawSiteException[]} = {} as
+      any;
+  for (const t in ContentSettingsTypes) {
+    const type = t as keyof typeof ContentSettingsTypes;
     chooserExceptions[ContentSettingsTypes[type]] = [];
     exceptions[ContentSettingsTypes[type]] = [];
   }
@@ -161,15 +160,14 @@ export function createSiteSettingsPrefs(
 
 /**
  * Helper to create a mock SiteGroup.
- * @param {!string} eTLDPlus1Name The eTLD+1 of all the origins provided in
- *     |originList|.
- * @param {!Array<string>} originList A list of the origins with the same
- *     eTLD+1.
- * @param {number=} mockUsage The override initial usage value for each origin
- *     in the site group.
- * @return {!SiteGroup}
+ * @param eTLDPlus1Name The eTLD+1 of all the origins provided in |originList|.
+ * @param originList A list of the origins with the same eTLD+1.
+ * @param mockUsage The override initial usage value for each origin in the site
+ *     group.
  */
-export function createSiteGroup(eTLDPlus1Name, originList, mockUsage) {
+export function createSiteGroup(
+    eTLDPlus1Name: string, originList: string[],
+    mockUsage?: number): SiteGroup {
   if (mockUsage === undefined) {
     mockUsage = 0;
   }
@@ -183,10 +181,8 @@ export function createSiteGroup(eTLDPlus1Name, originList, mockUsage) {
   };
 }
 
-export function createOriginInfo(origin, override) {
-  if (override === undefined) {
-    override = {};
-  }
+export function createOriginInfo(
+    origin: string, override?: Partial<OriginInfo>): OriginInfo {
   return Object.assign(
       {
         origin: origin,
@@ -194,18 +190,18 @@ export function createOriginInfo(origin, override) {
         usage: 0,
         numCookies: 0,
         hasPermissionSettings: false,
+        isInstalled: false,
       },
-      override);
+      override || {});
 }
 
 /**
  * Helper to retrieve the category of a permission from the given
  * |chooserType|.
- * @param {ChooserType} chooserType The chooser type of the
- *     permission.
- * @return {?ContentSettingsTypes}
+ * @param chooserType The chooser type of the permission.
  */
-export function getContentSettingsTypeFromChooserType(chooserType) {
+export function getContentSettingsTypeFromChooserType(chooserType: ChooserType):
+    ContentSettingsTypes|null {
   switch (chooserType) {
     case ChooserType.HID_DEVICES:
       return ContentSettingsTypes.HID_DEVICES;
@@ -219,13 +215,12 @@ export function getContentSettingsTypeFromChooserType(chooserType) {
 }
 
 export function setupPopstateListener() {
-  window.addEventListener('popstate', function(event) {
+  window.addEventListener('popstate', function() {
     // On pop state, do not push the state onto the window.history again.
     const routerInstance = Router.getInstance();
     routerInstance.setCurrentRoute(
-        /** @type {!Route} */ (
-            routerInstance.getRouteForPath(window.location.pathname) ||
-            routerInstance.getRoutes().BASIC),
+        routerInstance.getRouteForPath(window.location.pathname) ||
+            (routerInstance.getRoutes() as {BASIC: Route}).BASIC,
         new URLSearchParams(window.location.search), true);
   });
 }

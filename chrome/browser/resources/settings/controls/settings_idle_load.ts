@@ -112,4 +112,10 @@ export class SettingsIdleLoadElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-idle-load': SettingsIdleLoadElement;
+  }
+}
+
 customElements.define(SettingsIdleLoadElement.is, SettingsIdleLoadElement);
