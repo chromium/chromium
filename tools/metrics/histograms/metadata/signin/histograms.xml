@@ -731,7 +731,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.InvestigatedScenario" enum="SigninInvestigatedScenario"
-    expires_after="2021-12-12">
+    expires_after="2022-12-12">
   <owner>treib@chromium.org</owner>
   <owner>mmoskvitin@google.com</owner>
   <summary>
