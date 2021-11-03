@@ -7,6 +7,8 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
@@ -203,6 +205,8 @@ void FormForest::EraseFrame(LocalFrameToken frame) {
 // others), which will then also set the child frame's FrameData::parent_form.
 void FormForest::UpdateTreeOfRendererForm(FormData* form,
                                           ContentAutofillDriver* driver) {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.FormForest.UpdateTreeOfRendererForm.Duration");
   AFCHECK(form, return );
   AFCHECK(driver, return );
   AFCHECK(form->host_frame, return );
@@ -517,6 +521,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     }
     AFCHECK(num_did_visit == num_will_visit);
     root.form->fields = std::move(root_fields);
+    base::UmaHistogramCounts100(
+        "Autofill.FormForest.UpdateTreeOfRendererForm.Visits", num_did_visit);
   }
 
   // Triggers a reparse in a parent frame if `frame->parent_form` is unset.
@@ -545,6 +551,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
 const FormData& FormForest::GetBrowserFormOfRendererForm(
     const FormData& renderer_form) const {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.FormForest.GetBrowserFormOfRendererForm.Duration");
   AFCHECK(renderer_form.host_frame, return renderer_form);
 
   // For calling non-const-qualified getters.
@@ -559,6 +567,8 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
     const {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration");
   AFCHECK(browser_form.host_frame, return {browser_form});
 
   // For calling non-const-qualified getters.

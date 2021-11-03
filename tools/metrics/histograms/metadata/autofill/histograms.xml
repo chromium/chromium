@@ -1264,6 +1264,57 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormForest.GetBrowserFormOfRendererForm.Duration"
+    units="microseconds" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time it takes to retrieve a browser form for a given renderer
+    form. (A renderer form is a single frame's form, whereas a browser form may
+    or may not transcend multiple frames.) This corresponds to the duration of
+    FormForest::GetBrowserFormOfRendererForm() and is emitted per each
+    execution. Note that histogram samples for clients without high-resolution
+    clocks are dropped.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration"
+    units="microseconds" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time it takes to retrieve the renderer forms for a given browser
+    form. (A renderer form is a single frame's form, whereas a browser form may
+    or may not transcend multiple frames.) This corresponds to the duration of
+    FormForest::GetRendererFormsOfBrowserForm() and is emitted per each
+    execution. Note that histogram samples for clients without high-resolution
+    clocks are dropped.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FormForest.UpdateTreeOfRendererForm.Duration"
+    units="microseconds" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time it takes to update Autofill's form/frame tree. This
+    corresponds to the duration of FormForest::UpdateTreeOfRendererForm() and is
+    emitted per each execution. Note that histogram samples for clients without
+    high-resolution clocks are dropped.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.FormForest.UpdateTreeOfRendererForm.Visits"
+    units="node-visits" expires_after="2022-10-31">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records nodes visited on a form/frame tree. This is emitted per each call of
+    FormForest::UpdateTreeOfRendererForm() that actually does an entire tree
+    traversal.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormSubmission.PerProfileType"
     enum="BrowserProfileType" expires_after="2022-04-10">
   <owner>rhalavati@chromium.org</owner>
