@@ -64,38 +64,29 @@ PageInfoMainView::PageInfoMainView(
   const int hover_list_spacing =
       layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  constexpr int kColumnId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kColumnId);
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  layout->AddView(CreateBubbleHeaderView());
-  layout->AddPaddingRow(views::GridLayout::kFixedSize, hover_list_spacing);
+  AddChildView(CreateBubbleHeaderView())
+      ->SetProperty(views::kMarginsKey,
+                    gfx::Insets(0, 0, hover_list_spacing, 0));
 
 #if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  page_feature_info_view_ = layout->AddView(std::make_unique<views::View>());
+  page_feature_info_view_ = AddChildView(std::make_unique<views::View>());
 #endif
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  security_container_view_ = layout->AddView(CreateContainerView());
+  security_container_view_ = AddChildView(CreateContainerView());
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  permissions_view_ = layout->AddView(std::make_unique<views::View>());
+  permissions_view_ = AddChildView(std::make_unique<views::View>());
   permissions_view_->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-  site_settings_view_ = layout->AddView(CreateContainerView());
+  site_settings_view_ = AddChildView(CreateContainerView());
 
   int link_text_id = 0;
   int tooltip_text_id = 0;
   if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id)) {
-    layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-    site_settings_link_ = layout->AddView(std::make_unique<PageInfoHoverButton>(
+    site_settings_link_ = AddChildView(std::make_unique<PageInfoHoverButton>(
         base::BindRepeating(
             [](PageInfoMainView* view) {
               view->HandleMoreInfoRequest(view->site_settings_link_);
@@ -111,9 +102,8 @@ PageInfoMainView::PageInfoMainView(
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
     auto info = ui_delegate_->GetAboutThisSiteInfo();
     if (info.has_value()) {
-      layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
       about_this_site_section_ =
-          layout->AddView(CreateAboutThisSiteSection(info.value()));
+          AddChildView(CreateAboutThisSiteSection(info.value()));
     }
   }
 
