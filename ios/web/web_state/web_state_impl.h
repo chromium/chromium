@@ -118,10 +118,12 @@ class WebStateImpl : public WebState, public NavigationManagerDelegate {
   const WebFramesManagerImpl& GetWebFramesManagerImpl() const;
   WebFramesManagerImpl& GetWebFramesManagerImpl();
 
-  // Returns the SessionCertificatePolicyCacheImpl for this WebStateImpl.
-  const SessionCertificatePolicyCacheImpl&
+  // Returns/Sets the SessionCertificatePolicyCacheImpl for this WebStateImpl.
+  const SessionCertificatePolicyCacheImpl*
   GetSessionCertificatePolicyCacheImpl() const;
-  SessionCertificatePolicyCacheImpl& GetSessionCertificatePolicyCacheImpl();
+  void SetSessionCertificatePolicyCacheImpl(
+      std::unique_ptr<SessionCertificatePolicyCacheImpl>
+          certificate_policy_cache);
 
   // Creates a WebUI page for the given url, owned by this object.
   void CreateWebUI(const GURL& url);

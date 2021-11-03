@@ -17,7 +17,7 @@ namespace web {
 
 CRWSessionCertificatePolicyCacheStorage*
 SessionCertificatePolicyCacheStorageBuilder::BuildStorage(
-    SessionCertificatePolicyCacheImpl* cache) const {
+    const SessionCertificatePolicyCacheImpl* cache) const {
   CRWSessionCertificatePolicyCacheStorage* storage =
       [[CRWSessionCertificatePolicyCacheStorage alloc] init];
   storage.certificateStorages = [NSSet setWithSet:cache->GetAllowedCerts()];

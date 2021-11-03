@@ -16,7 +16,7 @@
 namespace web {
 
 int NavigationItemStorageBuilder::ItemStoredSize(
-    NavigationItemImpl* navigation_item) const {
+    const NavigationItemImpl* navigation_item) const {
   DCHECK(navigation_item);
   int size = 0;
   size += navigation_item->virtual_url_.spec().size();
@@ -31,7 +31,7 @@ int NavigationItemStorageBuilder::ItemStoredSize(
 }
 
 CRWNavigationItemStorage* NavigationItemStorageBuilder::BuildStorage(
-    NavigationItemImpl* navigation_item) const {
+    const NavigationItemImpl* navigation_item) const {
   DCHECK(navigation_item);
   CRWNavigationItemStorage* storage = [[CRWNavigationItemStorage alloc] init];
   storage.virtualURL = navigation_item->GetVirtualURL();

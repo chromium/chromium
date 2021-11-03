@@ -296,14 +296,17 @@ WebFramesManagerImpl& WebStateImpl::GetWebFramesManagerImpl() {
   return web_frames_manager_;
 }
 
-const SessionCertificatePolicyCacheImpl&
+const SessionCertificatePolicyCacheImpl*
 WebStateImpl::GetSessionCertificatePolicyCacheImpl() const {
-  return *certificate_policy_cache_;
+  return certificate_policy_cache_.get();
 }
 
-SessionCertificatePolicyCacheImpl&
-WebStateImpl::GetSessionCertificatePolicyCacheImpl() {
-  return *certificate_policy_cache_;
+void WebStateImpl::SetSessionCertificatePolicyCacheImpl(
+    std::unique_ptr<SessionCertificatePolicyCacheImpl>
+        certificate_policy_cache) {
+  DCHECK(!certificate_policy_cache_);
+  DCHECK(certificate_policy_cache);
+  certificate_policy_cache_ = std::move(certificate_policy_cache);
 }
 
 void WebStateImpl::CreateWebUI(const GURL& url) {
@@ -655,12 +658,12 @@ WebFramesManager* WebStateImpl::GetWebFramesManager() {
 
 const SessionCertificatePolicyCache*
 WebStateImpl::GetSessionCertificatePolicyCache() const {
-  return &GetSessionCertificatePolicyCacheImpl();
+  return certificate_policy_cache_.get();
 }
 
 SessionCertificatePolicyCache*
 WebStateImpl::GetSessionCertificatePolicyCache() {
-  return &GetSessionCertificatePolicyCacheImpl();
+  return certificate_policy_cache_.get();
 }
 
 CRWSessionStorage* WebStateImpl::BuildSessionStorage() {

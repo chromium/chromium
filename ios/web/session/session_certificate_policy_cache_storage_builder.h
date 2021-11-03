@@ -19,7 +19,7 @@ class SessionCertificatePolicyCacheStorageBuilder {
  public:
   // Creates a CRWSessionCertificatePolicyCacheStorage from |cache|.
   CRWSessionCertificatePolicyCacheStorage* BuildStorage(
-      SessionCertificatePolicyCacheImpl* cache) const;
+      const SessionCertificatePolicyCacheImpl* cache) const;
   // Creates a SessionCertificatePolicyCache from |cache_storage|.
   std::unique_ptr<SessionCertificatePolicyCacheImpl>
   BuildSessionCertificatePolicyCache(

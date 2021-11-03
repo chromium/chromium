@@ -26,8 +26,7 @@ class SerializableUserDataManagerWrapper : public base::SupportsUserData::Data {
  public:
   // Returns the SerializableUserDataManagerWrapper associated with |web_state|,
   // creating one if necessary.
-  static SerializableUserDataManagerWrapper* FromWebState(
-      web::WebState* web_state) {
+  static SerializableUserDataManagerWrapper* FromWebState(WebState* web_state) {
     DCHECK(web_state);
     SerializableUserDataManagerWrapper* wrapper =
         static_cast<SerializableUserDataManagerWrapper*>(
@@ -42,8 +41,18 @@ class SerializableUserDataManagerWrapper : public base::SupportsUserData::Data {
         web_state->GetUserData(kSerializableUserDataManagerKey));
   }
 
+  static const SerializableUserDataManagerWrapper* FromWebState(
+      const WebState* web_state) {
+    DCHECK(web_state);
+    const SerializableUserDataManagerWrapper* wrapper =
+        static_cast<const SerializableUserDataManagerWrapper*>(
+            web_state->GetUserData(kSerializableUserDataManagerKey));
+    return wrapper;
+  }
+
   // Returns the manager owned by this wrapper.
   SerializableUserDataManagerImpl* manager() { return &manager_; }
+  const SerializableUserDataManagerImpl* manager() const { return &manager_; }
 
  private:
   // The SerializableUserDataManagerWrapper owned by this object.
@@ -83,9 +92,18 @@ void SerializableUserDataImpl::Decode(NSCoder* coder) {
 
 // static
 SerializableUserDataManager* SerializableUserDataManager::FromWebState(
-    web::WebState* web_state) {
+    WebState* web_state) {
   DCHECK(web_state);
   return SerializableUserDataManagerWrapper::FromWebState(web_state)->manager();
+}
+
+// static
+const SerializableUserDataManager* SerializableUserDataManager::FromWebState(
+    const WebState* web_state) {
+  DCHECK(web_state);
+  const SerializableUserDataManagerWrapper* wrapper =
+      SerializableUserDataManagerWrapper::FromWebState(web_state);
+  return wrapper ? wrapper->manager() : nullptr;
 }
 
 SerializableUserDataManagerImpl::SerializableUserDataManagerImpl()

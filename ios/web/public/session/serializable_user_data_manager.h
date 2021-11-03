@@ -39,8 +39,11 @@ class SerializableUserData {
 class SerializableUserDataManager {
  public:
   // Returns the SerializableUserDataManager instance associated with
-  // |web_state|, instantiating one if necessary.
-  static SerializableUserDataManager* FromWebState(web::WebState* web_state);
+  // |web_state|, instantiating one if necessary (only for non-const
+  // version).
+  static SerializableUserDataManager* FromWebState(WebState* web_state);
+  static const SerializableUserDataManager* FromWebState(
+      const WebState* web_state);
 
   SerializableUserDataManager(const SerializableUserDataManager&) = delete;
   SerializableUserDataManager& operator=(const SerializableUserDataManager&) =
