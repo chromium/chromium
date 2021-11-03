@@ -26,6 +26,7 @@ static_library("keyed_service") {
     "//ash/quick_pair/ui",
     "//ash/services/quick_pair",
     "//base",
+    "//chromeos/services/bluetooth_config",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/user_manager",

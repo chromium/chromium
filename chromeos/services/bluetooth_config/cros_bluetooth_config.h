@@ -26,6 +26,7 @@ class DeviceCache;
 class DeviceNameManager;
 class DeviceOperationHandler;
 class DiscoverySessionManager;
+class FastPairDelegate;
 class Initializer;
 class SystemPropertiesProvider;
 
@@ -34,9 +35,9 @@ class SystemPropertiesProvider;
 // the API by delegating to these helpers.
 class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
  public:
-  CrosBluetoothConfig(
-      Initializer& initializer,
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+  CrosBluetoothConfig(Initializer& initializer,
+                      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+                      FastPairDelegate* fast_pair_delegate);
   ~CrosBluetoothConfig() override;
 
   // Sets the PrefServices to be used by classes within CrosBluetoothConfig.
@@ -69,6 +70,7 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   std::unique_ptr<SystemPropertiesProvider> system_properties_provider_;
   std::unique_ptr<DiscoverySessionManager> discovery_session_manager_;
   std::unique_ptr<DeviceOperationHandler> device_operation_handler_;
+  FastPairDelegate* fast_pair_delegate_ = nullptr;
 };
 
 }  // namespace bluetooth_config

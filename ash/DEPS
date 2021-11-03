@@ -74,6 +74,7 @@ include_rules = [
   # //ash can use the public interfaces of various services.
   "+chromeos/services/assistant/public" ,
   "+chromeos/services/assistant/test_support",
+  "+chromeos/services/bluetooth_config",
   "+chromeos/services/libassistant/public",
   "+chromeos/services/machine_learning/public",
   "+chromeos/services/multidevice_setup/public",

@@ -197,7 +197,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
-#include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -447,8 +446,6 @@ class DBusServices {
     disks::DiskMountManager::Initialize();
 
     NetworkHandler::Initialize();
-    if (features::IsBluetoothRevampEnabled())
-      chromeos::bluetooth_config::Initialize();
 
     chromeos::sensors::SensorHalDispatcher::Initialize();
 
@@ -477,9 +474,6 @@ class DBusServices {
     rollback_network_config::Shutdown();
     chromeos::sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
-    if (features::IsBluetoothRevampEnabled())
-      chromeos::bluetooth_config::Shutdown();
-
     disks::DiskMountManager::Shutdown();
     LoginState::Shutdown();
     NetworkCertLoader::Shutdown();

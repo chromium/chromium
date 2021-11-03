@@ -16,6 +16,12 @@
 
 class PrefRegistrySimple;
 
+namespace chromeos {
+namespace bluetooth_config {
+class FastPairDelegate;
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
 namespace ash {
 namespace quick_pair {
 
@@ -53,7 +59,9 @@ class Mediator final : public FeatureStatusTracker::Observer,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // QuickPairFeatureStatusTracker::Observer
+  chromeos::bluetooth_config::FastPairDelegate* GetFastPairDelegate();
+
+  // FeatureStatusTracker::Observer
   void OnFastPairEnabledChanged(bool is_enabled) override;
 
   // SannerBroker::Observer

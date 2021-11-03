@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
+#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,6 +29,8 @@ bool g_is_shut_down = false;
 PrefService* g_pending_logged_in_profile_prefs = nullptr;
 PrefService* g_pending_device_prefs = nullptr;
 
+FastPairDelegate* g_fast_pair_delegate = nullptr;
+
 void OnBluetoothAdapter(
     absl::optional<mojo::PendingReceiver<mojom::CrosBluetoothConfig>>
         pending_receiver,
@@ -37,8 +40,8 @@ void OnBluetoothAdapter(
 
   if (!g_instance) {
     InitializerImpl initializer;
-    g_instance =
-        new CrosBluetoothConfig(initializer, std::move(bluetooth_adapter));
+    g_instance = new CrosBluetoothConfig(
+        initializer, std::move(bluetooth_adapter), g_fast_pair_delegate);
     g_instance->SetPrefs(g_pending_logged_in_profile_prefs,
                          g_pending_device_prefs);
     g_pending_logged_in_profile_prefs = nullptr;
@@ -50,9 +53,13 @@ void OnBluetoothAdapter(
 
 }  // namespace
 
-void Initialize() {
+void Initialize(FastPairDelegate* delegate) {
   CHECK(ash::features::IsBluetoothRevampEnabled());
   CHECK(!g_instance);
+  DCHECK_EQ(ash::features::IsFastPairEnabled(), static_cast<bool>(delegate));
+
+  g_fast_pair_delegate = delegate;
+
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&OnBluetoothAdapter, /*pending_receiver=*/absl::nullopt));
 }
@@ -84,11 +91,14 @@ void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* device_prefs) {
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver) {
   CHECK(ash::features::IsBluetoothRevampEnabled());
+  DCHECK_EQ(ash::features::IsFastPairEnabled(),
+            static_cast<bool>(g_fast_pair_delegate));
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&OnBluetoothAdapter, std::move(pending_receiver)));
 }
 
-void OverrideInProcessInstanceForTesting(Initializer* initializer) {
+void OverrideInProcessInstanceForTesting(Initializer* initializer,
+                                         FastPairDelegate* fast_pair_delegate) {
   if (g_instance) {
     delete g_instance;
     g_instance = nullptr;
@@ -100,7 +110,8 @@ void OverrideInProcessInstanceForTesting(Initializer* initializer) {
   // Null BluetoothAdapter is used since |initializer| is expected to fake
   // Bluetooth functionality in tests.
   g_instance = new CrosBluetoothConfig(*initializer,
-                                       /*bluetooth_adapter=*/nullptr);
+                                       /*bluetooth_adapter=*/nullptr,
+                                       fast_pair_delegate);
 }
 
 }  // namespace bluetooth_config

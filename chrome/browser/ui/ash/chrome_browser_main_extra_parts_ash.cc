@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
@@ -61,6 +62,8 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension_factory.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
+#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
+#include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -225,6 +228,15 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   }
 
   desks_client_ = std::make_unique<DesksClient>();
+
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    chromeos::bluetooth_config::FastPairDelegate* delegate =
+        ash::features::IsFastPairEnabled()
+            ? ash::Shell::Get()->quick_pair_mediator()->GetFastPairDelegate()
+            : nullptr;
+
+    chromeos::bluetooth_config::Initialize(delegate);
+  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit() {
@@ -280,6 +292,9 @@ void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
+  if (ash::features::IsBluetoothRevampEnabled())
+    chromeos::bluetooth_config::Shutdown();
+
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   // ExoParts uses state from ash, delete it before ash so that exo can
   // uninstall correctly.

@@ -21,6 +21,7 @@
 #include "ash/quick_pair/ui/ui_broker_impl.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
+#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -85,6 +86,11 @@ Mediator::~Mediator() {
 void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   FastPairPrefEnabledProvider::RegisterProfilePrefs(registry);
   SavedDeviceRegistry::RegisterProfilePrefs(registry);
+}
+
+chromeos::bluetooth_config::FastPairDelegate* Mediator::GetFastPairDelegate() {
+  // TODO: Implementation of the delegate and returning the real instance here.
+  return nullptr;
 }
 
 void Mediator::OnFastPairEnabledChanged(bool is_enabled) {

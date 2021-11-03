@@ -489,6 +489,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   PowerEventObserver* power_event_observer() {
     return power_event_observer_.get();
   }
+  quick_pair::Mediator* quick_pair_mediator() {
+    return quick_pair_mediator_.get();
+  }
   ResizeShadowController* resize_shadow_controller() {
     return resize_shadow_controller_.get();
   }

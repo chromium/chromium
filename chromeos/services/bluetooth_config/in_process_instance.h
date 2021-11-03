@@ -14,10 +14,11 @@ class PrefService;
 namespace chromeos {
 namespace bluetooth_config {
 
+class FastPairDelegate;
 class Initializer;
 
 COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
-void Initialize();
+void Initialize(FastPairDelegate* fast_pair_delegate);
 
 COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
 void Shutdown();
@@ -34,7 +35,9 @@ void BindToInProcessInstance(
 // Overrides the in-process instance for testing purposes. To reverse this
 // override, call this function, passing null for |initializer|.
 COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
-void OverrideInProcessInstanceForTesting(Initializer* initializer);
+void OverrideInProcessInstanceForTesting(
+    Initializer* initializer,
+    FastPairDelegate* fast_pair_delegate = nullptr);
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

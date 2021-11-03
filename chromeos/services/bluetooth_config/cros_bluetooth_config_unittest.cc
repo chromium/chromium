@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
+#include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "components/session_manager/core/session_manager.h"
@@ -40,11 +41,16 @@ class CrosBluetoothConfigTest : public testing::Test {
 
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    fake_fast_pair_delegate_ = std::make_unique<FakeFastPairDelegate>();
     InitializerImpl initializer;
-    cros_bluetooth_config_ =
-        std::make_unique<CrosBluetoothConfig>(initializer, mock_adapter_);
+    cros_bluetooth_config_ = std::make_unique<CrosBluetoothConfig>(
+        initializer, mock_adapter_, fake_fast_pair_delegate_.get());
     cros_bluetooth_config_->SetPrefs(/*logged_in_profile_prefs=*/nullptr,
                                      &test_pref_service_);
+
+    // CrosBluetoothConfig ctor should set the device name manager for the
+    // delegate.
+    EXPECT_TRUE(fake_fast_pair_delegate_->device_name_manager() != nullptr);
   }
 
   mojo::Remote<mojom::CrosBluetoothConfig> BindToInterface() {
@@ -58,6 +64,7 @@ class CrosBluetoothConfigTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  std::unique_ptr<FakeFastPairDelegate> fake_fast_pair_delegate_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
 
   std::unique_ptr<CrosBluetoothConfig> cros_bluetooth_config_;
