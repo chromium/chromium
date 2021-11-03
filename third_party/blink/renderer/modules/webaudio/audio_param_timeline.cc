@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/fdlibm/ieee754.h"
@@ -519,6 +520,9 @@ void AudioParamTimeline::SetValueCurveAtTime(const Vector<float>& curve,
 
 void AudioParamTimeline::InsertEvent(std::unique_ptr<ParamEvent> event,
                                      ExceptionState& exception_state) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
+               "AudioParamTimeline::InsertEvent");
+
   DCHECK(IsMainThread());
 
   // Sanity check the event. Be super careful we're not getting infected with
