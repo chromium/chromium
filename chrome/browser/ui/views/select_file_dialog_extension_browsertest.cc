@@ -214,17 +214,19 @@ class BaseSelectFileDialogExtensionBrowserTest
     // extensions now and not before: crbug.com/831074, crbug.com/804413.
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
 
-    // Ensure the Files app background page has shut down. These tests should
-    // ensure launching without the background page functions correctly.
-    extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
-    extensions::ProcessManager::SetEventPageSuspendingTimeForTesting(1);
-    const auto* extension =
-        extensions::ExtensionRegistryFactory::GetForBrowserContext(profile())
-            ->GetExtensionById(extension_misc::kFilesManagerAppId,
-                               extensions::ExtensionRegistry::ENABLED);
-    extensions::BackgroundPageWatcher background_page_watcher(
-        extensions::ProcessManager::Get(profile()), extension);
-    background_page_watcher.WaitForClose();
+    if (GetParam().app_mode != SYSTEM_FILES_APP_MODE) {
+      // Ensure the Files app background page has shut down. These tests should
+      // ensure launching without the background page functions correctly.
+      extensions::ProcessManager::SetEventPageIdleTimeForTesting(1);
+      extensions::ProcessManager::SetEventPageSuspendingTimeForTesting(1);
+      const auto* extension =
+          extensions::ExtensionRegistryFactory::GetForBrowserContext(profile())
+              ->GetExtensionById(extension_misc::kFilesManagerAppId,
+                                 extensions::ExtensionRegistry::ENABLED);
+      extensions::BackgroundPageWatcher background_page_watcher(
+          extensions::ProcessManager::Get(profile()), extension);
+      background_page_watcher.WaitForClose();
+    }
   }
 
   void TearDown() override {
