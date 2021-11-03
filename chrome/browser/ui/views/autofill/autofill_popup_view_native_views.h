@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/bubble/bubble_border.h"
 
 namespace views {
 class BoxLayout;
@@ -98,6 +99,7 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   // TODO(crbug.com/831603): Remove these overrides and the corresponding
   // methods in AutofillPopupBaseView.
   void OnMouseMoved(const ui::MouseEvent& event) override {}
+  std::unique_ptr<views::Border> CreateBorder() override;
 
   AutofillPopupController* controller() { return controller_; }
 
@@ -123,6 +125,7 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   views::ScrollView* scroll_view_ = nullptr;
   views::View* body_container_ = nullptr;
   views::View* footer_container_ = nullptr;
+  views::BubbleBorder* bubble_border_ = nullptr;
 };
 
 }  // namespace autofill

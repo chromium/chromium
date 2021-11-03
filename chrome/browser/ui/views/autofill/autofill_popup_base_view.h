@@ -87,6 +87,9 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
 
   const AutofillPopupViewDelegate* delegate() const { return delegate_; }
 
+  // Returns the border to be applied to the popup.
+  virtual std::unique_ptr<views::Border> CreateBorder();
+
  private:
   friend class AutofillPopupBaseViewTest;
 
@@ -107,9 +110,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   // Hide the controller of this view. This assumes that doing so will
   // eventually hide this view in the process.
   void HideController(PopupHidingReason reason);
-
-  // Returns the border to be applied to the popup.
-  std::unique_ptr<views::Border> CreateBorder();
 
   // Must return the container view for this popup.
   gfx::NativeView container_view();

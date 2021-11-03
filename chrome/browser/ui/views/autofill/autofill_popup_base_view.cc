@@ -297,6 +297,17 @@ bool AutofillPopupBaseView::DoUpdateBoundsAndRedrawPopup() {
   return true;
 }
 
+std::unique_ptr<views::Border> AutofillPopupBaseView::CreateBorder() {
+  auto border = std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
+      SK_ColorWHITE);
+  border->SetCornerRadius(GetCornerRadius());
+  border->set_md_shadow_elevation(
+      ChromeLayoutProvider::Get()->GetShadowElevationMetric(
+          views::Emphasis::kMedium));
+  return border;
+}
+
 void AutofillPopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (GetWidget() && GetWidget()->GetNativeView() != focused_now)
     HideController(PopupHidingReason::kFocusChanged);
@@ -319,17 +330,6 @@ void AutofillPopupBaseView::HideController(PopupHidingReason reason) {
   // This will eventually result in the deletion of |this|, as the delegate
   // will hide |this|. See |DoHide| above for an explanation on why the precise
   // timing of that deletion is tricky.
-}
-
-std::unique_ptr<views::Border> AutofillPopupBaseView::CreateBorder() {
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      SK_ColorWHITE);
-  border->SetCornerRadius(GetCornerRadius());
-  border->set_md_shadow_elevation(
-      ChromeLayoutProvider::Get()->GetShadowElevationMetric(
-          views::Emphasis::kMedium));
-  return border;
 }
 
 gfx::NativeView AutofillPopupBaseView::container_view() {

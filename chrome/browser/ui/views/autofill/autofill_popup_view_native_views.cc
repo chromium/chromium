@@ -61,6 +61,8 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
+using views::BubbleBorder;
+
 namespace {
 
 // By spec, dropdowns should always have a width which is a multiple of 12.
@@ -1498,6 +1500,19 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
 
   SchedulePaint();
   return true;
+}
+
+std::unique_ptr<views::Border> AutofillPopupViewNativeViews::CreateBorder() {
+  BubbleBorder::Arrow arrow = BubbleBorder::Arrow::TOP_LEFT;
+  auto border = std::make_unique<BubbleBorder>(
+      arrow, BubbleBorder::STANDARD_SHADOW, SK_ColorWHITE);
+  border->SetCornerRadius(GetCornerRadius());
+  border->set_md_shadow_elevation(
+      ChromeLayoutProvider::Get()->GetShadowElevationMetric(
+          views::Emphasis::kMedium));
+  border->set_visible_arrow(true);
+  bubble_border_ = border.get();
+  return border;
 }
 
 BEGIN_METADATA(AutofillPopupViewNativeViews, AutofillPopupBaseView)
