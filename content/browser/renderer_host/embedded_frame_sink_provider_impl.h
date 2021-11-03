@@ -73,6 +73,10 @@ class CONTENT_EXPORT EmbeddedFrameSinkProviderImpl
   void ConnectToEmbedder(const viz::FrameSinkId& child_frame_sink_id,
                          mojo::PendingReceiver<blink::mojom::SurfaceEmbedder>
                              surface_embedder_receiver) override;
+  void RegisterFrameSinkHierarchy(
+      const viz::FrameSinkId& frame_sink_id) override;
+  void UnregisterFrameSinkHierarchy(
+      const viz::FrameSinkId& frame_sink_id) override;
 
  private:
   friend class EmbeddedFrameSinkProviderImplTest;

@@ -75,4 +75,17 @@ interface EmbeddedFrameSinkProvider {
   // using.
   ConnectToEmbedder(viz.mojom.FrameSinkId frame_sink_id,
                     pending_receiver<SurfaceEmbedder> embedder);
+
+  // Registers |frame_sink_id| as the child of its parent frame sink ID, which
+  // has been specified at frame sink creation time. The registration usually
+  // happens automatically when the frame sink is created in
+  // CreateCompositorFrameSink(), and here the client may want to manually
+  // control the registration.
+  RegisterFrameSinkHierarchy(viz.mojom.FrameSinkId frame_sink_id);
+
+  // Unregisters |frame_sink_id| as the child of its parent frame sink ID, which
+  // has been specified at frame sink creation time. The un-registration usually
+  // happens automatically when the frame sink is destructed, and here the
+  // client may want to manually control the un-registration.
+  UnregisterFrameSinkHierarchy(viz.mojom.FrameSinkId frame_sink_id);
 };

@@ -198,7 +198,7 @@ class OverlayWindowViews : public content::OverlayWindow,
   void TogglePlayPause();
 
   // Returns the current frame sink id for the surface displayed in the
-  // |video_view_]. If |video_view_| is not currently displaying a surface then
+  // |video_view_|. If |video_view_| is not currently displaying a surface then
   // returns nullptr.
   const viz::FrameSinkId* GetCurrentFrameSinkId() const;
 
@@ -284,6 +284,10 @@ class OverlayWindowViews : public content::OverlayWindow,
   // and hiding automatically. Only used for testing via
   // ForceControlsVisibleForTesting().
   absl::optional<bool> force_controls_visible_;
+
+  // Whether or not the current frame sink for the surface displayed in the
+  // |video_view_| is registered as the child of the overlay window frame sink.
+  bool has_registered_frame_sink_hierarchy_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_VIEWS_H_

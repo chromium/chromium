@@ -76,6 +76,8 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override {
     return base::SupportsWeakPtr<EmptyWebMediaPlayer>::AsWeakPtr();
   }
+  void RegisterFrameSinkHierarchy() override {}
+  void UnregisterFrameSinkHierarchy() override {}
 };
 
 }  // namespace blink

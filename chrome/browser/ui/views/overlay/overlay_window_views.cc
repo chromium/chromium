@@ -851,8 +851,11 @@ bool OverlayWindowViews::IsActive() const {
 void OverlayWindowViews::Close() {
   views::Widget::Close();
 
-  if (auto* frame_sink_id = GetCurrentFrameSinkId())
-    GetCompositor()->RemoveChildFrameSink(*frame_sink_id);
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
+    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
+    has_registered_frame_sink_hierarchy_ = false;
+  }
 }
 
 void OverlayWindowViews::ShowInactive() {
@@ -885,6 +888,12 @@ void OverlayWindowViews::ShowInactive() {
 
 void OverlayWindowViews::Hide() {
   views::Widget::Hide();
+
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
+    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
+    has_registered_frame_sink_hierarchy_ = false;
+  }
 }
 
 bool OverlayWindowViews::IsVisible() {
@@ -983,15 +992,17 @@ void OverlayWindowViews::SetHangUpButtonVisibility(bool is_visible) {
 }
 
 void OverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
-  // TODO(https://crbug.com/925346): We also want to unregister the page that
-  // used to embed the video as its parent.
-  if (!GetCurrentFrameSinkId()) {
-    GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
-  } else if (*GetCurrentFrameSinkId() != surface_id.frame_sink_id()) {
+  // The PiP window may have a previous surface set. If the window stays open
+  // since then, we need to unregister the previous frame sink; otherwise the
+  // surface frame sink should already be removed when the window closed.
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
     GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-    GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
   }
 
+  // Add the new frame sink to the PiP window and set the surface.
+  GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
+  has_registered_frame_sink_hierarchy_ = true;
   video_view_->layer()->SetShowSurface(
       surface_id, GetBounds().size(), SK_ColorBLACK,
       cc::DeadlinePolicy::UseDefaultDeadline(),
