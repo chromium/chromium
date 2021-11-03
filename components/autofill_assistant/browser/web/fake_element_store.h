@@ -14,6 +14,7 @@ namespace autofill_assistant {
 class FakeElementStore : public ElementStore {
  public:
   FakeElementStore();
+  FakeElementStore(content::WebContents* web_contents);
   ~FakeElementStore() override;
 
   FakeElementStore(const FakeElementStore&) = delete;
@@ -21,6 +22,9 @@ class FakeElementStore : public ElementStore {
 
   ClientStatus GetElement(const std::string& client_id,
                           ElementFinder::Result* out_element) const override;
+
+ private:
+  content::WebContents* web_contents_;
 };
 
 }  // namespace autofill_assistant

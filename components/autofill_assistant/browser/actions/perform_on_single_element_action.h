@@ -65,6 +65,10 @@ class PerformOnSingleElementAction : public Action {
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
+  void OnGetLastTimeUsed(const absl::optional<base::Time> last_date_used);
+
+  void InternalProcessActionImpl();
+
   void EndAction(const ClientStatus& status);
 
   ElementFinder::Result element_;

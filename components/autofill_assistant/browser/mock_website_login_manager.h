@@ -61,6 +61,15 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
                base::OnceCallback<void()> callback),
               (override));
 
+  MOCK_METHOD(void,
+              GetGetLastTimePasswordUsed,
+              (const Login& login,
+               base::OnceCallback<void(absl::optional<base::Time>)> callback),
+              (override));
+
+  MOCK_METHOD2(OnDeletePasswordForLogin,
+               void(const Login& login, base::OnceCallback<void(bool)>&));
+
   MOCK_METHOD(bool, ReadyToCommitGeneratedPassword, (), (override));
 
   MOCK_METHOD(void, CommitGeneratedPassword, (), (override));

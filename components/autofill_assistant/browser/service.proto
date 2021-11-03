@@ -940,6 +940,8 @@ message ProcessedActionProto {
     UploadDomProto.Result upload_dom_result = 33;
     // Should be set as a result of CheckOptionElementProto.
     CheckOptionElementProto.Result check_option_element_result = 35;
+    // Should be set as a result of SendKeystrokeEventsProto.
+    SendKeystrokeEventsProto.Result send_key_stroke_events_result = 36;
   }
 
   // Reports information about navigation that happened while

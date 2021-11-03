@@ -286,6 +286,8 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
           base::BindOnce(&WebController::JsClickElement,
                          delegate->GetWebController()->GetWeakPtr()));
     case ActionProto::ActionInfoCase::kSendKeystrokeEvents:
+      // TODO(crbug.com/1266332): Refactor this event into its own action,
+      // see https://chromium-review.googlesource.com/c/chromium/src/+/3245372
       return PerformOnSingleElementAction::WithClientId(
           delegate, action, action.send_keystroke_events().client_id(),
           base::BindOnce(

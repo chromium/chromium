@@ -119,6 +119,14 @@ message SendKeystrokeEventsProto {
   optional ClientIdProto client_id = 1;
   optional TextValue value = 2;
   optional int32 delay_in_ms = 3;
+
+  message Result {
+    // The number of months since the password used to fill an
+    // input was last used.
+    // If the input is not of password type or an error happens,
+    // this field will be empty.
+    optional int32 months_since_password_last_used = 1;
+  }
 }
 
 // Send a single key event to the element. This requires the element to have

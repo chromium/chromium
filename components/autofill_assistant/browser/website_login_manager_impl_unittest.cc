@@ -37,12 +37,14 @@ const char16_t kFakeNewPassword16[] = u"new_password";
 const char16_t kFormDataName[] = u"the-form-name";
 const char16_t kPasswordElement[] = u"password-element";
 const char16_t kUsernameElement[] = u"username-element";
+const double kDateLastUsedEpoch = 123;
 
 using autofill::FormData;
 using autofill::FormFieldData;
 using password_manager::PasswordForm;
 using password_manager::PasswordManager;
 using testing::_;
+using testing::Eq;
 using testing::Mock;
 using testing::Return;
 using testing::WithArg;
@@ -90,6 +92,7 @@ PasswordForm MakeSimplePasswordForm() {
   form.username_element = kUsernameElement;
   form.password_element = kPasswordElement;
   form.in_store = PasswordForm::Store::kProfileStore;
+  form.date_last_used = base::Time::FromDoubleT(kDateLastUsedEpoch);
 
   return form;
 }
@@ -219,6 +222,32 @@ TEST_F(WebsiteLoginManagerImplTest, DeletePasswordFailed) {
   EXPECT_CALL(mock_callback, Run(false)).Times(1);
   manager_->DeletePasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
                                    mock_callback.Get());
+  WaitForPasswordStore();
+}
+
+TEST_F(WebsiteLoginManagerImplTest, GetGetLastTimePasswordUsedSuccess) {
+  password_manager::PasswordFormDigest form_digest(
+      password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL());
+  base::MockCallback<base::OnceCallback<void(absl::optional<base::Time>)>>
+      mock_callback;
+  // |GetGetLastTimePasswordUsedSuccess| will first fetch all existing
+  // logins
+  EXPECT_CALL(*store(), GetLogins(form_digest, _));
+  EXPECT_CALL(mock_callback, Run({base::Time::FromDoubleT(123)})).Times(1);
+  manager_->GetGetLastTimePasswordUsed({GURL(kFakeUrl), kFakeUsername},
+                                       mock_callback.Get());
+  WaitForPasswordStore();
+}
+
+TEST_F(WebsiteLoginManagerImplTest, GetGetLastTimePasswordUsedFailed) {
+  base::MockCallback<base::OnceCallback<void(absl::optional<base::Time>)>>
+      mock_callback;
+  // |GetGetLastTimePasswordUsedSuccess| will first fetch all existing
+  // logins
+  EXPECT_CALL(*store(), GetLogins);
+  EXPECT_CALL(mock_callback, Run(Eq(absl::nullopt))).Times(1);
+  manager_->GetGetLastTimePasswordUsed({GURL(kFakeUrl2), kFakeUsername2},
+                                       mock_callback.Get());
   WaitForPasswordStore();
 }
 

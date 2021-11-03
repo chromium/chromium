@@ -176,6 +176,45 @@ class WebsiteLoginManagerImpl::PendingFetchPasswordRequest
   base::OnceCallback<void(bool, std::string)> callback_;
 };
 
+// A pending request to fetch the last time a password was used for the
+// specified |login|.
+class WebsiteLoginManagerImpl::PendingFetchLastTimePasswordUseRequest
+    : public WebsiteLoginManagerImpl::PendingRequest {
+ public:
+  PendingFetchLastTimePasswordUseRequest(
+      const password_manager::PasswordFormDigest& form_digest,
+      const password_manager::PasswordManagerClient* client,
+      const Login& login,
+      base::OnceCallback<void(absl::optional<base::Time>)> callback,
+      base::OnceCallback<void(const PendingRequest*)> notify_finished_callback)
+      : PendingRequest(form_digest,
+                       client,
+                       std::move(notify_finished_callback)),
+        login_(login),
+        callback_(std::move(callback)) {}
+
+ protected:
+  // From PendingRequest:
+  void OnFetchCompleted() override {
+    std::vector<const password_manager::PasswordForm*> matches =
+        form_fetcher_->GetNonFederatedMatches();
+    const auto* match = FindPasswordForLogin(matches, login_);
+
+    if (!match) {
+      std::move(callback_).Run(absl::nullopt);
+      PendingRequest::OnFetchCompleted();
+      return;
+    }
+
+    std::move(callback_).Run(match->date_last_used);
+    PendingRequest::OnFetchCompleted();
+  }
+
+ private:
+  Login login_;
+  base::OnceCallback<void(absl::optional<base::Time>)> callback_;
+};
+
 // A pending request to delete the password for the specified |login|.
 class WebsiteLoginManagerImpl::PendingDeletePasswordRequest
     : public WebsiteLoginManagerImpl::PendingRequest {
@@ -376,6 +415,21 @@ void WebsiteLoginManagerImpl::DeletePasswordForLogin(
       digest, client_, login, std::move(callback),
       base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,
                      weak_ptr_factory_.GetWeakPtr())));
+  pending_requests_.back()->Start();
+}
+
+void WebsiteLoginManagerImpl::GetGetLastTimePasswordUsed(
+    const Login& login,
+    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  password_manager::PasswordFormDigest digest(
+      password_manager::PasswordForm::Scheme::kHtml, login.origin.spec(),
+      GURL());
+  pending_requests_.emplace_back(
+      std::make_unique<PendingFetchLastTimePasswordUseRequest>(
+          digest, client_, login, std::move(callback),
+          base::BindOnce(&WebsiteLoginManagerImpl::OnRequestFinished,
+                         weak_ptr_factory_.GetWeakPtr())));
   pending_requests_.back()->Start();
 }
 

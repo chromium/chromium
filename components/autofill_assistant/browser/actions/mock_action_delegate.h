@@ -215,10 +215,12 @@ class MockActionDelegate : public ActionDelegate {
     return element_store_.get();
   }
 
+ protected:
+  mutable std::unique_ptr<ElementStore> element_store_;
+
  private:
   ClientSettings client_settings_;
   ProcessedActionStatusDetailsProto log_info_;
-  mutable std::unique_ptr<ElementStore> element_store_;
 
   base::WeakPtrFactory<MockActionDelegate> weak_ptr_factory_{this};
 };
