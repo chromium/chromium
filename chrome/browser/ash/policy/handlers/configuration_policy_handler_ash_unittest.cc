@@ -14,7 +14,9 @@
 #include "base/values.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/arc/arc_prefs.h"
+#include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
@@ -34,6 +36,13 @@ class ScreenMagnifierPolicyHandlerTest : public testing::Test {
   PolicyMap policy_;
   PrefValueMap prefs_;
   ScreenMagnifierPolicyHandler handler_;
+};
+
+class PowerManagementIdleSettingsPolicyHandlerTest : public testing::Test {
+ protected:
+  PolicyMap policy_;
+  PrefValueMap prefs_;
+  Schema chrome_schema_{Schema::Wrap(GetChromeSchemaData())};
 };
 
 class LoginScreenPowerManagementPolicyHandlerTest : public testing::Test {
@@ -57,34 +66,33 @@ void LoginScreenPowerManagementPolicyHandlerTest::SetUp() {
   chrome_schema_ = Schema::Wrap(GetChromeSchemaData());
 }
 
+base::Value GetPref(PrefValueMap* prefs, const std::string& name) {
+  base::Value* pref_value = nullptr;
+  if (prefs->GetValue(name, &pref_value))
+    return pref_value->Clone();
+  return base::Value("Pref was not found");
+}
+
 TEST_F(ScreenMagnifierPolicyHandlerTest, Default) {
   handler_.ApplyPolicySettings(policy_, &prefs_);
-  EXPECT_FALSE(
-      prefs_.GetValue(ash::prefs::kAccessibilityScreenMagnifierEnabled, NULL));
+  EXPECT_FALSE(prefs_.GetValue(ash::prefs::kAccessibilityScreenMagnifierEnabled,
+                               nullptr));
 }
 
 TEST_F(ScreenMagnifierPolicyHandlerTest, Disabled) {
   policy_.Set(key::kScreenMagnifierType, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   handler_.ApplyPolicySettings(policy_, &prefs_);
-
-  const base::Value* enabled = nullptr;
-  EXPECT_TRUE(prefs_.GetValue(ash::prefs::kAccessibilityScreenMagnifierEnabled,
-                              &enabled));
-  ASSERT_TRUE(enabled);
-  EXPECT_EQ(base::Value(false), *enabled);
+  EXPECT_EQ(base::Value(false),
+            GetPref(&prefs_, ash::prefs::kAccessibilityScreenMagnifierEnabled));
 }
 
 TEST_F(ScreenMagnifierPolicyHandlerTest, Enabled) {
   policy_.Set(key::kScreenMagnifierType, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
   handler_.ApplyPolicySettings(policy_, &prefs_);
-
-  const base::Value* enabled = nullptr;
-  EXPECT_TRUE(prefs_.GetValue(ash::prefs::kAccessibilityScreenMagnifierEnabled,
-                              &enabled));
-  ASSERT_TRUE(enabled);
-  EXPECT_EQ(base::Value(true), *enabled);
+  EXPECT_EQ(base::Value(true),
+            GetPref(&prefs_, ash::prefs::kAccessibilityScreenMagnifierEnabled));
 }
 
 TEST(ExternalDataPolicyHandlerTest, Empty) {
@@ -175,27 +183,28 @@ TEST(ExternalDataPolicyHandlerTest, Valid) {
   EXPECT_TRUE(errors.GetErrors(key::kUserAvatarImage).empty());
 }
 
-const char kLoginScreenPowerManagementPolicy[] =
-    "{"
-    "  \"AC\": {"
-    "    \"Delays\": {"
-    "      \"ScreenDim\": 5000,"
-    "      \"ScreenOff\": 7000,"
-    "      \"Idle\": 9000"
-    "    },"
-    "    \"IdleAction\": \"DoNothing\""
-    "  },"
-    "  \"Battery\": {"
-    "    \"Delays\": {"
-    "      \"ScreenDim\": 1000,"
-    "      \"ScreenOff\": 3000,"
-    "      \"Idle\": 4000"
-    "    },"
-    "    \"IdleAction\": \"DoNothing\""
-    "  },"
-    "  \"LidCloseAction\": \"DoNothing\","
-    "  \"UserActivityScreenDimDelayScale\": 300"
-    "}";
+const char kLoginScreenPowerManagementPolicy[] = R"(
+  {
+    "AC": {
+      "Delays": {
+        "ScreenDim": 5000,
+        "ScreenOff": 7000,
+        "Idle": 9000
+      },
+      "IdleAction": "DoNothing"
+    },
+    "Battery": {
+      "Delays": {
+        "ScreenDim": 10000,
+        "ScreenOff": 3000,
+        "Idle": 4000
+      },
+      "IdleAction": "DoNothing"
+    },
+    "LidCloseAction": "DoNothing",
+    "UserActivityScreenDimDelayScale": 300
+  }
+)";
 
 }  // namespace
 
@@ -209,19 +218,22 @@ TEST(NetworkConfigurationPolicyHandlerTest, Empty) {
 }
 
 TEST(NetworkConfigurationPolicyHandlerTest, ValidONC) {
-  const std::string kTestONC(
-      "{"
-      "  \"NetworkConfigurations\": [{"
-      "    \"GUID\": \"{485d6076-dd44-6b6d-69787465725f5045}\","
-      "    \"Type\": \"WiFi\","
-      "    \"Name\": \"some name\","
-      "    \"WiFi\": {"
-      "      \"Security\": \"WEP-PSK\","
-      "      \"SSID\": \"ssid\","
-      "      \"Passphrase\": \"pass\","
-      "    }"
-      "  }]"
-      "}");
+  const std::string kTestONC = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{485d6076-dd44-6b6d-69787465725f5045}",
+          "Type": "WiFi",
+          "Name": "some name",
+          "WiFi": {
+            "Security": "WEP-PSK",
+            "SSID": "ssid",
+            "Passphrase": "pass"
+          }
+        }
+      ]
+    }
+  )";
 
   PolicyMap policy_map;
   policy_map.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
@@ -260,19 +272,22 @@ TEST(NetworkConfigurationPolicyHandlerTest, JSONParseError) {
 }
 
 TEST(NetworkConfigurationPolicyHandlerTest, Sanitization) {
-  const std::string kTestONC(
-      "{"
-      "  \"NetworkConfigurations\": [{"
-      "    \"GUID\": \"{485d6076-dd44-6b6d-69787465725f5045}\","
-      "    \"Type\": \"WiFi\","
-      "    \"Name\": \"some name\","
-      "    \"WiFi\": {"
-      "      \"Security\": \"WEP-PSK\","
-      "      \"SSID\": \"ssid\","
-      "      \"Passphrase\": \"pass\","
-      "    }"
-      "  }]"
-      "}");
+  const std::string kTestONC = R"(
+    {
+      "NetworkConfigurations": [
+        {
+          "GUID": "{485d6076-dd44-6b6d-69787465725f5045}",
+          "Type": "WiFi",
+          "Name": "some name",
+          "WiFi": {
+            "Security": "WEP-PSK",
+            "SSID": "ssid",
+            "Passphrase": "pass"
+          }
+        }
+      ]
+    }
+  )";
 
   PolicyMap policy_map;
   policy_map.Set(key::kOpenNetworkConfiguration, POLICY_LEVEL_MANDATORY,
@@ -295,15 +310,14 @@ TEST(PinnedLauncherAppsPolicyHandler, PrefTranslation) {
   base::Value list(base::Value::Type::LIST);
   PolicyMap policy_map;
   PrefValueMap prefs;
-  base::ListValue expected_pinned_apps;
-  base::Value* value = nullptr;
+  base::Value expected_pinned_apps(base::Value::Type::LIST);
   PinnedLauncherAppsPolicyHandler handler;
 
   policy_map.Set(key::kPinnedLauncherApps, POLICY_LEVEL_MANDATORY,
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
   handler.ApplyPolicySettings(policy_map, &prefs);
-  EXPECT_TRUE(prefs.GetValue(prefs::kPolicyPinnedLauncherApps, &value));
-  EXPECT_EQ(expected_pinned_apps, *value);
+  EXPECT_EQ(expected_pinned_apps,
+            GetPref(&prefs, prefs::kPolicyPinnedLauncherApps));
 
   // Extension IDs are OK.
   base::Value entry1("abcdefghijklmnopabcdefghijklmnop");
@@ -327,8 +341,8 @@ TEST(PinnedLauncherAppsPolicyHandler, PrefTranslation) {
                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, list.Clone(), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  EXPECT_TRUE(prefs.GetValue(prefs::kPolicyPinnedLauncherApps, &value));
-  EXPECT_EQ(expected_pinned_apps, *value);
+  EXPECT_EQ(expected_pinned_apps,
+            GetPref(&prefs, prefs::kPolicyPinnedLauncherApps));
 }
 
 TEST_F(LoginScreenPowerManagementPolicyHandlerTest, Empty) {
@@ -363,6 +377,129 @@ TEST_F(LoginScreenPowerManagementPolicyHandlerTest, WrongType) {
       errors.GetErrors(key::kDeviceLoginScreenPowerManagement).empty());
 }
 
+TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
+       MinimumIdleWithoutChangingIdleAction) {
+  const std::string policy_with_minimum_correct_idle_timeouts = R"(
+    {
+      "AC": {
+        "IdleAction": "Shutdown",
+        "Delays": {
+          "Idle": 1
+        }
+      },
+      "Battery": {
+        "IdleAction": "Shutdown",
+        "Delays": {
+          "Idle": 1
+        }
+      }
+    }
+  )";
+  policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+              base::JSONReader::Read(policy_with_minimum_correct_idle_timeouts),
+              nullptr);
+  PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
+  handler.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(1), GetPref(&prefs_, ash::prefs::kPowerAcIdleDelayMs));
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN),
+            GetPref(&prefs_, ash::prefs::kPowerAcIdleAction));
+  EXPECT_EQ(base::Value(1),
+            GetPref(&prefs_, ash::prefs::kPowerBatteryIdleDelayMs));
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN),
+            GetPref(&prefs_, ash::prefs::kPowerBatteryIdleAction));
+}
+
+TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
+       SetPowerAcIdleActionToDoNothingForZeroAcIdleDelay) {
+  const std::string policy_with_zero_ac_idle = R"(
+    {
+      "AC": {
+        "IdleAction": "Shutdown",
+        "Delays": {
+          "Idle": 0
+        }
+      },
+      "Battery": {
+        "IdleAction": "Shutdown",
+        "Delays": {
+          "Idle": 30000
+        }
+      }
+    }
+  )";
+  policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+              base::JSONReader::Read(policy_with_zero_ac_idle), nullptr);
+  PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
+  handler.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(0), GetPref(&prefs_, ash::prefs::kPowerAcIdleDelayMs));
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING),
+            GetPref(&prefs_, ash::prefs::kPowerAcIdleAction));
+  // Do not change battery idle action.
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN),
+            GetPref(&prefs_, ash::prefs::kPowerBatteryIdleAction));
+}
+
+TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
+       SetPowerBatteryIdleActionToDoNothingForZeroBatteryIdleDelay) {
+  const std::string policy_with_zero_battery_idle = R"(
+    {
+      "AC": {
+        "IdleAction": "Shutdown",
+        "Delays": {
+          "Idle": 30000
+        }
+      },
+      "Battery": {
+        "IdleAction": "Shutdown",
+        "Delays": {
+          "Idle": 0
+        }
+      }
+    }
+  )";
+  policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+              base::JSONReader::Read(policy_with_zero_battery_idle), nullptr);
+  PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
+  handler.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(0),
+            GetPref(&prefs_, ash::prefs::kPowerBatteryIdleDelayMs));
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING),
+            GetPref(&prefs_, ash::prefs::kPowerBatteryIdleAction));
+  // Do not change AC idle action.
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN),
+            GetPref(&prefs_, ash::prefs::kPowerAcIdleAction));
+}
+
+TEST_F(PowerManagementIdleSettingsPolicyHandlerTest,
+       DoNotChangeIdleActionIfIdleTimeoutNotSet) {
+  const std::string policy_without_idle_timeouts = R"(
+    {
+      "AC": {
+        "IdleAction": "Shutdown"
+      },
+      "Battery": {
+        "IdleAction": "Shutdown"
+      }
+    }
+  )";
+  policy_.Set(key::kPowerManagementIdleSettings, POLICY_LEVEL_MANDATORY,
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+              base::JSONReader::Read(policy_without_idle_timeouts), nullptr);
+  PowerManagementIdleSettingsPolicyHandler handler(chrome_schema_);
+  handler.ApplyPolicySettings(policy_, &prefs_);
+
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN),
+            GetPref(&prefs_, ash::prefs::kPowerBatteryIdleAction));
+  EXPECT_EQ(base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN),
+            GetPref(&prefs_, ash::prefs::kPowerAcIdleAction));
+}
+
 TEST(ArcServicePolicyHandlerTest, DisabledByDefault) {
   PolicyMap policy_map;
   SetEnterpriseUsersDefaults(&policy_map);
@@ -373,10 +510,8 @@ TEST(ArcServicePolicyHandlerTest, DisabledByDefault) {
   EXPECT_TRUE(errors.empty());
   PrefValueMap prefs;
   handler.ApplyPolicySettings(policy_map, &prefs);
-  const base::Value* enabled = nullptr;
-  EXPECT_TRUE(prefs.GetValue(arc::prefs::kArcBackupRestoreEnabled, &enabled));
-  ASSERT_TRUE(enabled);
-  EXPECT_EQ(base::Value(false), *enabled);
+  EXPECT_EQ(base::Value(false),
+            GetPref(&prefs, arc::prefs::kArcBackupRestoreEnabled));
 }
 
 TEST(ArcServicePolicyHandlerTest, UnderUserControlWhenWrongType) {
@@ -419,10 +554,8 @@ TEST(ArcServicePolicyHandlerTest, DisabledByPolicy) {
   EXPECT_TRUE(errors.empty());
   PrefValueMap prefs;
   handler.ApplyPolicySettings(policy_map, &prefs);
-  const base::Value* enabled = nullptr;
-  EXPECT_TRUE(prefs.GetValue(arc::prefs::kArcBackupRestoreEnabled, &enabled));
-  ASSERT_TRUE(enabled);
-  EXPECT_EQ(base::Value(false), *enabled);
+  EXPECT_EQ(base::Value(false),
+            GetPref(&prefs, arc::prefs::kArcBackupRestoreEnabled));
 }
 
 TEST(ArcServicePolicyHandlerTest, UnderUserControlByPolicy) {
@@ -458,10 +591,8 @@ TEST(ArcServicePolicyHandlerTest, EnabledByPolicy) {
   EXPECT_TRUE(errors.empty());
   PrefValueMap prefs;
   handler.ApplyPolicySettings(policy_map, &prefs);
-  const base::Value* enabled = nullptr;
-  EXPECT_TRUE(prefs.GetValue(arc::prefs::kArcBackupRestoreEnabled, &enabled));
-  ASSERT_TRUE(enabled);
-  EXPECT_EQ(base::Value(true), *enabled);
+  EXPECT_EQ(base::Value(true),
+            GetPref(&prefs, arc::prefs::kArcBackupRestoreEnabled));
 }
 
 TEST(ArcServicePolicyHandlerTest, NotOverridingAnotherPolicy) {
@@ -479,13 +610,11 @@ TEST(ArcServicePolicyHandlerTest, NotOverridingAnotherPolicy) {
   PrefValueMap prefs;
   prefs.SetBoolean(arc::prefs::kArcBackupRestoreEnabled, false);
   handler.ApplyPolicySettings(policy_map, &prefs);
-  const base::Value* enabled = nullptr;
-  EXPECT_TRUE(prefs.GetValue(arc::prefs::kArcBackupRestoreEnabled, &enabled));
-  ASSERT_TRUE(enabled);
-  EXPECT_EQ(base::Value(false), *enabled);
+  EXPECT_EQ(base::Value(false),
+            GetPref(&prefs, arc::prefs::kArcBackupRestoreEnabled));
 }
 
-TEST(ArcServicePolicyHandlerTest, UnserUserControlForConsumer) {
+TEST(ArcServicePolicyHandlerTest, UnderUserControlForConsumer) {
   PolicyMap policy_map;
   ArcServicePolicyHandler handler(key::kArcBackupRestoreServiceEnabled,
                                   arc::prefs::kArcBackupRestoreEnabled);
