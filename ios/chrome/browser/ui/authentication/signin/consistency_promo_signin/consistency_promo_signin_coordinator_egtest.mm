@@ -105,4 +105,33 @@
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 }
 
+// Display an error dialog and then dismiss the web sign-in dialog.
+- (void)testGetErrorDialogAndSkipWebSigninDialog {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGreyAppInterface triggerConsistencyPromoSigninDialog];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninContinueButtonMatcher()]
+      performAction:grey_tap()];
+  // Wait for the error dialog (sign-in fails since the sign-in is done with a
+  // fake identity).
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:
+          chrome_test_util::StaticTextWithAccessibilityLabelId(
+              IDS_IOS_SIGN_IN_AUTH_FAILURE)
+                                  timeout:base::test::ios::
+                                              kWaitForDownloadTimeout];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabelId(
+                     IDS_IOS_SIGN_IN_DISMISS)] performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  // Skip the web sign-in dialog.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::WebSigninSkipButtonMatcher()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+}
+
 @end
