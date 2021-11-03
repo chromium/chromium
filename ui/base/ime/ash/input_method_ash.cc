@@ -276,19 +276,9 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
   // we have to convert |selection_range| from node coordinates to
   // |surrounding_text| coordinates.
   if (GetEngine()) {
-    DCHECK_LE(text_range.start(), text_range.end());
-
-    const uint32_t offset = text_range.start();
-    DCHECK_GE(selection_range.start(), offset);
-    DCHECK_GE(selection_range.end(), offset);
-
-    const uint32_t relative_selection_start = selection_range.start() - offset;
-    const uint32_t relative_selection_end = selection_range.end() - offset;
-    DCHECK_LE(relative_selection_start, surrounding_text.length());
-    DCHECK_LE(relative_selection_end, surrounding_text.length());
-
-    GetEngine()->SetSurroundingText(surrounding_text, relative_selection_start,
-                                    relative_selection_end, offset);
+    GetEngine()->SetSurroundingText(
+        surrounding_text, selection_range.start() - text_range.start(),
+        selection_range.end() - text_range.start(), text_range.start());
   }
 }
 
