@@ -643,6 +643,16 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
   gfx::Rect destination_subregion = gfx::Rect(kSourceSize);
   destination_subregion.ClampToCenteredSize(result_selection.size());
 
+  if (destination_subregion.x() % 2 != 0 ||
+      destination_subregion.y() % 2 != 0) {
+    // TODO(https://crbug.com/1256483): Fail the test case after adjusting asset
+    // sizes, if we got odd origin it means that the assets have been
+    // accidentally changed to no longer be even.
+    GTEST_SKIP() << " The test case expects the blit region's origin to be "
+                    "even for NV12 "
+                    " blit requests";
+  }
+
   const SkColor rgba_red = SkColorSetARGB(0xff, 0xff, 0, 0);
   const SkColor yuv_red = GLScalerTestUtil::ConvertRGBAColorToYUV(rgba_red);
 

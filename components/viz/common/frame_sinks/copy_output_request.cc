@@ -108,6 +108,10 @@ void CopyOutputRequest::set_blit_request(const BlitRequest& blit_request) {
   DCHECK_EQ(result_destination(), ResultDestination::kNativeTextures);
   DCHECK_EQ(result_format(), ResultFormat::NV12_PLANES);
 
+  // Destination region must start at an even offset for NV12 results:
+  DCHECK_EQ(blit_request.destination_region_offset.x() % 2, 0);
+  DCHECK_EQ(blit_request.destination_region_offset.y() % 2, 0);
+
 #if DCHECK_IS_ON()
   {
     const gpu::MailboxHolder* first_zeroed_mailbox_it = std::find_if(
