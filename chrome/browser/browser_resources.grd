@@ -21,7 +21,6 @@
         <structure name="IDR_KEYBOARD_UTILS_JS" file="resources\chromeos\keyboard\keyboard_utils.js" flattenhtml="true" type="chrome_html" />
         <structure name="IDR_ASSISTANT_OPTIN_HTML" file="resources\chromeos\assistant_optin\assistant_optin.html" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
         <structure name="IDR_ASSISTANT_OPTIN_JS" file="resources\chromeos\assistant_optin\assistant_optin.js" flattenhtml="true" allowexternalscript="true" type="chrome_html" />
-        <structure name="IDR_ASSISTANT_OPTIN_I18N_TEMPLATE_PROCESS_JS" file="resources\chromeos\assistant_optin\i18n_template_process.js" type="chrome_html" />
       </if>
     </structures>
     <includes>
