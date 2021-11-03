@@ -32,8 +32,8 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
   source->AddLocalizedString("appTitle", IDS_MEDIA_APP_APP_NAME);
 
-  // Redirects "system_assets/app_icon_*.png" (from manifest.json) to the icons
-  // for the gallery app.
+  // Redirects "system_assets/*" (from manifest.json) to the icons for the
+  // gallery app.
   // TODO(b/141588875): Switch these to IDR_MEDIA_APP_APP_ICON_*_PNG in the
   // internal media_app_bundle_resources.grd file (and add more icon
   // resolutions) when the final icon is ready.
@@ -53,6 +53,17 @@ content::WebUIDataSource* CreateHostDataSource() {
                           IDR_MEDIA_APP_GALLERY_ICON_192_PNG);
   source->AddResourcePath("system_assets/app_icon_256.png",
                           IDR_MEDIA_APP_GALLERY_ICON_256_PNG);
+  // Favicons.
+  source->AddResourcePath("system_assets/video_icon.svg",
+                          IDR_MEDIA_APP_VIDEO_ICON_SVG);
+  source->AddResourcePath("system_assets/image_icon.svg",
+                          IDR_MEDIA_APP_IMAGE_ICON_SVG);
+  source->AddResourcePath("system_assets/audio_icon.svg",
+                          IDR_MEDIA_APP_AUDIO_ICON_SVG);
+  source->AddResourcePath("system_assets/file_icon.svg",
+                          IDR_MEDIA_APP_FILE_ICON_SVG);
+  source->AddResourcePath("system_assets/app_icon.svg",
+                          IDR_MEDIA_APP_APP_ICON_SVG);
   return source;
 }
 

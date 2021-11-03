@@ -4,7 +4,7 @@
 
 import * as error_reporter from './error_reporter.js';
 import {assertCast, MessagePipe} from './message_pipe.m.js';
-import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
+import {DeleteFileMessage, FileContext, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
 
 const EMPTY_WRITE_ERROR_NAME = 'EmptyWriteError';
@@ -50,6 +50,13 @@ let FileDescriptor;
  * @type {!Array<!FileDescriptor>}
  */
 const currentFiles = [];
+
+/**
+ * A variable for storing the name of the app, taken from the <title>. We store
+ * it here since we mutate the title to show filename, but may want to restore
+ * it in some circumstances i.e. returning to zero state.
+ */
+let appTitle;
 
 /**
  * The current sort order.
@@ -110,6 +117,25 @@ const guestMessagePipe =
  */
 const iframeReady = new Promise(resolve => {
   guestMessagePipe.registerHandler(Message.IFRAME_READY, resolve);
+});
+
+guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
+  const notifyMsg = /** @type {!NotifyCurrentFileMessage} */ (message);
+
+  const title =
+      /** @type {!HTMLTitleElement} */ (document.querySelector('title'));
+  appTitle = appTitle || title.text;
+  title.text = notifyMsg.name || appTitle;
+
+  let genericType = notifyMsg.type ? notifyMsg.type.split('/')[0] : 'file';
+  if (title.text === appTitle) {
+    genericType = 'app';
+  } else if (!['audio', 'image', 'video', 'file'].includes(genericType)) {
+    genericType = 'file';
+  }
+  const icon = /** @type {!HTMLLinkElement} */ (
+      document.querySelector('link[rel=icon]'));
+  icon.href = `system_assets/${genericType}_icon.svg`;
 });
 
 guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {

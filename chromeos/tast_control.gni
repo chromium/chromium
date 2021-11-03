@@ -15,6 +15,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/196705842
   "apps.LaunchGalleryLanguage",
 
+  # b/204943503
+  "apps.LaunchGallery.stable",
+
   # crbug.com/1242415
   "hwsec.AttestationEnrollOnly",
   "hwsec.ChapsAttributePolicy",

@@ -186,6 +186,13 @@ mediaApp.ClientApiDelegate.prototype.openFeedbackDialog = function() {};
 mediaApp.ClientApiDelegate.prototype.requestSaveFile = function(
     suggestedName, mimeType, acceptTypeKeys) {};
 /**
+ * Notify MediaApp that the current file has been updated.
+ * @param {string|undefined} name
+ * @param {string|undefined} type
+ */
+mediaApp.ClientApiDelegate.prototype.notifyCurrentFile = function(
+    name, type) {};
+/**
  * Attempts to extract a JPEG "preview" from a RAW image file. Throws on any
  * failure. Note this is typically a full-sized preview, not a thumbnail.
  * @param {!Blob} file
