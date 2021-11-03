@@ -164,7 +164,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(
         base::FeatureList::IsEnabled(
             autofill::features::kAutofillUseConsistentPopupSettingsIcons)
-            ? kProductIcon
+            ? kMonoColorProductIcon
             : vector_icons::kSettingsIcon);
   }
 

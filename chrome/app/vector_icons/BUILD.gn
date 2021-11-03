@@ -71,6 +71,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "media_toolbar_button.icon",
     "media_toolbar_button_touch.icon",
     "mixed_content.icon",
+    "mono_color_product.icon",
     "move_group_to_new_window.icon",
     "my_location.icon",
     "navigate_home.icon",
