@@ -23,6 +23,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
@@ -90,3 +91,6 @@ void WebAppHoverButton::OnIconsRead(
                                   image_size);
   SetImage(views::Button::ButtonState::STATE_NORMAL, imageSkia);
 }
+
+BEGIN_METADATA(WebAppHoverButton, HoverButton)
+END_METADATA

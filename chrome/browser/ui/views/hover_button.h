@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace media_router {
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);
@@ -115,5 +116,11 @@ class HoverButton : public views::LabelButton {
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};
 };
+
+BEGIN_VIEW_BUILDER(, HoverButton, views::LabelButton)
+VIEW_BUILDER_METHOD(SetTitleTextStyle, views::style::TextStyle, SkColor)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, HoverButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_

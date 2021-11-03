@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/controls/button/button.h"
 #include "url/gurl.h"
@@ -69,3 +70,6 @@ void WebAppUrlHandlerHoverButton::MarkAsUnselected(const ui::Event* event) {
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged,
                            /*send_native_event=*/true);
 }
+
+BEGIN_METADATA(WebAppUrlHandlerHoverButton, WebAppHoverButton)
+END_METADATA

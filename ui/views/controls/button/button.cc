@@ -216,6 +216,17 @@ void Button::SetState(ButtonState state) {
   OnPropertyChanged(&state_, kPropertyEffectsPaint);
 }
 
+int Button::GetTag() const {
+  return tag_;
+}
+
+void Button::SetTag(int tag) {
+  if (tag_ == tag)
+    return;
+  tag_ = tag;
+  OnPropertyChanged(&tag_, kPropertyEffectsNone);
+}
+
 void Button::StartThrobbing(int cycles_til_stop) {
   if (!animate_on_state_change_)
     return;
@@ -709,6 +720,7 @@ ADD_PROPERTY_METADATA(bool, HideInkDropWhenShowingContextMenu)
 ADD_PROPERTY_METADATA(bool, InstallFocusRingOnFocus)
 ADD_PROPERTY_METADATA(bool, RequestFocusOnPress)
 ADD_PROPERTY_METADATA(ButtonState, State)
+ADD_PROPERTY_METADATA(int, Tag)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(int, TriggerableEventFlags)
 END_METADATA

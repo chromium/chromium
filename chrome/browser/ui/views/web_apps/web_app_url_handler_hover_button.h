@@ -10,7 +10,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_hover_button.h"
 #include "chrome/browser/web_applications/url_handler_launch_params.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/view_factory.h"
 
 class GURL;
 
@@ -22,6 +24,7 @@ class WebAppProvider;
 // icon, a title and a subtitle.
 class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
  public:
+  METADATA_HEADER(WebAppUrlHandlerHoverButton);
   // Creates a hoverable button with the given elements for an app, like so:
   //
   // +-------------------------------------------------------------------+
@@ -71,5 +74,10 @@ class WebAppUrlHandlerHoverButton : public WebAppHoverButton {
   const bool is_app_;
   bool selected_ = false;
 };
+
+BEGIN_VIEW_BUILDER(, WebAppUrlHandlerHoverButton, WebAppHoverButton)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, WebAppUrlHandlerHoverButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_URL_HANDLER_HOVER_BUTTON_H_
