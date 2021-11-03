@@ -107,6 +107,8 @@ const CGFloat kFaviconWidthHeight = 24;
 
 @property(nonatomic, assign) Browser* browser;
 
+@property(nonatomic, weak) UIViewController* baseViewController;
+
 // Handles displaying the action sheet for all form factors.
 @property(nonatomic, strong)
     ActionSheetCoordinator* legacyContextMenuCoordinator;
@@ -120,10 +122,12 @@ const CGFloat kFaviconWidthHeight = 24;
 
 @implementation ContextMenuConfigurationProvider
 
-- (instancetype)initWithBrowser:(Browser*)browser {
+- (instancetype)initWithBrowser:(Browser*)browser
+             baseViewController:(UIViewController*)baseViewController {
   self = [super init];
   if (self) {
     _browser = browser;
+    _baseViewController = baseViewController;
     _imageSaver = [[ImageSaver alloc] initWithBrowser:self.browser];
     _imageCopier = [[ImageCopier alloc] initWithBrowser:self.browser];
   }
@@ -132,8 +136,7 @@ const CGFloat kFaviconWidthHeight = 24;
 
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
-                                 params:(web::ContextMenuParams)params
-                     baseViewController:(UIViewController*)baseViewController {
+                                 params:(web::ContextMenuParams)params {
   self.linkPreview = nil;
   // Prevent context menu from displaying for a tab which is no longer the
   // current one.
@@ -147,7 +150,7 @@ const CGFloat kFaviconWidthHeight = 24;
   const bool isImage = imageURL.is_valid();
 
   BOOL isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
-  __weak UIViewController* weakBaseViewController = baseViewController;
+  __weak UIViewController* weakBaseViewController = self.baseViewController;
 
   // Presents a custom menu only if there is a valid url or a valid image.
   if (!isLink && !isImage)
@@ -425,8 +428,7 @@ const CGFloat kFaviconWidthHeight = 24;
 }
 
 - (void)showLegacyContextMenuForWebState:(web::WebState*)webState
-                                  params:(web::ContextMenuParams)params
-                      baseViewController:(UIViewController*)baseViewController {
+                                  params:(web::ContextMenuParams)params {
   DCHECK(!web::features::UseWebViewNativeContextMenuWeb() &&
          !web::features::UseWebViewNativeContextMenuSystem());
   // Prevent context menu from displaying for a tab which is no longer the
@@ -443,7 +445,7 @@ const CGFloat kFaviconWidthHeight = 24;
   DCHECK(self.browser->GetBrowserState());
 
   BOOL isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
-  __weak UIViewController* weakBaseViewController = baseViewController;
+  __weak UIViewController* weakBaseViewController = self.baseViewController;
 
   // Truncate context meny titles that originate from URLs, leaving text titles
   // untruncated.
@@ -455,7 +457,7 @@ const CGFloat kFaviconWidthHeight = 24;
   }
 
   self.legacyContextMenuCoordinator = [[ActionSheetCoordinator alloc]
-      initWithBaseViewController:baseViewController
+      initWithBaseViewController:self.baseViewController
                          browser:self.browser
                            title:menuTitle
                          message:nil

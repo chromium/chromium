@@ -43,8 +43,8 @@ class WebStateDelegate {
 
   // Returns the WebState the URL is opened in, or nullptr if the URL wasn't
   // opened immediately.
-  virtual WebState* OpenURLFromWebState(WebState*,
-                                        const WebState::OpenURLParams&);
+  virtual WebState* OpenURLFromWebState(WebState* source,
+                                        const WebState::OpenURLParams& params);
 
   // Notifies the delegate that the user triggered the context menu with the
   // given |ContextMenuParams|. If the delegate does not implement this method,

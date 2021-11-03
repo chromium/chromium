@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_metrics_browser_agent.h"
@@ -60,6 +61,9 @@ void AttachBrowserAgents(Browser* browser) {
   // Send Tab To Self is non-OTR only.
   if (!browser->GetBrowserState()->IsOffTheRecord())
     SendTabToSelfBrowserAgent::CreateForBrowser(browser);
+
+  // WebStateDelegateBrowserAgent requires TabInsertionBrowserAgent.
+  WebStateDelegateBrowserAgent::CreateForBrowser(browser);
 
   // UrlLoadingBrowserAgent requires UrlLoadingNotifierBrowserAgent.
   UrlLoadingBrowserAgent::CreateForBrowser(browser);

@@ -39,7 +39,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/main",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/policy:policy_util",

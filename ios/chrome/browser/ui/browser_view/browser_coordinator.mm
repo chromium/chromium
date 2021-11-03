@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/ui/commands/whats_new_commands.h"
+#import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
@@ -88,6 +89,7 @@
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -144,6 +146,10 @@
 // Coordinator for the badge popup menu.
 @property(nonatomic, strong)
     BadgePopupMenuCoordinator* badgePopupMenuCoordinator;
+
+// Coordinator-ish provider for context menus.
+@property(nonatomic, strong)
+    ContextMenuConfigurationProvider* contextMenuProvider;
 
 // Coordinator for the find bar.
 @property(nonatomic, strong) FindBarCoordinator* findBarCoordinator;
@@ -330,6 +336,8 @@
 
   [self.pageInfoCoordinator stop];
 
+  [self.contextMenuProvider dismissLegacyContextMenu];
+
   [self.viewController clearPresentedStateWithCompletion:completion
                                           dismissOmnibox:dismissOmnibox];
 }
@@ -377,6 +385,9 @@
                           dispatcher:self.dispatcher];
   WebNavigationBrowserAgent::FromBrowser(self.browser)
       ->SetDelegate(_viewController);
+  self.contextMenuProvider = [[ContextMenuConfigurationProvider alloc]
+         initWithBrowser:self.browser
+      baseViewController:_viewController];
 }
 
 // Shuts down the BrowserViewController.
@@ -415,7 +426,6 @@
                          browser:self.browser];
   self.formInputAccessoryCoordinator.navigator = self;
   [self.formInputAccessoryCoordinator start];
-  self.viewController.inputViewProvider = self.formInputAccessoryCoordinator;
 
   if (base::FeatureList::IsEnabled(kDownloadMobileConfigFile)) {
     self.mobileConfigCoordinator = [[MobileConfigCoordinator alloc]
@@ -1003,6 +1013,13 @@
 
 // Installs delegates for self.browser.
 - (void)installDelegatesForBrowser {
+  // The view controller should have been created.
+  DCHECK(self.viewController);
+
+  WebStateDelegateBrowserAgent::FromBrowser(self.browser)
+      ->SetUIProviders(self.contextMenuProvider,
+                       self.formInputAccessoryCoordinator, self.viewController);
+
   UrlLoadingBrowserAgent* loadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   if (loadingAgent) {
@@ -1012,6 +1029,8 @@
 
 // Uninstalls delegates for self.browser.
 - (void)uninstallDelegatesForBrowser {
+  WebStateDelegateBrowserAgent::FromBrowser(self.browser)->ClearUIProviders();
+
   UrlLoadingBrowserAgent* loadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   if (loadingAgent) {

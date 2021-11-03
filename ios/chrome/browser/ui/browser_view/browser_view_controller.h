@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
+#import "ios/chrome/browser/web/web_state_container_view_provider.h"
 
 @protocol ActivityServicePositioner;
 class Browser;
@@ -41,13 +42,17 @@ class Browser;
                         SyncPresenter,
                         ThumbStripSupporting,
                         ToolbarCoordinatorDelegate,
-                        WebNavigationNTPDelegate>
+                        WebNavigationNTPDelegate,
+                        WebStateContainerViewProvider>
 
-// Initializes a new BVC from its nib. |model| must not be nil. The
-// webUsageSuspended property for this BVC will be based on |model|, and future
-// changes to |model|'s suspension state should be made through this BVC
-// instead of directly on the model.
-// TODO(crbug.com/992582): Remove references to model objects from this class.
+// Initializes a new BVC.
+// |browser| is the browser whose tabs this BVC will display.
+// |factory| is the dependency factory created for this BVC instance.
+// |browserContainerViewController| is the container object this BVC will exist
+// inside.
+// |dispatcher| is the dispatcher instance this BVC will use.
+// TODO(crbug.com/992582): Remove references to model objects -- including
+//   |browser| and |dispatcher| -- from this class.
 - (instancetype)initWithBrowser:(Browser*)browser
                  dependencyFactory:
                      (BrowserViewControllerDependencyFactory*)factory
@@ -94,9 +99,6 @@ class Browser;
 // Presentation delegate for the non-modal default browser promo.
 @property(nonatomic, weak) id<DefaultPromoNonModalPresentationDelegate>
     nonModalPromoPresentationDelegate;
-
-// The input view provider for this browser view controller.
-@property(nonatomic, weak) id<CRWResponderInputView> inputViewProvider;
 
 // Whether the receiver is currently the primary BVC.
 - (void)setPrimary:(BOOL)primary;

@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,6 +70,8 @@ class BrowserCoordinatorTest : public PlatformTest {
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
+    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];

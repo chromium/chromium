@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
-#import "ios/chrome/browser/web/web_state_delegate_tab_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/components/security_interstitials/legacy_tls/legacy_tls_tab_allow_list.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
@@ -98,8 +97,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   // IOSChromeSessionTabHelper sets up the session ID used by other helpers,
   // so it needs to be created before them.
   IOSChromeSessionTabHelper::CreateForWebState(web_state);
-
-  WebStateDelegateTabHelper::CreateForWebState(web_state);
 
   NSString* tab_id = TabIdTabHelper::FromWebState(web_state)->tab_id();
   VoiceSearchNavigationTabHelper::CreateForWebState(web_state);
