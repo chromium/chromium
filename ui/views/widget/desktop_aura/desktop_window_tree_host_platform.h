@@ -142,15 +142,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void OnWorkspaceChanged() override;
 
  protected:
-  // TODO(https://crbug.com/990756): move these methods back to private
-  // once DWTHX11 stops using them.
-  internal::NativeWidgetDelegate* native_widget_delegate() {
-    return native_widget_delegate_;
-  }
-  DesktopNativeWidgetAura* desktop_native_widget_aura() {
-    return desktop_native_widget_aura_;
-  }
-
   // These are not general purpose methods and must be used with care. Please
   // make sure you understand the rounding direction before using.
   gfx::Rect ToDIPRect(const gfx::Rect& rect_in_pixels) const;
