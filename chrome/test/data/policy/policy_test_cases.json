@@ -6239,12 +6239,22 @@
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "background_mode.enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
         "policies": {
           "BackgroundModeEnabled": false
         },
         "prefs": {
           "background_mode.enabled": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": false
           }
         }
       }
