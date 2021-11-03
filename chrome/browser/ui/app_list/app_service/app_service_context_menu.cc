@@ -66,10 +66,10 @@ AppServiceContextMenu::AppServiceContextMenu(
     Profile* profile,
     const std::string& app_id,
     AppListControllerDelegate* controller)
-    : AppContextMenu(delegate, profile, app_id, controller) {
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
+    : AppContextMenu(delegate, profile, app_id, controller),
+      proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)) {
+  proxy_->AppRegistryCache().ForOneApp(
+      app_id, [this](const apps::AppUpdate& update) {
         app_type_ = apps_util::IsInstalled(update.Readiness())
                         ? update.AppType()
                         : apps::mojom::AppType::kUnknown;
@@ -85,8 +85,6 @@ AppServiceContextMenu::AppServiceContextMenu(
 AppServiceContextMenu::~AppServiceContextMenu() = default;
 
 void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
   if (app_type_ == apps::mojom::AppType::kUnknown) {
     std::move(callback).Run(nullptr);
     return;
@@ -99,7 +97,7 @@ void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
     return;
   }
 
-  proxy->GetMenuModel(
+  proxy_->GetMenuModel(
       app_id(), apps::mojom::MenuType::kAppList,
       controller()->GetAppListDisplayId(),
       base::BindOnce(&AppServiceContextMenu::OnGetMenuModel,
@@ -176,8 +174,8 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         if (app_type_ == apps::mojom::AppType::kWeb &&
             command_id == ash::USE_LAUNCH_TYPE_TABBED_WINDOW) {
-          apps::AppServiceProxyFactory::GetForProfile(profile())->SetWindowMode(
-              app_id(), apps::mojom::WindowMode::kTabbedWindow);
+          proxy_->SetWindowMode(app_id(),
+                                apps::mojom::WindowMode::kTabbedWindow);
           return;
         }
 
@@ -214,12 +212,10 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
       if (command_id >= ash::USE_LAUNCH_TYPE_COMMAND_START &&
           command_id < ash::USE_LAUNCH_TYPE_COMMAND_END) {
         auto user_window_mode = apps::mojom::WindowMode::kUnknown;
-        apps::AppServiceProxyFactory::GetForProfile(profile())
-            ->AppRegistryCache()
-            .ForOneApp(app_id(),
-                       [&user_window_mode](const apps::AppUpdate& update) {
-                         user_window_mode = update.WindowMode();
-                       });
+        proxy_->AppRegistryCache().ForOneApp(
+            app_id(), [&user_window_mode](const apps::AppUpdate& update) {
+              user_window_mode = update.WindowMode();
+            });
         return user_window_mode != apps::mojom::WindowMode::kUnknown &&
                user_window_mode ==
                    ConvertUseLaunchTypeCommandToWindowMode(command_id);
@@ -352,10 +348,8 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
       // Web apps can only toggle between kWindow and kBrowser.
       apps::mojom::WindowMode user_window_mode =
           ConvertUseLaunchTypeCommandToWindowMode(command_id);
-      if (user_window_mode != apps::mojom::WindowMode::kUnknown) {
-        apps::AppServiceProxyFactory::GetForProfile(profile())->SetWindowMode(
-            app_id(), user_window_mode);
-      }
+      if (user_window_mode != apps::mojom::WindowMode::kUnknown)
+        proxy_->SetWindowMode(app_id(), user_window_mode);
       return;
     }
     case apps::mojom::AppType::kExtension: {
@@ -391,8 +385,7 @@ void AppServiceContextMenu::ExecutePublisherContextMenuCommand(int command_id) {
   DCHECK(app_shortcut_items_);
   DCHECK_LT(index, app_shortcut_items_->size());
 
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->ExecuteContextMenuCommand(app_id(), command_id,
-                                  app_shortcut_items_->at(index).shortcut_id,
-                                  controller()->GetAppListDisplayId());
+  proxy_->ExecuteContextMenuCommand(app_id(), command_id,
+                                    app_shortcut_items_->at(index).shortcut_id,
+                                    controller()->GetAppListDisplayId());
 }

@@ -36,12 +36,13 @@ WebAppsCrosapiFactory::WebAppsCrosapiFactory()
     : BrowserContextKeyedServiceFactory(
           "WebAppsCrosapi",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(AppServiceProxyFactory::GetInstance());
 }
 
 KeyedService* WebAppsCrosapiFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new WebAppsCrosapi(Profile::FromBrowserContext(context));
+  return new WebAppsCrosapi(AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(context)));
 }
 
 }  // namespace apps

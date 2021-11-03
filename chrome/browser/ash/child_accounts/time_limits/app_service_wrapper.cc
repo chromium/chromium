@@ -169,13 +169,11 @@ void AppServiceWrapper::GetAppIcon(
     int size_hint_in_dp,
     base::OnceCallback<void(absl::optional<gfx::ImageSkia>)> on_icon_ready)
     const {
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
   const std::string app_service_id = AppServiceIdFromAppId(app_id, profile_);
   DCHECK(!app_service_id.empty());
 
   auto icon_type = apps::mojom::IconType::kStandard;
-  proxy->LoadIconFromIconKey(
+  GetAppProxy()->LoadIconFromIconKey(
       app_id.app_type(), app_service_id, apps::mojom::IconKey::New(), icon_type,
       size_hint_in_dp,
       /* allow_placeholder_icon */ false,
@@ -294,18 +292,16 @@ void AppServiceWrapper::OnInstanceRegistryWillBeDestroyed(
   apps::InstanceRegistry::Observer::Observe(nullptr);
 }
 
-apps::AppServiceProxyChromeOs* AppServiceWrapper::GetAppProxy() {
+apps::AppServiceProxy* AppServiceWrapper::GetAppProxy() const {
   return apps::AppServiceProxyFactory::GetForProfile(profile_);
 }
 
 apps::AppRegistryCache& AppServiceWrapper::GetAppCache() const {
-  return apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache();
+  return GetAppProxy()->AppRegistryCache();
 }
 
 apps::InstanceRegistry& AppServiceWrapper::GetInstanceRegistry() const {
-  return apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->InstanceRegistry();
+  return GetAppProxy()->InstanceRegistry();
 }
 
 bool AppServiceWrapper::ShouldIncludeApp(const AppId& app_id) const {

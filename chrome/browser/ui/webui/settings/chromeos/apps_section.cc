@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -274,7 +275,7 @@ AppsSection::AppsSection(Profile* profile,
                          SearchTagRegistry* search_tag_registry,
                          PrefService* pref_service,
                          ArcAppListPrefs* arc_app_list_prefs,
-                         apps::AppServiceProxyChromeOs* app_service_proxy)
+                         apps::AppServiceProxy* app_service_proxy)
     : OsSettingsSection(profile, search_tag_registry),
       pref_service_(pref_service),
       arc_app_list_prefs_(arc_app_list_prefs),

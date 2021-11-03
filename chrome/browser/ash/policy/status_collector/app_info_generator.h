@@ -11,14 +11,18 @@
 #include <vector>
 
 #include "base/time/default_clock.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/policy/status_collector/activity_storage.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/services/app_service/public/cpp/instance.h"
+#include "components/services/app_service/public/cpp/instance_registry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+
+namespace apps {
+class AppUpdate;
+}
 
 namespace enterprise_management {
 class AppInfo;
@@ -91,7 +95,7 @@ class AppInfoGenerator : public apps::InstanceRegistry::Observer,
     ~AppInfoProvider();
 
     ActivityStorage activity_storage;
-    apps::AppServiceProxyChromeOs& app_service_proxy;
+    apps::AppServiceProxy& app_service_proxy;
   };
 
   const enterprise_management::AppInfo ConvertToAppInfo(

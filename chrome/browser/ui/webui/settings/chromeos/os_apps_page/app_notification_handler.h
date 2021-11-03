@@ -6,15 +6,12 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_OS_APPS_PAGE_APP_NOTIFICATION_HANDLER_H_
 
 #include "ash/public/cpp/message_center_ash.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom/app_notification_handler.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-namespace apps {
-class AppServiceProxyChromeOs;
-}  // namespace apps
 
 namespace chromeos {
 namespace settings {
@@ -24,8 +21,7 @@ class AppNotificationHandler
       public ash::MessageCenterAsh::Observer,
       public apps::AppRegistryCache::Observer {
  public:
-  explicit AppNotificationHandler(
-      apps::AppServiceProxyChromeOs* app_service_proxy);
+  explicit AppNotificationHandler(apps::AppServiceProxy* app_service_proxy);
   ~AppNotificationHandler() override;
 
   // app_notification::mojom::AppNotificationHandler:
@@ -62,7 +58,7 @@ class AppNotificationHandler
   mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>
       observer_list_;
 
-  apps::AppServiceProxyChromeOs* app_service_proxy_;
+  apps::AppServiceProxy* app_service_proxy_;
 
   mojo::Receiver<app_notification::mojom::AppNotificationsHandler> receiver_{
       this};

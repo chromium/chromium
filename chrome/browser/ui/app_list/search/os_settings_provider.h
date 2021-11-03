@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search.mojom.h"
@@ -20,10 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
-
-namespace apps {
-class AppServiceProxyChromeOs;
-}  // namespace apps
 
 namespace chromeos {
 namespace settings {
@@ -127,7 +124,7 @@ class OsSettingsProvider
   chromeos::settings::OsSettingsManager* const settings_manager_;
   chromeos::settings::SearchHandler* search_handler_;
   const chromeos::settings::Hierarchy* hierarchy_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_;
+  apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last query. It is reset when view is closed.

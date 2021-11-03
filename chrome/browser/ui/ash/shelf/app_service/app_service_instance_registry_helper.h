@@ -9,12 +9,9 @@
 #include <memory>
 #include <set>
 
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "components/services/app_service/public/cpp/instance.h"
-
-namespace apps {
-class AppServiceProxyChromeOs;
-}
 
 namespace aura {
 class Window;
@@ -136,7 +133,7 @@ class AppServiceInstanceRegistryHelper {
 
   AppServiceAppWindowShelfController* controller_ = nullptr;
 
-  apps::AppServiceProxyChromeOs* proxy_ = nullptr;
+  apps::AppServiceProxy* proxy_ = nullptr;
 
   // Used to get app info for tabs.
   std::unique_ptr<ShelfControllerHelper> shelf_controller_helper_;

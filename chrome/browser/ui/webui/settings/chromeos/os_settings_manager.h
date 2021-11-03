@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
@@ -17,10 +18,6 @@
 class ArcAppListPrefs;
 class Profile;
 class SupervisedUserService;
-
-namespace apps {
-class AppServiceProxyChromeOs;
-}  // namespace apps
 
 namespace content {
 class WebUI;
@@ -100,7 +97,7 @@ class OsSettingsManager : public KeyedService {
       signin::IdentityManager* identity_manager,
       android_sms::AndroidSmsService* android_sms_service,
       CupsPrintersManager* printers_manager,
-      apps::AppServiceProxyChromeOs* app_service_proxy);
+      apps::AppServiceProxy* app_service_proxy);
   OsSettingsManager(const OsSettingsManager& other) = delete;
   OsSettingsManager& operator=(const OsSettingsManager& other) = delete;
   ~OsSettingsManager() override;

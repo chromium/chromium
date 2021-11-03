@@ -40,7 +40,7 @@ namespace {
 using ::ash::AccessibilityManager;
 
 void UninstallApp(Profile* profile, const std::string& app_id) {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(app_id) !=
       apps::mojom::AppType::kUnknown) {

@@ -164,7 +164,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
   std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
   content::ContentBrowserClient* old_content_browser_client_ = nullptr;
   apps::AppServiceTest app_service_test_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
 };
 
 #else

@@ -30,7 +30,7 @@ OsSettingsManager::OsSettingsManager(
     signin::IdentityManager* identity_manager,
     android_sms::AndroidSmsService* android_sms_service,
     CupsPrintersManager* printers_manager,
-    apps::AppServiceProxyChromeOs* app_service_proxy)
+    apps::AppServiceProxy* app_service_proxy)
     : search_tag_registry_(
           std::make_unique<SearchTagRegistry>(local_search_service_proxy)),
       sections_(

@@ -294,10 +294,10 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
  public:
   AppServiceDataSource(Profile* profile, AppSearchProvider* owner)
       : AppSearchProvider::DataSource(profile, owner),
-        icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile),
+        proxy_(apps::AppServiceProxyFactory::GetForProfile(profile)),
+        icon_cache_(proxy_,
                     apps::IconCache::GarbageCollectionPolicy::kExplicit) {
-    Observe(&apps::AppServiceProxyFactory::GetForProfile(profile)
-                 ->AppRegistryCache());
+    Observe(&proxy_->AppRegistryCache());
 
     sync_sessions::SessionSyncService* service =
         SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
@@ -318,10 +318,8 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
 
   // AppSearchProvider::DataSource overrides:
   void AddApps(AppSearchProvider::Apps* apps_vector) override {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AppRegistryCache().ForEachApp([this, apps_vector](
-                                             const apps::AppUpdate& update) {
+    proxy_->AppRegistryCache().ForEachApp([this, apps_vector](
+                                              const apps::AppUpdate& update) {
       if (!apps_util::IsInstalled(update.Readiness()) ||
           (update.ShowInSearch() != apps::mojom::OptionalBool::kTrue &&
            !(update.Recommendable() == apps::mojom::OptionalBool::kTrue &&
@@ -404,6 +402,8 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       apps::AppRegistryCache* cache) override {
     Observe(nullptr);
   }
+
+  apps::AppServiceProxy* const proxy_;
 
   // The AppServiceDataSource seems like one (but not the only) good place to
   // add an App Service icon caching wrapper, because (1) the AppSearchProvider

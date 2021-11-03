@@ -98,7 +98,7 @@ class AppNotificationHandlerTest : public testing::Test {
   void SetUp() override {
     ash::MessageCenterAsh::SetForTesting(&message_center_ash_);
     app_service_proxy_ =
-        std::make_unique<apps::AppServiceProxyChromeOs>(profile_.get());
+        std::make_unique<apps::AppServiceProxy>(profile_.get());
     handler_ =
         std::make_unique<AppNotificationHandler>(app_service_proxy_.get());
 
@@ -166,7 +166,7 @@ class AppNotificationHandlerTest : public testing::Test {
   std::unique_ptr<AppNotificationHandler> handler_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<apps::AppServiceProxyChromeOs> app_service_proxy_;
+  std::unique_ptr<apps::AppServiceProxy> app_service_proxy_;
   FakeMessageCenterAsh message_center_ash_;
   std::unique_ptr<AppNotificationHandlerTestObserver> observer_;
 };

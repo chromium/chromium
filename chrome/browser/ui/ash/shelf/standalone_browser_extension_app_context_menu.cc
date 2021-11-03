@@ -12,7 +12,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -82,7 +82,7 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
       return;
     case ash::MENU_CLOSE: {
       // There can only be a single active ash profile when Lacros is running.
-      apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxy* proxy =
           apps::AppServiceProxyFactory::GetForProfile(
               ProfileManager::GetPrimaryUserProfile());
       proxy->StopApp(app_id_);
@@ -97,7 +97,7 @@ void StandaloneBrowserExtensionAppContextMenu::ExecuteCommand(int command_id,
           (source_ == Source::kShelf)
               ? AppListClientImpl::GetInstance()->GetAppListWindow()
               : nullptr;
-      apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxy* proxy =
           apps::AppServiceProxyFactory::GetForProfile(
               ProfileManager::GetPrimaryUserProfile());
       proxy->Uninstall(app_id_, uninstall_source, /*parent_window=*/window);
@@ -125,9 +125,8 @@ void StandaloneBrowserExtensionAppContextMenu::OnGetMenuModel(
     GetMenuModelCallback callback) {
   bool allow_uninstall = false;
   bool allow_app_info = false;
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          ProfileManager::GetPrimaryUserProfile());
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
   proxy->AppRegistryCache().ForOneApp(
       app_id_,
       [&allow_app_info, &allow_uninstall](const apps::AppUpdate& update) {

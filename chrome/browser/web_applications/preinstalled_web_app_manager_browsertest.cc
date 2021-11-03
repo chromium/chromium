@@ -876,16 +876,15 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
   EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
 
   // Wait for app service to see the newly installed app.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->FlushMojoCallsForTesting();
 
   apps::mojom::InstallReason install_reason =
       apps::mojom::InstallReason::kUnknown;
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [&](const apps::AppUpdate& update) {
-        install_reason = update.InstallReason();
-      });
+  proxy->AppRegistryCache().ForOneApp(app_id,
+                                      [&](const apps::AppUpdate& update) {
+                                        install_reason = update.InstallReason();
+                                      });
 
   EXPECT_EQ(install_reason, apps::mojom::InstallReason::kOem);
 }
@@ -964,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   GURL preinstalled_app_start_url("https://example.org/");
   GURL user_app_start_url("https://test.org/");
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   AppListClientImpl::GetInstance()->UpdateProfile();
   ash::AppListTestApi app_list_test_api;
@@ -1017,8 +1016,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
                            apps::mojom::UninstallSource::kUnknown);
 
   // Ensure the UI receives the app uninstall.
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
+  proxy->FlushMojoCallsForTesting();
 
   // Default app should be removed from local app list but remain in sync list.
   EXPECT_FALSE(registrar().IsInstalled(preinstalled_app_id));

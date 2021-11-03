@@ -397,7 +397,7 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
 
 void ChromeNewWindowClient::OpenCalculator() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   DCHECK(proxy);
   proxy->Launch(ash::calculator_app::GetInstalledCalculatorAppId(profile),
@@ -406,7 +406,7 @@ void ChromeNewWindowClient::OpenCalculator() {
 
 void ChromeNewWindowClient::OpenFileManager() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   DCHECK(proxy);
 
@@ -433,7 +433,7 @@ void ChromeNewWindowClient::OpenFileManager() {
 
 void ChromeNewWindowClient::OpenDownloadsFolder() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   auto downloads_path =
       file_manager::util::GetDownloadsFolderForProfile(profile);
@@ -579,7 +579,7 @@ void ChromeNewWindowClient::OpenWebAppFromArc(const GURL& url) {
   int event_flags = apps::GetEventFlags(
       apps::mojom::LaunchContainer::kLaunchContainerWindow,
       WindowOpenDisposition::NEW_WINDOW, /*prefer_container=*/false);
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   proxy->AppRegistryCache().ForOneApp(

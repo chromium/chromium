@@ -15,7 +15,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"

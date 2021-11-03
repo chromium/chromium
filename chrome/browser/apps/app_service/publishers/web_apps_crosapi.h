@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
@@ -18,8 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-class Profile;
 
 namespace base {
 class Location;
@@ -36,7 +35,7 @@ class WebAppsCrosapi : public KeyedService,
                        public apps::PublisherBase,
                        public crosapi::mojom::AppPublisher {
  public:
-  explicit WebAppsCrosapi(Profile* profile);
+  explicit WebAppsCrosapi(AppServiceProxy* proxy);
   ~WebAppsCrosapi() override;
 
   WebAppsCrosapi(const WebAppsCrosapi&) = delete;
@@ -119,7 +118,7 @@ class WebAppsCrosapi : public KeyedService,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   mojo::Receiver<crosapi::mojom::AppPublisher> receiver_{this};
   mojo::Remote<crosapi::mojom::AppController> controller_;
-  Profile* const profile_;
+  AppServiceProxy* const proxy_;
   bool should_notify_initialized_ = true;
   base::WeakPtrFactory<WebAppsCrosapi> weak_factory_{this};
 };

@@ -166,7 +166,7 @@ void AppServiceAppResult::Launch(int event_flags,
     return;
   }
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   // For Crostini apps, non-platform Chrome apps, Web apps, it could be

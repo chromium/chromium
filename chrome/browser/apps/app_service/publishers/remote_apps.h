@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_model.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -48,7 +49,7 @@ class RemoteApps : public apps::PublisherBase {
     virtual apps::mojom::MenuItemsPtr GetMenuModel(const std::string& id) = 0;
   };
 
-  RemoteApps(Profile* profile, Delegate* delegate);
+  RemoteApps(AppServiceProxy* proxy, Delegate* delegate);
   RemoteApps(const RemoteApps&) = delete;
   RemoteApps& operator=(const RemoteApps&) = delete;
   ~RemoteApps() override;

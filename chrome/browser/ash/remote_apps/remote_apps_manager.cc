@@ -12,6 +12,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/remote_apps/remote_apps_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -122,7 +123,9 @@ class RemoteAppsPlaceholderIcon : public gfx::CanvasImageSource {
 
 RemoteAppsManager::RemoteAppsManager(Profile* profile)
     : profile_(profile),
-      remote_apps_(std::make_unique<apps::RemoteApps>(profile_, this)),
+      remote_apps_(std::make_unique<apps::RemoteApps>(
+          apps::AppServiceProxyFactory::GetForProfile(profile_),
+          this)),
       model_(std::make_unique<RemoteAppsModel>()),
       image_downloader_(std::make_unique<ImageDownloaderImpl>()) {
   app_list_syncable_service_ =
@@ -288,11 +291,6 @@ void RemoteAppsManager::OnAppListItemAdded(ChromeAppListItem* item) {
 
   // Make a copy of id as item->metadata can be invalidated.
   HandleOnAppAdded(std::string(item->id()));
-}
-
-void RemoteAppsManager::SetRemoteAppsForTesting(
-    std::unique_ptr<apps::RemoteApps> remote_apps) {
-  remote_apps_ = std::move(remote_apps);
 }
 
 void RemoteAppsManager::SetImageDownloaderForTesting(

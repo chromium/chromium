@@ -72,7 +72,7 @@ using app_notification::mojom::AppNotificationsHandler;
 using app_notification::mojom::AppNotificationsObserver;
 
 AppNotificationHandler::AppNotificationHandler(
-    apps::AppServiceProxyChromeOs* app_service_proxy)
+    apps::AppServiceProxy* app_service_proxy)
     : app_service_proxy_(app_service_proxy) {
   if (ash::MessageCenterAsh::Get()) {
     ash::MessageCenterAsh::Get()->AddObserver(this);

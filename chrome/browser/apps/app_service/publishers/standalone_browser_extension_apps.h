@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -16,8 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-
-class Profile;
 
 namespace apps {
 
@@ -41,7 +40,7 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                                        public apps::PublisherBase,
                                        public crosapi::mojom::AppPublisher {
  public:
-  explicit StandaloneBrowserExtensionApps(Profile* profile);
+  explicit StandaloneBrowserExtensionApps(AppServiceProxy* proxy);
   ~StandaloneBrowserExtensionApps() override;
 
   StandaloneBrowserExtensionApps(const StandaloneBrowserExtensionApps&) =

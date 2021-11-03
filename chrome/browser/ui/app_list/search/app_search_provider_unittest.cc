@@ -116,8 +116,7 @@ bool MoreRelevant(const ChromeSearchResult* result1,
   return result1->relevance() > result2->relevance();
 }
 
-void UpdateIconKey(apps::AppServiceProxyChromeOs& proxy,
-                   const std::string& app_id) {
+void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
   apps::mojom::AppPtr app = apps::mojom::App::New();
   app->app_id = app_id;
   proxy.AppRegistryCache().ForOneApp(
@@ -835,7 +834,7 @@ TEST_F(AppSearchProviderCrostiniTest, CrostiniApp) {
 }
 
 TEST_F(AppSearchProviderTest, AppServiceIconCache) {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   ASSERT_NE(proxy, nullptr);
 

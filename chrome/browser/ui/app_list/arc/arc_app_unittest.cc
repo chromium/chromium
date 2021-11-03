@@ -406,7 +406,7 @@ MATCHER_P(ArcPackageInfoIs, package, "") {
 void RemoveNonArcApps(Profile* profile,
                       FakeAppListModelUpdater* model_updater,
                       bool flush) {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (flush)
     proxy->FlushMojoCallsForTesting();
@@ -2613,7 +2613,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderWithBadIcon) {
   // could load the icon by calling ArcAppIcon, so override the icon loader
   // temporarily to avoid calling ArcAppIcon. Otherwise, it might affect
   // the test result when calling AppServiceAppIconLoader to load the icon.
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   apps::StubIconLoader stub_icon_loader;
   apps::IconLoader* old_icon_loader =
@@ -2818,7 +2818,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   base::RunLoop run_loop;
   base::RepeatingClosure quit = run_loop.QuitClosure();
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, proxy);
 

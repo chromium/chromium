@@ -12,16 +12,11 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 
 class Profile;
-
-namespace apps {
-class AppServiceProxyChromeOs;
-class AppUpdate;
-class InstanceUpdate;
-}  // namespace apps
 
 namespace gfx {
 class ImageSkia;
@@ -157,7 +152,7 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
       apps::InstanceRegistry* cache) override;
 
  private:
-  apps::AppServiceProxyChromeOs* GetAppProxy();
+  apps::AppServiceProxy* GetAppProxy() const;
   apps::AppRegistryCache& GetAppCache() const;
   apps::InstanceRegistry& GetInstanceRegistry() const;
 

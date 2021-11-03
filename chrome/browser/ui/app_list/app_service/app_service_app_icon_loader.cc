@@ -132,7 +132,7 @@ void AppServiceAppIconLoader::OnAppRegistryCacheWillBeDestroyed(
 
 void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
                                            bool allow_placeholder_icon) {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   auto icon_type = apps::mojom::IconType::kStandard;

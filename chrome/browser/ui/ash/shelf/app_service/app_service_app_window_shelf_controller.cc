@@ -15,6 +15,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -101,7 +102,7 @@ AppServiceAppWindowShelfController::~AppServiceAppWindowShelfController() {
 
   // We need to remove all Registry observers for added users.
   for (auto* profile : profile_list_) {
-    apps::AppServiceProxyChromeOs* proxy =
+    apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->InstanceRegistry().RemoveObserver(this);
   }
@@ -728,7 +729,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
       MultiUserWindowManagerHelper::GetInstance();
   aura::Window* other_window = nullptr;
   for (auto* it : profile_list_) {
-    apps::AppServiceProxyChromeOs* proxy =
+    apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(it);
     if (proxy == proxy_)
       continue;

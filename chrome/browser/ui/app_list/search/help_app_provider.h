@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -20,10 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
-
-namespace apps {
-class AppServiceProxyChromeOs;
-}  // namespace apps
 
 namespace ash {
 namespace help_app {
@@ -102,7 +99,7 @@ class HelpAppProvider : public SearchProvider,
 
   Profile* const profile_;
   ash::help_app::SearchHandler* search_handler_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_;
+  apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last search query. It is reset when the view is closed.

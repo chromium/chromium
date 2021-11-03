@@ -18,7 +18,6 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,12 +28,10 @@
 
 namespace apps {
 
-WebAppsCrosapi::WebAppsCrosapi(Profile* profile) : profile_(profile) {
+WebAppsCrosapi::WebAppsCrosapi(AppServiceProxy* proxy) : proxy_(proxy) {
   // This object may be created when the flag is on or off, but only register
   // the publisher if the flag is on.
   if (web_app::IsWebAppsCrosapiEnabled()) {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile);
     mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
     if (!app_service.is_bound()) {
       return;
@@ -119,7 +116,7 @@ void WebAppsCrosapi::LaunchAppWithIntent(
   launch_params->app_id = app_id;
   launch_params->launch_source = launch_source;
   launch_params->intent =
-      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile_);
+      apps_util::ConvertAppServiceToCrosapiIntent(intent, proxy_->profile());
   controller_->Launch(std::move(launch_params), base::DoNothing());
   // TODO(crbug/1261263): handle the case where launch fails.
   std::move(callback).Run(/*success=*/true);
@@ -159,10 +156,9 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
                                   GetMenuModelCallback callback) {
   bool is_system_web_app = false;
   bool can_use_uninstall = true;
-  apps::mojom::WindowMode display_mode;
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  apps::mojom::WindowMode display_mode = apps::mojom::WindowMode::kUnknown;
 
-  proxy->AppRegistryCache().ForOneApp(
+  proxy_->AppRegistryCache().ForOneApp(
       app_id, [&is_system_web_app, &can_use_uninstall,
                &display_mode](const apps::AppUpdate& update) {
         if (update.InstallReason() == apps::mojom::InstallReason::kSystem) {
@@ -177,7 +173,7 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
 
   apps::mojom::MenuItemsPtr menu_items = apps::mojom::MenuItems::New();
 
-  if (!is_system_web_app) {
+  if (display_mode != apps::mojom::WindowMode::kUnknown && !is_system_web_app) {
     apps::CreateOpenNewSubmenu(menu_type,
                                display_mode == apps::mojom::WindowMode::kBrowser
                                    ? IDS_APP_LIST_CONTEXT_MENU_NEW_TAB
@@ -192,8 +188,8 @@ void WebAppsCrosapi::GetMenuModel(const std::string& app_id,
     // InstanceRegistry updates are implemented.
     bool app_running =
         web_app::IsWebAppsCrosapiEnabled()
-            ? proxy->BrowserAppInstanceRegistry()->IsAppRunning(app_id)
-            : proxy->InstanceRegistry().ContainsAppId(app_id);
+            ? proxy_->BrowserAppInstanceRegistry()->IsAppRunning(app_id)
+            : proxy_->InstanceRegistry().ContainsAppId(app_id);
     if (app_running) {
       apps::AddCommandItem(ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
                            &menu_items);

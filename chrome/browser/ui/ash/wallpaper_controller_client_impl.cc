@@ -619,7 +619,7 @@ void WallpaperControllerClientImpl::OpenWallpaperPicker() {
     return;
   }
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(kWallpaperManagerId) ==
       apps::mojom::AppType::kUnknown) {

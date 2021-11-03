@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/status_collector/app_info_generator.h"
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"

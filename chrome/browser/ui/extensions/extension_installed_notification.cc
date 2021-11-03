@@ -68,7 +68,7 @@ void ExtensionInstalledNotification::Click(
   if (!extensions::util::IsAppLaunchable(extension_id_, profile_))
     return;
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   if (proxy->AppRegistryCache().GetAppType(extension_id_) ==
       apps::mojom::AppType::kUnknown) {

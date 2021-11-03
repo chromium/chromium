@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps_factory.h"
@@ -29,9 +29,8 @@ StandaloneBrowserExtensionAppShelfItemController::
 
   // Lacros is mutually exclusive with multi-signin. As such, there can only be
   // a single ash profile active. We grab it from the shelf.
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          ChromeShelfController::instance()->profile());
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      ChromeShelfController::instance()->profile());
 
   apps::mojom::IconKeyPtr icon_key = apps::mojom::IconKey::New();
   constexpr bool kAllowPlaceholderIcon = false;
@@ -92,9 +91,8 @@ void StandaloneBrowserExtensionAppShelfItemController::ItemSelected(
   }
 
   if (filtered_windows.size() == 0) {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(
-            ProfileManager::GetPrimaryUserProfile());
+    apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+        ProfileManager::GetPrimaryUserProfile());
     proxy->Launch(app_id(), event->flags(),
                   ShelfLaunchSourceToAppsLaunchSource(source),
                   /*window_info=*/nullptr);
@@ -161,9 +159,8 @@ void StandaloneBrowserExtensionAppShelfItemController::ExecuteCommand(
 
 void StandaloneBrowserExtensionAppShelfItemController::Close() {
   // There can only be a single active ash profile when Lacros is running.
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          ProfileManager::GetPrimaryUserProfile());
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      ProfileManager::GetPrimaryUserProfile());
   proxy->StopApp(app_id());
 }
 

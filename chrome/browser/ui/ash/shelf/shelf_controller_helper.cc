@@ -143,7 +143,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
 
   const std::string& app_id = id.app_id;
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   // Launch apps with AppServiceProxy.Launch.

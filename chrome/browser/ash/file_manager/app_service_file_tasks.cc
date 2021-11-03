@@ -147,7 +147,7 @@ void FindAppServiceTasks(Profile* profile,
     }
   }
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(maybe_original_profile);
 
   std::vector<apps::mojom::IntentFilePtr> intent_files;

@@ -590,9 +590,8 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
     bool allow_placeholder_icon) {
   if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
           Profile::FromBrowserContext(app_window()->browser_context()))) {
-    apps::AppServiceProxyChromeOs* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(
-            Profile::FromBrowserContext(app_window()->browser_context()));
+    apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+        Profile::FromBrowserContext(app_window()->browser_context()));
 
     apps::mojom::AppType app_type =
         proxy->AppRegistryCache().GetAppType(app_window()->extension_id());
