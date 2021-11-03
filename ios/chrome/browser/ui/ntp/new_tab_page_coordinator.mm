@@ -346,6 +346,8 @@
   self.ntpViewController.contentSuggestionsViewController =
       self.contentSuggestionsCoordinator.viewController;
   self.ntpViewController.panGestureHandler = self.panGestureHandler;
+  self.ntpViewController.feedVisible =
+      [self shouldFeedBeVisible] && self.discoverFeedViewController;
   self.ntpMediator.ntpViewController = self.ntpViewController;
 
   self.discoverFeedWrapperViewController =
@@ -631,10 +633,6 @@
 
 - (void)reloadContentSuggestions {
   [self.contentSuggestionsCoordinator reload];
-}
-
-- (BOOL)isFeedVisible {
-  return [self shouldFeedBeVisible] && self.discoverFeedViewController;
 }
 
 #pragma mark - PrefObserverDelegate

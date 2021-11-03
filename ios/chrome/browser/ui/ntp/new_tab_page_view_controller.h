@@ -59,6 +59,9 @@
 @property(nonatomic, strong)
     DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
 
+// Whether or not the feed is visible.
+@property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

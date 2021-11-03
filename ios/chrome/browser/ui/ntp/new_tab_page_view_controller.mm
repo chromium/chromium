@@ -121,9 +121,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   AddSameConstraints(discoverFeedView, self.view);
 
   UIViewController* parentViewController =
-      [self.ntpContentDelegate isFeedVisible]
-          ? self.discoverFeedWrapperViewController.discoverFeed
-          : self.discoverFeedWrapperViewController;
+      self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
+                         : self.discoverFeedWrapperViewController;
 
   [self.contentSuggestionsViewController
       willMoveToParentViewController:parentViewController];
@@ -164,7 +163,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
   // If the feed is not visible, we control the delegate ourself (since it is
   // otherwise controlled by the DiscoverProvider).
-  if (![self.ntpContentDelegate isFeedVisible]) {
+  if (!self.isFeedVisible) {
     self.discoverFeedWrapperViewController.contentCollectionView.delegate =
         self;
   }
@@ -209,7 +208,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
     self.shouldFocusFakebox = NO;
   }
 
-  if (![self.ntpContentDelegate isFeedVisible]) {
+  if (!self.isFeedVisible) {
     [self setMinimumHeight];
   }
 
@@ -280,7 +279,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
         weakSelf.collectionView.contentOffset.y < pinnedOffsetY) {
       weakSelf.collectionView.contentOffset = CGPointMake(0, pinnedOffsetY);
     }
-    if (![self.ntpContentDelegate isFeedVisible]) {
+    if (!self.isFeedVisible) {
       [self setMinimumHeight];
     }
   };
@@ -666,7 +665,7 @@ const CGFloat kOffsetToPinOmnibox = 100;
 // for the content suggestions within it.
 - (void)applyCollectionViewConstraints {
   UIView* containerView;
-  if ([self.ntpContentDelegate isFeedVisible]) {
+  if (self.isFeedVisible) {
     // TODO(crbug.com/1262536): Remove this when the bug is fixed.
     if (IsNTPViewHierarchyRepairEnabled()) {
       [self verifyNTPViewHierarchy];
