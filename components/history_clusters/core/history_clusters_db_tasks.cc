@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/memories_features.h"
 
 namespace history_clusters {
@@ -41,46 +42,57 @@ GetAnnotatedVisitsToCluster::GetAnnotatedVisitsToCluster(
     Callback callback)
     : incomplete_visit_map_(incomplete_visit_map),
       original_end_time_(end_time),
+      continuation_end_time_(end_time),
       visit_soft_cap_(max_count),
-      callback_(std::move(callback)) {
-  // Provide a parameter-controlled hard-cap of the max visits to fetch.
-  // Note in most cases we stop fetching visits far before reaching this
-  // number. This is to prevent OOM errors. See https://crbug.com/1262016.
-  options_.max_count = kMaxVisitsToCluster.Get();
-
-  // Determine initial query options.
-  options_.end_time = end_time;
-  options_.begin_time = GetBeginTimeOnDayBoundary(end_time);
-
-  // History Clusters wants a complete navigation graph and internally handles
-  // de-duplication.
-  options_.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-}
+      callback_(std::move(callback)) {}
 
 GetAnnotatedVisitsToCluster::~GetAnnotatedVisitsToCluster() = default;
 
 bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     history::HistoryBackend* backend,
     history::HistoryDatabase* db) {
+  history::QueryOptions options;
+
+  // Provide a parameter-controlled hard-cap of the max visits to fetch.
+  // Note in most cases we stop fetching visits far before reaching this
+  // number. This is to prevent OOM errors. See https://crbug.com/1262016.
+  options.max_count = kMaxVisitsToCluster.Get();
+
+  // History Clusters wants a complete navigation graph and internally handles
+  // de-duplication.
+  options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
+
   // Accumulate 1 day at a time of visits to avoid breaking up clusters.
   // We stop once we meet `visit_soft_cap_`. Also hard cap at
   // `options_.max_count` which is enforced at the database level to avoid any
   // one day blasting past the hard cap, causing OOM errors.
-  while (!exhausted_history_ && annotated_visits_.size() < visit_soft_cap_ &&
-         annotated_visits_.size() < size_t(options_.EffectiveMaxCount())) {
-    auto newly_fetched_annotated_visits = backend->GetAnnotatedVisits(options_);
-    // Tack on all the newly fetched visits onto our accumulator vector.
-    base::ranges::move(newly_fetched_annotated_visits,
-                       std::back_inserter(annotated_visits_));
-    // TODO(tommycli): Connect this to History's limit defined internally in
-    //  components/history.
-    exhausted_history_ =
-        (base::Time::Now() - options_.begin_time) >= base::Days(90);
+  bool limited_by_max_count = false;
+  while (!exhausted_history_ && !limited_by_max_count &&
+         annotated_visits_.size() < visit_soft_cap_) {
+    options.end_time = continuation_end_time_;
+    options.begin_time = GetBeginTimeOnDayBoundary(options.end_time);
+
+    auto newly_fetched_annotated_visits =
+        backend->GetAnnotatedVisits(options, &limited_by_max_count);
 
     // If we didn't get enough visits, ask for another day's worth from
     // History and call this method again when done.
-    options_.end_time = options_.begin_time;
-    options_.begin_time = options_.end_time - base::Days(1);
+    if (limited_by_max_count && !newly_fetched_annotated_visits.empty()) {
+      continuation_end_time_ =
+          newly_fetched_annotated_visits.back().visit_row.visit_time;
+    } else {
+      continuation_end_time_ = options.begin_time;
+    }
+
+    // TODO(tommycli): Connect this to History's limit defined internally in
+    //  components/history.
+    exhausted_history_ =
+        !limited_by_max_count &&
+        (base::Time::Now() - continuation_end_time_) >= base::Days(90);
+
+    // Tack on all the newly fetched visits onto our accumulator vector.
+    base::ranges::move(newly_fetched_annotated_visits,
+                       std::back_inserter(annotated_visits_));
   }
 
   // Now we have enough visits for clustering, add all incomplete visits
@@ -103,11 +115,13 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
     if (!incomplete_visit_context_annotations.status.history_rows)
       continue;
 
-    // Discard incomplete visits outside the time bounds. `begin_time` is
-    // inclusive, and `end_time` is exclusive.
+    // Discard incomplete visits outside the time bounds of the actual visits
+    // we fetched, accounting for the fact that we may have been limited by
+    // `options.max_count`.
     const auto& visit_time =
         incomplete_visit_context_annotations.visit_row.visit_time;
-    if ((!options_.begin_time.is_null() && visit_time < options_.begin_time) ||
+    if ((!continuation_end_time_.is_null() &&
+         visit_time < continuation_end_time_) ||
         (!original_end_time_.is_null() && visit_time >= original_end_time_)) {
       continue;
     }
@@ -166,14 +180,12 @@ bool GetAnnotatedVisitsToCluster::RunOnDBThread(
 }
 
 void GetAnnotatedVisitsToCluster::DoneRunOnMainThread() {
-  // Assuming we didn't completely exhaust history, the
-  // `continuation_end_time` is the `options.begin_time` of the latest History
-  // query we completed.
-  base::Time continuation_end_time;
+  // Don't give a continuation end time if we exhausted all of History.
+  base::Time continuation_end_time_result;
   if (!exhausted_history_)
-    continuation_end_time = options_.begin_time;
+    continuation_end_time_result = continuation_end_time_;
 
-  std::move(callback_).Run(annotated_visits_, continuation_end_time);
+  std::move(callback_).Run(annotated_visits_, continuation_end_time_result);
 }
 
 }  // namespace history_clusters

@@ -1454,7 +1454,8 @@ void HistoryBackend::AddContextAnnotationsForVisit(
 }
 
 std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
-    const QueryOptions& options) {
+    const QueryOptions& options,
+    bool* limited_by_max_count) {
   // Gets `VisitVector` matching `options`, then for each visit, gets the
   // associated `URLRow`, `VisitContextAnnotations`, and
   // `VisitContentAnnotations`.
@@ -1468,8 +1469,13 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
   //  two, while somehow still avoiding fetching unnecessary fields, such as
   //  `VisitContextAnnotations`. Probably we need to expand `QueryOptions`.
   VisitVector visit_rows;
-  // Ignore the return value, as we don't care if we have more visits.
-  db_->GetVisibleVisitsInRange(options, &visit_rows);
+
+  // Set the optional out-param if it's non-nullptr.
+  bool limited = db_->GetVisibleVisitsInRange(options, &visit_rows);
+  if (limited_by_max_count) {
+    *limited_by_max_count = limited;
+  }
+
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());
 
   VisitSourceMap sources;
