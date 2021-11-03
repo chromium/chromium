@@ -94,6 +94,10 @@ void SharingHubBubbleViewImpl::OnThemeChanged() {
   LocationBarBubbleDelegateView::OnThemeChanged();
   if (GetWidget()) {
     set_color(GetColorProvider()->GetColor(ui::kColorMenuBackground));
+    share_link_label_->SetBackgroundColor(
+        GetColorProvider()->GetColor(ui::kColorMenuBackground));
+    share_link_label_->SetEnabledColor(
+        GetColorProvider()->GetColor(ui::kColorMenuItemForeground));
   }
 }
 
@@ -165,8 +169,7 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
       /*bottom*/ kLabelLinePaddingBottom,
       /*right*/ kIndent);
   share_link_label->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
-
-  action_list_view->AddChildView(share_link_label);
+  share_link_label_ = action_list_view->AddChildView(share_link_label);
 
   for (const auto& action : third_party_actions) {
     auto* view = action_list_view->AddChildView(

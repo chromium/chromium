@@ -81,6 +81,10 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
   // ScrollView containing the list of share/save actions.
   views::ScrollView* scroll_view_ = nullptr;
 
+  // The "Share link to" annotation text, which indicates to the user what
+  // the 3P target options do.
+  views::Label* share_link_label_ = nullptr;
+
   base::WeakPtrFactory<SharingHubBubbleViewImpl> weak_factory_{this};
 };
 
