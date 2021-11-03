@@ -27,6 +27,12 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+// Avoid including this header file directly or referring directly to
+// AppServiceProxyLacros as a type. Instead:
+//  - for forward declarations, use app_service_proxy_forward.h
+//  - for the full header, use app_service_proxy.h, which aliases correctly
+//    based on the platform
+
 class Profile;
 
 namespace web_app {
@@ -281,11 +287,11 @@ class AppServiceProxyLacros : public KeyedService,
     apps::IconLoader* overriding_icon_loader_for_testing_;
   };
 
+  Profile* profile() const { return profile_; }
+
   bool IsValidProfile();
 
   void Initialize();
-
-  void AddAppIconSource(Profile* profile);
 
   // KeyedService overrides:
   void Shutdown() override;
@@ -334,6 +340,10 @@ class AppServiceProxyLacros : public KeyedService,
   int crosapi_app_service_proxy_version_ = 0;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};
+
+ private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
 };
 
 }  // namespace apps

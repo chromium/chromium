@@ -4,8 +4,11 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_chromeos.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/instance_registry_updater.h"
@@ -50,7 +53,6 @@ AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
         std::make_unique<apps::InstanceRegistryUpdater>(
             *browser_app_instance_registry_, instance_registry_);
   }
-  Initialize();
 }
 
 AppServiceProxyChromeOs::~AppServiceProxyChromeOs() {
@@ -103,9 +105,7 @@ void AppServiceProxyChromeOs::Initialize() {
 
   Observe(&AppRegistryCache());
 
-  publisher_host_ = std::make_unique<PublisherHost>(
-      profile_, &instance_registry_, browser_app_instance_registry_.get(),
-      app_service_);
+  publisher_host_ = std::make_unique<PublisherHost>(this);
 
   if (!profile_->AsTestingProfile()) {
     app_platform_metrics_service_ =
@@ -115,12 +115,6 @@ void AppServiceProxyChromeOs::Initialize() {
         base::BindOnce(&AppServiceProxyChromeOs::InitAppPlatformMetrics,
                        weak_ptr_factory_.GetWeakPtr()));
   }
-
-  // Asynchronously add app icon source, so we don't do too much work in the
-  // constructor.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&AppServiceProxyChromeOs::AddAppIconSource,
-                                weak_ptr_factory_.GetWeakPtr(), profile_));
 }
 
 apps::InstanceRegistry& AppServiceProxyChromeOs::InstanceRegistry() {

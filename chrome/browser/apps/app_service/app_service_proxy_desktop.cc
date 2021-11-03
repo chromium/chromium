@@ -11,9 +11,7 @@
 namespace apps {
 
 AppServiceProxy::AppServiceProxy(Profile* profile)
-    : AppServiceProxyBase(profile) {
-  Initialize();
-}
+    : AppServiceProxyBase(profile) {}
 
 AppServiceProxy::~AppServiceProxy() = default;
 
@@ -28,13 +26,7 @@ void AppServiceProxy::Initialize() {
     return;
   }
 
-  publisher_host_ = std::make_unique<PublisherHost>(profile_, app_service_);
-
-  // Asynchronously add app icon source, so we don't do too much work in the
-  // constructor.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&AppServiceProxy::AddAppIconSource,
-                                weak_ptr_factory_.GetWeakPtr(), profile_));
+  publisher_host_ = std::make_unique<PublisherHost>(this);
 }
 
 void AppServiceProxy::Uninstall(const std::string& app_id,

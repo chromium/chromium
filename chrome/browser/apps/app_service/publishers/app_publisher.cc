@@ -4,12 +4,13 @@
 
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 
 namespace apps {
 
-AppPublisher::AppPublisher(Profile* profile)
-    : proxy_(AppServiceProxyFactory::GetForProfile(profile)) {}
+AppPublisher::AppPublisher(AppServiceProxy* proxy) : proxy_(proxy) {
+  DCHECK(proxy);
+}
 
 AppPublisher::~AppPublisher() = default;
 

@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -22,6 +21,12 @@
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
+
+// Avoid including this header file directly or referring directly to
+// AppServiceProxyChromeOs as a type. Instead:
+//  - for forward declarations, use app_service_proxy_forward.h
+//  - for the full header, use app_service_proxy.h, which aliases correctly
+//    based on the platform
 
 class Profile;
 
@@ -101,6 +106,9 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase,
           app_platform_metrics_service);
 
  private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
+
   using UninstallDialogs = std::set<std::unique_ptr<apps::UninstallDialog>,
                                     base::UniquePtrComparator>;
 

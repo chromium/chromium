@@ -3597,6 +3597,7 @@ static_library("browser") {
       "apps/app_service/app_service_proxy_base.h",
       "apps/app_service/app_service_proxy_factory.cc",
       "apps/app_service/app_service_proxy_factory.h",
+      "apps/app_service/app_service_proxy_forward.h",
       "apps/app_service/browser_app_launcher.cc",
       "apps/app_service/browser_app_launcher.h",
       "apps/app_service/extension_uninstaller.cc",
@@ -4971,7 +4972,7 @@ static_library("browser") {
       "signin/chrome_signin_status_metrics_provider_delegate.h",
     ]
 
-    if (!is_android) {
+    if (!is_android && !is_chromeos_lacros) {
       sources += [
         "apps/app_service/app_service_proxy_desktop.cc",
         "apps/app_service/app_service_proxy_desktop.h",

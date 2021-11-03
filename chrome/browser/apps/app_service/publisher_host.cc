@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -35,19 +35,8 @@ bool g_omit_plugin_vm_apps_for_testing_ = false;
 
 }  // anonymous namespace
 
-PublisherHost::PublisherHost(
-    Profile* profile,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    InstanceRegistry* instance_registry,
-    BrowserAppInstanceRegistry* browser_app_instance_registry,
-#endif
-    const mojo::Remote<apps::mojom::AppService>& app_service)
-    : profile_(profile),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      instance_registry_(instance_registry),
-      browser_app_instance_registry_(browser_app_instance_registry),
-#endif
-      app_service_(app_service) {
+PublisherHost::PublisherHost(AppServiceProxy* proxy) : proxy_(proxy) {
+  DCHECK(proxy);
   Initialize();
 }
 
@@ -78,11 +67,12 @@ void PublisherHost::FlushMojoCallsForTesting() {
 }
 
 void PublisherHost::ReInitializeCrostiniForTesting(Profile* profile) {
-  crostini_apps_->ReInitializeForTesting(app_service_, profile);
+  crostini_apps_->ReInitializeForTesting(  // IN-TEST
+      proxy_->AppService(), profile);
 }
 
 void PublisherHost::Shutdown() {
-  if (app_service_.is_connected()) {
+  if (proxy_->AppService().is_connected()) {
     extension_apps_->Shutdown();
     if (web_apps_) {
       web_apps_->Shutdown();
@@ -93,35 +83,37 @@ void PublisherHost::Shutdown() {
 #endif
 
 void PublisherHost::Initialize() {
+  auto* profile = proxy_->profile();
+  auto& app_service = proxy_->AppService();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!g_omit_built_in_apps_for_testing_) {
     built_in_chrome_os_apps_ =
-        std::make_unique<BuiltInChromeOsApps>(app_service_, profile_);
+        std::make_unique<BuiltInChromeOsApps>(app_service, proxy_);
   }
   // TODO(b/170591339): Allow borealis to provide apps for the non-primary
   // profile.
-  if (guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)) {
-    borealis_apps_ = std::make_unique<BorealisApps>(app_service_, profile_);
+  if (guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)) {
+    borealis_apps_ = std::make_unique<BorealisApps>(app_service, profile);
   }
-  crostini_apps_ = std::make_unique<CrostiniApps>(app_service_, profile_);
+  crostini_apps_ = std::make_unique<CrostiniApps>(app_service, profile);
   extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(
-      app_service_, profile_, instance_registry_);
+      app_service, profile, &proxy_->InstanceRegistry());
   if (!g_omit_plugin_vm_apps_for_testing_) {
-    plugin_vm_apps_ = std::make_unique<PluginVmApps>(app_service_, profile_);
+    plugin_vm_apps_ = std::make_unique<PluginVmApps>(app_service, profile);
   }
   // Lacros does not support multi-signin, so only create for the primary
   // profile. This also avoids creating an instance for the lock screen app
   // profile and ensures there is only one instance of StandaloneBrowserApps.
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
+      chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
     standalone_browser_apps_ = std::make_unique<StandaloneBrowserApps>(
-        app_service_, profile_, browser_app_instance_registry_);
+        app_service, profile, proxy_->BrowserAppInstanceRegistry());
   }
-  web_apps_ = std::make_unique<web_app::WebApps>(app_service_,
-                                                 instance_registry_, profile_);
+  web_apps_ = std::make_unique<web_app::WebApps>(
+      app_service, &proxy_->InstanceRegistry(), profile);
 #else
-  web_apps_ = std::make_unique<web_app::WebApps>(app_service_, profile_);
-  extension_apps_ = std::make_unique<ExtensionApps>(app_service_, profile_);
+  web_apps_ = std::make_unique<web_app::WebApps>(app_service, profile);
+  extension_apps_ = std::make_unique<ExtensionApps>(app_service, profile);
 #endif
 }
 

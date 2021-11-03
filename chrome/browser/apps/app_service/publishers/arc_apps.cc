@@ -520,25 +520,21 @@ ArcApps* ArcApps::Get(Profile* profile) {
   return ArcAppsFactory::GetForProfile(profile);
 }
 
-// static
-ArcApps* ArcApps::CreateForTesting(Profile* profile,
-                                   apps::AppServiceProxyChromeOs* proxy) {
-  return new ArcApps(profile, proxy);
-}
+ArcApps::ArcApps(AppServiceProxy* proxy)
+    : AppPublisher(proxy),
+      proxy_(proxy),
+      profile_(proxy->profile()),
+      arc_icon_once_loader_(profile_) {}
 
-ArcApps::ArcApps(Profile* profile) : ArcApps(profile, nullptr) {}
+ArcApps::~ArcApps() = default;
 
-ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
-    : AppPublisher(profile), profile_(profile), arc_icon_once_loader_(profile) {
+void ArcApps::Initialize() {
   if (!arc::IsArcAllowedForProfile(profile_) ||
       (arc::ArcServiceManager::Get() == nullptr)) {
     return;
   }
 
-  if (!proxy) {
-    proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  }
-  mojo::Remote<apps::mojom::AppService>& app_service = proxy->AppService();
+  mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
   if (!app_service.is_bound()) {
     return;
   }
@@ -549,7 +545,7 @@ ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
     return;
   }
   prefs->AddObserver(this);
-  proxy->SetArcIsRegistered();
+  proxy_->SetArcIsRegistered();
 
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
@@ -566,7 +562,7 @@ ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
         ash::ArcNotificationsHostInitializer::Get());
   }
 
-  auto* instance_registry = &proxy->InstanceRegistry();
+  auto* instance_registry = &proxy_->InstanceRegistry();
   if (instance_registry) {
     instance_registry_observation_.Observe(instance_registry);
   }
@@ -577,21 +573,12 @@ ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
   }
 
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kArc);
-  Init();
-}
 
-ArcApps::~ArcApps() = default;
-
-void ArcApps::Init() {
   std::vector<std::unique_ptr<App>> apps;
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  if (prefs) {
-    for (const auto& app_id : prefs->GetAppIds()) {
-      std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-          prefs->GetApp(app_id);
-      if (app_info) {
-        apps.push_back(CreateApp(prefs, app_id, *app_info));
-      }
+  for (const auto& app_id : prefs->GetAppIds()) {
+    std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+    if (app_info) {
+      apps.push_back(CreateApp(prefs, app_id, *app_info));
     }
   }
   AppPublisher::Publish(std::move(apps));
@@ -1304,8 +1291,7 @@ void ArcApps::OnIntentFiltersUpdated(
 }
 
 void ArcApps::OnPreferredAppsChanged() {
-  mojo::Remote<apps::mojom::AppService>& app_service =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)->AppService();
+  mojo::Remote<apps::mojom::AppService>& app_service = proxy_->AppService();
   if (!app_service.is_bound()) {
     return;
   }

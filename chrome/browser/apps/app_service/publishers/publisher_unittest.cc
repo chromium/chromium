@@ -96,10 +96,11 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
     }
   }
 
-  // Recreate ArcApps to verify the init process.
-  ArcApps* arc_apps = ArcAppsFactory::GetForProfile(profile());
-  ASSERT_TRUE(arc_apps);
-  arc_apps->CreateForTesting(profile(), nullptr);
+  // Verify the initialization process again with a new ArcApps object.
+  std::unique_ptr<ArcApps> arc_apps = std::make_unique<ArcApps>(
+      AppServiceProxyFactory::GetForProfile(profile()));
+  ASSERT_TRUE(arc_apps.get());
+  arc_apps->Initialize();
 
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
@@ -107,6 +108,8 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
       VerifyApp(app_id, app_info->name, Readiness::kReady);
     }
   }
+
+  arc_apps->Shutdown();
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
