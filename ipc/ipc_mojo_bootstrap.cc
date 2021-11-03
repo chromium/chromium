@@ -32,6 +32,7 @@
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/typed_macros.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
@@ -41,10 +42,12 @@
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
+#include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_handler.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_handler_delegate.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_proxy.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
+#include "mojo/public/cpp/bindings/tracing_helpers.h"
 
 namespace IPC {
 
@@ -969,9 +972,19 @@ class ChannelAssociatedGroupController
     if (!client)
       return;
 
-    // Using client->interface_name() is safe here because this is a static
-    // string defined for each mojo interface.
-    TRACE_EVENT0("mojom", client->interface_name());
+    TRACE_EVENT(
+        TRACE_CATEGORY_OR_DISABLED_BY_DEFAULT_MOJOM("mojom"),
+        // Using client->interface_name() is safe here because this is a static
+        // string defined for each mojo interface.
+        perfetto::StaticString(client->interface_name()),
+        [&](perfetto::EventContext& ctx) {
+          static const uint8_t* toplevel_flow_enabled =
+              TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("toplevel.flow");
+          if (!*toplevel_flow_enabled)
+            return;
+
+          perfetto::Flow::Global(message.GetTraceId())(ctx);
+        });
     DCHECK(endpoint->task_runner()->RunsTasksInCurrentSequence() ||
            proxy_task_runner_->RunsTasksInCurrentSequence());
 

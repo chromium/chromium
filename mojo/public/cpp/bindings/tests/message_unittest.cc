@@ -23,7 +23,7 @@ void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
                               std::vector<ScopedHandle>* handles) {
   Message message(kTestMessageName, kTestMessageFlags, 0, kTestPayloadSize,
                   nullptr);
-  message.header()->trace_id = 0;
+  message.header()->trace_nonce = 0;
   bytes->resize(message.data_num_bytes());
   std::copy(message.data(), message.data() + message.data_num_bytes(),
             bytes->begin());
