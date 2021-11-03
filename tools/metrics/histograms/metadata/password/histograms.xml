@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates"
-    units="units" expires_after="2021-12-12">
+    units="units" expires_after="2022-06-30">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2709,7 +2709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SyncingAccountState"
-    enum="PasswordManagerSyncingAccountState" expires_after="2021-12-12">
+    enum="PasswordManagerSyncingAccountState" expires_after="2022-06-30">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
