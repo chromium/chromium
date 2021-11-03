@@ -246,6 +246,129 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
   }
 }
 
+// Tests the PasswordManager.PasswordStore.AddLoginAsync.* metric.
+TEST_P(PasswordStoreAndroidBackendTestForMetrics, AddLoginAsyncMetrics) {
+  backend().InitBackend(
+      PasswordStoreAndroidBackend::RemoteChangesReceived(),
+      /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
+      /*completion=*/base::DoNothing());
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+  constexpr JobId kJobId{1337};
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.AddLoginAsync.Success";
+  const char kErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  base::HistogramTester histogram_tester;
+
+  base::MockCallback<PasswordStoreChangeListReply> mock_reply;
+  EXPECT_CALL(*bridge(), AddLogin).WillOnce(Return(kJobId));
+  PasswordForm form = CreateTestLogin();
+  backend().AddLoginAsync(form, mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run).Times(ShouldSucceed() ? 1 : 0);
+  task_environment_.FastForwardBy(kLatencyDelta);
+
+  if (ShouldSucceed()) {
+    consumer().OnLoginsChanged(kJobId, {});
+  } else {
+    consumer().OnError(
+        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+  }
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  if (!ShouldSucceed()) {
+    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+  }
+}
+
+// Tests the PasswordManager.PasswordStore.UpdateLoginAsync metric.
+TEST_P(PasswordStoreAndroidBackendTestForMetrics, UpdateLoginAsyncMetrics) {
+  backend().InitBackend(
+      PasswordStoreAndroidBackend::RemoteChangesReceived(),
+      /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
+      /*completion=*/base::DoNothing());
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+  constexpr JobId kJobId{1337};
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.UpdateLoginAsync.Success";
+  const char kErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  base::HistogramTester histogram_tester;
+
+  base::MockCallback<PasswordStoreChangeListReply> mock_reply;
+  EXPECT_CALL(*bridge(), UpdateLogin).WillOnce(Return(kJobId));
+  PasswordForm form = CreateTestLogin();
+  backend().UpdateLoginAsync(form, mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run).Times(ShouldSucceed() ? 1 : 0);
+  task_environment_.FastForwardBy(kLatencyDelta);
+
+  if (ShouldSucceed()) {
+    consumer().OnLoginsChanged(kJobId, {});
+  } else {
+    consumer().OnError(
+        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+  }
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  if (!ShouldSucceed()) {
+    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+  }
+}
+
+// Tests the PasswordManager.PasswordStore.RemoveLoginAsync metric.
+TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
+  backend().InitBackend(
+      PasswordStoreAndroidBackend::RemoteChangesReceived(),
+      /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
+      /*completion=*/base::DoNothing());
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+  constexpr JobId kJobId{1337};
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.RemoveLoginAsync.Success";
+  const char kErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  base::HistogramTester histogram_tester;
+
+  base::MockCallback<PasswordStoreChangeListReply> mock_reply;
+  EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kJobId));
+  PasswordForm form = CreateTestLogin();
+  backend().RemoveLoginAsync(form, mock_reply.Get());
+  EXPECT_CALL(mock_reply, Run).Times(ShouldSucceed() ? 1 : 0);
+  task_environment_.FastForwardBy(kLatencyDelta);
+
+  if (ShouldSucceed()) {
+    consumer().OnLoginsChanged(kJobId, {});
+  } else {
+    consumer().OnError(
+        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+  }
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  if (!ShouldSucceed()) {
+    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          PasswordStoreAndroidBackendTestForMetrics,
                          testing::Bool());

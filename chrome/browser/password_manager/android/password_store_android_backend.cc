@@ -286,7 +286,9 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
 void PasswordStoreAndroidBackend::OnLoginsChanged(
     JobId job_id,
     const PasswordStoreChangeList& changes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
+  reply.RecordMetrics(JobReturnHandler::WasSuccess(true));
   DCHECK(reply.Holds<PasswordStoreChangeListReply>());
 
   main_task_runner_->PostTask(
