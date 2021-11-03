@@ -147,11 +147,6 @@ PasswordForm MakeSavedPassword(base::StringPiece signon_realm,
   form.password_value = std::u16string(password);
   form.username_element = std::u16string(username_element);
   form.in_store = PasswordForm::Store::kProfileStore;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues =
-      base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
   return form;
 }
 
@@ -179,11 +174,6 @@ PasswordForm MakeSavedAndroidPassword(
   form.app_display_name = std::string(app_display_name);
   form.affiliated_web_realm = std::string(affiliated_web_realm);
   form.password_value = std::u16string(password);
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues =
-      base::flat_map<InsecureType, password_manager::InsecurityMetadata>();
   return form;
 }
 

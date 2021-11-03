@@ -72,11 +72,6 @@ password_manager::PasswordForm CreateTestPasswordForm(
   form.username_value = u"username" + base::NumberToString16(index);
   form.password_value = u"password" + base::NumberToString16(index);
   form.in_store = store;
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<password_manager::InsecureType,
-                                        password_manager::InsecurityMetadata>();
   return form;
 }
 
