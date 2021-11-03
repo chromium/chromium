@@ -228,17 +228,6 @@ config("gaiacp_config") {
     # Needed to build COM objects that will be hosted in a DLL.
     "_WINDLL",
   ]
-  cflags = [
-    # C4245: 'conversion' : conversion from 'type1' to 'type2',
-    #                       signed/unsigned mismatch
-    # Disabling because this Level 4 warning is causing ATL code to not compile,
-    # warnings are errors:
-    #     c:\src\depot_tools\win_toolchain\vs_files\
-    #         d3cb0e37bdd120ad0ac4650b674b09e81be45616\vc\atlmfc\include\
-    #         atlexcept.h(102): warning C4245: '=':
-    #         conversion from 'NTSTATUS' to 'DWORD', signed/unsigned mismatch
-    "/wd4245",
-  ]
   libs = [
     "advapi32.lib",  # For LookupAccountSid()
     "credui.lib",  # For CredPackAuthenticationBufferW()

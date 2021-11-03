@@ -168,8 +168,6 @@ template("core_impl_source_set") {
         "broker_win.cc",
         "channel_win.cc",
       ]
-      cflags = [ "/wd4324" ]  # Structure was padded due to __declspec(align()),
-                              # which is uninteresting.
     }
 
     # Use target_os == "chromeos" instead of is_chromeos because we need to

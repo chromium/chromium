@@ -146,14 +146,6 @@ config("absl_default_cflags_cc") {
       cflags_cc += [ "-Wbitfield-enum-conversion" ]
     }
   }
-  if (is_win) {
-    cflags_cc += [
-      "/wd4005",  # macro-redefinition
-      "/wd4018",  # sign-compare
-      "/wd4068",  # unknown pragma
-      "/wd4702",  # unreachable code
-    ]
-  }
 }
 
 config("absl_test_cflags_cc") {

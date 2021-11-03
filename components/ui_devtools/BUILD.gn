@@ -89,11 +89,6 @@ component("ui_devtools") {
 
   defines = [ "UI_DEVTOOLS_IMPLEMENTATION" ]
 
-  cflags = []
-  if (is_win) {
-    cflags += [ "/wd4800" ]  # Value forced to bool.
-  }
-
   deps = [
     ":protocol_generated_sources",
     "//base",
