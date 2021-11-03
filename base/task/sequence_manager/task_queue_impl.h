@@ -203,7 +203,7 @@ class BASE_EXPORT TaskQueueImpl {
   // Enqueues |task| on the |delayed_work_queue|. Called during wake-ups to
   // queue delayed tasks in order of delayed run time across multiple task
   // queues. Must be called from the main thread.
-  void MoveReadyDelayedTaskToWorkQueue(Task task);
+  void MoveReadyDelayedTaskToWorkQueue(std::unique_ptr<Task> task);
 
   // RAII handle created at the start of a wake-up for a given task queue. This
   // finishes the wake-up for that task queue when the object goes out of scope.
@@ -226,7 +226,8 @@ class BASE_EXPORT TaskQueueImpl {
   // Wrapper around a ready delayed task and its task queue used for ordering
   // tasks across task queues by delayed run time during wake-ups.
   struct ReadyDelayedTask {
-    ReadyDelayedTask(TaskQueueImpl* queue, Task task);
+    ReadyDelayedTask(TaskQueueImpl* queue, std::unique_ptr<Task> task);
+    ~ReadyDelayedTask();
     ReadyDelayedTask(ReadyDelayedTask&&);
     ReadyDelayedTask& operator=(ReadyDelayedTask&&);
 
@@ -234,7 +235,7 @@ class BASE_EXPORT TaskQueueImpl {
     bool operator<(const ReadyDelayedTask& other) const;
 
     TaskQueueImpl* task_queue;
-    Task task;
+    std::unique_ptr<Task> task;
   };
 
   // Called during wake-ups to move all delayed task whose delays expire before
@@ -372,11 +373,11 @@ class BASE_EXPORT TaskQueueImpl {
     DelayedIncomingQueue& operator=(const DelayedIncomingQueue&) = delete;
     ~DelayedIncomingQueue();
 
-    void push(Task task);
-    void pop();
+    void push(std::unique_ptr<Task> task);
+    std::unique_ptr<Task> pop();
     bool empty() const { return queue_.empty(); }
     size_t size() const { return queue_.size(); }
-    const Task& top() const { return queue_.top(); }
+    const Task& top() const { return *queue_.top(); }
     void swap(DelayedIncomingQueue* other);
 
     bool has_pending_high_resolution_tasks() const {
@@ -389,8 +390,17 @@ class BASE_EXPORT TaskQueueImpl {
     Value AsValue(TimeTicks now) const;
 
    private:
+    struct Comparator {
+      bool operator()(const std::unique_ptr<Task>& task1,
+                      const std::unique_ptr<Task>& task2) {
+        return *task1 > *task2;
+      }
+    };
+
     struct PQueue
-        : public std::priority_queue<Task, std::vector<Task>, std::greater<>> {
+        : public std::priority_queue<std::unique_ptr<Task>,
+                                     std::vector<std::unique_ptr<Task>>,
+                                     DelayedIncomingQueue::Comparator> {
       // Removes all cancelled tasks from the queue. Returns the number of
       // removed high resolution tasks (which could be lower than the total
       // number of removed tasks).
@@ -472,15 +482,16 @@ class BASE_EXPORT TaskQueueImpl {
 
   // Push the task onto the |delayed_incoming_queue|. Lock-free main thread
   // only fast path.
-  void PushOntoDelayedIncomingQueueFromMainThread(Task pending_task,
-                                                  TimeTicks now,
-                                                  bool notify_task_annotator);
+  void PushOntoDelayedIncomingQueueFromMainThread(
+      std::unique_ptr<Task> pending_task,
+      TimeTicks now,
+      bool notify_task_annotator);
 
   // Push the task onto the |delayed_incoming_queue|.  Slow path from other
   // threads.
-  void PushOntoDelayedIncomingQueue(Task pending_task);
+  void PushOntoDelayedIncomingQueue(std::unique_ptr<Task> pending_task);
 
-  void ScheduleDelayedWorkTask(Task pending_task);
+  void ScheduleDelayedWorkTask(std::unique_ptr<Task> pending_task);
 
   void MoveReadyImmediateTasksToImmediateWorkQueueLocked()
       EXCLUSIVE_LOCKS_REQUIRED(any_thread_lock_);

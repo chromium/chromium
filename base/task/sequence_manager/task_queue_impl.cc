@@ -361,8 +361,9 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
       posted_task.queue_time = time_domain_now;
 
     PushOntoDelayedIncomingQueueFromMainThread(
-        Task(std::move(posted_task), time_domain_delayed_run_time,
-             sequence_number, EnqueueOrder(), resolution),
+        std::make_unique<Task>(std::move(posted_task),
+                               time_domain_delayed_run_time, sequence_number,
+                               EnqueueOrder(), resolution),
         time_domain_now, /* notify_task_annotator */ true);
   } else {
     // NOTE posting a delayed task from a different thread is not expected to
@@ -381,23 +382,24 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask posted_task,
     if (sequence_manager_->GetAddQueueTimeToTasks())
       posted_task.queue_time = time_domain_now;
 
-    PushOntoDelayedIncomingQueue(
-        Task(std::move(posted_task), time_domain_delayed_run_time,
-             sequence_number, EnqueueOrder(), resolution));
+    PushOntoDelayedIncomingQueue(std::make_unique<Task>(
+        std::move(posted_task), time_domain_delayed_run_time, sequence_number,
+        EnqueueOrder(), resolution));
   }
 }
 
 void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
-    Task pending_task,
+    std::unique_ptr<Task> pending_task,
     TimeTicks now,
     bool notify_task_annotator) {
 #if DCHECK_IS_ON()
-  pending_task.cross_thread_ = false;
+  DCHECK(pending_task);
+  pending_task->cross_thread_ = false;
 #endif
 
   if (notify_task_annotator) {
-    sequence_manager_->WillQueueTask(&pending_task, name_);
-    MaybeReportIpcTaskQueuedFromMainThread(pending_task, name_);
+    sequence_manager_->WillQueueTask(pending_task.get(), name_);
+    MaybeReportIpcTaskQueuedFromMainThread(*pending_task, name_);
   }
   main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
 
@@ -407,17 +409,19 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueueFromMainThread(
   TraceQueueSize();
 }
 
-void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
-  sequence_manager_->WillQueueTask(&pending_task, name_);
-  MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(pending_task, name_);
+void TaskQueueImpl::PushOntoDelayedIncomingQueue(
+    std::unique_ptr<Task> pending_task) {
+  DCHECK(pending_task);
+  sequence_manager_->WillQueueTask(pending_task.get(), name_);
+  MaybeReportIpcTaskQueuedFromAnyThreadUnlocked(*pending_task, name_);
 
 #if DCHECK_IS_ON()
-  pending_task.cross_thread_ = true;
+  pending_task->cross_thread_ = true;
 #endif
 
   // TODO(altimin): Add a copy method to Task to capture metadata here.
-  auto task_runner = pending_task.task_runner;
-  const auto task_type = pending_task.task_type;
+  auto task_runner = pending_task->task_runner;
+  const auto task_type = pending_task->task_type;
   PostImmediateTaskImpl(
       PostedTask(std::move(task_runner),
                  BindOnce(&TaskQueueImpl::ScheduleDelayedWorkTask,
@@ -426,15 +430,17 @@ void TaskQueueImpl::PushOntoDelayedIncomingQueue(Task pending_task) {
       CurrentThread::kNotMainThread);
 }
 
-void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
+void TaskQueueImpl::ScheduleDelayedWorkTask(
+    std::unique_ptr<Task> pending_task) {
+  DCHECK(pending_task);
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-  TimeTicks delayed_run_time = pending_task.delayed_run_time;
+  TimeTicks delayed_run_time = pending_task->delayed_run_time;
   TimeTicks time_domain_now = main_thread_only().time_domain->NowTicks();
   if (delayed_run_time <= time_domain_now) {
     // If |delayed_run_time| is in the past then push it onto the work queue
     // immediately. To ensure the right task ordering we need to temporarily
     // push it onto the |delayed_incoming_queue|.
-    pending_task.delayed_run_time = time_domain_now;
+    pending_task->delayed_run_time = time_domain_now;
     main_thread_only().delayed_incoming_queue.push(std::move(pending_task));
     LazyNow lazy_now(time_domain_now);
     MoveReadyDelayedTasksToWorkQueue(&lazy_now);
@@ -568,7 +574,7 @@ bool TaskQueueImpl::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
   // Because task destructors could have a side-effect of posting new tasks, we
   // move all the cancelled tasks into a temporary container before deleting
   // them. This is to avoid the queue from changing while iterating over it.
-  StackVector<Task, 8> tasks_to_delete;
+  StackVector<std::unique_ptr<Task>, 8> tasks_to_delete;
 
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task* task =
@@ -577,8 +583,7 @@ bool TaskQueueImpl::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
     if (!task->task.IsCancelled())
       break;
 
-    tasks_to_delete->push_back(std::move(*task));
-    main_thread_only().delayed_incoming_queue.pop();
+    tasks_to_delete->push_back(main_thread_only().delayed_incoming_queue.pop());
   }
 
   if (!tasks_to_delete->empty()) {
@@ -601,23 +606,23 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
   // Because task destructors could have a side-effect of posting new tasks, we
   // move all the cancelled tasks into a temporary container before deleting
   // them. This is to avoid the queue from changing while iterating over it.
-  StackVector<Task, 8> tasks_to_delete;
+  StackVector<std::unique_ptr<Task>, 8> tasks_to_delete;
 
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task& task =
         const_cast<Task&>(main_thread_only().delayed_incoming_queue.top());
     CHECK(task.task);
     if (task.task.IsCancelled()) {
-      tasks_to_delete->push_back(std::move(task));
-      main_thread_only().delayed_incoming_queue.pop();
+      tasks_to_delete->push_back(
+          main_thread_only().delayed_incoming_queue.pop());
       continue;
     }
     if (task.delayed_run_time > lazy_now->Now())
       break;
 
     UpdateTaskOnDelayExpired(task);
-    delayed_work_queue_task_pusher.Push(std::move(task));
-    main_thread_only().delayed_incoming_queue.pop();
+    delayed_work_queue_task_pusher.Push(
+        main_thread_only().delayed_incoming_queue.pop());
   }
 
   // Explicitly delete tasks last.
@@ -630,29 +635,30 @@ void TaskQueueImpl::TakeReadyDelayedTasks(
   // Because task destructors could have a side-effect of posting new tasks, we
   // move all the cancelled tasks into a temporary container before deleting
   // them. This is to avoid the queue from changing while iterating over it.
-  StackVector<Task, 8> tasks_to_delete;
+  StackVector<std::unique_ptr<Task>, 8> tasks_to_delete;
 
   while (!main_thread_only().delayed_incoming_queue.empty()) {
     Task& task =
         const_cast<Task&>(main_thread_only().delayed_incoming_queue.top());
     if (!task.task || task.task.IsCancelled()) {
-      tasks_to_delete->push_back(std::move(task));
-      main_thread_only().delayed_incoming_queue.pop();
+      tasks_to_delete->push_back(
+          main_thread_only().delayed_incoming_queue.pop());
       continue;
     }
     if (task.delayed_run_time > lazy_now.Now())
       break;
 
-    tasks.emplace_back(this, std::move(task));
-    main_thread_only().delayed_incoming_queue.pop();
+    tasks.emplace_back(this, main_thread_only().delayed_incoming_queue.pop());
   }
 
   // Explicitly delete tasks last.
   tasks_to_delete->clear();
 }
 
-void TaskQueueImpl::MoveReadyDelayedTaskToWorkQueue(Task task) {
-  UpdateTaskOnDelayExpired(task);
+void TaskQueueImpl::MoveReadyDelayedTaskToWorkQueue(
+    std::unique_ptr<Task> task) {
+  DCHECK(task);
+  UpdateTaskOnDelayExpired(*task);
   main_thread_only().delayed_work_queue->Push(std::move(task));
 }
 
@@ -1419,22 +1425,27 @@ void TaskQueueImpl::OnQueueUnblocked() {
 TaskQueueImpl::DelayedIncomingQueue::DelayedIncomingQueue() = default;
 TaskQueueImpl::DelayedIncomingQueue::~DelayedIncomingQueue() = default;
 
-void TaskQueueImpl::DelayedIncomingQueue::push(Task task) {
+void TaskQueueImpl::DelayedIncomingQueue::push(std::unique_ptr<Task> task) {
+  DCHECK(task);
   // TODO(crbug.com/1247285): Remove this once the cause of corrupted tasks in
   // the queue is understood.
-  CHECK(task.task);
-  if (task.is_high_res)
+  CHECK(task->task);
+  if (task->is_high_res)
     pending_high_res_tasks_++;
   queue_.push(std::move(task));
 }
 
-void TaskQueueImpl::DelayedIncomingQueue::pop() {
+std::unique_ptr<Task> TaskQueueImpl::DelayedIncomingQueue::pop() {
   DCHECK(!empty());
+  DCHECK(queue_.top());
   if (top().is_high_res) {
     pending_high_res_tasks_--;
     DCHECK_GE(pending_high_res_tasks_, 0);
   }
+  std::unique_ptr<Task> task =
+      std::move(const_cast<std::unique_ptr<Task>&>(queue_.top()));
   queue_.pop();
+  return task;
 }
 
 void TaskQueueImpl::DelayedIncomingQueue::swap(DelayedIncomingQueue* rhs) {
@@ -1453,19 +1464,20 @@ size_t TaskQueueImpl::DelayedIncomingQueue::PQueue::SweepCancelledTasks(
   // std::vector. We poke at that vector directly here to filter out canceled
   // tasks in place.
   size_t num_high_res_tasks_swept = 0u;
-  auto keep_task = [&num_high_res_tasks_swept](const Task& task) {
-    if (!task.task.IsCancelled())
-      return true;
-    if (task.is_high_res)
-      num_high_res_tasks_swept++;
-    return false;
-  };
+  auto keep_task =
+      [&num_high_res_tasks_swept](const std::unique_ptr<Task>& task) {
+        if (!task->task.IsCancelled())
+          return true;
+        if (task->is_high_res)
+          num_high_res_tasks_swept++;
+        return false;
+      };
 
   // Because task destructors could have a side-effect of posting new tasks, we
   // move all the cancelled tasks into a temporary container before deleting
   // them. This is to avoid |c| from changing while c.erase() is running.
   auto delete_start = std::stable_partition(c.begin(), c.end(), keep_task);
-  StackVector<Task, 8> tasks_to_delete;
+  StackVector<std::unique_ptr<Task>, 8> tasks_to_delete;
   std::move(delete_start, c.end(),
             std::back_inserter(tasks_to_delete.container()));
   c.erase(delete_start, c.end());
@@ -1486,14 +1498,16 @@ Value TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {
 Value TaskQueueImpl::DelayedIncomingQueue::PQueue::AsValue(
     TimeTicks now) const {
   Value state(Value::Type::LIST);
-  for (const Task& task : c)
-    state.Append(TaskAsValue(task, now));
+  for (const std::unique_ptr<Task>& task : c)
+    state.Append(TaskAsValue(*task, now));
   return state;
 }
 
 TaskQueueImpl::ReadyDelayedTask::ReadyDelayedTask(TaskQueueImpl* queue,
-                                                  Task task)
+                                                  std::unique_ptr<Task> task)
     : task_queue(queue), task(std::move(task)) {}
+
+TaskQueueImpl::ReadyDelayedTask::~ReadyDelayedTask() = default;
 
 TaskQueueImpl::ReadyDelayedTask::ReadyDelayedTask(ReadyDelayedTask&& other) =
     default;
@@ -1503,7 +1517,7 @@ TaskQueueImpl::ReadyDelayedTask& TaskQueueImpl::ReadyDelayedTask::operator=(
 
 bool TaskQueueImpl::ReadyDelayedTask::operator<(
     const TaskQueueImpl::ReadyDelayedTask& other) const {
-  return task < other.task;
+  return *task < *other.task;
 }
 
 TaskQueueImpl::WakeUpHandle::WakeUpHandle(TaskQueueImpl* queue,

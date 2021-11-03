@@ -188,7 +188,8 @@ TEST_F(WorkQueueTest, CreateTaskPusherOneTask) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    Task task = FakeTaskWithEnqueueOrder(2);
+    std::unique_ptr<Task> task =
+        std::make_unique<Task>(FakeTaskWithEnqueueOrder(2));
     task_pusher.Push(std::move(task));
   }
   EXPECT_EQ(work_queue_.get(), work_queue_sets_->GetOldestQueueInSet(0));
@@ -198,9 +199,9 @@ TEST_F(WorkQueueTest, CreateTaskPusherThreeTasks) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    task_pusher.Push(FakeTaskWithEnqueueOrder(2));
-    task_pusher.Push(FakeTaskWithEnqueueOrder(3));
-    task_pusher.Push(FakeTaskWithEnqueueOrder(4));
+    task_pusher.Push(std::make_unique<Task>(FakeTaskWithEnqueueOrder(2)));
+    task_pusher.Push(std::make_unique<Task>(FakeTaskWithEnqueueOrder(3)));
+    task_pusher.Push(std::make_unique<Task>(FakeTaskWithEnqueueOrder(4)));
   }
   EXPECT_EQ(work_queue_.get(), work_queue_sets_->GetOldestQueueInSet(0));
   EXPECT_EQ(2ull, work_queue_->GetFrontTask()->enqueue_order());
@@ -212,9 +213,9 @@ TEST_F(WorkQueueTest, CreateTaskPusherAfterFenceHit) {
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
   {
     WorkQueue::TaskPusher task_pusher(work_queue_->CreateTaskPusher());
-    task_pusher.Push(FakeTaskWithEnqueueOrder(2));
-    task_pusher.Push(FakeTaskWithEnqueueOrder(3));
-    task_pusher.Push(FakeTaskWithEnqueueOrder(4));
+    task_pusher.Push(std::make_unique<Task>(FakeTaskWithEnqueueOrder(2)));
+    task_pusher.Push(std::make_unique<Task>(FakeTaskWithEnqueueOrder(3)));
+    task_pusher.Push(std::make_unique<Task>(FakeTaskWithEnqueueOrder(4)));
   }
   EXPECT_EQ(nullptr, work_queue_sets_->GetOldestQueueInSet(0));
 }
