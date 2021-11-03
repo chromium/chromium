@@ -58,6 +58,10 @@ std::string FakeScriptExecutorDelegate::GetEmailAddressForAccessTokenAccount() {
   return std::string();
 }
 
+ukm::UkmRecorder* FakeScriptExecutorDelegate::GetUkmRecorder() {
+  return nullptr;
+}
+
 bool FakeScriptExecutorDelegate::EnterState(AutofillAssistantState state) {
   if (GetState() == state)
     return false;

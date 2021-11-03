@@ -23,6 +23,7 @@
 #include "components/autofill_assistant/browser/viewport_mode.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/icu/source/common/unicode/umachine.h"
 
 class GURL;
@@ -285,6 +286,9 @@ class ActionDelegate {
   // Returns the e-mail address that corresponds to the access token or an empty
   // string.
   virtual std::string GetEmailAddressForAccessTokenAccount() const = 0;
+
+  // Returns the UkmRecorder.
+  virtual ukm::UkmRecorder* GetUkmRecorder() const = 0;
 
   // Sets or updates contextual information.
   // Passing nullptr clears the contextual information.

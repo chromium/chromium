@@ -71,7 +71,8 @@ Controller::Controller(
     const base::TickClock* tick_clock,
     base::WeakPtr<RuntimeManagerImpl> runtime_manager,
     std::unique_ptr<Service> service,
-    std::unique_ptr<AutofillAssistantTtsController> tts_controller)
+    std::unique_ptr<AutofillAssistantTtsController> tts_controller,
+    ukm::UkmRecorder* ukm_recorder)
     : content::WebContentsObserver(web_contents),
       client_(client),
       tick_clock_(tick_clock),
@@ -80,7 +81,8 @@ Controller::Controller(
                        : ServiceImpl::Create(web_contents->GetBrowserContext(),
                                              client_)),
       navigating_to_new_document_(web_contents->IsWaitingForResponse()),
-      tts_controller_(std::move(tts_controller)) {
+      tts_controller_(std::move(tts_controller)),
+      ukm_recorder_(ukm_recorder) {
   user_model_.AddObserver(this);
   tts_controller_->SetTtsEventDelegate(weak_ptr_factory_.GetWeakPtr());
 }
@@ -164,6 +166,10 @@ content::WebContents* Controller::GetWebContents() {
 
 std::string Controller::GetEmailAddressForAccessTokenAccount() {
   return client_->GetEmailAddressForAccessTokenAccount();
+}
+
+ukm::UkmRecorder* Controller::GetUkmRecorder() {
+  return ukm_recorder_;
 }
 
 std::string Controller::GetDisplayStringsLocale() {

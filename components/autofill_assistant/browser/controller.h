@@ -35,6 +35,7 @@
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -67,7 +68,8 @@ class Controller : public ScriptExecutorDelegate,
              const base::TickClock* tick_clock,
              base::WeakPtr<RuntimeManagerImpl> runtime_manager,
              std::unique_ptr<Service> service,
-             std::unique_ptr<AutofillAssistantTtsController> tts_controller);
+             std::unique_ptr<AutofillAssistantTtsController> tts_controller,
+             ukm::UkmRecorder* ukm_recorder);
 
   Controller(const Controller&) = delete;
   Controller& operator=(const Controller&) = delete;
@@ -122,6 +124,7 @@ class Controller : public ScriptExecutorDelegate,
   WebsiteLoginManager* GetWebsiteLoginManager() override;
   content::WebContents* GetWebContents() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
+  ukm::UkmRecorder* GetUkmRecorder() override;
 
   void SetTouchableElementArea(const ElementAreaProto& area) override;
   void SetStatusMessage(const std::string& message) override;
@@ -631,6 +634,8 @@ class Controller : public ScriptExecutorDelegate,
   // Log information about action execution. Gets reset at the start of every
   // action and attached to the action result on completion.
   ProcessedActionStatusDetailsProto log_info_;
+
+  ukm::UkmRecorder* ukm_recorder_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

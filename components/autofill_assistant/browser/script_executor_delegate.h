@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/viewport_mode.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -65,6 +66,7 @@ class ScriptExecutorDelegate {
   virtual WebsiteLoginManager* GetWebsiteLoginManager() = 0;
   virtual content::WebContents* GetWebContents() = 0;
   virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
+  virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
 
   // Enters the given state. Returns true if the state was changed.
   virtual bool EnterState(AutofillAssistantState state) = 0;

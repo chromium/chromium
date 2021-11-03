@@ -50,6 +50,7 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
               GetEmailAddressForAccessTokenAccount,
               (),
               (override));
+  MOCK_METHOD(ukm::UkmRecorder*, GetUkmRecorder, (), (override));
   MOCK_METHOD(bool, EnterState, (AutofillAssistantState state), (override));
   MOCK_METHOD(void,
               SetOverlayBehavior,

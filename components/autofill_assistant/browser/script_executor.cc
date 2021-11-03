@@ -628,6 +628,10 @@ std::string ScriptExecutor::GetEmailAddressForAccessTokenAccount() const {
   return delegate_->GetEmailAddressForAccessTokenAccount();
 }
 
+ukm::UkmRecorder* ScriptExecutor::GetUkmRecorder() const {
+  return delegate_->GetUkmRecorder();
+}
+
 void ScriptExecutor::SetDetails(std::unique_ptr<Details> details,
                                 base::TimeDelta delay) {
   return delegate_->SetDetails(std::move(details), delay);
