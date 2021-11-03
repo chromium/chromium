@@ -11,6 +11,8 @@
 #include "components/page_info/about_this_site_validation.h"
 #include "components/page_info/features.h"
 #include "components/page_info/proto/about_this_site_metadata.pb.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
 namespace page_info {
@@ -21,7 +23,8 @@ AboutThisSiteService::AboutThisSiteService(std::unique_ptr<Client> client)
     : client_(std::move(client)) {}
 
 absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
-    const GURL& url) const {
+    const GURL& url,
+    ukm::SourceId source_id) const {
   optimization_guide::OptimizationMetadata metadata;
   auto decision = client_->CanApplyOptimization(url, &metadata);
   absl::optional<proto::AboutThisSiteMetadata> about_this_site_metadata =
@@ -33,6 +36,9 @@ absl::optional<proto::SiteInfo> AboutThisSiteService::GetAboutThisSiteInfo(
                                      about_this_site_metadata);
   base::UmaHistogramEnumeration("Security.PageInfo.AboutThisSiteStatus",
                                 status);
+  ukm::builders::AboutThisSiteStatus(source_id)
+      .SetStatus(static_cast<int>(status))
+      .Record(ukm::UkmRecorder::Get());
   if (status == ProtoValidation::kValid) {
     return about_this_site_metadata->site_info();
   }

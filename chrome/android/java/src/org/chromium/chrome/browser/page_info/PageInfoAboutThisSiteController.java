@@ -23,6 +23,7 @@ import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteIn
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /**
@@ -108,7 +109,8 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     private @Nullable SiteInfo getSiteInfo() {
         byte[] result = PageInfoAboutThisSiteControllerJni.get().getSiteInfo(
-                mMainController.getBrowserContext(), mMainController.getURL());
+                mMainController.getBrowserContext(), mMainController.getURL(),
+                mTab.getWebContents());
         if (result == null) return null;
         SiteInfo info = null;
         try {
@@ -127,6 +129,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
 
     @NativeMethods
     interface Natives {
-        byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url);
+        byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url, WebContents webContents);
     }
 }

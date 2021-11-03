@@ -55,6 +55,7 @@ import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.Hyperl
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteDescription;
 import org.chromium.components.page_info.proto.AboutThisSiteMetadataProto.SiteInfo;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -138,7 +139,8 @@ public class PageInfoAboutThisSiteTest {
     private void mockResponse(byte[] bytes) {
         doReturn(bytes)
                 .when(mMockAboutThisSiteJni)
-                .getSiteInfo(any(BrowserContextHandle.class), any(GURL.class));
+                .getSiteInfo(
+                        any(BrowserContextHandle.class), any(GURL.class), any(WebContents.class));
     }
 
     private byte[] createDescription() {

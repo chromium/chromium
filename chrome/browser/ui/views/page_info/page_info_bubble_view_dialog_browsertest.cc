@@ -25,6 +25,7 @@
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
@@ -489,7 +490,12 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
       auto* service =
           AboutThisSiteServiceFactory::GetForProfile(browser()->profile());
       bubble_view->OpenAboutThisSitePage(
-          service->GetAboutThisSiteInfo(GetUrl(kAboutThisSiteUrl)).value());
+          service
+              ->GetAboutThisSiteInfo(
+                  GetUrl(kAboutThisSiteUrl),
+                  ukm::GetSourceIdForWebContentsDocument(
+                      browser()->tab_strip_model()->GetActiveWebContents()))
+              .value());
     }
   }
 

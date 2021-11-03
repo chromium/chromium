@@ -8,6 +8,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/page_info/about_this_site_validation.h"
 #include "components/page_info/proto/about_this_site_metadata.pb.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -99,7 +100,8 @@ TEST_F(AboutThisSiteServiceTest, ValidResponse) {
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnDescription));
 
-  auto info = service()->GetAboutThisSiteInfo(GURL("https://foo.com"));
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_TRUE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        ProtoValidation::kValid, 1);
@@ -111,7 +113,8 @@ TEST_F(AboutThisSiteServiceTest, InvalidResponse) {
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnInvalidDescription));
 
-  auto info = service()->GetAboutThisSiteInfo(GURL("https://foo.com"));
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        ProtoValidation::kIncompleteDescription, 1);
@@ -123,7 +126,8 @@ TEST_F(AboutThisSiteServiceTest, NoResponse) {
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnNoResult));
 
-  auto info = service()->GetAboutThisSiteInfo(GURL("https://foo.com"));
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        ProtoValidation::kNoResult, 1);
@@ -135,7 +139,8 @@ TEST_F(AboutThisSiteServiceTest, Unknown) {
   EXPECT_CALL(*client(), CanApplyOptimization(_, _))
       .WillOnce(Invoke(&ReturnUnknown));
 
-  auto info = service()->GetAboutThisSiteInfo(GURL("https://foo.com"));
+  auto info = service()->GetAboutThisSiteInfo(
+      GURL("https://foo.com"), ukm::UkmRecorder::GetNewSourceID());
   EXPECT_FALSE(info.has_value());
   t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteStatus",
                        ProtoValidation::kUnknown, 1);

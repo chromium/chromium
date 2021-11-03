@@ -101,6 +101,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//services/metrics/public/cpp:metrics_cpp",
     "//testing/gtest",
     "//url:url",
   ]

@@ -18,6 +18,30 @@ be describing additional metrics about the same event.
 
 <ukm-configuration>
 
+<event name="AboutThisSiteStatus">
+  <owner>olesiamarukhnno@google.com</owner>
+  <summary>
+    Recorded on each page info bubble open when &quot;About this site&quot; data
+    is fetched.
+  </summary>
+  <metric name="Status" enum="AboutThisSiteStatus">
+    <summary>
+      The status of the &quot;About this site&quot; info, including if the data
+      is available and whether the proto is valid. See
+      |page_info::about_this_site_validation::ProtoValidation| for enum
+      elements.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AbusiveExperienceHeuristic">
   <owner>csharrison@chromium.org</owner>
   <owner>yaoxia@chromium.org</owner>

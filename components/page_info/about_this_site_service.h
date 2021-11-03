@@ -10,6 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -42,7 +43,9 @@ class AboutThisSiteService : public KeyedService {
   AboutThisSiteService& operator=(const AboutThisSiteService&) = delete;
 
   // Returns "About this site" information for the website with |url|.
-  absl::optional<proto::SiteInfo> GetAboutThisSiteInfo(const GURL& url) const;
+  absl::optional<proto::SiteInfo> GetAboutThisSiteInfo(
+      const GURL& url,
+      ukm::SourceId source_id) const;
 
  private:
   std::unique_ptr<Client> client_;
