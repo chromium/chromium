@@ -17338,6 +17338,7 @@ chromium-metrics-reviews@google.com.
     </obsolete>
   </affected-histogram>
   <affected-histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound"/>
+  <affected-histogram name="Sync.ModelTypeTimeUntilEncryptionKeyFound2"/>
   <affected-histogram name="Sync.ModelTypeUndecryptablePendingUpdatesDropped"/>
   <affected-histogram name="Sync.NonReflectionUpdateFreshnessPossiblySkewed">
     <obsolete>
