@@ -702,7 +702,7 @@ void AutocompleteController::UpdateResult(
        i != providers_.end(); ++i)
     result_.AppendMatches(input_, (*i)->matches());
 
-  if (OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
+  if (done_ && OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
 
   UpdateHeaderInfoFromZeroSuggestProvider(&result_);
