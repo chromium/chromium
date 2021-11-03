@@ -41,22 +41,6 @@ const char kShellExecutableName[] = "content_shell";
 const char kMojoCoreLibraryName[] = "libmojo_core.so";
 #endif
 
-const char* kSwitchesToCopy[] = {
-#if defined(USE_OZONE)
-    // Keep the kOzonePlatform switch that the Ozone must use.
-    switches::kOzonePlatform,
-#endif
-    // Some tests use custom cmdline that doesn't hold switches from previous
-    // cmdline. Only a couple of switches are copied. That can result in
-    // incorrect initialization of a process. For example, the work that we do
-    // to have use_x11 && use_ozone, requires UseOzonePlatform feature flag to
-    // be passed to all the process to ensure correct path is chosen.
-    // TODO(https://crbug.com/1096425): update this comment once USE_X11 goes
-    // away.
-    switches::kEnableFeatures,
-    switches::kDisableFeatures,
-};
-
 base::FilePath GetCurrentDirectory() {
   base::FilePath current_directory;
   CHECK(base::GetCurrentDirectory(&current_directory));
@@ -81,9 +65,15 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
         GetFilePathNextToCurrentExecutable(kShellExecutableName));
     command_line.AppendSwitchPath(switches::kContentShellDataPath,
                                   temp_dir_.GetPath());
+#if defined(USE_OZONE)
     const base::CommandLine& cmdline = *base::CommandLine::ForCurrentProcess();
+    const char* kSwitchesToCopy[] = {
+        // Keep the kOzonePlatform switch that the Ozone must use.
+        switches::kOzonePlatform,
+    };
     command_line.CopySwitchesFrom(cmdline, kSwitchesToCopy,
                                   base::size(kSwitchesToCopy));
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line.AppendSwitchASCII(switches::kUseGL,

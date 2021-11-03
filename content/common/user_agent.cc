@@ -34,7 +34,7 @@ std::string GetUserAgentPlatform() {
   return "";
 #elif defined(OS_MAC)
   return "Macintosh; ";
-#elif defined(USE_X11) || defined(USE_OZONE)
+#elif defined(USE_OZONE)
   return "X11; ";  // strange, but that's what Firefox uses
 #elif defined(OS_ANDROID)
   return "Linux; ";

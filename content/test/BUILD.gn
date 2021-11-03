@@ -2767,10 +2767,6 @@ test("content_unittests") {
     deps += [ "//third_party/boringssl" ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
-
   if (is_linux || is_chromeos) {
     sources += [ "../common/set_process_title_linux_unittest.cc" ]
     deps += [ "//content/common:set_process_title_linux" ]

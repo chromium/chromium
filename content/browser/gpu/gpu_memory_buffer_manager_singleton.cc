@@ -36,16 +36,11 @@ viz::mojom::GpuService* GetGpuService(
   return nullptr;
 }
 
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
 bool ShouldSetBufferFormatsFromGpuExtraInfo() {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .fetch_buffer_formats_for_gmb_on_gpu;
-  }
-#endif
-  return true;
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .fetch_buffer_formats_for_gmb_on_gpu;
 }
 #endif
 
@@ -84,9 +79,8 @@ GpuMemoryBufferManagerSingleton::GetInstance() {
 }
 
 void GpuMemoryBufferManagerSingleton::OnGpuExtraInfoUpdate() {
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
-  // X11 and non-Ozone/X11 fetch buffer formats on gpu and pass them via gpu
-  // extra info.
+#if defined(USE_OZONE_PLATFORM_X11)
+  // X11 fetches buffer formats on gpu and passes them via gpu extra info.
   if (!ShouldSetBufferFormatsFromGpuExtraInfo())
     return;
 

@@ -127,20 +127,8 @@
 #include "base/win/windows_version.h"
 #endif
 
-#if defined(USE_AURA) && defined(USE_X11)
-#include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_code_conversion.h"
-#include "ui/events/test/events_test_utils.h"
-#include "ui/events/test/events_test_utils_x11.h"
-#include "ui/events/x/x11_event_translation.h"
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/events/keycodes/keyboard_code_conversion.h"
-#endif
-
-#if defined(USE_X11) && defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #endif
 
 using blink::TestWebFrameContentDumper;
@@ -158,7 +146,7 @@ namespace {
 
 static const int kProxyRoutingId = 13;
 
-#if (defined(USE_AURA) && defined(USE_X11)) || defined(USE_OZONE)
+#if defined(USE_OZONE)
 // Converts MockKeyboard::Modifiers to ui::EventFlags.
 int ConvertMockKeyboardModifier(MockKeyboard::Modifiers modifiers) {
   static struct ModifierMap {
@@ -381,49 +369,6 @@ class RenderViewImplTest : public RenderViewTest {
     return param;
   }
 
-#if defined(USE_X11)
-  int SendKeyEventX11(MockKeyboard::Layout layout,
-                      int key_code,
-                      MockKeyboard::Modifiers modifiers,
-                      std::u16string* output) {
-    // We ignore |layout|, which means we are only testing the layout of the
-    // current locale. TODO(mazda): fix this to respect |layout|.
-    CHECK(output);
-    const int flags = ConvertMockKeyboardModifier(modifiers);
-
-    ui::ScopedXI2Event xevent;
-    xevent.InitKeyEvent(ui::ET_KEY_PRESSED,
-                        static_cast<ui::KeyboardCode>(key_code), flags);
-    auto event1 = ui::BuildKeyEventFromXEvent(*xevent);
-    NativeWebKeyboardEvent keydown_event(*event1);
-    SendNativeKeyEvent(keydown_event);
-
-    // X11 doesn't actually have native character events, but give the test
-    // what it wants.
-    xevent.InitKeyEvent(ui::ET_KEY_PRESSED,
-                        static_cast<ui::KeyboardCode>(key_code), flags);
-    auto event2 = ui::BuildKeyEventFromXEvent(*xevent);
-    event2->set_character(
-        DomCodeToUsLayoutCharacter(event2->code(), event2->flags()));
-    ui::KeyEventTestApi test_event2(event2.get());
-    test_event2.set_is_char(true);
-    NativeWebKeyboardEvent char_event(*event2);
-    SendNativeKeyEvent(char_event);
-
-    xevent.InitKeyEvent(ui::ET_KEY_RELEASED,
-                        static_cast<ui::KeyboardCode>(key_code), flags);
-    auto event3 = ui::BuildKeyEventFromXEvent(*xevent);
-    NativeWebKeyboardEvent keyup_event(*event3);
-    SendNativeKeyEvent(keyup_event);
-
-    char16_t c = DomCodeToUsLayoutCharacter(
-        UsLayoutKeyboardCodeToDomCode(static_cast<ui::KeyboardCode>(key_code)),
-        flags);
-    output->assign(1, c);
-    return 1;
-  }
-#endif
-
 #if defined(USE_OZONE)
   int SendKeyEventOzone(MockKeyboard::Layout layout,
                         int key_code,
@@ -495,12 +440,6 @@ class RenderViewImplTest : public RenderViewTest {
     SendNativeKeyEvent(keyup_event);
 
     return length;
-#elif defined(USE_X11)
-#if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform())
-      return SendKeyEventOzone(layout, key_code, modifiers, output);
-#endif
-    return SendKeyEventX11(layout, key_code, modifiers, output);
 #elif defined(USE_OZONE)
     return SendKeyEventOzone(layout, key_code, modifiers, output);
 #else

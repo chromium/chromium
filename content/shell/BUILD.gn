@@ -307,10 +307,6 @@ static_library("content_shell_lib") {
     deps += [ "//ui/gtk" ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/events/devices/x11" ]
-  }
-
   if (is_android) {
     deps += [
       "//components/embedder_support/android:view",

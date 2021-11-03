@@ -26,10 +26,6 @@
 #include "ui/aura/env.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
-
 #if defined(OS_FUCHSIA)
 #include "ui/ozone/public/ozone_switches.h"
 #endif

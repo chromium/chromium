@@ -224,12 +224,6 @@
 #include "content/browser/media/cdm_registry_impl.h"
 #endif
 
-#if defined(USE_X11)
-#include "gpu/config/gpu_driver_bug_workaround_type.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/base/x/x11_util.h"           // nogncheck
-#endif
-
 #if defined(USE_NSS_CERTS)
 #include "crypto/nss_util.h"
 #endif
@@ -531,13 +525,6 @@ int BrowserMainLoop::EarlyInitialization() {
   // by now since a thread to start the ServiceManager has been created
   // before the browser main loop starts.
   DCHECK(SandboxHostLinux::GetInstance()->IsInitialized());
-#endif
-
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform() && UsingInProcessGpu() &&
-      !x11::Connection::Get()->Ready()) {
-    LOG(ERROR) << "Failed to open an X11 connection.";
-  }
 #endif
 
   // GLib's spawning of new processes is buggy, so it's important that at this
@@ -1394,16 +1381,6 @@ bool BrowserMainLoop::InitializeToolkit() {
 #endif
 
 #if defined(USE_AURA)
-
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform() &&
-      !parsed_command_line_.HasSwitch(switches::kHeadless) &&
-      !x11::Connection::Get()->Ready()) {
-    LOG(ERROR) << "Unable to open X display.";
-    return false;
-  }
-#endif
-
   // Env creates the compositor. Aura widgets need the compositor to be created
   // before they can be initialized by the browser.
   env_ = aura::Env::CreateInstance();

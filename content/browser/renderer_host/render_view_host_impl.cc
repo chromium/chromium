@@ -267,7 +267,7 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
   // TODO(crbug.com/1066605): Consider exposing this as a FIDL parameter.
   prefs->focus_ring_color = SK_AlphaTRANSPARENT;
 #endif
-#if defined(USE_OZONE) || defined(USE_X11)
+#if defined(USE_OZONE)
   prefs->selection_clipboard_buffer_available =
       ui::Clipboard::IsSupportedClipboardBuffer(
           ui::ClipboardBuffer::kSelection);

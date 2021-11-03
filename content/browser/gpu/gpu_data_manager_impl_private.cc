@@ -75,10 +75,6 @@
 #include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_manager.h"
 
-#if defined(USE_OZONE) || defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
-
 #if defined(OS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
@@ -100,19 +96,13 @@ namespace content {
 
 namespace {
 
-// On X11 (Ozone and non-Ozone), we do not know GpuMemoryBuffer configuration
-// support until receiving the initial GPUInfo.
+// On X11, we do not know GpuMemoryBuffer configuration support until receiving
+// the initial GPUInfo.
 bool CanUpdateGmbGpuPreferences() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return !ui::OzonePlatform::GetInstance()
-                ->GetPlatformProperties()
-                .fetch_buffer_formats_for_gmb_on_gpu;
-  }
-#endif
-#if defined(USE_X11)
-  DCHECK(!features::IsUsingOzonePlatform());
-  return false;
+  return !ui::OzonePlatform::GetInstance()
+              ->GetPlatformProperties()
+              .fetch_buffer_formats_for_gmb_on_gpu;
 #else
   return true;
 #endif
@@ -1377,11 +1367,9 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
 #endif
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    gpu_preferences->message_pump_type = ui::OzonePlatform::GetInstance()
-                                             ->GetPlatformProperties()
-                                             .message_pump_type_for_gpu;
-  }
+  gpu_preferences->message_pump_type = ui::OzonePlatform::GetInstance()
+                                           ->GetPlatformProperties()
+                                           .message_pump_type_for_gpu;
 #endif
 
 #if defined(OS_MAC)

@@ -118,14 +118,6 @@ target(link_target_type, "gpu_sources") {
     deps += [ "//components/metal_util" ]
   }
 
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/linux:gpu_memory_buffer_support_x11",
-      "//ui/gfx/x",
-    ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }

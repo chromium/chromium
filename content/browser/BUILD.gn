@@ -2256,10 +2256,6 @@ source_set("browser") {
     deps += [ "//ui/events" ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/base/x" ]
-  }
-
   if (use_ozone) {
     deps += [ "//ui/ozone:buildflags" ]
   }
@@ -2642,13 +2638,6 @@ source_set("browser") {
 
   if ((is_linux || is_chromeos) && use_aura) {
     deps += [ "//third_party/fontconfig" ]
-  }
-
-  if (use_x11) {
-    deps += [
-      "//ui/events/platform/x11",
-      "//ui/gfx/x",
-    ]
   }
 
   if (use_pangocairo) {
