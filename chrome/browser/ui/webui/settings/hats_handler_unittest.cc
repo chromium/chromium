@@ -37,8 +37,11 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
     base::test::ScopedFeatureList::FeatureAndParams privacy_sandbox{
         features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
         {{"settings-time", "10s"}}};
+    base::test::ScopedFeatureList::FeatureAndParams privacy_review{
+        features::kHappinessTrackingSurveysForDesktopPrivacyReview,
+        {{"settings-time", "15s"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {settings_privacy, privacy_sandbox}, {});
+        {settings_privacy, privacy_sandbox, privacy_review}, {});
   }
 
   void SetUp() override {
@@ -111,6 +114,20 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
 
   args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
+  task_environment()->RunUntilIdle();
+}
+
+TEST_F(HatsHandlerTest, PrivacyReviewHats) {
+  // Check that completing a privacy review triggers a privacy review hats.
+  EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
+                                       kHatsSurveyTriggerPrivacyReview,
+                                       web_contents(), 15000, _, _, true))
+      .Times(1);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(static_cast<int>(
+      HatsHandler::TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE));
   handler()->HandleTrustSafetyInteractionOccurred(
       &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();

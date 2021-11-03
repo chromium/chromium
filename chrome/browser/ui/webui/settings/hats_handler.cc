@@ -103,6 +103,14 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
         GetPrivacySettingsProductSpecificBitsData(profile),
         /*product_specific_string_data=*/{},
         /*require_same_origin=*/true);
+  } else if (interaction == TrustSafetyInteraction::COMPLETED_PRIVACY_GUIDE) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerPrivacyReview, web_ui()->GetWebContents(),
+        features::kHappinessTrackingSurveysForDesktopPrivacyReviewTime.Get()
+            .InMilliseconds(),
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/{},
+        /*require_same_origin=*/true);
   }
 }
 

@@ -24,6 +24,7 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
@@ -224,6 +225,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           headerString: this.i18n('privacyReviewCookiesCardHeader'),
           onForwardNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.COMPLETION);
+            HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+                TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
           },
           onBackNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.SAFE_BROWSING, true);

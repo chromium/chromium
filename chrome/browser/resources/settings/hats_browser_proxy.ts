@@ -14,6 +14,7 @@ export enum TrustSafetyInteraction {
   USED_PRIVACY_CARD = 1,
   OPENED_PRIVACY_SANDBOX = 2,
   OPENED_PASSWORD_MANAGER = 3,
+  COMPLETED_PRIVACY_GUIDE = 4,
 }
 
 export interface HatsBrowserProxy {

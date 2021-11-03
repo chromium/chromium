@@ -514,6 +514,10 @@ const base::Feature kHaTSDesktopDevToolsLayoutPanel{
 const base::Feature kHappinessTrackingSurveysForDesktopPrivacyReview{
     "HappinessTrackingSurveysForDesktopPrivacyReview",
     base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForDesktopPrivacyReviewTime{
+        &kHappinessTrackingSurveysForDesktopPrivacyReview, "settings-time",
+        base::Seconds(20)};
 
 // Enables or disables the Happiness Tracking System for Desktop Privacy
 // Sandbox.
