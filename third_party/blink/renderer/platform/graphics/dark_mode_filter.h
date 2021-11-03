@@ -35,6 +35,8 @@ class PLATFORM_EXPORT DarkModeFilter {
   // them.
   enum class ElementRole { kText, kListSymbol, kBackground, kSVG };
 
+  DarkModeImagePolicy GetDarkModeImagePolicy() const;
+
   SkColor InvertColorIfNeeded(SkColor color, ElementRole element_role);
   absl::optional<cc::PaintFlags> ApplyToFlagsIfNeeded(
       const cc::PaintFlags& flags,
@@ -49,23 +51,24 @@ class PLATFORM_EXPORT DarkModeFilter {
   // DarkModeResult::kNotClassified - Dark mode filter should be applied and to
   // get the color filter ApplyToImage() should be called. This API is
   // thread-safe.
-  DarkModeResult AnalyzeShouldApplyToImage(const SkIRect& src,
-                                           const SkIRect& dst) const;
+  bool ImageShouldHaveFilterAppliedBasedOnSizes(const SkIRect& src,
+                                                const SkIRect& dst) const;
 
   // Returns dark mode color filter based on the classification done on
   // |pixmap|. The image cannot be classified if pixmap is empty or |src| is
   // empty or |src| is larger than pixmap bounds. Before calling this function
-  // AnalyzeShouldApplyToImage() must be called for early out or deciding
-  // appropriate function call. This function should be called only if image
-  // policy is set to DarkModeImagePolicy::kFilterSmart. This API is
+  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
+  // deciding appropriate function call. This function should be called only if
+  // image policy is set to DarkModeImagePolicy::kFilterSmart. This API is
   // thread-safe.
   sk_sp<SkColorFilter> ApplyToImage(const SkPixmap& pixmap,
                                     const SkIRect& src) const;
 
   // Returns dark mode color filter for images. Before calling this function
-  // AnalyzeShouldApplyToImage() must be called for early out or deciding
-  // appropriate function call. This function should be called only if image
-  // policy is set to DarkModeImagePolicy::kFilterAll. This API is thread-safe.
+  // ImageShouldHaveFilterAppliedBasedOnSizes() must be called for early out or
+  // deciding appropriate function call. This function should be called only if
+  // image policy is set to DarkModeImagePolicy::kFilterAll. This API is
+  // thread-safe.
   sk_sp<SkColorFilter> GetImageFilter() const;
 
  private:

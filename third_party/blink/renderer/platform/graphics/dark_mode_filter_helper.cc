@@ -79,39 +79,31 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(DarkModeFilter& filter,
   DCHECK(image);
   DCHECK(flags);
 
-  // Invert the content automatically and do not need to use the image filter on
-  // the result.
-  if (image->IsGradientGeneratedImage() || image->IsSVGImageForContainer() ||
-      image->IsCrossfadeGeneratedImage())
+  DarkModeImagePolicy image_policy = filter.GetDarkModeImagePolicy();
+  if (image_policy == DarkModeImagePolicy::kFilterNone)
     return;
+
+  if (image_policy == DarkModeImagePolicy::kFilterAll) {
+    flags->setColorFilter(filter.GetImageFilter());
+    return;
+  }
 
   SkIRect rounded_src = src.roundOut();
   SkIRect rounded_dst = dst.roundOut();
-
-  switch (filter.AnalyzeShouldApplyToImage(rounded_src, rounded_dst)) {
-    case DarkModeResult::kDoNotApplyFilter:
+  if (filter.ImageShouldHaveFilterAppliedBasedOnSizes(rounded_src,
+                                                      rounded_dst)) {
+    // Raster-side dark mode path - Just set the dark mode on flags and dark
+    // mode will be applied at compositor side during rasterization.
+    if (ShouldUseRasterSidePath(image)) {
+      flags->setUseDarkModeForImage(true);
       return;
+    }
 
-    case DarkModeResult::kApplyFilter:
-      flags->setColorFilter(filter.GetImageFilter());
-      return;
-
-    case DarkModeResult::kNotClassified:
-      // Raster-side dark mode path - Just set the dark mode on flags and dark
-      // mode will be applied at compositor side during rasterization.
-      if (ShouldUseRasterSidePath(image)) {
-        flags->setUseDarkModeForImage(true);
-        return;
-      }
-
-      // Blink-side dark mode path - Apply dark mode to images in main thread
-      // only. If the result is not cached, calling this path is expensive and
-      // will block main thread.
-      ApplyToImageOnMainThread(filter, image, flags, rounded_src, rounded_dst);
-      return;
+    // Blink-side dark mode path - Apply dark mode to images in main thread
+    // only. If the result is not cached, calling this path is expensive and
+    // will block main thread.
+    ApplyToImageOnMainThread(filter, image, flags, rounded_src, rounded_dst);
   }
-
-  NOTREACHED();
 }
 
 }  // namespace blink

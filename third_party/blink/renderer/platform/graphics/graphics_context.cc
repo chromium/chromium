@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
@@ -744,14 +743,11 @@ void GraphicsContext::DrawImage(
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
 
-  if (auto_dark_mode.enabled) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(*GetDarkModeFilter(), image,
-                                               &image_flags, src, dest);
-  }
   SkSamplingOptions sampling = ComputeSamplingOptions(image, dest, src);
   ImageDrawOptions draw_options(
-      GetDarkModeFilter(), sampling, should_respect_image_orientation,
-      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled);
+      auto_dark_mode.enabled ? GetDarkModeFilter() : nullptr, sampling,
+      should_respect_image_orientation, Image::kClampImageToSourceRect,
+      decode_mode, auto_dark_mode.enabled);
 
   image->Draw(canvas_, image_flags, dest, src, draw_options);
   paint_controller_.SetImagePainted();
@@ -787,14 +783,10 @@ void GraphicsContext::DrawImageRRect(
   image_flags.setBlendMode(op);
   image_flags.setColor(SK_ColorBLACK);
 
-  if (auto_dark_mode.enabled) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(
-        *GetDarkModeFilter(), image, &image_flags, src_rect, dest.Rect());
-  }
-
   ImageDrawOptions draw_options(
-      GetDarkModeFilter(), sampling, respect_orientation,
-      Image::kClampImageToSourceRect, decode_mode, auto_dark_mode.enabled);
+      auto_dark_mode.enabled ? GetDarkModeFilter() : nullptr, sampling,
+      respect_orientation, Image::kClampImageToSourceRect, decode_mode,
+      auto_dark_mode.enabled);
 
   bool use_shader = (visible_src == src_rect) &&
                     (respect_orientation == kDoNotRespectImageOrientation ||
@@ -802,7 +794,8 @@ void GraphicsContext::DrawImageRRect(
   if (use_shader) {
     const SkMatrix local_matrix =
         SkMatrix::RectToRect(visible_src, dest.Rect());
-    use_shader = image->ApplyShader(image_flags, local_matrix, draw_options);
+    use_shader = image->ApplyShader(image_flags, local_matrix, dest.Rect(),
+                                    src_rect, draw_options);
   }
 
   if (use_shader) {
@@ -861,18 +854,11 @@ void GraphicsContext::DrawImageTiled(
 
   PaintFlags image_flags = ImmutableState()->FillFlags();
   image_flags.setBlendMode(op);
-
-  if (auto_dark_mode.enabled) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(
-        *GetDarkModeFilter(), image, &image_flags, tiling_info.image_rect,
-        dest_rect);
-  }
-
   SkSamplingOptions sampling = ImageSamplingOptions();
-  ImageDrawOptions draw_options(GetDarkModeFilter(), sampling,
-                                respect_orientation,
-                                Image::kClampImageToSourceRect,
-                                Image::kSyncDecode, auto_dark_mode.enabled);
+  ImageDrawOptions draw_options(
+      auto_dark_mode.enabled ? GetDarkModeFilter() : nullptr, sampling,
+      respect_orientation, Image::kClampImageToSourceRect, Image::kSyncDecode,
+      auto_dark_mode.enabled);
 
   image->DrawPattern(*this, image_flags, dest_rect, tiling_info, draw_options);
   paint_controller_.SetImagePainted();

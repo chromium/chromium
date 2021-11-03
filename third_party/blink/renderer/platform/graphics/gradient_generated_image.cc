@@ -63,6 +63,8 @@ void GradientGeneratedImage::DrawTile(GraphicsContext& context,
 
 bool GradientGeneratedImage::ApplyShader(PaintFlags& flags,
                                          const SkMatrix& local_matrix,
+                                         const FloatRect& dst_rect,
+                                         const FloatRect& src_rect,
                                          const ImageDrawOptions& draw_options) {
   DCHECK(gradient_);
   gradient_->ApplyToFlags(flags, local_matrix, draw_options);

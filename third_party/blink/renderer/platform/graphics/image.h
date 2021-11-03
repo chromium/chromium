@@ -94,8 +94,6 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool IsBitmapImage() const { return false; }
   virtual bool IsStaticBitmapImage() const { return false; }
   virtual bool IsPlaceholderImage() const { return false; }
-  virtual bool IsGradientGeneratedImage() const { return false; }
-  virtual bool IsCrossfadeGeneratedImage() const { return false; }
 
   virtual bool CurrentFrameKnownToBeOpaque() = 0;
 
@@ -304,6 +302,8 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // of that function the shader should use a clamping tile mode if possible.
   virtual bool ApplyShader(cc::PaintFlags&,
                            const SkMatrix& local_matrix,
+                           const FloatRect& dst_rect,
+                           const FloatRect& src_rect,
                            const ImageDrawOptions& draw_options);
 
   // Use ContextProvider() for immediate use only, use

@@ -76,6 +76,8 @@ class CORE_EXPORT SVGImageForContainer final : public Image {
 
   bool ApplyShader(cc::PaintFlags&,
                    const SkMatrix& local_matrix,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
                    const ImageDrawOptions& draw_options) override;
 
   void Draw(cc::PaintCanvas*,

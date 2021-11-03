@@ -68,20 +68,10 @@ void CrossfadeGeneratedImage::DrawCrossfade(
   // behavior, but this warrants further investigation. crbug.com/472634
   ImageDrawOptions from_draw_options(draw_options);
   from_draw_options.respect_orientation = kDoNotRespectImageOrientation;
-  if (draw_options.apply_dark_mode) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(*(draw_options.dark_mode_filter),
-                                               from_image_.get(), &image_flags,
-                                               from_image_rect, dest_rect);
-  }
   from_image_->Draw(canvas, image_flags, dest_rect, from_image_rect,
                     from_draw_options);
   image_flags.setBlendMode(SkBlendMode::kPlus);
   image_flags.setColor(ScaleAlpha(flags.getColor(), percentage_));
-  if (draw_options.apply_dark_mode) {
-    DarkModeFilterHelper::ApplyToImageIfNeeded(*(draw_options.dark_mode_filter),
-                                               to_image_.get(), &image_flags,
-                                               to_image_rect, dest_rect);
-  }
   to_image_->Draw(canvas, image_flags, dest_rect, to_image_rect, draw_options);
 }
 
@@ -109,10 +99,9 @@ void CrossfadeGeneratedImage::DrawTile(GraphicsContext& context,
   PaintFlags flags = context.FillFlags();
   flags.setBlendMode(SkBlendMode::kSrcOver);
   FloatRect dest_rect((FloatPoint()), size_);
-  ImageDrawOptions draw_options;
+  ImageDrawOptions draw_options(options);
   draw_options.sampling_options =
       context.ComputeSamplingOptions(this, dest_rect, src_rect);
-  draw_options.respect_orientation = options.respect_orientation;
   DrawCrossfade(context.Canvas(), flags, draw_options);
 }
 

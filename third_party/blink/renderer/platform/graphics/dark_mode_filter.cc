@@ -77,6 +77,10 @@ DarkModeFilter::ImmutableData::ImmutableData(const DarkModeSettings& settings)
   image_classifier = std::make_unique<DarkModeImageClassifier>();
 }
 
+DarkModeImagePolicy DarkModeFilter::GetDarkModeImagePolicy() const {
+  return immutable_.settings.image_policy;
+}
+
 SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   if (!immutable_.color_filter)
     return color;
@@ -89,28 +93,20 @@ SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color, ElementRole role) {
   return color;
 }
 
-DarkModeResult DarkModeFilter::AnalyzeShouldApplyToImage(
+bool DarkModeFilter::ImageShouldHaveFilterAppliedBasedOnSizes(
     const SkIRect& src,
     const SkIRect& dst) const {
-  if (immutable_.settings.image_policy == DarkModeImagePolicy::kFilterNone)
-    return DarkModeResult::kDoNotApplyFilter;
-
-  if (immutable_.settings.image_policy == DarkModeImagePolicy::kFilterAll)
-    return DarkModeResult::kApplyFilter;
-
   // Images being drawn from very smaller |src| rect, i.e. one of the dimensions
   // is very small, can be used for the border around the content or showing
   // separator. Consider these images irrespective of size of the rect being
   // drawn to. Classifying them will not be too costly.
   if (src.width() <= kMinImageLength || src.height() <= kMinImageLength)
-    return DarkModeResult::kNotClassified;
+    return true;
 
   // Do not consider images being drawn into bigger rect as these images are not
   // meant for icons or representing smaller widgets. These images are
   // considered as photos which should be untouched.
-  return (dst.width() <= kMaxImageLength && dst.height() <= kMaxImageLength)
-             ? DarkModeResult::kNotClassified
-             : DarkModeResult::kDoNotApplyFilter;
+  return dst.width() <= kMaxImageLength && dst.height() <= kMaxImageLength;
 }
 
 sk_sp<SkColorFilter> DarkModeFilter::ApplyToImage(const SkPixmap& pixmap,

@@ -496,6 +496,8 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
 
 bool SVGImage::ApplyShader(PaintFlags& flags,
                            const SkMatrix& local_matrix,
+                           const FloatRect& dst_rect,
+                           const FloatRect& src_rect,
                            const ImageDrawOptions& draw_options) {
   const DrawInfo draw_info(FloatSize(intrinsic_size_), 1, NullURL(),
                            draw_options.apply_dark_mode);

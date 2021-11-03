@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_cache.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
@@ -289,8 +290,13 @@ void Image::DrawPattern(GraphicsContext& context,
   PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
+  if (draw_options.apply_dark_mode) {
+    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
+    DarkModeFilterHelper::ApplyToImageIfNeeded(
+        *dark_mode_filter, this, &flags, FloatRect(subset_rect), dest_rect);
+  }
 
-  context.DrawRect(dest_rect, flags, AutoDarkMode(draw_options));
+  context.DrawRect(dest_rect, flags, AutoDarkMode::Disabled());
 
   StartAnimation();
 
@@ -322,13 +328,20 @@ PaintImageBuilder Image::CreatePaintImageBuilder() {
 
 bool Image::ApplyShader(PaintFlags& flags,
                         const SkMatrix& local_matrix,
-                        const ImageDrawOptions&) {
+                        const FloatRect& dst_rect,
+                        const FloatRect& src_rect,
+                        const ImageDrawOptions& draw_options) {
   // Default shader impl: attempt to build a shader based on the current frame
   // SkImage.
   PaintImage image = PaintImageForCurrentFrame();
   if (!image)
     return false;
 
+  if (draw_options.apply_dark_mode) {
+    DarkModeFilter* dark_mode_filter = draw_options.dark_mode_filter;
+    DarkModeFilterHelper::ApplyToImageIfNeeded(*dark_mode_filter, this, &flags,
+                                               src_rect, dst_rect);
+  }
   flags.setShader(PaintShader::MakeImage(image, SkTileMode::kClamp,
                                          SkTileMode::kClamp, &local_matrix));
   if (!flags.HasShader())

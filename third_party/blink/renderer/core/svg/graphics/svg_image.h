@@ -192,6 +192,8 @@ class CORE_EXPORT SVGImage final : public Image {
                     const FloatRect& unzoomed_src_rect);
   bool ApplyShader(cc::PaintFlags&,
                    const SkMatrix& local_matrix,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
                    const ImageDrawOptions&) override;
   bool ApplyShaderForContainer(const DrawInfo&,
                                cc::PaintFlags&,

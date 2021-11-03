@@ -45,9 +45,9 @@ class PLATFORM_EXPORT GradientGeneratedImage final : public GeneratedImage {
 
   bool ApplyShader(PaintFlags&,
                    const SkMatrix&,
+                   const FloatRect& dst_rect,
+                   const FloatRect& src_rect,
                    const ImageDrawOptions&) override;
-
-  bool IsGradientGeneratedImage() const override { return true; }
 
  protected:
   void Draw(cc::PaintCanvas*,
