@@ -123,12 +123,6 @@ void SendTabToSelfBubbleController::OnManageDevicesClicked(
 void SendTabToSelfBubbleController::OnBubbleClosed() {
   bubble_shown_ = false;
   send_tab_to_self_bubble_view_ = nullptr;
-
-  // |web_contents_| can be null in tests.
-  if (web_contents_ && sharing_hub::SharingHubOmniboxEnabled(
-                           web_contents_->GetBrowserContext())) {
-    UpdateIcon();
-  }
 }
 
 void SendTabToSelfBubbleController::OnBackButtonPressed() {
@@ -136,8 +130,6 @@ void SendTabToSelfBubbleController::OnBackButtonPressed() {
       sharing_hub::SharingHubBubbleController::CreateOrGetFromWebContents(
           web_contents_);
   controller->ShowBubble();
-
-  UpdateIcon();
 }
 
 void SendTabToSelfBubbleController::ShowConfirmationMessage() {

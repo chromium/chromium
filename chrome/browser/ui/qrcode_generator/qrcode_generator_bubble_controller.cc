@@ -63,11 +63,6 @@ QRCodeGeneratorBubbleController::qrcode_generator_bubble_view() const {
 void QRCodeGeneratorBubbleController::OnBubbleClosed() {
   bubble_shown_ = false;
   qrcode_generator_bubble_ = nullptr;
-
-  if (sharing_hub::SharingHubOmniboxEnabled(
-          web_contents_->GetBrowserContext())) {
-    UpdateIcon();
-  }
 }
 
 void QRCodeGeneratorBubbleController::OnBackButtonPressed() {
