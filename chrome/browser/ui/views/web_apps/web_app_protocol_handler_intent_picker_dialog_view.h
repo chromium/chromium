@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/views/web_apps/launch_app_user_choice_dialog_view.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -18,22 +19,20 @@
 
 class Profile;
 
-namespace views {
-class Checkbox;
-class ImageView;
-}  // namespace views
+namespace web_app {
 
-// This class extends DialogDelegateView and needs to be owned
-// by the views framework.
-class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
+// User choice dialog for PWA protocol handling:
+// https://web.dev/url-protocol-handler/
+class WebAppProtocolHandlerIntentPickerView
+    : public LaunchAppUserChoiceDialogView {
  public:
   METADATA_HEADER(WebAppProtocolHandlerIntentPickerView);
 
   WebAppProtocolHandlerIntentPickerView(
       const GURL& url,
       Profile* profile,
-      const web_app::AppId& app_id,
-      chrome::WebAppProtocolHandlerAcceptanceCallback close_callback);
+      const AppId& app_id,
+      chrome::WebAppLaunchAcceptanceCallback close_callback);
 
   WebAppProtocolHandlerIntentPickerView(
       const WebAppProtocolHandlerIntentPickerView&) = delete;
@@ -41,36 +40,15 @@ class WebAppProtocolHandlerIntentPickerView : public views::DialogDelegateView {
       const WebAppProtocolHandlerIntentPickerView&) = delete;
   ~WebAppProtocolHandlerIntentPickerView() override;
 
-  static void Show(
-      const GURL& url,
-      Profile* profile,
-      const web_app::AppId& app_id,
-      chrome::WebAppProtocolHandlerAcceptanceCallback close_callback);
-
-  static void SetDefaultRememberSelectionForTesting(bool remember_state);
+ protected:
+  std::unique_ptr<views::View> CreateAboveAppInfoView() override;
+  std::unique_ptr<views::View> CreateBelowAppInfoView() override;
+  std::u16string GetRememberChoiceString() override;
 
  private:
-  // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
-  const web_app::AppId& GetSelectedAppId() const;
-  void OnAccepted();
-  void OnCanceled();
-  void OnClosed();
-  void InitChildViews();
-  void OnIconsRead(std::map<SquareSizePx, SkBitmap> icon_bitmaps);
-
-  // Runs the close_callback_ provided during Show() if it exists.
-  void RunCloseCallback(bool allowed, bool remember_user_choice);
-
   const GURL url_;
-  Profile* const profile_;
-  const web_app::AppId app_id_;
-  views::Checkbox* remember_selection_checkbox_;
-  views::ImageView* icon_image_view_;
-  chrome::WebAppProtocolHandlerAcceptanceCallback close_callback_;
-  base::WeakPtrFactory<WebAppProtocolHandlerIntentPickerView> weak_ptr_factory_{
-      this};
 };
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_PROTOCOL_HANDLER_INTENT_PICKER_DIALOG_VIEW_H_

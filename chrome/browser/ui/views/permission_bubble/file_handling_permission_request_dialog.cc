@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/permission_bubble/file_handling_permission_request_dialog.h"
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -38,6 +40,10 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
     base::OnceCallback<void(bool, bool)> result_callback)
     : result_callback_(std::move(result_callback)) {
   g_instance_for_testing = this;
+
+  DCHECK(!base::FeatureList::IsEnabled(
+      features::kDesktopPWAsFileHandlingSettingsGated));
+
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(

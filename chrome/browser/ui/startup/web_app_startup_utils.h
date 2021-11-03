@@ -32,6 +32,10 @@ void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
                           Browser* browser,
                           apps::mojom::LaunchContainer container);
 
+// `callback` will be run after the next `MaybeHandleWebAppLaunch()` invocation
+// finishes executing.
+void SetStartupDoneCallbackForTesting(base::OnceClosure callback);
+
 }  // namespace startup
 }  // namespace web_app
 

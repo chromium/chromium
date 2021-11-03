@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -21,9 +22,11 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 
+namespace web_app {
+
 namespace {
 
-web_app::AppId InstallTestWebApp(Profile* profile) {
+AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
   auto app_info = std::make_unique<WebApplicationInfo>();
   app_info->title = u"Test app";
@@ -33,7 +36,7 @@ web_app::AppId InstallTestWebApp(Profile* profile) {
   protocol_handler.protocol = "web+test";
   protocol_handler.url = GURL("http://example.org/?uri=%s");
   app_info->protocol_handlers.push_back(std::move(protocol_handler));
-  return web_app::test::InstallWebApp(profile, std::move(app_info));
+  return test::InstallWebApp(profile, std::move(app_info));
 }
 
 }  // namespace
@@ -48,7 +51,7 @@ class WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest
         views::test::AnyWidgetTestPasskey{},
         "WebAppProtocolHandlerIntentPickerView");
     GURL protocol_url("web+test://test");
-    web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
+    AppId test_app_id = InstallTestWebApp(browser()->profile());
 
     base::RunLoop run_loop;
     auto dialog_finished = base::BindLambdaForTesting(
@@ -58,7 +61,7 @@ class WebAppProtocolHandlerIntentPickerDialogInProcessBrowserTest
           EXPECT_EQ(expected_remember_user_choice, remember_user_choice);
         });
 
-    WebAppProtocolHandlerIntentPickerView::Show(
+    chrome::ShowWebAppProtocolHandlerIntentPicker(
         protocol_url, browser()->profile(), test_app_id,
         std::move(dialog_finished));
 
@@ -126,8 +129,8 @@ class WebAppProtocolHandlerIntentPickerDialogInteractiveBrowserTest
         views::test::AnyWidgetTestPasskey{},
         "WebAppProtocolHandlerIntentPickerView");
     GURL protocol_url("web+test://test");
-    web_app::AppId test_app_id = InstallTestWebApp(browser()->profile());
-    WebAppProtocolHandlerIntentPickerView::Show(
+    AppId test_app_id = InstallTestWebApp(browser()->profile());
+    chrome::ShowWebAppProtocolHandlerIntentPicker(
         protocol_url, browser()->profile(), test_app_id, base::DoNothing());
     waiter.WaitIfNeededAndGet()->CloseWithReason(
         views::Widget::ClosedReason::kEscKeyPressed);
@@ -139,3 +142,5 @@ IN_PROC_BROWSER_TEST_F(
     InvokeUi_CloseDialog) {
   ShowAndVerifyUi();
 }
+
+}  // namespace web_app

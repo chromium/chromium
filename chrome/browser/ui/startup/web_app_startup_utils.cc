@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -51,6 +52,11 @@ namespace startup {
 namespace {
 
 using content::ProtocolHandler;
+
+base::OnceClosure& GetStartupDoneCallback() {
+  static base::NoDestructor<base::OnceClosure> instance;
+  return *instance;
+}
 
 // Encapsulates web app startup logic. This object keeps itself alive via ref
 // counting, attaching a reference to each callback in its control flow. It will
@@ -100,7 +106,11 @@ class StartupWebAppCreator
         keep_alive_(KeepAliveOrigin::WEB_APP_INTENT_PICKER,
                     KeepAliveRestartOption::DISABLED) {}
 
-  ~StartupWebAppCreator() = default;
+  ~StartupWebAppCreator() {
+    auto startup_done = std::move(GetStartupDoneCallback());
+    if (startup_done)
+      std::move(startup_done).Run();
+  }
 
   void Start() {
     WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile_);
@@ -235,7 +245,7 @@ class StartupWebAppCreator
     if (!file_handler_url)
       return LaunchResult::kNotHandled;
 
-    launch_files_ = launch_files;
+    launch_files_ = std::move(launch_files);
 
     const WebApp* web_app = provider->registrar().GetAppById(app_id_);
     DCHECK(web_app);
@@ -247,13 +257,8 @@ class StartupWebAppCreator
 
     switch (web_app->file_handler_approval_state()) {
       case ApiApprovalState::kRequiresPrompt:
-        // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive
-        // through holding onto `launch_callback`.
-        // TODO(estade): this should use a file handling dialog, but until
-        // that's implemented, this reuses the PH dialog as a stand-in.
-        chrome::ShowWebAppProtocolHandlerIntentPicker(
-            GURL("https://example.com"), profile_, app_id_,
-            std::move(launch_callback));
+        chrome::ShowWebAppFileLaunchDialog(launch_files_, profile_, app_id_,
+                                           std::move(launch_callback));
         break;
       case ApiApprovalState::kAllowed:
         std::move(launch_callback)
@@ -357,6 +362,10 @@ void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
   LaunchModeRecorder().SetLaunchMode(mode);
 
   StartupBrowserCreatorImpl::MaybeToggleFullscreen(browser);
+}
+
+void SetStartupDoneCallbackForTesting(base::OnceClosure callback) {
+  GetStartupDoneCallback() = std::move(callback);
 }
 
 }  // namespace startup

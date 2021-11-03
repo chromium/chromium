@@ -263,6 +263,47 @@ std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
       l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
 
+std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
+    Profile* profile,
+    const AppId& app_id,
+    bool* found_multiple) {
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (!provider)
+    return {};
+
+  const apps::FileHandlers* file_handlers =
+      provider->registrar().GetAppFileHandlers(app_id);
+
+  std::vector<std::string> associations;
+#if defined(OS_LINUX)
+  // TODO(estade): on Linux both the MIME type and extension must match. Should
+  // we just show the extensions like on other platforms?
+  std::set<std::string> mime_types_set =
+      apps::GetMimeTypesFromFileHandlers(*file_handlers);
+  associations.reserve(mime_types_set.size());
+  associations.insert(associations.end(), mime_types_set.begin(),
+                      mime_types_set.end());
+#else   // !defined(OS_LINUX)
+  std::set<std::string> extensions_set =
+      apps::GetFileExtensionsFromFileHandlers(*file_handlers);
+  associations.reserve(extensions_set.size());
+
+  // Convert file types from formats like ".txt" to "TXT".
+  std::transform(extensions_set.begin(), extensions_set.end(),
+                 std::back_inserter(associations),
+                 [](const std::string& extension) {
+                   return base::ToUpperASCII(extension.substr(1));
+                 });
+#endif  // defined(OS_LINUX)
+
+  if (found_multiple)
+    *found_multiple = associations.size() > 1;
+
+  return base::UTF8ToUTF16(base::JoinString(
+      associations,
+      l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsWebAppsCrosapiEnabled() {
   return base::FeatureList::IsEnabled(features::kWebAppsCrosapi) ||

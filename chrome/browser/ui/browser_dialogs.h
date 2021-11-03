@@ -189,17 +189,22 @@ void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
 // Callback used to indicate whether a user has accepted the launch of a
 // web app. The |allowed| is true when the user allows the app to launch.
 // |remember_user_choice| is true if the user wants to persist the decision.
-using WebAppProtocolHandlerAcceptanceCallback =
+using WebAppLaunchAcceptanceCallback =
     base::OnceCallback<void(bool allowed, bool remember_user_choice)>;
 
 // Shows the Web App Protocol Handler Intent Picker view.
-// |profile| is kept alive throughout the processing and running of
-// |close_callback|. |close_callback| may be null.
 void ShowWebAppProtocolHandlerIntentPicker(
     const GURL& url,
     Profile* profile,
     const web_app::AppId& app_id,
-    WebAppProtocolHandlerAcceptanceCallback close_callback);
+    WebAppLaunchAcceptanceCallback close_callback);
+
+// Shows the pre-launch dialog for a file handling PWA launch. The user can
+// allow or block the launch.
+void ShowWebAppFileLaunchDialog(const std::vector<base::FilePath>& file_paths,
+                                Profile* profile,
+                                const web_app::AppId& app_id,
+                                WebAppLaunchAcceptanceCallback close_callback);
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_WIN) || defined(OS_MAC) || \

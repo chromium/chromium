@@ -2519,8 +2519,8 @@ IN_PROC_BROWSER_TEST_F(
   observer.SetWebAppProtocolSettingsChangedDelegate(
       base::BindLambdaForTesting([&]() { allowed_protocols_notified = true; }));
 
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      true);
+  web_app::WebAppProtocolHandlerIntentPickerView::
+      SetDefaultRememberSelectionForTesting(true);
 
   // Launch the browser via a command line with a handled protocol URL param.
   SetUpCommandlineAndStart("web+test://parameterString", app_id);
@@ -2529,8 +2529,8 @@ IN_PROC_BROWSER_TEST_F(
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
 
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      false);
+  web_app::WebAppProtocolHandlerIntentPickerView::
+      SetDefaultRememberSelectionForTesting(false);
   // Wait for app launch task to complete.
   content::RunAllTasksUntilIdle();
 
@@ -2604,8 +2604,8 @@ IN_PROC_BROWSER_TEST_F(
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      true);
+  web_app::WebAppProtocolHandlerIntentPickerView::
+      SetDefaultRememberSelectionForTesting(true);
   // Launch the browser via a command line with a handled protocol URL param.
   SetUpCommandlineAndStart("web+test://parameterString", app_id);
 
@@ -2613,8 +2613,8 @@ IN_PROC_BROWSER_TEST_F(
   waiter.WaitIfNeededAndGet()->CloseWithReason(
       views::Widget::ClosedReason::kAcceptButtonClicked);
 
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      false);
+  web_app::WebAppProtocolHandlerIntentPickerView::
+      SetDefaultRememberSelectionForTesting(false);
 
   // Wait for app launch task to complete and launches a new browser.
   ui_test_utils::WaitForBrowserToOpen();
@@ -2747,8 +2747,8 @@ IN_PROC_BROWSER_TEST_F(
   protocol_handler.protocol = "web+test";
   web_app::AppId app_id = InstallWebAppWithProtocolHandlers({protocol_handler});
 
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      true);
+  web_app::WebAppProtocolHandlerIntentPickerView::
+      SetDefaultRememberSelectionForTesting(true);
   // Launch the browser via a command line with a handled protocol URL param.
   SetUpCommandlineAndStart("web+test://parameterString", app_id);
 
@@ -2757,8 +2757,8 @@ IN_PROC_BROWSER_TEST_F(
       views::Widget::ClosedReason::kCancelButtonClicked);
   base::RunLoop().RunUntilIdle();
 
-  WebAppProtocolHandlerIntentPickerView::SetDefaultRememberSelectionForTesting(
-      false);
+  web_app::WebAppProtocolHandlerIntentPickerView::
+      SetDefaultRememberSelectionForTesting(false);
 
   // Check that we added this protocol to web app's allowed_launch_protocols
   // on accept.
