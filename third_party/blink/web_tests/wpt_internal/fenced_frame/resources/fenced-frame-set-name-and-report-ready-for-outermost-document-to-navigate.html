@@ -7,8 +7,10 @@
      server so that the outermost document can attempt to navigate it by name.
      (The navigation should not succeed - see the test expectations).
 -->
+<body>
 <script>
   const ready_for_navigation_key = KEYS["ready_for_navigation"];
   window.name = "target_frame";
   writeValueToServer(ready_for_navigation_key, "READY");
 </script>
+</body>

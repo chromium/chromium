@@ -38,20 +38,19 @@ const KEYS = {
 
   "navigation_success"                          : "00000000-0000-0000-0000-00000000000F",
   "ready_for_navigation"                        : "00000000-0000-0000-0000-000000000010",
-  "outer_page_did_navigate"                     : "00000000-0000-0000-0000-000000000011",
 
-  "secFetchDest.value"                          : "00000000-0000-0000-0000-000000000012",
+  "secFetchDest.value"                          : "00000000-0000-0000-0000-000000000011",
 
-  "window.prompt"                               : "00000000-0000-0000-0000-000000000013",
+  "window.prompt"                               : "00000000-0000-0000-0000-000000000012",
 
-  "fenced_navigation_complete"                  : "00000000-0000-0000-0000-000000000014",
-  "outer_page_ready_for_next_fenced_navigation" : "00000000-0000-0000-0000-000000000015",
+  "fenced_navigation_complete"                  : "00000000-0000-0000-0000-000000000013",
+  "outer_page_ready_for_next_fenced_navigation" : "00000000-0000-0000-0000-000000000014",
 
-  "focus-changed"                               : "00000000-0000-0000-0000-000000000016",
-  "focus-ready"                                 : "00000000-0000-0000-0000-000000000017",
+  "focus-changed"                               : "00000000-0000-0000-0000-000000000015",
+  "focus-ready"                                 : "00000000-0000-0000-0000-000000000016",
 
-  "navigate_ancestor"                           : "00000000-0000-0000-0000-000000000018",
-  "navigate_ancestor_from_nested"               : "00000000-0000-0000-0000-000000000019",
+  "navigate_ancestor"                           : "00000000-0000-0000-0000-000000000017",
+  "navigate_ancestor_from_nested"               : "00000000-0000-0000-0000-000000000018",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

@@ -13,33 +13,30 @@ async function init() {
   //   3.) A nested fenced frame
   // Navigations to all of the above should fail, and thus should open a new
   // top-level popup window instead of navigating these frames.
+
+  const test_type = new URL(location.href).searchParams.get('test_type');
   const ready_for_navigation_key = KEYS["ready_for_navigation"];
-  const outer_page_did_navigate_key = KEYS["outer_page_did_navigate"];
 
-  // Set up the named frame and report to the outer document that we're ready
-  // for it to try and navigate the named frame.
-  window.name = "target_frame";
-  writeValueToServer(ready_for_navigation_key, "READY");
-  await nextValueFromServer(outer_page_did_navigate_key);
-  // Now that the outer page has completed this test, reset `target_frame` named
-  // frame.
-  window.name = "";
-
-  const iframe = document.createElement('iframe');
-  iframe.name = "target_frame";
-  document.body.append(iframe);
-  writeValueToServer(ready_for_navigation_key, "READY");
-  await nextValueFromServer(outer_page_did_navigate_key);
-  // Now that the outer page has completed this test, reset `target_frame` named
-  // frame.
-  document.body.removeChild(iframe);
-
-  const ff = attachFencedFrame("fenced-frame-set-name-and-report-" +
-                               "ready-for-outermost-document-to-navigate.html");
-  await nextValueFromServer(outer_page_did_navigate_key);
-  // Now that the outer page has completed this test, reset `target_frame` named
-  // frame.
-  document.body.removeChild(ff);
+  switch (test_type) {
+    case "top-level fenced frame":
+      // Set up the named frame and report to the outer document that we're ready
+      // for it to try and navigate the named frame.
+      window.name = "target_frame";
+      writeValueToServer(ready_for_navigation_key, "READY");
+      break;
+    case "nested iframe":
+      const iframe = document.createElement('iframe');
+      iframe.name = "target_frame";
+      document.body.append(iframe);
+      writeValueToServer(ready_for_navigation_key, "READY");
+      break;
+    case "nested fenced frame":
+      // This fenced frame will report to the outermost document when it is ready.
+      const ff =
+          attachFencedFrame("fenced-frame-set-name-and-report-ready-for-" +
+                            "outermost-document-to-navigate.html");
+      break;
+  }
 }
 
 init();
