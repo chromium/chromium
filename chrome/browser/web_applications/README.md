@@ -72,6 +72,10 @@ Notes:
 * Per spec, the `start_url` origin does not have to match the `manifest_url` origin
 * The `start_url` could be different than the `document_url`.
 
+### Manifest id
+The `id` specified in manifest represents the identity of the web app. The manifest id is processed following the algorithm described in [appmanifest specification](https://www.w3.org/TR/appmanifest/#id-member) to produce the app's identity. In web app system, the app's [identity](https://www.w3.org/TR/appmanifest/#dfn-identity) is [hashed](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app_helpers.cc;l=69;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97) to be stored to [WebApp->app_id()](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/web_app.h;l=43;drc=cafa646efbb6f668d3ba20ff482c1f729159ae97;bpv=1;bpt=1). 
+
+The app identity is verified in manifest updating process, if an app gets a manifest with [mismatched identity](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/manifest_update_task.cc;l=315?q=manifest_update_task&ss=chromium%2Fchromium%2Fsrc), the update process is aborted.
 ### Scope
 
 Scope refers to the prefix that a WebApp controls. All paths at or nested inside of a WebApp's scope is thought of as "controlled" or "in-scope" of that WebApp. This is a simple string prefix match. For example, if `scope` is `/my-app`, then the following will be "in-scope":
