@@ -26,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/crx_file/id_util.h"
-#include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -260,8 +259,8 @@ void StartupAppLauncher::OnExtensionUpdateCheckFinished(bool update_found) {
     // of the shared module, extension, etc will be cleaned up andthe new
     // version will be loaded.
     extensions::ExtensionSystem::Get(profile_)
-            ->extension_service()
-            ->ReloadExtension(app_id_);
+        ->extension_service()
+        ->ReloadExtension(app_id_);
 
     SYSLOG(INFO) << "Finish to reload extension with id " << app_id_;
   }
@@ -435,7 +434,6 @@ void StartupAppLauncher::LaunchApp() {
           apps::mojom::LaunchSource::kFromKiosk));
 
   KioskAppManager::Get()->InitSession(profile_, app_id_);
-  session_manager::SessionManager::Get()->SessionStarted();
 
   OnLaunchSuccess();
 }
