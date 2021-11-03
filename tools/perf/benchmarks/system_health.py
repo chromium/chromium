@@ -54,6 +54,8 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
     cat_filter.AddIncludedCategory('accessibility')
     # Needed for the metric reported by page.
     cat_filter.AddIncludedCategory('blink.user_timing')
+    # Needed for blinkResourceMetric,
+    cat_filter.AddIncludedCategory('blink.resource')
     # Needed for the console error metric.
     cat_filter.AddIncludedCategory('v8.console')
 
@@ -64,6 +66,7 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
         *SYSTEM_HEALTH_BENCHMARK_UMA)
     options.SetTimelineBasedMetrics([
         'accessibilityMetric',
+        'blinkResourceMetric',
         'consoleErrorMetric',
         'cpuTimeMetric',
         'limitedCpuTimeMetric',
