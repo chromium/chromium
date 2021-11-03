@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/core/tailored_security_service/tailored_security_service.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 
 #include <memory>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/safe_browsing/core/tailored_security_service/tailored_security_service_observer.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -284,7 +284,8 @@ void TailoredSecurityService::QueryTailoredSecurityBit() {
         policy {
           cookies_allowed: NO
           setting:
-            "To disable this feature, users uncheck the setting in Account Settings."
+            "To disable this feature, users uncheck the setting in Account "
+            "Settings."
           chrome_policy {
             SafeBrowsingEnabled {
               policy_options {mode: MANDATORY}

@@ -9,7 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/tailored_security_service/tailored_security_service.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
