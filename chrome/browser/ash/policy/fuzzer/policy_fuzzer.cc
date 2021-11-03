@@ -33,6 +33,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -103,6 +104,24 @@ struct PerInputEnvironment {
   std::unique_ptr<ConfigurationPolicyHandlerList> policy_handler_list;
 };
 
+void CheckPolicyMap(const PolicyMap& policy_map,
+                    PolicyScope expected_policy_scope,
+                    bool expected_is_device_policy) {
+  for (const auto& it : policy_map) {
+    const std::string& policy_name = it.first;
+    const PolicyMap::Entry& entry = it.second;
+    CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
+    CHECK_EQ(entry.scope, expected_policy_scope)
+        << "Policy " << policy_name << " has wrong scope";
+
+    const PolicyDetails* policy_details = GetChromePolicyDetails(policy_name);
+    CHECK(policy_details) << "Policy " << policy_name
+                          << " has no policy details";
+    CHECK_EQ(policy_details->is_device_policy, expected_is_device_policy)
+        << "Policy " << policy_name << " is of unexpected type";
+  }
+}
+
 void CheckPolicyToPrefTranslation(const PolicyMap& policy_map,
                                   const PerInputEnvironment& per_input_env) {
   PrefValueMap prefs;
@@ -139,14 +158,8 @@ DEFINE_PROTO_FUZZER(const PolicyFuzzerProto& proto) {
     PolicyMap policy_map;
     DecodeDevicePolicy(chrome_device_settings, data_manager, &policy_map);
 
-    for (const auto& it : policy_map) {
-      const std::string& policy_name = it.first;
-      const PolicyMap::Entry& entry = it.second;
-      CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
-      CHECK_EQ(entry.scope, POLICY_SCOPE_MACHINE)
-          << "Policy " << policy_name << " has not machine scope";
-    }
-
+    CheckPolicyMap(policy_map, POLICY_SCOPE_MACHINE,
+                   /*expected_is_device_policy=*/true);
     CheckPolicyToPrefTranslation(policy_map, per_input_env);
     CheckPolicyToCrosSettingsTranslation(chrome_device_settings);
   }
@@ -161,14 +174,8 @@ DEFINE_PROTO_FUZZER(const PolicyFuzzerProto& proto) {
                       PolicyScope::POLICY_SCOPE_USER, &policy_map,
                       PolicyPerProfileFilter::kAny);
 
-    for (const auto& it : policy_map) {
-      const std::string& policy_name = it.first;
-      const PolicyMap::Entry& entry = it.second;
-      CHECK(entry.value()) << "Policy " << policy_name << " has an empty value";
-      CHECK_EQ(entry.scope, POLICY_SCOPE_USER)
-          << "Policy " << policy_name << " has not user scope";
-    }
-
+    CheckPolicyMap(policy_map, POLICY_SCOPE_USER,
+                   /*expected_is_device_policy=*/false);
     CheckPolicyToPrefTranslation(policy_map, per_input_env);
   }
 }
