@@ -91,6 +91,12 @@ void ScheduledExecutor::Shutdown() {
   is_shut_down_ = true;
 }
 
+int ScheduledExecutor::GetTid(int index) const {
+  // ScheduledExecutor does not own a thread pool directly nor manages threads,
+  // thus cannot support this debug feature.
+  return 0;
+}
+
 std::shared_ptr<api::Cancelable> ScheduledExecutor::Schedule(
     Runnable&& runnable,
     absl::Duration duration) {

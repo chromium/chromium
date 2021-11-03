@@ -37,6 +37,7 @@ class ScheduledExecutor : public api::ScheduledExecutor {
                                             absl::Duration duration) override;
   void Execute(Runnable&& runnable) override;
   void Shutdown() override;
+  int GetTid(int index) const override;
 
  private:
   struct PendingTaskWithTimer {

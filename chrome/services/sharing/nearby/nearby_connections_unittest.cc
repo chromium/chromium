@@ -37,7 +37,6 @@ namespace connections {
 namespace {
 
 const char kServiceId[] = "NearbySharing";
-const char kConnectionToken[] = "connection_token";
 const char kFastAdvertisementServiceUuid[] =
     "0000fef3-0000-1000-8000-00805f9b34fb";
 const size_t kEndpointIdLength = 4u;
@@ -304,7 +303,7 @@ class NearbyConnectionsTest : public testing::Test {
                .raw_authentication_token = ByteArray(
                    kRawAuthenticationToken, sizeof(kRawAuthenticationToken)),
                .is_incoming_connection = false},
-              options, info.listener, kConnectionToken);
+              options, info.listener);
           callback.result_cb({Status::kSuccess});
         });
 
@@ -359,7 +358,7 @@ class NearbyConnectionsTest : public testing::Test {
                .raw_authentication_token = ByteArray(
                    kRawAuthenticationToken, sizeof(kRawAuthenticationToken)),
                .is_incoming_connection = false},
-              options, info.listener, kConnectionToken);
+              options, info.listener);
           callback.result_cb({Status::kSuccess});
         });
 
@@ -466,7 +465,7 @@ TEST_F(NearbyConnectionsTest, StartDiscovery) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
   endpoint_found_run_loop.Run();
 
   base::RunLoop endpoint_lost_run_loop;
@@ -530,7 +529,7 @@ TEST_F(NearbyConnectionsTest, InjectEndpoint) {
         client_proxy->OnEndpointFound(
             kServiceId, endpoint_data.remote_endpoint_id,
             ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-            /*medium=*/{});
+            /*mediums=*/{});
         callback.result_cb({Status::kSuccess});
       });
 
@@ -554,7 +553,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionInitiated) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   base::RunLoop initiated_run_loop;
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
@@ -582,7 +581,7 @@ TEST_F(NearbyConnectionsTest,
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
 
@@ -597,7 +596,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionAccept) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -621,7 +620,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionOnRejected) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   client_proxy =
@@ -647,7 +646,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionOnBandwidthUpgrade) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -695,7 +694,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionOnDisconnected) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -723,7 +722,7 @@ TEST_F(NearbyConnectionsTest, RequestConnectionDisconnect) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -764,7 +763,7 @@ TEST_F(NearbyConnectionsTest, OnPayloadTransferUpdate) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -795,7 +794,7 @@ TEST_F(NearbyConnectionsTest, SendBytesPayload) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -838,7 +837,7 @@ TEST_F(NearbyConnectionsTest, SendBytesPayloadCancelled) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   client_proxy =
@@ -900,7 +899,7 @@ TEST_F(NearbyConnectionsTest, SendFilePayload) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
   RequestConnection(fake_connection_life_cycle_listener, endpoint_data);
@@ -1043,7 +1042,7 @@ TEST_F(NearbyConnectionsTest, DisconnectAllEndpoints) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   // Set up a connection to one endpoint.
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener;
@@ -1058,7 +1057,7 @@ TEST_F(NearbyConnectionsTest, DisconnectAllEndpoints) {
   client_proxy->OnEndpointFound(
       kServiceId, endpoint_data2.remote_endpoint_id,
       ByteArrayFromMojom(endpoint_data2.remote_endpoint_info),
-      /*medium=*/{});
+      /*mediums=*/{});
 
   FakeConnectionLifecycleListener fake_connection_life_cycle_listener2;
   ConnectionListener connections_listener2;
