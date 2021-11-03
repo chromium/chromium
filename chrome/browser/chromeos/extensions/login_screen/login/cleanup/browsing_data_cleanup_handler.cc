@@ -24,8 +24,7 @@ void BrowsingDataCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
-    std::move(callback).Run(
-        "Browsing data cleanup error: There is no active user");
+    std::move(callback).Run("There is no active user");
     return;
   }
 
@@ -51,9 +50,8 @@ void BrowsingDataCleanupHandler::OnBrowsingDataRemoverDone(
     return;
   }
 
-  std::move(callback_).Run(
-      "Browsing data cleanup error: Failed to cleanup all data with flag: " +
-      base::NumberToString(failed_data_types));
+  std::move(callback_).Run("Failed to cleanup all data with flag: " +
+                           base::NumberToString(failed_data_types));
 }
 
 }  // namespace chromeos

@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/browsing_data_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h"
@@ -19,6 +20,31 @@
 #include "base/logging.h"
 
 namespace chromeos {
+
+namespace {
+
+// Must kept in sync with the CleanupHandler variant in
+// tools/metrics/histograms/metadata/enterprise/histograms.xml
+constexpr char kBrowsingDataCleanupHandlerHistogramName[] = "BrowsingData";
+constexpr char kClipboardCleanupHandlerHistogramName[] = "Clipboard";
+constexpr char kExtensionCleanupHandlerHistogramName[] = "Extension";
+constexpr char kFilesCleanupHandlerHistogramName[] = "Files";
+constexpr char kOpenWindowsCleanupHandlerHistogramName[] = "OpenWindows";
+constexpr char kPrintJobsCleanupHandlerHistogramName[] = "PrintJobs";
+
+void RecordHandlerMetrics(const std::string& handler_name,
+                          const base::Time& start_time,
+                          bool success) {
+  base::TimeDelta delta = base::Time::Now() - start_time;
+
+  std::string histogram_prefix =
+      "Enterprise.LoginApiCleanup." + handler_name + ".";
+
+  base::UmaHistogramTimes(histogram_prefix + "Timing", delta);
+  base::UmaHistogramBoolean(histogram_prefix + "Success", success);
+}
+
+}  // namespace
 
 // static
 CleanupManager* CleanupManager::Get() {
@@ -47,14 +73,16 @@ void CleanupManager::Cleanup(CleanupCallback callback) {
       base::BindOnce(&CleanupManager::OnAllCleanupHandlersDone,
                      base::Unretained(this)));
 
-  for (auto& handler : cleanup_handlers_) {
-    handler->Cleanup(base::BindOnce(&CleanupManager::OnCleanupHandlerDone,
-                                    base::Unretained(this), barrier_closure));
+  start_time_ = base::Time::Now();
+  for (auto& kv : cleanup_handlers_) {
+    kv.second->Cleanup(base::BindOnce(&CleanupManager::OnCleanupHandlerDone,
+                                      base::Unretained(this), barrier_closure,
+                                      kv.first));
   }
 }
 
 void CleanupManager::SetCleanupHandlersForTesting(
-    std::vector<std::unique_ptr<CleanupHandler>> cleanup_handlers) {
+    std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers) {
   cleanup_handlers_.swap(cleanup_handlers);
 }
 
@@ -70,21 +98,29 @@ void CleanupManager::SetIsCleanupInProgressForTesting(
 }
 
 void CleanupManager::InitializeCleanupHandlers() {
-  cleanup_handlers_.emplace_back(
-      std::make_unique<BrowsingDataCleanupHandler>());
-  cleanup_handlers_.emplace_back(std::make_unique<OpenWindowsCleanupHandler>());
-  cleanup_handlers_.emplace_back(std::make_unique<FilesCleanupHandler>());
-  cleanup_handlers_.emplace_back(std::make_unique<ClipboardCleanupHandler>());
-  cleanup_handlers_.emplace_back(std::make_unique<PrintJobsCleanupHandler>());
-  cleanup_handlers_.emplace_back(std::make_unique<ExtensionCleanupHandler>());
+  cleanup_handlers_.insert({kBrowsingDataCleanupHandlerHistogramName,
+                            std::make_unique<BrowsingDataCleanupHandler>()});
+  cleanup_handlers_.insert({kOpenWindowsCleanupHandlerHistogramName,
+                            std::make_unique<OpenWindowsCleanupHandler>()});
+  cleanup_handlers_.insert({kFilesCleanupHandlerHistogramName,
+                            std::make_unique<FilesCleanupHandler>()});
+  cleanup_handlers_.insert({kClipboardCleanupHandlerHistogramName,
+                            std::make_unique<ClipboardCleanupHandler>()});
+  cleanup_handlers_.insert({kPrintJobsCleanupHandlerHistogramName,
+                            std::make_unique<PrintJobsCleanupHandler>()});
+  cleanup_handlers_.insert({kExtensionCleanupHandlerHistogramName,
+                            std::make_unique<ExtensionCleanupHandler>()});
 }
 
 void CleanupManager::OnCleanupHandlerDone(
     base::RepeatingClosure barrier_closure,
+    const std::string& handler_name,
     const absl::optional<std::string>& error) {
   if (error) {
-    errors_.push_back(*error);
+    errors_.push_back(handler_name + ": " + *error);
   }
+
+  RecordHandlerMetrics(handler_name, start_time_, !error);
 
   std::move(barrier_closure).Run();
 }

@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/mock_cleanup_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +22,13 @@ using testing::Invoke;
 using testing::WithArg;
 
 namespace chromeos {
+
+namespace {
+
+constexpr char kHandler1Name[] = "Handler1";
+constexpr char kHandler2Name[] = "Handler2";
+
+}  // namespace
 
 class CleanupManagerUnittest : public testing::Test {
  public:
@@ -36,6 +44,8 @@ class CleanupManagerUnittest : public testing::Test {
 };
 
 TEST_F(CleanupManagerUnittest, Cleanup) {
+  base::HistogramTester histogram_tester;
+
   auto no_error_callback = [](CleanupHandler::CleanupHandlerCallback callback) {
     std::move(callback).Run(absl::nullopt);
   };
@@ -48,9 +58,9 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
   EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
       .WillOnce(WithArg<0>(Invoke(no_error_callback)));
 
-  std::vector<std::unique_ptr<CleanupHandler>> cleanup_handlers;
-  cleanup_handlers.emplace_back(std::move(mock_cleanup_handler1));
-  cleanup_handlers.emplace_back(std::move(mock_cleanup_handler2));
+  std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
+  cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});
+  cleanup_handlers.insert({kHandler2Name, std::move(mock_cleanup_handler2)});
   CleanupManager* manager = CleanupManager::Get();
   manager->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
@@ -61,6 +71,15 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
         run_loop.QuitClosure().Run();
       }));
   run_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LoginApiCleanup.Handler1.Success", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.LoginApiCleanup.Handler1.Timing", 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LoginApiCleanup.Handler2.Success", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.LoginApiCleanup.Handler2.Timing", 1);
 }
 
 TEST_F(CleanupManagerUnittest, CleanupInProgress) {
@@ -73,8 +92,8 @@ TEST_F(CleanupManagerUnittest, CleanupInProgress) {
             callback = std::move(callback_arg);
           }))));
 
-  std::vector<std::unique_ptr<CleanupHandler>> cleanup_handlers;
-  cleanup_handlers.emplace_back(std::move(mock_cleanup_handler));
+  std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
+  cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler)});
   CleanupManager* manager = CleanupManager::Get();
   manager->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
@@ -99,34 +118,41 @@ TEST_F(CleanupManagerUnittest, CleanupInProgress) {
 }
 
 TEST_F(CleanupManagerUnittest, CleanupErrors) {
+  base::HistogramTester histogram_tester;
+
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler1 =
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))
       .WillOnce(WithArg<0>(
           Invoke([](CleanupHandler::CleanupHandlerCallback callback) {
-            std::move(callback).Run("Handler 1 error");
+            std::move(callback).Run("Error 1");
           })));
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler2 =
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
       .WillOnce(WithArg<0>(
           Invoke([](CleanupHandler::CleanupHandlerCallback callback) {
-            std::move(callback).Run("Handler 2 error");
+            std::move(callback).Run("Error 2");
           })));
 
-  std::vector<std::unique_ptr<CleanupHandler>> cleanup_handlers;
-  cleanup_handlers.emplace_back(std::move(mock_cleanup_handler1));
-  cleanup_handlers.emplace_back(std::move(mock_cleanup_handler2));
+  std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
+  cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});
+  cleanup_handlers.insert({kHandler2Name, std::move(mock_cleanup_handler2)});
   CleanupManager* manager = CleanupManager::Get();
   manager->SetCleanupHandlersForTesting(std::move(cleanup_handlers));
 
   base::RunLoop run_loop;
   manager->Cleanup(
       base::BindLambdaForTesting([&](absl::optional<std::string> error) {
-        EXPECT_EQ("Handler 1 error\nHandler 2 error", *error);
+        EXPECT_EQ("Handler1: Error 1\nHandler2: Error 2", *error);
         run_loop.QuitClosure().Run();
       }));
   run_loop.Run();
+
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LoginApiCleanup.Handler1.Success", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LoginApiCleanup.Handler2.Success", 0, 1);
 }
 
 }  // namespace chromeos

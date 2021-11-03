@@ -37,8 +37,7 @@ void ExtensionCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
       extensions::ExtensionSystem::Get(profile_)->extension_service();
 
   if (!profile_) {
-    std::move(callback).Run(
-        "Extension data cleanup error: There is no active user");
+    std::move(callback).Run("There is no active user");
     return;
   }
   callback_ = std::move(callback);

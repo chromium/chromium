@@ -24,8 +24,7 @@ void PrintJobsCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
-    std::move(callback).Run(
-        "Print jobs cleanup error: There is no active user");
+    std::move(callback).Run("There is no active user");
     return;
   }
 
@@ -40,8 +39,7 @@ void PrintJobsCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 
 void PrintJobsCleanupHandler::OnDeleteAllPrintJobsDone(bool success) {
   if (!success) {
-    std::move(callback_).Run(
-        "Print jobs cleanup error: Failed to delete all print jobs");
+    std::move(callback_).Run("Failed to delete all print jobs");
     return;
   }
 

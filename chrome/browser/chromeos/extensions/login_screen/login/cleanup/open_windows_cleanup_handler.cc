@@ -22,8 +22,7 @@ void OpenWindowsCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
-    std::move(callback).Run(
-        "Open windows cleanup error: There is no active user");
+    std::move(callback).Run("There is no active user");
     return;
   }
 

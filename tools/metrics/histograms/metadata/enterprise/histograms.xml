@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CleanupHandler">
+  <variant name="BrowsingData" summary="Handler for browsing data"/>
+  <variant name="Clipboard" summary="Handler for clipboard"/>
+  <variant name="Extension" summary="Handler for extensions"/>
+  <variant name="Files" summary="Handler for files"/>
+  <variant name="OpenWindows" summary="Handler for open browser windows"/>
+  <variant name="PrintJobs" summary="Handler for print jobs"/>
+</variants>
+
 <variants name="Enterprise_RemoteCommandType">
   <variant name=".BrowserClearBrowsingData" summary="Clear Browsing Data"/>
   <variant name=".CommandEchoTest" summary="Command echo test"/>
@@ -1588,6 +1597,24 @@ chromium-metrics-reviews@google.com.
     Estimated that till version M86 we should get enough stats to understand if
     there are big problems with the D-Bus call.
   </summary>
+</histogram>
+
+<histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
+    enum="BooleanSuccess" expires_after="2022-12-31">
+  <owner>jityao@google.com</owner>
+  <owner>hendrich@chromium.org</owner>
+  <summary>ChromeOS only. Records if cleanup handler succeeded.</summary>
+  <token key="CleanupHandler" variants="CleanupHandler"/>
+</histogram>
+
+<histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Timing" units="ms"
+    expires_after="2022-12-31">
+  <owner>jityao@google.com</owner>
+  <owner>hendrich@chromium.org</owner>
+  <summary>
+    ChromeOS only. Records the duration the cleanup handler took.
+  </summary>
+  <token key="CleanupHandler" variants="CleanupHandler"/>
 </histogram>
 
 <histogram

@@ -76,7 +76,7 @@ FilesCleanupHandler::~FilesCleanupHandler() = default;
 void FilesCleanupHandler::Cleanup(CleanupHandlerCallback callback) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!profile) {
-    std::move(callback).Run("Files cleanup error: There is no active user");
+    std::move(callback).Run("There is no active user");
     return;
   }
 
@@ -115,8 +115,7 @@ bool FilesCleanupHandler::CleanupTaskOnTaskRunner(Profile* profile) {
 void FilesCleanupHandler::CleanupTaskDone(CleanupHandlerCallback callback,
                                           bool success) {
   if (!success) {
-    std::move(callback).Run(
-        "Files cleanup error: Failed to delete all files and directories");
+    std::move(callback).Run("Failed to delete all files and directories");
     return;
   }
 

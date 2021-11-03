@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_CLEANUP_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_LOGIN_SCREEN_LOGIN_CLEANUP_CLEANUP_MANAGER_H_
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/cleanup_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,7 +37,7 @@ class CleanupManager {
   bool is_cleanup_in_progress() const { return is_cleanup_in_progress_; }
 
   void SetCleanupHandlersForTesting(
-      std::vector<std::unique_ptr<CleanupHandler>> cleanup_handlers);
+      std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers);
 
   void ResetCleanupHandlersForTesting();
 
@@ -50,13 +52,16 @@ class CleanupManager {
   void InitializeCleanupHandlers();
 
   void OnCleanupHandlerDone(base::RepeatingClosure barrier_closure,
+                            const std::string& handler_name,
                             const absl::optional<std::string>& error);
 
   void OnAllCleanupHandlersDone();
 
-  std::vector<std::unique_ptr<CleanupHandler>> cleanup_handlers_;
+  // Map of handler name to handler.
+  std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers_;
   std::vector<std::string> errors_;
   bool is_cleanup_in_progress_ = false;
+  base::Time start_time_;
   CleanupCallback callback_;
 };
 
