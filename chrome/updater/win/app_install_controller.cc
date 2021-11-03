@@ -29,11 +29,15 @@
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/install_progress_observer.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-braces"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/splash_screen.h"
 #include "chrome/updater/win/ui/util.h"
 #include "chrome/updater/win/win_util.h"
+#pragma clang diagnostic pop
 
 namespace updater {
 namespace {

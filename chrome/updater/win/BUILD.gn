@@ -81,24 +81,6 @@ process_version_rc_template("version_resources") {
   output = "$target_gen_dir/updater_exe.rc"
 }
 
-# This build target is defined to minimize the impact of -Wno-missing-braces
-# compiler switch. In the future it might be possible to isolate the
-# dependency of ATL in the UI so ATL headers are not visible in the
-# compilation units outside the UI itself.
-# TODO(sorin): https://crbug.com/1014311
-source_set("app_install_controller") {
-  cflags_cc = [ "-Wno-missing-braces" ]
-
-  sources = [ "app_install_controller.cc" ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//chrome/updater:version_header",
-    "//chrome/updater/win/ui",
-  ]
-}
-
 source_set("tag_extractor") {
   public = [ "tag_extractor.h" ]
 

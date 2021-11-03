@@ -220,10 +220,7 @@ if (is_win || is_mac) {
     }
 
     if (is_win) {
-      allow_circular_includes_from = [
-        "//chrome/updater/win:app_install_controller",
-        "//chrome/updater/win/ui",
-      ]
+      allow_circular_includes_from = [ "//chrome/updater/win/ui" ]
 
       sources += [
         "activity_impl_win.cc",
@@ -247,6 +244,7 @@ if (is_win || is_mac) {
         "update_block_check_win.cc",
         "util_win.cc",
         "win/action_handler.cc",
+        "win/app_install_controller.cc",
         "win/install_progress_observer.cc",
         "win/install_progress_observer.h",
         "win/installer_api.cc",
@@ -281,7 +279,6 @@ if (is_win || is_mac) {
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-        "//chrome/updater/win:app_install_controller",
         "//chrome/updater/win/ui",
         "//components/winhttp",
       ]
