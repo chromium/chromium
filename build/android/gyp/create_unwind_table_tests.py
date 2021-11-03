@@ -13,7 +13,8 @@ import unittest
 
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
-    EncodeAddressUnwind, EncodeAsBytes, EncodeStackPointerUpdate, EncodePop,
+    EncodeAddressUnwind, EncodedAddressUnwind, EncodeAsBytes,
+    EncodeFunctionOffsetTable, EncodeStackPointerUpdate, EncodePop,
     EncodeUnwindInstructionTable, NullParser, PushOrSubSpParser,
     ReadFunctionCfi, StoreSpParser, Uleb128Encode, UnwindType, VPushParser)
 
@@ -529,3 +530,133 @@ class _TestEncodeUnwindInstructionTable(unittest.TestCase):
             bytes([0, 3]): 4,  # score = 2 / 2 = 1
         },
         offsets)
+
+
+class _TestFunctionOffsetTable(unittest.TestCase):
+  def testSingleEntry(self):
+    self.maxDiff = None
+    complete_instruction_sequence0 = bytes([3])
+    complete_instruction_sequence1 = bytes([1, 3])
+
+    sequence1 = (
+        EncodedAddressUnwind(0x200, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x0, complete_instruction_sequence0),
+    )
+
+    address_unwind_sequences = [sequence1]
+
+    table, offsets = EncodeFunctionOffsetTable(
+        address_unwind_sequences, {
+            complete_instruction_sequence0: 52,
+            complete_instruction_sequence1: 50,
+        })
+
+    self.assertEqual(
+        bytes([
+            # (0x200, 50)
+            128,
+            4,
+            50,
+            # (0, 52)
+            0,
+            52,
+        ]),
+        table)
+
+    self.assertDictEqual({
+        sequence1: 0,
+    }, offsets)
+
+  def testMultipleEntry(self):
+    self.maxDiff = None
+    complete_instruction_sequence0 = bytes([3])
+    complete_instruction_sequence1 = bytes([1, 3])
+    complete_instruction_sequence2 = bytes([2, 3])
+
+    sequence1 = (
+        EncodedAddressUnwind(0x10, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x0, complete_instruction_sequence0),
+    )
+    sequence2 = (
+        EncodedAddressUnwind(0x200, complete_instruction_sequence2),
+        EncodedAddressUnwind(0x0, complete_instruction_sequence0),
+    )
+    address_unwind_sequences = [sequence1, sequence2]
+
+    table, offsets = EncodeFunctionOffsetTable(
+        address_unwind_sequences, {
+            complete_instruction_sequence0: 52,
+            complete_instruction_sequence1: 50,
+            complete_instruction_sequence2: 80,
+        })
+
+    self.assertEqual(
+        bytes([
+            # (0x10, 50)
+            0x10,
+            50,
+            # (0, 52)
+            0,
+            52,
+            # (0x200, 80)
+            128,
+            4,
+            80,
+            # (0, 52)
+            0,
+            52,
+        ]),
+        table)
+
+    self.assertDictEqual({
+        sequence1: 0,
+        sequence2: 4,
+    }, offsets)
+
+  def testDuplicatedEntry(self):
+    self.maxDiff = None
+    complete_instruction_sequence0 = bytes([3])
+    complete_instruction_sequence1 = bytes([1, 3])
+    complete_instruction_sequence2 = bytes([2, 3])
+
+    sequence1 = (
+        EncodedAddressUnwind(0x10, complete_instruction_sequence1),
+        EncodedAddressUnwind(0x0, complete_instruction_sequence0),
+    )
+    sequence2 = (
+        EncodedAddressUnwind(0x200, complete_instruction_sequence2),
+        EncodedAddressUnwind(0x0, complete_instruction_sequence0),
+    )
+    sequence3 = sequence1
+
+    address_unwind_sequences = [sequence1, sequence2, sequence3]
+
+    table, offsets = EncodeFunctionOffsetTable(
+        address_unwind_sequences, {
+            complete_instruction_sequence0: 52,
+            complete_instruction_sequence1: 50,
+            complete_instruction_sequence2: 80,
+        })
+
+    self.assertEqual(
+        bytes([
+            # (0x10, 50)
+            0x10,
+            50,
+            # (0, 52)
+            0,
+            52,
+            # (0x200, 80)
+            128,
+            4,
+            80,
+            # (0, 52)
+            0,
+            52,
+        ]),
+        table)
+
+    self.assertDictEqual({
+        sequence1: 0,
+        sequence2: 4,
+    }, offsets)

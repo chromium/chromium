@@ -508,3 +508,58 @@ def EncodeUnwindInstructionTable(complete_instruction_sequences: Iterable[bytes]
     offsets[sequence] = current_offset
     current_offset += len(sequence)
   return b''.join(ordered_sequences), offsets
+
+
+class EncodedAddressUnwind(NamedTuple):
+  """Record representing unwind information for an address within a function.
+
+  This structure represents the same concept as `AddressUnwind`. The only
+  difference is that how to unwind from the address is represented as
+  encoded ARM unwind instructions.
+
+  Attributes:
+    address_offset: The offset of the address from the start address of the
+      function.
+    complete_instruction_sequence: The full ARM unwind instruction sequence to
+      unwind from the `address_offset`.
+  """
+  address_offset: int
+  complete_instruction_sequence: bytes
+
+
+def EncodeFunctionOffsetTable(
+    encoded_address_unwind_sequences: Iterable[
+        Tuple[EncodedAddressUnwind, ...]],
+    unwind_instruction_table_offsets: Dict[bytes, int]
+) -> Tuple[bytes, Dict[Tuple[EncodedAddressUnwind, ...], int]]:
+  """Encodes the function offset table.
+
+  The function offset table maps local address_offset from function
+  start to the location in the unwind instruction table.
+
+  Argument:
+    encoded_address_unwind_sequences: An iterable of encoded address unwind
+      sequences.
+    unwind_instruction_table_offsets: The offset mapping returned from
+      `EncodeUnwindInstructionTable`.
+
+  Returns:
+    A tuple containing:
+    - The function offset table as bytes.
+    - The mapping from the `EncodedAddressUnwind`s to the offset in the function
+      offset table. This mapping is used to construct the function table, which
+      references entries in the function offset table.
+  """
+  function_offset_table = bytearray()
+  offsets: Dict[Tuple[EncodedAddressUnwind, ...], int] = {}
+
+  for sequence in encoded_address_unwind_sequences:
+    if sequence in offsets:
+      continue
+
+    offsets[sequence] = len(function_offset_table)
+    for address_offset, complete_instruction_sequence in sequence:
+      function_offset_table += Uleb128Encode(address_offset) + Uleb128Encode(
+          unwind_instruction_table_offsets[complete_instruction_sequence])
+
+  return bytes(function_offset_table), offsets
