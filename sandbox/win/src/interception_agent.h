@@ -35,8 +35,13 @@ class ResolverThunk;
 // loader lock.
 class InterceptionAgent {
  public:
+  InterceptionAgent() = delete;
+
   // Returns the single InterceptionAgent object for this process.
   static InterceptionAgent* GetInterceptionAgent();
+
+  InterceptionAgent(const InterceptionAgent&) = delete;
+  InterceptionAgent& operator=(const InterceptionAgent&) = delete;
 
   // This method should be invoked whenever a new dll is loaded to perform the
   // required patches. If the return value is false, this dll should not be
@@ -78,8 +83,6 @@ class InterceptionAgent {
   // is allocated with a placement new with enough space to hold the complete
   // array of pointers, not just the first element.
   DllInterceptionData* dlls_[1];
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InterceptionAgent);
 };
 
 }  // namespace sandbox
