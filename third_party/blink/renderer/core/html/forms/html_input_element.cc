@@ -2187,4 +2187,28 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   }
 }
 
+// Show a browser picker for this input element (crbug.com/939561).
+// https://github.com/whatwg/html/issues/6909
+void HTMLInputElement::showPicker(ExceptionState& exception_state) {
+  LocalFrame* frame = GetDocument().GetFrame();
+  // In cross-origin iframes it should throw a "SecurityError" DOMException
+  // except on file and color. In same-origin iframes it should work fine.
+  // https://github.com/whatwg/html/issues/6909#issuecomment-917138991
+  if (type() != input_type_names::kFile && type() != input_type_names::kColor &&
+      frame && frame->IsCrossOriginToMainFrame()) {
+    exception_state.ThrowSecurityError(
+        "HTMLInputElement::showPicker() called from cross-origin iframe.");
+    return;
+  }
+
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "HTMLInputElement::showPicker() requires a user gesture.");
+    return;
+  }
+
+  input_type_view_->OpenPopupView();
+}
+
 }  // namespace blink

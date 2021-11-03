@@ -1187,6 +1187,10 @@
       status: "stable",
     },
     {
+      name: "HTMLInputElementShowPicker",
+      status: "experimental",
+    },
+    {
       name: "HTMLPopupElement",
       status: "experimental",
       implied_by: ["HTMLSelectMenuElement"],

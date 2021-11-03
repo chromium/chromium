@@ -177,6 +177,14 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
     return;
   }
 
+  OpenPopupView();
+  event.SetDefaultHandled();
+}
+
+void FileInputType::OpenPopupView() {
+  HTMLInputElement& input = GetElement();
+  Document& document = input.GetDocument();
+
   if (ChromeClient* chrome_client = GetChromeClient()) {
     FileChooserParams params;
     bool is_directory =
@@ -201,7 +209,6 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
                       : WebFeature::kInputTypeFileInsecureOriginOpenChooser);
     chrome_client->OpenFileChooser(document.GetFrame(), NewFileChooser(params));
   }
-  event.SetDefaultHandled();
 }
 
 void FileInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
