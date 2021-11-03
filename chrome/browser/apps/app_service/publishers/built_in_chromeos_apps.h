@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -21,7 +22,7 @@ namespace apps {
 // An app publisher (in the App Service sense) of built-in Chrome OS apps.
 //
 // See components/services/app_service/README.md.
-class BuiltInChromeOsApps : public apps::PublisherBase {
+class BuiltInChromeOsApps : public apps::PublisherBase, public AppPublisher {
  public:
   BuiltInChromeOsApps(const mojo::Remote<apps::mojom::AppService>& app_service,
                       AppServiceProxy* proxy);
@@ -30,6 +31,14 @@ class BuiltInChromeOsApps : public apps::PublisherBase {
   ~BuiltInChromeOsApps() override;
 
  private:
+  // apps::AppPublisher overrides.
+  void LoadIcon(const std::string& app_id,
+                const IconKey& icon_key,
+                IconType icon_type,
+                int32_t size_hint_in_dip,
+                bool allow_placeholder_icon,
+                apps::LoadIconCallback callback) override;
+
   // apps::mojom::Publisher overrides.
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
                apps::mojom::ConnectOptionsPtr opts) override;

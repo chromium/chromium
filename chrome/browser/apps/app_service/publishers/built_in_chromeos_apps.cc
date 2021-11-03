@@ -20,11 +20,31 @@
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+std::unique_ptr<apps::App> CreateApp(
+    const app_list::InternalApp& internal_app) {
+  if ((internal_app.app_id == nullptr) ||
+      (internal_app.name_string_resource_id == 0) ||
+      (internal_app.icon_resource_id <= 0)) {
+    return nullptr;
+  }
+
+  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+      apps::AppType::kBuiltIn, internal_app.app_id, apps::Readiness::kReady,
+      l10n_util::GetStringUTF8(internal_app.name_string_resource_id));
+
+  app->icon_key =
+      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                    internal_app.icon_resource_id, apps::IconEffects::kNone);
+
+  // TODO(crbug.com/1253250): Add other fields for the App struct.
+  return app;
+}
 
 apps::mojom::AppPtr Convert(const app_list::InternalApp& internal_app) {
   if ((internal_app.app_id == nullptr) ||
@@ -73,11 +93,37 @@ namespace apps {
 BuiltInChromeOsApps::BuiltInChromeOsApps(
     const mojo::Remote<apps::mojom::AppService>& app_service,
     AppServiceProxy* proxy)
-    : profile_(proxy->profile()) {
+    : AppPublisher(proxy), profile_(proxy->profile()) {
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kBuiltIn);
+
+  std::vector<std::unique_ptr<App>> apps;
+  for (const auto& internal_app : app_list::GetInternalAppList(profile_)) {
+    std::unique_ptr<App> app = CreateApp(internal_app);
+    if (app) {
+      apps.push_back(std::move(app));
+    }
+  }
+  AppPublisher::Publish(std::move(apps));
 }
 
 BuiltInChromeOsApps::~BuiltInChromeOsApps() = default;
+
+void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,
+                                   const IconKey& icon_key,
+                                   IconType icon_type,
+                                   int32_t size_hint_in_dip,
+                                   bool allow_placeholder_icon,
+                                   apps::LoadIconCallback callback) {
+  constexpr bool is_placeholder_icon = false;
+  if (icon_key.resource_id != IconKey::kInvalidResourceId) {
+    LoadIconFromResource(
+        icon_type, size_hint_in_dip, icon_key.resource_id, is_placeholder_icon,
+        static_cast<IconEffects>(icon_key.icon_effects), std::move(callback));
+    return;
+  }
+  // On failure, we still run the callback, with an empty IconValue.
+  std::move(callback).Run(std::make_unique<IconValue>());
+}
 
 void BuiltInChromeOsApps::Connect(
     mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
