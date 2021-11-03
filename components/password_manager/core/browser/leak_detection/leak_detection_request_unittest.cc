@@ -41,10 +41,14 @@ class LeakDetectionRequestTest : public testing::Test {
   LeakDetectionRequest request_;
 };
 
+std::string BuildLookupSingleLeakUrlStr() {
+  return BuildLookupSingleLeakURL().spec();
+}
+
 TEST_F(LeakDetectionRequestTest, ServerError) {
-  test_url_loader_factory()->AddResponse(
-      LeakDetectionRequest::kLookupSingleLeakEndpoint, "",
-      net::HTTP_INTERNAL_SERVER_ERROR);
+  test_url_loader_factory()->AddResponse(BuildLookupSingleLeakUrlStr(),
+                                         /*content=*/"",
+                                         net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
   request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
@@ -63,9 +67,9 @@ TEST_F(LeakDetectionRequestTest, ServerError) {
 }
 
 TEST_F(LeakDetectionRequestTest, QuotaLimit) {
-  test_url_loader_factory()->AddResponse(
-      LeakDetectionRequest::kLookupSingleLeakEndpoint, "",
-      net::HTTP_TOO_MANY_REQUESTS);
+  test_url_loader_factory()->AddResponse(BuildLookupSingleLeakUrlStr(),
+                                         /*content=*/"",
+                                         net::HTTP_TOO_MANY_REQUESTS);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
   request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
@@ -84,9 +88,8 @@ TEST_F(LeakDetectionRequestTest, QuotaLimit) {
 
 TEST_F(LeakDetectionRequestTest, MalformedServerResponse) {
   static constexpr base::StringPiece kMalformedResponse = "\x01\x02\x03";
-  test_url_loader_factory()->AddResponse(
-      LeakDetectionRequest::kLookupSingleLeakEndpoint,
-      std::string(kMalformedResponse));
+  test_url_loader_factory()->AddResponse(BuildLookupSingleLeakUrlStr(),
+                                         std::string(kMalformedResponse));
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
   request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
@@ -108,8 +111,8 @@ TEST_F(LeakDetectionRequestTest, WellformedServerResponse) {
   google::internal::identity::passwords::leak::check::v1::
       LookupSingleLeakResponse response;
   std::string response_string = response.SerializeAsString();
-  test_url_loader_factory()->AddResponse(
-      LeakDetectionRequest::kLookupSingleLeakEndpoint, response_string);
+  test_url_loader_factory()->AddResponse(BuildLookupSingleLeakUrlStr(),
+                                         response_string);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
   request().LookupSingleLeak(test_url_loader_factory(), kAccessToken,
@@ -135,8 +138,8 @@ TEST_F(LeakDetectionRequestTest,
   google::internal::identity::passwords::leak::check::v1::
       LookupSingleLeakResponse response;
   std::string response_string = response.SerializeAsString();
-  test_url_loader_factory()->AddResponse(
-      LeakDetectionRequest::kLookupSingleLeakEndpoint, response_string);
+  test_url_loader_factory()->AddResponse(BuildLookupSingleLeakUrlStr(),
+                                         response_string);
 
   base::MockCallback<LeakDetectionRequest::LookupSingleLeakCallback> callback;
   request().LookupSingleLeak(
