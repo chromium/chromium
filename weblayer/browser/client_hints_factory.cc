@@ -41,8 +41,7 @@ KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
       context, BrowserProcess::GetInstance()->GetNetworkQualityTracker(),
       HostContentSettingsMapFactory::GetForBrowserContext(context),
       CookieSettingsFactory::GetForBrowserContext(context),
-      embedder_support::GetUserAgentMetadata(
-          BrowserProcess::GetInstance()->GetLocalState()));
+      embedder_support::GetUserAgentMetadata());
 }
 
 content::BrowserContext* ClientHintsFactory::GetBrowserContextToUse(

@@ -3809,35 +3809,3 @@ IN_PROC_BROWSER_TEST_F(UpdatedGreaseFeatureParamTest,
   }
   ASSERT_TRUE(saw_updated_grease);
 }
-
-class GreaseEnterprisePolicyTest : public ClientHintsBrowserTest {
-  void SetUpInProcessBrowserTestFixture() override {
-    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-    policy::PolicyMap policies;
-    SetPolicy(&policies, policy::key::kUserAgentClientHintsGREASEUpdateEnabled,
-              absl::optional<base::Value>(false));
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  std::unique_ptr<base::FeatureList> EnabledFeatures() override {
-    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
-    feature_list->InitializeFromCommandLine("GreaseUACH:updated_algorithm/true",
-                                            "");
-    return feature_list;
-  }
-};
-
-// Makes sure that the enterprise policy is able to prevent updated GREASE.
-IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest, GreaseEnterprisePolicyTest) {
-  const GURL gurl = accept_ch_without_lifetime_url();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
-  std::string ua_ch_result = main_frame_ua_observed();
-  // The updated GREASE algorithm would contain at least one of these
-  // characters. The equal sign, space, and semicolon are not present as they
-  // exist in the old algorithm.
-  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
-                                            '/', ')', '?', '_'};
-  for (auto i : updated_grease_chars) {
-    ASSERT_TRUE(ua_ch_result.find(i) == std::string::npos);
-  }
-}

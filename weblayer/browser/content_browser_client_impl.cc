@@ -433,8 +433,7 @@ std::string ContentBrowserClientImpl::GetReducedUserAgent() {
 }
 
 blink::UserAgentMetadata ContentBrowserClientImpl::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata(
-      BrowserProcess::GetInstance()->GetLocalState());
+  return embedder_support::GetUserAgentMetadata();
 }
 
 void ContentBrowserClientImpl::OverrideWebkitPrefs(

@@ -875,9 +875,7 @@ void TabImpl::SetDesktopUserAgentEnabled(JNIEnv* env, jboolean enable) {
   // Reset state that an earlier call to Navigation::SetUserAgentString()
   // could have modified.
   embedder_support::SetDesktopUserAgentOverride(
-      web_contents_.get(),
-      embedder_support::GetUserAgentMetadata(
-          BrowserProcess::GetInstance()->GetLocalState()),
+      web_contents_.get(), embedder_support::GetUserAgentMetadata(),
       /* override_in_new_tabs= */ false);
   web_contents_->SetRendererInitiatedUserAgentOverrideOption(
       content::NavigationController::UA_OVERRIDE_INHERIT);
