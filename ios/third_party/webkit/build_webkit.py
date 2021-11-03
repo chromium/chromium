@@ -28,10 +28,12 @@ def main():
   output_dir = opts.output_dir
   if not output_dir:
     # Use a default that matches what ninja uses.
+    platform_dir = 'iOS' if opts.ios_simulator else 'macOS'
     output_dir = os.path.realpath(os.path.join(
       os.path.dirname(__file__),
       '../../..',
-      'out', 'Debug-iphonesimulator', 'obj', 'ios', 'third_party', 'webkit'));
+      'out', 'Debug-iphonesimulator', 'obj',
+      'ios', 'third_party', 'webkit', platform_dir));
 
   command = ['src/Tools/Scripts/build-webkit']
 

@@ -102,8 +102,6 @@ if (_build_ios_webkit) {
       "$_webkit_ios_out_product_dir/WebKitTestRunnerApp.app/Frameworks/libclang_rt.asan_iossim_dynamic.dylib",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.Networking.xpc",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.Networking.xpc/com.apple.WebKit.Networking.Development",
-      "$_webkit_ios_out_product_dir/com.apple.WebKit.Plugin.64.xpc",
-      "$_webkit_ios_out_product_dir/com.apple.WebKit.Plugin.64.xpc/com.apple.WebKit.Plugin.64.Development",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.Development.xpc",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.Development.xpc/com.apple.WebKit.WebContent.Development.Development",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.xpc",
@@ -127,7 +125,6 @@ if (_build_ios_webkit) {
       "$_webkit_ios_out_product_dir/WebKitLegacy.framework",
       "$_webkit_ios_out_product_dir/WebKitTestRunnerApp.app/Frameworks/libclang_rt.asan_iossim_dynamic.dylib",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.Networking.xpc",
-      "$_webkit_ios_out_product_dir/com.apple.WebKit.Plugin.64.xpc",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.Development.xpc",
       "$_webkit_ios_out_product_dir/com.apple.WebKit.WebContent.xpc",
     ]

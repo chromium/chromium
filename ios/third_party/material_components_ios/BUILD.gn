@@ -1584,7 +1584,6 @@ ios_framework_bundle("material_components_ios") {
     "CoreText.framework",
     "QuartzCore.framework",
     "UIKit.framework",
-    "WebKit.framework",
   ]
 
   deps = [
@@ -1594,6 +1593,7 @@ ios_framework_bundle("material_components_ios") {
     "//ios/third_party/material_text_accessibility_ios",
     "//ios/third_party/motion_animator_objc",
     "//ios/third_party/motion_transitioning_objc",
+    "//ios/third_party/webkit",
   ]
 
   configs -= [
