@@ -59,7 +59,7 @@ class ASH_EXPORT CaptureModeController
     // The absolute path of the folder used for saving the captures.
     base::FilePath path;
 
-    // True if the above |path| is the default "Downloads" folder on the device.
+    // True if the above `path` is the default "Downloads" folder on the device.
     bool is_default_downloads_folder = false;
   };
 
@@ -398,6 +398,9 @@ class ASH_EXPORT CaptureModeController
                                          bool success,
                                          bool in_projector_mode,
                                          bool proceed);
+
+  // Gets the corresponding `SaveLocation` enum value on the given `path`.
+  CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
 

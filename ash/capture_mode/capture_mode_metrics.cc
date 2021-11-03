@@ -28,6 +28,8 @@ constexpr char kQuickActionHistogramName[] =
     "Ash.CaptureModeController.QuickAction";
 constexpr char kRecordTimeHistogramName[] =
     "Ash.CaptureModeController.ScreenRecordingLength";
+constexpr char kSaveToLocationHistogramName[] =
+    "Ash.CaptureModeController.SaveLocation";
 constexpr char kScreenshotsPerDayHistogramName[] =
     "Ash.CaptureModeController.ScreenshotsPerDay";
 constexpr char kScreenshotsPerWeekHistogramName[] =
@@ -134,6 +136,11 @@ void RecordNumberOfScreenshotsTakenInLastWeek(
 
 void RecordScreenshotNotificationQuickAction(CaptureQuickAction action) {
   base::UmaHistogramEnumeration(kQuickActionHistogramName, action);
+}
+
+void RecordSaveToLocation(CaptureModeSaveToLocation save_location) {
+  base::UmaHistogramEnumeration(
+      GetCaptureModeHistogramName(kSaveToLocationHistogramName), save_location);
 }
 
 }  // namespace ash

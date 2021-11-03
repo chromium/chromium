@@ -54,6 +54,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       override;
   void OnSessionStateChanged(bool started) override;
   void OnServiceRemoteReset() override;
+  bool GetDriveFsMountPointPath(base::FilePath* path) const override;
   std::unique_ptr<ash::RecordingOverlayView> CreateRecordingOverlayView()
       const override;
 

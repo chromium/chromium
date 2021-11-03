@@ -29,9 +29,12 @@ class TestRecordingOverlayView : public RecordingOverlayView {
 
 TestCaptureModeDelegate::TestCaptureModeDelegate() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  const bool result =
+  const bool created_downloads_dir =
       base::CreateNewTempDirectory(/*prefix=*/"", &fake_downloads_dir_);
-  DCHECK(result);
+  DCHECK(created_downloads_dir);
+  const bool created_root_drive_dir =
+      fake_drive_fs_mount_path_.CreateUniqueTempDir();
+  DCHECK(created_root_drive_dir);
 }
 
 TestCaptureModeDelegate::~TestCaptureModeDelegate() = default;
@@ -135,6 +138,12 @@ void TestCaptureModeDelegate::OnServiceRemoteReset() {
   // reset (on which it shuts down the service process). Here since the service
   // is running in-process with ash_unittests, we just delete the instance.
   recording_service_.reset();
+}
+
+bool TestCaptureModeDelegate::GetDriveFsMountPointPath(
+    base::FilePath* result) const {
+  *result = fake_drive_fs_mount_path_.GetPath();
+  return true;
 }
 
 std::unique_ptr<RecordingOverlayView>

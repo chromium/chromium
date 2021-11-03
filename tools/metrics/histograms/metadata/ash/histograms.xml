@@ -536,6 +536,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.CaptureModeController.SaveToLocation.{TabletOrClamshell}"
+    enum="CaptureModeSaveToLocation" expires_after="2022-09-09">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever screen capture is saved in {TabletOrClamshell}. The
+    recorded enum value indicates the location that the screen capture is saved.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.ScreenRecordingLength"
     units="seconds" expires_after="2022-09-09">
   <owner>afakhry@chromium.org</owner>

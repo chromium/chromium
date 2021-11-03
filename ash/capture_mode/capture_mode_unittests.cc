@@ -215,6 +215,20 @@ std::unique_ptr<aura::Window> CreateTransientModalChildWindow(
   return child;
 }
 
+// To avoid flaky failures due to mouse devices blocking entering tablet mode,
+// we detach all mouse devices. This shouldn't affect testing the cursor
+// status.
+void SwitchToTabletMode() {
+  TabletModeControllerTestApi test_api;
+  test_api.DetachAllMice();
+  test_api.EnterTabletMode();
+}
+
+void LeaveTabletMode() {
+  TabletModeControllerTestApi test_api;
+  test_api.LeaveTabletMode();
+}
+
 // Defines a capture client observer, that sets the input capture to the window
 // given to the constructor, and destroys it once capture is lost.
 class TestCaptureClientObserver : public aura::client::CaptureClientObserver {
@@ -571,6 +585,24 @@ class CaptureModeTest : public AshTestBase {
     DCHECK(result);
     return custom_folder;
   }
+
+  base::FilePath CreateFolderOnDriveFS(const std::string& custom_folder_name) {
+    auto* test_delegate = CaptureModeController::Get()->delegate_for_testing();
+    base::FilePath root_drive_folder;
+    EXPECT_TRUE(test_delegate->GetDriveFsMountPointPath(&root_drive_folder));
+    base::FilePath folder_on_drive_fs =
+        root_drive_folder.Append(custom_folder_name);
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    const bool result = base::CreateDirectory(folder_on_drive_fs);
+    EXPECT_TRUE(result);
+    return folder_on_drive_fs;
+  }
+
+  std::string GetCaptureModeHistogramName(std::string prefix) {
+    prefix.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
+                                                 : ".ClamshellMode");
+    return prefix;
+  }
 };
 
 class CaptureSessionWidgetObserver : public views::WidgetObserver {
@@ -649,15 +681,13 @@ TEST_F(CaptureModeTest, CheckCursorVisibility) {
   EXPECT_TRUE(cursor_manager->IsMouseEventsEnabled());
 
   // Enter tablet mode.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
   // After entering tablet mode, cursor should be invisible and locked.
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
   // Leave tablet mode, cursor should be visible again.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
@@ -665,9 +695,7 @@ TEST_F(CaptureModeTest, CheckCursorVisibilityOnTabletMode) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
 
   // Enter tablet mode.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
   // After entering tablet mode, cursor should be invisible.
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
 
@@ -678,7 +706,7 @@ TEST_F(CaptureModeTest, CheckCursorVisibilityOnTabletMode) {
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
 
   // Leave tablet mode, cursor should be visible now.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
@@ -1462,12 +1490,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
 
   // Enter tablet mode, the cursor should be hidden.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
-  // To avoid flaky failures due to mouse devices blocking entering tablet mode,
-  // we detach all mouse devices. This shouldn't affect testing the cursor
-  // status.
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
@@ -1477,7 +1500,7 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
   // Return to clamshell mode, mouse should appear again.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());
 
@@ -1532,17 +1555,15 @@ TEST_F(CaptureModeTest, FullscreenCursorStates) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 
   // Enter tablet mode, the cursor should be hidden.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
   // To avoid flaky failures due to mouse devices blocking entering tablet mode,
   // we detach all mouse devices. This shouldn't affect testing the cursor
   // status.
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
   // Exit tablet mode, the cursor should appear again.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
   EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
@@ -1622,17 +1643,15 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
   EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
 
   // Enter tablet mode, the cursor should be hidden.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
   // To avoid flaky failures due to mouse devices blocking entering tablet mode,
   // we detach all mouse devices. This shouldn't affect testing the cursor
   // status.
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
 
   // Exit tablet mode, the cursor should appear again.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
   EXPECT_EQ(CursorType::kCustom, cursor_manager->GetCursor().type());
   EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kVideo));
@@ -2418,6 +2437,60 @@ TEST_P(CaptureModeSaveFileTest, SaveCapturedFileWithCustomFolder) {
   // Since `available_custom_folder` is now available, the captured files will
   // be saved into the custom folder;
   EXPECT_EQ(file_saved_path.DirName(), available_custom_folder);
+}
+
+TEST_P(CaptureModeSaveFileTest, CaptureModeSaveToLocationMetric) {
+  constexpr char kHistogramBase[] = "Ash.CaptureModeController.SaveLocation";
+  base::HistogramTester histogram_tester;
+  auto* controller = CaptureModeController::Get();
+  auto* test_delegate = controller->delegate_for_testing();
+
+  // Initialize four different save-to locations for screen capture that
+  // includes default downloads folder, local customized folder, root drive and
+  // a specific folder on drive.
+  const auto downloads_folder = test_delegate->GetUserDefaultDownloadsFolder();
+  const base::FilePath custom_folder = CreateCustomFolder("test");
+  base::FilePath root_drive_folder;
+  test_delegate->GetDriveFsMountPointPath(&root_drive_folder);
+  const base::FilePath non_root_drive_folder = CreateFolderOnDriveFS("test");
+  struct {
+    base::FilePath set_save_file_folder;
+    CaptureModeSaveToLocation save_location;
+  } kTestCases[] = {
+      {downloads_folder, CaptureModeSaveToLocation::kDefault},
+      {custom_folder, CaptureModeSaveToLocation::kCustomizedFolder},
+      {root_drive_folder, CaptureModeSaveToLocation::kDrive},
+      {non_root_drive_folder, CaptureModeSaveToLocation::kDriveFolder},
+  };
+  for (auto test_case : kTestCases) {
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramBase), test_case.save_location,
+        0);
+  }
+  // Set four different save-to locations in clamshell mode and check the
+  // histogram results.
+  EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+  for (auto test_case : kTestCases) {
+    StartCaptureSessionWithParam();
+    controller->SetCustomCaptureFolder(test_case.set_save_file_folder);
+    auto file_saved_path = PerformCapture();
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramBase), test_case.save_location,
+        1);
+  }
+
+  // Set four different save-to locations in tablet mode and check the histogram
+  // results.
+  SwitchToTabletMode();
+  EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+  for (auto test_case : kTestCases) {
+    StartCaptureSessionWithParam();
+    controller->SetCustomCaptureFolder(test_case.set_save_file_folder);
+    auto file_saved_path = PerformCapture();
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(kHistogramBase), test_case.save_location,
+        1);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -3286,9 +3359,7 @@ TEST_F(CaptureModeTest, ScreenshotConfigurationHistogram) {
 // Tests that there is no crash when touching the capture label widget in tablet
 // mode when capturing a window. Regression test for https://crbug.com/1152938.
 TEST_F(CaptureModeTest, TabletTouchCaptureLabelWidgetWindowMode) {
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
 
   // Enter capture window mode.
   CaptureModeController* controller =
@@ -4431,14 +4502,12 @@ TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursorOverlay) {
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
   // Entering tablet mode should hide the cursor overlay.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
   FlushOverlay();
   EXPECT_TRUE(fake_overlay()->IsHidden());
 
   // Exiting tablet mode should reshow the overlay.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   FlushOverlay();
   EXPECT_FALSE(fake_overlay()->IsHidden());
 }
@@ -4447,9 +4516,7 @@ TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursorOverlay) {
 // remains hidden afterward.
 TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursor) {
   // Enter tablet mode.
-  TabletModeControllerTestApi tablet_mode_controller_test_api;
-  tablet_mode_controller_test_api.DetachAllMice();
-  tablet_mode_controller_test_api.EnterTabletMode();
+  SwitchToTabletMode();
 
   auto* cursor_manager = Shell::Get()->cursor_manager();
   CaptureModeController* controller = StartCaptureSession(
@@ -4466,7 +4533,7 @@ TEST_F(CaptureModeCursorOverlayTest, TabletModeHidesCursor) {
   CaptureScreenshotAndCheckCursorVisibility(controller);
 
   // Exiting tablet mode.
-  tablet_mode_controller_test_api.LeaveTabletMode();
+  LeaveTabletMode();
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
@@ -5792,9 +5859,7 @@ class CaptureModeAudioSettingHistogramTest
   void SetUp() override {
     CaptureModeTest::SetUp();
     if (GetParam()) {
-      TabletModeControllerTestApi test_api;
-      test_api.DetachAllMice();
-      test_api.EnterTabletMode();
+      SwitchToTabletMode();
     }
   }
 
@@ -5806,11 +5871,6 @@ class CaptureModeAudioSettingHistogramTest
   void StartRecording() { CaptureModeTestApi().PerformCapture(); }
 
   void StopRecording() { CaptureModeTestApi().StopVideoRecording(); }
-
-  std::string GetCaptureModeHistogramName(std::string prefix) {
-    prefix.append(GetParam() ? ".TabletMode" : ".ClamshellMode");
-    return prefix;
-  }
 };
 
 TEST_P(CaptureModeAudioSettingHistogramTest, VideoRecordingAudioMetric) {

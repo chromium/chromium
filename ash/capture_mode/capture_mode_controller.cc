@@ -1167,7 +1167,7 @@ void CaptureModeController::OnImageFileSaved(
   const auto image = gfx::Image::CreateFrom1xPNGBytes(png_bytes);
   CopyImageToClipboard(image);
   ShowPreviewNotification(file_saved_path, image, CaptureModeType::kImage);
-
+  RecordSaveToLocation(GetSaveToOption(file_saved_path));
   HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
   if (client)  // May be `nullptr` in tests.
     client->AddScreenshot(file_saved_path);
@@ -1195,6 +1195,7 @@ void CaptureModeController::OnVideoFileSaved(
     RecordCaptureModeRecordTime(
         (base::TimeTicks::Now() - recording_start_time_).InSeconds());
   }
+  RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
 
   if (on_file_saved_callback_for_test_)
     std::move(on_file_saved_callback_for_test_).Run(saved_video_file_path);
@@ -1480,6 +1481,22 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
 
   low_disk_space_threshold_reached_ = false;
   recording_start_time_ = base::TimeTicks();
+}
+
+CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(
+    const base::FilePath& path) {
+  const auto dir_path = path.DirName();
+  if (dir_path == delegate_->GetUserDefaultDownloadsFolder())
+    return CaptureModeSaveToLocation::kDefault;
+  base::FilePath mounted_path;
+  if (delegate_->GetDriveFsMountPointPath(&mounted_path)) {
+    if (dir_path == mounted_path)
+      return CaptureModeSaveToLocation::kDrive;
+
+    if (mounted_path.IsParent(dir_path))
+      return CaptureModeSaveToLocation::kDriveFolder;
+  }
+  return CaptureModeSaveToLocation::kCustomizedFolder;
 }
 
 }  // namespace ash

@@ -119,6 +119,14 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // service.
   virtual void OnServiceRemoteReset() = 0;
 
+  // Gets the DriveFS mount point. Returns true if the Drive is mounted false
+  // otherwise.
+  // TODO(michelefan): Now we have both CaptureModeDelegate and ProjectorClient
+  // expose the GetDriveFsMountPointPath. Add the APIs in ShellDelegate which is
+  // implemented by ChromeShellDelegate in chrome and TestShellDelegate in
+  // ash_unittests to reduce the duplication.
+  virtual bool GetDriveFsMountPointPath(base::FilePath* path) const = 0;
+
   // Creates and returns the view that will be used as the contents view of the
   // overlay widget, which is added as a child of the recorded surface to host
   // contents rendered in a web view that are meant to be part of the recording

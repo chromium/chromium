@@ -11215,6 +11215,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Projector app"/>
 </enum>
 
+<enum name="CaptureModeSaveToLocation">
+  <int value="0" label="Default downloads folder"/>
+  <int value="1" label="Root drive folder"/>
+  <int value="2" label="Customized folder in drive"/>
+  <int value="3" label="Local customized folder"/>
+</enum>
+
 <enum name="CapturePixelFormat">
   <obsolete>
     Deprecated as of 08/2015.

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -86,6 +87,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       override;
   void OnSessionStateChanged(bool started) override;
   void OnServiceRemoteReset() override;
+  bool GetDriveFsMountPointPath(base::FilePath* result) const override;
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView()
       const override;
 
@@ -97,6 +99,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool is_allowed_by_dlp_ = true;
   bool is_allowed_by_policy_ = true;
   bool should_save_after_dlp_check_ = true;
+  base::ScopedTempDir fake_drive_fs_mount_path_;
 };
 
 }  // namespace ash

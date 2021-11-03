@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -188,6 +189,21 @@ void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
 }
 
 void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
+
+bool ChromeCaptureModeDelegate::GetDriveFsMountPointPath(
+    base::FilePath* result) const {
+  if (!chromeos::LoginState::Get()->IsUserLoggedIn())
+    return false;
+
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          ProfileManager::GetPrimaryUserProfile());
+  if (!integration_service || !integration_service->IsMounted())
+    return false;
+
+  *result = integration_service->GetMountPointPath();
+  return true;
+}
 
 std::unique_ptr<ash::RecordingOverlayView>
 ChromeCaptureModeDelegate::CreateRecordingOverlayView() const {
