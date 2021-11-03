@@ -7407,22 +7407,59 @@
       }
     ]
   },
-  "AllowSyncXHRInPageDismissal": {
+  "AllowSyncXHRInPageDismissal.CrOSOnly": {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "default_for_enterprise_users": true,
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value for enterprice users (default_for_enterprise_users = true).",
+        "prefs": {
+          "allow_sync_xhr_in_page_dismissal": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AllowSyncXHRInPageDismissal": false
+        },
+        "prefs": {
+          "allow_sync_xhr_in_page_dismissal": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  "AllowSyncXHRInPageDismissal.nonCrOS": {
     "os": [
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
       "android"
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value for non-enterprise users (no policies set).",
+        "prefs": {
+          "allow_sync_xhr_in_page_dismissal": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AllowSyncXHRInPageDismissal": true
         },
         "prefs": {
-          "allow_sync_xhr_in_page_dismissal": {}
+          "allow_sync_xhr_in_page_dismissal": {
+            "value": true
+          }
         }
       }
     ]
