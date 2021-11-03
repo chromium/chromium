@@ -207,3 +207,33 @@ TEST_F(ViewFactoryTest, TestViewBuilderCustomConfigure) {
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 5);
   EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 10);
 }
+
+TEST_F(ViewFactoryTest, TestViewBuilderAddChildAtIndex) {
+  views::View* parent = nullptr;
+  views::LabelButton* ok_button = nullptr;
+  views::LabelButton* cancel_button = nullptr;
+  std::unique_ptr<views::View> view =
+      views::Builder<views::View>()
+          .CopyAddressTo(&parent)
+          .AddChild(views::Builder<views::LabelButton>()
+                        .CopyAddressTo(&cancel_button)
+                        .SetIsDefault(false)
+                        .SetEnabled(true)
+                        .SetText(u"Cancel"))
+          .AddChildAt(views::Builder<views::LabelButton>()
+                          .CopyAddressTo(&ok_button)
+                          .SetIsDefault(false)
+                          .SetEnabled(true)
+                          .SetText(u"OK"),
+                      0)
+          .Build();
+
+  EXPECT_NE(parent, nullptr);
+  EXPECT_NE(ok_button, nullptr);
+  EXPECT_NE(cancel_button, nullptr);
+  EXPECT_EQ(view.get(), parent);
+  EXPECT_TRUE(view->GetVisible());
+  // Make sure the OK button is inserted into the child list at index 0.
+  EXPECT_EQ(ok_button, view->children()[0]);
+  EXPECT_EQ(cancel_button, view->children()[1]);
+}
