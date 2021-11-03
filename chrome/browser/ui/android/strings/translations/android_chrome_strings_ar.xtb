@@ -888,7 +888,7 @@
 <translation id="6477928892249167417">يبدو أن المواقع الإلكترونية التالية مهمة بالنسبة إليك:</translation>
 <translation id="6482749332252372425">تعذّر تنزيل الملف <ph name="FILE_NAME" /> لعدم توفر مساحة لتخزين.</translation>
 <translation id="6489610539826642779">قائمة القراءة <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
-<translation id="6490496612063106490">الرابط المؤدي إلى النصوص التي تم تمييزها</translation>
+<translation id="6490496612063106490">إنشاء رابط إلى نص محدّد</translation>
 <translation id="6496823230996795692">لاستخدام <ph name="APP_NAME" /> للمرة الأولى، يُرجى الاتصال بالإنترنت.</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{تم تنزيل ملف واحد.}zero{اكتملت # عملية تنزيل.}two{اكتملت عمليتا تنزيل.}few{اكتملت # عمليات تنزيل.}many{اكتملت # عملية تنزيل.}other{اكتملت # علمية تنزيل.}}</translation>
 <translation id="6508722015517270189">‏إعادة تشغيل Chrome</translation>
