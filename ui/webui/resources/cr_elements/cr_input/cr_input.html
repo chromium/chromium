@@ -66,7 +66,7 @@
       }
 
       :host([readonly]) #input {
-        opacity: 0.6;
+        opacity: var(--cr-input-readonly-opacity, 0.6);
       }
 
       :host([invalid]) #underline {
