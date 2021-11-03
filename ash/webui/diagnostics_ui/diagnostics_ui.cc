@@ -409,7 +409,9 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   diagnostics::metrics::NavigationView initial_view =
       GetInitialView(web_ui->GetWebContents()->GetURL());
   EmitInitialScreen(initial_view);
-
+  web_ui->AddMessageHandler(
+      std::make_unique<diagnostics::metrics::DiagnosticsMetricsMessageHandler>(
+          initial_view));
   // TODO(ashleydp): Clean up timestamp when EmitAppOpenDuration is deprecated
   open_timestamp_ = base::Time::Now();
 }
