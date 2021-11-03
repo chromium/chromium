@@ -32,10 +32,11 @@ namespace extension_function_test_utils {
 absl::optional<base::Value> ParseList(const std::string& data);
 
 // If |val| is a dictionary, return it as one, otherwise NULL.
-base::DictionaryValue* ToDictionary(base::Value* val);
+std::unique_ptr<base::DictionaryValue> ToDictionary(
+    std::unique_ptr<base::Value> val);
 
 // If |val| is a list, return it as one, otherwise NULL.
-base::ListValue* ToList(base::Value* val);
+std::unique_ptr<base::ListValue> ToList(std::unique_ptr<base::Value> val);
 
 // Returns true if |val| contains any privacy information, e.g. url,
 // pendingUrl, title or faviconUrl.
@@ -56,14 +57,15 @@ std::string RunFunctionAndReturnError(ExtensionFunction* function,
 // Run |function| with |args| and return the result. Adds an error to the
 // current test if |function| returns an error. Takes ownership of
 // |function|. The caller takes ownership of the result.
-base::Value* RunFunctionAndReturnSingleResult(
+std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
     ExtensionFunction* function,
     const std::string& args,
     Browser* browser,
     extensions::api_test_utils::RunFunctionFlags flags);
-base::Value* RunFunctionAndReturnSingleResult(ExtensionFunction* function,
-                                              const std::string& args,
-                                              Browser* browser);
+std::unique_ptr<base::Value> RunFunctionAndReturnSingleResult(
+    ExtensionFunction* function,
+    const std::string& args,
+    Browser* browser);
 
 // Create and run |function| with |args|. Works with both synchronous and async
 // functions. Ownership of |function| remains with the caller.

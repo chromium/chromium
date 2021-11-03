@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
 
   // The management API should list this extension.
   scoped_refptr<ManagementGetAllFunction> function =
-      new ManagementGetAllFunction();
+      base::MakeRefCounted<ManagementGetAllFunction>();
   std::unique_ptr<base::Value> result(
       test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
                                                    browser()));
@@ -277,9 +277,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiBrowserTest,
   // And it should continue to do so even after it crashes.
   ASSERT_TRUE(CrashEnabledExtension(extension->id()));
 
-  function = new ManagementGetAllFunction();
-  result.reset(test_utils::RunFunctionAndReturnSingleResult(function.get(),
-                                                            "[]", browser()));
+  function = base::MakeRefCounted<ManagementGetAllFunction>();
+  result = test_utils::RunFunctionAndReturnSingleResult(function.get(), "[]",
+                                                        browser());
   ASSERT_TRUE(result->is_list());
   EXPECT_EQ(1U, result->GetList().size());
 }

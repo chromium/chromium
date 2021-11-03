@@ -630,7 +630,7 @@ class DownloadExtensionTest : public ExtensionApiTest {
   // profile(), so pass it the on-record browser so that it always uses the
   // on-record profile to match real-life behavior.
 
-  base::Value* RunFunctionAndReturnResult(
+  std::unique_ptr<base::Value> RunFunctionAndReturnResult(
       scoped_refptr<ExtensionFunction> function,
       const std::string& args) {
     SetUpExtensionFunction(function.get());
@@ -1499,8 +1499,8 @@ IN_PROC_BROWSER_TEST_F(
   // Extensions running in the incognito window should have access to both
   // items because the Test extension is in spanning mode.
   GoOffTheRecord();
-  result_value.reset(RunFunctionAndReturnResult(
-      new DownloadsSearchFunction(), "[{}]"));
+  result_value =
+      RunFunctionAndReturnResult(new DownloadsSearchFunction(), "[{}]");
   ASSERT_TRUE(result_value.get());
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(2UL, result_value->GetList().size());
@@ -1530,8 +1530,8 @@ IN_PROC_BROWSER_TEST_F(
   // Extensions running in the on-record window should have access only to the
   // on-record item.
   GoOnTheRecord();
-  result_value.reset(RunFunctionAndReturnResult(
-      new DownloadsSearchFunction(), "[{}]"));
+  result_value =
+      RunFunctionAndReturnResult(new DownloadsSearchFunction(), "[{}]");
   ASSERT_TRUE(result_value.get());
   ASSERT_TRUE(result_value->is_list());
   ASSERT_EQ(1UL, result_value->GetList().size());
@@ -2081,9 +2081,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       "[{\"state\": \"in_progress\","
       "  \"url\": \"javascript:document.write(\\\"hello\\\");\"}]"));
 
-  result.reset(
+  result =
       RunFunctionAndReturnResult(new DownloadsDownloadFunction(),
-                                 "[{\"url\": \"javascript:return false;\"}]"));
+                                 "[{\"url\": \"javascript:return false;\"}]");
   ASSERT_TRUE(result.get());
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
@@ -2199,10 +2199,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           "    \"current\": \"complete\"}}]",
                           result_id)));
 
-  result.reset(RunFunctionAndReturnResult(
-      new DownloadsDownloadFunction(), base::StringPrintf(
+  result = RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      base::StringPrintf(
           "[{\"url\": \"%s\",  \"conflictAction\": \"overwrite\"}]",
-          download_url.c_str())));
+          download_url.c_str()));
   ASSERT_TRUE(result.get());
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
@@ -3834,9 +3835,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 
   // Start downloading a file.
-  result.reset(RunFunctionAndReturnResult(
-      new DownloadsDownloadFunction(), base::StringPrintf(
-          "[{\"url\": \"%s\"}]", download_url.c_str())));
+  result = RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
   ASSERT_TRUE(result.get());
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
@@ -3958,9 +3959,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 
   // Start downloading a file.
-  result.reset(RunFunctionAndReturnResult(
-      new DownloadsDownloadFunction(), base::StringPrintf(
-          "[{\"url\": \"%s\"}]", download_url.c_str())));
+  result = RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
   ASSERT_TRUE(result.get());
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
@@ -4165,9 +4166,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start an incognito download for comparison.
   GoOffTheRecord();
-  result.reset(RunFunctionAndReturnResult(
-      new DownloadsDownloadFunction(), base::StringPrintf(
-          "[{\"url\": \"%s\"}]", download_url.c_str())));
+  result = RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
   ASSERT_TRUE(result.get());
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();
@@ -4314,9 +4315,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // Start an incognito download for comparison.
   GoOffTheRecord();
-  result.reset(RunFunctionAndReturnResult(
-      new DownloadsDownloadFunction(), base::StringPrintf(
-          "[{\"url\": \"%s\"}]", download_url.c_str())));
+  result = RunFunctionAndReturnResult(
+      new DownloadsDownloadFunction(),
+      base::StringPrintf("[{\"url\": \"%s\"}]", download_url.c_str()));
   ASSERT_TRUE(result.get());
   ASSERT_TRUE(result->is_int());
   result_id = result->GetInt();

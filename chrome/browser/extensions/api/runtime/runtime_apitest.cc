@@ -162,10 +162,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
   std::unique_ptr<base::Value> result(
       extension_function_test_utils::RunFunctionAndReturnSingleResult(
           new RuntimeGetPlatformInfoFunction(), "[]", browser()));
-  ASSERT_TRUE(result.get() != NULL);
-  base::DictionaryValue* dict =
-      extension_function_test_utils::ToDictionary(result.get());
-  ASSERT_TRUE(dict != NULL);
+  ASSERT_TRUE(result);
+  std::unique_ptr<base::DictionaryValue> dict =
+      extension_function_test_utils::ToDictionary(std::move(result));
+  ASSERT_TRUE(dict != nullptr);
   EXPECT_TRUE(dict->HasKey("os"));
   EXPECT_TRUE(dict->HasKey("arch"));
   EXPECT_TRUE(dict->HasKey("nacl_arch"));

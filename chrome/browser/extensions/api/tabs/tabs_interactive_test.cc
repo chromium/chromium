@@ -65,10 +65,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
 
   function = new extensions::WindowsGetLastFocusedFunction();
   function->set_extension(extension.get());
-  result.reset(utils::ToDictionary(
-      utils::RunFunctionAndReturnSingleResult(function.get(),
-                                              "[{\"populate\": true}]",
-                                              browser())));
+  result = utils::ToDictionary(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[{\"populate\": true}]", browser()));
 
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.
@@ -120,10 +118,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   // Get tabs NOT in the 'last focused' window called from the focused browser.
   function = new extensions::TabsQueryFunction();
   function->set_extension(extension.get());
-  result.reset(utils::ToList(
-      utils::RunFunctionAndReturnSingleResult(function.get(),
-                                              "[{\"lastFocusedWindow\":false}]",
-                                              browser())));
+  result = utils::ToList(utils::RunFunctionAndReturnSingleResult(
+      function.get(), "[{\"lastFocusedWindow\":false}]", browser()));
 
   result_tabs = result.get();
   // We should get one tab for each extra window and one for the initial window.
@@ -200,8 +196,8 @@ class ExtensionWindowLastFocusedTest : public PlatformAppBrowserTest {
 
   int GetTabId(const base::DictionaryValue* value) const;
 
-  base::Value* RunFunction(ExtensionFunction* function,
-                           const std::string& params);
+  std::unique_ptr<base::Value> RunFunction(ExtensionFunction* function,
+                                           const std::string& params);
 
   const Extension* extension() { return extension_.get(); }
 
@@ -289,7 +285,7 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   return *tab_id;
 }
 
-base::Value* ExtensionWindowLastFocusedTest::RunFunction(
+std::unique_ptr<base::Value> ExtensionWindowLastFocusedTest::RunFunction(
     ExtensionFunction* function,
     const std::string& params) {
   function->set_extension(extension_.get());
@@ -359,8 +355,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    std::unique_ptr<base::DictionaryValue> result(utils::ToDictionary(
-        RunFunction(function.get(), "[{\"populate\": true}]")));
+    std::unique_ptr<base::DictionaryValue> result = utils::ToDictionary(
+        RunFunction(function.get(), "[{\"populate\": true}]"));
     int popup_browser_window_id = ExtensionTabUtil::GetWindowId(popup_browser);
     EXPECT_EQ(popup_browser_window_id,
               api_test_utils::GetInteger(result.get(), "id"));
@@ -375,10 +371,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
 
     scoped_refptr<WindowsGetLastFocusedFunction> function =
         new WindowsGetLastFocusedFunction();
-    std::unique_ptr<base::DictionaryValue> result(
+    std::unique_ptr<base::DictionaryValue> result =
         utils::ToDictionary(RunFunction(
             function.get(),
-            "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]")));
+            "[{\"populate\": true, \"windowTypes\": [ \"devtools\" ]}]"));
     int devtools_window_id = ExtensionTabUtil::GetWindowId(
         DevToolsWindowTesting::Get(devtools)->browser());
     EXPECT_EQ(devtools_window_id,
