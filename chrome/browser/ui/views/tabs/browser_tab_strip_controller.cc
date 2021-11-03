@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -55,7 +54,6 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -81,17 +79,6 @@ using base::UserMetricsAction;
 using content::WebContents;
 
 namespace {
-
-bool DetermineTabStripLayoutStacked(PrefService* prefs, bool* adjust_layout) {
-  *adjust_layout = false;
-  // For ash, always allow entering stacked mode.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  *adjust_layout = true;
-  return prefs->GetBoolean(prefs::kTabStripStackedLayout);
-#else
-  return false;
-#endif
-}
 
 // Gets the source browser view during a tab dragging. Returns nullptr if there
 // is none.
@@ -226,12 +213,6 @@ BrowserTabStripController::BrowserTabStripController(
     menu_model_factory_ = std::make_unique<TabMenuModelFactory>();
   }
   model_->SetTabStripUI(this);
-
-  local_pref_registrar_.Init(g_browser_process->local_state());
-  local_pref_registrar_.Add(
-      prefs::kTabStripStackedLayout,
-      base::BindRepeating(&BrowserTabStripController::UpdateStackedLayout,
-                          base::Unretained(this)));
 }
 
 BrowserTabStripController::~BrowserTabStripController() {
@@ -497,13 +478,9 @@ void BrowserTabStripController::CreateNewTabWithLocation(
 
 void BrowserTabStripController::StackedLayoutMaybeChanged() {
   bool adjust_layout = false;
-  bool stacked_layout = DetermineTabStripLayoutStacked(
-      g_browser_process->local_state(), &adjust_layout);
+  bool stacked_layout = false;
   if (!adjust_layout || stacked_layout == tabstrip_->stacked_layout())
     return;
-
-  g_browser_process->local_state()->SetBoolean(prefs::kTabStripStackedLayout,
-                                               tabstrip_->stacked_layout());
 }
 
 void BrowserTabStripController::OnStartedDragging(bool dragging_window) {
@@ -832,8 +809,7 @@ void BrowserTabStripController::AddTab(WebContents* contents,
 
 void BrowserTabStripController::UpdateStackedLayout() {
   bool adjust_layout = false;
-  bool stacked_layout = DetermineTabStripLayoutStacked(
-      g_browser_process->local_state(), &adjust_layout);
+  bool stacked_layout = false;
   tabstrip_->set_adjust_layout(adjust_layout);
   tabstrip_->SetStackedLayout(stacked_layout);
 }

@@ -2541,10 +2541,6 @@ const char kChromeOsReleaseChannel[] = "cros.system.releaseChannel";
 const char kPerformanceTracingEnabled[] =
     "feedback.performance_tracing_enabled";
 
-// Boolean indicating whether tabstrip uses stacked layout (on touch devices).
-// Defaults to false.
-const char kTabStripStackedLayout[] = "tab-strip-stacked-layout";
-
 // Indicates that factory reset was requested from options page or reset screen.
 const char kFactoryResetRequested[] = "FactoryResetRequested";
 

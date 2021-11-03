@@ -448,6 +448,8 @@
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
 namespace {
+// Deprecated 10/2021
+const char kTabStripStackedLayout[] = "tab-strip-stacked-layout";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 5/2021
@@ -690,6 +692,8 @@ const char kAppCacheForceEnabled[] = "app_cache_force_enabled";
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kTabStripStackedLayout, false);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kRegisteredSupervisedUserAllowlists);
   registry->RegisterStringPref(kFirstRunTrialGroup, std::string());
@@ -1118,10 +1122,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   DeviceOAuth2TokenStoreDesktop::RegisterPrefs(registry);
 #endif
 
-#if defined(TOOLKIT_VIEWS)
-  RegisterBrowserViewLocalPrefs(registry);
-#endif
-
   // This is intentionally last.
   RegisterLocalStatePrefsForMigration(registry);
 }
@@ -1524,6 +1524,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 09/2021.
   local_state->ClearPref(kCloudPolicyOverridesPlatformPolicy);
+
+  // Added 10/2021.
+  local_state->ClearPref(kTabStripStackedLayout);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
