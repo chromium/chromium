@@ -681,7 +681,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
 
 // Android doesn't support PRE_ tests.
 // TODO(wfh): Enable this test when https://crbug.com/1257820 is fixed.
-#if !defined(OS_ANDROID)
+// TODO(crbug.com/1266222): Fix disk cache error on Fuchsia
+#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
  public:
   NetworkServiceBrowserCacheResetTest() = default;
@@ -835,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
                                            /*load_only_from_cache=*/true, url),
               net::test::IsError(net::ERR_CACHE_MISS));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
 enum class FailureType {
   kNoFailures = 0,
