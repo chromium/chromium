@@ -827,7 +827,11 @@ CopyOrMoveOperationDelegate::CopyOrMoveOperationDelegate(
       error_behavior_(error_behavior),
       progress_callback_(progress_callback),
       callback_(std::move(callback)) {
-  same_file_system_ = src_root_.IsInSameFileSystem(dest_root_);
+  // Force same_file_system_ = false if options include kForceCrossFilesystem.
+  same_file_system_ =
+      !options.Has(
+          FileSystemOperation::CopyOrMoveOption::kForceCrossFilesystem) &&
+      src_root_.IsInSameFileSystem(dest_root_);
 }
 
 CopyOrMoveOperationDelegate::~CopyOrMoveOperationDelegate() = default;

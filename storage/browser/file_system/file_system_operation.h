@@ -253,11 +253,15 @@ class FileSystemOperation {
     // be successfully done without preserving last modified time).
     kPreserveLastModified,
 
-    // Preserve permissions of the destination file. If the operation to update
+    // Preserves permissions of the destination file. If the operation to update
     // permissions is not supported on the file system for the destination file,
     // this option will simply be ignored (i.e. Copy would be successfully done
     // without preserving permissions of the destination file).
     kPreserveDestinationPermissions,
+
+    // Forces the copy or move operation to use the cross-filesystem
+    // implementation.
+    kForceCrossFilesystem,
 
     kFirst = kPreserveLastModified,
     kLast = kPreserveDestinationPermissions
