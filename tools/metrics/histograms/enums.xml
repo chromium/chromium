@@ -17201,6 +17201,8 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="8" label="7z"/>
   <int value="9" label="Crx"/>
   <int value="10" label="Iso"/>
+  <int value="11" label="Xz-compressed Tar"/>
+  <int value="12" label="Xz-compressed Other"/>
 </enum>
 
 <enum name="CrosDisksClientFormatError">
