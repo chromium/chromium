@@ -4,7 +4,6 @@
 
 #include <deque>
 
-#include "base/command_line.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/no_destructor.h"
@@ -45,8 +44,7 @@ bool HasHistogramWithHash(const metrics::ChromeUserMetricsExtension& uma_log,
 class MetricsBrowserTest : public WebLayerBrowserTest {
  public:
   void SetUp() override {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(metrics::switches::kForceEnableMetricsReporting);
+    metrics::ForceEnableMetricsReportingForTesting();
 
     InstallTestGmsBridge(GetConsentType(),
                          base::BindRepeating(&MetricsBrowserTest::OnLogMetrics,

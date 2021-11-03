@@ -131,8 +131,7 @@ TEST_F(IOSChromeMetricsServiceClientTest,
   local_feature.InitAndDisableFeature(ukm::kUkmFeature);
 
   // Force metrics reporting using the commandline switch.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      metrics::switches::kForceEnableMetricsReporting);
+  metrics::ForceEnableMetricsReportingForTesting();
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());

@@ -93,7 +93,7 @@ class MetricsServiceBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Enable the metrics service for testing (in recording-only mode).
-    command_line->AppendSwitch(metrics::switches::kMetricsRecordingOnly);
+    metrics::EnableMetricsRecordingOnlyForTesting(command_line);
   }
 
   void SetUp() override {

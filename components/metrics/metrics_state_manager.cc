@@ -408,14 +408,11 @@ void MetricsStateManager::LogHasSessionShutdownCleanly(
 
 void MetricsStateManager::ForceClientIdCreation() {
   // TODO(asvitkine): Ideally, all tests would actually set up consent properly,
-  // so the command-line check wouldn't be needed here.
+  // so the command-line checks wouldn't be needed here.
   // Currently, kForceEnableMetricsReporting is used by Java UkmTest and
   // kMetricsRecordingOnly is used by Chromedriver tests.
   DCHECK(enabled_state_provider_->IsConsentGiven() ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kForceEnableMetricsReporting) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kMetricsRecordingOnly));
+         IsMetricsReportingForceEnabled() || IsMetricsRecordingOnlyEnabled());
   if (!external_client_id_.empty()) {
     client_id_ = external_client_id_;
     base::UmaHistogramEnumeration("UMA.ClientIdSource",

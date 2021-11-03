@@ -5,7 +5,6 @@
 #include "components/metrics/metrics_service_accessor.h"
 
 #include "base/base_switches.h"
-#include "base/command_line.h"
 #include "build/branding_buildflags.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -27,11 +26,9 @@ bool IsMetricsReportingEnabledForOfficialBuild(PrefService* pref_service) {
 // static
 bool MetricsServiceAccessor::IsMetricsReportingEnabled(
     PrefService* pref_service) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceEnableMetricsReporting)) {
-    LOG(WARNING)
-        << "Force Enable Metrics Reporting is enabled, data will be sent to "
-           "servers. Should not be used for tests.";
+  if (IsMetricsReportingForceEnabled()) {
+    LOG(WARNING) << "Metrics Reporting is force enabled, data will be sent to "
+                    "servers. Should not be used for tests.";
     return true;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

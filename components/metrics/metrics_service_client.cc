@@ -160,8 +160,7 @@ void MetricsServiceClient::UpdateRunningServices() {
 }
 
 bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceEnableMetricsReporting);
+  return ::metrics::IsMetricsReportingForceEnabled();
 }
 
 }  // namespace metrics

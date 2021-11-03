@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_service.h"
@@ -118,8 +117,7 @@ void MetricsServicesManager::UpdateRunningServices() {
   DCHECK(thread_checker_.CalledOnValidThread());
   metrics::MetricsService* metrics = GetMetricsService();
 
-  const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(metrics::switches::kMetricsRecordingOnly)) {
+  if (metrics::IsMetricsRecordingOnlyEnabled()) {
     metrics->StartRecordingForTests();
     return;
   }

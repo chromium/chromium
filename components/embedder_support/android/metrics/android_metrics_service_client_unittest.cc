@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
@@ -335,8 +334,7 @@ TEST_F(AndroidMetricsServiceClientTest,
 }
 
 TEST_F(AndroidMetricsServiceClientTest, TestCanForceEnableMetrics) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      metrics::switches::kForceEnableMetricsReporting);
+  ForceEnableMetricsReportingForTesting();
 
   auto prefs = CreateTestPrefs();
   auto client = std::make_unique<TestClient>();
@@ -353,8 +351,7 @@ TEST_F(AndroidMetricsServiceClientTest, TestCanForceEnableMetrics) {
 
 TEST_F(AndroidMetricsServiceClientTest,
        TestCanForceEnableMetricsIfAlreadyEnabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      metrics::switches::kForceEnableMetricsReporting);
+  ForceEnableMetricsReportingForTesting();
 
   auto prefs = CreateTestPrefs();
   auto client = std::make_unique<TestClient>();
@@ -371,8 +368,7 @@ TEST_F(AndroidMetricsServiceClientTest,
 
 TEST_F(AndroidMetricsServiceClientTest,
        TestCannotForceEnableMetricsIfAppOptsOut) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      metrics::switches::kForceEnableMetricsReporting);
+  ForceEnableMetricsReportingForTesting();
 
   auto prefs = CreateTestPrefs();
   auto client = std::make_unique<TestClient>();
