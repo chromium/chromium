@@ -302,6 +302,7 @@ js_library("network_info") {
 js_library("network_list") {
   deps = [
     ":connectivity_card",
+    ":diagnostics_browser_proxy",
     ":diagnostics_types",
     ":mojo_interface_provider",
     ":network_card",

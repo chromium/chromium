@@ -12,6 +12,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {NetworkHealthProviderInterface, NetworkListObserverInterface, NetworkListObserverReceiver} from './diagnostics_types.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
@@ -27,6 +28,9 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior],
+
+  /** @private {?DiagnosticsBrowserProxy} */
+  browserProxy_: null,
 
   /**
    * @private {?NetworkHealthProviderInterface}
@@ -73,6 +77,8 @@ Polymer({
 
   /** @override */
   created() {
+    this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
+    this.browserProxy_.initialize();
     this.networkHealthProvider_ = getNetworkHealthProvider();
     this.observeNetworkList_();
   },
@@ -130,6 +136,9 @@ Polymer({
         }
         this.$.networkListContainer.focus();
       });
+      // TODO(ashleydp): Remove when a call can be made at a higher component
+      // to avoid duplicate code in all navigatable pages.
+      this.browserProxy_.recordNavigation('connectivity');
     }
   },
 
