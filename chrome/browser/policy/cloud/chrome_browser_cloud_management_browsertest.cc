@@ -60,11 +60,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if defined(OS_ANDROID)
+#include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_android.h"
+#else
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID)
 
 #if defined(OS_MAC)
 #include "chrome/browser/policy/cloud/chrome_browser_cloud_management_browsertest_mac_util.h"
@@ -89,6 +92,14 @@ constexpr char kEnrollmentResultMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.Result";
 const char kUnenrollmentSuccessMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess";
+
+#if defined(OS_ANDROID)
+typedef ChromeBrowserCloudManagementBrowserTestDelegateAndroid
+    ChromeBrowserCloudManagementBrowserTestDelegateType;
+#else
+typedef ChromeBrowserCloudManagementBrowserTestDelegateDesktop
+    ChromeBrowserCloudManagementBrowserTestDelegateType;
+#endif  // defined(OS_ANDROID)
 
 void UpdatePolicyStorage(PolicyStorage* policy_storage) {
   em::CloudPolicySettings settings;
@@ -233,7 +244,7 @@ class PolicyFetchCoreObserver : public CloudPolicyCore::Observer {
 
 class ChromeBrowserCloudManagementServiceIntegrationTest
     : public PlatformBrowserTest,
-      public testing::WithParamInterface<std::string (
+      public testing::WithParamInterface<std::string (  // NOLINT
           ChromeBrowserCloudManagementServiceIntegrationTest::*)(void)> {
  public:
   MOCK_METHOD4(OnJobDone,
@@ -352,7 +363,7 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
     token_ = response.register_response().device_management_token();
   }
 
-  ChromeBrowserCloudManagementBrowserTestDelegate delegate_;
+  ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
 
   std::string token_;
   std::unique_ptr<DeviceManagementService> service_;
@@ -454,7 +465,7 @@ class MachineLevelUserCloudPolicyManagerTest : public PlatformBrowserTest {
     return observer.was_called();
   }
 
-  ChromeBrowserCloudManagementBrowserTestDelegate delegate_;
+  ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
 };
 
 IN_PROC_BROWSER_TEST_F(MachineLevelUserCloudPolicyManagerTest, NoDmToken) {
@@ -472,9 +483,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
  public:
   ChromeBrowserCloudManagementEnrollmentTest() : observer_(&delegate_) {
     BrowserDMTokenStorage::SetForTesting(&storage_);
-    storage_.SetEnrollmentToken(is_enrollment_token_valid()
-                                    ? kEnrollmentToken
-                                    : kInvalidEnrollmentToken);
+    storage_.SetEnrollmentToken(enrollment_token());
     storage_.SetClientId("client_id");
     storage_.EnableStorage(storage_enabled());
     storage_.SetEnrollmentErrorOption(should_display_error_message());
@@ -487,6 +496,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
           chrome::RESULT_CODE_CLOUD_POLICY_ENROLLMENT_FAILED);
     }
   }
+
   ChromeBrowserCloudManagementEnrollmentTest(
       const ChromeBrowserCloudManagementEnrollmentTest&) = delete;
   ChromeBrowserCloudManagementEnrollmentTest& operator=(
@@ -554,8 +564,12 @@ class ChromeBrowserCloudManagementEnrollmentTest
   bool is_enrollment_token_valid() const { return std::get<0>(GetParam()); }
   bool storage_enabled() const { return std::get<1>(GetParam()); }
   bool should_display_error_message() const { return std::get<2>(GetParam()); }
+  std::string enrollment_token() const {
+    return is_enrollment_token_valid() ? kEnrollmentToken
+                                       : kInvalidEnrollmentToken;
+  }
 
-  ChromeBrowserCloudManagementBrowserTestDelegate delegate_;
+  ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
 
   base::HistogramTester histogram_tester_;
 
@@ -576,6 +590,8 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowserCloudManagementEnrollmentTest, MAYBE_Test) {
   // Test body is run only if enrollment is succeeded or failed without error
   // message.
   EXPECT_TRUE(is_enrollment_token_valid() || !should_display_error_message());
+
+  delegate_.MaybeWaitForEnrollmentConfirmation(enrollment_token());
 
   delegate_.MaybeCheckTotalBrowserCount(1u);
 
@@ -688,7 +704,7 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
   bool storage_enabled() const { return std::get<1>(GetParam()); }
 
  protected:
-  ChromeBrowserCloudManagementBrowserTestDelegate delegate_;
+  ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
 
   MachineLevelUserCloudPolicyPolicyFetchObserver observer_;
 
@@ -850,7 +866,7 @@ class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
   DMToken retrieve_dm_token() { return storage_.RetrieveDMToken(); }
 
  private:
-  ChromeBrowserCloudManagementBrowserTestDelegate delegate_;
+  ChromeBrowserCloudManagementBrowserTestDelegateType delegate_;
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   FakeBrowserDMTokenStorage storage_;
   base::ScopedTempDir temp_dir_;

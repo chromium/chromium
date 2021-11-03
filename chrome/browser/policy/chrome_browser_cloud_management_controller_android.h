@@ -58,7 +58,8 @@ class ChromeBrowserCloudManagementControllerAndroid
  private:
   // Active while it can't be determined if enrollment token is set by non-CBCM
   // policies.
-  std::unique_ptr<PolicyService::Observer> policy_service_observer_;
+  std::unique_ptr<PolicyService::ProviderUpdateObserver>
+      provider_update_observer_;
 };
 
 }  // namespace policy

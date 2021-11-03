@@ -39,12 +39,18 @@ std::string BrowserDMTokenStorageAndroid::InitClientId() {
 }
 
 std::string BrowserDMTokenStorageAndroid::InitEnrollmentToken() {
-  PolicyService* policy_service =
-      g_browser_process->browser_policy_connector()->GetPolicyService();
-  DCHECK(policy_service);
+  // When a DMToken is available, it's possible that this method was called
+  // very early in the initialization process, even before `g_browser_process`
+  // be initialized.
+  if (!g_browser_process || !g_browser_process->browser_policy_connector() ||
+      !g_browser_process->browser_policy_connector()->HasPolicyService()) {
+    DCHECK(!android::ReadDmTokenFromSharedPreferences().empty());
+    return std::string();
+  }
 
   const base::Value* value =
-      policy_service
+      g_browser_process->browser_policy_connector()
+          ->GetPolicyService()
           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
           .GetValue(key::kCloudManagementEnrollmentToken);
   return value && value->is_string() ? value->GetString() : std::string();

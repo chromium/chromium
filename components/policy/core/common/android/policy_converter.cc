@@ -183,6 +183,11 @@ absl::optional<base::Value> PolicyConverter::ConvertValueToSchema(
   return absl::nullopt;
 }
 
+void PolicyConverter::SetPolicyValueForTesting(const std::string& key,
+                                               base::Value value) {
+  PolicyConverter::SetPolicyValue(key, std::move(value));
+}
+
 void PolicyConverter::SetPolicyValue(const std::string& key,
                                      base::Value value) {
   const Schema schema = policy_schema_->GetKnownProperty(key);

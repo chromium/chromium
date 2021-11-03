@@ -11,13 +11,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
 #include "chrome/browser/policy/browser_dm_token_storage_android.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_android.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -29,53 +32,69 @@ namespace {
 
 // Responsible for triggering initialization once it can be determined if an
 // enrollment token is set by non-CBCM policy providers.
-class DeferredInitializationRunner : public PolicyService::Observer {
+class DeferredInitializationRunner
+    : public PolicyService::ProviderUpdateObserver {
  public:
-  DeferredInitializationRunner(PolicyService* policy_service,
-                               base::OnceClosure callback);
+  explicit DeferredInitializationRunner(base::OnceClosure callback);
   DeferredInitializationRunner(const DeferredInitializationRunner&) = delete;
   DeferredInitializationRunner& operator=(const DeferredInitializationRunner&) =
       delete;
   ~DeferredInitializationRunner() override;
 
-  // PolicyService::Observer implementation:
-  void OnPolicyUpdated(const PolicyNamespace& ns,
-                       const PolicyMap& previous,
-                       const PolicyMap& current) override;
-  void OnPolicyServiceInitialized(PolicyDomain domain) override;
-  void OnFirstPoliciesLoaded(PolicyDomain domain) override;
+  // PolicyService::ProviderUpdateObserver implementation:
+  void OnProviderUpdatePropagated(
+      ConfigurationPolicyProvider* provider) override;
 
  private:
-  PolicyService* policy_service_ = nullptr;
-  // If set, a callback to be invoked by |OnPolicyServiceInitialized|.
+  // If set, a callback to be invoked by |OnProviderUpdatePropagated|.
   base::OnceClosure callback_;
 };
 
 DeferredInitializationRunner::DeferredInitializationRunner(
-    PolicyService* policy_service,
     base::OnceClosure callback)
-    : policy_service_(policy_service), callback_(std::move(callback)) {
-  policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
+    : callback_(std::move(callback)) {
+  PolicyService* policy_service =
+      g_browser_process->browser_policy_connector()->GetPolicyService();
+  policy_service->AddProviderUpdateObserver(this);
 }
 
 DeferredInitializationRunner::~DeferredInitializationRunner() {
-  if (policy_service_)
-    policy_service_->RemoveObserver(POLICY_DOMAIN_CHROME, this);
+  if (callback_) {
+    PolicyService* policy_service =
+        g_browser_process->browser_policy_connector()->GetPolicyService();
+    policy_service->RemoveProviderUpdateObserver(this);
+  }
 }
 
-void DeferredInitializationRunner::OnPolicyUpdated(const PolicyNamespace& ns,
-                                                   const PolicyMap& previous,
-                                                   const PolicyMap& current) {}
+void DeferredInitializationRunner::OnProviderUpdatePropagated(
+    ConfigurationPolicyProvider* provider) {
+  if (!callback_ || provider != g_browser_process->browser_policy_connector()
+                                    ->GetPlatformProvider()) {
+    return;
+  }
 
-void DeferredInitializationRunner::OnPolicyServiceInitialized(
-    PolicyDomain domain) {
-  if (callback_)
-    std::move(callback_).Run();
-  policy_service_->RemoveObserver(POLICY_DOMAIN_CHROME, this);
-  policy_service_ = nullptr;
+  PolicyService* policy_service =
+      g_browser_process->browser_policy_connector()->GetPolicyService();
+  if (!policy_service
+           ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+           .Get(key::kCloudManagementEnrollmentToken)) {
+    return;
+  }
+
+  policy_service->RemoveProviderUpdateObserver(this);
+  std::move(callback_).Run();
 }
 
-void DeferredInitializationRunner::OnFirstPoliciesLoaded(PolicyDomain domain) {}
+bool CloudManagementEnrollmentTokenPolicyAvailable() {
+  DCHECK(g_browser_process);
+  DCHECK(g_browser_process->browser_policy_connector());
+  DCHECK(g_browser_process->browser_policy_connector()->GetPolicyService());
+
+  return g_browser_process->browser_policy_connector()
+      ->GetPolicyService()
+      ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+      .Get(key::kCloudManagementEnrollmentToken);
+}
 
 }  // namespace
 
@@ -193,21 +212,15 @@ bool ChromeBrowserCloudManagementControllerAndroid::
   // needed. When postponed, policy manager creation will happen during
   // controller initialization, when it's guaranteed that the PolicyService
   // exists and is initialized.
-  //
-  // TODO(http://crbug.com/1200522): Allow policy manager to be created
-  // immediately if a DM token is cached in Shared Preferences.
-  return g_browser_process && g_browser_process->browser_policy_connector() &&
-         g_browser_process->browser_policy_connector()->HasPolicyService() &&
-         ReadyToInit();
+  return !android::ReadDmTokenFromSharedPreferences().empty() ||
+         (g_browser_process && g_browser_process->browser_policy_connector() &&
+          g_browser_process->browser_policy_connector()->HasPolicyService() &&
+          CloudManagementEnrollmentTokenPolicyAvailable());
 }
 
 bool ChromeBrowserCloudManagementControllerAndroid::ReadyToInit() {
-  DCHECK(g_browser_process);
-  DCHECK(g_browser_process->browser_policy_connector());
-
-  return g_browser_process->browser_policy_connector()
-      ->GetPolicyService()
-      ->IsInitializationComplete(POLICY_DOMAIN_CHROME);
+  return !android::ReadDmTokenFromSharedPreferences().empty() ||
+         CloudManagementEnrollmentTokenPolicyAvailable();
 }
 
 std::unique_ptr<ClientDataDelegate>
@@ -217,12 +230,12 @@ ChromeBrowserCloudManagementControllerAndroid::CreateClientDataDelegate() {
 
 void ChromeBrowserCloudManagementControllerAndroid::DeferInitialization(
     base::OnceClosure callback) {
+  DCHECK(callback);
   DCHECK(g_browser_process);
   DCHECK(g_browser_process->browser_policy_connector());
 
-  policy_service_observer_ = std::make_unique<DeferredInitializationRunner>(
-      g_browser_process->browser_policy_connector()->GetPolicyService(),
-      std::move(callback));
+  provider_update_observer_ =
+      std::make_unique<DeferredInitializationRunner>(std::move(callback));
 }
 
 }  // namespace policy

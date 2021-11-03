@@ -190,6 +190,7 @@ source_set("browser_tests") {
   if (is_android) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_android.h",
     ]
   }
 
@@ -231,6 +232,7 @@ source_set("browser_tests") {
   if (!is_android && !is_chromeos_ash) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
+      "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.h",
     ]
   }
 }

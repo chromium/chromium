@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string>
+
 namespace policy {
 
 class ChromeBrowserCloudManagementBrowserTestDelegate {
@@ -16,23 +18,28 @@ class ChromeBrowserCloudManagementBrowserTestDelegate {
 
   // Check if a notification dialog has been closed if |popup_expected| on
   // platforms that show an error message if policy registration fails.
-  void MaybeCheckDialogClosingAfterPolicyRegistration(
-      bool popup_expected) const;
+  virtual void MaybeCheckDialogClosingAfterPolicyRegistration(
+      bool popup_expected) const = 0;
 
   // Returns true on platforms in which policy manager initialization is not
   // deferred.
-  bool ExpectManagerImmediatelyInitialized(bool enrollment_succeeded) const;
+  virtual bool ExpectManagerImmediatelyInitialized(
+      bool enrollment_succeeded) const = 0;
 
   // Returns true on platforms for which a machine name is not sent on browser
   // registration.
-  bool AcceptEmptyMachineNameOnBrowserRegistration() const;
+  virtual bool AcceptEmptyMachineNameOnBrowserRegistration() const = 0;
 
   // Returns true on platforms in which either OnStoreLoaded or OnStoreError
   // event should be fired even if the browser is not managed by CBCM.
-  bool ExpectOnStoreEventFired() const;
+  virtual bool ExpectOnStoreEventFired() const = 0;
 
   // Checks the number of active browsers on platforms where this is possible.
-  void MaybeCheckTotalBrowserCount(size_t expected_browser_count) const;
+  virtual void MaybeCheckTotalBrowserCount(
+      size_t expected_browser_count) const = 0;
+
+  virtual void MaybeWaitForEnrollmentConfirmation(
+      const std::string& enrollment_token) = 0;
 };
 
 }  // namespace policy
