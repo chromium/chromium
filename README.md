@@ -8,8 +8,3 @@ Blitz is a simple browser designed to be easy to use.
 
 ## LTS
 Because I adopted a SaaS software model, I made the support times longer
-=======
-Blitz is a simple browser designed to be easy to use.
-## Change Log
-* Assistant 1.0
-* Up to date fork
