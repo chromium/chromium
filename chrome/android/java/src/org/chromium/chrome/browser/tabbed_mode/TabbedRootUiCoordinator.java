@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog;
 import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
@@ -163,6 +164,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final int mControlContainerHeightResource;
     private final Supplier<InsetObserverView> mInsetObserverViewSupplier;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
+    private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
 
     private int mStatusIndicatorHeight;
     private int mContinuousSearchHeight;
@@ -194,6 +196,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         @Override
         public void destroy() {
+            if (mLayoutStateProvider != null && mGestureNavLayoutObserver != null) {
+                mLayoutStateProvider.removeObserver(mGestureNavLayoutObserver);
+            }
             super.destroy();
             swapToTab(null);
         }
@@ -480,6 +485,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         return isShowingStartSurfaceHomepage();
                     }
                 }, mCompositorViewHolderSupplier.get()::addTouchEventObserver, mLayoutManager);
+        mGestureNavLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
+            @Override
+            public void onStartedShowing(int layoutType, boolean showToolbar) {
+                if (layoutType == LayoutType.TAB_SWITCHER) mHistoryNavigationCoordinator.reset();
+            }
+        };
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         // TODO(twellington): Supply TabModelSelector as well and move initialization earlier.
@@ -521,6 +532,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initScrollCapture();
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
+    }
+
+    @Override
+    protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        super.setLayoutStateProvider(layoutStateProvider);
+        if (mGestureNavLayoutObserver != null) {
+            layoutStateProvider.addObserver(mGestureNavLayoutObserver);
+        }
     }
 
     private boolean isShowingStartSurfaceHomepage() {

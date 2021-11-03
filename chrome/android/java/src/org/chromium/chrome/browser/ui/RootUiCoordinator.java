@@ -173,7 +173,7 @@ public class RootUiCoordinator
     private OverlayPanelManager.OverlayPanelManagerObserver mOverlayPanelManagerObserver;
 
     private OneshotSupplier<LayoutStateProvider> mLayoutStateProviderOneShotSupplier;
-    private LayoutStateProvider mLayoutStateProvider;
+    protected LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     /** A means of providing the theme color to different features. */
@@ -949,7 +949,7 @@ public class RootUiCoordinator
                         R.color.omnibox_focused_fading_background_color));
     }
 
-    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+    protected void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
         assert layoutStateProvider != null;
         assert mLayoutStateProvider == null : "The LayoutStateProvider should set at most once.";
 

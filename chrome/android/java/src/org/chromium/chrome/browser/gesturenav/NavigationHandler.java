@@ -302,7 +302,7 @@ class NavigationHandler implements TouchEventObserver {
      * @return {@code true} if navigation was triggered and its UI is in action, or
      *         edge glow effect is visible.
      */
-    private boolean isActive() {
+    boolean isActive() {
         return mState == GestureState.DRAGGED || mState == GestureState.GLOW;
     }
 

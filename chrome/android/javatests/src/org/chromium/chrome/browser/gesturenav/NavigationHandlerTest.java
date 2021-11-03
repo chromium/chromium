@@ -239,6 +239,18 @@ public class NavigationHandlerTest {
                 ChromeTabUtils.getUrlStringOnUiThread(currentTab()));
     }
 
+    @Test
+    @SmallTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    public void testSwipeAndHoldOnNtp_EnterTabSwitcher() throws TimeoutException {
+        // Clicking tab switcher button while swiping and holding the gesture navigation
+        // bubble should reset the state and dismiss the UI.
+        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+        mNavUtils.swipeFromEdgeAndHold(/*leftEdge=*/true);
+        setTabSwitcherModeAndWait(true);
+        Assert.assertFalse("Navigation UI should be reset.", mNavigationHandler.isActive());
+    }
+
     /**
      * Enter or exit the tab switcher with animations and wait for the scene to change.
      * @param inSwitcher Whether to enter or exit the tab switcher.
