@@ -163,6 +163,7 @@ void FakeRmadClient::GetCurrentState(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(reply)));
   }
+  TriggerHardwareVerificationResultObservation(true, "");
 }
 
 void FakeRmadClient::TransitionNextState(
