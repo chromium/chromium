@@ -34,10 +34,10 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
     kMaxValue = kHierarchicalHistogram,
   };
 
-  // TODO(crbug.com/1228501): Add kSingleServer option.
   enum class ProcessingType {
     kTwoParty = 0,
-    kMaxValue = kTwoParty,
+    kSingleServer = 1,
+    kMaxValue = kSingleServer,
   };
 
   AggregationServicePayloadContents(Operation operation,
@@ -82,8 +82,8 @@ class CONTENT_EXPORT AggregatableReport {
 
     // This payload is constructed using the data in the
     // AggregationServicePayloadContents and then encrypted with one of
-    // `origin`'s public keys. The plaintext of the encrypted payload is a
-    // serialized CBOR map structured as follows:
+    // `origin`'s public keys. For the kTwoParty processing type, the plaintext
+    // of the encrypted payload is a serialized CBOR map structured as follows:
     // {
     //   "version": "<API version>",
     //   "operation": "<chosen operation as string>",
@@ -92,6 +92,12 @@ class CONTENT_EXPORT AggregatableReport {
     //   "reporting_origin": "https://reporter.example",
     //   "dpf_key": <binary serialization of the DPF key>,
     // }
+    // For the kSingleServer processing type, the "dpf_key" field is replaced
+    // with:
+    //   "data": { "bucket": <bucket>, "value": <value> }
+    // If two processing origins are provided, one payload (chosen randomly)
+    // would contain that data and the other would instead contain:
+    //   "data": {}
     std::vector<uint8_t> payload;
 
     // Indicates the chosen encryption key.
@@ -103,9 +109,9 @@ class CONTENT_EXPORT AggregatableReport {
    public:
     virtual ~Provider();
 
-    // Generates DPF keys, serializes the information in `report_request` and
-    // encrypts using the `public_keys` as necessary. The order of `public_keys`
-    // should correspond to `report_request.processing_origins`, which should be
+    // Processes and serializes the information in `report_request` and encrypts
+    // using the `public_keys` as necessary. The order of `public_keys` should
+    // correspond to `report_request.processing_origins`, which should be
     // sorted. Returns `absl::nullopt` if an error occurred during construction.
     virtual absl::optional<AggregatableReport> CreateFromRequestAndPublicKeys(
         AggregatableReportRequest report_request,
@@ -124,8 +130,6 @@ class CONTENT_EXPORT AggregatableReport {
 
   // log_2 of the value output space
   static constexpr size_t kValueDomainBitLength = 64;
-
-  static constexpr size_t kNumberOfProcessingOrigins = 2;
 
   // Used as the authenticated information (i.e. context info). This value must
   // not be reused for new protocols or versions of this protocol unless the
@@ -174,6 +178,12 @@ class CONTENT_EXPORT AggregatableReport {
   // TODO(crbug.com/1247409): Expose static method to validate that a
   // base::Value appears to represent a valid report.
 
+  // Returns whether `number` is a valid number of processing origins for the
+  // `processing_type`.
+  static bool IsNumberOfProcessingOriginsValid(
+      size_t number,
+      AggregationServicePayloadContents::ProcessingType processing_type);
+
  private:
   // This vector should have an entry for each processing origin specified in
   // the original AggregatableReportRequest.
@@ -187,7 +197,10 @@ class CONTENT_EXPORT AggregatableReport {
 // processing origin.
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
-  // Returns `absl::nullopt` if `processing_origins.size()` is invalid.
+  // Returns `absl::nullopt` if `payload_contents` has a negative bucket or
+  // value. Also returns `absl::nullopt` if `processing_origins.size()` is not
+  // valid for the `payload_contents.processing_type` (see
+  // `IsNumberOfProcessingOriginsValid` above).
   static absl::optional<AggregatableReportRequest> Create(
       std::vector<url::Origin> processing_origins,
       AggregationServicePayloadContents payload_contents,

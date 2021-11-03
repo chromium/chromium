@@ -99,19 +99,20 @@ AggregatableReportAssembler::CreateForTesting(
 void AggregatableReportAssembler::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
-  DCHECK_EQ(report_request.processing_origins().size(),
-            AggregatableReport::kNumberOfProcessingOrigins);
   DCHECK(base::ranges::is_sorted(report_request.processing_origins()));
+  const size_t num_processing_origins =
+      report_request.processing_origins().size();
+  DCHECK(AggregatableReport::IsNumberOfProcessingOriginsValid(
+      num_processing_origins,
+      report_request.payload_contents().processing_type));
 
   const AggregationServicePayloadContents& contents =
       report_request.payload_contents();
 
-  // Currently, these should be the only possible enum values.
+  // Currently, this is the only supported operation.
   DCHECK_EQ(
       contents.operation,
       AggregationServicePayloadContents::Operation::kHierarchicalHistogram);
-  DCHECK_EQ(contents.processing_type,
-            AggregationServicePayloadContents::ProcessingType::kTwoParty);
 
   if (pending_requests_.size() >= kMaxSimultaneousRequests) {
     std::move(callback).Run(absl::nullopt,
@@ -124,13 +125,12 @@ void AggregatableReportAssembler::AssembleReport(
 
   const PendingRequest& pending_request =
       pending_requests_
-          .emplace(id, PendingRequest(
-                           std::move(report_request), std::move(callback),
-                           /*num_processing_origins=*/
-                           AggregatableReport::kNumberOfProcessingOrigins))
+          .emplace(
+              id, PendingRequest(std::move(report_request), std::move(callback),
+                                 num_processing_origins))
           .first->second;
 
-  for (size_t i = 0; i < AggregatableReport::kNumberOfProcessingOrigins; ++i) {
+  for (size_t i = 0; i < num_processing_origins; ++i) {
     // `fetcher_` is owned by `this`, so `base::Unretained()` is safe.
     fetcher_->GetPublicKey(
         pending_request.report_request.processing_origins()[i],
@@ -168,7 +168,7 @@ void AggregatableReportAssembler::OnPublicKeyFetched(
       std::move(key);
 
   if (pending_request.num_returned_key_fetches ==
-      AggregatableReport::kNumberOfProcessingOrigins) {
+      pending_request.report_request.processing_origins().size()) {
     OnAllPublicKeysFetched(report_id, pending_request);
   }
 }

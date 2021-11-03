@@ -159,15 +159,25 @@ testing::AssertionResult SharedInfoEqual(
   return testing::AssertionSuccess();
 }
 
-AggregatableReportRequest CreateExampleRequest() {
+std::vector<url::Origin> GetExampleProcessingOrigins() {
+  return {url::Origin::Create(GURL("https://a.example")),
+          url::Origin::Create(GURL("https://b.example"))};
+}
+
+AggregatableReportRequest CreateExampleRequest(
+    AggregationServicePayloadContents::ProcessingType processing_type) {
+  return CreateExampleRequest(processing_type, GetExampleProcessingOrigins());
+}
+
+AggregatableReportRequest CreateExampleRequest(
+    AggregationServicePayloadContents::ProcessingType processing_type,
+    std::vector<url::Origin> processing_origins) {
   return AggregatableReportRequest::Create(
-             {url::Origin::Create(GURL("https://a.example")),
-              url::Origin::Create(GURL("https://b.example"))},
+             std::move(processing_origins),
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::
                      kHierarchicalHistogram,
-                 /*bucket=*/123, /*value=*/456,
-                 AggregationServicePayloadContents::ProcessingType::kTwoParty,
+                 /*bucket=*/123, /*value=*/456, processing_type,
                  url::Origin::Create(GURL("https://reporting.example"))),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
@@ -301,6 +311,8 @@ std::ostream& operator<<(
   switch (processing_type) {
     case AggregationServicePayloadContents::ProcessingType::kTwoParty:
       return out << "kTwoParty";
+    case AggregationServicePayloadContents::ProcessingType::kSingleServer:
+      return out << "kSingleServer";
   }
 }
 
