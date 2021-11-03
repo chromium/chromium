@@ -11,11 +11,10 @@
 #include "ash/components/quick_answers/result_loader.h"
 #include "ash/components/quick_answers/understanding/intent_generator.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
+class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace ash {
@@ -63,8 +62,9 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
   using IntentGeneratorFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<IntentGenerator>()>;
 
-  QuickAnswersClient(network::mojom::URLLoaderFactory* url_loader_factory,
-                     QuickAnswersDelegate* delegate);
+  QuickAnswersClient(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      QuickAnswersDelegate* delegate);
 
   QuickAnswersClient(const QuickAnswersClient&) = delete;
   QuickAnswersClient& operator=(const QuickAnswersClient&) = delete;
@@ -123,7 +123,7 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
                                const IntentInfo& intent_info);
   base::TimeDelta GetImpressionDuration() const;
 
-  network::mojom::URLLoaderFactory* url_loader_factory_ = nullptr;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   QuickAnswersDelegate* delegate_ = nullptr;
   std::unique_ptr<ResultLoader> result_loader_;
   std::unique_ptr<IntentGenerator> intent_generator_;

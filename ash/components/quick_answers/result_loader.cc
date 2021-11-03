@@ -9,6 +9,7 @@
 #include "ash/components/quick_answers/utils/quick_answers_metrics.h"
 #include "base/bind.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -17,7 +18,7 @@ namespace quick_answers {
 namespace {
 
 using network::ResourceRequest;
-using network::mojom::URLLoaderFactory;
+using network::SharedURLLoaderFactory;
 
 // TODO(llin): Update the policy detail after finalizing on the consent check.
 constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
@@ -41,16 +42,17 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
 
 }  // namespace
 
-ResultLoader::ResultLoader(URLLoaderFactory* url_loader_factory,
-                           ResultLoaderDelegate* delegate)
-    : network_loader_factory_(url_loader_factory), delegate_(delegate) {}
+ResultLoader::ResultLoader(
+    scoped_refptr<SharedURLLoaderFactory> url_loader_factory,
+    ResultLoaderDelegate* delegate)
+    : url_loader_factory_(url_loader_factory), delegate_(delegate) {}
 
 ResultLoader::~ResultLoader() = default;
 
 // static
 std::unique_ptr<ResultLoader> ResultLoader::Create(
     IntentType intent_type,
-    URLLoaderFactory* url_loader_factory,
+    scoped_refptr<SharedURLLoaderFactory> url_loader_factory,
     ResultLoader::ResultLoaderDelegate* delegate) {
   if (intent_type == IntentType::kTranslation)
     return std::make_unique<TranslationResultLoader>(url_loader_factory,
@@ -59,7 +61,7 @@ std::unique_ptr<ResultLoader> ResultLoader::Create(
 }
 
 void ResultLoader::Fetch(const PreprocessedOutput& preprocessed_output) {
-  DCHECK(network_loader_factory_);
+  DCHECK(url_loader_factory_);
   DCHECK(!preprocessed_output.query.empty());
 
   // Load the resource.
@@ -79,7 +81,7 @@ void ResultLoader::OnBuildRequestComplete(
 
   fetch_start_time_ = base::TimeTicks::Now();
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      network_loader_factory_,
+      url_loader_factory_.get(),
       base::BindOnce(&ResultLoader::OnSimpleURLLoaderComplete,
                      weak_factory_.GetWeakPtr(), preprocessed_output));
 }

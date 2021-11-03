@@ -12,12 +12,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/containers/contains.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
 namespace quick_answers {
 namespace {
-
-using network::mojom::URLLoaderFactory;
 
 QuickAnswersClient::ResultLoaderFactoryCallback*
     g_testing_result_factory_callback = nullptr;
@@ -38,11 +37,10 @@ void QuickAnswersClient::SetIntentGeneratorFactoryForTesting(
   g_testing_intent_generator_factory_callback = factory;
 }
 
-QuickAnswersClient::QuickAnswersClient(URLLoaderFactory* url_loader_factory,
-                                       QuickAnswersDelegate* delegate)
-    : url_loader_factory_(url_loader_factory),
-      delegate_(delegate) {
-}
+QuickAnswersClient::QuickAnswersClient(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    QuickAnswersDelegate* delegate)
+    : url_loader_factory_(url_loader_factory), delegate_(delegate) {}
 
 QuickAnswersClient::~QuickAnswersClient() = default;
 

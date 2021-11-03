@@ -10,15 +10,13 @@
 
 #include "ash/components/quick_answers/quick_answers_model.h"
 #include "ash/components/quick_answers/search_result_parsers/search_response_parser.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 
 namespace network {
+class SharedURLLoaderFactory;
 class SimpleURLLoader;
 struct ResourceRequest;
-
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
 }  // namespace network
 
 namespace ash {
@@ -57,8 +55,9 @@ class ResultLoader {
       std::unique_ptr<network::ResourceRequest> resource_request,
       const std::string& request_body)>;
 
-  ResultLoader(network::mojom::URLLoaderFactory* url_loader_factory,
-               ResultLoaderDelegate* delegate);
+  ResultLoader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      ResultLoaderDelegate* delegate);
 
   ResultLoader(const ResultLoader&) = delete;
   ResultLoader& operator=(const ResultLoader&) = delete;
@@ -69,7 +68,7 @@ class ResultLoader {
   // Creates ResultLoader based on the |intent_type|.
   static std::unique_ptr<ResultLoader> Create(
       IntentType intent_type,
-      network::mojom::URLLoaderFactory* url_loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       ResultLoader::ResultLoaderDelegate* delegate);
 
   // Starts downloading of |quick_answers| associated with |selected_text|,
@@ -89,7 +88,7 @@ class ResultLoader {
                                ResponseParserCallback complete_callback) = 0;
 
  private:
-  network::mojom::URLLoaderFactory* network_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
   ResultLoaderDelegate* const delegate_;
 

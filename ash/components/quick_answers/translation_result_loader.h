@@ -10,11 +10,10 @@
 
 #include "ash/components/quick_answers/result_loader.h"
 #include "ash/components/quick_answers/translation_response_parser.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace network {
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
+class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace ash {
@@ -22,8 +21,9 @@ namespace quick_answers {
 
 class TranslationResultLoader : public ResultLoader {
  public:
-  TranslationResultLoader(network::mojom::URLLoaderFactory* url_loader_factory,
-                          ResultLoaderDelegate* delegate);
+  TranslationResultLoader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      ResultLoaderDelegate* delegate);
 
   TranslationResultLoader(const TranslationResultLoader&) = delete;
   TranslationResultLoader& operator=(const TranslationResultLoader&) = delete;

@@ -1120,10 +1120,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
 
   ash::QuickAnswersController::Get()->SetClient(
       std::make_unique<ash::quick_answers::QuickAnswersClient>(
-          profile()
-              ->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess()
-              .get(),
+          g_browser_process->shared_url_loader_factory(),
           ash::QuickAnswersController::Get()->GetQuickAnswersDelegate()));
 
   ChromeBrowserMainPartsLinux::PostProfileInit();

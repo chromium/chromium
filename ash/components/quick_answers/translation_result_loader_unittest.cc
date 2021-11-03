@@ -11,9 +11,11 @@
 #include "ash/components/quick_answers/test/test_helpers.h"
 #include "ash/components/quick_answers/utils/quick_answers_utils.h"
 #include "ash/public/cpp/quick_answers/controller/quick_answers_browser_client.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/assistant/public/shared/constants.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,8 +72,11 @@ class TranslationResultLoaderTest : public testing::Test {
     quick_answers_browser_client_ =
         std::make_unique<FakeQuickAnswersBrowserClient>();
     mock_delegate_ = std::make_unique<MockResultLoaderDelegate>();
+    test_shared_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
     loader_ = std::make_unique<TranslationResultLoader>(
-        &test_url_loader_factory_, mock_delegate_.get());
+        test_shared_loader_factory_, mock_delegate_.get());
   }
 
   void TearDown() override { loader_.reset(); }
@@ -83,6 +88,7 @@ class TranslationResultLoaderTest : public testing::Test {
   std::unique_ptr<MockResultLoaderDelegate> mock_delegate_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
 TEST_F(TranslationResultLoaderTest, Success) {

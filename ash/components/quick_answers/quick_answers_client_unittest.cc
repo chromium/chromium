@@ -13,10 +13,12 @@
 #include "ash/components/quick_answers/utils/quick_answers_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/quick_answers/test_support/quick_answers_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,8 +30,9 @@ namespace {
 
 class TestResultLoader : public ResultLoader {
  public:
-  TestResultLoader(network::mojom::URLLoaderFactory* url_loader_factory,
-                   ResultLoaderDelegate* delegate)
+  TestResultLoader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      ResultLoaderDelegate* delegate)
       : ResultLoader(url_loader_factory, delegate) {}
   // ResultLoader:
   void BuildRequest(const PreprocessedOutput& preprocessed_output,
@@ -44,8 +47,9 @@ class TestResultLoader : public ResultLoader {
 
 class MockResultLoader : public TestResultLoader {
  public:
-  MockResultLoader(network::mojom::URLLoaderFactory* url_loader_factory,
-                   ResultLoaderDelegate* delegate)
+  MockResultLoader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      ResultLoaderDelegate* delegate)
       : TestResultLoader(url_loader_factory, delegate) {}
 
   MockResultLoader(const MockResultLoader&) = delete;
@@ -94,7 +98,10 @@ class QuickAnswersClientTest : public QuickAnswersTestBase {
     QuickAnswersTestBase::SetUp();
     mock_delegate_ = std::make_unique<MockQuickAnswersDelegate>();
 
-    client_ = std::make_unique<QuickAnswersClient>(&test_url_loader_factory_,
+    test_shared_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_);
+    client_ = std::make_unique<QuickAnswersClient>(test_shared_loader_factory_,
                                                    mock_delegate_.get());
 
     result_loader_factory_callback_ = base::BindRepeating(
@@ -132,6 +139,7 @@ class QuickAnswersClientTest : public QuickAnswersTestBase {
   std::unique_ptr<MockIntentGenerator> mock_intent_generator_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   QuickAnswersClient::ResultLoaderFactoryCallback
       result_loader_factory_callback_;
   QuickAnswersClient::IntentGeneratorFactoryCallback
@@ -159,7 +167,7 @@ TEST_F(QuickAnswersClientTest, SendRequest) {
       &intent_generator_factory_callback_);
 
   mock_result_loader_ =
-      std::make_unique<MockResultLoader>(&test_url_loader_factory_, nullptr);
+      std::make_unique<MockResultLoader>(test_shared_loader_factory_, nullptr);
   EXPECT_CALL(*mock_result_loader_,
               Fetch(PreprocessedOutputEqual(PreprocessRequest(
                   IntentInfo("sel", IntentType::kDictionary)))));
@@ -190,7 +198,7 @@ TEST_F(QuickAnswersClientTest, SendRequestForPreprocessing) {
       &intent_generator_factory_callback_);
 
   mock_result_loader_ =
-      std::make_unique<MockResultLoader>(&test_url_loader_factory_, nullptr);
+      std::make_unique<MockResultLoader>(test_shared_loader_factory_, nullptr);
   EXPECT_CALL(*mock_result_loader_, Fetch(::testing::_)).Times(0);
   QuickAnswersClient::SetResultLoaderFactoryForTesting(
       &result_loader_factory_callback_);
@@ -204,7 +212,7 @@ TEST_F(QuickAnswersClientTest, FetchQuickAnswers) {
   quick_answers_request->preprocessed_output.query = "Define sel";
 
   mock_result_loader_ =
-      std::make_unique<MockResultLoader>(&test_url_loader_factory_, nullptr);
+      std::make_unique<MockResultLoader>(test_shared_loader_factory_, nullptr);
   EXPECT_CALL(*mock_result_loader_,
               Fetch(PreprocessedOutputEqual(
                   quick_answers_request->preprocessed_output)));
