@@ -78,7 +78,6 @@ class ReadOnlyOriginView : public views::View {
                      const url::Origin& origin,
                      const SkBitmap* icon_bitmap,
                      Profile* profile,
-                     security_state::SecurityLevel security_level,
                      SkColor background_color) {
     auto title_origin_container = std::make_unique<views::View>();
     SkColor foreground = color_utils::GetColorWithMaxContrast(background_color);
@@ -112,25 +111,9 @@ class ReadOnlyOriginView : public views::View {
     columns = origin_layout->AddColumnSet(0);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    if (PaymentsExperimentalFeatures::IsEnabled(
-            features::kPaymentHandlerSecurityIcon))
-      columns->AddPaddingColumn(views::GridLayout::kFixedSize, 4);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
     origin_layout->StartRow(views::GridLayout::kFixedSize, 0);
-    if (PaymentsExperimentalFeatures::IsEnabled(
-            features::kPaymentHandlerSecurityIcon)) {
-      auto security_icon = std::make_unique<views::ImageView>();
-      const ui::ThemeProvider& theme_provider =
-          ThemeService::GetThemeProviderForProfile(profile);
-      security_icon->SetImage(gfx::CreateVectorIcon(
-          location_bar_model::GetSecurityVectorIcon(
-              security_level,
-              /* use_updated_connection_security_indicators=*/false),
-          16, GetOmniboxSecurityChipColor(&theme_provider, security_level)));
-      security_icon->SetID(static_cast<int>(DialogViewID::SECURITY_ICON_VIEW));
-      origin_layout->AddView(std::move(security_icon));
-    }
     auto* origin_label = origin_layout->AddView(std::make_unique<views::Label>(
         url_formatter::FormatOriginForSecurityDisplay(
             origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC)));
@@ -293,8 +276,6 @@ PaymentHandlerWebFlowViewController::CreateHeaderContentView(
   return std::make_unique<ReadOnlyOriginView>(
       GetPaymentHandlerDialogTitle(web_contents()), origin,
       state()->selected_app()->icon_bitmap(), profile_,
-      web_contents() ? SslValidityChecker::GetSecurityLevel(web_contents())
-                     : security_state::NONE,
       background->get_color());
 }
 
