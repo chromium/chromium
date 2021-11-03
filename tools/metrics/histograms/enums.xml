@@ -42770,6 +42770,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="20" label="Duplicate entry"/>
 </enum>
 
+<enum name="IconLoadingMethod">
+  <int value="0" label="Load icon from cache"/>
+  <int value="1" label="Load icon via mojom call"/>
+  <int value="2" label="Load icon via non-mojom call"/>
+</enum>
+
 <enum name="ICUCreateInstanceCode">
   <summary>Recorded when ICU create instance of key objects.</summary>
   <int value="0" label="Character Break Iterator"/>

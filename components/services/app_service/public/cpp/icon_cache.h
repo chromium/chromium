@@ -20,6 +20,20 @@
 
 namespace apps {
 
+// This is used for logging, so do not remove or reorder existing entries.
+enum class IconLoadingMethod {
+  kFromCache = 0,
+  kViaMojomCall = 1,
+  kViaNonMojomCall = 2,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kViaNonMojomCall,
+};
+
+// Records metrics when loading icons.
+void RecordAppLaunchMetrics(IconLoadingMethod icon_loading_method);
+
 // An IconLoader that caches the apps::mojom::IconType::kUncompressed
 // results of another (wrapped) IconLoader.
 class IconCache : public IconLoader {

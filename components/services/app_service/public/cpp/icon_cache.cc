@@ -7,8 +7,13 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace apps {
+
+void RecordAppLaunchMetrics(IconLoadingMethod icon_loading_method) {
+  base::UmaHistogramEnumeration("Apps.IconLoadingMethod", icon_loading_method);
+}
 
 IconCache::Value::Value()
     : image_(), is_placeholder_icon_(false), ref_count_(0) {}
@@ -72,6 +77,7 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
 
   std::unique_ptr<IconLoader::Releaser> releaser(nullptr);
   if (cache_hit) {
+    RecordAppLaunchMetrics(IconLoadingMethod::kFromCache);
     std::move(callback).Run(cache_hit->AsIconValue(icon_type));
   } else if (wrapped_loader_) {
     releaser = wrapped_loader_->LoadIconFromIconKey(

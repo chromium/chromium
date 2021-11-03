@@ -2269,6 +2269,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.IconLoadingMethod" enum="IconLoadingMethod"
+    expires_after="2022-04-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>nancylingwang@chromium.org</owner>
+  <summary>Records the app icon loading method when loading app icons.</summary>
+</histogram>
+
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
     enum="WebAppInstallResultCode" expires_after="2022-05-01">
   <owner>dmurph@chromium.org</owner>
