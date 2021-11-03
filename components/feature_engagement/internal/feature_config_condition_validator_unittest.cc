@@ -49,6 +49,14 @@ FeatureConfig GetAcceptingFeatureConfig() {
   return config;
 }
 
+FeatureConfig GetNonBlockingFeatureConfig() {
+  FeatureConfig config;
+  config.valid = true;
+  config.blocked_by.type = BlockedBy::Type::NONE;
+  config.blocking.type = Blocking::Type::NONE;
+  return config;
+}
+
 SessionRateImpact CreateSessionRateImpactTypeExplicit(
     std::vector<std::string> affected_features) {
   SessionRateImpact impact;
@@ -56,6 +64,32 @@ SessionRateImpact CreateSessionRateImpactTypeExplicit(
   impact.affected_features = affected_features;
   return impact;
 }
+
+class TestConfiguration : public Configuration {
+ public:
+  TestConfiguration() { config_ = GetValidFeatureConfig(); }
+  ~TestConfiguration() override = default;
+
+  // Configuration implementation.
+  const FeatureConfig& GetFeatureConfig(
+      const base::Feature& feature) const override {
+    return config_;
+  }
+  const FeatureConfig& GetFeatureConfigByName(
+      const std::string& feature_name) const override {
+    return config_;
+  }
+  const Configuration::ConfigMap& GetRegisteredFeatureConfigs() const override {
+    return map_;
+  }
+  const std::vector<std::string> GetRegisteredFeatures() const override {
+    return std::vector<std::string>();
+  }
+
+ private:
+  FeatureConfig config_;
+  Configuration::ConfigMap map_;
+};
 
 class TestEventModel : public EventModel {
  public:
@@ -235,36 +269,37 @@ class FeatureConfigConditionValidatorTest : public ::testing::Test {
       uint32_t current_day) {
     FeatureConfig config = GetAcceptingFeatureConfig();
     config.event_configs.insert(EventConfig("event1", comparator, window, 0));
-    return validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+    return validator_.MeetsConditions(
+        kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+        display_lock_controller_, &configuration_, current_day);
   }
 
   ConditionValidator::Result GetResultForDay(const FeatureConfig& config,
                                              uint32_t current_day) {
-    return validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+    return validator_.MeetsConditions(
+        kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+        display_lock_controller_, &configuration_, current_day);
   }
 
   ConditionValidator::Result GetResultForDayZero(const FeatureConfig& config) {
-    return validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, 0);
+    return validator_.MeetsConditions(
+        kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+        display_lock_controller_, &configuration_, 0);
   }
 
   ConditionValidator::Result GetResultForDayZeroForFeature(
       const base::Feature& feature,
       const FeatureConfig& config) {
-    return validator_.MeetsConditions(feature, config, event_model_,
-                                      availability_model_,
-                                      display_lock_controller_, 0);
+    return validator_.MeetsConditions(
+        feature, config, event_model_, availability_model_,
+        display_lock_controller_, &configuration_, 0);
   }
 
   TestEventModel event_model_;
   TestAvailabilityModel availability_model_;
   TestDisplayLockController display_lock_controller_;
   FeatureConfigConditionValidator validator_;
+  TestConfiguration configuration_;
   uint32_t current_day_;
 };
 
@@ -315,20 +350,6 @@ TEST_F(FeatureConfigConditionValidatorTest, ReadyModelAcceptingConfig) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   EXPECT_TRUE(GetResultForDayZero(GetAcceptingFeatureConfig()).NoErrors());
-}
-
-TEST_F(FeatureConfigConditionValidatorTest, CurrentlyShowing) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
-
-  validator_.NotifyIsShowing(
-      kFeatureConfigTestFeatureBar, FeatureConfig(),
-      {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
-  ConditionValidator::Result result =
-      GetResultForDayZero(GetAcceptingFeatureConfig());
-  EXPECT_FALSE(result.NoErrors());
-  EXPECT_FALSE(result.currently_showing_ok);
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, Used) {
@@ -892,7 +913,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
       EventConfig("event2", Comparator(EQUAL, 5u), 99u, 0));
   ConditionValidator::Result result = validator_.MeetsConditions(
       kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
-      display_lock_controller_, current_day);
+      display_lock_controller_, &configuration_, current_day);
   EXPECT_TRUE(result.NoErrors());
 
   // Verify validator counts correctly for two events last 100 days.
@@ -901,9 +922,9 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
       EventConfig("event1", Comparator(EQUAL, 20u), 100u, 0));
   config.event_configs.insert(
       EventConfig("event2", Comparator(EQUAL, 10u), 100u, 0));
-  result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+  result = validator_.MeetsConditions(
+      kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+      display_lock_controller_, &configuration_, current_day);
   EXPECT_TRUE(result.NoErrors());
 
   // Verify validator counts correctly for two events last 101 days.
@@ -912,9 +933,9 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
       EventConfig("event1", Comparator(EQUAL, 30u), 101u, 0));
   config.event_configs.insert(
       EventConfig("event2", Comparator(EQUAL, 15u), 101u, 0));
-  result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+  result = validator_.MeetsConditions(
+      kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+      display_lock_controller_, &configuration_, current_day);
   EXPECT_TRUE(result.NoErrors());
 
   // Verify validator counts correctly for two events last 101 days, and returns
@@ -924,9 +945,9 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
       EventConfig("event1", Comparator(EQUAL, 0), 101u, 0));
   config.event_configs.insert(
       EventConfig("event2", Comparator(EQUAL, 15u), 101u, 0));
-  result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+  result = validator_.MeetsConditions(
+      kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+      display_lock_controller_, &configuration_, current_day);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 
@@ -937,9 +958,9 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
       EventConfig("event1", Comparator(EQUAL, 30u), 101u, 0));
   config.event_configs.insert(
       EventConfig("event2", Comparator(EQUAL, 0), 101u, 0));
-  result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+  result = validator_.MeetsConditions(
+      kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+      display_lock_controller_, &configuration_, current_day);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 
@@ -950,9 +971,9 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
       EventConfig("event1", Comparator(EQUAL, 0), 101u, 0));
   config.event_configs.insert(
       EventConfig("event2", Comparator(EQUAL, 0), 101u, 0));
-  result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config,
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, current_day);
+  result = validator_.MeetsConditions(
+      kFeatureConfigTestFeatureFoo, config, event_model_, availability_model_,
+      display_lock_controller_, &configuration_, current_day);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 }
@@ -1050,6 +1071,72 @@ TEST_F(FeatureConfigConditionValidatorTest, DisplayLockedStatus) {
   display_lock_controller_.SetNextIsDisplayLockedResult(false);
 
   EXPECT_TRUE(GetResultForDayZero(GetAcceptingFeatureConfig()).NoErrors());
+}
+
+TEST_F(FeatureConfigConditionValidatorTest, TestConcurrentPromosBlockingAll) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
+  validator_.NotifyIsShowing(
+      kFeatureConfigTestFeatureBar, FeatureConfig(),
+      {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
+  ConditionValidator::Result result =
+      GetResultForDayZero(GetValidFeatureConfig());
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.currently_showing_ok);
+}
+
+TEST_F(FeatureConfigConditionValidatorTest, TestConcurrentPromosBlockingNone) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
+
+  FeatureConfig non_blocking_config = GetNonBlockingFeatureConfig();
+  validator_.NotifyIsShowing(
+      kFeatureConfigTestFeatureBar, FeatureConfig(),
+      {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
+  ConditionValidator::Result result = GetResultForDayZero(non_blocking_config);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.currently_showing_ok);
+}
+
+TEST_F(FeatureConfigConditionValidatorTest,
+       TestConcurrentPromosBlockingExplicitBlocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
+
+  FeatureConfig non_blocking_config = GetNonBlockingFeatureConfig();
+  non_blocking_config.blocked_by.type = BlockedBy::Type::EXPLICIT;
+  non_blocking_config.blocked_by.affected_features = {
+      kFeatureConfigTestFeatureBar.name};
+  validator_.NotifyIsShowing(
+      kFeatureConfigTestFeatureBar, FeatureConfig(),
+      {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
+  ConditionValidator::Result result = GetResultForDayZero(non_blocking_config);
+  EXPECT_FALSE(result.NoErrors());
+  EXPECT_FALSE(result.currently_showing_ok);
+}
+
+TEST_F(FeatureConfigConditionValidatorTest,
+       TestConcurrentPromosBlockingExplicitNotBlocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar,
+       kFeatureConfigTestFeatureQux},
+      {});
+
+  FeatureConfig non_blocking_config = GetNonBlockingFeatureConfig();
+  non_blocking_config.blocked_by.type = BlockedBy::Type::EXPLICIT;
+  non_blocking_config.blocked_by.affected_features = {
+      kFeatureConfigTestFeatureBar.name};
+  validator_.NotifyIsShowing(
+      kFeatureConfigTestFeatureQux, FeatureConfig(),
+      {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name,
+       kFeatureConfigTestFeatureQux.name});
+  ConditionValidator::Result result = GetResultForDayZero(non_blocking_config);
+  EXPECT_TRUE(result.NoErrors());
+  EXPECT_TRUE(result.currently_showing_ok);
 }
 
 }  // namespace feature_engagement
