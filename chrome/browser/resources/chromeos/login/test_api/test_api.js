@@ -112,6 +112,26 @@ class HIDDetectionScreenTester extends ScreenElementApi {
   emulateDevicesConnected() {
     chrome.send('HIDDetectionScreen.emulateDevicesConnectedForTesting');
   }
+
+  touchscreenDetected() {
+    // Touchscreen entire row is only visible when touchscreen is detected.
+    let touchscreenRow = new PolymerElementApi(this, '#hid-touchscreen-entry');
+    return touchscreenRow.isVisible();
+  }
+
+  mouseDetected() {
+    let mouseTickIcon = new PolymerElementApi(this, '#mouse-tick');
+    return mouseTickIcon.isVisible();
+  }
+
+  keyboardDetected() {
+    let keyboardTickIcon = new PolymerElementApi(this, '#keyboard-tick');
+    return keyboardTickIcon.isVisible();
+  }
+
+  canClickNext() {
+    return this.nextButton.isEnabled();
+  }
 }
 
 class WelcomeScreenTester extends ScreenElementApi {

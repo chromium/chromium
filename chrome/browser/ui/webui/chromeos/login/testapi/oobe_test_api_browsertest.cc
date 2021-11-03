@@ -69,12 +69,33 @@ IN_PROC_BROWSER_TEST_F(OobeTestApiTestChromebox, HIDDetectionScreen) {
   test::OobeJS()
       .CreateWaiter("OobeAPI.screens.HIDDetectionScreen.isVisible()")
       ->Wait();
+
+  test::OobeJS().ExpectFalse(
+      "OobeAPI.screens.HIDDetectionScreen.touchscreenDetected()");
+  test::OobeJS().ExpectFalse(
+      "OobeAPI.screens.HIDDetectionScreen.mouseDetected()");
+  test::OobeJS().ExpectFalse(
+      "OobeAPI.screens.HIDDetectionScreen.keyboardDetected()");
+  test::OobeJS().ExpectFalse(
+      "OobeAPI.screens.HIDDetectionScreen.canClickNext()");
+
   test::OobeJS().Evaluate(
       "OobeAPI.screens.HIDDetectionScreen.emulateDevicesConnected()");
-  test::OobeJS()
-      .CreateWaiter("OobeAPI.screens.HIDDetectionScreen.isEnabled()")
-      ->Wait();
+
+  test::OobeJS().ExpectTrue(
+      "OobeAPI.screens.HIDDetectionScreen.touchscreenDetected()");
+  test::OobeJS().ExpectTrue(
+      "OobeAPI.screens.HIDDetectionScreen.mouseDetected()");
+  test::OobeJS().ExpectTrue(
+      "OobeAPI.screens.HIDDetectionScreen.keyboardDetected()");
+  test::OobeJS().ExpectTrue(
+      "OobeAPI.screens.HIDDetectionScreen.canClickNext()");
+
   test::OobeJS().Evaluate("OobeAPI.screens.HIDDetectionScreen.clickNext()");
+
+  test::OobeJS()
+      .CreateWaiter("OobeAPI.screens.WelcomeScreen.isVisible()")
+      ->Wait();
 }
 
 class NoOobeTestApiTest : public OobeBaseTest {
