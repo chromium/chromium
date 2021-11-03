@@ -59,6 +59,23 @@ class ZeroStateDriveProvider : public SearchProvider,
   ash::AppListSearchResultType ResultType() override;
   void Start(const std::u16string& query) override;
 
+  void set_session_manager_for_testing(
+      session_manager::SessionManager* session_manager) {
+    session_manager_ = session_manager;
+  }
+
+  // The minimum time between hypothetical queries.
+  // These values persist to logs. Entries should not be renumbered and numeric
+  // values should never be reused.
+  enum class ThrottleInterval {
+    kUnknown = 0,
+    kFiveMinutes = 1,
+    kTenMinutes = 2,
+    kFifteenMinutes = 3,
+    kThirtyMinutes = 4,
+    kMaxValue = kThirtyMinutes,
+  };
+
  private:
   void OnFilePathsLocated(
       absl::optional<std::vector<drivefs::mojom::FilePathOrErrorPtr>> paths);
@@ -82,7 +99,7 @@ class ZeroStateDriveProvider : public SearchProvider,
 
   Profile* const profile_;
   drive::DriveIntegrationService* const drive_service_;
-  session_manager::SessionManager* const session_manager_;
+  session_manager::SessionManager* session_manager_;
 
   ItemSuggestCache item_suggest_cache_;
 

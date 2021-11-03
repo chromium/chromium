@@ -35,6 +35,8 @@
 namespace app_list {
 namespace {
 
+using ThrottleInterval = ZeroStateDriveProvider::ThrottleInterval;
+
 // Schemas of result IDs for the results list and suggestion chips.
 // TODO(crbug.com/1258415): kChipSchema can be removed once the new launcher is
 // launched.
@@ -51,18 +53,6 @@ enum class Status {
   kPathLocationFailed = 3,
   kAllFilesErrored = 4,
   kMaxValue = kAllFilesErrored,
-};
-
-// The minimum time between hypothetical queries.
-// These values persist to logs. Entries should not be renumbered and numeric
-// values should never be reused.
-enum class ThrottleInterval {
-  kUnknown = 0,
-  kFiveMinutes = 1,
-  kTenMinutes = 2,
-  kFifteenMinutes = 3,
-  kThirtyMinutes = 4,
-  kMaxValue = kThirtyMinutes,
 };
 
 ThrottleInterval MinutesToThrottleInterval(const int minutes) {
@@ -146,8 +136,12 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
     }
   }
 
-  session_observation_.Observe(session_manager_);
-  power_observation_.Observe(chromeos::PowerManagerClient::Get());
+  if (session_manager_)
+    session_observation_.Observe(session_manager_);
+
+  auto* power_manager = chromeos::PowerManagerClient::Get();
+  if (power_manager)
+    power_observation_.Observe(power_manager);
 
   // Normalize scores if the launcher search normalization experiment is
   // enabled, but don't if the categorical search experiment is also enabled.
