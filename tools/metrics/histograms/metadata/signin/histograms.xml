@@ -1510,6 +1510,30 @@ kept as long as profile signout is possible -->
   <summary>Tracks where FirstSetupComplete bit is set from.</summary>
 </histogram>
 
+<histogram name="Signin.SyncPromo.{Action}.Count.{AccessPoint}" units="counts"
+    expires_after="M102">
+  <owner>triploblastic@chromium.org</owner>
+  <owner>aliceywang@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    This histogram records how many times sync promos have been shown (including
+    the current one) across all access points when {Action} the {AccessPoint}
+    sync promo (Android Only).
+  </summary>
+  <token key="Action">
+    <variant name="Continued"
+        summary="the user presses on any button (except the dismiss cross) on"/>
+    <variant name="Dismissed" summary="the user dismisses"/>
+    <variant name="Shown" summary="Chrome shows"/>
+  </token>
+  <token key="AccessPoint">
+    <variant name="Bookmarks" summary="bookmark page"/>
+    <variant name="Ntp" summary="new tab page"/>
+    <variant name="RecentTabs" summary="recent tabs page"/>
+    <variant name="Settings" summary="settings page"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.TokenTable.GetAllTokensSqlStatementValidity"
     enum="BooleanValid" expires_after="never">
 <!-- expires-never: This reports SQL validity statements for loading

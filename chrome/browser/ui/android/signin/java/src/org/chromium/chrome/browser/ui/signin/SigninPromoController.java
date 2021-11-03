@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -76,14 +77,29 @@ public class SigninPromoController {
         void onDismiss();
     }
 
+    private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
 
-    /** Suffix strings for promo shown count preference. */
-    private static final String BOOKMARKS = "Bookmarks";
-    private static final String NTP = "Ntp";
-    private static final String RECENT_TABS = "RecentTabs";
-    private static final String SETTINGS = "Settings";
+    /** Suffix strings for promo shown count preference and histograms. */
+    @StringDef({AccessPointId.BOOKMARKS, AccessPointId.NTP, AccessPointId.RECENT_TABS,
+            AccessPointId.SETTINGS})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AccessPointId {
+        String BOOKMARKS = "Bookmarks";
+        String NTP = "Ntp";
+        String RECENT_TABS = "RecentTabs"; // Only used for histograms
+        String SETTINGS = "Settings";
+    }
+
+    /** Strings used for promo shown count histograms. */
+    @StringDef({UserAction.CONTINUED, UserAction.DISMISSED, UserAction.SHOWN})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface UserAction {
+        String CONTINUED = "Continued";
+        String DISMISSED = "Dismissed";
+        String SHOWN = "Shown";
+    }
 
     private @Nullable DisplayableProfileData mProfileData;
     private @Nullable ImpressionTracker mImpressionTracker;
@@ -97,6 +113,7 @@ public class SigninPromoController {
     private final String mSigninNotDefaultUserActionName;
     private final String mSigninNewAccountUserActionName;
     private final @Nullable String mSyncPromoDismissedPreferenceTracker;
+    // TODO(https://crbug.com/1254399): Remove these fields related to impressions.
     private final @Nullable String mImpressionsTilDismissHistogramName;
     private final @Nullable String mImpressionsTilSigninButtonsHistogramName;
     private final @Nullable String mImpressionsTilXButtonHistogramName;
@@ -230,11 +247,12 @@ public class SigninPromoController {
     public static String getPromoShowCountPreferenceName(@AccessPoint int accessPoint) {
         switch (accessPoint) {
             case SigninAccessPoint.BOOKMARK_MANAGER:
-                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(BOOKMARKS);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                        AccessPointId.BOOKMARKS);
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
-                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(NTP);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.NTP);
             case SigninAccessPoint.SETTINGS:
-                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(SETTINGS);
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.SETTINGS);
             default:
                 throw new IllegalArgumentException(
                         "Unexpected value for access point: " + accessPoint);
@@ -418,6 +436,8 @@ public class SigninPromoController {
         }
 
         if (onDismissListener != null) {
+            // Recent Tabs promos can't be dismissed.
+            assert mAccessPoint != SigninAccessPoint.RECENT_TABS;
             view.getDismissButton().setVisibility(View.VISIBLE);
             view.getDismissButton().setOnClickListener(promoView -> {
                 assert mImpressionsTilXButtonHistogramName != null;
@@ -427,6 +447,7 @@ public class SigninPromoController {
                         mImpressionsTilXButtonHistogramName, getNumImpressions());
                 SharedPreferencesManager.getInstance().writeBoolean(
                         mSyncPromoDismissedPreferenceTracker, true);
+                recordShowCountHistogram(UserAction.DISMISSED);
                 onDismissListener.onDismiss();
             });
         } else {
@@ -452,6 +473,7 @@ public class SigninPromoController {
         }
         SharedPreferencesManager.getInstance().incrementInt(
                 ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
+        recordShowCountHistogram(UserAction.SHOWN);
 
         if (mAccessPoint == SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
             final long currentTime = System.currentTimeMillis();
@@ -534,10 +556,37 @@ public class SigninPromoController {
 
     private void recordSigninButtonUsed() {
         mWasUsed = true;
+        recordShowCountHistogram(UserAction.CONTINUED);
         if (mImpressionsTilSigninButtonsHistogramName != null) {
             RecordHistogram.recordCount100Histogram(
                     mImpressionsTilSigninButtonsHistogramName, getNumImpressions());
         }
+    }
+
+    private void recordShowCountHistogram(@UserAction String actionType) {
+        final String accessPoint;
+        switch (mAccessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER:
+                accessPoint = AccessPointId.BOOKMARKS;
+                break;
+            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+                accessPoint = AccessPointId.NTP;
+                break;
+            case SigninAccessPoint.RECENT_TABS:
+                accessPoint = AccessPointId.RECENT_TABS;
+                break;
+            case SigninAccessPoint.SETTINGS:
+                accessPoint = AccessPointId.SETTINGS;
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "Unexpected value for access point" + mAccessPoint);
+        }
+        RecordHistogram.recordExactLinearHistogram(
+                "Signin.SyncPromo." + actionType + ".Count." + accessPoint,
+                SharedPreferencesManager.getInstance().readInt(
+                        ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT),
+                MAX_TOTAL_PROMO_SHOW_COUNT);
     }
 
     private void setImageSize(
