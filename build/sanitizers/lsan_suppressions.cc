@@ -81,6 +81,8 @@ char kLSanDefaultSuppressions[] =
     "leak:ash::LockStateController::StartPostLockAnimation\n"
     // Suppress leaks in OverviewItem. crbug.com/1265030
     "leak:ash::OverviewItem::OnWindowDestroying\n"
+    // Suppress leak in SurfaceDrawContext. crbug.com/1265033
+    "leak:skgpu::v1::SurfaceDrawContext::drawGlyphRunListWithCache\n"
 #endif
 
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
