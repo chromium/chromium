@@ -555,10 +555,10 @@ TEST_F(FFmpegDemuxerTest, Read_Video) {
 TEST_F(FFmpegDemuxerTest, SeekInitialized_NoVideoStartTime) {
   CreateDemuxer("audio-start-time-only.webm");
   InitializeDemuxer();
-  // Video stream should be preferred for seeking even if video start time is
-  // unknown.
-  DemuxerStream* vstream = GetStream(DemuxerStream::VIDEO);
-  EXPECT_EQ(vstream, preferred_seeking_stream(base::TimeDelta()));
+  // Video would normally be preferred, but not if it's a zero packet
+  // stream.
+  DemuxerStream* expected_stream = GetStream(DemuxerStream::AUDIO);
+  EXPECT_EQ(expected_stream, preferred_seeking_stream(base::TimeDelta()));
 }
 
 TEST_F(FFmpegDemuxerTest, Seeking_PreferredStreamSelection) {

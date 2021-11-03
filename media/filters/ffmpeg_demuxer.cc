@@ -60,6 +60,8 @@ namespace media {
 
 namespace {
 
+constexpr int64_t kInvalidPTSMarker = static_cast<int64_t>(0x8000000000000000);
+
 void SetAVStreamDiscard(AVStream* stream, AVDiscard discard) {
   DCHECK(stream);
   stream->discard = discard;
@@ -1592,6 +1594,8 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindStreamWithLowestStartTimestamp(
   for (const auto& stream : streams_) {
     if (!stream || stream->IsEnabled() != enabled)
       continue;
+    if (av_stream_get_first_dts(stream->av_stream()) == kInvalidPTSMarker)
+      continue;
     if (!lowest_start_time_stream ||
         stream->start_time() < lowest_start_time_stream->start_time()) {
       lowest_start_time_stream = stream.get();
@@ -1604,16 +1608,21 @@ FFmpegDemuxerStream* FFmpegDemuxer::FindPreferredStreamForSeeking(
     base::TimeDelta seek_time) {
   // If we have a selected/enabled video stream and its start time is lower
   // than the |seek_time| or unknown, then always prefer it for seeking.
-  FFmpegDemuxerStream* video_stream = nullptr;
   for (const auto& stream : streams_) {
-    if (stream && stream->type() == DemuxerStream::VIDEO &&
-        stream->IsEnabled()) {
-      video_stream = stream.get();
-      if (video_stream->start_time() <= seek_time) {
-        return video_stream;
-      }
-      break;
-    }
+    if (!stream)
+      continue;
+
+    if (stream->type() != DemuxerStream::VIDEO)
+      continue;
+
+    if (av_stream_get_first_dts(stream->av_stream()) == kInvalidPTSMarker)
+      continue;
+
+    if (!stream->IsEnabled())
+      continue;
+
+    if (stream->start_time() <= seek_time)
+      return stream.get();
   }
 
   // If video stream is not present or |seek_time| is lower than the video start
