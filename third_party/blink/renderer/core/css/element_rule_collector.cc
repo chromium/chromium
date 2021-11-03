@@ -330,8 +330,7 @@ void ElementRuleCollector::CollectMatchingRulesForList(
 
 DISABLE_CFI_PERF
 void ElementRuleCollector::CollectMatchingRules(
-    const MatchRequest& match_request,
-    bool matching_tree_boundary_rules) {
+    const MatchRequest& match_request) {
   DCHECK(match_request.rule_set);
 
   SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
@@ -353,11 +352,10 @@ void ElementRuleCollector::CollectMatchingRules(
   // Check whether other types of rules are applicable in the current tree
   // scope. Criteria for this:
   // a) the rules are UA rules.
-  // b) matching tree boundary crossing rules.
-  // c) the rules come from a shadow style sheet in the same tree scope as the
+  // b) the rules come from a shadow style sheet in the same tree scope as the
   //    given element.
   // c) is checked in rulesApplicableInCurrentTreeScope.
-  if (!matching_ua_rules_ && !matching_tree_boundary_rules &&
+  if (!matching_ua_rules_ &&
       !RulesApplicableInCurrentTreeScope(&element, match_request.scope))
     return;
 
@@ -418,6 +416,16 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
 
   CollectMatchingRulesForList(match_request.rule_set->ShadowHostRules(),
                               match_request, checker);
+}
+
+void ElementRuleCollector::CollectMatchingSlottedRules(
+    const MatchRequest& match_request) {
+  SelectorChecker checker(style_.get(), nullptr, pseudo_style_request_, mode_,
+                          matching_ua_rules_);
+
+  CollectMatchingRulesForList(
+      match_request.rule_set->SlottedPseudoElementRules(), match_request,
+      checker);
 }
 
 void ElementRuleCollector::CollectMatchingPartPseudoRules(

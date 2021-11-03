@@ -418,9 +418,10 @@ class CORE_EXPORT CSSSelector {
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
 
-  bool HasSlottedPseudo() const;
   // Returns true if the immediately preceeding simple selector is ::part.
   bool FollowsPart() const;
+  // Returns true if the immediately preceeding simple selector is ::slotted.
+  bool FollowsSlotted() const;
 
   static String FormatPseudoTypeForDebugging(PseudoType);
 

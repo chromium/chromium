@@ -1208,19 +1208,18 @@ static bool ForAnyInTagHistory(const Functor& functor,
   return false;
 }
 
-bool CSSSelector::HasSlottedPseudo() const {
-  return ForAnyInTagHistory(
-      [](const CSSSelector& selector) -> bool {
-        return selector.GetPseudoType() == CSSSelector::kPseudoSlotted;
-      },
-      *this);
-}
-
 bool CSSSelector::FollowsPart() const {
   const CSSSelector* previous = TagHistory();
   if (!previous)
     return false;
   return previous->GetPseudoType() == kPseudoPart;
+}
+
+bool CSSSelector::FollowsSlotted() const {
+  const CSSSelector* previous = TagHistory();
+  if (!previous)
+    return false;
+  return previous->GetPseudoType() == kPseudoSlotted;
 }
 
 String CSSSelector::FormatPseudoTypeForDebugging(PseudoType type) {

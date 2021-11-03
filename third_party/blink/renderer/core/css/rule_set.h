@@ -75,26 +75,6 @@ class CSSSelector;
 class MediaQueryEvaluator;
 class StyleSheetContents;
 
-class MinimalRuleData {
-  DISALLOW_NEW();
-
- public:
-  MinimalRuleData(StyleRule* rule, unsigned selector_index, AddRuleFlags flags)
-      : rule_(rule), selector_index_(selector_index), flags_(flags) {}
-
-  void Trace(Visitor*) const;
-
-  Member<StyleRule> rule_;
-  unsigned selector_index_;
-  AddRuleFlags flags_;
-};
-
-}  // namespace blink
-
-WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MinimalRuleData)
-
-namespace blink {
-
 // This is a wrapper around a StyleRule, pointing to one of the N complex
 // selectors in the StyleRule. This allows us to treat each selector
 // independently but still tie them back to the original StyleRule. If multiple
@@ -248,11 +228,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                          AddRuleFlags = kRuleHasNoSpecialState,
                          CascadeLayer* = nullptr);
   void AddStyleRule(StyleRule*, AddRuleFlags);
-  void AddRule(StyleRule*,
-               unsigned selector_index,
-               AddRuleFlags,
-               const ContainerQuery*,
-               const CascadeLayer*);
 
   const RuleFeatureSet& Features() const { return features_; }
 
@@ -338,8 +313,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return scroll_timeline_rules_;
   }
-  const HeapVector<MinimalRuleData>& SlottedPseudoElementRules() const {
-    return slotted_pseudo_element_rules_;
+  const HeapVector<Member<const RuleData>>* SlottedPseudoElementRules() const {
+    DCHECK(!pending_rules_);
+    return &slotted_pseudo_element_rules_;
   }
 
   bool HasCascadeLayers() const { return implicit_outer_layer_; }
@@ -392,6 +368,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   void Trace(Visitor*) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData);
   friend class RuleSetCascadeLayerTest;
 
   using PendingRuleMap =
@@ -417,6 +394,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      const ContainerQuery*,
                      CascadeLayer*);
   bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
+  void AddRule(StyleRule*,
+               unsigned selector_index,
+               AddRuleFlags,
+               const ContainerQuery*,
+               const CascadeLayer*);
 
   void SortKeyframesRulesIfNeeded();
 
@@ -470,6 +452,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<const RuleData>> universal_rules_;
   HeapVector<Member<const RuleData>> shadow_host_rules_;
   HeapVector<Member<const RuleData>> part_pseudo_rules_;
+  HeapVector<Member<const RuleData>> slotted_pseudo_element_rules_;
   HeapVector<Member<const RuleData>> visited_dependent_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
@@ -478,7 +461,6 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<Member<StyleRuleCounterStyle>> counter_style_rules_;
   HeapVector<Member<StyleRuleScrollTimeline>> scroll_timeline_rules_;
-  HeapVector<MinimalRuleData> slotted_pseudo_element_rules_;
   Vector<MediaQuerySetResult> media_query_set_results_;
 
   unsigned rule_count_;
