@@ -1829,6 +1829,12 @@ message DeviceRestrictedManagedGuestSessionEnabledProto {
   optional bool enabled = 1 [default = false];
 }
 
+// Setting that controls whether keyboard shortcuts mapping are consistent
+// across all international keyboard layouts.
+message DeviceI18nShortcutsEnabledProto {
+  optional bool enabled = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1995,4 +2001,5 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto
       login_screen_prompt_on_multiple_matching_certificates = 126;
   optional BooleanPolicyProto kiosk_crx_manifest_update_url_ignored = 127;
+  optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
 }

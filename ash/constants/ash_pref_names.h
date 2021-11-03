@@ -379,6 +379,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kNextImeShortcutReminderDismissed[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDeviceI18nShortcutsEnabled[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kImprovedShortcutsNotificationShownCount[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)

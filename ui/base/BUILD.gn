@@ -635,6 +635,13 @@ component("features") {
     "ui_base_features.h",
   ]
 
+  if (is_chromeos_ash) {
+    sources += [
+      "shortcut_mapping_pref_delegate.cc",
+      "shortcut_mapping_pref_delegate.h",
+    ]
+  }
+
   deps = [
     ":buildflags",
     "//base",

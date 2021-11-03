@@ -79,6 +79,7 @@ class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
 class PowerMetricsReporter;
 class RendererFreezer;
+class ShortcutMappingPrefService;
 class ShutdownPolicyForwarder;
 class WebKioskAppManager;
 
@@ -186,6 +187,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ArcKioskAppManager> arc_kiosk_app_manager_;
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
 
+  std::unique_ptr<ash::ShortcutMappingPrefService>
+      shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
 

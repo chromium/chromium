@@ -140,6 +140,7 @@
 #include "chrome/browser/ash/scheduler_configuration_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
+#include "chrome/browser/ash/shortcut_mapping_pref_service.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
 #include "chrome/browser/ash/system/breakpad_consent_watcher.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
@@ -770,6 +771,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   lock_to_single_user_manager_ =
       std::make_unique<policy::LockToSingleUserManager>();
 
+  shortcut_mapping_pref_service_ =
+      std::make_unique<ash::ShortcutMappingPrefService>();
+
   // AccessibilityManager and SystemKeyEventListener use InputMethodManager.
   input_method::Initialize();
 
@@ -1075,6 +1079,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
   // Initialize input methods.
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
+  // TODO(crbug/1264581): Remove this object once kDeviceI18nShortcutsEnabled
+  // policy is deprecated.
   UserSessionManager* session_manager = UserSessionManager::GetInstance();
   DCHECK(manager);
   DCHECK(session_manager);
@@ -1336,6 +1342,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_lifetime_manager_.reset();
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
+  shortcut_mapping_pref_service_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();

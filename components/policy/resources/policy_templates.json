@@ -28681,6 +28681,41 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       When this policy is set to False, chrome will allow the wildcard symbol ("*") in the Access-Control-Allow-Headers header in the CORS preflight response to cover the Authorization header.
 
       This Enterprise policy is temporary; it's intended to be removed after <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 103.''',
+    },
+    {
+      'name': 'DeviceI18nShortcutsEnabled',
+      'owners': ['jimmyxgong@chromium.org', 'zentaro@chromium.org', 'cros-peripheral@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:97-'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'International keyboard shortcuts are mapped to the location of the keys in the keyboard instead of the glyph of the key.',
+        },
+        {
+          'value': False,
+          'caption': 'International keyboard shortcuts are mapped to the glyph of the keys instead of key location on the keyboard.',
+        },
+      ],
+      'example_value': True,
+      'id': 925,
+      'default': True,
+      'default_for_managed_devices_doc_only': True,
+      'caption': ''' Allows enabling/disabling international shortcut keys remaps''',
+      'tags': [],
+      'desc': ''' This policy controls whether the improved international keyboard shortcut mapping is enabled.
+      This feature ensures keyboard shortcuts work consistently with international keyboard layouts and deprecate legacy shortcuts.
+
+      If this policy is disabled, improved international keyboards shortcuts are disabled.
+      If this policy is enabled, improved international keyboards shortcuts are enabled.
+      If unset, this policy is enabled for managed devices and enabled for consumer-owned devices.
+      Note this is only a temporarily policy to allow managed users to still be able to use deprecated legacy shortcuts. This policy will deprecate after customized keyboard shortcuts are available.''',
     }
   ],
   'messages': {
@@ -29143,6 +29178,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceRestrictedManagedGuestSessionEnabled': 'device_restricted_managed_guest_session_enabled.enabled',
     'DeviceLoginScreenPromptOnMultipleMatchingCertificates': 'login_screen_prompt_on_multiple_matching_certificates.value',
     'KioskCRXManifestUpdateURLIgnored': 'kiosk_crx_manifest_update_url_ignored',
+    'DeviceI18nShortcutsEnabled': 'device_i18n_shortcuts_enabled.enabled',
   },
   'policy_atomic_group_definitions': [
     {
@@ -29651,6 +29687,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 924,
+  'highest_id_currently_used': 925,
   'highest_atomic_group_id_currently_used': 41
 }

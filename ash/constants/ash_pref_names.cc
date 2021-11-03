@@ -837,6 +837,10 @@ const char kLastUsedImeShortcutReminderDismissed[] =
 const char kNextImeShortcutReminderDismissed[] =
     "ash.shortcut_reminders.next_ime_dismissed";
 
+// Boolean pref to indicate whether to use i18n shortcut mapping and deprecate
+// legacy shortcuts.
+const char kDeviceI18nShortcutsEnabled[] = "ash.device_i18n_shortcuts_enabled";
+
 // An integet pref that tracks how many times the user has been shown the
 // notification about shortcuts changing.
 const char kImprovedShortcutsNotificationShownCount[] =

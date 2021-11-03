@@ -16,6 +16,10 @@
 #include "base/android/build_info.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/shortcut_mapping_pref_delegate.h"
+#endif
+
 namespace features {
 
 #if defined(OS_WIN)
@@ -205,6 +209,18 @@ const base::Feature kImprovedKeyboardShortcuts = {
     "ImprovedKeyboardShortcuts", base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsImprovedKeyboardShortcutsEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug/1264581): Remove this once kDeviceI18nShortcutsEnabled policy is
+  // deprecated.
+  if (::ui::ShortcutMappingPrefDelegate::IsInitialized()) {
+    ::ui::ShortcutMappingPrefDelegate* instance =
+        ::ui::ShortcutMappingPrefDelegate::GetInstance();
+    if (instance && instance->IsDeviceEnterpriseManaged()) {
+      return instance->IsI18nShortcutPrefEnabled();
+    }
+  }
+#endif  // defined(IS_CHROMEOS_ASH)
+
   return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
 }
 

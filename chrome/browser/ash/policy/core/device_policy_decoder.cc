@@ -2000,6 +2000,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
+  if (policy.has_device_i18n_shortcuts_enabled()) {
+    const em::DeviceI18nShortcutsEnabledProto& container(
+        policy.device_i18n_shortcuts_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDeviceI18nShortcutsEnabled, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.enabled()), nullptr);
+    }
+  }
+
   if (policy.has_device_borealis_allowed() &&
       policy.device_borealis_allowed().has_allowed()) {
     policies->Set(key::kDeviceBorealisAllowed, POLICY_LEVEL_MANDATORY,

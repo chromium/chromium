@@ -142,6 +142,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       chromeos::prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(
       ash::prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
+  registry->RegisterBooleanPref(ash::prefs::kDeviceI18nShortcutsEnabled, true);
 
   ash::RegisterLocalStatePrefs(registry);
   sync_consent_optional_field_trial::RegisterLocalStatePrefs(registry);

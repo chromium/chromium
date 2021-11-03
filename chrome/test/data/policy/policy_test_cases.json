@@ -16738,6 +16738,35 @@
       }
     ]
   },
+  "DeviceI18nShortcutsEnabled": {
+    "os": ["chromeos_ash"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceI18nShortcutsEnabled": true
+        },
+        "prefs": { "ash.device_i18n_shortcuts_enabled": {
+          "value": true, "location": "local_state" }
+        }
+      },
+      {
+        "policies": {
+          "DeviceI18nShortcutsEnabled": false
+        },
+        "prefs": { "ash.device_i18n_shortcuts_enabled": {
+          "value": false, "location": "local_state" }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.device_i18n_shortcuts_enabled": {
+            "default_value": true, "location": "local_state"
+          }
+        }
+      }
+    ]
+  },
   "PreconfiguredDeskTemplates": {
     "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   },
