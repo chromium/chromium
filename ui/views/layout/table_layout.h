@@ -135,10 +135,6 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
 
-#if DCHECK_IS_ON()
-  bool OnViewAdded(View* host, View* view) override;
-#endif
-
  private:
   enum class SizeCalculationType {
     kPreferred,
