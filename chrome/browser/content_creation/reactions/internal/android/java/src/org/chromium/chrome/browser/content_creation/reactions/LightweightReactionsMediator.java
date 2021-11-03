@@ -5,10 +5,15 @@
 package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.net.Uri;
 
 import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils;
+import org.chromium.components.browser_ui.share.ShareImageFileUtils.FileOutputStreamWriter;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.third_party.glide.gif_encoder.AnimatedGifEncoder;
 
 import java.util.List;
 
@@ -18,7 +23,33 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
  * Mediator for the Lightweight Reactions component.
  */
 public class LightweightReactionsMediator {
+    /**
+     * Interface for generating a GIF from a view.
+     */
+    public interface GifGeneratorHost {
+        /**
+         * Invoked when the encoder is ready to encode the next frame. The implementer should
+         * perform all necessary work to have the view ready to draw the next GIF frame to a canvas,
+         * and then invoke the provided callback when the frame is ready.
+         */
+        public void prepareFrame(Callback<Void> cb);
+
+        /**
+         * Invoked when the encoder wants the implementer to draw the next GIF frame to the provided
+         * canvas.
+         */
+        public void drawFrame(Canvas canvas);
+    }
+
+    // GIF encoding constants
+    private static final String GIF_FILE_EXT = ".gif";
+    private static final int GIF_FPS = 24;
+    private static final int GIF_QUALITY = 10; // Range is 1 (best) to 20 (worst/fastest).
+    private static final int GIF_REPEAT = 0; // Infinite repeat.
+
     private final ImageFetcher mImageFetcher;
+
+    private int mFramesGenerated;
 
     public LightweightReactionsMediator(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
@@ -90,6 +121,64 @@ public class LightweightReactionsMediator {
                 }
             });
         }
+    }
+
+    /**
+     * Encodes a GIF based on the given {@link GifGeneratorHost}, and invokes the given callback
+     * with the URI to the temporary GIF file for sharing.
+     *
+     * @param host The {@link GifGeneratorHost} to use for generating the GIF frames.
+     * @param frameCount The desired number of frames. The encoder will keep invoking the host's
+     *                   prepareFrame() and drawFrame() until this many frames have been generated.
+     * @param width The desired width, in pixels, for the final GIF.
+     * @param height The desired height, in pixels, for the final GIF.
+     * @param doneCallback The callback to invoke when the final GIF is ready. The callback is
+     *                     passed the Uri to the temporary GIF file that was generated.
+     */
+    public void generateGif(GifGeneratorHost host, int frameCount, int width, int height,
+            Callback<Uri> doneCallback) {
+        FileOutputStreamWriter gifWriter = (fos, frameCallback) -> {
+            AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+            encoder.setFrameRate(GIF_FPS);
+            encoder.setQuality(GIF_QUALITY);
+            encoder.setRepeat(GIF_REPEAT);
+            encoder.start(fos);
+            mFramesGenerated = 0;
+
+            Callback<Void> prepareFrameCallback = new Callback<Void>() {
+                @Override
+                public void onResult(Void v) {
+                    // The next frame is ready to be drawn and encoded. Use ARGB_8888 config for the
+                    // bitmap, which is a standard configuration that allows transparency.
+                    Bitmap frame = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(frame);
+                    host.drawFrame(canvas);
+                    encoder.addFrame(frame);
+                    ++mFramesGenerated;
+
+                    if (mFramesGenerated >= frameCount) {
+                        boolean success = encoder.finish();
+                        frameCallback.onResult(success);
+                    } else {
+                        host.prepareFrame(this);
+                    }
+                }
+            };
+
+            host.prepareFrame(prepareFrameCallback);
+        };
+
+        ShareImageFileUtils.generateTemporaryUriFromStream(
+                getFileName(), gifWriter, GIF_FILE_EXT, doneCallback);
+    }
+
+    /**
+     * Returns the localized temporary filename. Random numbers will be appended to it when the file
+     * creation happens.
+     */
+    private String getFileName() {
+        // TODO(crbug.com/1213923): get final string from UX, and localize it here.
+        return "reaction";
     }
 
     /**

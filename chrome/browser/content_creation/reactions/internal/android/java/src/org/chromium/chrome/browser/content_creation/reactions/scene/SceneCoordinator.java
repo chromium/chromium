@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.widget.RelativeLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.content_creation.reactions.LightweightReactionsMediator;
 import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
@@ -92,7 +94,10 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 @Override
                 public void onResult(Void v) {
                     if (expectedCallbacks.decrementAndGet() == 0) {
-                        cb.onResult(null);
+                        // The BaseGifDrawable class posts the result of the frame decoding to the
+                        // UI thread. Post the callback back to a worker thread.
+                        PostTask.postTask(
+                                TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> { cb.onResult(null); });
                     }
                 }
             });

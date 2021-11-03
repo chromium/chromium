@@ -30,6 +30,7 @@ android_library("java") {
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/share/android:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/content_creation/reactions/android:java",
     "//components/image_fetcher:java",
@@ -38,6 +39,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/gif_player:gif_player_java",
+    "//third_party/glide/gif_encoder:gif_encoder_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
