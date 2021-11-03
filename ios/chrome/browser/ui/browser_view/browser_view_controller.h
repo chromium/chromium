@@ -9,7 +9,6 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
-#import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
