@@ -7,10 +7,15 @@
 #include <string>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -18,7 +23,8 @@
 namespace ash {
 namespace sharesheet {
 
-CopyToClipboardShareAction::CopyToClipboardShareAction() = default;
+CopyToClipboardShareAction::CopyToClipboardShareAction(Profile* profile)
+    : profile_(profile) {}
 
 CopyToClipboardShareAction::~CopyToClipboardShareAction() = default;
 
@@ -56,7 +62,20 @@ void CopyToClipboardShareAction::LaunchAction(
     }
   }
 
-  // TODO(crbug.com/1244143) Add image and file copying logic.
+  const bool has_files =
+      (intent->files.has_value() && !intent->files.value().empty());
+  if (has_files) {
+    std::vector<ui::FileInfo> file_infos;
+    for (const auto& file : intent->files.value()) {
+      file_infos.emplace_back(
+          ui::FileInfo(apps::GetFileSystemURL(profile_, file->url).path(),
+                       base::FilePath()));
+    }
+
+    clipboard_writer.WriteFilenames(ui::FileInfosToURIList(file_infos));
+  }
+
+  // TODO(crbug.com/1244143) Add image copying logic.
   if (controller_) {
     controller_->CloseBubble(::sharesheet::SharesheetResult::kSuccess);
   }
