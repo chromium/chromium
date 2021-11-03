@@ -25,7 +25,7 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
 
   void SetRenderFrameHost(RenderFrameHostImpl* render_frame_host);
   void DidFinishNavigation(NavigationRequest* navigation_request);
-  void UpdatePortals();
+  void UpdatePages();
 
  protected:
   // Base overrides.

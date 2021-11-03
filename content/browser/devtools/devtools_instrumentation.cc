@@ -406,10 +406,15 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
       NavigationRequest::From(navigation_handle)->frame_tree_node();
   FrameTreeNode* parent = FrameTreeNode::From(frame_tree_node->parent());
   if (!parent) {
-    auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
-    if (web_contents->IsPortal() && web_contents->GetOuterWebContents()) {
-      parent =
-          web_contents->GetOuterWebContents()->GetPrimaryFrameTree().root();
+    FrameTreeNode* outer_delegate_node =
+        frame_tree_node->render_manager()->GetOuterDelegateNode();
+    if (outer_delegate_node &&
+        (WebContentsImpl::FromFrameTreeNode(frame_tree_node)->IsPortal() ||
+         frame_tree_node->IsFencedFrameRoot())) {
+      parent = frame_tree_node->render_manager()
+                   ->GetOuterDelegateNode()
+                   ->parent()
+                   ->frame_tree_node();
     }
   }
 

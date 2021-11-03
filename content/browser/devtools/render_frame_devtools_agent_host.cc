@@ -156,7 +156,7 @@ bool RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(
 
 // static
 scoped_refptr<DevToolsAgentHost>
-RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
+RenderFrameDevToolsAgentHost::CreateForLocalRootOrEmbeddedPageNavigation(
     NavigationRequest* request) {
   // Note that this method does not use FrameTreeNode::current_frame_host(),
   // since it is used while the frame host may not be set as current yet,
@@ -424,7 +424,7 @@ void RenderFrameDevToolsAgentHost::ReadyToCommitNavigation(
         request->GetRenderFrameHost()->is_local_root_subframe()) {
       // An agent may have been created earlier if auto attach is on.
       if (!FindAgentHost(request->frame_tree_node()))
-        CreateForLocalRootOrPortalNavigation(request);
+        CreateForLocalRootOrEmbeddedPageNavigation(request);
     }
     return;
   }
@@ -650,7 +650,7 @@ void RenderFrameDevToolsAgentHost::OnNavigationRequestWillBeSent(
 }
 
 void RenderFrameDevToolsAgentHost::UpdatePortals() {
-  auto_attacher_->UpdatePortals();
+  auto_attacher_->UpdatePages();
 }
 
 void RenderFrameDevToolsAgentHost::DisconnectWebContents() {
@@ -736,8 +736,18 @@ std::string RenderFrameDevToolsAgentHost::GetTitle() {
     if (!title.empty())
       return title;
   }
-  if (IsChildFrame() && frame_host_)
-    return frame_host_->GetLastCommittedURL().spec();
+  if (frame_host_) {
+    if (IsChildFrame())
+      return frame_host_->GetLastCommittedURL().spec();
+    if (!frame_host_->GetPage().IsPrimary()) {
+      NavigationEntryImpl* entry = frame_host_->frame_tree_node()
+                                       ->frame_tree()
+                                       ->controller()
+                                       .GetLastCommittedEntry();
+      return entry ? base::UTF16ToUTF8(entry->GetTitleForDisplay())
+                   : std::string();
+    }
+  }
   if (web_contents())
     return base::UTF16ToUTF8(web_contents()->GetTitle());
   return GetURL().spec();
@@ -752,11 +762,12 @@ std::string RenderFrameDevToolsAgentHost::GetDescription() {
 
 GURL RenderFrameDevToolsAgentHost::GetURL() {
   // Order is important here.
-  WebContents* web_contents = GetWebContents();
-  if (web_contents && !IsChildFrame())
-    return web_contents->GetVisibleURL();
-  if (frame_host_)
+  if (frame_host_ && (IsChildFrame() || !frame_host_->GetPage().IsPrimary()))
     return frame_host_->GetLastCommittedURL();
+  WebContents* web_contents = GetWebContents();
+  if (web_contents) {
+    return web_contents->GetVisibleURL();
+  }
   return GURL();
 }
 

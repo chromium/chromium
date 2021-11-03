@@ -316,6 +316,10 @@ crbug.com/1171298 virtual/bfcache/http/tests/devtools/bfcache/* [ Pass ]
 crbug.com/1247131 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/* [ Pass ]
 crbug.com/1247131 wpt_internal/lazyembed/* [ Skip ]
 
+# These tests require the mparch based fenced frames.
+crbug.com/1260483 http/tests/inspector-protocol/fenced-frame/* [ Skip ]
+crbug.com/1260483 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/* [ Pass ]
+
 # Ref test with very minor differences. We need fuzzy matching for our ref tests,
 # or upstream this to WPT.
 crbug.com/1185506 svg/text/textpath-pattern.svg [ Failure Pass ]

@@ -64,10 +64,10 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   // whether DevToolsAgentHost has actually been created.
   static bool ShouldCreateDevToolsForHost(RenderFrameHostImpl* rfh);
 
-  // This method is called when new frame is created for a portal or local root
-  // navigation.
-  static scoped_refptr<DevToolsAgentHost> CreateForLocalRootOrPortalNavigation(
-      NavigationRequest* request);
+  // This method is called when new frame is created for an emebedded page
+  // (portal or fenced frame) or local root navigation.
+  static scoped_refptr<DevToolsAgentHost>
+  CreateForLocalRootOrEmbeddedPageNavigation(NavigationRequest* request);
   static scoped_refptr<DevToolsAgentHost> FindForDangling(
       FrameTreeNode* frame_tree_node);
 

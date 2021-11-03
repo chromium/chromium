@@ -51,14 +51,15 @@ DevToolsAgentHost* TargetAutoAttacher::AutoAttachToFrame(
       frame_tree_node->IsMainFrame() &&
       static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(new_host))
           ->IsPortal();
-  bool needs_host_attached =
-      new_host->is_local_root_subframe() || is_portal_main_frame;
+  bool is_fenced_frame_main_frame =
+      frame_tree_node->IsMainFrame() && frame_tree_node->IsFencedFrameRoot();
+  bool needs_host_attached = new_host->is_local_root_subframe() ||
+                             is_portal_main_frame || is_fenced_frame_main_frame;
 
   if (needs_host_attached) {
     if (!agent_host) {
-      agent_host =
-          RenderFrameDevToolsAgentHost::CreateForLocalRootOrPortalNavigation(
-              navigation_request);
+      agent_host = RenderFrameDevToolsAgentHost::
+          CreateForLocalRootOrEmbeddedPageNavigation(navigation_request);
     }
     return DispatchAutoAttach(agent_host.get(), wait_for_debugger_on_start)
                ? agent_host.get()

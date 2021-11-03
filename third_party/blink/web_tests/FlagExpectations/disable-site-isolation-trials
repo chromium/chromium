@@ -33,6 +33,7 @@ http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js 
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
 http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-iframe.js [ Skip ]
 http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
+virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
 
 # Fix to unblock wpt-importer
 crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
