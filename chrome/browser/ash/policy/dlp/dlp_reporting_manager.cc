@@ -222,7 +222,7 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
   }
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
       &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
-  report_queue_->Enqueue(&event, reporting::Priority::IMMEDIATE,
+  report_queue_->Enqueue(&event, reporting::Priority::SLOW_BATCH,
                          std::move(callback));
 
   switch (event.mode()) {
