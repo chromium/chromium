@@ -23,6 +23,17 @@ window.autoStep = () => {
 };
 
 /**
+ * This error type is thrown by executeJsInPreviewTagSwa_ if the script to
+ * execute in the untrusted context produces an error.
+ */
+export class ExecuteScriptError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ExecuteScriptError';
+  }
+}
+
+/**
  * Class to manipulate the window in the remote extension.
  */
 export class RemoteCall {
@@ -528,8 +539,8 @@ export class RemoteCallFilesApp extends RemoteCall {
    * Responds with its output.
    *
    * @param {string} appId App window Id.
-   * @param {string} query Query to the <preview-tag> element (this is ignored
-   *     for SWA).
+   * @param {!Array<string>} query Query to the <preview-tag> element (this is
+   *     ignored for SWA).
    * @param {string} statement Javascript statement to be executed within the
    *     <preview-tag>.
    * @return {!Promise<*>} resolved with the return value of the `statement`.
@@ -555,8 +566,9 @@ export class RemoteCallFilesApp extends RemoteCall {
           let result = ${statement};
           result = result === undefined ? '@undefined@' : [result];
           window.domAutomationController.send(JSON.stringify(result));
-        } catch {
-          window.domAutomationController.send(JSON.stringify('@undefined@'));
+        } catch (error) {
+          const errorInfo = {'@error@':  error.message, '@stack@': error.stack};
+          window.domAutomationController.send(JSON.stringify(errorInfo));
         }`;
 
     const command = {
@@ -565,7 +577,18 @@ export class RemoteCallFilesApp extends RemoteCall {
     };
 
     const response = await sendTestMessage(command);
-    return response === '"@undefined@"' ? undefined : JSON.parse(response);
+    if (response === '"@undefined@"') {
+      return undefined;
+    }
+    const output = JSON.parse(response);
+    if ('@error@' in output) {
+      console.error(output['@error@']);
+      console.error('Original StackTrace:\n' + output['@stack@']);
+      throw new ExecuteScriptError(
+          'Error executing JS in Preview: ' + output['@error@']);
+    } else {
+      return output;
+    }
   }
 
   /**

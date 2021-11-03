@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {DialogType} from '../dialog_type.js';
+import {ExecuteScriptError} from '../remote_call.js';
 import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
@@ -317,6 +318,29 @@ async function getQuickViewMetadataBoxField(appId, name, hidden = '') {
 
   const element = await remoteCall.waitForElement(appId, quickViewQuery);
   return element.text;
+}
+
+/**
+ * Executes a script in the context of a <preview-tag> element and returns its
+ * output. Returns undefined when ExecuteScriptError is caught.
+ *
+ * @param {string} appId App window Id.
+ * @param {!Array<string>} query Query to the <preview-tag> element (this is
+ *     ignored for SWA).
+ * @param {string} statement Javascript statement to be executed within the
+ *     <preview-tag>.
+ * @return {!Promise<*>}
+ */
+async function executeJsInPreviewTagAndCatchErrors(appId, query, statement) {
+  try {
+    return await remoteCall.executeJsInPreviewTag(appId, query, statement);
+  } catch (e) {
+    if (e instanceof ExecuteScriptError) {
+      return undefined;
+    } else {
+      throw (e);
+    }
+  }
 }
 
 /**
@@ -652,8 +676,8 @@ testcase.openQuickViewDocumentsProvider = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     // Check: the content of text file should be shown.
     if (!text || !text[0] || !text[0].includes('chocolate and chips')) {
       return pending(caller, `Waiting for ${previewTag} content.`);
@@ -809,8 +833,8 @@ testcase.openQuickViewUtf8Text = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
 
     // Check: the content of ENTRIES.utf8Text should be shown.
     if (!text || !text[0] ||
@@ -887,8 +911,10 @@ testcase.openQuickViewScrollText = async () => {
   // The initial preview scrollY should be 0.
   await repeatUntil(async () => {
     const scrollY =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
-    return String(scrollY) === '0';
+        await executeJsInPreviewTagAndCatchErrors(appId, preview, getScrollY);
+    if (String(scrollY) !== '0') {
+      return pending(caller, 'Waiting for preview text to load.');
+    }
   });
 
   // Scroll the preview and verify that it scrolled.
@@ -955,7 +981,7 @@ testcase.openQuickViewPdf = async () => {
     const getType =
         contentWindowQuery + '.document.querySelector("embed").type';
     const type =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getType);
+        await executeJsInPreviewTagAndCatchErrors(appId, preview, getType);
     return checkPdfEmbedType(type);
   });
 
@@ -1023,7 +1049,7 @@ testcase.openQuickViewPdfPopup = async () => {
     const getType =
         contentWindowQuery + '.document.querySelector("embed").type';
     const type =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getType);
+        await executeJsInPreviewTagAndCatchErrors(appId, preview, getType);
     return checkPdfEmbedType(type);
   });
 
@@ -1188,11 +1214,15 @@ testcase.openQuickViewScrollHtml = async () => {
 
   // Get the Quick View preview scrollY.
   const getScrollY = 'window.scrollY';
-  const scrollY =
-      await remoteCall.executeJsInPreviewTag(appId, preview, getScrollY);
 
-  // Check: the initial preview scrollY should be 0.
-  chrome.test.assertEq('0', scrollY.toString());
+  // The initial preview scrollY should be 0.
+  await repeatUntil(async () => {
+    const scrollY =
+        await executeJsInPreviewTagAndCatchErrors(appId, preview, getScrollY);
+    if (String(scrollY) !== '0') {
+      return pending(caller, `Waiting for preview text to load.`);
+    }
+  });
 
   // Scroll the preview and verify that it scrolled.
   await repeatUntil(async () => {
@@ -2019,8 +2049,8 @@ testcase.openQuickViewKeyboardUpDownChangesView = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     if (!text || !text[0] || !text[0].includes('This is a sample file')) {
       return pending(caller, 'Waiting for preview content.');
     }
@@ -2037,8 +2067,8 @@ testcase.openQuickViewKeyboardUpDownChangesView = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     if (!text || !text[0] || !text[0].includes('42 tall text')) {
       return pending(caller, 'Waiting for preview content.');
     }
@@ -2098,8 +2128,8 @@ testcase.openQuickViewKeyboardLeftRightChangesView = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     if (!text || !text[0] || !text[0].includes('This is a sample file')) {
       return pending(caller, 'Waiting for preview content.');
     }
@@ -2116,8 +2146,8 @@ testcase.openQuickViewKeyboardLeftRightChangesView = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     if (!text || !text[0] || !text[0].includes('42 tall text')) {
       return pending(caller, 'Waiting for preview content.');
     }
@@ -2538,8 +2568,8 @@ testcase.openQuickViewWithMultipleFilesKeyboardUpDown = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     // Check: the content of ENTRIES.hello should be shown.
     if (!text || !text[0] || !text[0].includes('This is a sample file')) {
       return pending(caller, 'Waiting for preview content.');
@@ -2557,8 +2587,8 @@ testcase.openQuickViewWithMultipleFilesKeyboardUpDown = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     // Check: the content of ENTRIES.tallText should be shown.
     if (!text || !text[0] || !text[0].includes('42 tall text')) {
       return pending(caller, 'Waiting for preview content.');
@@ -2640,8 +2670,8 @@ testcase.openQuickViewWithMultipleFilesKeyboardLeftRight = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     // Check: the content of ENTRIES.hello should be shown.
     if (!text || !text[0] || !text[0].includes('This is a sample file')) {
       return pending(caller, 'Waiting for preview content.');
@@ -2659,8 +2689,8 @@ testcase.openQuickViewWithMultipleFilesKeyboardLeftRight = async () => {
         'document.querySelector("iframe").contentWindow' :
         'window';
     const getTextContent = contentWindowQuery + '.document.body.textContent';
-    const text =
-        await remoteCall.executeJsInPreviewTag(appId, preview, getTextContent);
+    const text = await executeJsInPreviewTagAndCatchErrors(
+        appId, preview, getTextContent);
     // Check: the content of ENTRIES.tallText should be shown.
     if (!text || !text[0] || !text[0].includes('42 tall text')) {
       return pending(caller, 'Waiting for preview content.');
