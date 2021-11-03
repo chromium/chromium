@@ -98,6 +98,12 @@ bool GetPython3Command(base::CommandLine* python_cmd) {
   python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython3")));
 #endif
 
+#if defined(OS_MAC)
+  // Enable logging to help diagnose https://crbug.com/1254962. Remove this when
+  // the bug is resolved.
+  python_cmd->AppendArg("-vpython-log-level=info");
+#endif
+
   // Launch python in unbuffered mode, so that python output doesn't mix with
   // gtest output in buildbot log files. See http://crbug.com/147368.
   python_cmd->AppendArg("-u");
