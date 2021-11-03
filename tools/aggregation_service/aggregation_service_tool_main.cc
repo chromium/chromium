@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -20,7 +21,10 @@
 
 namespace {
 
-// If you change any of the switch strings, update the kHelpMsg accordingly.
+// If you change any of the switch strings, update the `kHelpMsg`,
+// `kAllowedSwitches` and `kRequiredSwitches` accordingly.
+constexpr char kSwitchHelp[] = "help";
+constexpr char kSwitchHelpShort[] = "h";
 constexpr char kSwitchOperation[] = "operation";
 constexpr char kSwitchBucket[] = "bucket";
 constexpr char kSwitchValue[] = "value";
@@ -35,14 +39,14 @@ constexpr char kSwitchAdditionalFields[] = "additional-fields";
 
 constexpr char kHelpMsg[] = R"(
   aggregation_service_tool [--operation=<operation>] --bucket=<bucket>
-  --value=<value> [--processing-type=<processing_type>]
+  --value=<value> --processing-type=<processing_type>
   --reporting-origin=<reporting_origin>
   --privacy-budget-key=<privacy_budget_key>
   --helper-keys=<helper_server_keys> [--output=<output_file>]
   [--output-url=<output_url>] [--disable-payload-encryption]
   [--additional-fields=<additional_fields>]
 
-  Example:
+  Examples:
   aggregation_service_tool --operation="hierarchical-histogram" --bucket=1234
   --value=5 --processing-type="two-party"
   --reporting-origin="https://example.com"
@@ -53,7 +57,7 @@ constexpr char kHelpMsg[] = R"(
   "source_site=https://publisher.example,attribution_destination=https://advertiser.example"
   or
   aggregation_service_tool --bucket=1234 --value=5
-  --reporting-origin="https://example.com"
+  --processing-type="single-server" --reporting-origin="https://example.com"
   --privacy-budget-key="test_privacy_budget_key"
   --helper-keys="https://a.com=keys1.json,https://b.com=keys2.json"
   --output-url="https://c.com/reports"
@@ -72,8 +76,8 @@ constexpr char kHelpMsg[] = R"(
              integer.
   --value = Bucket value of the histogram contribution, must be non-negative
             integer.
-  --processing-type = Optional switch. Currently only supports "two-party".
-                      Default is "two-party".
+  --processing-type = The processing type to use, either "single-server" or
+                      "two-party".
   --reporting-origin = The reporting origin endpoint.
   --privacy-budget-key = The privacy budgeting key.
   --helper-keys = List of mapping of origins to public key json files.
@@ -107,13 +111,43 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  const std::vector<std::string> kAllowedSwitches = {kSwitchHelp,
+                                                     kSwitchHelpShort,
+                                                     kSwitchOperation,
+                                                     kSwitchBucket,
+                                                     kSwitchValue,
+                                                     kSwitchProcessingType,
+                                                     kSwitchReportingOrigin,
+                                                     kSwitchPrivacyBudgetKey,
+                                                     kSwitchHelperKeys,
+                                                     kSwitchOutputFile,
+                                                     kSwitchOutputUrl,
+                                                     kDisablePayloadEncryption,
+                                                     kSwitchAdditionalFields};
+  for (const auto& provided_switch : command_line.GetSwitches()) {
+    if (!base::Contains(kAllowedSwitches, provided_switch.first)) {
+      LOG(ERROR) << "aggregation_service_tool did not expect "
+                 << provided_switch.first << " to be specified.";
+      PrintHelp();
+      return 1;
+    }
+  }
+
+  if (command_line.GetSwitches().empty() ||
+      command_line.HasSwitch(kSwitchHelp) ||
+      command_line.HasSwitch(kSwitchHelpShort)) {
+    PrintHelp();
+    return 1;
+  }
+
   const std::vector<std::string> kRequiredSwitches = {
-      kSwitchBucket, kSwitchValue, kSwitchReportingOrigin,
+      kSwitchBucket,           kSwitchValue,
+      kSwitchProcessingType,   kSwitchReportingOrigin,
       kSwitchPrivacyBudgetKey, kSwitchHelperKeys};
   for (const std::string& required_switch : kRequiredSwitches) {
     if (!command_line.HasSwitch(required_switch.c_str())) {
       LOG(ERROR) << "aggregation_service_tool expects " << required_switch
-                 << " to be specified";
+                 << " to be specified.";
       PrintHelp();
       return 1;
     }

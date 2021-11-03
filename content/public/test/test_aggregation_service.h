@@ -44,7 +44,8 @@ class TestAggregationService {
   // This is 1-1 mapping of AggregationServicePayloadContent::ProcessingType.
   enum class ProcessingType {
     kTwoParty = 0,
-    kMaxValue = kTwoParty,
+    kSingleServer = 1,
+    kMaxValue = kSingleServer,
   };
 
   // Represents a request to assemble an aggregatable report.

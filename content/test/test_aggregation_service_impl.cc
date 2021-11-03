@@ -46,6 +46,8 @@ AggregationServicePayloadContents::ProcessingType ConvertToProcessingType(
   switch (processing_type) {
     case TestAggregationService::ProcessingType::kTwoParty:
       return AggregationServicePayloadContents::ProcessingType::kTwoParty;
+    case TestAggregationService::ProcessingType::kSingleServer:
+      return AggregationServicePayloadContents::ProcessingType::kSingleServer;
   }
 }
 

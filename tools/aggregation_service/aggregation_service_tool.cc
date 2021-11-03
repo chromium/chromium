@@ -41,6 +41,8 @@ absl::optional<content::TestAggregationService::ProcessingType>
 ConvertToProcessingType(const std::string& processing_type_string) {
   if (processing_type_string == "two-party")
     return content::TestAggregationService::ProcessingType::kTwoParty;
+  if (processing_type_string == "single-server")
+    return content::TestAggregationService::ProcessingType::kSingleServer;
 
   return absl::nullopt;
 }
