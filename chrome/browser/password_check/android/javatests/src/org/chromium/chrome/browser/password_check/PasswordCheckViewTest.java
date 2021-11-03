@@ -107,23 +107,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PasswordCheckViewTest {
     private static final CompromisedCredential ANA = new CompromisedCredential(
             "https://some-url.com/signin", new GURL("https://some-url.com/"), "Ana", "some-url.com",
-            "Ana", "password", "https://some-url.com/.well-known/change-password", "", 1, true,
+            "Ana", "password", "https://some-url.com/.well-known/change-password", "", 1, 1, true,
             false, false, false);
     private static final CompromisedCredential PHISHED = new CompromisedCredential(
             "http://example.com/signin", new GURL("http://example.com/"), "", "http://example.com",
             "(No username)", "DoSomething", "http://example.com/.well-known/change-password", "", 1,
-            false, true, false, false);
-    private static final CompromisedCredential LEAKED =
-            new CompromisedCredential("https://some-other-url.com/signin",
-                    new GURL("https://some-other-url.com/"), "AZiegler", "some-other-url.com",
-                    "AZiegler", "N0M3rcy", "", "com.other.package", 1, true, false, false, false);
+            1, false, true, false, false);
+    private static final CompromisedCredential LEAKED = new CompromisedCredential(
+            "https://some-other-url.com/signin", new GURL("https://some-other-url.com/"),
+            "AZiegler", "some-other-url.com", "AZiegler", "N0M3rcy", "", "com.other.package", 1, 1,
+            true, false, false, false);
     private static final CompromisedCredential LEAKED_AND_PHISHED =
             new CompromisedCredential("https://super-important.com/signin",
                     new GURL("https://super-important.com/"), "HSong", "super-important.com",
-                    "HSong", "N3rfTh1s", "", "com.important.super", 1, true, true, false, false);
+                    "HSong", "N3rfTh1s", "", "com.important.super", 1, 1, true, true, false, false);
     private static final CompromisedCredential SCRIPTED = new CompromisedCredential(
             "https://script.com/signin", new GURL("https://script.com/"), "Charlie", "script.com",
-            "Charlie", "secret", "https://script.com/.well-known/change-password", "", 1, true,
+            "Charlie", "secret", "https://script.com/.well-known/change-password", "", 1, 1, true,
             false, true, true);
 
     private static final int LEAKS_COUNT = 2;
