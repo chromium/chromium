@@ -15,7 +15,7 @@
   await TestRunner.showPanel('elements');
 
   // Warm up elements renderer.
-  runtime.loadModulePromise('elements').then(function() {
+  TestRunner.loadLegacyModule('elements').then(function() {
     ConsoleTestRunner.expandConsoleMessages(callback);
   });
 

@@ -23,7 +23,7 @@
   `);
   await TestRunner.showPanel('elements');
 
-  runtime.loadModulePromise('elements').then(function() {
+  TestRunner.loadLegacyModule('elements').then(function() {
     TestRunner.evaluateInPage('logToConsole()', onLoggedToConsole);
   });
 

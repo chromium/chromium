@@ -17,7 +17,7 @@
   dumpIconResult();
 
   TestRunner.addResult('Loading Network Module');
-  await self.runtime.loadModulePromise('network');
+  await TestRunner.loadLegacyModule('network');
   TestRunner.addResult('Network Module Loaded');
 
   SDK.multitargetNetworkManager.setBlockingEnabled(false);

@@ -12,7 +12,7 @@
     `);
 
   // Warm up highlighter module.
-  runtime.loadModulePromise('source_frame').then(function() {
+  TestRunner.loadLegacyModule('source_frame').then(function() {
     ElementsTestRunner.expandElementsTree(step1);
   });
 

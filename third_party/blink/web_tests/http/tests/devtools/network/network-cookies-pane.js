@@ -29,5 +29,5 @@
     }, 0);
   }
 
-  self.runtime.loadModulePromise('cookie_table').then(run);
+  TestRunner.loadLegacyModule('cookie_table').then(run);
 })();

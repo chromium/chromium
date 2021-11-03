@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that the live line-level heap profile is shown in the text editor.\n`);
   Common.settingForTest('memoryLiveHeapProfile').set(true);
-  await self.runtime.loadModulePromise('perf_ui');
+  await TestRunner.loadLegacyModule('perf_ui');
   await TestRunner.loadLegacyModule('main');
   await TestRunner.loadLegacyModule('source_frame');
   await Main.Main.instanceForTest.lateInitDonePromiseForTest();
