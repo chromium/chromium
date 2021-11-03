@@ -205,7 +205,7 @@ def main():
         test_launcher_filter_files = args.test_launcher_filter_file.split(';')
         with tempfile.NamedTemporaryFile('a+b') as combined_filter_file:
           for filter_file in test_launcher_filter_files:
-            with open(filter_file, 'r') as f:
+            with open(filter_file, 'rb') as f:
               combined_filter_file.write(f.read())
           combined_filter_file.seek(0)
           target.PutFile(combined_filter_file.name,

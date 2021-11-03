@@ -184,7 +184,7 @@ class TestServerThread(threading.Thread):
     self.command_line.append('--startup-pipe=%d' % pipe_out)
 
     # Pass the remaining arguments as-is.
-    for key, values in args_copy.iteritems():
+    for key, values in args_copy.items():
       if not isinstance(values, list):
         values = [values]
       for value in values:
@@ -200,7 +200,7 @@ class TestServerThread(threading.Thread):
     # alone and redirected with subprocess.Popen. It is important to leave those
     # fds filled, or the test server will accidentally open other fds at those
     # numbers.
-    for fd in xrange(3, 1024):
+    for fd in range(3, 1024):
       if fd != pipe_out:
         try:
           os.close(fd)
@@ -213,6 +213,11 @@ class TestServerThread(threading.Thread):
 
     # Set up a pipe for the server to report when it has started.
     pipe_in, pipe_out = os.pipe()
+
+    # TODO(crbug.com/941669): Remove if condition after python3 migration.
+    if hasattr(os, 'set_inheritable'):
+      os.set_inheritable(pipe_out, True)
+
     try:
       self._GenerateCommandLineArguments(pipe_out)
       # TODO(crbug.com/941669): When this script is ported to Python 3, replace
@@ -240,7 +245,9 @@ class TestServerThread(threading.Thread):
             # Preserve stdout and stderr from the test server.
             stdout=None,
             stderr=None,
-            cwd=_DIR_SOURCE_ROOT)
+            cwd=_DIR_SOURCE_ROOT,
+            close_fds=False)
+
       # Close pipe_out early. If self.process crashes, this will be visible
       # in _WaitToStartAndGetPortFromTestServer's select loop.
       os.close(pipe_out)
@@ -319,16 +326,16 @@ class SpawningServerRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     for header_name in additional_headers:
       self.send_header(header_name, additional_headers[header_name])
     self.end_headers()
-    self.wfile.write(contents)
+    self.wfile.write(contents.encode('utf8'))
     self.wfile.flush()
 
   def _StartTestServer(self):
     """Starts the test server thread."""
     _logger.info('Handling request to spawn a test server.')
-    content_type = self.headers.getheader('content-type')
+    content_type = self.headers.get('content-type')
     if content_type != 'application/json':
       raise Exception('Bad content-type for start request.')
-    content_length = self.headers.getheader('content-length')
+    content_length = self.headers.get('content-length')
     if not content_length:
       content_length = 0
     try:
