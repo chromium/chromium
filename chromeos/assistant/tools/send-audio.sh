@@ -53,7 +53,7 @@ send_audio() {
     local text=$(echo $@ | tr " " "+")
     echo "Input text is: $text"
 
-    echo "Performing text-to-speech"
+    echo "Translating text-to-speech"
     http --download "https://www.google.com/speech-api/v1/synthesize?lang=en&text=$text" --output $MP3_FILE --body
     echo "Converting to $OUTPUT_FILE"
     ffmpeg -y -i $MP3_FILE -acodec pcm_s16le -f s16le -ar 16000 $PCM_FILE \
