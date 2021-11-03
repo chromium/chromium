@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_feature_pod_controller_legacy.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -48,7 +49,9 @@ bool SetNetworkEnabled(bool enabled) {
 
 NetworkFeaturePodControllerLegacy::NetworkFeaturePodControllerLegacy(
     UnifiedSystemTrayController* tray_controller)
-    : tray_controller_(tray_controller) {}
+    : tray_controller_(tray_controller) {
+  DCHECK(!ash::features::IsQuickSettingsNetworkRevampEnabled());
+}
 
 NetworkFeaturePodControllerLegacy::~NetworkFeaturePodControllerLegacy() =
     default;
