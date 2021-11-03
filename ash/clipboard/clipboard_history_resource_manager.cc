@@ -270,7 +270,7 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 
   // See if we have an |existing| item that will render the same as |item|.
   auto it = std::find_if(items.begin(), items.end(), [&](const auto& existing) {
-    return &existing != &item && existing.data().bitmap().isNull() &&
+    return &existing != &item && existing.data().png().empty() &&
            existing.data().markup_data() == item.data().markup_data();
   });
 
