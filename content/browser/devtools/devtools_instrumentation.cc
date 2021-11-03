@@ -408,7 +408,8 @@ std::vector<std::unique_ptr<NavigationThrottle>> CreateNavigationThrottles(
   if (!parent) {
     auto* web_contents = WebContentsImpl::FromFrameTreeNode(frame_tree_node);
     if (web_contents->IsPortal() && web_contents->GetOuterWebContents()) {
-      parent = web_contents->GetOuterWebContents()->GetFrameTree()->root();
+      parent =
+          web_contents->GetOuterWebContents()->GetPrimaryFrameTree().root();
     }
   }
 

@@ -97,8 +97,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // prerendering page.
     frame_tree_->controller().SetSessionStorageNamespace(
         site_info.GetStoragePartitionId(site_instance->GetBrowserContext()),
-        web_contents_.GetFrameTree()->controller().GetSessionStorageNamespace(
-            site_info));
+        web_contents_.GetPrimaryFrameTree()
+            .controller()
+            .GetSessionStorageNamespace(site_info));
 
     // TODO(https://crbug.com/1199679): This should be moved to FrameTree::Init
     web_contents_.NotifySwappedFromRenderManager(
@@ -167,7 +168,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 
   WebContents* GetWebContents() { return &web_contents_; }
 
-  FrameTree* GetPrimaryFrameTree() { return web_contents_.GetFrameTree(); }
+  FrameTree& GetPrimaryFrameTree() {
+    return web_contents_.GetPrimaryFrameTree();
+  }
 
   ActivateResult Activate(NavigationRequest& navigation_request) {
     // There should be no ongoing main-frame navigation during activation.
@@ -201,15 +204,15 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     navigation_request.SetPrerenderActivationNavigationState(
         std::move(nav_entry), frame_tree_->root()->current_replication_state());
 
-    FrameTree* target_frame_tree = GetPrimaryFrameTree();
-    DCHECK_EQ(target_frame_tree,
+    FrameTree& target_frame_tree = GetPrimaryFrameTree();
+    DCHECK_EQ(&target_frame_tree,
               navigation_request.frame_tree_node()->frame_tree());
 
     // We support activating the prerenderd page only to the topmost
     // RenderFrameHost.
     CHECK(!page->render_frame_host->GetParentOrOuterDocumentOrEmbedder());
 
-    page->render_frame_host->SetFrameTreeNode(*(target_frame_tree->root()));
+    page->render_frame_host->SetFrameTreeNode(*(target_frame_tree.root()));
     // Copy frame name into the replication state of the primary main frame to
     // ensure that the replication state of the primary main frame after
     // activation matches the replication state stored in the renderer.
@@ -221,7 +224,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     page->render_frame_host->frame_tree_node()->set_frame_name_for_activation(
         frame_tree_->root()->unique_name(), frame_tree_->root()->frame_name());
     for (auto& it : page->proxy_hosts) {
-      it.second->set_frame_tree_node(*(target_frame_tree->root()));
+      it.second->set_frame_tree_node(*(target_frame_tree.root()));
     }
 
     // Iterate over the root RenderFrameHost's subframes and update the
@@ -237,7 +240,7 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     // process some messages while the RenderFrameHost FrameTree and
     // FrameTreeNode are stale.
     for (FrameTreeNode* subframe_node : subframe_nodes) {
-      subframe_node->SetFrameTree(*target_frame_tree);
+      subframe_node->SetFrameTree(target_frame_tree);
     }
 
     page->render_frame_host->ForEachRenderFrameHostIncludingSpeculative(
@@ -481,7 +484,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 // parent document sets a policy on the child iframe.
 bool PrerenderHost::IsFramePolicyCompatibleWithPrimaryFrameTree() {
   FrameTreeNode* prerender_root_ftn = page_holder_->frame_tree()->root();
-  FrameTreeNode* primary_root_ftn = page_holder_->GetPrimaryFrameTree()->root();
+  FrameTreeNode* primary_root_ftn = page_holder_->GetPrimaryFrameTree().root();
 
   // Ensure that the pending frame policy is not set on the main frames, as it
   // is usually set on frames by their parent frames.

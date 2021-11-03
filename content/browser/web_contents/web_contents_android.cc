@@ -562,8 +562,8 @@ void WebContentsAndroid::AdjustSelectionByCharacterOffset(
 }
 
 bool WebContentsAndroid::InitializeRenderFrameForJavaScript() {
-  if (!web_contents_->GetFrameTree()
-           ->root()
+  if (!web_contents_->GetPrimaryFrameTree()
+           .root()
            ->render_manager()
            ->InitializeMainRenderFrameForImmediateUse()) {
     LOG(ERROR) << "Failed to initialize RenderFrame to evaluate javascript";

@@ -114,7 +114,7 @@ FrameTreeNode* GetFrameTreeNodeAncestor(FrameTreeNode* frame_tree_node) {
 scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetOrCreateFor(
     WebContents* web_contents) {
   FrameTreeNode* node =
-      static_cast<WebContentsImpl*>(web_contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(web_contents)->GetPrimaryFrameTree().root();
   // TODO(dgozman): this check should not be necessary. See
   // http://crbug.com/489664.
   if (!node)
@@ -178,14 +178,14 @@ scoped_refptr<DevToolsAgentHost> RenderFrameDevToolsAgentHost::FindForDangling(
 // static
 bool DevToolsAgentHost::HasFor(WebContents* web_contents) {
   FrameTreeNode* node =
-      static_cast<WebContentsImpl*>(web_contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(web_contents)->GetPrimaryFrameTree().root();
   return node ? FindAgentHost(node) != nullptr : false;
 }
 
 // static
 bool DevToolsAgentHost::IsDebuggerAttached(WebContents* web_contents) {
   FrameTreeNode* node =
-      static_cast<WebContentsImpl*>(web_contents)->GetFrameTree()->root();
+      static_cast<WebContentsImpl*>(web_contents)->GetPrimaryFrameTree().root();
   RenderFrameDevToolsAgentHost* host = node ? FindAgentHost(node) : nullptr;
   return host && host->IsAttached();
 }
@@ -194,7 +194,10 @@ bool DevToolsAgentHost::IsDebuggerAttached(WebContents* web_contents) {
 void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
     DevToolsAgentHost::List* result) {
   for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
-    for (FrameTreeNode* node : wc->GetFrameTree()->Nodes()) {
+    // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+    // multiple FrameTrees. This probably needs to iterate over all FrameTrees.
+    // Investigate.
+    for (FrameTreeNode* node : wc->GetPrimaryFrameTree().Nodes()) {
       if (!node->current_frame_host() || !ShouldCreateDevToolsForNode(node))
         continue;
       if (!node->current_frame_host()->IsRenderFrameLive())

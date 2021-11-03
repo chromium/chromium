@@ -42,7 +42,7 @@ std::vector<RenderFrameHostImpl*> GetChildren(RenderFrameHostImpl* rfh) {
         // If the child is used for an inner WebContents then add the inner
         // WebContents.
         children.push_back(
-            contents->GetFrameTree()->root()->current_frame_host());
+            contents->GetPrimaryFrameTree().root()->current_frame_host());
       }
     } else {
       children.push_back(rfh->child_at(i)->current_frame_host());
@@ -712,8 +712,8 @@ void FindRequestManager::NotifyFindReply(int request_id, bool final_update) {
 }
 
 RenderFrameHost* FindRequestManager::GetInitialFrame(bool forward) const {
-  FrameTreeNode* ftn = contents_->GetFrameTree()->root();
-  RenderFrameHost* rfh = ftn->current_frame_host();
+  RenderFrameHost* rfh =
+      contents_->GetPrimaryFrameTree().root()->current_frame_host();
   if (!forward)
     rfh = GetDeepestLastChild(static_cast<RenderFrameHostImpl*>(rfh));
 

@@ -177,7 +177,7 @@ void FrameAutoAttacher::UpdatePortals() {
 
       scoped_refptr<DevToolsAgentHost> new_host =
           RenderFrameDevToolsAgentHost::GetOrCreateFor(
-              web_contents_impl->GetFrameTree()->root());
+              web_contents_impl->GetPrimaryFrameTree().root());
       new_hosts.insert(new_host);
     }
   }

@@ -121,7 +121,10 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
         static_cast<WebContentsImpl*>(host->GetWebContents());
     if (!web_contents)
       return false;
-    FrameTreeNode* frame_tree_node = web_contents->GetFrameTree()->root();
+    // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+    // multiple FrameTrees. Make sure this code really just needs the
+    // primary one.
+    FrameTreeNode* frame_tree_node = web_contents->GetPrimaryFrameTree().root();
     if (!frame_tree_node)
       return false;
     return host == RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);

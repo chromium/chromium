@@ -760,7 +760,8 @@ WebContentsImpl::WebContentsTreeNode::WebContentsTreeNode(
       outer_web_contents_(nullptr),
       outer_contents_frame_tree_node_id_(
           FrameTreeNode::kFrameTreeNodeInvalidId),
-      focused_frame_tree_(current_web_contents->GetFrameTree()->GetSafeRef()) {}
+      focused_frame_tree_(
+          current_web_contents->GetPrimaryFrameTree().GetSafeRef()) {}
 
 WebContentsImpl::WebContentsTreeNode::~WebContentsTreeNode() = default;
 
@@ -1087,7 +1088,7 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
   // opener's sandbox flags lack the PropagatesToAuxiliaryBrowsingContexts
   // bit (which is controlled by the "allow-popups-to-escape-sandbox" token).
   // See https://html.spec.whatwg.org/#attr-iframe-sandbox.
-  FrameTreeNode* new_root = new_contents->GetFrameTree()->root();
+  FrameTreeNode* new_root = new_contents->GetPrimaryFrameTree().root();
   if (opener) {
     network::mojom::WebSandboxFlags opener_flags =
         opener_rfh->active_sandbox_flags();
@@ -1944,11 +1945,15 @@ const std::string& WebContentsImpl::GetEncoding() {
 }
 
 bool WebContentsImpl::WasDiscarded() {
-  return GetFrameTree()->root()->was_discarded();
+  return GetPrimaryFrameTree().root()->was_discarded();
 }
 
 void WebContentsImpl::SetWasDiscarded(bool was_discarded) {
-  GetFrameTree()->root()->set_was_discarded();
+  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+  // multiple FrameTrees. Should we propagate the was_discarded to all other
+  // FrameTrees? It seems that was_discarded could be a WebContentsImpl
+  // property.
+  GetPrimaryFrameTree().root()->set_was_discarded();
 }
 
 base::ScopedClosureRunner WebContentsImpl::IncrementCapturerCount(
@@ -2466,7 +2471,11 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   // current one, since the view can be swapped due to a cross-origin
   // navigation.
   std::set<RenderViewHostImpl*> render_view_hosts;
-  for (auto& render_view_host : GetFrameTree()->render_view_hosts()) {
+  // TODO(https://crbug.com/1264031): With MPArch a WebContents might have
+  // multiple FrameTrees. This code probably needs to be rewritten: e.g. we will
+  // need to iterate over all RenderViewHosts when detaching fenced frames
+  // nested within a GuestView.
+  for (auto& render_view_host : GetPrimaryFrameTree().render_view_hosts()) {
     if (render_view_host.second->GetWidget() &&
         render_view_host.second->GetWidget()->GetView()) {
       DCHECK(render_view_host.second->GetWidget()
@@ -2490,7 +2499,7 @@ std::unique_ptr<WebContents> WebContentsImpl::DetachFromOuterWebContents() {
   std::unique_ptr<WebContents> web_contents =
       node_.DisconnectFromOuterWebContents();
   DCHECK_EQ(web_contents.get(), this);
-  node_.SetFocusedFrameTree(GetFrameTree());
+  node_.SetFocusedFrameTree(&GetPrimaryFrameTree());
 
   for (auto* render_view_host : render_view_hosts)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
@@ -3781,7 +3790,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
             partition_id, session_storage_namespace));
     if (!web_contents_impl)
       return nullptr;
-    return web_contents_impl->GetFrameTree();
+    return &web_contents_impl->GetPrimaryFrameTree();
   }
 
   bool renderer_started_hidden =
@@ -3933,7 +3942,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       }
     }
   }
-  return new_contents_impl->GetFrameTree();
+  return &new_contents_impl->GetPrimaryFrameTree();
 }
 
 RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
@@ -6353,7 +6362,7 @@ void WebContentsImpl::ActivateAndShowRepostFormWarningDialog() {
 }
 
 bool WebContentsImpl::HasAccessedInitialDocument() {
-  return GetFrameTree()->has_accessed_initial_main_document();
+  return GetPrimaryFrameTree().has_accessed_initial_main_document();
 }
 
 void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
@@ -6487,7 +6496,8 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
   if (is_loading) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
         "browser,navigation", "WebContentsImpl Loading", this, "URL", url,
-        "Main FrameTreeNode id", GetFrameTree()->root()->frame_tree_node_id());
+        "Primary Main FrameTreeNode id",
+        GetPrimaryFrameTree().root()->frame_tree_node_id());
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidStartLoading");
     observers_.NotifyObservers(&WebContentsObserver::DidStartLoading);
   } else {
@@ -6956,7 +6966,8 @@ RenderFrameHostImpl* WebContentsImpl::GetOuterWebContentsFrame() {
   FrameTreeNode* outer_node =
       FrameTreeNode::GloballyFindByID(GetOuterDelegateFrameTreeNodeId());
   // The outer node should be in the outer WebContents.
-  DCHECK_EQ(outer_node->frame_tree(), GetOuterWebContents()->GetFrameTree());
+  DCHECK_EQ(outer_node->frame_tree(),
+            &GetOuterWebContents()->GetPrimaryFrameTree());
   return outer_node->parent();
 }
 
@@ -8908,7 +8919,7 @@ void WebContentsImpl::SetOpenerForNewContents(FrameTreeNode* opener,
                                               bool opener_suppressed) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetOpenerForNewContents");
   if (opener) {
-    FrameTreeNode* new_root = GetFrameTree()->root();
+    FrameTreeNode* new_root = GetPrimaryFrameTree().root();
 
     // For the "original opener", track the opener's main frame instead, because
     // if the opener is a subframe, the opener tracking could be easily bypassed
