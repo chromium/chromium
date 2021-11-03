@@ -991,6 +991,21 @@ void FrameLoader::CommitNavigation(
   if (!CancelProvisionalLoaderForNewNavigation())
     return;
 
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow())) {
+    if (navigation_params->frame_load_type == WebFrameLoadType::kBackForward) {
+      auto result = app_history->DispatchNavigateEvent(
+          navigation_params->url, nullptr, NavigateEventType::kCrossDocument,
+          WebFrameLoadType::kBackForward,
+          navigation_params->is_browser_initiated
+              ? UserNavigationInvolvement::kBrowserUI
+              : UserNavigationInvolvement::kNone,
+          nullptr, navigation_params->history_item);
+      DCHECK_EQ(result, AppHistory::DispatchResult::kContinue);
+      if (!document_loader_)
+        return;
+    }
+  }
+
   FillStaticResponseIfNeeded(navigation_params.get(), frame_);
   AssertCanNavigate(navigation_params.get(), frame_);
 

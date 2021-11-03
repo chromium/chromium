@@ -492,24 +492,6 @@ AppHistoryResult* AppHistory::goTo(ScriptState* script_state,
       MakeGarbageCollected<AppHistoryApiNavigation>(script_state, this, options,
                                                     key);
   upcoming_traversals_.insert(key, ongoing_navigation);
-
-  AppHistoryEntry* destination = entries_[keys_to_indices_.at(key)];
-
-  // TODO(japhet): We will fire the navigate event for same-document navigations
-  // at commit time, but not cross-document. This should probably move to a more
-  // central location if we want to fire the navigate event for cross-document
-  // back-forward navigations in general.
-  if (!destination->sameDocument()) {
-    if (DispatchNavigateEvent(
-            destination->url(), nullptr, NavigateEventType::kCrossDocument,
-            WebFrameLoadType::kBackForward, UserNavigationInvolvement::kNone,
-            nullptr,
-            destination->GetItem()) != AppHistory::DispatchResult::kContinue) {
-      return EarlyErrorResult(script_state, DOMExceptionCode::kAbortError,
-                              "Navigation was aborted");
-    }
-  }
-
   GetSupplementable()
       ->GetFrame()
       ->GetLocalFrameHostRemote()
@@ -658,8 +640,7 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   }
   init->setDestination(destination);
 
-  init->setCancelable(involvement != UserNavigationInvolvement::kBrowserUI ||
-                      type != WebFrameLoadType::kBackForward);
+  init->setCancelable(type != WebFrameLoadType::kBackForward);
   init->setCanTransition(
       CanChangeToUrlForHistoryApi(url, GetSupplementable()->GetSecurityOrigin(),
                                   current_url) &&

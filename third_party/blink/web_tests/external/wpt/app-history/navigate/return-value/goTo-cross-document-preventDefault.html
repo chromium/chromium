@@ -20,8 +20,10 @@ promise_test(async t => {
   assert_equals(i.contentWindow.appHistory.entries().length, 2);
   assert_equals(i.contentWindow.appHistory.current, i.contentWindow.appHistory.entries()[1]);
 
+  // This will be a noop, because navigate events are uncancelable for traversals.
   i.contentWindow.appHistory.onnavigate = e => e.preventDefault();
 
-  await assertBothRejectDOM(t, i.contentWindow.appHistory.goTo(key), "AbortError", i.contentWindow);
-}, "goTo() promise rejection when preventDefault()ing the navigate event (cross-document)");
+  assertNeverSettles(t, i.contentWindow.appHistory.goTo(key), i.contentWindow);
+  await new Promise(resolve => i.onload = () => t.step_timeout(resolve, 0));
+}, "goTo() promise never settle when preventDefault()ing the navigate event (cross-document)");
 </script>
