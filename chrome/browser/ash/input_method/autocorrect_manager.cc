@@ -50,8 +50,8 @@ void RecordAssistiveSuccess(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Success", type);
 }
 
-constexpr int kKeysUntilAutocorrectWindowHides = 4;
-constexpr int kDistanceUntilAutocorrectWindowHides = 3;
+constexpr int kKeysUntilUnderlineHides = 4;
+constexpr int kDistanceUntilUnderlineHides = 3;
 
 }  // namespace
 
@@ -75,7 +75,7 @@ void AutocorrectManager::HandleAutocorrect(const gfx::Range autocorrect_range,
                                                       current_text);
 
   original_text_ = original_text;
-  key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
+  key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
   if (!input_context->GetAutocorrectRange().is_empty()) {
     input_context->SetAutocorrectRange(gfx::Range());  // clear underline
     LogAssistiveAutocorrectAction(AutocorrectActions::kUserAcceptedAutocorrect);
@@ -159,8 +159,8 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
       ui::IMEBridge::Get()->GetInputContextHandler();
   const gfx::Range range = input_context->GetAutocorrectRange();
   if (!range.is_empty() &&
-      (cursor_pos + kDistanceUntilAutocorrectWindowHides < range.start() ||
-       cursor_pos - kDistanceUntilAutocorrectWindowHides > range.end())) {
+      (cursor_pos + kDistanceUntilUnderlineHides < range.start() ||
+       cursor_pos - kDistanceUntilUnderlineHides > range.end())) {
     input_context->SetAutocorrectRange(gfx::Range());  // clear underline
     LogAssistiveAutocorrectAction(AutocorrectActions::kUserAcceptedAutocorrect);
   }
@@ -186,7 +186,7 @@ void AutocorrectManager::OnSurroundingTextChanged(const std::u16string& text,
       LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
       RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
     }
-    key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
+    key_presses_until_underline_hide_ = kKeysUntilUnderlineHides;
   } else if (window_visible_) {
     AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
