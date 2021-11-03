@@ -28,8 +28,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/display/display.h"
-#include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace chromeos {
@@ -37,33 +35,17 @@ namespace chromeos {
 namespace {
 LockScreenStartReauthDialog* g_dialog = nullptr;
 
-// Dialog width ratio compared to the screen.
-const double kDialogRatio = 0.86;
-
 }  // namespace
 
 // static
 gfx::Size LockScreenStartReauthDialog::CalculateLockScreenReauthDialogSize(
-    const gfx::Size& display_size,
     bool is_new_layout_enabled) {
   if (!is_new_layout_enabled) {
     return kBaseLockDialogSize;
   }
 
-  gfx::Size result = display_size;
-  result.set_height(result.height() * kDialogRatio);
-  result.set_width(result.width() * kDialogRatio);
-
-  bool is_horizontal = display_size.width() >= display_size.height();
-  if (is_horizontal) {
-    result.SetToMax(kMinLandscapeDialogSize);
-    result.SetToMin(kMaxLandscapeDialogSize);
-  } else {
-    result.SetToMax(kMinPortraitDialogSize);
-    result.SetToMin(kMaxPortraitDialogSize);
-  }
-
-  return result;
+  // LockscreenReauth Dialog size should match OOBE Dialog size.
+  return CalculateOobeDialogSizeForPrimaryDisplay();
 }
 
 void LockScreenStartReauthDialog::Show() {
@@ -141,11 +123,9 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
 }
 
 LockScreenStartReauthDialog::LockScreenStartReauthDialog()
-    : BaseLockDialog(
-          GURL(chrome::kChromeUILockScreenStartReauthURL),
-          CalculateLockScreenReauthDialogSize(
-              display::Screen::GetScreen()->GetPrimaryDisplay().size(),
-              features::IsNewLockScreenReauthLayoutEnabled())),
+    : BaseLockDialog(GURL(chrome::kChromeUILockScreenStartReauthURL),
+                     CalculateLockScreenReauthDialogSize(
+                         features::IsNewLockScreenReauthLayoutEnabled())),
       network_state_helper_(std::make_unique<login::NetworkStateHelper>()) {
   NetworkHandler::Get()->network_state_handler()->AddObserver(this, FROM_HERE);
 }

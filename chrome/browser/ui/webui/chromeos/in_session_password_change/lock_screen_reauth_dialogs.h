@@ -33,7 +33,6 @@ class LockScreenStartReauthDialog : public BaseLockDialog,
   void CloseLockScreenNetworkDialog();
   void ShowLockScreenNetworkDialog();
   static gfx::Size CalculateLockScreenReauthDialogSize(
-      const gfx::Size& display_size,
       bool is_new_layout_enabled);
 
  private:

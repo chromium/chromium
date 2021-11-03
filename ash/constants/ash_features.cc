@@ -817,7 +817,7 @@ const base::Feature kNearbyKeepAliveFix{"NearbyKeepAliveFix",
 
 // Controls whether new Lockscreen reauth layout is shown or not.
 const base::Feature kNewLockScreenReauthLayout{
-    "NewLockScreenReauthLayout", base::FEATURE_DISABLED_BY_DEFAULT};
+    "NewLockScreenReauthLayout", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the Night Light feature.
 const base::Feature kNightLight{"NightLight", base::FEATURE_ENABLED_BY_DEFAULT};
