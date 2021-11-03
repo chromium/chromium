@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 7: Uncaught TypeError: Cannot set properties of null (setting 'id')
+CONSOLE ERROR: Uncaught TypeError: Cannot set properties of null (setting 'id')
 PASS

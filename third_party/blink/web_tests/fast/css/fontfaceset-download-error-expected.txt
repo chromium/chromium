@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 45: Failed to decode downloaded font: data:application/x-truetype-font,
-CONSOLE WARNING: line 45: Failed to decode downloaded font: data:application/x-truetype-font,
+CONSOLE WARNING: Failed to decode downloaded font: data:application/x-truetype-font,
+CONSOLE WARNING: Failed to decode downloaded font: data:application/x-truetype-font,
 CONSOLE WARNING: Failed to decode downloaded font: invalidfont.png
 CONSOLE WARNING: OTS parsing error: invalid sfntVersion: -1991225785
 Test download error cases.

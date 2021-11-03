@@ -1,10 +1,10 @@
-CONSOLE MESSAGE: line 32: Sending cancelable touchmove
-CONSOLE MESSAGE: line 21: Calling preventDefault on TouchEvent with cancelable=true
-CONSOLE MESSAGE: line 39: Sending uncancelable touchmove
-CONSOLE MESSAGE: line 21: Calling preventDefault on TouchEvent with cancelable=false
-CONSOLE ERROR: line 22: Ignored attempt to cancel a touchmove event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.
-CONSOLE MESSAGE: line 64: Sending uncancelable touchmove
-CONSOLE ERROR: line 57: Ignored attempt to cancel a touchmove event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.
+CONSOLE MESSAGE: Sending cancelable touchmove
+CONSOLE MESSAGE: Calling preventDefault on TouchEvent with cancelable=true
+CONSOLE MESSAGE: Sending uncancelable touchmove
+CONSOLE MESSAGE: Calling preventDefault on TouchEvent with cancelable=false
+CONSOLE ERROR: Ignored attempt to cancel a touchmove event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.
+CONSOLE MESSAGE: Sending uncancelable touchmove
+CONSOLE ERROR: Ignored attempt to cancel a touchmove event with cancelable=false, for example because scrolling is in progress and cannot be interrupted.
 This is a testharness.js-based test.
 PASS Test that touch events may or may not be marked cancelable. http://crbug.com/365681
 PASS Test that warning occurs in default mode

@@ -2,7 +2,7 @@ CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resourc
 
 ALERT: PASS (1/3)
 ALERT: PASS (2/3)
-CONSOLE ERROR: line 49: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "img-src https:".
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "img-src https:".
 
 ALERT: PASS (3/3)
 This test ensures that registering a scheme as bypassing CSP actually bypasses CSP. This test passes if three PASSes are generated.

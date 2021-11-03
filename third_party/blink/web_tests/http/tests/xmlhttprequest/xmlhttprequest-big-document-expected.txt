@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 16: [object HTMLCollection]
+CONSOLE MESSAGE: [object HTMLCollection]
 Test case for bug 528078: XML files fail to parse if over 10 million bytes in size
 
 You should see PASS.

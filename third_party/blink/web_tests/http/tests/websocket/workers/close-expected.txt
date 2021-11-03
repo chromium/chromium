@@ -1,5 +1,5 @@
-CONSOLE WARNING: line 124: WebSocket connection to 'ws://127.0.0.1:8880/close' failed: WebSocket is closed before the connection is established.
-CONSOLE WARNING: line 165: WebSocket connection to 'ws://127.0.0.1:8880/close' failed: WebSocket is closed before the connection is established.
+CONSOLE WARNING: WebSocket connection to 'ws://127.0.0.1:8880/close' failed: WebSocket is closed before the connection is established.
+CONSOLE WARNING: WebSocket connection to 'ws://127.0.0.1:8880/close' failed: WebSocket is closed before the connection is established.
 Verify WebSocket::close behaviors in Worker.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

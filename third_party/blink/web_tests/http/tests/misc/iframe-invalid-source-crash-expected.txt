@@ -1,3 +1,3 @@
-CONSOLE ERROR: line 9: Not allowed to load local resource: file:
+CONSOLE ERROR: Not allowed to load local resource: file:
  This tests that we don't crash if an iframe has an invalid source.
 SUCCESS - didn't crash

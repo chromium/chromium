@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 19: Test image loaded.
-CONSOLE MESSAGE: line 47: Drop event fired.
+CONSOLE MESSAGE: Test image loaded.
+CONSOLE MESSAGE: Drop event fired.
 Filename being dragged: generatedimage.gif
 

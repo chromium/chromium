@@ -1,29 +1,29 @@
 CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (1/12)
-CONSOLE ERROR: line 1: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (1/12)
+CONSOLE ERROR: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (2/12)
-CONSOLE MESSAGE: line 15: PASS (3/12)
-CONSOLE MESSAGE: line 15: PASS (4/12)
-CONSOLE ERROR: line 27: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (2/12)
+CONSOLE MESSAGE: PASS (3/12)
+CONSOLE MESSAGE: PASS (4/12)
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (5/12)
-CONSOLE ERROR: line 1: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (5/12)
+CONSOLE ERROR: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (6/12)
-CONSOLE MESSAGE: line 15: PASS (7/12)
-CONSOLE ERROR: line 1: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (6/12)
+CONSOLE MESSAGE: PASS (7/12)
+CONSOLE ERROR: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (8/12)
-CONSOLE ERROR: line 27: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (8/12)
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (9/12)
-CONSOLE MESSAGE: line 15: PASS (10/12)
-CONSOLE ERROR: line 27: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (9/12)
+CONSOLE MESSAGE: PASS (10/12)
+CONSOLE ERROR: Refused to load the image 'http://127.0.0.1:8000/security/resources/abe.png' because it violates the following Content Security Policy directive: "default-src https:". Note that 'img-src' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (11/12)
-CONSOLE ERROR: line 1: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
+CONSOLE MESSAGE: PASS (11/12)
+CONSOLE ERROR: Refused to load the stylesheet 'http://127.0.0.1:8000/security/resources/cssStyle.css' because it violates the following Content Security Policy directive: "default-src https:". Note that 'style-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
 
-CONSOLE MESSAGE: line 15: PASS (12/12)
+CONSOLE MESSAGE: PASS (12/12)
 This test ensures that registering a scheme as bypassing CSP actually bypasses CSP. This test passes if only PASSes are generated.

@@ -1,6 +1,6 @@
-CONSOLE WARNING: line 23: The provided value 'Blob' is not a valid enum value of type BinaryType.
-CONSOLE WARNING: line 26: The provided value 'ArrayBuffer' is not a valid enum value of type BinaryType.
-CONSOLE WARNING: line 29: The provided value '' is not a valid enum value of type BinaryType.
+CONSOLE WARNING: The provided value 'Blob' is not a valid enum value of type BinaryType.
+CONSOLE WARNING: The provided value 'ArrayBuffer' is not a valid enum value of type BinaryType.
+CONSOLE WARNING: The provided value '' is not a valid enum value of type BinaryType.
 Test WebSocket.binaryType attribute.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

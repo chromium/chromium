@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 7: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
+CONSOLE WARNING: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
 Ensures that we get exceptions when we do not include required arguments for webkitStorageInfo methods.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

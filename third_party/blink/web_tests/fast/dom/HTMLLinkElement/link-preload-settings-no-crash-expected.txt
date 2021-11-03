@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 64: <link rel=preload> has an invalid `href` value
+CONSOLE WARNING: <link rel=preload> has an invalid `href` value
 Inserting a into a bare document shouldn't crash.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

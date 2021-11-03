@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 15: Not allowed to navigate top frame to data URL: data:text/plain,a
+CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,a
 CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,b
 CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,i
 CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/plain,j

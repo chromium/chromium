@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 31: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
+CONSOLE WARNING: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
 This tests webkitStorageInfo API works.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

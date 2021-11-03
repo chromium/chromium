@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 7: 'data' URLs may not be used as base URLs for a document.
+CONSOLE ERROR: 'data' URLs may not be used as base URLs for a document.
 This is a testharness.js-based test.
 PASS 'data:' is an invalid base URL.
 Harness: the test ran to completion.

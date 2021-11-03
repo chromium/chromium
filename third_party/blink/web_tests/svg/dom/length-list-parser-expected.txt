@@ -1,238 +1,238 @@
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e,-.e+968,52e,78…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7e+ -27e\t\t3-2025…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "28886-0.00000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "84e-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "79.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "010--613506-0.00…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "9-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "e-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "--0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1-0.000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
-CONSOLE ERROR: line 37: Error: <text> attribute x: Expected length, "\u0000".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e,-.e+968,52e,78…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7e+ -27e\t\t3-2025…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "28886-0.00000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "84e-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "79.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "010--613506-0.00…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1,.,+.833+.004 2-0…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3.3+945-.+.5,6-1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1e, -0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "9-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e7e+ -27e\t\t3-202…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "564281 0ee51+ e \t378584…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…000001608\t9 367 ..81e9e539\te 4 e…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "-8e8625686 3.0-0.0000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "e-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…0001993,35\t+684 +\t159e   +.3-e0+…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "3+.47e19353 2+\t7…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "--0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "61822,15-00.166.7 ".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "2\t.5,658-7 e ,8477553".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "7-3469.43,+,0\t 1…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1-0.000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "…2 589\t-45e58 -4\t-0.0000000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "1+.5-0.000000000…".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "+08-14\t4- .57-\t …".
+CONSOLE ERROR: Error: <text> attribute x: Expected length, "\u0000".
 This test fuzzes the length list parser with semi-random attribute values and dumps the results of any values that parse successfully.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 36: Uncaught this exception is expected
-CONSOLE ERROR: line 36: Uncaught this exception is expected
+CONSOLE ERROR: Uncaught this exception is expected
+CONSOLE ERROR: Uncaught this exception is expected
 Test exceptions in IDBRequest handlers cause aborts.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

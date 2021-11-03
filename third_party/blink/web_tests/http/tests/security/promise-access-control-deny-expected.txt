@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 1: Uncaught (in promise) 42
+CONSOLE ERROR: Uncaught (in promise) 42
 Tests that promise rejection events are muted for cross origin non-CORS scripts

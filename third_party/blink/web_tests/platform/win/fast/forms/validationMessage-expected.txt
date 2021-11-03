@@ -1,8 +1,8 @@
-CONSOLE WARNING: line 119: The specified value "1999-01-02" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 127: The specified value "2000-01-01T00:00" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 135: The specified value "1999-01" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 143: The specified value "1999-W01" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 151: The specified value "06:00" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "1999-01-02" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "2000-01-01T00:00" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "1999-01" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "1999-W01" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "06:00" cannot be parsed, or is out of range.
 Test for validationMessage DOM property.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

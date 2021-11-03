@@ -110,8 +110,6 @@ crbug.com/1254932 http/tests/preload/meta-csp.html [ Failure ]
 # Extra box in the output:
 crbug.com/1254933 css3/filters/filterRegions.html [ Failure ]
 
-crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Failure Pass ]
-crbug.com/1235685 plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 
 # Script preloaded: No
 crbug.com/1254940 http/tests/security/contentSecurityPolicy/nonces/scriptnonce-redirect.html [ Failure ]
@@ -159,14 +157,8 @@ crbug.com/1254945 external/wpt/html/semantics/embedded-content/media-elements/tr
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
-# Console log messages have flaky line numbers
-crbug.com/896194 http/tests/security/link-crossorigin-stylesheet-use-credentials.html [ Failure Pass ]
-crbug.com/896194 http/tests/security/referrer-policy-conflicting-policies.html [ Failure Pass ]
-crbug.com/896194 http/tests/security/video-poster-cross-origin-crash2.html [ Failure Pass ]
-crbug.com/896194 plugins/focus-change-2-change-focus.html [ Failure Pass ]
-crbug.com/896194 webaudio/IIRFilter/unstable-filter-warning.html [ Failure Pass ]
-crbug.com/896194 http/tests/security/referrer-policy-conflicting-policies-image-set.html [ Failure Pass ]
-crbug.com/896194 http/tests/security/script-onerror-crossorigin-no-cors.html [ Failure Pass ]
+crbug.com/1264472 plugins/focus-change-2-change-focus.html [ Failure Pass ]
+
 
 crbug.com/1197502 [ Win ] http/tests/intersection-observer/cross-origin-iframe-with-nesting.html [ Failure Pass ]
 
@@ -7181,7 +7173,6 @@ crbug.com/1258618 virtual/portals/http/tests/devtools/portals/portals-elements-n
 crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 
 # Sheriff 2021-10-07
-crbug.com/896194 plugins/focus-change-1-no-change.html [ Failure Pass ]
 crbug.com/1257570 [ Win7 ] fast/dom/vertical-scrollbar-in-rtl.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
 crbug.com/crbug.com/1256763 [ Win7 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Failure Pass ]

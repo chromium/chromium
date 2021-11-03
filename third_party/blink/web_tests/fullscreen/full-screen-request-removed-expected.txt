@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 21: Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
+CONSOLE WARNING: Failed to execute 'requestFullscreen' on 'Element': API can only be initiated by a user gesture.
 Test for bug 62320: Emit an error event when a request to enter full-screen is rejected.
 
 Tests that the document is still messaged if the element requesting full screen is removed before the event is generated.

@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 11: Uncaught SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'http://127.0.0.1:8000/pushState.html' cannot be created in a document with origin 'http://127.0.0.1:8000' and URL 'about:blank'.
+CONSOLE ERROR: Uncaught SecurityError: Failed to execute 'pushState' on 'History': A history state object with URL 'http://127.0.0.1:8000/pushState.html' cannot be created in a document with origin 'http://127.0.0.1:8000' and URL 'about:blank'.
 
 
 ============== Back Forward List ==============

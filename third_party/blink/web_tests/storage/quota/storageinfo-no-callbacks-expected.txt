@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 44: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
+CONSOLE WARNING: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
 This tests webkitStorageInfo methods do not crash when they are not given optional callbacks parameters.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -1,7 +1,9 @@
-CONSOLE MESSAGE: line 44: Wrong node selected.
-CONSOLE MESSAGE: line 46: Wrong anchor offset: 8 instead of 0
-CONSOLE MESSAGE: line 41: Wrong end node type: [object HTMLBRElement]
-CONSOLE MESSAGE: line 44: Wrong node selected.
+CONSOLE MESSAGE: Wrong focus offset: 5 instead of 4
+CONSOLE MESSAGE: Wrong node selected.
+CONSOLE MESSAGE: Wrong anchor offset: 8 instead of 0
+CONSOLE MESSAGE: Wrong focus offset: 5 instead of 4
+CONSOLE MESSAGE: Wrong end node type: [object HTMLBRElement]
+CONSOLE MESSAGE: Wrong node selected.
 | <html>
 |   <head>
 |   <body>

@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 17: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
+CONSOLE MESSAGE: Failed to execute 'appendChild' on 'Node': Only one element on document allowed.
 If this does not assert in a debug build, the test passed.

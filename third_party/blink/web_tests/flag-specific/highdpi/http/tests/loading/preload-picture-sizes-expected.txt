@@ -1,7 +1,7 @@
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-CONSOLE WARNING: line 59: <source src> with a <picture> parent is invalid and therefore ignored. Please use <source srcset> instead.
+CONSOLE WARNING: <source src> with a <picture> parent is invalid and therefore ignored. Please use <source srcset> instead.
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame

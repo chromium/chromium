@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 48: BiquadFilter.frequency.linearRampToValueAtTime value -1000 outside nominal range [0, 24000]; value will be clamped.
+CONSOLE WARNING: BiquadFilter.frequency.linearRampToValueAtTime value -1000 outside nominal range [0, 24000]; value will be clamped.
 This is a testharness.js-based test.
 PASS # AUDIT TASK RUNNER STARTED.
 PASS Executing "clamp"

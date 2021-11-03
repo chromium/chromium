@@ -1,7 +1,7 @@
-CONSOLE WARNING: line 8: The specified value "parsing" does not conform to the required format, "yyyy-MM-dd".
-CONSOLE WARNING: line 23: The specified value "Invalid attribute value" does not conform to the required format, "yyyy-MM-dd".
-CONSOLE WARNING: line 25: The specified value "Invalid attribute value" does not conform to the required format, "yyyy-MM-dd".
-CONSOLE WARNING: line 28: The specified value "Invalid IDL value" does not conform to the required format, "yyyy-MM-dd".
+CONSOLE WARNING: The specified value "parsing" does not conform to the required format, "yyyy-MM-dd".
+CONSOLE WARNING: The specified value "Invalid attribute value" does not conform to the required format, "yyyy-MM-dd".
+CONSOLE WARNING: The specified value "Invalid attribute value" does not conform to the required format, "yyyy-MM-dd".
+CONSOLE WARNING: The specified value "Invalid IDL value" does not conform to the required format, "yyyy-MM-dd".
 Invisible INPUT element should not show a format warning.
 
 

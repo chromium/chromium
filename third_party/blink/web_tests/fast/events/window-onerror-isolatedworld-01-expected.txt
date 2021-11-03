@@ -1,6 +1,6 @@
-CONSOLE ERROR: line 11: Uncaught Error: Error in isolated world inline script.
-CONSOLE ERROR: line 8: Uncaught Error: Error in isolated world load handler.
-CONSOLE ERROR: line 6: Uncaught Error: Error in isolated world setTimeout callback.
+CONSOLE ERROR: Uncaught Error: Error in isolated world inline script.
+CONSOLE ERROR: Uncaught Error: Error in isolated world load handler.
+CONSOLE ERROR: Uncaught Error: Error in isolated world setTimeout callback.
 Test that window.onerror and "error" event listeners from main world are not invoked for uncaught exceptions in scripts running in isolate worlds, but only for exceptions in the main world.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

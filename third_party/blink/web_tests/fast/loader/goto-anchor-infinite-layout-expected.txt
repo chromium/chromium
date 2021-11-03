@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 21: Failed to decode downloaded font: data:text/plain,
+CONSOLE WARNING: Failed to decode downloaded font: data:text/plain,
 Test for https://bugs.webkit.org/show_bug.cgi?id=27137 REGRESSION (r44311): Reproducible crash due to infinite recursion into FrameLoader::gotoAnchor() -> FrameView::layout().
 
 The test passes if it does not hang or crash.
