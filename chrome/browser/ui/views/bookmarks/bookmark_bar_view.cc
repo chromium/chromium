@@ -1429,7 +1429,6 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
 
   const auto* node = GetNodeForSender(sender);
   ui::ImageModel icon;
-  views::Widget* widget = sender->GetWidget();
   if (node->is_url()) {
     const gfx::Image& image = model_->GetFavicon(node);
     icon = image.IsEmpty()
@@ -1443,7 +1442,7 @@ void BookmarkBarView::WriteDragDataForView(View* sender,
   button_drag_utils::SetDragImage(
       node->url(), node->GetTitle(),
       views::GetImageSkiaFromImageModel(icon, GetColorProvider()), &press_pt,
-      *widget, data);
+      data);
   WriteBookmarkDragData(node, data);
 }
 

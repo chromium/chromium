@@ -1246,9 +1246,8 @@ void LocationBarView::WriteDragDataForView(views::View* sender,
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
   gfx::ImageSkia favicon = favicon_driver->GetFavicon().AsImageSkia();
-  button_drag_utils::SetURLAndDragImage(web_contents->GetURL(),
-                                        web_contents->GetTitle(), favicon,
-                                        nullptr, *sender->GetWidget(), data);
+  button_drag_utils::SetURLAndDragImage(
+      web_contents->GetURL(), web_contents->GetTitle(), favicon, nullptr, data);
 }
 
 int LocationBarView::GetDragOperationsForView(views::View* sender,

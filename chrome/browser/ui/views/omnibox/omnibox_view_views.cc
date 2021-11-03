@@ -1761,7 +1761,7 @@ void OmniboxViewViews::OnWriteDragData(ui::OSExchangeData* data) {
     if (IsSelectAll())
       model()->GetDataForURLExport(&url, &title, &favicon);
     button_drag_utils::SetURLAndDragImage(url, title, favicon.AsImageSkia(),
-                                          nullptr, *GetWidget(), data);
+                                          nullptr, data);
     data->SetURL(url, title);
   }
 }
