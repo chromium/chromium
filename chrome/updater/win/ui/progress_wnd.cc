@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
-#include "chrome/updater/win/ui/constants.h"
+#include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_ctls.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
 
 namespace updater {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_WIN_UI_UTIL_H_
-#define CHROME_UPDATER_WIN_UI_UTIL_H_
+#ifndef CHROME_UPDATER_WIN_UI_UI_UTIL_H_
+#define CHROME_UPDATER_WIN_UI_UI_UTIL_H_
 
 #include <windows.h>
 
@@ -62,4 +62,4 @@ bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);
 }  // namespace ui
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_WIN_UI_UTIL_H_
+#endif  // CHROME_UPDATER_WIN_UI_UI_UTIL_H_

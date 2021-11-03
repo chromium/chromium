@@ -35,7 +35,7 @@
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/splash_screen.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
 #pragma clang diagnostic pop
 

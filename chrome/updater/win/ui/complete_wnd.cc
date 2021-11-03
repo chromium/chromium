@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
-#include "chrome/updater/win/ui/constants.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_constants.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_util.h"
 
 namespace updater {

@@ -220,8 +220,6 @@ if (is_win || is_mac) {
     }
 
     if (is_win) {
-      allow_circular_includes_from = [ "//chrome/updater/win/ui" ]
-
       sources += [
         "activity_impl_win.cc",
         "app/app_install_win.cc",
@@ -263,6 +261,25 @@ if (is_win || is_mac) {
         "win/setup/uninstall.h",
         "win/task_scheduler.cc",
         "win/task_scheduler.h",
+        "win/ui/complete_wnd.cc",
+        "win/ui/complete_wnd.h",
+        "win/ui/owner_draw_controls.cc",
+        "win/ui/owner_draw_controls.h",
+        "win/ui/progress_wnd.cc",
+        "win/ui/progress_wnd.h",
+        "win/ui/splash_screen.cc",
+        "win/ui/splash_screen.h",
+        "win/ui/ui.cc",
+        "win/ui/ui.h",
+        "win/ui/ui_constants.cc",
+        "win/ui/ui_constants.h",
+        "win/ui/ui_ctls.h",
+        "win/ui/ui_displayed_event.cc",
+        "win/ui/ui_displayed_event.h",
+        "win/ui/ui_util.cc",
+        "win/ui/ui_util.h",
+        "win/ui/yes_no_dialog.cc",
+        "win/ui/yes_no_dialog.h",
         "win/update_service_internal_proxy.cc",
         "win/update_service_internal_proxy.h",
         "win/update_service_proxy.cc",
@@ -279,8 +296,9 @@ if (is_win || is_mac) {
         "//chrome/updater/app/server/win:updater_idl_idl",
         "//chrome/updater/app/server/win:updater_internal_idl_idl",
         "//chrome/updater/app/server/win:updater_legacy_idl_idl",
-        "//chrome/updater/win/ui",
+        "//chrome/updater/win/ui/resources",
         "//components/winhttp",
+        "//third_party/wtl",
       ]
 
       configs -= [ "//build/config/win:winver" ]
