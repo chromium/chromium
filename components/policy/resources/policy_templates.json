@@ -21478,14 +21478,16 @@
       - <ph name="OVERRIDE_APP_NAME_LABEL">custom_name</ph>
       (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
       version 96, allows you to permanently override the app name for all web
-      apps and PWAs.)
+      apps and PWAs. Currently only supported on
+      <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.)
 
       - <ph name="CUSTOM_ICON_LABEL">custom_icon</ph>
       (Starting with <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>
       version 96, allows you to override the app icon of installed apps. The
       icons have to be square, maximal 1 MB in size, and in one of the following
       formats: jpeg, png, gif, webp, ico. The hash value has to be the SHA256
-      hash of the icon file.)
+      hash of the icon file. Currently only supported on
+      <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>.)
 
       See <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME">PinnedLauncherApps</ph> for pinning apps to the <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> shelf.''',
       'label': '''URLs for Web Apps to be silently installed.''',
