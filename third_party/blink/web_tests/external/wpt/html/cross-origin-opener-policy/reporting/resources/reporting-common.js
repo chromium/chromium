@@ -190,55 +190,110 @@ async function reportingTest(testFunction, executorToken, expectedReports) {
   await Promise.all(Array.from(expectedReports, checkForExpectedReport));
 }
 
-function getReportEndpoints(host) {
-  result = "";
-  reportEndpoints.forEach(
-    reportEndpoint => {
-      let reportToJSON = {
-        'group': `${reportEndpoint.name}`,
-        'max_age': 3600,
-        'endpoints': [
-          {
-            'url': `${host}/reporting/resources/report.py?reportID=${reportEndpoint.reportID}`
-          },
-        ]
-      };
-      result += JSON.stringify(reportToJSON)
-                        .replace(/,/g, '\\,')
-                        .replace(/\(/g, '\\\(')
-                        .replace(/\)/g, '\\\)=')
-                + "\\,";
-    }
-  );
-  return result.slice(0, -2);
+function convertToWPTHeaderPipe([name, value]) {
+  return `header(${name}, ${encodeURIComponent(value)})`;
+}
+
+function getReportToHeader(host) {
+  return [
+    "Report-To",
+    reportEndpoints.map(
+      reportEndpoint => {
+        const reportToJSON = {
+          'group': `${reportEndpoint.name}`,
+          'max_age': 3600,
+          'endpoints': [{
+            'url': `${host}${getReportEndpointURL(reportEndpoint.reportID)}`
+          }]
+        };
+        // Escape comma as required by wpt pipes.
+        return JSON.stringify(reportToJSON)
+          .replace(/,/g, '\\,')
+          .replace(/\(/g, '\\\(')
+          .replace(/\)/g, '\\\)=');
+      }
+    ).join("\\, ")];
+}
+
+function getReportingEndpointsHeader(host) {
+  return [
+    "Reporting-Endpoints",
+    reportEndpoints.map(reportEndpoint => {
+      return `${reportEndpoint.name}="${host}${getReportEndpointURL(reportEndpoint.reportID)}"`;
+    }).join("\\, ")];
+}
+
+// Return Report and Report-Only policy headers.
+function getPolicyHeaders(coop, coep, coopRo, coepRo) {
+  return [
+    [`Cross-Origin-Opener-Policy`, coop],
+    [`Cross-Origin-Embedder-Policy`, coep],
+    [`Cross-Origin-Opener-Policy-Report-Only`, coopRo],
+    [`Cross-Origin-Embedder-Policy-Report-Only`, coepRo]];
 }
 
 function navigationReportingTest(testName, host, coop, coep, coopRo, coepRo,
-    expectedReports ){
+  expectedReports) {
   const executorToken = token();
   const callbackToken = token();
   promise_test(async t => {
-    await reportingTest( async resolve => {
+    await reportingTest(async resolve => {
+      const openee_headers = [
+        getReportToHeader(host.origin),
+        ...getPolicyHeaders(coop, coep, coopRo, coepRo)
+      ].map(convertToWPTHeaderPipe);
       const openee_url = host.origin + executor_path +
-      `|header(report-to,${encodeURIComponent(getReportEndpoints(host.origin))})` +
-      `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(coop)})` +
-      `|header(Cross-Origin-Embedder-Policy,${encodeURIComponent(coep)})` +
-      `|header(Cross-Origin-Opener-Policy-Report-Only,${encodeURIComponent(coopRo)})` +
-      `|header(Cross-Origin-Embedder-Policy-Report-Only,${encodeURIComponent(coepRo)})`+
-      `&uuid=${executorToken}`;
+        openee_headers.join('|') + `&uuid=${executorToken}`;
       const openee = window.open(openee_url);
       const uuid = token();
       t.add_cleanup(() => send(uuid, "window.close()"));
 
       // 1. Make sure the new document is loaded.
       send(executorToken, `
-        send("${callbackToken}", "Ready");
-      `);
+      send("${callbackToken}", "Ready");
+    `);
       let reply = await receive(callbackToken);
       assert_equals(reply, "Ready");
       resolve();
     }, executorToken, expectedReports);
   }, `coop reporting test ${testName} to ${host.name} with ${coop}, ${coep}, ${coopRo}, ${coepRo}`);
+}
+
+function navigationDocumentReportingTest(testName, host, coop, coep, coopRo,
+  coepRo, expectedReports) {
+  const executorToken = token();
+  const callbackToken = token();
+  promise_test(async t => {
+    const openee_headers = [
+      getReportingEndpointsHeader(host.origin),
+      ...getPolicyHeaders(coop, coep, coopRo, coepRo)
+    ].map(convertToWPTHeaderPipe);
+    const openee_url = host.origin + executor_path +
+      openee_headers.join('|') + `&uuid=${executorToken}`;
+    window.open(openee_url);
+    t.add_cleanup(() => send(executorToken, "window.close()"));
+    // Have openee window send a message through dispatcher, once we receive
+    // the Ready message from dispatcher it means the openee is fully loaded.
+    send(executorToken, `
+      send("${callbackToken}", "Ready");
+    `);
+    let reply = await receive(callbackToken);
+    assert_equals(reply, "Ready");
+
+    await wait(1000);
+
+    expectedReports = expectedReports.map(
+      (report) => replaceValuesInExpectedReport(report, executorToken));
+    return Promise.all(expectedReports.map(
+      async ({ endpoint, report: expectedReport }) => {
+        await pollReports(endpoint);
+        for (let report of endpoint.reports) {
+          assert_true(isObjectAsExpected(report, expectedReport),
+            `report received for endpoint: ${endpoint.name} ${JSON.stringify(report)} should match ${JSON.stringify(expectedReport)}`);
+        }
+        assert_equals(endpoint.reports.length, 1, `has exactly one report for ${endpoint.name}`)
+      }));
+  }, `coop document reporting test ${testName} to ${host.name} with ${coop}, ${coep}, ${coopRo}, ${coepRo}`);
 }
 
 // Run an array of reporting tests then verify there's no reports that were not
@@ -254,6 +309,17 @@ async function runNavigationReportingTests(testName, tests) {
   verifyRemainingReports();
 }
 
+// Run an array of reporting tests using Reporting-Endpoints header then
+// verify there's no reports that were not expected.
+// Tests' elements contain: host, coop, coep, coop-report-only,
+// coep-report-only, expectedReports.
+// See isObjectAsExpected for explanations regarding the matching behavior.
+function runNavigationDocumentReportingTests(testName, tests) {
+  clearReportsOnServer();
+  tests.forEach(test => {
+    navigationDocumentReportingTest(testName, ...test);
+  });
+}
 
 function verifyRemainingReports() {
   promise_test(t => {
@@ -275,12 +341,22 @@ const receiveReport = async function(uuid, type) {
     if (reports == "timeout")
       return "timeout";
     reports = JSON.parse(reports);
-
     for(report of reports) {
       if (report?.body?.type == type)
         return report;
     }
   }
+}
+
+// Build a set of 'Cross-Origin-Opener-Policy' and
+// 'Cross-Origin-Opener-Policy-Report-Only' headers.
+const coopHeaders = function (uuid) {
+  return {
+    coopSameOriginHeader: `|header(Cross-Origin-Opener-Policy,same-origin%3Breport-to="${uuid}")`,
+    coopSameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy,same-origin-allow-popups%3Breport-to="${uuid}")`,
+    coopReportOnlySameOriginHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin%3Breport-to="${uuid}")`,
+    coopReportOnlySameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin-allow-popups%3Breport-to="${uuid}")`
+  };
 }
 
 // Build a set of headers to tests the reporting API. This defines a set of
@@ -302,9 +378,19 @@ const reportToHeaders = function(uuid) {
 
   return {
     header: `|header(report-to,${reportToJSON})`,
-    coopSameOriginHeader: `|header(Cross-Origin-Opener-Policy,same-origin%3Breport-to="${uuid}")`,
-    coopSameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy,same-origin-allow-popups%3Breport-to="${uuid}")`,
-    coopReportOnlySameOriginHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin%3Breport-to="${uuid}")`,
-    coopReportOnlySameOriginAllowPopupsHeader: `|header(Cross-Origin-Opener-Policy-Report-Only,same-origin-allow-popups%3Breport-to="${uuid}")`,
+    ...coopHeaders(uuid)
+  };
+};
+
+// Build a set of headers to tests the reporting API. This defines a set of
+// matching 'Reporting-Endpoints', 'Cross-Origin-Opener-Policy' and
+// 'Cross-Origin-Opener-Policy-Report-Only' headers.
+const reportingEndpointsHeaders = function (uuid) {
+  const report_endpoint_url = dispatcher_path + `?uuid=${uuid}`;
+  const reporting_endpoints_header = `${uuid}="${report_endpoint_url}"`;
+
+  return {
+    header: `|header(Reporting-Endpoints,${reporting_endpoints_header})`,
+    ...coopHeaders(uuid)
   };
 };
