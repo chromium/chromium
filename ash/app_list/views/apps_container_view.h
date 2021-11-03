@@ -28,6 +28,7 @@ class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
 class ContentsView;
+class ContinueSectionView;
 class FolderBackgroundView;
 class PageSwitcher;
 class SuggestionChipContainerView;
@@ -113,6 +114,7 @@ class ASH_EXPORT AppsContainerView
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& old_bounds) override;
+  void ChildVisibilityChanged(views::View* child) override;
 
   // AppListPage overrides:
   void OnShown() override;
@@ -265,6 +267,7 @@ class ASH_EXPORT AppsContainerView
   // The views below are owned by views hierarchy.
   SuggestionChipContainerView* suggestion_chip_container_view_ = nullptr;
   views::View* continue_container_ = nullptr;
+  ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::Separator* separator_ = nullptr;
   PagedAppsGridView* apps_grid_view_ = nullptr;

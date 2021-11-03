@@ -115,10 +115,10 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   recent_apps_->ShowResults(search_model, model);
 
   // Horizontal separator.
-  auto* separator =
+  separator_ =
       scroll_contents->AddChildView(std::make_unique<views::Separator>());
-  separator->SetBorder(views::CreateEmptyBorder(kSeparatorInsets));
-  separator->SetColor(ColorProvider::Get()->GetContentLayerColor(
+  separator_->SetBorder(views::CreateEmptyBorder(kSeparatorInsets));
+  separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
       ColorProvider::ContentLayerType::kSeparatorColor));
 
   // All apps section.
@@ -142,6 +142,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   scroll_view_->SetContents(std::move(scroll_contents));
 
   continue_section_->UpdateSuggestionTasks();
+  UpdateSeparatorVisibility();
 }
 
 AppListBubbleAppsPage::~AppListBubbleAppsPage() {
@@ -166,6 +167,11 @@ void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());
 
   recent_apps_->ShowResults(search_model, model);
+}
+
+void AppListBubbleAppsPage::ChildVisibilityChanged(views::View* child) {
+  if (child == continue_section_ || child == recent_apps_)
+    UpdateSeparatorVisibility();
 }
 
 void AppListBubbleAppsPage::MoveFocusUpFromRecents() {
@@ -206,6 +212,11 @@ bool AppListBubbleAppsPage::MoveFocusUpFromAppsGrid(int column) {
   DCHECK(item);
   item->RequestFocus();
   return true;
+}
+
+void AppListBubbleAppsPage::UpdateSeparatorVisibility() {
+  separator_->SetVisible(recent_apps_->GetItemViewCount() > 0 ||
+                         continue_section_->GetTasksSuggestionsCount() > 0);
 }
 
 BEGIN_METADATA(AppListBubbleAppsPage, views::View)

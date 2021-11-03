@@ -14,6 +14,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Separator;
+}  // namespace views
+
 namespace ash {
 
 class AppListConfig;
@@ -53,6 +57,7 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   // views::View:
   void Layout() override;
+  void ChildVisibilityChanged(views::View* child) override;
 
   // AppListModelProvider::Observer:
   void OnActiveAppListModelsChanged(AppListModel* model,
@@ -71,12 +76,16 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
   }
 
   RecentAppsView* recent_apps_for_test() { return recent_apps_; }
+  views::Separator* separator_for_test() { return separator_; }
 
  private:
   friend class AppListTestHelper;
 
+  void UpdateSeparatorVisibility();
+
   ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
+  views::Separator* separator_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;
 

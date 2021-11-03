@@ -80,7 +80,7 @@ AppListBubblePresenter* GetBubblePresenter() {
   return Shell::Get()->app_list_controller()->bubble_presenter_for_test();
 }
 
-views::View* GetSeparator() {
+views::View* GetSearchBoxSeparator() {
   return GetBubblePresenter()->bubble_view_for_test()->separator_for_test();
 }
 
@@ -131,6 +131,14 @@ class AppListBubbleViewTest : public AshTestBase {
 
   AppListBubbleAppsPage* GetAppsPage() {
     return GetAppListTestHelper()->GetBubbleAppsPage();
+  }
+
+  views::View* GetAppsPageSeparator() {
+    return GetAppsPage()->separator_for_test();
+  }
+
+  ContinueSectionView* GetContinueSectionView() {
+    return GetAppListTestHelper()->GetContinueSectionView();
   }
 
   RecentAppsView* GetRecentAppsView() {
@@ -197,7 +205,7 @@ TEST_F(AppListBubbleViewTest, Layout) {
 
   // The separator is immediately under the search box.
   gfx::Point separator_origin;
-  views::View::ConvertPointToWidget(GetSeparator(), &separator_origin);
+  views::View::ConvertPointToWidget(GetSearchBoxSeparator(), &separator_origin);
   EXPECT_EQ(0, separator_origin.x());
   EXPECT_EQ(search_box_view->height(), separator_origin.y());
 }
@@ -242,7 +250,7 @@ TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
   LeftClickOn(search_box->assistant_button());
 
   EXPECT_FALSE(search_box->GetVisible());
-  EXPECT_FALSE(GetSeparator()->GetVisible());
+  EXPECT_FALSE(GetSearchBoxSeparator()->GetVisible());
   EXPECT_FALSE(GetAppsPage()->GetVisible());
   EXPECT_FALSE(GetSearchPage()->GetVisible());
   EXPECT_TRUE(GetAssistantPage()->GetVisible());
@@ -508,8 +516,7 @@ TEST_F(AppListBubbleViewTest, UpArrowFromRecentsSelectsContinueTasks) {
   ShowAppList();
 
   ContinueTaskView* last_continue_task =
-      GetAppListTestHelper()->GetContinueSectionView()->GetTaskViewAtForTesting(
-          3);
+      GetContinueSectionView()->GetTaskViewAtForTesting(3);
   auto* recent_apps_view = GetRecentAppsView();
 
   // Pressing 'up' from any column in recent apps moves to the last continue
@@ -569,9 +576,9 @@ TEST_F(AppListBubbleViewTest,
 
   PressAndReleaseKey(ui::VKEY_UP);
 
-  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
   auto* focus_manager = GetAppsPage()->GetFocusManager();
-  EXPECT_TRUE(continue_section->Contains(focus_manager->GetFocusedView()))
+  EXPECT_TRUE(
+      GetContinueSectionView()->Contains(focus_manager->GetFocusedView()))
       << GetFocusedViewName();
 }
 
@@ -589,11 +596,11 @@ TEST_F(AppListBubbleViewTest, DownArrowMovesFocusToContinueTasks) {
 
   // Pressing down arrow moves focus through the continue tasks. It does not
   // trigger ScrollView scrolling.
-  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
   auto* focus_manager = GetAppsPage()->GetFocusManager();
   for (int i = 0; i < 4; i++) {
     PressAndReleaseKey(ui::VKEY_DOWN);
-    EXPECT_TRUE(continue_section->Contains(focus_manager->GetFocusedView()));
+    EXPECT_TRUE(
+        GetContinueSectionView()->Contains(focus_manager->GetFocusedView()));
   }
 
   // Pressing down arrow again moves focus into the apps grid.
@@ -759,7 +766,7 @@ TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   auto* search_box = GetSearchBoxView();
   EXPECT_TRUE(search_box->GetViewAccessibility().IsIgnored());
   EXPECT_TRUE(search_box->GetViewAccessibility().IsLeaf());
-  auto* continue_section = GetAppListTestHelper()->GetContinueSectionView();
+  auto* continue_section = GetContinueSectionView();
   EXPECT_TRUE(continue_section->GetViewAccessibility().IsIgnored());
   EXPECT_TRUE(continue_section->GetViewAccessibility().IsLeaf());
   auto* recent_apps = GetRecentAppsView();
@@ -860,6 +867,39 @@ TEST_F(AppListBubbleViewTest, ScrollInFolderHeaderScrollsFolder) {
   // The view scrolled.
   const int final_scroll_offset = scroll_view->GetVisibleRect().y();
   EXPECT_GT(final_scroll_offset, initial_scroll_offset);
+}
+
+TEST_F(AppListBubbleViewTest,
+       SeparatorWontShowWithNoRecentAppsNorContinueFiles) {
+  AddAppItems(5);
+  ShowAppList();
+
+  ASSERT_EQ(0, GetRecentAppsView()->GetItemViewCount());
+  ASSERT_EQ(0u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  EXPECT_FALSE(GetAppsPageSeparator()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, SeparatorShowsWithRecentApps) {
+  AddAppItems(5);
+  AddRecentApps(4);
+  ShowAppList();
+
+  ASSERT_EQ(4, GetRecentAppsView()->GetItemViewCount());
+  ASSERT_EQ(0u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  EXPECT_TRUE(GetAppsPageSeparator()->GetVisible());
+}
+
+TEST_F(AppListBubbleViewTest, SeparatorShowsWithContinueFiles) {
+  AddAppItems(5);
+  AddContinueSuggestionResult(4);
+  ShowAppList();
+
+  ASSERT_EQ(0, GetRecentAppsView()->GetItemViewCount());
+  ASSERT_EQ(4u, GetContinueSectionView()->GetTasksSuggestionsCount());
+
+  EXPECT_TRUE(GetAppsPageSeparator()->GetVisible());
 }
 
 }  // namespace

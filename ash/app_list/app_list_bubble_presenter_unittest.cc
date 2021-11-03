@@ -359,16 +359,16 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForLargeDisplay) {
 
   int no_apps_bubble_view_height = presenter->bubble_view_for_test()->height();
 
-  // Add 30 apps to the app list and reopen.
+  // Add enough apps to enlarge the bubble view size from its default height.
   presenter->Dismiss();
-  AddAppItems(30);
+  AddAppItems(35);
   presenter->Show(GetPrimaryDisplay().id());
 
-  int thirty_apps_bubble_view_height =
+  int thirty_five_apps_bubble_view_height =
       presenter->bubble_view_for_test()->height();
 
-  // The AppListBubbleView should be larger after apps have neen added to it.
-  EXPECT_GT(thirty_apps_bubble_view_height, no_apps_bubble_view_height);
+  // The AppListBubbleView should be larger after apps have been added to it.
+  EXPECT_GT(thirty_five_apps_bubble_view_height, no_apps_bubble_view_height);
 
   // Add 50 more apps to the app list and reopen.
   presenter->Dismiss();
@@ -379,7 +379,8 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForLargeDisplay) {
       presenter->bubble_view_for_test()->height();
 
   // With more apps added, the height of the bubble should increase.
-  EXPECT_GT(eighty_apps_bubble_view_height, thirty_apps_bubble_view_height);
+  EXPECT_GT(eighty_apps_bubble_view_height,
+            thirty_five_apps_bubble_view_height);
 
   // The bubble height should not be larger than half the display height.
   EXPECT_LE(eighty_apps_bubble_view_height, 1000);

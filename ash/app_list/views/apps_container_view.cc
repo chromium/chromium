@@ -322,12 +322,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     continue_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kVertical);
 
-    auto* continue_section =
+    continue_section_ =
         continue_container_->AddChildView(std::make_unique<ContinueSectionView>(
             view_delegate, kContinueColumnCount, /*tablet_mode=*/true));
-    continue_section->SetPaintToLayer();
-    continue_section->layer()->SetFillsBoundsOpaquely(false);
-    continue_section->UpdateSuggestionTasks();
+    continue_section_->SetPaintToLayer();
+    continue_section_->layer()->SetFillsBoundsOpaquely(false);
+    continue_section_->UpdateSuggestionTasks();
 
     recent_apps_ = continue_container_->AddChildView(
         std::make_unique<RecentAppsView>(this, view_delegate));
@@ -347,6 +347,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     separator_->layer()->SetFillsBoundsOpaquely(false);
     separator_->SetProperty(views::kCrossAxisAlignmentKey,
                             views::LayoutAlignment::kCenter);
+
+    separator_->SetVisible(recent_apps_->GetItemViewCount() > 0 ||
+                           continue_section_->GetTasksSuggestionsCount() > 0);
   } else {
     // Add child view at index 0 so focus traversal goes to suggestion chips
     // before the views in the scrollable_container.
@@ -894,6 +897,15 @@ void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
   // Finish initialization of views that require app list config.
   if (creating_initial_config)
     UpdateForActiveAppListModel();
+}
+
+void AppsContainerView::ChildVisibilityChanged(views::View* child) {
+  if (!features::IsProductivityLauncherEnabled())
+    return;
+  if (child == continue_section_ || child == recent_apps_) {
+    separator_->SetVisible(recent_apps_->GetItemViewCount() > 0 ||
+                           continue_section_->GetTasksSuggestionsCount() > 0);
+  }
 }
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {

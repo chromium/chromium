@@ -333,5 +333,21 @@ TEST_P(RecentAppsViewTest, UpdateAppsOnModelChange) {
   EXPECT_EQ(std::vector<std::string>{}, GetRecentAppsIds());
 }
 
+TEST_P(RecentAppsViewTest, VisibleWithMinimumApps) {
+  AddAppResults(4);
+  ShowAppList();
+
+  // Verify the visibility of the recent_apps section.
+  EXPECT_TRUE(GetRecentAppsView()->GetVisible());
+}
+
+TEST_P(RecentAppsViewTest, NotVisibleWithLessThanMinimumApps) {
+  AddAppResults(3);
+  ShowAppList();
+
+  // Verify the visibility of the recent_apps section.
+  EXPECT_FALSE(GetRecentAppsView()->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash

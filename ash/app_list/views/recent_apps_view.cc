@@ -162,6 +162,7 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
   layout_->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   layout_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
+  SetVisible(false);
 }
 
 RecentAppsView::~RecentAppsView() = default;
@@ -190,8 +191,12 @@ void RecentAppsView::ShowResults(SearchModel* search_model,
       items.push_back(item);
   }
 
-  if (items.size() < kMinRecommendedApps)
+  if (items.size() < kMinRecommendedApps) {
+    SetVisible(false);
     return;
+  }
+
+  SetVisible(true);
 
   for (AppListItem* item : items) {
     auto* item_view = AddChildView(std::make_unique<AppListItemView>(
