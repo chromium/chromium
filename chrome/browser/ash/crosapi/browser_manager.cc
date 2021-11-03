@@ -550,6 +550,26 @@ void BrowserManager::RemoveObserver(BrowserManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void BrowserManager::Shutdown() {
+  // Lacros KeepAlive should be disabled once Shutdown() has been signalled.
+  // Further calls to `UpdateKeepAliveInBrowserIfNecessary()` will no-op after
+  // `shutdown_requested_` has been set.
+  UpdateKeepAliveInBrowserIfNecessary(false);
+  shutdown_requested_ = true;
+
+  // The lacros-chrome process may have already been terminated as the result of
+  // a previous mojo pipe disconnection in `OnMojoDisconnected()` and has not
+  // yet been restarted. Ensure the lacros process is still valid before
+  // proceeding.
+  if (!lacros_process_.IsValid())
+    return;
+
+  // Signal the the lacros process to terminate. This will result in mojo
+  // disconnecting and a callback into `OnMojoDisconnected()`. This will post a
+  // task that waits for a successful lacros-chrome exit on a separate thread.
+  lacros_process_.Terminate(/*ignored=*/0, /*wait=*/false);
+}
+
 void BrowserManager::SetState(State state) {
   if (state_ == state)
     return;
@@ -631,6 +651,11 @@ BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
   DCHECK(!lacros_path_.empty());
   DCHECK(lacros_selection_.has_value());
 
+  if (shutdown_requested_) {
+    LOG(WARNING) << "lacros-chrome is preparing for system shutdown";
+    return MaybeStartResult::kNotStarted;
+  }
+
   if (state_ == State::TERMINATING) {
     LOG(WARNING) << "lacros-chrome is terminating, so cannot start now";
     return MaybeStartResult::kNotStarted;
@@ -654,6 +679,7 @@ void BrowserManager::Start(
     browser_util::InitialBrowserAction initial_browser_action) {
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
+  DCHECK(!shutdown_requested_);
   // Ensure we're not trying to open a window before the shelf is initialized.
   DCHECK(ChromeShelfController::instance());
 
@@ -683,6 +709,15 @@ void BrowserManager::StartWithLogFile(
     browser_util::InitialBrowserAction initial_browser_action,
     LaunchParamsFromBackground params) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
+
+  if (shutdown_requested_) {
+    // StartWithLogFile() may have been posted before Shutdown() has been
+    // signalled by the system. Ensure that we do not start lacros-chrome in
+    // this case.
+    LOG(ERROR) << "Start attempted after Shutdown() called.";
+    SetState(State::STOPPED);
+    return;
+  }
 
   if (!params.use_new_account_manager) {
     // If `use_new_account_manager` is false, that means deleting old lacros
@@ -887,6 +922,7 @@ void BrowserManager::OnBrowserRelaunchRequested(CrosapiId id) {
 
 void BrowserManager::OnMojoDisconnected() {
   DCHECK(state_ == State::STARTING || state_ == State::RUNNING);
+  DCHECK(lacros_process_.IsValid());
   LOG(WARNING)
       << "Mojo to lacros-chrome is disconnected. Terminating lacros-chrome";
 
@@ -910,9 +946,10 @@ void BrowserManager::OnLacrosChromeTerminated() {
   // abnormally (e.g. crashes). For now, assume the user meant to close it.
   SetLaunchOnLoginPref(false);
 
-  if (relaunch_requested_)
+  if (!shutdown_requested_ && relaunch_requested_) {
     Start(browser_util::InitialBrowserAction(
         mojom::InitialBrowserAction::kRestoreLastSession));
+  }
 }
 
 void BrowserManager::OnSessionStateChanged() {
@@ -958,7 +995,7 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path,
     std::move(load_complete_callback_).Run(success);
   }
 
-  if (state_ == State::STOPPED &&
+  if (state_ == State::STOPPED && !shutdown_requested_ &&
       (browser_util::IsLacrosPrimaryBrowser() || GetLaunchOnLoginPref())) {
     Start(GetInitialBrowserAction());
   }
@@ -1042,7 +1079,8 @@ void BrowserManager::StopKeepAlive(Feature feature) {
 }
 
 void BrowserManager::LaunchForKeepAliveIfNecessary() {
-  if (state_ == State::STOPPED && !keep_alive_features_.empty()) {
+  if (state_ == State::STOPPED && !shutdown_requested_ &&
+      !keep_alive_features_.empty()) {
     CHECK(browser_util::IsLacrosEnabled());
     CHECK(browser_util::IsLacrosAllowedToLaunch());
     Start(browser_util::InitialBrowserAction(
@@ -1051,10 +1089,11 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
 }
 
 void BrowserManager::UpdateKeepAliveInBrowserIfNecessary(bool enabled) {
-  if (!browser_service_.has_value() ||
+  if (shutdown_requested_ || !browser_service_.has_value() ||
       browser_service_->interface_version <
           crosapi::mojom::BrowserService::kUpdateKeepAliveMinVersion) {
-    // Browser is not running now, or Lacros is too old. Just give up.
+    // Shutdown has started, the browser is not running now, or Lacros is too
+    // old. Just give up.
     return;
   }
   browser_service_->service->UpdateKeepAlive(enabled);

@@ -185,6 +185,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // is was validated by Ash.
   void SetDeviceAccountPolicy(const std::string& policy_blob);
 
+  // Notifies the BrowserManager that it should prepare for shutdown. This is
+  // called in the early stages of ash shutdown to give Lacros sufficient time
+  // for a graceful exit.
+  void Shutdown();
+
   // Parameters used to launch Lacros that are calculated on a background
   // sequence. Public so that it can be used from private static functions.
   struct LaunchParamsFromBackground {
@@ -321,10 +326,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
                                     mojo::RemoteSetElementId mojo_id) override;
   void OnBrowserRelaunchRequested(CrosapiId id) override;
 
-  // Called when the Mojo connection to lacros-chrome is disconnected.
-  // It may be "just a Mojo error" or "lacros-chrome crash".
-  // In either case, terminates lacros-chrome, because there's no longer a
-  // way to communicate with lacros-chrome.
+  // Called when the Mojo connection to lacros-chrome is disconnected. It may be
+  // "just a Mojo error" or "lacros-chrome crash". This method posts a
+  // shutdown-blocking async task that waits lacros-chrome to exit, giving it a
+  // chance to gracefully exit. The task will send a terminate signal to
+  // lacros-chrome if the process has not terminated within the graceful
+  // shutdown window.
   void OnMojoDisconnected();
 
   // Called when lacros-chrome is terminated and successfully wait(2)ed.
@@ -400,6 +407,10 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Remembers the request from Lacros-chrome whether it needs to be
   // relaunched. Reset on new process start in any cases.
   bool relaunch_requested_ = false;
+
+  // Tracks whether Shutdown() has been signalled by ash. This flag ensures any
+  // new or existing lacros startup tasks are not executed during shutdown.
+  bool shutdown_requested_ = false;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

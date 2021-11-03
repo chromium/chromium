@@ -15,6 +15,7 @@
 #include "base/memory/singleton.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
@@ -373,6 +374,16 @@ void BrowserProcessPlatformPart::StartTearDown() {
   // destroyed.  So we need to destroy |timezone_resolver_| here.
   timezone_resolver_.reset();
   profile_helper_.reset();
+}
+
+void BrowserProcessPlatformPart::AttemptExit(bool try_to_quit_application) {
+  // Request Lacros terminate early during shutdown to give it the opportunity
+  // to shutdown gracefully. Check to make sure `browser_manager` is available
+  // as it may be null in tests.
+  if (auto* browser_manager = crosapi::BrowserManager::Get())
+    browser_manager->Shutdown();
+
+  BrowserProcessPlatformPartBase::AttemptExit(try_to_quit_application);
 }
 
 chromeos::system::SystemClock* BrowserProcessPlatformPart::GetSystemClock() {
