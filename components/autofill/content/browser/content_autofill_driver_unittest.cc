@@ -520,12 +520,17 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
+  url::Origin triggered_origin;
   FormData input_form_data = SeeAddressFormData();
+  for (FormFieldData& field : input_form_data.fields) {
+    field.origin = triggered_origin;
+    field.value = u"dummy_value";
+  }
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->FillOrPreviewForm(input_page_id,
                              mojom::RendererFormDataAction::kFill,
-                             input_form_data, url::Origin(), {});
+                             input_form_data, triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
@@ -542,12 +547,20 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
+  url::Origin triggered_origin;
   FormData input_form_data = SeeAddressFormData();
+  for (FormFieldData& field : input_form_data.fields) {
+    field.origin = triggered_origin;
+    field.value = u"dummy_value";
+  }
+  ASSERT_TRUE(base::ranges::all_of(input_form_data.fields,
+                                   base::not_fn(&std::u16string::empty),
+                                   &FormFieldData::value));
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->FillOrPreviewForm(input_page_id,
                              mojom::RendererFormDataAction::kPreview,
-                             input_form_data, url::Origin(), {});
+                             input_form_data, triggered_origin, {});
 
   run_loop.RunUntilIdle();
 

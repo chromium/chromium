@@ -840,29 +840,29 @@ TEST_P(ParameterizedFormCacheBrowserTest, FieldLimit) {
 // clearing their frames and skipping the then-empty forms.
 TEST_P(FormCacheIframeBrowserTest, FrameLimit) {
   std::string html;
-  for (unsigned int i = 0; i < MaxParseableChildFrames(0) + 1; i++)
+  for (unsigned int i = 0; i < kMaxParseableChildFrames + 1; i++)
     html += "<form><iframe></iframe></form>";
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(MaxParseableChildFrames(0) + 1,
+  ASSERT_EQ(kMaxParseableChildFrames + 1,
             GetMainFrame()->GetDocument().Forms().size());
 
   FormCache form_cache(GetMainFrame());
   FormCache::UpdateFormCacheResult forms =
       form_cache.ExtractNewForms(/*field_data_manager=*/nullptr);
 
-  EXPECT_EQ(MaxParseableChildFrames(0), forms.updated_forms.size());
+  EXPECT_EQ(kMaxParseableChildFrames, forms.updated_forms.size());
   EXPECT_TRUE(forms.removed_forms.empty());
 }
 
 // Test that FormCache::ExtractNewForms() limits the number of total fields and
 // total frames:
-// - the forms [0, MaxParseableChildFrames(0)) should be unchanged,
-// - the forms [MaxParseableChildFrames(0), kMaxParseableFields) should have
+// - the forms [0, kMaxParseableChildFrames) should be unchanged,
+// - the forms [kMaxParseableChildFrames, kMaxParseableFields) should have
 //   empty FormData::child_frames,
 // - the forms [kMaxParseableFields, end) should be skipped.
 TEST_P(FormCacheIframeBrowserTest, FieldAndFrameLimit) {
-  ASSERT_LE(MaxParseableChildFrames(0), kMaxParseableFields);
+  ASSERT_LE(kMaxParseableChildFrames, kMaxParseableFields);
 
   std::string html;
   for (unsigned int i = 0; i < kMaxParseableFields + 1; i++)
@@ -881,11 +881,10 @@ TEST_P(FormCacheIframeBrowserTest, FieldAndFrameLimit) {
                                     &std::vector<FormFieldData>::empty,
                                     &FormData::fields));
   EXPECT_TRUE(base::ranges::none_of(
-      base::make_span(forms.updated_forms)
-          .subspan(0, MaxParseableChildFrames(0)),
+      base::make_span(forms.updated_forms).subspan(0, kMaxParseableChildFrames),
       &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
   EXPECT_TRUE(base::ranges::all_of(
-      base::make_span(forms.updated_forms).subspan(MaxParseableChildFrames(0)),
+      base::make_span(forms.updated_forms).subspan(kMaxParseableChildFrames),
       &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
 
   EXPECT_TRUE(forms.removed_forms.empty());

@@ -589,6 +589,12 @@ void ContentAutofillRouter::FillOrPreviewForm(
       form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
                                                  field_type_map);
   for (const FormData& renderer_form : renderer_forms) {
+    // Sending empty fill data to the renderer is semantically a no-op but
+    // causes some further mojo calls.
+    if (base::ranges::all_of(renderer_form.fields, &std::u16string::empty,
+                             &FormFieldData::value)) {
+      continue;
+    }
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
       target->FillOrPreviewFormImpl(kCrossFrameFill, action, renderer_form);
     }

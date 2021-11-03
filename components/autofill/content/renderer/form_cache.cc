@@ -144,14 +144,13 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     return base::flat_set<FormRendererId>(std::move(vec));
   }();
 
-  size_t frame_depth = form_util::GetFrameDepth(frame_);
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
 
   // Helper function that stores new autofillable forms in |forms|. Returns
   // false iff the total number of fields exceeds |kMaxParseableFields|. Clears
   // |form|'s FormData::child_frames if the total number of frames exceeds
-  // MaxParseableChildFrames().
+  // kMaxParseableChildFrames.
   auto ProcessForm =
       [&](FormData form,
           const std::vector<WebFormControlElement>& control_elements) {
@@ -166,9 +165,9 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
         if (num_fields_seen > kMaxParseableFields)
           return false;
 
-        // Enforce the MaxParseableChildFrames() limit: ignore the iframes, but
+        // Enforce the kMaxParseableChildFrames limit: ignore the iframes, but
         // do not ignore the fields (i.e., continue parsing).
-        if (num_frames_seen > MaxParseableChildFrames(frame_depth))
+        if (num_frames_seen > kMaxParseableChildFrames)
           form.child_frames.clear();
 
         size_t num_editable_elements =
@@ -278,7 +277,6 @@ FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
       static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
                                           form_util::EXTRACT_OPTIONS);
 
-  size_t frame_depth = form_util::GetFrameDepth(frame_);
   size_t num_fields_seen = 0;
   size_t num_frames_seen = 0;
   for (const WebFormElement& form_element : document.Forms()) {
@@ -304,7 +302,7 @@ FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
       return r;
     }
 
-    if (num_frames_seen > MaxParseableChildFrames(frame_depth))
+    if (num_frames_seen > kMaxParseableChildFrames)
       form.child_frames.clear();
 
     size_t num_editable_elements =
@@ -368,7 +366,7 @@ FormCache::UpdateFormCacheResult FormCache::ExtractNewForms(
     return r;
   }
 
-  if (num_frames_seen > MaxParseableChildFrames(frame_depth))
+  if (num_frames_seen > kMaxParseableChildFrames)
     synthetic_form.child_frames.clear();
 
   size_t num_editable_elements =

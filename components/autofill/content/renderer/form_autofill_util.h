@@ -32,7 +32,6 @@ class WebDocument;
 class WebElement;
 class WebFormControlElement;
 class WebFormElement;
-class WebFrame;
 class WebInputElement;
 class WebLocalFrame;
 class WebNode;
@@ -173,9 +172,6 @@ bool IsAutofillableElement(const blink::WebFormControlElement& element);
 // checks if the element takes up space in the layout, ie. this element or a
 // descendant has a non-empty bounding bounding client rect.
 bool IsWebElementVisible(const blink::WebElement& element);
-
-// The number of edges from |frame| to its main frame.
-size_t GetFrameDepth(const blink::WebFrame* frame);
 
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
 // attribute.

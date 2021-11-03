@@ -275,7 +275,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   //
   // We perform all these tasks in a single pre-order depth-first traversal of
   // |form|'s tree. That is, every field of a form is visited before/after
-  // recursing into the subframes of the form that come before/after that field.
+  // recursing into the subframes of the form that come after/before that field.
   // Only if |form|'s tree is trivial (consists of a single form), we can take
   // an abbreviation and just move the fields.
   if (!frame->parent_form && form->child_frames.empty() &&
@@ -289,6 +289,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     // from the renderer form |source_form| from |source| to |target|.
     // Default-initializes each source field after its move to prevent it from
     // being moved in a future call.
+    //
     // Calling MoveFields() repeatedly to move one field at a time runs in
     // quadratic time due to the comparisons of the fields' renderer_form_id().
     // The cost could be reduced to linear time by reversing the source vectors
@@ -323,16 +324,16 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     // For example, consider a Node |n| whose form has 4 child frames and at
     // least 5 fields:
     //   <form>
-    //     <iframe>
+    //     <iframe></iframe>
     //     <input id="0">
     //     <input id="1">
     //     <input id="2">
-    //     <iframe>
-    //     <iframe>
+    //     <iframe></iframe>
+    //     <iframe></iframe>
     //     <input id="3">
     //     <input id="4">
-    //     <iframe>
-    //     <input>
+    //     <iframe></iframe>
+    //     <input id="5">
     //     ...
     //   </form>
     // The relative order of fields and frames is encoded in
@@ -342,7 +343,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     // - `n.form->child_frames[1].predecessor == 2`;
     // - `n.form->child_frames[2].predecessor == 2`;
     // - `n.form->child_frames[3].predecessor == 4`.
-    // Then the represented field range depends of the next frame:
+    // Then, the field range represented by |n| depends on `n.next_frame`:
     // - `n.next_frame == 0` represents the empty range;
     // - `n.next_frame == 1` represents the fields with indices 0, 1, 2;
     // - `n.next_frame == 2` represents the empty range;
@@ -357,8 +358,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     //
     // Since the relative order of the fields is the same as in the renderer
     // form, the index |i| of a field from `n.form` translates to the |i|th
-    // field whose `renderer_form_id()` is `n.form->global_id()` in the
-    // respective vector that contains the fields from `n.form`.
+    // field |f| from the respective vector that contains the fields from
+    // `n.form` for which `f.renderer_form_id() == n.form->global_id()`.
     //
     // When the traversal expands a Node |n| from the |frontier|, we
     // - pull these fields from |roots_on_path| (defined below) or |form_fields|
@@ -368,9 +369,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     //   - a Node with incremented `n.next_frame` for the successor frame and
     //     its preceding fields
     //   in an order that ensures DOM-order traversal.
-    // The latter step is omitted if Node::next_frame is out of bounds,
-    // indicating indicating that all fields and frames have been visited
-    // already.
+    // If Node::next_frame is out of bounds (indicating that all fields and
+    // frames have been visited already), we omit the latter step.
     struct Node {
       FrameData* frame;   // Not null.
       FormData* form;     // Not null.
@@ -391,24 +391,36 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     std::vector<FormFieldData> root_fields;
     root_fields.reserve(root.form->fields.size() + form_fields.size());
 
-    size_t num_visits = 0;
+    // We bound the number of visited nodes. We want to visit the field ranges
+    // of `root.form` plus up to 64 nodes from its descendant frames. (This
+    // constant may be adjusted if real-world trees tend to be bigger.)
+    //
+    // If visiting the field ranges of a frame would push us over the kMaxVisits
+    // limit, we disconnect that frame's subtrees from `root.form`'s tree.
+    //
+    // The invariants are
+    // - `num_did_visit <= num_will_visit` and
+    // - `num_will_visit <= kMaxVisits`.
+    // The latter is immediate. The former holds because
+    // - |num_did_visit| is the number `frontier.pop()` operations,
+    // - |num_will_visit| is the number of `frontier.push()` operations.
+    auto NumChildrenOfForm = [](const FormData& form) {
+      return form.child_frames.size() + 1;
+    };
+    auto NumChildrenOfFrame = [&NumChildrenOfForm](const FrameData& frame) {
+      size_t num = 0;
+      for (const FormData& form : frame.child_forms)
+        num += NumChildrenOfForm(form);
+      return num;
+    };
+    size_t num_did_visit = 0;
+    size_t num_will_visit = NumChildrenOfForm(*root.form);
+    const size_t kMaxVisits = num_will_visit + 64;
+
     while (!frontier.empty()) {
-      // Each node |n| is visited `n.form->child_frames.size() + 1` times.
-      // By induction on the tree height, it follows that the overall number of
-      // visits is 2 * N - 1, where N is the number of nodes in the tree:
-      // For a tree with a single vertex, the claim is immediate. For the
-      // induction step, consider a root node with K children. Let N_I be the
-      // number of nodes in the subtree induced by the Ith child. By induction,
-      // the number of visits in each subtree is 2 * N_I - 1. The number of
-      // visits in the whole tree is therefore
-      //     K + 1 + \sum_{I=1}^K (2 * N_I - 1)
-      //   = 1 + \sum_{I=1}^K 2 * N_I
-      //   = 2 * (1 + \sum_{I=1}^K N_I) - 1
-      //   = 2 * N - 1.
-      if (++num_visits > kMaxParseableFramesInTree * 2 - 1) {
-        AFCHECK(false);
-        break;
-      }
+      ++num_did_visit;
+      AFCHECK(num_did_visit <= num_will_visit, break);
+      AFCHECK(num_will_visit <= kMaxVisits, break);
 
       Node n = frontier.top();
       frontier.pop();
@@ -435,8 +447,22 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       // order.
       //
       // If `n.next_frame` is out of bounds, all paths through |n| have been
-      // fully traversed, so if applicable, we pop `n.form` from
-      // |roots_on_path|.
+      // fully traversed. In this case we pop `n.form` from |roots_on_path| if
+      // applicable.
+      //
+      // To avoid excessive computational cost on sites with many forms (e.g.,
+      // <form><input></form> x 200 x multiple frames), the traversal does not
+      // descend into `n.form`'s |child_frame| if visiting |child_frame|'s field
+      // ranges would push us over the kMaxVisits limit. In this case, we
+      // disconnect the subtrees of |child_frame| from |n|.
+      //
+      // Note that an earlier tree traversal may have moved some fields from
+      // |child_frame|'s subtrees to `root.form` (or a former root). The present
+      // tree traversal implicitly deletes such fields from `root.form`. We
+      // intentionally do not move them back to |child_frame|'s subtree because
+      // (a) this would add a lot of complexity just to handle a rare special
+      // case, and (b) the fields will re-occur in |child_frame|'s subtree once
+      // UpdateTreeOfRendererForm() is called for their renderer forms.
       if (n.next_frame < n.form->child_frames.size()) {
         // [begin, end) is the range of fields from `n.form` before
         // `n.next_frame`.
@@ -448,20 +474,36 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
             n.form->child_frames[n.next_frame].predecessor + 1);
         AFCHECK(begin <= end, continue);
         MoveFields(end - begin, n.form->global_id(), source, root_fields);
+
+        // Pushes the right-sibling field range of |n| onto the stack.
         frontier.push(
             {.frame = n.frame, .form = n.form, .next_frame = n.next_frame + 1});
+
+        // Pushes the child field ranges of |n| onto the stack. To ensure DOM
+        // order, we do so in reverse order and after the right sibling.
+        //
+        // Even if a |child_frame| isn't known yet, we create its FrameData and
+        // set its FrameData::parent_frame to avoid a reparse of `n.frame` when
+        // a form is seen in |child_frame|.
+        //
+        // If visiting |child_frame|'s field ranges would push us over the
+        // kMaxVisits limit, we disconnect the |child_frame| from `n.form` by
+        // unsetting FrameData::parent_form.
         absl::optional<LocalFrameToken> local_child =
             Resolve(*n.frame, n.form->child_frames[n.next_frame].token);
         FrameData* child_frame;
-        // If the FrameData does not exist yet, creating it now and setting the
-        // FrameData::parent_form avoids a reparse if and when a form is seen in
-        // this child frame.
         if (local_child && (child_frame = GetOrCreateFrameData(*local_child))) {
-          child_frame->parent_form = n.form->global_id();
-          for (size_t i = child_frame->child_forms.size(); i > 0; --i) {
-            frontier.push({.frame = child_frame,
-                           .form = &child_frame->child_forms[i - 1],
-                           .next_frame = 0});
+          num_will_visit += NumChildrenOfFrame(*child_frame);
+          if (num_will_visit > kMaxVisits) {
+            num_will_visit -= NumChildrenOfFrame(*child_frame);
+            child_frame->parent_form = absl::nullopt;
+          } else {
+            child_frame->parent_form = n.form->global_id();
+            for (size_t i = child_frame->child_forms.size(); i > 0; --i) {
+              frontier.push({.frame = child_frame,
+                             .form = &child_frame->child_forms[i - 1],
+                             .next_frame = 0});
+            }
           }
         }
       } else {
@@ -473,6 +515,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         }
       }
     }
+    AFCHECK(num_did_visit == num_will_visit);
     root.form->fields = std::move(root_fields);
   }
 

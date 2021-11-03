@@ -1580,7 +1580,7 @@ bool FormOrFieldsetsToFormData(
     });
   }
 
-  if (form->child_frames.size() > MaxParseableChildFrames(GetFrameDepth(frame)))
+  if (form->child_frames.size() > kMaxParseableChildFrames)
     form->child_frames.clear();
 
   const bool success = (!form->fields.empty() || !form->child_frames.empty()) &&
@@ -1876,13 +1876,6 @@ bool IsAutofillableElement(const WebFormControlElement& element) {
 
 bool IsWebElementVisible(const blink::WebElement& element) {
   return element.IsFocusable();
-}
-
-size_t GetFrameDepth(const blink::WebFrame* frame) {
-  size_t depth = 0;
-  while ((frame = frame->Parent()) != nullptr)
-    ++depth;
-  return depth;
 }
 
 std::u16string GetFormIdentifier(const WebFormElement& form) {
