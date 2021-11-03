@@ -31,7 +31,7 @@ class VIEWS_EXPORT InteractionSequenceViews {
 
   // Given an InteractionSequence and a View, names the view in the sequence.
   // If the view doesn't already have an element identifier, assigns
-  // ui::InteractionSequence::kTemporaryIdentifier. If `view` is null, calls
+  // ui::ElementTracker::kTemporaryIdentifier. If `view` is null, calls
   // sequence->NameElement(nullptr, name).
   //
   // It is an error to call this method on a non-null View which is not visible

@@ -700,6 +700,21 @@ TEST_F(ElementTrackerViewsTest, CanLookupElementByView) {
             ElementTrackerViews::GetInstance()->GetElementForView(button));
 }
 
+TEST_F(ElementTrackerViewsTest, AssignTemporaryId) {
+  auto* button = widget_->SetContentsView(std::make_unique<LabelButton>());
+  DCHECK(!button->GetProperty(kElementIdentifierKey));
+
+  TrackedElementViews* element =
+      ElementTrackerViews::GetInstance()->GetElementForView(button);
+  EXPECT_EQ(nullptr, element);
+  element = ElementTrackerViews::GetInstance()->GetElementForView(button, true);
+  EXPECT_NE(nullptr, element);
+  EXPECT_EQ(ui::ElementTracker::kTemporaryIdentifier.raw_value(),
+            button->GetProperty(kElementIdentifierKey).raw_value());
+  EXPECT_EQ(element, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+                         ui::ElementTracker::kTemporaryIdentifier, context()));
+}
+
 // The following tests ensure conformity with the different platforms' Views
 // implementation to ensure that Views are reported as visible to the user at
 // the correct times, including during Widget close/delete.

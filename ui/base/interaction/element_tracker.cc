@@ -16,6 +16,8 @@
 
 namespace ui {
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
+
 class ElementTracker::ElementData {
  public:
   ElementData(ElementTracker* tracker,

@@ -215,14 +215,34 @@ ui::ElementContext ElementTrackerViews::GetContextForWidget(Widget* widget) {
   return ui::ElementContext(widget->GetPrimaryWindowWidget());
 }
 
-TrackedElementViews* ElementTrackerViews::GetElementForView(View* view) {
-  const auto identifier = view->GetProperty(kElementIdentifierKey);
-  if (!identifier)
-    return nullptr;
+TrackedElementViews* ElementTrackerViews::GetElementForView(
+    View* view,
+    bool assign_temporary_id) {
+  ui::ElementIdentifier identifier = view->GetProperty(kElementIdentifierKey);
+  if (!identifier) {
+    if (!assign_temporary_id)
+      return nullptr;
+
+    // We shouldn't be assigning temporary IDs to views which are not yet on
+    // widgets (how did we even get a reference to the view?)
+    DCHECK(view->GetWidget());
+    identifier = ui::ElementTracker::kTemporaryIdentifier;
+    view->SetProperty(kElementIdentifierKey, identifier);
+  }
   const auto it = element_data_.find(identifier);
-  if (it == element_data_.end())
+  if (it == element_data_.end()) {
+    DCHECK(!assign_temporary_id);
     return nullptr;
+  }
   return it->second->GetElementForView(view);
+}
+
+const TrackedElementViews* ElementTrackerViews::GetElementForView(
+    const View* view) const {
+  // Const casts are justified as `assign_temporary_id` = false will not result
+  // in any modification to existing data.
+  return const_cast<ElementTrackerViews*>(this)->GetElementForView(
+      const_cast<View*>(view), false);
 }
 
 View* ElementTrackerViews::GetUniqueView(ui::ElementIdentifier id,

@@ -296,17 +296,6 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   TrackedElement* GetNamedElement(const base::StringPiece& name);
   const TrackedElement* GetNamedElement(const base::StringPiece& name) const;
 
-  // Identifier that should be used by each framework to create a
-  // TrackedElement for use with NameElement() if the element does not already
-  // have an identifier.
-  //
-  // Currently, the identifier is not removed when the sequence completes, but
-  // in the future we may implement a ref-counting system for named elements
-  // that use a temporary identifier so that it does not persist after the
-  // sequences that reference the element are gone.
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(InteractionSequence,
-                                         kTemporaryIdentifier);
-
  private:
   explicit InteractionSequence(std::unique_ptr<Configuration> configuration);
 

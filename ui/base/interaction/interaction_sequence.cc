@@ -357,9 +357,6 @@ const TrackedElement* InteractionSequence::GetNamedElement(
   return const_cast<InteractionSequence*>(this)->GetNamedElement(name);
 }
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(InteractionSequence,
-                                      kTemporaryIdentifier);
-
 void InteractionSequence::OnElementShown(TrackedElement* element) {
   DCHECK_EQ(StepType::kShown, next_step()->type);
   DCHECK(element->identifier() == next_step()->id);

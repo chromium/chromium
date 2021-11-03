@@ -49,11 +49,8 @@ void InteractionSequenceViews::NameView(ui::InteractionSequence* sequence,
                                         const base::StringPiece& name) {
   ui::TrackedElement* element = nullptr;
   if (view) {
-    if (!view->GetProperty(kElementIdentifierKey)) {
-      view->SetProperty(kElementIdentifierKey,
-                        ui::InteractionSequence::kTemporaryIdentifier);
-    }
-    element = ElementTrackerViews::GetInstance()->GetElementForView(view);
+    element = ElementTrackerViews::GetInstance()->GetElementForView(
+        view, /* assign_temporary_id =*/true);
     DCHECK(element);
   }
   sequence->NameElement(element, name);
