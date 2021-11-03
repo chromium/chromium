@@ -4,9 +4,13 @@
 
 #include "components/autofill_assistant/browser/starter_heuristic.h"
 
+#include <set>
+#include <vector>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -116,9 +120,9 @@ void StarterHeuristic::InitFromTrialParams() {
   matcher_id_to_intent_map_ = std::move(mapping);
 }
 
-std::set<std::string> StarterHeuristic::IsHeuristicMatch(
+base::flat_set<std::string> StarterHeuristic::IsHeuristicMatch(
     const GURL& url) const {
-  std::set<std::string> matching_intents;
+  base::flat_set<std::string> matching_intents;
   if (matcher_id_to_intent_map_.empty() || !url.is_valid()) {
     return matching_intents;
   }
@@ -143,8 +147,8 @@ std::set<std::string> StarterHeuristic::IsHeuristicMatch(
 
 void StarterHeuristic::RunHeuristicAsync(
     const GURL& url,
-    base::OnceCallback<void(const std::set<std::string>& intents)> callback)
-    const {
+    base::OnceCallback<void(const base::flat_set<std::string>& intents)>
+        callback) const {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&StarterHeuristic::IsHeuristicMatch,

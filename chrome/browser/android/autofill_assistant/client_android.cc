@@ -14,6 +14,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantClient_jni.h"
@@ -421,7 +422,7 @@ int ClientAndroid::FindDirectAction(const std::string& action_name) {
     if (!user_action.enabled())
       continue;
 
-    const std::set<std::string>& action_names =
+    const base::flat_set<std::string>& action_names =
         user_action.direct_action().names;
     if (action_names.count(action_name) != 0)
       return i;

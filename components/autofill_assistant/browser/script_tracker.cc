@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/script_executor.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -221,10 +223,12 @@ bool ScriptTracker::RunnablesHaveChanged() {
   if (runnable_scripts_.size() != pending_runnable_scripts_.size())
     return true;
 
-  std::set<std::string> current_paths;
+  std::vector<std::string> all_current_paths;
   for (const auto& handle : runnable_scripts_) {
-    current_paths.insert(handle.path);
+    all_current_paths.emplace_back(handle.path);
   }
+  auto current_paths =
+      base::flat_set<std::string>(std::move(all_current_paths));
   return pending_runnable_scripts_ != current_paths;
 }
 

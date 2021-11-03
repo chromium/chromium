@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -278,7 +279,7 @@ void Starter::MaybeStartImplicitlyForUrl(const GURL& url,
 
 void Starter::OnHeuristicMatch(const GURL& url,
                                const ukm::SourceId source_id,
-                               const std::set<std::string>& intents) {
+                               const base::flat_set<std::string>& intents) {
   if (intents.empty()) {
     Metrics::RecordInChromeTriggerAction(
         ukm_recorder_, source_id,

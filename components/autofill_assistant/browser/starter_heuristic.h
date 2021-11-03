@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_HEURISTIC_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_HEURISTIC_H_
 
-#include <set>
 #include <string>
 
 #include "base/callback_forward.h"
@@ -35,8 +34,8 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   // The callback will be invoked on the caller's sequence.
   void RunHeuristicAsync(
       const GURL& url,
-      base::OnceCallback<void(const std::set<std::string>& intents)> callback)
-      const;
+      base::OnceCallback<void(const base::flat_set<std::string>& intents)>
+          callback) const;
 
  private:
   friend class base::RefCountedThreadSafe<StarterHeuristic>;
@@ -51,7 +50,7 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   void InitFromTrialParams();
 
   // Runs the heuristic against |url|. Returns all matching intents.
-  std::set<std::string> IsHeuristicMatch(const GURL& url) const;
+  base::flat_set<std::string> IsHeuristicMatch(const GURL& url) const;
 
   // The set of denylisted domains that will always return false before
   // considering any of the intent heuristics.

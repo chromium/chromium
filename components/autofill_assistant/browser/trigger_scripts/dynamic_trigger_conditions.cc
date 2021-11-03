@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
 #include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "third_party/re2/src/re2/re2.h"
 

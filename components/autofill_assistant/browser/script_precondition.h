@@ -6,11 +6,11 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_SCRIPT_PRECONDITION_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
@@ -65,7 +65,7 @@ class ScriptPrecondition {
   bool MatchParameters(const TriggerContext& context) const;
 
   // Domain (exact match) excluding the last '/' character.
-  std::set<std::string> domain_match_;
+  base::flat_set<std::string> domain_match_;
 
   // Pattern of the path parts of the URL.
   std::vector<std::unique_ptr<re2::RE2>> path_pattern_;

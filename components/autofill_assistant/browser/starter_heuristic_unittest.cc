@@ -4,6 +4,7 @@
 
 #include "components/autofill_assistant/browser/starter_heuristic.h"
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/gmock_callback_support.h"
@@ -24,7 +25,7 @@ class StarterHeuristicTest : public testing::Test {
   ~StarterHeuristicTest() override = default;
 
   // Synchronous evaluation of the heuristic for easier testing.
-  std::set<std::string> IsHeuristicMatchForTest(
+  base::flat_set<std::string> IsHeuristicMatchForTest(
       const StarterHeuristic& starter_heuristic,
       const GURL& url) {
     return starter_heuristic.IsHeuristicMatch(url);
@@ -76,9 +77,10 @@ TEST_F(StarterHeuristicTest, RunHeuristicAsync) {
         )"}});
 
   base::test::TaskEnvironment task_environment;
-  base::MockCallback<base::OnceCallback<void(const std::set<std::string>&)>>
+  base::MockCallback<
+      base::OnceCallback<void(const base::flat_set<std::string>&)>>
       callback;
-  EXPECT_CALL(callback, Run(std::set<std::string>{"FAKE_INTENT_CART"}));
+  EXPECT_CALL(callback, Run(base::flat_set<std::string>{"FAKE_INTENT_CART"}));
   auto starter_heuristic = base::MakeRefCounted<StarterHeuristic>();
   starter_heuristic->RunHeuristicAsync(GURL("https://www.example.com/cart"),
                                        callback.Get());

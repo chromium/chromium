@@ -4,11 +4,10 @@
 
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 
-#include <set>
-
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -76,7 +75,7 @@ class BatchElementCheckerTest : public testing::Test {
   BatchElementChecker checks_;
   base::flat_map<std::string, bool> element_exists_results_;
   base::flat_map<std::string, std::string> get_field_value_results_;
-  std::set<std::string> all_done_;
+  base::flat_set<std::string> all_done_;
 };
 
 TEST_F(BatchElementCheckerTest, Empty) {
