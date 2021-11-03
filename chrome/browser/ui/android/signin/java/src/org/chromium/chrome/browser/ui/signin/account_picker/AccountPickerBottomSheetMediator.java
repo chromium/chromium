@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -56,7 +57,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
 
         mModel = AccountPickerBottomSheetProperties.createModel(this::onSelectedAccountClicked,
-                this::onContinueAsClicked, view -> onDismissButtonClicked.run());
+                this::onContinueAsClicked,
+                view -> onDismissButtonClicked.run(), accountPickerDelegate.getEntryPoint());
         mProfileDataCache.addObserver(this);
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
@@ -148,6 +150,10 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
         return mModel;
     }
 
+    boolean isEntryPointWebSignin() {
+        return mModel.get(AccountPickerBottomSheetProperties.ENTRY_POINT) == EntryPoint.WEB_SIGNIN;
+    }
+
     void destroy() {
         mAccountPickerDelegate.destroy();
         mProfileDataCache.removeObserver(this);
@@ -234,7 +240,12 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SIGNED_IN_WITH_NON_DEFAULT_ACCOUNT);
         }
-        SigninPreferencesManager.getInstance().clearWebSigninAccountPickerActiveDismissalCount();
+
+        if (isEntryPointWebSignin()) {
+            SigninPreferencesManager.getInstance()
+                    .clearWebSigninAccountPickerActiveDismissalCount();
+        }
+
         mAccountPickerDelegate.signIn(mSelectedAccountName, this::onSigninFailed);
     }
 

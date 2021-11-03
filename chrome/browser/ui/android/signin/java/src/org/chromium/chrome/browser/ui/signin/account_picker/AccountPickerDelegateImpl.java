@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
@@ -83,6 +84,11 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
                         }
                     });
         });
+    }
+
+    @Override
+    public @EntryPoint int getEntryPoint() {
+        return EntryPoint.WEB_SIGNIN;
     }
 
     private static WebSigninBridge.Listener createWebSigninBridgeListener(

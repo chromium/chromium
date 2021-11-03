@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
@@ -22,6 +23,7 @@ import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.widget.ButtonCompat;
+import org.chromium.ui.widget.TextViewWithLeading;
 
 /**
  * This class is the AccountPickerBottomsheet view for the web sign-in flow.
@@ -153,6 +155,17 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         continueButton.setText(continueAsButtonText);
     }
 
+    /**
+     * Adjusts the strings in the header and dismiss button for the send-tab-to-self entry point.
+     */
+    void setSendTabToSelfHeaderAndDismissButtonText() {
+        setSendTabToSelfHeaderText(ViewState.COLLAPSED_ACCOUNT_LIST);
+        setSendTabToSelfHeaderText(ViewState.EXPANDED_ACCOUNT_LIST);
+        setSendTabToSelfHeaderText(ViewState.NO_ACCOUNTS);
+
+        mDismissButton.setText(R.string.cancel);
+    }
+
     @Override
     public View getContentView() {
         return mContentView;
@@ -215,6 +228,14 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.account_picker_bottom_sheet_accessibility_closed;
+    }
+
+    private void setSendTabToSelfHeaderText(@ViewState int viewState) {
+        final View view = mViewFlipper.getChildAt(viewState);
+        ((TextView) view.findViewById(R.id.account_picker_header_title))
+                .setText(R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self);
+        ((TextViewWithLeading) view.findViewById(R.id.account_picker_header_subtitle))
+                .setText(R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self);
     }
 
     private static void setUpContinueButton(View view, @StringRes int buttonId) {

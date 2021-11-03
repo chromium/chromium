@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.VisibleForTesting;
 
@@ -20,10 +21,26 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Coordinator of the account picker bottom sheet used in web signin flow.
  */
 public class AccountPickerBottomSheetCoordinator {
+    /** The scenarios which can trigger the account picker bottom sheet.*/
+    @IntDef({
+            EntryPoint.WEB_SIGNIN,
+            EntryPoint.SEND_TAB_TO_SELF,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface EntryPoint {
+        // The user navigated to a website requiring a signed-in Google Account.
+        int WEB_SIGNIN = 0;
+        // The user attempted to use the send-tab-to-self feature while being signed out.
+        int SEND_TAB_TO_SELF = 1;
+    }
+
     private final AccountPickerBottomSheetView mView;
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerCoordinator mAccountPickerCoordinator;
@@ -37,13 +54,13 @@ public class AccountPickerBottomSheetCoordinator {
             }
 
             if (reason == StateChangeReason.SWIPE) {
-                logMetricAndIncrementActiveDismissalCount(
+                logMetricAndIncrementActiveDismissalCountIfWebSignin(
                         AccountConsistencyPromoAction.DISMISSED_SWIPE_DOWN);
             } else if (reason == StateChangeReason.BACK_PRESS) {
-                logMetricAndIncrementActiveDismissalCount(
+                logMetricAndIncrementActiveDismissalCountIfWebSignin(
                         AccountConsistencyPromoAction.DISMISSED_BACK);
             } else if (reason == StateChangeReason.TAP_SCRIM) {
-                logMetricAndIncrementActiveDismissalCount(
+                logMetricAndIncrementActiveDismissalCountIfWebSignin(
                         AccountConsistencyPromoAction.DISMISSED_SCRIM);
             }
 
@@ -88,16 +105,19 @@ public class AccountPickerBottomSheetCoordinator {
 
     @MainThread
     private void onDismissButtonClicked() {
-        logMetricAndIncrementActiveDismissalCount(AccountConsistencyPromoAction.DISMISSED_BUTTON);
+        logMetricAndIncrementActiveDismissalCountIfWebSignin(
+                AccountConsistencyPromoAction.DISMISSED_BUTTON);
         mBottomSheetController.hideContent(mView, true);
     }
 
     @MainThread
-    private void logMetricAndIncrementActiveDismissalCount(
+    private void logMetricAndIncrementActiveDismissalCountIfWebSignin(
             @AccountConsistencyPromoAction int promoAction) {
         SigninMetricsUtils.logAccountConsistencyPromoAction(promoAction);
-        SigninPreferencesManager.getInstance()
-                .incrementWebSigninAccountPickerActiveDismissalCount();
+        if (mAccountPickerBottomSheetMediator.isEntryPointWebSignin()) {
+            SigninPreferencesManager.getInstance()
+                    .incrementWebSigninAccountPickerActiveDismissalCount();
+        }
     }
 
     @VisibleForTesting

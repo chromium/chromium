@@ -25,6 +25,7 @@
       android:text="@string/signin_account_picker_dialog_title" />
 
   <org.chromium.ui.widget.TextViewWithLeading
+      android:id="@+id/account_picker_header_subtitle"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginStart="24dp"

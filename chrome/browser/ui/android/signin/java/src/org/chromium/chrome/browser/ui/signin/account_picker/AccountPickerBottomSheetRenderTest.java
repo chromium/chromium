@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
@@ -35,6 +36,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator.EntryPoint;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -64,6 +66,7 @@ public class AccountPickerBottomSheetRenderTest {
 
     private static final class CustomAccountPickerDelegate implements AccountPickerDelegate {
         private @Nullable GoogleServiceAuthError mError;
+        private @EntryPoint int mEntryPoint = EntryPoint.WEB_SIGNIN;
 
         CustomAccountPickerDelegate() {
             mError = null;
@@ -77,6 +80,10 @@ public class AccountPickerBottomSheetRenderTest {
             mError = null;
         }
 
+        void setSendTabToSelfEntryPoint() {
+            mEntryPoint = EntryPoint.SEND_TAB_TO_SELF;
+        }
+
         @Override
         public void destroy() {}
 
@@ -86,6 +93,11 @@ public class AccountPickerBottomSheetRenderTest {
             if (mError != null) {
                 onSignInErrorCallback.onResult(mError);
             }
+        }
+
+        @Override
+        public @EntryPoint int getEntryPoint() {
+            return mEntryPoint;
         }
     }
 
@@ -136,7 +148,8 @@ public class AccountPickerBottomSheetRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testCollapsedSheetWithAccountView(boolean nightModeEnabled) throws IOException {
+    public void testCollapsedSheetWithAccountViewForWebSigninEntryPoint(boolean nightModeEnabled)
+            throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         buildAndShowCollapsedBottomSheet();
         onView(isRoot()).check(ViewUtils.waitForView(allOf(withText(TEST_EMAIL1), isDisplayed())));
@@ -149,12 +162,43 @@ public class AccountPickerBottomSheetRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testExpandedSheetView(boolean nightModeEnabled) throws IOException {
+    public void testCollapsedSheetWithAccountViewForSendTabToSelfEntryPoint(
+            boolean nightModeEnabled) throws IOException {
+        mAccountPickerDelegate.setSendTabToSelfEntryPoint();
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        buildAndShowCollapsedBottomSheet();
+        onView(isRoot()).check(ViewUtils.waitForView(allOf(withText(TEST_EMAIL1), isDisplayed())));
+        onView(isRoot()).check(ViewUtils.waitForView(allOf(withText(FULL_NAME1), isDisplayed())));
+        mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(),
+                "collapsed_sheet_with_account_for_send_tab_to_self");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetViewForWebSigninEntryPoint(boolean nightModeEnabled)
+            throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
         mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
         buildAndShowCollapsedBottomSheet();
         expandBottomSheet();
         mRenderTestRule.render(mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetViewForSendTabToSelfEntryPoint(boolean nightModeEnabled)
+            throws IOException {
+        mAccountPickerDelegate.setSendTabToSelfEntryPoint();
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2, null, null, null);
+        buildAndShowCollapsedBottomSheet();
+        expandBottomSheet();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet_for_send_tab_to_self");
     }
 
     @Test
