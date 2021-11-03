@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -52,7 +53,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/painter.h"
 #include "ui/views/view.h"
 
@@ -236,8 +236,13 @@ void PopulateSheetHeaderView(bool show_back_arrow,
                              std::unique_ptr<views::Background> background) {
   SkColor background_color = background->get_color();
   container->SetBackground(std::move(background));
-  views::GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::BoxLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  // Need some spacing if the optional back arrow presents.
+  constexpr int kPaddingBetweenArrowAndTitle = 8;
+  layout->set_between_child_spacing(kPaddingBetweenArrowAndTitle);
 
   constexpr int kVerticalInset = 14;
   constexpr int kHeaderHorizontalInset = 16;
@@ -245,25 +250,7 @@ void PopulateSheetHeaderView(bool show_back_arrow,
       views::CreateEmptyBorder(kVerticalInset, kHeaderHorizontalInset,
                                kVerticalInset, kHeaderHorizontalInset));
 
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  // A column for the optional back arrow.
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  constexpr int kPaddingBetweenArrowAndTitle = 8;
-  if (show_back_arrow)
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize,
-                              kPaddingBetweenArrowAndTitle);
-
-  // A column for the title.
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  if (!show_back_arrow) {
-    layout->SkipColumns(1);
-  } else {
+  if (show_back_arrow) {
     auto back_arrow =
         views::CreateVectorImageButton(std::move(back_arrow_callback));
     views::SetImageFromVectorIcon(
@@ -274,10 +261,11 @@ void PopulateSheetHeaderView(bool show_back_arrow,
     back_arrow->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     back_arrow->SetID(static_cast<int>(DialogViewID::BACK_BUTTON));
     back_arrow->SetAccessibleName(l10n_util::GetStringUTF16(IDS_PAYMENTS_BACK));
-    layout->AddView(std::move(back_arrow));
+    container->AddChildView(std::move(back_arrow));
   }
 
-  layout->AddView(std::move(header_content_view));
+  layout->SetFlexForView(
+      container->AddChildView(std::move(header_content_view)), 1);
 }
 
 std::unique_ptr<views::ImageView> CreateAppIconView(
