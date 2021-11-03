@@ -68,6 +68,13 @@ SYNC_TEST_F('ChromeVoxTtsBackgroundTest', 'Preprocess', function() {
   // Repetitions for the pound sterling shouldn't be summarized.
   assertEquals(
       'pound sterling pound sterling pound sterling', preprocess('£££'));
+
+  // Negative currency values.
+  assertEquals('-1 dollar', preprocess('-$1'));
+  assertEquals('-1.12 dollar', preprocess('-$1.12'));
+  assertEquals('-1,123.58 dollar', preprocess('-$1,123.58'));
+  assertEquals('-1,123,581.3 dollar', preprocess('-$1,123,581.3'));
+  assertEquals('-1,123.58 pound sterling', preprocess('-£1,123.58'));
 });
 
 TEST_F('ChromeVoxTtsBackgroundTest', 'UpdateVoice', function() {
