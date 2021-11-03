@@ -7841,6 +7841,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="251"
       label="OBSOLETE_RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE"/>
   <int value="252" label="RFH_POPUP_REQUEST_WHILE_PRERENDERING"/>
+  <int value="253" label="RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE"/>
+  <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

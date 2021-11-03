@@ -278,6 +278,8 @@ enum BadMessageReason {
   FARI_LOGOUT_BAD_ENDPOINT = 250,
   OBSOLETE_RFH_CHILD_FRAME_UNEXPECTED_OWNER_ELEMENT_TYPE = 251,
   RFH_POPUP_REQUEST_WHILE_PRERENDERING = 252,
+  RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE = 253,  // Unused until 97.0.4674.0
+  RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS = 254,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
