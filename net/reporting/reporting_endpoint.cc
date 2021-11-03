@@ -88,7 +88,7 @@ bool operator>(const ReportingEndpointGroupKey& lhs,
 
 std::string ReportingEndpointGroupKey::ToString() const {
   return "Source: " +
-         (reporting_source ? "null" : reporting_source->ToString()) +
+         (reporting_source ? reporting_source->ToString() : "null") +
          "; NIK: " + network_isolation_key.ToDebugString() +
          "; Origin: " + origin.Serialize() + "; Group name: " + group_name;
 }
