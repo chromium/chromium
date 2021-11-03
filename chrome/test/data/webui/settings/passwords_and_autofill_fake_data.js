@@ -379,9 +379,11 @@ export class PasswordSectionElementFactory {
    * Helper method used to create a password editing dialog.
    * @param {MultiStorePasswordUiEntry=} passwordEntry
    * @param {Array<!MultiStorePasswordUiEntry>=} passwords
+   * @param {boolean=} isAccountStoreUser
    * @return {!Object}
    */
-  createPasswordEditDialog(passwordEntry = null, passwords) {
+  createPasswordEditDialog(
+      passwordEntry = null, passwords, isAccountStoreUser = false) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
     passwordDialog.existingEntry = passwordEntry;
     if (passwordEntry && !passwordEntry.federationText) {
@@ -392,6 +394,7 @@ export class PasswordSectionElementFactory {
     }
     passwordDialog.savedPasswords =
         passwords || (passwordEntry ? [passwordEntry] : []);
+    passwordDialog.isAccountStoreUser = isAccountStoreUser;
     this.document.body.appendChild(passwordDialog);
     flush();
     return passwordDialog;

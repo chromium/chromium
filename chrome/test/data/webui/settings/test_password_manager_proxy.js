@@ -59,6 +59,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
       'removeException',
       'removeExceptions',
       'changeSavedPassword',
+      'isAccountStoreDefault',
       'getUrlCollection',
       'addPassword',
     ]);
@@ -91,6 +92,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
 
     /** @private {boolean} */
     this.isOptedInForAccountStorage_ = false;
+
+    /** @private {boolean} */
+    this.isAccountStoreDefault_ = false;
 
     /** @private {?chrome.passwordsPrivate.UrlCollection} */
     this.getUrlCollectionResponse_ = null;
@@ -308,20 +312,34 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     this.methodCalled('removeInsecureCredential', insecureCredential);
   }
 
-  /** override */
+  /** @override */
   recordPasswordCheckInteraction(interaction) {
     this.methodCalled('recordPasswordCheckInteraction', interaction);
   }
 
-  /** override */
+  /** @override */
   recordPasswordCheckReferrer(referrer) {
     this.methodCalled('recordPasswordCheckReferrer', referrer);
   }
 
-  /** override */
+  /** @override */
   changeSavedPassword(ids, newUsername, newPassword) {
     this.methodCalled('changeSavedPassword', {ids, newUsername, newPassword});
     return Promise.resolve();
+  }
+
+  /**
+   * Sets the value to be returned by isAccountStoreDefault.
+   * @param {boolean} isDefault
+   */
+  setIsAccountStoreDefault(isDefault) {
+    this.isAccountStoreDefault_ = isDefault;
+  }
+
+  /** @override */
+  isAccountStoreDefault() {
+    this.methodCalled('isAccountStoreDefault');
+    return Promise.resolve(this.isAccountStoreDefault_);
   }
 
   /**
@@ -332,39 +350,39 @@ export class TestPasswordManagerProxy extends TestBrowserProxy {
     this.getUrlCollectionResponse_ = urlCollection;
   }
 
-  /** override */
+  /** @override */
   getUrlCollection(url) {
     this.methodCalled('getUrlCollection', url);
     return Promise.resolve(this.getUrlCollectionResponse_);
   }
 
-  /** override */
+  /** @override */
   addPassword(options) {
     this.methodCalled('addPassword', options);
     return Promise.resolve();
   }
 
-  /** override */
+  /** @override */
   addPasswordsFileExportProgressListener() {}
 
-  /** override */
+  /** @override */
   cancelExportPasswords() {}
 
-  /** override */
+  /** @override */
   exportPasswords() {}
 
-  /** override */
+  /** @override */
   importPasswords() {}
 
-  /** override */
+  /** @override */
   optInForAccountStorage() {}
 
-  /** override */
+  /** @override */
   removePasswordsFileExportProgressListener() {}
 
-  /** override */
+  /** @override */
   requestExportProgressStatus() {}
 
-  /** override */
+  /** @override */
   undoRemoveSavedPasswordOrException() {}
 }

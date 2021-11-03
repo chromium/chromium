@@ -141,8 +141,10 @@ declare global {
       export function stopPasswordCheck(callback?: () => void): void;
       export function getPasswordCheckStatus(
           callback: (status: PasswordCheckStatus) => void): void;
+      export function isAccountStoreDefault(
+          callback: (isDefault: boolean) => void): void;
       export function getUrlCollection(
-        url: string, callback: (urlCollection: UrlCollection) => void): void;
+          url: string, callback: (urlCollection: UrlCollection) => void): void;
       export function addPassword(
           options: AddPasswordOptions, callback?: () => void): void;
 

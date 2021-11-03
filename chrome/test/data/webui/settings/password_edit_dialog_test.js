@@ -416,23 +416,48 @@ suite('PasswordEditDialog', function() {
     assertTrue(addDialog.$.actionButton.disabled);
   });
 
+  test(
+      'selectsDeviceInStorePickerWhenAccountStoreIsNotDefault',
+      async function() {
+        passwordManager.setIsAccountStoreDefault(false);
+        const addDialog = elementFactory.createPasswordEditDialog(
+            null, [], /*isAccountStoreUser=*/ true);
+        await passwordManager.whenCalled('isAccountStoreDefault');
+
+        assertEquals(
+            addDialog.storeOptionDeviceValue, addDialog.$.storePicker.value);
+      });
+
+  test(
+      'selectsAccountInStorePickerWhenAccountStoreIsDefault', async function() {
+        passwordManager.setIsAccountStoreDefault(true);
+        const addDialog = elementFactory.createPasswordEditDialog(
+            null, [], /*isAccountStoreUser=*/ true);
+        await passwordManager.whenCalled('isAccountStoreDefault');
+
+        assertEquals(
+            addDialog.storeOptionAccountValue, addDialog.$.storePicker.value);
+      });
+
   test('addsPasswordWhenNotAccountStoreUser', function() {
     const addDialog = elementFactory.createPasswordEditDialog();
     return addPasswordTestHelper(
         addDialog, passwordManager, /*expectedUseAccountStore=*/ false);
   });
 
-  test('addsPasswordWhenAccountStoreUserAndAccountSelected', function() {
-    const addDialog = elementFactory.createPasswordEditDialog();
-    addDialog.isAccountStoreUser = true;
+  test('addsPasswordWhenAccountStoreUserAndAccountSelected', async function() {
+    const addDialog = elementFactory.createPasswordEditDialog(
+        null, [], /*isAccountStoreUser=*/ true);
+    await passwordManager.whenCalled('isAccountStoreDefault');
     addDialog.$.storePicker.value = addDialog.storeOptionAccountValue;
     return addPasswordTestHelper(
         addDialog, passwordManager, /*expectedUseAccountStore=*/ true);
   });
 
-  test('addsPasswordWhenAccountStoreUserAndDeviceSelected', function() {
-    const addDialog = elementFactory.createPasswordEditDialog();
-    addDialog.isAccountStoreUser = true;
+  test('addsPasswordWhenAccountStoreUserAndDeviceSelected', async function() {
+    const addDialog = elementFactory.createPasswordEditDialog(
+        null, [], /*isAccountStoreUser=*/ true);
+    await passwordManager.whenCalled('isAccountStoreDefault');
     addDialog.$.storePicker.value = addDialog.storeOptionDeviceValue;
     return addPasswordTestHelper(
         addDialog, passwordManager, /*expectedUseAccountStore=*/ false);

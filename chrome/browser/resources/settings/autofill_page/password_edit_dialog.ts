@@ -180,6 +180,14 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     if (!this.isInViewMode_) {
       this.usernamesByOrigin_ = this.getUsernamesByOrigin_();
     }
+    if (this.shouldShowStorePicker_()) {
+      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
+          isAccountStoreDefault => {
+            this.$.storePicker.value = isAccountStoreDefault ?
+                this.storeOptionAccountValue :
+                this.storeOptionDeviceValue;
+          });
+    }
   }
 
   /** Closes the dialog. */

@@ -50,6 +50,14 @@ export interface PasswordManagerProxy {
   recordPasswordsPageAccessInSettings(): void;
 
   /**
+   * Requests whether the account store is a default location for saving
+   * passwords. False means the device store is a default one. Must be called
+   * when the current user has already opted-in for account storage.
+   * @return A promise that resolves to whether the account store is default.
+   */
+  isAccountStoreDefault(): Promise<boolean>;
+
+  /**
    * Requests whether the given |url| meets the requirements to save a password
    * for it (e.g. valid, has proper scheme etc.).
    * @return A promise that resolves to the corresponding URLCollection on
@@ -359,6 +367,12 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   recordPasswordsPageAccessInSettings() {
     chrome.passwordsPrivate.recordPasswordsPageAccessInSettings();
+  }
+
+  isAccountStoreDefault() {
+    return new Promise<boolean>(resolve => {
+      chrome.passwordsPrivate.isAccountStoreDefault(resolve);
+    });
   }
 
   getUrlCollection(url: string) {
