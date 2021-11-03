@@ -1,0 +1,26 @@
+[package]
+name = "atty"
+version = "0.2.14"
+authors = ["softprops <d.tangren@gmail.com>"]
+description = "A simple interface for querying atty"
+documentation = "http://softprops.github.io/atty"
+homepage = "https://github.com/softprops/atty"
+repository = "https://github.com/softprops/atty"
+keywords = ["terminal", "tty", "isatty"]
+license = "MIT"
+readme = "README.md"
+exclude = ["/.travis.yml", "/appveyor.yml"]
+
+[badges]
+travis-ci = { repository = "softprops/atty" }
+
+[target.'cfg(unix)'.dependencies]
+libc = { version = "0.2", default-features = false }
+
+[target.'cfg(target_os = "hermit")'.dependencies]
+hermit-abi = "0.1.6"
+
+[target.'cfg(windows)'.dependencies.winapi]
+version = "0.3"
+features = ["consoleapi", "processenv", "minwinbase", "minwindef", "winbase"]
+

@@ -1,0 +1,30 @@
+[package]
+name = "codespan-reporting"
+version = "0.11.1"
+readme = "../README.md"
+license = "Apache-2.0"
+authors = ["Brendan Zabarauskas <bjzaba@yahoo.com.au>"]
+description = "Beautiful diagnostic reporting for text-based programming languages"
+homepage = "https://github.com/brendanzab/codespan"
+repository = "https://github.com/brendanzab/codespan"
+documentation = "https://docs.rs/codespan-reporting"
+exclude = ["assets/**"]
+edition = "2018"
+
+[dependencies]
+serde = { version = "1", optional = true, features = ["derive"] }
+termcolor = "1"
+unicode-width = "0.1"
+
+[dev-dependencies]
+anyhow = "1"
+insta = "1.6.3"
+lazy_static = "1.4"
+peg = "0.6"
+rustyline = "6"
+structopt = "0.3"
+unindent = "0.1"
+
+[features]
+serialization = ["serde", "serde/rc"]
+ascii-only = []
