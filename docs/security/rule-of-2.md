@@ -179,9 +179,11 @@ You can 'defang' a potentially-malicious input by transforming it into a
 _normal_ or _minimal_ form, usually by first transforming it into a format with
 a simpler grammar. We say that all data, file, and wire formats are defined by a
 _grammar_, even if that grammar is implicit or only partially-specified (as is
-so often the case). A file format with a particularly simple grammar is
-[Farbfeld](https://tools.suckless.org/farbfeld/). (The grammar is represented in
-the table at the top.)
+so often the case). A data format with a particularly simple grammar is
+[`SkPixmap`](https://source.chromium.org/chromium/chromium/src/+/3df9ac8e76132c586e888d1ddc7d2217574f17b0:third_party/skia/include/core/SkPixmap.h;l=712).
+(The 'grammar' is represented by the private data fields: a region of raw pixel
+data, the size of that region, and simple metadata (`SkImageInfo`) about how to
+interpret the pixels.)
 
 It's rare to find such a simple grammar for input formats, however.
 
