@@ -570,6 +570,12 @@ void RestrictedCookieManager::SetCanonicalCookie(
       cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(),
       cookie_partition_key, source_scheme, origin_.port());
   DCHECK(sanitized_cookie);
+  // FromStorage() uses a less strict version of IsCanonical(), we need to check
+  // the stricter version as well here.
+  if (!sanitized_cookie->IsCanonical()) {
+    std::move(callback).Run(false);
+    return;
+  }
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
 
   net::CookieOptions options = MakeOptionsForSet(

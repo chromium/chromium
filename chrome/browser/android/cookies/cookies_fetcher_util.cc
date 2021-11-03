@@ -124,7 +124,11 @@ static void JNI_CookiesFetcher_RestoreCookies(
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
           static_cast<net::CookiePriority>(priority), same_party, pk,
           static_cast<net::CookieSourceScheme>(source_scheme), source_port);
-  if (!cookie)
+  // FromStorage() uses a less strict version of IsCanonical(), we need to check
+  // the stricter version as well here. This is safe because this function is
+  // only used for incognito cookies which don't survive Chrome updates and
+  // therefore should never be the "older" less strict variety.
+  if (!cookie || !cookie->IsCanonical())
     return;
 
   // Assume HTTPS - since the cookies are being restored from another store,
