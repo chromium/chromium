@@ -6092,9 +6092,6 @@ crbug.com/1173956 http/tests/xsl/xslt-transform-with-javascript-disabled.html [ 
 external/wpt/css/cssom-view/MediaQueryList-addListener-handleEvent-expected.txt [ Failure Pass ]
 external/wpt/css/cssom-view/MediaQueryList-extends-EventTarget-interop-expected.txt [ Failure Pass ]
 
-# Disabling test until https://chromium-review.googlesource.com/c/devtools/devtools-frontend/+/2801092 is merged.
-crbug.com/1195224 http/tests/devtools/filtered-item-selection-dialog-rendering.js [ Failure Pass ]
-
 # No support for key combinations like Alt + c in testdriver.Actions for content_shell
 crbug.com/893480 external/wpt/uievents/interface/keyboard-accesskey-click-event.html [ Timeout ]
 
