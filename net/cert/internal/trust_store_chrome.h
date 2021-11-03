@@ -40,7 +40,8 @@ class NET_EXPORT TrustStoreChrome : public TrustStore {
   bool Contains(const ParsedCertificate* cert) const;
 
  private:
-  explicit TrustStoreChrome(base::span<const ChromeRootCertInfo> certs);
+  TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
+                   bool certs_are_static);
   TrustStoreInMemory trust_store_;
 };
 
