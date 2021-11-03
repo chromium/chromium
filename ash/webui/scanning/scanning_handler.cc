@@ -214,7 +214,6 @@ void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
 }
 
 void ScanningHandler::HandleSaveScanSettings(const base::ListValue* args) {
-  CHECK(base::FeatureList::IsEnabled(ash::features::kScanAppStickySettings));
   if (!IsJavascriptAllowed())
     return;
 
@@ -224,7 +223,6 @@ void ScanningHandler::HandleSaveScanSettings(const base::ListValue* args) {
 }
 
 void ScanningHandler::HandleGetScanSettings(const base::ListValue* args) {
-  CHECK(base::FeatureList::IsEnabled(ash::features::kScanAppStickySettings));
   if (!IsJavascriptAllowed())
     return;
 

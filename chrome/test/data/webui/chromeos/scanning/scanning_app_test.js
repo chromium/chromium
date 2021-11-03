@@ -1973,10 +1973,6 @@ export function scanningAppTest() {
 
   // Verify saved settings are applied when available for the selected scanner.
   test('ApplySavedSettings', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const selectedPath = {baseName: 'path', filePath: 'valid/scan/to/path'};
     testBrowserProxy.setSavedSettingsSelectedPath(selectedPath);
 
@@ -2027,10 +2023,6 @@ export function scanningAppTest() {
   // Verify if the setting value stored in saved settings is no longer
   // available on the selected scanner, the default setting is chosen.
   test('SettingNotFoundInCapabilities', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const selectedPath = {baseName: 'path', filePath: 'valid/scan/to/path'};
     testBrowserProxy.setSavedSettingsSelectedPath(selectedPath);
 
@@ -2082,10 +2074,6 @@ export function scanningAppTest() {
   // scanner's capabilities doesn't support it, the multi-page scan checkbox
   // will not be set.
   test('MultiPageNotAvailableFromCapabilities', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const savedScanSettings = {
       lastUsedScannerName: secondScannerName,
       scanToPath: '',
@@ -2117,10 +2105,6 @@ export function scanningAppTest() {
   // JSON (i.e. the first time the feature is enabled), the multi-page scan
   // checkbox will not be set.
   test('MultiPageNotInSavedSettings', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const savedScanSettings = {
       lastUsedScannerName: firstScannerName,
       scanToPath: '',
@@ -2149,10 +2133,6 @@ export function scanningAppTest() {
 
   // Verify the last used scanner is selected from saved settings.
   test('selectLastUsedScanner', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const savedScanSettings = {
       lastUsedScannerName: secondScannerName,
       scanToPath: 'scan/to/path',
@@ -2182,10 +2162,6 @@ export function scanningAppTest() {
 
   // Verify the scan settings are sent to the Pref service to be saved.
   test('saveScanSettings', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const scannerSetting = {
       name: secondScannerName,
       lastScanDate: LAST_SCAN_DATE,
@@ -2228,10 +2204,6 @@ export function scanningAppTest() {
   // Verify that the correct scanner setting is replaced when saving scan
   // settings to the Pref service.
   test('replaceExistingScannerInScanSettings', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const firstScannerSetting = {
       name: firstScannerName,
       lastScanDate: LAST_SCAN_DATE,
@@ -2307,10 +2279,6 @@ export function scanningAppTest() {
   // Verify that the correct scanner gets evicted when there are too many
   // scanners in saved scan settings.
   test('evictScannersOverTheMaxLimit', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     const scannerToEvict = {
       name: secondScannerName,
       lastScanDate: '1/1/2021',
@@ -2362,10 +2330,6 @@ export function scanningAppTest() {
   // Verify that no scanners get evicted when the number of scanners in saved
   // scan settings is equal to |MAX_NUM_SAVED_SCANNERS|.
   test('doNotEvictScannersAtMax', () => {
-    if (!loadTimeData.getBoolean('scanAppStickySettingsEnabled')) {
-      return;
-    }
-
     /** @type {!Array<!ScannerSetting>} */
     const scanners = new Array(MAX_NUM_SAVED_SCANNERS);
     for (let i = 0; i < MAX_NUM_SAVED_SCANNERS; i++) {

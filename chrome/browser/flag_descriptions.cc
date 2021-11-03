@@ -4973,11 +4973,6 @@ extern const char kScanAppSearchablePdfDescription[] =
     "Allow selecting Searchable PDF file type in Scan app"
     " with incorporation of OCR service.";
 
-const char kScanAppStickySettingsName[] = "Enable sticky settings in Scan app";
-const char kScanAppStickySettingsDescription[] =
-    "Enables sticky settings in Scan app for automatically saving scan"
-    " settings in Chrome OS.";
-
 extern const char kSharesheetCopyToClipboardName[] =
     "Enable copy to clipboard in the Chrome OS Sharesheet.";
 extern const char kSharesheetCopyToClipboardDescription[] =

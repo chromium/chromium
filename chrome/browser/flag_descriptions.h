@@ -2870,9 +2870,6 @@ extern const char kScanAppMultiPageScanDescription[];
 extern const char kScanAppSearchablePdfName[];
 extern const char kScanAppSearchablePdfDescription[];
 
-extern const char kScanAppStickySettingsName[];
-extern const char kScanAppStickySettingsDescription[];
-
 extern const char kSharesheetCopyToClipboardName[];
 extern const char kSharesheetCopyToClipboardDescription[];
 

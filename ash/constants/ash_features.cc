@@ -1013,10 +1013,6 @@ const base::Feature kScanAppMultiPageScan{"ScanAppMultiPageScan",
 const base::Feature kScanAppSearchablePdf{"ScanAppSearchablePdf",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables sticky settings in the Scan app.
-const base::Feature kScanAppStickySettings{"ScanAppStickySettings",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Overrides semantic colors in Chrome OS for easier debugging.
 const base::Feature kSemanticColorsDebugOverride{
     "SemanticColorDebugOverride", base::FEATURE_DISABLED_BY_DEFAULT};

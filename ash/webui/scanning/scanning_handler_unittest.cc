@@ -185,9 +185,7 @@ class ScanningHandlerTest : public testing::Test {
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
 
-    scoped_feature_list_.InitWithFeatures(
-        {features::kScanAppMediaLink, ash::features::kScanAppStickySettings},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kScanAppMediaLink}, {});
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     my_files_path_ = temp_dir_.GetPath().Append("MyFiles");

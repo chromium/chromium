@@ -275,14 +275,6 @@ Polymer({
      */
     scanFailedDialogTextKey_: String,
 
-    /** @private {boolean} */
-    scanAppStickySettingsEnabled_: {
-      type: Boolean,
-      value: function() {
-        return loadTimeData.getBoolean('scanAppStickySettingsEnabled');
-      }
-    },
-
     /** @private {!ScanSettings} */
     savedScanSettings_: {
       type: Object,
@@ -371,17 +363,15 @@ Polymer({
         /* @type {string} */ (myFilesPath) => {
           this.selectedFilePath = myFilesPath;
         });
-    if (this.scanAppStickySettingsEnabled_) {
-      this.browserProxy_.getScanSettings().then(
-          /* @type {string} */ (scanSettings) => {
-            if (!scanSettings) {
-              return;
-            }
+    this.browserProxy_.getScanSettings().then(
+        /* @type {string} */ (scanSettings) => {
+          if (!scanSettings) {
+            return;
+          }
 
-            this.savedScanSettings_ =
-                /** @type {!ScanSettings} */ (JSON.parse(scanSettings));
-          });
-    }
+          this.savedScanSettings_ =
+              /** @type {!ScanSettings} */ (JSON.parse(scanSettings));
+        });
   },
 
   /** @override */
@@ -544,8 +534,7 @@ Polymer({
     this.selectedFileType = ash.scanning.mojom.FileType.kPdf.toString();
 
     this.setAppState_(
-        this.scanAppStickySettingsEnabled_ &&
-                this.areSavedScanSettingsAvailable_() ?
+        this.areSavedScanSettingsAvailable_() ?
             AppState.SETTING_SAVED_SETTINGS :
             AppState.READY);
   },
@@ -630,9 +619,7 @@ Polymer({
               });
     }
 
-    if (this.scanAppStickySettingsEnabled_) {
-      this.saveScanSettings_();
-    }
+    this.saveScanSettings_();
 
     const scanJobSettingsForMetrics = {
       sourceType: this.sourceTypeMap_.get(this.selectedSource),
@@ -1159,8 +1146,6 @@ Polymer({
 
   /** @private */
   saveScanSettings_() {
-    assert(this.scanAppStickySettingsEnabled_);
-
     const scannerName = this.getSelectedScannerDisplayName_();
     this.savedScanSettings_.lastUsedScannerName = scannerName;
     this.savedScanSettings_.scanToPath = this.selectedFilePath;

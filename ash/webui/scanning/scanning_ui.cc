@@ -160,9 +160,6 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "scanAppSearchablePdfEnabled",
       base::FeatureList::IsEnabled(chromeos::features::kScanAppSearchablePdf));
-  html_source->AddBoolean(
-      "scanAppStickySettingsEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kScanAppStickySettings));
 }
 
 }  // namespace
