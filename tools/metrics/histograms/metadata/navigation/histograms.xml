@@ -982,8 +982,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
     expires_after="2022-02-06">
-  <owner>elawrence@chromium.org</owner>
   <owner>estark@chromium.org</owner>
+  <owner>elawrence@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     The scheme of the URL for each main-frame navigation. This is only recorded
     for finished navigations and not attempts. Warning: this histogram was
@@ -993,8 +994,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.MainFrameSchemeDifferentPage2"
     enum="NavigationScheme" expires_after="2022-04-10">
-  <owner>elawrence@chromium.org</owner>
   <owner>estark@chromium.org</owner>
+  <owner>elawrence@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     The scheme of the URL for each main-frame navigation that replaces a
     document object. This is not reported for reference fragment navigations,
@@ -1005,8 +1007,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.MainFrameSchemeDifferentPageOTR2"
     enum="NavigationScheme" expires_after="2022-04-24">
-  <owner>elawrence@chromium.org</owner>
   <owner>estark@chromium.org</owner>
+  <owner>elawrence@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     The scheme of the URL for each main-frame navigation that replaces a
     document object while in incognito. This is not reported for reference
