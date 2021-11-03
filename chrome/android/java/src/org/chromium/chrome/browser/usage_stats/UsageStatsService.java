@@ -63,6 +63,21 @@ public class UsageStatsService {
         return sInstance;
     }
 
+    /**
+     * Creates a UsageStatsService for the given Activity if the feature is enabled.
+     * @param activity The activity in which page view events are occurring.
+     * @param activityTabProvider The provider of the active tab for the activity.
+     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
+     */
+    public static void createPageViewObserverIfEnabled(Activity activity,
+            ActivityTabProvider activityTabProvider,
+            Supplier<TabContentManager> tabContentManagerSupplier) {
+        if (!isEnabled()) return;
+
+        getInstance().createPageViewObserver(
+                activity, activityTabProvider, tabContentManagerSupplier);
+    }
+
     @VisibleForTesting
     UsageStatsService() {
         mProfile = Profile.getLastUsedRegularProfile();
@@ -88,9 +103,9 @@ public class UsageStatsService {
      * Create a {@link PageViewObserver} for the given tab model selector and activity.
      * @param activity The activity in which page view events are occurring.
      * @param activityTabProvider The provider of the active tab for the activity.
-     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager},
+     * @param tabContentManagerSupplier Supplier of the current {@link TabContentManager}.
      */
-    public PageViewObserver createPageViewObserver(Activity activity,
+    private PageViewObserver createPageViewObserver(Activity activity,
             ActivityTabProvider activityTabProvider,
             Supplier<TabContentManager> tabContentManagerSupplier) {
         ThreadUtils.assertOnUiThread();

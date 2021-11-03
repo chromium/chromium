@@ -831,10 +831,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                      + "maybeGetFeedAppLifecycleAndMaybeCreatePageViewObserver")) {
             FeedSurfaceTracker.getInstance().startup();
 
-            if (UsageStatsService.isEnabled()) {
-                UsageStatsService.getInstance().createPageViewObserver(
-                        this, getActivityTabProvider(), getTabContentManagerSupplier());
-            }
+            UsageStatsService.createPageViewObserverIfEnabled(
+                    this, getActivityTabProvider(), getTabContentManagerSupplier());
         }
     }
 
