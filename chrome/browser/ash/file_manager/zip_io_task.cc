@@ -174,6 +174,10 @@ void ZipIOTask::OnZipProgress() {
   DCHECK(zip_file_creator_);
   progress_.bytes_transferred = zip_file_creator_->GetProgress().bytes;
   progress_callback_.Run(progress_);
+  if (zip_file_creator_->GetResult() == ZipFileCreator::kInProgress) {
+    zip_file_creator_->SetProgressCallback(base::BindOnce(
+        &ZipIOTask::OnZipProgress, weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void ZipIOTask::OnZipComplete() {
