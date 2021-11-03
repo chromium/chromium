@@ -55900,6 +55900,12 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="MediaKeySystem">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Clear Key"/>
+  <int value="2" label="Widevine"/>
+</enum>
+
+<enum name="MediaKeySystemLegacy">
   <int value="0" label="Clear Key"/>
   <int value="1" label="Widevine"/>
 </enum>
