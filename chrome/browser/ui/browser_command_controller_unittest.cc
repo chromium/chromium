@@ -522,6 +522,28 @@ TEST_F(BrowserCommandControllerTest, OnSigninAllowedPrefChange) {
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SHOW_SIGNIN));
 }
 
+TEST_F(BrowserCommandControllerTest,
+       SavePageDisabledByDownloadRestrictionsPolicy) {
+  chrome::BrowserCommandController command_controller(browser());
+  const CommandUpdater* command_updater = &command_controller;
+
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+  profile()->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+                                    3 /*ALL_FILES*/);
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+}
+
+TEST_F(BrowserCommandControllerTest,
+       SavePageDisabledByAllowFileSelectionDialogsPolicy) {
+  chrome::BrowserCommandController command_controller(browser());
+  const CommandUpdater* command_updater = &command_controller;
+
+  EXPECT_TRUE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kAllowFileSelectionDialogs, false);
+  EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
+}
+
 class IncognitoClearBrowsingDataCommandTest
     : public BrowserWithTestWindowTest,
       public testing::WithParamInterface<bool> {

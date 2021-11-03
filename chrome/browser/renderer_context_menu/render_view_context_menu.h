@@ -241,6 +241,9 @@ class RenderViewContextMenu : public RenderViewContextMenuBase,
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
       bool notify_if_restricted) const;
 
+  // Helper function for checking policies.
+  bool IsSaveAsItemAllowedByPolicy() const;
+
   // Command enabled query functions.
   bool IsReloadEnabled() const;
   bool IsViewSourceEnabled() const;

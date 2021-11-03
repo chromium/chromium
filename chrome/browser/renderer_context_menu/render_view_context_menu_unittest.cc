@@ -13,6 +13,9 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
@@ -449,11 +452,20 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service_);
+
+    // Set up policies.
+    testing_local_state_ = std::make_unique<ScopedTestingLocalState>(
+        TestingBrowserProcess::GetGlobal());
+    local_state()->SetBoolean(prefs::kAllowFileSelectionDialogs, true);
+    DownloadCoreServiceFactory::GetForBrowserContext(profile())
+        ->SetDownloadManagerDelegateForTesting(
+            std::make_unique<ChromeDownloadManagerDelegate>(profile()));
   }
 
   void TearDown() override {
     registry_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
+    testing_local_state_.reset();
   }
 
   std::unique_ptr<TestRenderViewContextMenu> CreateContextMenu() {
@@ -490,8 +502,11 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
   }
 
+  PrefService* local_state() { return testing_local_state_->Get(); }
+
  private:
   std::unique_ptr<ProtocolHandlerRegistry> registry_;
+  std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   TemplateURLService* template_url_service_;
 };
 
@@ -520,8 +535,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
 // Verifies that SearchWebFor field is enabled/disabled based on DLP rules.
 TEST_F(RenderViewContextMenuPrefsTest,
        DisableSearchWebForWhenClipboardIsBlocked) {
-  ScopedTestingLocalState testing_local_state(
-      TestingBrowserProcess::GetGlobal());
   content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
   params.page_url = GURL("http://www.foo.com/");
   auto menu = std::make_unique<TestRenderViewContextMenu>(
@@ -531,7 +544,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 
-  MockDlpRulesManager mock_dlp_rules_manager(testing_local_state.Get());
+  MockDlpRulesManager mock_dlp_rules_manager(local_state());
   menu->set_dlp_rules_manager(&mock_dlp_rules_manager);
   EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 
@@ -550,8 +563,7 @@ TEST_F(RenderViewContextMenuPrefsTest,
       "rule #1", "Block", std::move(src_urls), std::move(dst_urls),
       /*dst_components=*/base::Value(base::Value::Type::LIST),
       std::move(restrictions)));
-  testing_local_state.Get()->Set(policy::policy_prefs::kDlpRulesList,
-                                 std::move(rules));
+  local_state()->Set(policy::policy_prefs::kDlpRulesList, std::move(rules));
   EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SEARCHWEBFOR));
 }
 #endif
@@ -719,6 +731,29 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   menu->Init();
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       SaveAsDisabledByDownloadRestrictionsPolicy) {
+  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+  profile()->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
+                                    3 /*ALL_FILES*/);
+
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       SaveAsDisabledByAllowFileSelectionDialogsPolicy) {
+  std::unique_ptr<TestRenderViewContextMenu> menu(CreateContextMenu());
+
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+  local_state()->SetBoolean(prefs::kAllowFileSelectionDialogs, false);
+
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

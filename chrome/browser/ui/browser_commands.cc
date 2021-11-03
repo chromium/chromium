@@ -28,6 +28,7 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -1342,6 +1343,12 @@ bool CanSavePage(const Browser* browser) {
   if (g_browser_process->local_state() &&
       !g_browser_process->local_state()->GetBoolean(
           prefs::kAllowFileSelectionDialogs)) {
+    return false;
+  }
+  if (static_cast<DownloadPrefs::DownloadRestriction>(
+          browser->profile()->GetPrefs()->GetInteger(
+              prefs::kDownloadRestrictions)) ==
+      DownloadPrefs::DownloadRestriction::ALL_FILES) {
     return false;
   }
   return !browser->is_type_devtools() &&

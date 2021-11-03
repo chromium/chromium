@@ -41,6 +41,7 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -2903,6 +2904,20 @@ const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
 }
 #endif
 
+bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy() const {
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  // Check if file-selection dialogs are forbidden by policy.
+  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs))
+    return false;
+  // Check if all downloads are forbidden by policy.
+  if (DownloadPrefs::FromBrowserContext(GetProfile())->download_restriction() ==
+      DownloadPrefs::DownloadRestriction::ALL_FILES) {
+    return false;
+  }
+  return true;
+}
+
 // Controller functions --------------------------------------------------------
 
 bool RenderViewContextMenu::IsReloadEnabled() const {
@@ -2960,10 +2975,7 @@ bool RenderViewContextMenu::IsTranslateEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  // Test if file-selection dialogs are forbidden by policy.
-  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs))
+  if (!IsSaveAsItemAllowedByPolicy())
     return false;
 
   PolicyBlocklistService* service =
@@ -2991,20 +3003,14 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
 }
 
 bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  // Test if file-selection dialogs are forbidden by policy.
-  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs))
+  if (!IsSaveAsItemAllowedByPolicy())
     return false;
 
   return params_.has_image_contents;
 }
 
 bool RenderViewContextMenu::IsSaveAsEnabled() const {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  // Test if file-selection dialogs are forbidden by policy.
-  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs))
+  if (!IsSaveAsItemAllowedByPolicy())
     return false;
 
   const GURL& url = params_.src_url;
@@ -3029,10 +3035,7 @@ bool RenderViewContextMenu::IsSavePageEnabled() const {
   if (browser && !browser->CanSaveContents(embedder_web_contents_))
     return false;
 
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  // Test if file-selection dialogs are forbidden by policy.
-  if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs))
+  if (!IsSaveAsItemAllowedByPolicy())
     return false;
 
   // We save the last committed entry (which the user is looking at), as

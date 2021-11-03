@@ -191,6 +191,10 @@ BrowserCommandController::BrowserCommandController(Browser* browser)
       prefs::kPrintingEnabled,
       base::BindRepeating(&BrowserCommandController::UpdatePrintingState,
                           base::Unretained(this)));
+  profile_pref_registrar_.Add(
+      prefs::kDownloadRestrictions,
+      base::BindRepeating(&BrowserCommandController::UpdateSaveAsState,
+                          base::Unretained(this)));
 #if !defined(OS_MAC)
   profile_pref_registrar_.Add(
       prefs::kFullscreenAllowed,
