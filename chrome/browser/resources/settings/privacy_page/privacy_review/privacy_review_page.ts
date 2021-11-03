@@ -26,6 +26,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
@@ -100,13 +101,15 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel_(privacyReviewStep_, prefs.generated.cookie_primary_setting)',
+            'computeStepIndicatorModel_(privacyReviewStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
       },
     };
   }
 
   static get observers() {
-    return [`onPrefChanged_(prefs.generated.cookie_primary_setting)`];
+    return [
+      `onPrefsChanged_(prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)`
+    ];
   }
 
   private privacyReviewStep_: PrivacyReviewStep;
@@ -212,7 +215,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
           onBackNavigation: () => {
             this.navigateToCard_(PrivacyReviewStep.HISTORY_SYNC, true);
           },
-          isAvailable: () => true,
+          isAvailable: () => this.shouldShowSafeBrowsingCard_(),
         },
       ],
       [
@@ -237,8 +240,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     this.navigateToNextCardIfCurrentCardNoLongerAvailable();
   }
 
-  /** Update the privacy review state based on changed pref. */
-  private onPrefChanged_() {
+  /** Update the privacy review state based on changed prefs. */
+  private onPrefsChanged_() {
     // If this change resulted in the user no longer being in one of the
     // available states for the given card, we need to skip it.
     this.navigateToNextCardIfCurrentCardNoLongerAvailable();
@@ -349,6 +352,13 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     return currentCookieSetting === CookiePrimarySetting.BLOCK_THIRD_PARTY ||
         currentCookieSetting ===
         CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO;
+  }
+
+  private shouldShowSafeBrowsingCard_(): boolean {
+    const currentSafeBrowsingSetting =
+        this.getPref('generated.safe_browsing').value;
+    return currentSafeBrowsingSetting === SafeBrowsingSetting.ENHANCED ||
+        currentSafeBrowsingSetting === SafeBrowsingSetting.STANDARD;
   }
 
   private showHeader_(): boolean {

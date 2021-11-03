@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
 import {Route, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -23,6 +23,7 @@ suite('PrivacyReviewPage', function() {
   let page;
   let isSyncOn;
   let shouldShowCookiesCard;
+  let shouldShowSafeBrowsingCard;
 
   setup(function() {
     document.body.innerHTML = '';
@@ -40,11 +41,16 @@ suite('PrivacyReviewPage', function() {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
         },
+        safe_browsing: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: SafeBrowsingSetting.STANDARD,
+        },
       },
     };
     document.body.appendChild(page);
     isSyncOn = false;
     shouldShowCookiesCard = true;
+    shouldShowSafeBrowsingCard = true;
 
     // Simulates the route of the user entering the privacy review from the S&P
     // settings. This is necessary as tests seem to by default define the
@@ -128,6 +134,20 @@ suite('PrivacyReviewPage', function() {
   }
 
   /**
+   * Set the safe browsing setting for the privacy review.
+   * @param {SafeBrowsingSetting} setting
+   */
+  function setSafeBrowsingSetting(setting) {
+    page.set('prefs.generated.safe_browsing', {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: setting,
+    });
+    shouldShowSafeBrowsingCard = setting === SafeBrowsingSetting.ENHANCED ||
+        setting === SafeBrowsingSetting.STANDARD;
+    flush();
+  }
+
+  /**
    * @param {!{
    *   headerTextExpected: (string|undefined),
    *   isSettingFooterVisibleExpected: (boolean|undefined),
@@ -196,8 +216,17 @@ suite('PrivacyReviewPage', function() {
    * @return The expected total number of active cards for the step indicator.
    */
   function getExpectedNumberOfActiveCards() {
-    return PRIVACY_REVIEW_STEPS - (isSyncOn ? 0 : 1) -
-        (shouldShowCookiesCard ? 0 : 1);
+    let numSteps = PRIVACY_REVIEW_STEPS;
+    if (!isSyncOn) {
+      numSteps -= 1;
+    }
+    if (!shouldShowCookiesCard) {
+      numSteps -= 1;
+    }
+    if (!shouldShowSafeBrowsingCard) {
+      numSteps -= 1;
+    }
+    return numSteps;
   }
 
   /**
@@ -274,7 +303,14 @@ suite('PrivacyReviewPage', function() {
       isBackButtonVisibleExpected: true,
       isCookiesFragmentVisibleExpected: true,
     });
-    assertStepIndicatorModel(isSyncOn ? 3 : 2);
+    let activeIndex = 3;
+    if (!isSyncOn) {
+      activeIndex -= 1;
+    }
+    if (!shouldShowSafeBrowsingCard) {
+      activeIndex -= 1;
+    }
+    assertStepIndicatorModel(activeIndex);
   }
 
   test('startPrivacyReview', function() {
@@ -370,15 +406,31 @@ suite('PrivacyReviewPage', function() {
     assertSafeBrowsingCardVisible();
   });
 
-  test('historySyncCardForwardNavigation', function() {
-    navigateToStep('historySync');
-    setSyncEnabled(true);
-    assertHistorySyncCardVisible();
+  test(
+      'historySyncCardForwardNavigationShouldShowSafeBrowsingCard', function() {
+        navigateToStep('historySync');
+        setSyncEnabled(true);
+        setSafeBrowsingSetting(SafeBrowsingSetting.ENHANCED);
+        setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
+        assertHistorySyncCardVisible();
 
-    page.shadowRoot.querySelector('#nextButton').click();
-    flush();
-    assertSafeBrowsingCardVisible();
-  });
+        page.shadowRoot.querySelector('#nextButton').click();
+        flush();
+        assertSafeBrowsingCardVisible();
+      });
+
+  test(
+      'historySyncCardForwardNavigationShouldHideSafeBrowsingCard', function() {
+        navigateToStep('historySync');
+        setSyncEnabled(true);
+        setSafeBrowsingSetting(SafeBrowsingSetting.DISABLED);
+        setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
+        assertHistorySyncCardVisible();
+
+        page.shadowRoot.querySelector('#nextButton').click();
+        flush();
+        assertCookiesCardVisible();
+      });
 
   test('safeBrowsingCardBackNavigationSyncOn', function() {
     navigateToStep('safeBrowsing');
@@ -398,6 +450,29 @@ suite('PrivacyReviewPage', function() {
     page.shadowRoot.querySelector('#backButton').click();
     flush();
     assertMsbbCardVisible();
+  });
+
+  test('safeBrowsingCardGetsUpdated', function() {
+    navigateToStep('safeBrowsing');
+    setSafeBrowsingSetting(SafeBrowsingSetting.ENHANCED);
+    setCookieSetting(CookiePrimarySetting.BLOCK_THIRD_PARTY);
+    assertSafeBrowsingCardVisible();
+    const radioButtonGroup =
+        page.shadowRoot.querySelector('#safeBrowsingFragment')
+            .shadowRoot.querySelector('#safeBrowsingRadioGroup');
+    assertEquals(
+        Number(radioButtonGroup.selected), SafeBrowsingSetting.ENHANCED);
+
+    // Changing the safe browsing setting should automatically change the
+    // selected radio button.
+    setSafeBrowsingSetting(SafeBrowsingSetting.STANDARD);
+    assertEquals(
+        Number(radioButtonGroup.selected), SafeBrowsingSetting.STANDARD);
+
+    // Changing the safe browsing setting to a disabled state while shown should
+    // navigate away from the safe browsing card.
+    setSafeBrowsingSetting(SafeBrowsingSetting.DISABLED);
+    assertCookiesCardVisible();
   });
 
   test('safeBrowsingCardForwardNavigationShouldShowCookiesCard', function() {
@@ -420,13 +495,26 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
   });
 
-  test('cookiesCardBackNavigation', function() {
+  test('cookiesCardBackNavigationShouldShowSafeBrowsingCard', function() {
     navigateToStep('cookies');
+    setSyncEnabled(true);
+    setSafeBrowsingSetting(SafeBrowsingSetting.STANDARD);
     assertCookiesCardVisible();
 
     page.shadowRoot.querySelector('#backButton').click();
     flush();
     assertSafeBrowsingCardVisible();
+  });
+
+  test('cookiesCardBackNavigationShouldHideSafeBrowsingCard', function() {
+    navigateToStep('cookies');
+    setSyncEnabled(true);
+    setSafeBrowsingSetting(SafeBrowsingSetting.DISABLED);
+    assertCookiesCardVisible();
+
+    page.shadowRoot.querySelector('#backButton').click();
+    flush();
+    assertHistorySyncCardVisible();
   });
 
   test('cookiesCardForwardNavigation', function() {

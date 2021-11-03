@@ -232,6 +232,10 @@ suite('PrivacyReviewEnabled', function() {
           type: chrome.settingsPrivate.PrefType.NUMBER,
           value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
         },
+        safe_browsing: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: SafeBrowsingSetting.STANDARD,
+        },
       },
     };
     document.body.appendChild(page);
