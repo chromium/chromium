@@ -28,6 +28,17 @@
   .button-icon {
     flex-grow: 1;
   }
+
+  #diagnosticsIconDiv {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  #diagnosticsIcon {
+    height: 40px;
+    width: 40px;
+  }
 </style>
 
 <base-page orientation="column">
@@ -39,9 +50,9 @@
   <div slot="body">
     <cr-button id="diagnosticsButton" class="button-card"
       on-click="onDiagnosticsButtonClick_">
-      <iron-icon icon="shimless-icon24:check-circle" class="button-icon"
-          hidden="[[!checked]]">
-      </iron-icon>
+      <div id="diagnosticsIconDiv">
+        <img id="diagnosticsIcon" src="png/diagnostics_app_icon_192.png">
+      </div>
       <div class="button-text">
         <div class="button-label">
           <span>Run Diagnostics</span>

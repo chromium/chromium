@@ -49,6 +49,7 @@ generate_grd("build_grd") {
     "fake_shimless_rma_service.js",
     "index.html",
     "mojo_interface_provider.js",
+    "png/diagnostics_app_icon_192.png",
     "shimless_rma_types.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
