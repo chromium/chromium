@@ -2031,8 +2031,6 @@ void DeviceStatusCollector::SampleDischargeRate(
       it->second.set_charge_rate(percent);
     }
   }
-
-  AddDataSample(std::move(sample), std::move(callback));
 }
 
 void DeviceStatusCollector::ReceiveCPUTemperature(
