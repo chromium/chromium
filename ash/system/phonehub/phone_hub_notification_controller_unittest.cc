@@ -10,6 +10,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/fake_feature_status_provider.h"
@@ -267,6 +268,9 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
   gfx::Image shared_image(
       gfx::ImageSkia::CreateFrom1xBitmap(shared_image_bitmap));
 
+  const std::u16string expected_phone_name = u"Phone name";
+  phone_hub_manager_.mutable_phone_model()->SetPhoneName(expected_phone_name);
+
   chromeos::phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
@@ -279,12 +283,17 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
 
   notification_manager_->SetNotification(fake_notification);
 
+  const std::u16string expected_accessible_name =
+      base::StrCat({kAppName, u", ", kTitle, u": ", kTextContent, u", ",
+                    expected_phone_name});
+
   auto* cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(timestamp, cros_notification->timestamp());
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
   EXPECT_EQ(kTitle, cros_notification->title());
   EXPECT_EQ(kAppName, cros_notification->display_source());
+  EXPECT_EQ(expected_accessible_name, cros_notification->accessible_name());
 
   // Note that there's a slight discrepancy between the PhoneHub and
   // notification image naming.
