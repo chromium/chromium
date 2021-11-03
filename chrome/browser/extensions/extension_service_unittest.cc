@@ -3527,11 +3527,10 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   service()->PerformActionBasedOnOmahaAttributes(good0, attributes);
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       good0, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
-  EXPECT_TRUE(DoesIntegerPrefExist(good0, kPrefBlocklistState));
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good0));
 
-  // Un-blocklist all extensions.
+  // Un-blocklist all extensions from the Safe Browsing blocklist.
   test_blocklist.Clear(false);
   task_environment()->RunUntilIdle();
 
@@ -3541,7 +3540,8 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   // unblocklisting/re-enabling.
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good0));
-  ValidateIntegerPref(good0, kPrefBlocklistState, kBlocklistedMalwareInteger);
+  EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
+      good0, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
   EXPECT_FALSE(DoesIntegerPrefExist(good1, kPrefBlocklistState));
 }
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)

@@ -2336,10 +2336,10 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   extension_dict->SetString(
       kPrefInstallTime, base::NumberToString(install_time.ToInternalValue()));
   if (install_flags & kInstallFlagIsBlocklistedForMalware) {
-    // Keep the acknowledged state during an update, because we wouldn't want to
-    // reset the acknowledged state if the extension was already on the
+    // Don't reset the acknowledged state during an update, because we wouldn't
+    // want to reset the acknowledged state if the extension was already on the
     // blocklist.
-    blocklist_prefs::SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
         extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
   }
 
@@ -2687,7 +2687,7 @@ void ExtensionPrefs::MigrateOldBlocklistPrefs() {
       if (was_blocklisted) {
         // Keep the blocklist acknowledged pref unchanged as it will be updated
         // below.
-        blocklist_prefs::SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
+        blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
             extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, this);
       }
       // Clear the legacy pref.

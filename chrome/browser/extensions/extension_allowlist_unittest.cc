@@ -147,8 +147,8 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
-            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                kExtensionId1, extension_prefs()));
+            blocklist_prefs::GetExtensionBlocklistState(kExtensionId1,
+                                                        extension_prefs()));
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       kExtensionId1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
       extension_prefs()));
@@ -164,8 +164,8 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
-            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
-                kExtensionId1, extension_prefs()));
+            blocklist_prefs::GetExtensionBlocklistState(kExtensionId1,
+                                                        extension_prefs()));
   EXPECT_TRUE(blocklist_prefs::HasOmahaBlocklistState(
       kExtensionId1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
       extension_prefs()));

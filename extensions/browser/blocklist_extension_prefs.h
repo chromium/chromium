@@ -77,19 +77,7 @@ void UpdateCurrentGreylistStatesAsAcknowledged(const std::string& extension_id,
                                                ExtensionPrefs* extension_prefs);
 
 // Sets the `bitmap_blocklist_state` to the Safe Browsing blocklist state pref.
-// If the BLOCKLISTED_MALWARE state has changed, also clears the "acknowledged"
-// bit.
 void SetSafeBrowsingExtensionBlocklistState(
-    const std::string& extension_id,
-    BitMapBlocklistState bitmap_blocklist_state,
-    ExtensionPrefs* extension_prefs);
-
-// Similar to SetSafeBrowsingExtensionBlocklistState, but not clearing the
-// "acknowledged" bit.
-// Warning: This function was created to accommodate legacy code. It should not
-// be used in new code. Please call SetSafeBrowsingExtensionBlocklistState
-// instead.
-void SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
     const std::string& extension_id,
     BitMapBlocklistState bitmap_blocklist_state,
     ExtensionPrefs* extension_prefs);

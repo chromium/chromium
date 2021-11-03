@@ -194,36 +194,15 @@ void SetSafeBrowsingExtensionBlocklistState(
     const std::string& extension_id,
     BitMapBlocklistState bitmap_blocklist_state,
     ExtensionPrefs* extension_prefs) {
-  bool currently_blocklisted =
-      IsExtensionBlocklisted(extension_id, extension_prefs);
-  BlocklistState state =
-      BitMapBlocklistStateToBlocklistState(bitmap_blocklist_state);
-  bool is_blocklisted = state == BLOCKLISTED_MALWARE;
-  if (is_blocklisted != currently_blocklisted) {
-    // Always make sure the "acknowledged" bit is cleared since the blocklist
-    // bit is changing.
-    blocklist_prefs::RemoveAcknowledgedBlocklistState(
-        extension_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
-        extension_prefs);
-  }
-
-  SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
-      extension_id, bitmap_blocklist_state, extension_prefs);
-}
-
-void SetSafeBrowsingExtensionBlocklistStateKeepAcknowledged(
-    const std::string& extension_id,
-    BitMapBlocklistState bitmap_blocklist_state,
-    ExtensionPrefs* extension_prefs) {
-  BlocklistState state =
-      BitMapBlocklistStateToBlocklistState(bitmap_blocklist_state);
-  if (state == NOT_BLOCKLISTED) {
+  if (bitmap_blocklist_state == BitMapBlocklistState::NOT_BLOCKLISTED) {
     extension_prefs->UpdateExtensionPref(extension_id, kPrefBlocklistState,
                                          nullptr);
     extension_prefs->DeleteExtensionPrefsIfPrefEmpty(extension_id);
   } else {
-    extension_prefs->UpdateExtensionPref(extension_id, kPrefBlocklistState,
-                                         std::make_unique<base::Value>(state));
+    extension_prefs->UpdateExtensionPref(
+        extension_id, kPrefBlocklistState,
+        std::make_unique<base::Value>(
+            BitMapBlocklistStateToBlocklistState(bitmap_blocklist_state)));
   }
 }
 
