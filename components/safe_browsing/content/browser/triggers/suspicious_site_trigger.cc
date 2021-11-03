@@ -36,8 +36,8 @@ const int64_t kSuspiciousSiteCollectionPeriodMilliseconds = 5000;
 const char kSuspiciousSiteTriggerEventMetricName[] =
     "SafeBrowsing.Triggers.SuspiciousSite.Event";
 
-const char kSuspiciousSiteTriggerReportRejectionMetricName[] =
-    "SafeBrowsing.Triggers.SuspiciousSite.ReportRejectionReason";
+const char kSuspiciousSiteTriggerReportRejectionTestMetricName[] =
+    "SafeBrowsingTest.Triggers.SuspiciousSite.ReportRejectionReason";
 
 const char kSuspiciousSiteTriggerReportDelayStateTestMetricName[] =
     "SafeBrowsingTest.Triggers.SuspiciousSite.DelayTimerState";
@@ -102,8 +102,8 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
           error_options, &reason)) {
     UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                               SuspiciousSiteTriggerEvent::REPORT_START_FAILED);
-    UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerReportRejectionMetricName,
-                              reason);
+    LOCAL_HISTOGRAM_ENUMERATION(
+        kSuspiciousSiteTriggerReportRejectionTestMetricName, reason);
     return false;
   }
 

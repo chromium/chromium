@@ -1785,6 +1785,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.Triggers.SuspiciousSite.ReportRejectionReason"
     enum="TriggerManagerReason" expires_after="2021-11-07">
+  <obsolete>
+    Removed 11-2021 due to lack of use
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
