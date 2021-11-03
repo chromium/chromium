@@ -927,6 +927,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
+    @MinWebLayerVersion(97)
     public void
     testExternalIntentWithNoRedirectBlockedIfIntentProcessingDisabledOnNavigationStarted()
             throws Throwable {
@@ -981,6 +982,7 @@ public class ExternalNavigationTest {
      */
     @Test
     @SmallTest
+    @MinWebLayerVersion(97)
     public void
     testExternalIntentAfterRedirectBlockedIfIntentProcessingDisabledOnNavigationStarted()
             throws Throwable {
