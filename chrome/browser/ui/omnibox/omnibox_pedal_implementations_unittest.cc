@@ -16352,6 +16352,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             "share link with qr code",
             "share page",
             "share this page",
+            "share this tab",
         },
 
         // ID#36
