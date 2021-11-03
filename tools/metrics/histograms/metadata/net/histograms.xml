@@ -5018,6 +5018,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SiteDomainIsSafe" enum="Boolean" expires_after="M95">
+  <obsolete>
+    Removed November 2021.
+  </obsolete>
   <owner>mmenke@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
