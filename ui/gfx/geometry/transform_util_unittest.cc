@@ -5,7 +5,9 @@
 #include "ui/gfx/geometry/transform_util.h"
 
 #include <stddef.h>
+#include <limits>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point.h"
@@ -346,6 +348,121 @@ TEST(TransformUtilTest, TransformBetweenRects) {
 
   // Tests the case where the destination is an empty rectangle.
   verify(RectF(0.f, 0.f, 3.f, 5.f), RectF());
+}
+
+TEST(TransformUtilTest, Transform2dScaleComponents) {
+  // Values to test quiet NaN, infinity, and a denormal float if they're
+  // present; zero otherwise (since for the case this is used for, it
+  // should produce the same result).
+  const float quiet_NaN_or_zero = std::numeric_limits<float>::has_quiet_NaN
+                                      ? std::numeric_limits<float>::quiet_NaN()
+                                      : 0;
+  const float infinity_or_zero = std::numeric_limits<float>::has_infinity
+                                     ? std::numeric_limits<float>::infinity()
+                                     : 0;
+  const float denorm_min_or_zero =
+      (std::numeric_limits<float>::has_denorm == std::denorm_present)
+          ? std::numeric_limits<float>::denorm_min()
+          : 0;
+
+  const struct {
+    Transform transform;
+    absl::optional<Vector2dF> expected_scale;
+  } tests[] = {
+      // clang-format off
+      // A matrix with only scale and translation.
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, 1),
+       Vector2dF(3, 7)},
+      // Matrices like the first, but also with various
+      // perspective-altering components.
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, -0.5, 1),
+       Vector2dF(3, 7)},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0.2f, 0, -0.5f, 1),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0.2f, -0.2f, -0.5f, 1),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0.2f, -0.2f, -0.5f, 1),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, -0.2f, -0.5f, 1),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, -0.5f, 0.25f),
+       Vector2dF(12, 28)},
+      // Matrices like the first, but with some types of rotation.
+      {Transform(0, 3, 0, -23,
+                 7, 0, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, 1),
+       Vector2dF(7, 3)},
+      {Transform(3, 8, 0, -23,
+                 4, 6, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, 1),
+       Vector2dF(5, 10)},
+      // Combination of rotation and perspective
+      {Transform(3, 8, 0, -23,
+                 4, 6, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, 0.25f),
+       Vector2dF(20, 40)},
+      // Error handling cases for final perspective component.
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, 0),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, quiet_NaN_or_zero),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, infinity_or_zero),
+       absl::nullopt},
+      {Transform(3, 0, 0, -23,
+                 0, 7, 0, 31,
+                 0, 0, 11, 47,
+                 0, 0, 0, denorm_min_or_zero),
+       absl::nullopt},
+      // clang-format on
+  };
+
+  const float fallback = 1.409718f;  // randomly generated in [1,2)
+
+  for (const auto& test : tests) {
+    absl::optional<Vector2dF> try_result =
+        TryComputeTransform2dScaleComponents(test.transform);
+    EXPECT_EQ(try_result, test.expected_scale);
+    Vector2dF result =
+        ComputeTransform2dScaleComponents(test.transform, fallback);
+    if (test.expected_scale) {
+      EXPECT_EQ(result, *test.expected_scale);
+    } else {
+      EXPECT_EQ(result, Vector2dF(fallback, fallback));
+    }
+  }
 }
 
 }  // namespace

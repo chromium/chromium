@@ -6392,9 +6392,10 @@ TEST_P(LCDTextTest, NonTranslationAboveRenderTarget) {
   // Scale. LCD-text is allowed.
   gfx::Transform scale;
   scale.Scale(2.0, 2.0);
-  // Apply perspective to prevent the scale from applying to the layers below
-  // the render target.
+  // Apply perspective and rotation to prevent the scale from applying
+  // to the layers below the render target.
   scale.ApplyPerspectiveDepth(10);
+  scale.RotateAboutXAxis(15.0);
   SetTransform(layer_, scale);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "scale transform above render target");

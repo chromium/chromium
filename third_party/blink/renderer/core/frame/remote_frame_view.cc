@@ -203,15 +203,14 @@ void RemoteFrameView::UpdateCompositingScaleFactor() {
   float frame_to_local_root_scale_factor = 1.0f;
   gfx::Transform local_root_transform = TransformationMatrix::ToTransform(
       local_root_transform_state.AccumulatedTransform());
-  if (local_root_transform.HasPerspective()) {
+  absl::optional<gfx::Vector2dF> scale_components =
+      gfx::TryComputeTransform2dScaleComponents(local_root_transform);
+  if (!scale_components) {
     frame_to_local_root_scale_factor =
         gfx::ComputeApproximateMaxScale(local_root_transform);
   } else {
-    gfx::Vector2dF scale_components =
-        gfx::ComputeTransform2dScaleComponents(local_root_transform,
-                                               /*fallback_scale=*/1.0f);
     frame_to_local_root_scale_factor =
-        std::max(scale_components.x(), scale_components.y());
+        std::max(scale_components->x(), scale_components->y());
   }
 
   // The compositing scale factor is calculated by multiplying the scale factor

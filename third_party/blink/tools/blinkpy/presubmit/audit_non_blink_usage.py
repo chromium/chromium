@@ -311,7 +311,6 @@ _CONFIG = [
             'cc::MathUtil',
             'gfx::BoundingRect',
             'gfx::ComputeApproximateMaxScale',
-            'gfx::ComputeTransform2dScaleComponents',
             'gfx::Determinant',
             'gfx::IntersectRects',
             'gfx::PointAtOffsetFromOrigin',
@@ -343,6 +342,7 @@ _CONFIG = [
             'gfx::TransposePoint',
             'gfx::TransposeRect',
             'gfx::TransposeSize',
+            'gfx::TryComputeTransform2dScaleComponents',
             'gfx::UnionRects',
 
             # Range type.

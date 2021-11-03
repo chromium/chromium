@@ -5,6 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 #define UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -84,6 +85,11 @@ GEOMETRY_SKIA_EXPORT Transform WindowMatrix(int x,
                                             int width,
                                             int height);
 
+// Compute 2D scale if possible; return whether it was set.
+GEOMETRY_SKIA_EXPORT absl::optional<Vector2dF>
+TryComputeTransform2dScaleComponents(const Transform& transform);
+
+// Compute 2D scale, and fall back to fallback_value if not possible.
 GEOMETRY_SKIA_EXPORT Vector2dF
 ComputeTransform2dScaleComponents(const Transform& transform,
                                   float fallback_value);

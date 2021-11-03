@@ -253,6 +253,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     gfx::Transform transform;
     transform.Scale(10.2f, 15.1f);
     transform.ApplyPerspectiveDepth(10);
+    transform.RotateAboutXAxis(15.0f);
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
@@ -263,6 +264,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     gfx::Transform transform;
     transform.Scale(0.1f, 0.2f);
     transform.ApplyPerspectiveDepth(10);
+    transform.RotateAboutXAxis(15.0f);
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());
@@ -273,6 +275,7 @@ TEST_F(LayerImplTest, PerspectiveTransformHasReasonableScale) {
     gfx::Transform transform;
     transform.Scale(10000.1f, 10000.2f);
     transform.ApplyPerspectiveDepth(10);
+    transform.RotateAboutXAxis(15.0f);
     layer->draw_properties().screen_space_transform = transform;
 
     ASSERT_TRUE(layer->ScreenSpaceTransform().HasPerspective());

@@ -651,17 +651,45 @@ static inline float ScaleOnAxis(double a, double b, double c) {
   return static_cast<float>(std::sqrt(a * a + b * b + c * c));
 }
 
+absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
+    const Transform& transform) {
+  const auto& matrix = transform.matrix();
+  if (matrix.get(3, 0) != 0.0f || matrix.get(3, 1) != 0.0f) {
+    return absl::nullopt;
+  }
+
+  float w = matrix.getFloat(3, 3);
+  if (!std::isnormal(w)) {
+    return absl::nullopt;
+  }
+  float w_scale = 1.0f / w;
+
+  // In theory, this shouldn't be using the matrix.getDouble(2, 0) and
+  // .getDouble(1, 0) values; creating a large transfer from input x or
+  // y (in the layer) to output z has no visible difference when the
+  // transform being considered is a transform to device space, since
+  // the resulting z values are ignored.  However, ignoring them here
+  // might be risky because it would mean that we would have more
+  // variation in the results under animation of rotateX() or rotateY(),
+  // and we'd be relying more heavily on code to compute correct scales
+  // during animation.  Currently some such code only considers the
+  // endpoints, which would become problematic for cases like animation
+  // from rotateY(-60deg) to rotateY(60deg).
+  float x_scale = ScaleOnAxis(matrix.getDouble(0, 0), matrix.getDouble(1, 0),
+                              matrix.getDouble(2, 0));
+  float y_scale = ScaleOnAxis(matrix.getDouble(0, 1), matrix.getDouble(1, 1),
+                              matrix.getDouble(2, 1));
+  return Vector2dF(x_scale * w_scale, y_scale * w_scale);
+}
+
 Vector2dF ComputeTransform2dScaleComponents(const Transform& transform,
                                             float fallback_value) {
-  if (transform.HasPerspective())
-    return Vector2dF(fallback_value, fallback_value);
-  float x_scale = ScaleOnAxis(transform.matrix().getDouble(0, 0),
-                              transform.matrix().getDouble(1, 0),
-                              transform.matrix().getDouble(2, 0));
-  float y_scale = ScaleOnAxis(transform.matrix().getDouble(0, 1),
-                              transform.matrix().getDouble(1, 1),
-                              transform.matrix().getDouble(2, 1));
-  return Vector2dF(x_scale, y_scale);
+  absl::optional<Vector2dF> scale =
+      TryComputeTransform2dScaleComponents(transform);
+  if (scale) {
+    return *scale;
+  }
+  return Vector2dF(fallback_value, fallback_value);
 }
 
 float ComputeApproximateMaxScale(const Transform& transform) {

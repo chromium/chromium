@@ -3150,6 +3150,7 @@ TEST_F(DrawPropertiesScalingTest, LayerTransformsInHighDPI) {
 TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   gfx::Transform perspective_matrix;
   perspective_matrix.ApplyPerspectiveDepth(2.0);
+  perspective_matrix.RotateAboutYAxis(15.0);
   gfx::Vector2dF perspective_surface_offset(2.f, 2.f);
 
   gfx::Transform scale_small_matrix;
@@ -3223,13 +3224,16 @@ TEST_F(DrawPropertiesScalingTest, SurfaceLayerTransformsInHighDPI) {
   // The scale for the perspective surface is not known, so it is rendered 1:1
   // with the screen, and then scaled during drawing.
   gfx::Transform expected_perspective_surface_draw_transform;
+  expected_perspective_surface_draw_transform.Scale(contents_scale_factor,
+                                                    contents_scale_factor);
   expected_perspective_surface_draw_transform.Translate(
-      contents_scale_factor * perspective_surface_offset.x(),
-      contents_scale_factor * perspective_surface_offset.y());
+      perspective_surface_offset);
   expected_perspective_surface_draw_transform.PreconcatTransform(
       perspective_matrix);
   expected_perspective_surface_draw_transform.PreconcatTransform(
       scale_small_matrix);
+  expected_perspective_surface_draw_transform.Scale(
+      1.0f / contents_scale_factor, 1.0f / contents_scale_factor);
   gfx::Transform expected_perspective_surface_layer_draw_transform;
   expected_perspective_surface_layer_draw_transform.Scale(
       contents_scale_factor, contents_scale_factor);
