@@ -156,8 +156,10 @@
             on-keydown="onToggleHistoryClustersKeydown_"
             on-mousedown="onToggleHistoryClustersMousedown_"
             hidden="[[!historyClustersEnabled]]">
-          <iron-icon icon="cr:close"></iron-icon>
-          [[getToggleHistoryClustersItemLabel(historyClustersVisible)]]
+          <iron-icon src="[[getToggleHistoryClustersItemIcon_(
+              historyClustersVisible)]]">
+          </iron-icon>
+          [[getToggleHistoryClustersItemLabel_(historyClustersVisible)]]
           <paper-ripple id="thc-ripple"></paper-ripple>
         </a>
       </iron-selector>

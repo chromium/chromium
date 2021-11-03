@@ -158,7 +158,12 @@ export class HistorySideBarElement extends PolymerElement {
         Page.HISTORY;
   }
 
-  private getToggleHistoryClustersItemLabel(): string {
+  private getToggleHistoryClustersItemIcon_(): string {
+    return this.historyClustersVisible ? 'images/journeys_off.svg' :
+                                         'images/journeys.svg';
+  }
+
+  private getToggleHistoryClustersItemLabel_(): string {
     return loadTimeData.getString(
         this.historyClustersVisible ? 'disableHistoryClusters' :
                                       'enableHistoryClusters');
