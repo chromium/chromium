@@ -13,23 +13,22 @@
 #include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-extern "C" int32_t add_two_ints_via_rust(int32_t x, int32_t y);
+#include "build/rust/tests/test_mixed_source_set/test_mixed_source_set.h"
+#include "build/rust/tests/test_rust_source_set/src/lib.rs.h"
+
 TEST(RustTest, CppCallingIntoRust_BasicFFI) {
   EXPECT_EQ(7, add_two_ints_via_rust(3, 4));
 }
 
-extern "C" void* allocate_via_rust();
-extern "C" void deallocate_via_rust(void* p);
 TEST(RustTest, RustComponentUsesPartitionAlloc) {
   // Verify that PartitionAlloc is consistently used in C++ and Rust.
   auto cpp_allocated_int = std::make_unique<int>();
-  void* rust_allocated_ptr = allocate_via_rust();
+  SomeStruct* rust_allocated_ptr = allocate_via_rust().into_raw();
   EXPECT_EQ(base::IsManagedByPartitionAlloc(rust_allocated_ptr),
             base::IsManagedByPartitionAlloc(cpp_allocated_int.get()));
-  deallocate_via_rust(rust_allocated_ptr);
+  rust::Box<SomeStruct>::from_raw(rust_allocated_ptr);
 }
 
-extern "C" int32_t add_two_ints_via_rust_then_cpp(int32_t x, int32_t y);
 TEST(RustTest, CppCallingIntoRustAndBack_BasicFFI) {
-  EXPECT_EQ(10, add_two_ints_via_rust_then_cpp(6, 4));
+  EXPECT_EQ(10u, add_two_ints_via_rust_then_cpp(6, 4));
 }

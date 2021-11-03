@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/rust_cxx.gni")
 import("//build/rust/rust_unit_test.gni")
 
 # Creates a Rust target (rlib, executable, proc macro etc.) with
@@ -72,6 +73,13 @@ template("rust_target") {
   if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
     _build_unit_tests = false
   }
+  if (defined(invoker.cxx_bindings)) {
+    _deps_for_rust_targets += [
+      ":${_target_name}_cxx",
+      "//build/rust:cxx_rustdeps",
+    ]
+    _cxx_bindings = invoker.cxx_bindings
+  }
 
   # TODO(danakj): This could be a hash generated from the input crate, such as
   # from its path, in which case the BUILD.gn would not need to specify
@@ -117,6 +125,9 @@ template("rust_target") {
       } else {
         forward_variables_from(invoker, [ "visibility" ])
       }
+      if (defined(_cxx_bindings)) {
+        public_deps = [ ":${_target_name}_cxx" ]
+      }
     }
   } else {
     # This is a plain simple single Rust target.
@@ -130,6 +141,9 @@ template("rust_target") {
     crate_root = _crate_root
     configs += _configs
     deps = _deps
+    if (defined(_cxx_bindings)) {
+      deps += [ "//build/rust:cxx_rustdeps" ]
+    }
     rustflags = _rustflags
     rustflags += [ string_join("",
                                [
@@ -173,6 +187,13 @@ template("rust_target") {
         deps += invoker.test_deps
       }
       deps += _deps_for_rust_targets
+    }
+  }
+
+  if (defined(_cxx_bindings)) {
+    rust_cxx("${_target_name}_cxx") {
+      inputs = _cxx_bindings
+      native_header_deps = _deps
     }
   }
 }

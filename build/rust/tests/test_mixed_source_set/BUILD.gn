@@ -10,4 +10,5 @@ mixed_source_set("test_mixed_source_set") {
     "test_mixed_source_set.h",
   ]
   rs_sources = [ "src/lib.rs" ]
+  rs_cxx_bindings = [ "src/lib.rs" ]
 }

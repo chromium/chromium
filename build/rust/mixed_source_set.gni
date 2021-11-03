@@ -32,6 +32,7 @@ import("//build/rust/rust_source_set.gni")
 #   rs_unit_test_target
 #   rs_crate_root
 #   rs_features
+#   rs_cxx_bindings
 #     Rust parameters. Same meaning as in 'rust_source_set' without the
 #     'rs_' prefix, e.g. rs_configs here means the same as 'configs' in
 #     rust_source_set.
@@ -64,6 +65,9 @@ template("mixed_source_set") {
       }
       if (defined(invoker.rs_features)) {
         features = invoker.rs_features
+      }
+      if (defined(invoker.rs_cxx_bindings)) {
+        cxx_bindings = invoker.rs_cxx_bindings
       }
       if (defined(invoker.deps)) {
         deps = invoker.deps

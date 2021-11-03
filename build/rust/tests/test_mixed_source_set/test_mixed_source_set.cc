@@ -3,19 +3,18 @@
 // found in the LICENSE file.
 
 #include "test_mixed_source_set.h"
-#include <stdint.h>
 #include <iostream>
 
-extern "C" void rust_code();
+#include "build/rust/tests/test_mixed_source_set/src/lib.rs.h"
 
 void say_hello_via_callbacks() {
-  rust_code();
+  say_hello_from_a_cpp_callback_from_rust();
 }
 
-extern "C" void cpp_callback() {
+void cpp_callback() {
   std::cout << "Hello from C++ callback from Rust" << std::endl;
 }
 
-extern "C" uint32_t cpp_addition(uint32_t a, uint32_t b) {
+uint32_t cpp_addition(uint32_t a, uint32_t b) {
   return a + b;
 }
