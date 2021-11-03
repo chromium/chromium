@@ -23,6 +23,8 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/no_state_prefetch/prerender_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -32,6 +34,8 @@
 #include "components/google/core/common/google_switches.h"
 #include "components/google/core/common/google_util.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/optimization_guide/core/hints_component_info.h"
 #include "components/optimization_guide/core/hints_component_util.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
@@ -295,6 +299,41 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   void ResetCountHintsRequestsReceived() {
     base::AutoLock lock(lock_);
     count_hints_requests_received_ = 0;
+  }
+
+  // Triggers nostate prefetch of |url|.
+  void TriggerNoStatePrefetch(const GURL& url) {
+    prerender::NoStatePrefetchManager* no_state_prefetch_manager =
+        prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
+            browser()->profile());
+    ASSERT_TRUE(no_state_prefetch_manager);
+
+    prerender::test_utils::TestNoStatePrefetchContentsFactory*
+        no_state_prefetch_contents_factory =
+            new prerender::test_utils::TestNoStatePrefetchContentsFactory();
+    no_state_prefetch_manager->SetNoStatePrefetchContentsFactoryForTest(
+        no_state_prefetch_contents_factory);
+
+    content::SessionStorageNamespace* storage_namespace =
+        browser()
+            ->tab_strip_model()
+            ->GetActiveWebContents()
+            ->GetController()
+            .GetDefaultSessionStorageNamespace();
+    ASSERT_TRUE(storage_namespace);
+
+    std::unique_ptr<prerender::test_utils::TestPrerender> test_prerender =
+        no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
+            prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
+
+    std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
+        no_state_prefetch_manager->AddPrerenderFromOmnibox(
+            url, storage_namespace, gfx::Size(640, 480));
+    ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
+
+    // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or
+    // FINAL_STATUS_RECENTLY_VISITED.
+    test_prerender->contents()->set_skip_final_checks(true);
   }
 
  protected:
@@ -1101,6 +1140,42 @@ IN_PROC_BROWSER_TEST_F(
             kRaceNavigationFetchNotAttempted,
         1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherDoesntFetchOnNSP) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  // Allowlist NoScript for https_url()'s' host.
+  SetUpComponentUpdateHints(https_url());
+
+  // Expect that the browser initialization will record at least one sample
+  // in each of the following histograms as hints fetching is enabled.
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 1),
+            1);
+
+  EXPECT_GE(optimization_guide::RetryForHistogramUntilCountReached(
+                histogram_tester,
+                "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", 1),
+            1);
+
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.Status", net::HTTP_OK, 1);
+
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.NetErrorCode", net::OK,
+      1);
+  histogram_tester->ExpectUniqueSample(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
+
+  // Initiate a NSP.
+  SetNetworkConnectionOnline();
+  ResetCountHintsRequestsReceived();
+  TriggerNoStatePrefetch(GURL("https://someotherurl.com/"));
+
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
 }
 
 class HintsFetcherSearchPageBrowserTest : public HintsFetcherBrowserTest {
