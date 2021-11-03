@@ -2365,6 +2365,7 @@ source_set("browser") {
     ]
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
     ]
   } else if (is_posix) {
