@@ -75,7 +75,8 @@ class DeviceCacheImpl : public DeviceCache,
                             device::BluetoothDevice::BatteryType type) override;
 
   // DeviceNameManager::Observer:
-  void OnDeviceNicknameChanged(const std::string& device_id) override;
+  void OnDeviceNicknameChanged(const std::string& device_id,
+                               const std::string& nickname) override;
 
   // Fetches all known devices from BluetoothAdapter and populates them into
   // |paired_devices_| and |unpaired_devices_|.

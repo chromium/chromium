@@ -81,7 +81,7 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
       << "Device ID to nickname map pref is unregistered.";
   device_id_to_nickname_map->SetStringKey(device_id, nickname);
 
-  NotifyDeviceNicknameChanged(device_id);
+  NotifyDeviceNicknameChanged(device_id, nickname);
 }
 
 void DeviceNameManagerImpl::SetPrefs(PrefService* local_state) {

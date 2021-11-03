@@ -24,8 +24,10 @@ class DeviceNameManager {
    public:
     ~Observer() override = default;
 
-    // Invoked when the nickname of device with id |device_id| has changed.
-    virtual void OnDeviceNicknameChanged(const std::string& device_id) = 0;
+    // Invoked when the nickname of device with id |device_id| has changed to
+    // |nickname|.
+    virtual void OnDeviceNicknameChanged(const std::string& device_id,
+                                         const std::string& nickname) = 0;
   };
 
   virtual ~DeviceNameManager();
@@ -49,7 +51,8 @@ class DeviceNameManager {
  protected:
   DeviceNameManager();
 
-  void NotifyDeviceNicknameChanged(const std::string& device_id);
+  void NotifyDeviceNicknameChanged(const std::string& device_id,
+                                   const std::string& nickname);
 
   base::ObserverList<Observer> observers_;
 };

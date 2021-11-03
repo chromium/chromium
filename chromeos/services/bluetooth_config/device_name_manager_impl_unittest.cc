@@ -35,15 +35,22 @@ class FakeObserver : public DeviceNameManager::Observer {
     return last_device_id_nickname_changed_;
   }
 
+  const std::string& last_device_nickname_changed() const {
+    return last_device_nickname_changed_;
+  }
+
  private:
   // DeviceNameManager::Observer:
-  void OnDeviceNicknameChanged(const std::string& device_id) override {
+  void OnDeviceNicknameChanged(const std::string& device_id,
+                               const std::string& nickname) override {
     ++num_device_nickname_changed_calls_;
     last_device_id_nickname_changed_ = device_id;
+    last_device_nickname_changed_ = nickname;
   }
 
   size_t num_device_nickname_changed_calls_ = 0u;
   std::string last_device_id_nickname_changed_;
+  std::string last_device_nickname_changed_;
 };
 
 }  // namespace
@@ -99,6 +106,10 @@ class DeviceNameManagerImplTest : public testing::Test {
     return fake_observer_.last_device_id_nickname_changed();
   }
 
+  const std::string& GetLastDeviceNicknameChanged() const {
+    return fake_observer_.last_device_nickname_changed();
+  }
+
  private:
   std::vector<const device::BluetoothDevice*> GetMockDevices() {
     std::vector<const device::BluetoothDevice*> devices;
@@ -127,6 +138,7 @@ TEST_F(DeviceNameManagerImplTest, GetThenSetValidThenSetInvalid) {
   EXPECT_EQ(manager->GetDeviceNickname(device_id), kTestNickname);
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 1u);
   EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
+  EXPECT_EQ(GetLastDeviceNicknameChanged(), kTestNickname);
 
   // Set an empty nickname, this should fail and the nickname should be
   // unchanged.
@@ -151,6 +163,7 @@ TEST_F(DeviceNameManagerImplTest, NicknameIsPersistedBetweenManagerInstances) {
   EXPECT_EQ(manager->GetDeviceNickname(device_id), kTestNickname);
   EXPECT_EQ(GetNumDeviceNicknameObserverEvents(), 1u);
   EXPECT_EQ(GetLastDeviceIdNicknameChanged(), device_id);
+  EXPECT_EQ(GetLastDeviceNicknameChanged(), kTestNickname);
 
   // Create a new manager and destroy the old one.
   manager = CreateDeviceNameManager();

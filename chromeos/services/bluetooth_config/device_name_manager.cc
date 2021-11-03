@@ -20,9 +20,10 @@ void DeviceNameManager::RemoveObserver(Observer* observer) {
 }
 
 void DeviceNameManager::NotifyDeviceNicknameChanged(
-    const std::string& device_id) {
+    const std::string& device_id,
+    const std::string& nickname) {
   for (auto& observer : observers_)
-    observer.OnDeviceNicknameChanged(device_id);
+    observer.OnDeviceNicknameChanged(device_id, nickname);
 }
 
 }  // namespace bluetooth_config
