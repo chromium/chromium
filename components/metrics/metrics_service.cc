@@ -931,11 +931,8 @@ void MetricsService::RecordCurrentEnvironment(MetricsLog* log, bool complete) {
 
 void MetricsService::RecordCurrentHistograms() {
   DCHECK(log_manager_.current_log());
-
-  // "true" indicates that StatisticsRecorder should include histograms held in
-  // persistent storage.
   base::StatisticsRecorder::PrepareDeltas(
-      true, base::Histogram::kNoFlags,
+      /*include_persistent=*/true, base::Histogram::kNoFlags,
       base::Histogram::kUmaTargetedHistogramFlag, &histogram_snapshot_manager_);
   delegating_provider_.RecordHistogramSnapshots(&histogram_snapshot_manager_);
 }

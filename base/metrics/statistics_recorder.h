@@ -177,11 +177,12 @@ class BASE_EXPORT StatisticsRecorder {
   // This method must be called on the UI thread.
   static void ImportProvidedHistograms();
 
-  // Snapshots all histograms via |snapshot_manager|. |flags_to_set| is used to
-  // set flags for each histogram. |required_flags| is used to select
-  // histograms to be recorded. Only histograms that have all the flags
-  // specified by the argument will be chosen. If all histograms should be
-  // recorded, set it to |Histogram::kNoFlags|.
+  // Snapshots all histograms via |snapshot_manager|. |include_persistent|
+  // determines whether histograms held in persistent storage are
+  // snapshotted. |flags_to_set| is used to set flags for each histogram.
+  // |required_flags| is used to select which histograms to record. Only
+  // histograms with all required flags are selected. If all histograms should
+  // be recorded, use |Histogram::kNoFlags| as the required flag.
   static void PrepareDeltas(bool include_persistent,
                             HistogramBase::Flags flags_to_set,
                             HistogramBase::Flags required_flags,
