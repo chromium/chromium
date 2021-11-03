@@ -8,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.UserManager;
 
@@ -23,24 +22,20 @@ import org.chromium.base.task.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Receiver of the RestrictAccountsToPatterns policy.
- */
+/** Receiver of the RestrictAccountsToPatterns policy. */
 final class AccountRestrictionPatternReceiver {
     private static final String TAG = "AccountRestriction";
     private static final String ACCOUNT_RESTRICTION_PATTERNS_KEY = "RestrictAccountsToPatterns";
 
     AccountRestrictionPatternReceiver(Callback<List<PatternMatcher>> onPatternsUpdated) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            BroadcastReceiver receiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    getRestrictionPatternsAsync().then(onPatternsUpdated);
-                }
-            };
-            ContextUtils.getApplicationContext().registerReceiver(
-                    receiver, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
-        }
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                getRestrictionPatternsAsync().then(onPatternsUpdated);
+            }
+        };
+        ContextUtils.getApplicationContext().registerReceiver(
+                receiver, new IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
         getRestrictionPatternsAsync().then(onPatternsUpdated);
     }
 
@@ -63,9 +58,6 @@ final class AccountRestrictionPatternReceiver {
     @WorkerThread
     private List<PatternMatcher> getRestrictionPatterns() {
         final List<PatternMatcher> patternMatchers = new ArrayList<>();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            return patternMatchers;
-        }
         try {
             Context context = ContextUtils.getApplicationContext();
             UserManager userManager = (UserManager) context.getSystemService(Context.USER_SERVICE);
