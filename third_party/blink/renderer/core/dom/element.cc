@@ -4495,11 +4495,10 @@ bool Element::IsAutofocusable() const {
 }
 
 bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
-  if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled() ||
-      GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() ==
-          GetDocument()
-              .GetDisplayLockDocumentState()
-              .DisplayLockBlockingAllActivationCount())
+  if (GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() ==
+      GetDocument()
+          .GetDisplayLockDocumentState()
+          .DisplayLockBlockingAllActivationCount())
     return false;
 
   HeapVector<std::pair<Member<Element>, Member<Element>>> activatable_targets;
@@ -4924,8 +4923,6 @@ Element::EnsureResizeObserverData() {
 }
 
 DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
-  if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
-    return nullptr;
   DCHECK(HasDisplayLockContext());
   DCHECK(HasRareData());
   return GetElementRareData()->GetDisplayLockContext();

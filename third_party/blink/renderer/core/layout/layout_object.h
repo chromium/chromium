@@ -3421,8 +3421,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   DisplayLockContext* GetDisplayLockContext() const {
     NOT_DESTROYED();
-    if (!RuntimeEnabledFeatures::CSSContentVisibilityEnabled())
-      return nullptr;
     auto* element = DynamicTo<Element>(GetNode());
     if (!element)
       return nullptr;

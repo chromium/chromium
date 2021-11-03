@@ -96,16 +96,14 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
   const Node& first_node = *range->FirstNode();
   bool needs_style_and_layout = false;
 
-  if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
-    // TODO(vmpstr): Rework this, since it is only used for bookkeeping.
-    DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
-        EphemeralRangeInFlatTree(range));
+  // TODO(vmpstr): Rework this, since it is only used for bookkeeping.
+  DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
+      EphemeralRangeInFlatTree(range));
 
-    // We need to update the style and layout since the event dispatched may
-    // have modified it, and we need up-to-date layout to ScrollRectToVisible
-    // below.
-    needs_style_and_layout = true;
-  }
+  // We need to update the style and layout since the event dispatched may
+  // have modified it, and we need up-to-date layout to ScrollRectToVisible
+  // below.
+  needs_style_and_layout = true;
 
   // If the active match is hidden inside a <details> element, then we should
   // expand it so find-in-page can scroll to it.

@@ -3481,7 +3481,6 @@
       keywords: ["visible", "auto", "hidden", "hidden-matchable"],
       default_value: "visible",
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSContentVisibility",
       computable: false,
     },
     {

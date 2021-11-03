@@ -1961,8 +1961,7 @@ static void AssertLayoutTreeUpdated(Node& root,
   Node* node = &root;
   while (node) {
     if (auto* element = DynamicTo<Element>(node)) {
-      if ((RuntimeEnabledFeatures::CSSContentVisibilityEnabled() &&
-           element->ChildStyleRecalcBlockedByDisplayLock()) ||
+      if (element->ChildStyleRecalcBlockedByDisplayLock() ||
           (allow_dirty_container_subtrees && element->GetLayoutObject() &&
            element->GetLayoutObject()
                ->StyleRef()

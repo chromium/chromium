@@ -590,12 +590,6 @@
       implied_by: ["CSSContainerQueries"]
     },
     {
-      // The main content-visibility feature.
-      // https://drafts.csswg.org/css-contain/#content-visibility
-      name: "CSSContentVisibility",
-      status: "stable",
-    },
-    {
       // The content-visibility: hidden-matchable feature. This is a planned
       // follow-up to the main CSSContentVisibility feature, thus it is gated
       // by a different flag.

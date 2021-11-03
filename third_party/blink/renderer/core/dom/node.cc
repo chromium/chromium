@@ -1240,10 +1240,8 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
 
     // If we reach a locked ancestor, we should abort since the ancestor marking
     // will be done when the lock is committed.
-    if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled()) {
-      if (ancestor->ChildStyleRecalcBlockedByDisplayLock())
-        break;
-    }
+    if (ancestor->ChildStyleRecalcBlockedByDisplayLock())
+      break;
   }
   if (!isConnected())
     return;
@@ -1266,9 +1264,8 @@ void Node::MarkAncestorsWithChildNeedsStyleRecalc() {
   // roots. These would be updated when we commit the lock. If we have locked
   // display locks somewhere in the document, we iterate up the ancestor chain
   // to check if we're in one such subtree.
-  if (RuntimeEnabledFeatures::CSSContentVisibilityEnabled() &&
-      GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() >
-          0) {
+  if (GetDocument().GetDisplayLockDocumentState().LockedDisplayLockCount() >
+      0) {
     for (Element* ancestor_copy = ancestor; ancestor_copy;
          ancestor_copy = ancestor_copy->GetStyleRecalcParent()) {
       if (ancestor_copy->ChildStyleRecalcBlockedByDisplayLock())
