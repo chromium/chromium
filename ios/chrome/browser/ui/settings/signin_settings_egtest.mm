@@ -214,11 +214,8 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
-  [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
-  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
-  [SigninEarlGreyUI tapSigninConfirmationDialog];
 
   // Disable Sync
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
