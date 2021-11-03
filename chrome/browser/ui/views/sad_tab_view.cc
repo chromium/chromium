@@ -32,14 +32,12 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
-
-constexpr int kMaxContentWidth = 600;
-constexpr int kMinColumnWidth = 120;
-constexpr int kTitleBottomSpacing = 13;
 
 std::unique_ptr<views::Label> CreateFormattedLabel(
     const std::u16string& message) {
@@ -487,95 +485,88 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
 
   SetBackground(
       views::CreateThemedSolidBackground(this, ui::kColorDialogBackground));
-
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  const int column_set_id = 0;
-  views::ColumnSet* columns = layout->AddColumnSet(column_set_id);
-
-  // TODO(ananta)
-  // This view should probably be styled as web UI.
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  const int unrelated_horizontal_spacing = provider->GetDistanceMetric(
-          DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
-  columns->AddPaddingColumn(1.0, unrelated_horizontal_spacing);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0,
-                     kMinColumnWidth);
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0,
-                     kMinColumnWidth);
-  columns->AddPaddingColumn(1.0, unrelated_horizontal_spacing);
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      provider->GetInsetsMetric(views::INSETS_DIALOG)));
+  auto* top_spacer = AddChildView(std::make_unique<views::View>());
+  auto* container = AddChildView(std::make_unique<views::FlexLayoutView>());
+  container->SetOrientation(views::LayoutOrientation::kVertical);
+  constexpr int kMinContentWidth = 240;
+  container->SetMinimumCrossAxisSize(kMinContentWidth);
+  auto* bottom_spacer = AddChildView(std::make_unique<views::View>());
 
-  auto image = std::make_unique<views::ImageView>();
+  // Center content horizontally; divide vertical padding into 1/3 above, 2/3
+  // below.
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout->SetFlexForView(top_spacer, 1);
+  layout->SetFlexForView(bottom_spacer, 2);
 
+  // Crashed tab image.
+  auto* image = container->AddChildView(std::make_unique<views::ImageView>());
   image->SetImage(
       gfx::CreateVectorIcon(kCrashedTabIcon, 48, gfx::kChromeIconGrey));
+  const int unrelated_vertical_spacing =
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
+  image->SetProperty(views::kMarginsKey,
+                     gfx::Insets(0, 0, unrelated_vertical_spacing, 0));
+  image->SetProperty(views::kCrossAxisAlignmentKey,
+                     views::LayoutAlignment::kStart);
 
-  const int unrelated_vertical_spacing_large = provider->GetDistanceMetric(
-      DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE);
-  layout->AddPaddingRow(1.0, unrelated_vertical_spacing_large);
-  layout->StartRow(views::GridLayout::kFixedSize, column_set_id);
-  layout->AddView(std::move(image), 2, 1);
+  // Title.
+  title_ = container->AddChildView(
+      std::make_unique<views::Label>(l10n_util::GetStringUTF16(GetTitle())));
+  title_->SetFontList(ui::ResourceBundle::GetSharedInstance().GetFontList(
+      ui::ResourceBundle::LargeFont));
+  title_->SetMultiLine(true);
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  constexpr int kTitleBottomSpacing = 13;
+  title_->SetProperty(views::kMarginsKey,
+                      gfx::Insets(0, 0, kTitleBottomSpacing, 0));
 
-  auto title =
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(GetTitle()));
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  title->SetFontList(rb.GetFontList(ui::ResourceBundle::LargeFont));
-  title->SetMultiLine(true);
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set_id,
-                              views::GridLayout::kFixedSize,
-                              unrelated_vertical_spacing_large);
-  title_ = layout->AddView(std::move(title), 2, 1.0);
-
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set_id,
-                              views::GridLayout::kFixedSize,
-                              kTitleBottomSpacing);
-  message_ = layout->AddView(
-      CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())), 2, 1.0,
-      views::GridLayout::LEADING, views::GridLayout::LEADING);
-
+  // Message and optional bulleted list.
+  message_ = container->AddChildView(
+      CreateFormattedLabel(l10n_util::GetStringUTF16(GetInfoMessage())));
   std::vector<int> bullet_string_ids = GetSubMessages();
   if (!bullet_string_ids.empty()) {
-    auto list_view = std::make_unique<BulletedLabelListView>();
+    auto* list_view = AddChildView(std::make_unique<BulletedLabelListView>());
     for (const auto& id : bullet_string_ids)
       list_view->AddLabel(l10n_util::GetStringUTF16(id));
-
-    layout->StartRow(views::GridLayout::kFixedSize, column_set_id);
-    layout->AddView(std::move(list_view), 2, 1.0);
+    list_view->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(2, 1));
   }
 
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set_id,
-                              views::GridLayout::kFixedSize,
-                              kTitleBottomSpacing);
-  layout->AddView(
-      CreateErrorCodeLabel(GetErrorCodeFormatString(), GetCrashedErrorCode()),
-      2, 1.0, views::GridLayout::LEADING, views::GridLayout::LEADING);
+  // Error code.
+  container
+      ->AddChildView(CreateErrorCodeLabel(GetErrorCodeFormatString(),
+                                          GetCrashedErrorCode()))
+      ->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets(kTitleBottomSpacing, 0, unrelated_vertical_spacing, 0));
 
-  auto help_link = std::make_unique<views::Link>(
-      l10n_util::GetStringUTF16(GetHelpLinkTitle()));
+  // Bottom row: help link, action button.
+  auto* actions_container =
+      container->AddChildView(std::make_unique<views::FlexLayoutView>());
+  actions_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  auto* help_link =
+      actions_container->AddChildView(std::make_unique<views::Link>(
+          l10n_util::GetStringUTF16(GetHelpLinkTitle())));
   help_link->SetCallback(base::BindRepeating(
       &SadTab::PerformAction, base::Unretained(this), Action::HELP_LINK));
-  layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_set_id,
-                              views::GridLayout::kFixedSize,
-                              unrelated_vertical_spacing_large);
-  layout->AddView(std::move(help_link), 1.0, 1.0, views::GridLayout::LEADING,
-                  views::GridLayout::CENTER);
-  auto action_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(&SadTabView::PerformAction, base::Unretained(this),
-                          Action::BUTTON),
-      l10n_util::GetStringUTF16(GetButtonTitle()));
-  action_button->SetProminent(true);
+  help_link->SetProperty(views::kTableVertAlignKey,
+                         views::LayoutAlignment::kCenter);
   action_button_ =
-      layout->AddView(std::move(action_button), 1.0, 1.0,
-                      views::GridLayout::TRAILING, views::GridLayout::LEADING);
-
-  layout->AddPaddingRow(2, provider->GetDistanceMetric(
-                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+      actions_container->AddChildView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&SadTabView::PerformAction,
+                              base::Unretained(this), Action::BUTTON),
+          l10n_util::GetStringUTF16(GetButtonTitle())));
+  action_button_->SetProminent(true);
+  action_button_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded)
+          .WithAlignment(views::LayoutAlignment::kEnd));
 
   // Needed to ensure this View is drawn even if a sibling (such as dev tools)
   // has a z-order.
@@ -638,6 +629,7 @@ void SadTabView::AttachToWebView() {
 
 void SadTabView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // Specify the maximum message and title width explicitly.
+  constexpr int kMaxContentWidth = 600;
   const int max_width =
       std::min(width() - ChromeLayoutProvider::Get()->GetDistanceMetric(
                              DISTANCE_UNRELATED_CONTROL_HORIZONTAL) *
