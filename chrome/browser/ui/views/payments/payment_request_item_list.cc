@@ -24,7 +24,6 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/grid_layout.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
@@ -66,52 +65,37 @@ PaymentRequestItemList::Item::Item(base::WeakPtr<PaymentRequestSpec> spec,
 PaymentRequestItemList::Item::~Item() {}
 
 void PaymentRequestItemList::Item::Init() {
-  std::unique_ptr<views::View> content =
-      CreateContentView(&accessible_item_description_);
+  views::BoxLayout* layout =
+      SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::View* content_view =
+      AddChildView(CreateContentView(&accessible_item_description_));
+  content_view->SetCanProcessEventsWithinSubtree(false);
+  layout->SetFlexForView(content_view, 1);
 
-  // Add a column for the item's content view.
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  // The container view contains the checkmark shown next to the selected
+  // profile, an optional extra_view and an optional edit_button.
+  views::View* container = AddChildView(std::make_unique<views::View>());
+  views::BoxLayout* container_layout =
+      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+          kExtraViewSpacing));
+  container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  container_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  // Add a column for the checkmark shown next to the selected profile.
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  container->AddChildView(CreateCheckmark(selected() && GetClickable()));
 
-  std::unique_ptr<views::View> extra_view = CreateExtraView();
-  if (extra_view) {
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize, kExtraViewSpacing);
-    // Add a column for the extra_view, which comes after the checkmark.
-    columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  }
-
-  if (show_edit_button_) {
-    columns->AddPaddingColumn(views::GridLayout::kFixedSize, kExtraViewSpacing);
-    // Add a column for the edit_button if it exists.
-    columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                       views::GridLayout::kFixedSize,
-                       views::GridLayout::ColumnSize::kFixed, kEditIconSize,
-                       kEditIconSize);
-  }
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  content->SetCanProcessEventsWithinSubtree(false);
-  layout->AddView(std::move(content));
-
-  layout->AddView(CreateCheckmark(selected() && GetClickable()));
-
-  if (extra_view)
-    layout->AddView(std::move(extra_view));
+  if (std::unique_ptr<views::View> extra_view = CreateExtraView())
+    container->AddChildView(std::move(extra_view));
 
   if (show_edit_button_) {
     auto edit_button = views::CreateVectorImageButton(
         base::BindRepeating(&Item::EditButtonPressed, base::Unretained(this)));
+    edit_button->SetBorder(nullptr);
     const SkColor icon_color =
         color_utils::DeriveDefaultIconColor(SK_ColorBLACK);
     edit_button->SetImage(views::Button::STATE_NORMAL,
@@ -122,7 +106,7 @@ void PaymentRequestItemList::Item::Init() {
     edit_button->SetID(static_cast<int>(DialogViewID::EDIT_ITEM_BUTTON));
     edit_button->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_PAYMENTS_EDIT));
-    layout->AddView(std::move(edit_button));
+    container->AddChildView(std::move(edit_button));
   }
 
   UpdateAccessibleName();
