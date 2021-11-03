@@ -291,7 +291,6 @@ EXPORTS
     ?CompareSlowPath@Cord@absl@@AEBAHVstring_view@2@_K1@Z
     ?ConcatNodes@CordForest@absl@@QEAAPEAUCordRep@cord_internal@2@XZ
     ?Consume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
-    ?ConsumeBeginTo@CordRepBtree@cord_internal@absl@@CAPEAV123@PEAV123@_K1@Z
     ?ConsumeUnboundConversion@str_format_internal@absl@@YAPEBDPEBD0PEAUUnboundConversion@12@PEAH@Z
     ?ConvertDateTime@absl@@YA?AUTimeConversion@1@_JHHHHHVTimeZone@1@@Z
     ?ConvertDeletedToEmptyAndFullToDeleted@container_internal@absl@@YAXPEAW4ctrl_t@12@_K@Z
@@ -301,7 +300,7 @@ EXPORTS
     ?ConvertOne@ParsedFormatConsumer@ParsedFormatBase@str_format_internal@absl@@QEAA_NAEBUUnboundConversion@34@Vstring_view@4@@Z
     ?Copy@CordRepRing@cord_internal@absl@@CAPEAV123@PEAV123@II_K@Z
     ?CopyCordToString@absl@@YAXAEBVCord@1@PEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
-    ?CopyPrefix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K_N@Z
+    ?CopyPrefix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K@Z
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K@Z
     ?CopyTo@InlineRep@Cord@absl@@QEBAXPEAV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@@Z
     ?CopyToArraySlowPath@Cord@absl@@AEBAXPEAD@Z
@@ -370,7 +369,6 @@ EXPORTS
     ?ErasePayload@Status@absl@@QEAA_NVstring_view@2@@Z
     ?Eval@Condition@absl@@QEBA_NXZ
     ?ExtendTransitions@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NXZ
-    ?ExtractFront@CordRepBtree@cord_internal@absl@@CAPEAUCordRep@23@PEAV123@@Z
     ?FDivDuration@absl@@YANVDuration@1@0@Z
     ?FailedPreconditionError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
     ?FailureSignalToString@debugging_internal@absl@@YAPEBDH@Z
@@ -598,10 +596,10 @@ EXPORTS
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QEAAXXZ
     ?PrepareToModify@Status@absl@@AEAAXXZ
     ?Prepend@Cord@absl@@QEAAXAEBV12@@Z
+    ?Prepend@Cord@absl@@QEAAXVstring_view@2@@Z
     ?Prepend@CordRepBtree@cord_internal@absl@@SAPEAV123@PEAV123@Vstring_view@3@_K@Z
     ?Prepend@CordRepRing@cord_internal@absl@@SAPEAV123@PEAV123@PEAUCordRep@23@@Z
     ?Prepend@CordRepRing@cord_internal@absl@@SAPEAV123@PEAV123@Vstring_view@3@_K@Z
-    ?PrependArray@Cord@absl@@AEAAXVstring_view@2@W4MethodIdentifier@CordzUpdateTracker@cord_internal@2@@Z
     ?PrependLeaf@CordRepRing@cord_internal@absl@@CAPEAV123@PEAV123@PEAUCordRep@23@_K2@Z
     ?PrependSlow@CordRepBtree@cord_internal@absl@@CAPEAV123@PEAV123@PEAUCordRep@23@@Z
     ?PrependSlow@CordRepRing@cord_internal@absl@@CAPEAV123@PEAV123@PEAUCordRep@23@@Z
@@ -629,8 +627,6 @@ EXPORTS
     ?ReaderLockWhenWithTimeout@Mutex@absl@@QEAA_NAEBVCondition@2@VDuration@2@@Z
     ?ReaderTryLock@Mutex@absl@@QEAA_NXZ
     ?ReaderUnlock@Mutex@absl@@QEAAXXZ
-    ?Rebuild@CordRepBtree@cord_internal@absl@@CAXPEAPEAV123@PEAV123@_N@Z
-    ?Rebuild@CordRepBtree@cord_internal@absl@@SAPEAV123@PEAV123@@Z
     ?ReclaimThreadIdentity@synchronization_internal@absl@@YAXPEAX@Z
     ?RecordInsertSlow@container_internal@absl@@YAXPEAUHashtablezInfo@12@_K1@Z
     ?Register@?$SampleRecorder@UHashtablezInfo@container_internal@absl@@@profiling_internal@absl@@QEAAPEAUHashtablezInfo@container_internal@3@XZ
@@ -651,7 +647,6 @@ EXPORTS
     ?RemovePrefix@Cord@absl@@QEAAX_K@Z
     ?RemovePrefix@CordRepRing@cord_internal@absl@@SAPEAV123@PEAV123@_K1@Z
     ?RemoveSuffix@Cord@absl@@QEAAX_K@Z
-    ?RemoveSuffix@CordRepBtree@cord_internal@absl@@SAPEAUCordRep@23@PEAV123@_K@Z
     ?RemoveSuffix@CordRepRing@cord_internal@absl@@SAPEAV123@PEAV123@_K1@Z
     ?ResetToBuiltinUTC@TimeZoneInfo@cctz@time_internal@absl@@AEAA_NAEBV?$duration@_JV?$ratio@$00$00@__1@std@@@chrono@__1@std@@@Z
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@Vstring_view@1@@Z
@@ -659,7 +654,7 @@ EXPORTS
     ?ReverseConsume@cord_internal@absl@@YAXPEAUCordRep@12@V?$FunctionRef@$$A6AXPEAUCordRep@cord_internal@absl@@_K1@Z@2@@Z
     ?SafeToDelete@CordzHandle@cord_internal@absl@@QEBA_NXZ
     ?SafeWriteToStderr@raw_logging_internal@absl@@YAXPEBD_K@Z
-    ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@PEA_J_K@Z
+    ?SampleSlow@container_internal@absl@@YAPEAUHashtablezInfo@12@PEA_J@Z
     ?Seek@CordRepBtreeReader@cord_internal@absl@@QEAA?AVstring_view@3@_K@Z
     ?SetCapacityForTesting@CordRepRing@cord_internal@absl@@QEAAX_K@Z
     ?SetCurrentThreadIdentity@base_internal@absl@@YAXPEAUThreadIdentity@12@P6AXPEAX@Z@Z
