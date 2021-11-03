@@ -50,8 +50,6 @@ const MediaQueryParser::State MediaQueryParser::kReadRestrictor =
     &MediaQueryParser::ReadRestrictor;
 const MediaQueryParser::State MediaQueryParser::kReadMediaNot =
     &MediaQueryParser::ReadMediaNot;
-const MediaQueryParser::State MediaQueryParser::kReadMediaType =
-    &MediaQueryParser::ReadMediaType;
 const MediaQueryParser::State MediaQueryParser::kSkipUntilComma =
     &MediaQueryParser::SkipUntilComma;
 const MediaQueryParser::State MediaQueryParser::kDone = &MediaQueryParser::Done;
@@ -144,13 +142,6 @@ bool MediaQueryParser::ConsumeAnd(CSSParserTokenRange& range) {
   return true;
 }
 
-void MediaQueryParser::SetStateAndRestrict(
-    State state,
-    MediaQuery::RestrictorType restrictor) {
-  media_query_data_.SetRestrictor(restrictor);
-  state_ = state;
-}
-
 void MediaQueryParser::FinishQueryDataAndSetState(bool success,
                                                   CSSParserTokenRange& range) {
   if (!success) {
@@ -179,7 +170,15 @@ void MediaQueryParser::ReadRestrictor(CSSParserTokenRange& range) {
                                  range);
     }
   } else if (range.Peek().GetType() == kIdentToken) {
-    SetStateAndRestrict(kReadMediaType, ConsumeRestrictor(range));
+    media_query_data_.SetRestrictor(ConsumeRestrictor(range));
+    String type = ConsumeType(range);
+
+    if (!type.IsNull()) {
+      media_query_data_.SetMediaType(type);
+      FinishQueryDataAndSetState(ConsumeAnd(range), range);
+    } else {
+      state_ = kSkipUntilComma;
+    }
   } else if (range.AtEnd() && !query_set_->QueryVector().size()) {
     state_ = kDone;
   } else {
@@ -191,25 +190,6 @@ void MediaQueryParser::ReadMediaNot(CSSParserTokenRange& range) {
   if (ConsumeIfIdent(range, "not"))
     media_query_data_.SetRestrictor(MediaQuery::kNot);
   FinishQueryDataAndSetState(ConsumeFeature(range) && ConsumeAnd(range), range);
-}
-
-void MediaQueryParser::ReadMediaType(CSSParserTokenRange& range) {
-  DCHECK_EQ(state_, kReadMediaType);
-
-  String type = ConsumeType(range);
-
-  if (!type.IsNull()) {
-    media_query_data_.SetMediaType(type);
-    FinishQueryDataAndSetState(ConsumeAnd(range), range);
-  } else if (range.AtEnd()) {
-    state_ = kDone;
-  } else {
-    state_ = kSkipUntilComma;
-    if (range.Peek().GetType() == kCommaToken)
-      SkipUntilComma(range);
-    else
-      range.ConsumeComponentValue();
-  }
 }
 
 void MediaQueryParser::SkipUntilComma(CSSParserTokenRange& range) {

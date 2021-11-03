@@ -113,13 +113,11 @@ class CORE_EXPORT MediaQueryParser {
 
   void ReadRestrictor(CSSParserTokenRange&);
   void ReadMediaNot(CSSParserTokenRange&);
-  void ReadMediaType(CSSParserTokenRange&);
   void SkipUntilComma(CSSParserTokenRange&);
   void Done(CSSParserTokenRange&);
 
   using State = void (MediaQueryParser::*)(CSSParserTokenRange&);
 
-  void SetStateAndRestrict(State, MediaQuery::RestrictorType);
   void FinishQueryDataAndSetState(bool success, CSSParserTokenRange&);
 
   bool IsMediaFeatureAllowedInMode(const String& media_feature) const;
@@ -133,7 +131,6 @@ class CORE_EXPORT MediaQueryParser {
 
   const static State kReadRestrictor;
   const static State kReadMediaNot;
-  const static State kReadMediaType;
   const static State kSkipUntilComma;
   const static State kDone;
 };
