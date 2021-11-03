@@ -1096,8 +1096,8 @@
   },
   {
     "name": "detect-form-submission-on-form-clear",
-    "owners": [ "kazinova@google.com", "jdoerrie"],
-    "expiry_milestone": 96
+    "owners": [ "kazinova@google.com", "khamutov@google.com"],
+    "expiry_milestone": 101
   },
   {
     "name": "detect-target-embedding-lookalikes",
