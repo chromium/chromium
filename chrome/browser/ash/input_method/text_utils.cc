@@ -131,6 +131,10 @@ int FindNextSentenceEnd(const std::u16string& text, int pos) {
 }
 
 Sentence FindLastSentence(const std::u16string& text, int pos) {
+  if (pos > 0 &&
+      (pos == text.size() || text[pos] == '\n' || text[pos] == '\r')) {
+    pos--;
+  }
   int end = FindLastSentenceEnd(text, pos);
   if (end == kUndefined) {
     return Sentence();
@@ -149,6 +153,10 @@ Sentence FindLastSentence(const std::u16string& text, int pos) {
 }
 
 Sentence FindCurrentSentence(const std::u16string& text, int pos) {
+  if (pos > 0 &&
+      (pos == text.size() || text[pos] == '\n' || text[pos] == '\r')) {
+    pos--;
+  }
   int start = FindLastSentenceEnd(text, pos);
   if (start == kUndefined) {
     start = 0;

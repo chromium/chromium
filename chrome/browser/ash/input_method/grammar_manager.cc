@@ -339,6 +339,8 @@ void GrammarManager::AcceptSuggestion() {
                           current_fragment_.range.start()),
         current_fragment_.range.length() -
             surrounding_text.selection_range.length());
+    input_context->SetSelectionRange(current_fragment_.range.start(),
+                                     current_fragment_.range.start());
     // Insert the suggestion and put cursor after it.
     input_context->CommitText(
         base::UTF8ToUTF16(current_fragment_.suggestion),

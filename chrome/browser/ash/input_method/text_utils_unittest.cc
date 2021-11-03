@@ -30,6 +30,7 @@ TEST(TextUtilsTest, FindsLastSentenceEnd) {
 
   // Multiple lines cases.
   EXPECT_EQ(FindLastSentenceEnd(u"This is a dog\n\nThat is a cat", 20), 13);
+  EXPECT_EQ(FindLastSentenceEnd(u"This is a dog\n", 13), 12);
 }
 
 TEST(TextUtilsTest, FindsNextSentenceEnd) {
@@ -57,7 +58,8 @@ TEST(TextUtilsTest, FindsNextSentenceEnd) {
 
 TEST(TextUtilsTest, FindLastSentence) {
   EXPECT_EQ(FindLastSentence(u"This is a test.", 14), Sentence());
-  EXPECT_EQ(FindLastSentence(u"This is a test.", 15),
+  EXPECT_EQ(FindLastSentence(u"This is a test.", 15), Sentence());
+  EXPECT_EQ(FindLastSentence(u"This is a test. ", 15),
             Sentence(gfx::Range(0, 15), u"This is a test."));
   EXPECT_EQ(FindLastSentence(u"Hi! This is a test.  ", 19),
             Sentence(gfx::Range(4, 19), u"This is a test."));
@@ -76,12 +78,15 @@ TEST(TextUtilsTest, FindLastSentence) {
             Sentence(gfx::Range(0, 13), u"This is a dog"));
   EXPECT_EQ(FindLastSentence(u"This is a dog\n\nThat is a cat", 20),
             Sentence());
+  EXPECT_EQ(FindLastSentence(u"This is a dog\n", 13), Sentence());
 }
 
 TEST(TextUtilsTest, FindCurrentSentence) {
   EXPECT_EQ(FindCurrentSentence(u"This is a test.", 14),
             Sentence(gfx::Range(0, 15), u"This is a test."));
-  EXPECT_EQ(FindCurrentSentence(u"This is a test.", 15), Sentence());
+  EXPECT_EQ(FindCurrentSentence(u"This is a test.", 15),
+            Sentence(gfx::Range(0, 15), u"This is a test."));
+  EXPECT_EQ(FindCurrentSentence(u"This is a test. ", 15), Sentence());
   EXPECT_EQ(FindCurrentSentence(u"Hi! This is a test.  ", 18),
             Sentence(gfx::Range(4, 19), u"This is a test."));
 
@@ -97,6 +102,8 @@ TEST(TextUtilsTest, FindCurrentSentence) {
 
   EXPECT_EQ(FindCurrentSentence(u"This is a dog\nThat is a cat", 20),
             Sentence(gfx::Range(14, 27), u"That is a cat"));
+  EXPECT_EQ(FindCurrentSentence(u"This is a dog\n", 13),
+            Sentence(gfx::Range(0, 13), u"This is a dog"));
 }
 
 }  // namespace
