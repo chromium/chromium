@@ -35,6 +35,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
@@ -349,6 +350,15 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     return overview_session->grid_list();
   }
+
+  // OverviewTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
+    OverviewTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the helpers `AddEntry()` and `DeleteEntry()`, which will be used in
