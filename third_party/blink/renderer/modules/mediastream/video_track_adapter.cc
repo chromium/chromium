@@ -26,6 +26,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/video_track_adapter_settings.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace WTF {
@@ -543,19 +544,22 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::
 
 VideoTrackAdapter::VideoTrackAdapter(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    scoped_refptr<MetronomeProvider> metronome_provider,
     base::WeakPtr<MediaStreamVideoSource> media_stream_video_source)
     : io_task_runner_(io_task_runner),
+      metronome_provider_(std::move(metronome_provider)),
       media_stream_video_source_(media_stream_video_source),
       renderer_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      monitoring_frame_rate_(false),
       muted_state_(false),
       frame_counter_(0),
+      old_frame_counter_snapshot_(0),
       source_frame_rate_(0.0f) {
   DCHECK(io_task_runner);
 }
 
 VideoTrackAdapter::~VideoTrackAdapter() {
   DCHECK(adapters_.IsEmpty());
+  DCHECK(!monitoring_frame_rate_timer_);
 }
 
 void VideoTrackAdapter::AddTrack(const MediaStreamVideoTrack* track,
@@ -720,9 +724,13 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
     OnMutedInternalCallback on_muted_callback,
     double source_frame_rate) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK(!monitoring_frame_rate_);
+  DCHECK(!monitoring_frame_rate_timer_);
 
-  monitoring_frame_rate_ = true;
+  on_muted_callback_ = std::move(on_muted_callback);
+  monitoring_frame_rate_timer_ = std::make_unique<WebRtcTimer>(
+      metronome_provider_, io_task_runner_,
+      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+          &VideoTrackAdapter::CheckFramesReceivedOnIO, WrapRefCounted(this))));
 
   // If the source does not know the frame rate, set one by default.
   if (source_frame_rate == 0.0f)
@@ -730,17 +738,20 @@ void VideoTrackAdapter::StartFrameMonitoringOnIO(
   source_frame_rate_ = source_frame_rate;
   DVLOG(1) << "Monitoring frame creation, first (large) delay: "
            << (kFirstFrameTimeoutInFrameIntervals / source_frame_rate_) << "s";
-  PostDelayedCrossThreadTask(
-      *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
-                          WrapRefCounted(this), std::move(on_muted_callback),
-                          frame_counter_),
+  old_frame_counter_snapshot_ = frame_counter_;
+  monitoring_frame_rate_timer_->StartOneShot(
       base::Seconds(kFirstFrameTimeoutInFrameIntervals / source_frame_rate_));
 }
 
 void VideoTrackAdapter::StopFrameMonitoringOnIO() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  monitoring_frame_rate_ = false;
+  if (!monitoring_frame_rate_timer_) {
+    // Already stopped.
+    return;
+  }
+  monitoring_frame_rate_timer_->Shutdown();
+  monitoring_frame_rate_timer_.reset();
+  on_muted_callback_ = OnMutedInternalCallback();
 }
 
 void VideoTrackAdapter::SetSourceFrameSizeOnIO(
@@ -828,20 +839,14 @@ void VideoTrackAdapter::DeliverEncodedVideoFrameOnIO(
     adapter->DeliverEncodedVideoFrame(frame, estimated_capture_time);
 }
 
-void VideoTrackAdapter::CheckFramesReceivedOnIO(
-    OnMutedInternalCallback set_muted_state_callback,
-    uint64_t old_frame_counter_snapshot) {
+void VideoTrackAdapter::CheckFramesReceivedOnIO() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
 
-  if (!monitoring_frame_rate_)
-    return;
-
-  DVLOG_IF(1, old_frame_counter_snapshot == frame_counter_)
+  DVLOG_IF(1, old_frame_counter_snapshot_ == frame_counter_)
       << "No frames have passed, setting source as Muted.";
-
-  bool muted_state = old_frame_counter_snapshot == frame_counter_;
+  bool muted_state = old_frame_counter_snapshot_ == frame_counter_;
   if (muted_state_ != muted_state) {
-    set_muted_state_callback.Run(muted_state);
+    on_muted_callback_.Run(muted_state);
     muted_state_ = muted_state;
     if (muted_state_) {
       for (const auto& adapter : adapters_)
@@ -849,11 +854,8 @@ void VideoTrackAdapter::CheckFramesReceivedOnIO(
     }
   }
 
-  PostDelayedCrossThreadTask(
-      *io_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(&VideoTrackAdapter::CheckFramesReceivedOnIO,
-                          WrapRefCounted(this),
-                          std::move(set_muted_state_callback), frame_counter_),
+  old_frame_counter_snapshot_ = frame_counter_;
+  monitoring_frame_rate_timer_->StartOneShot(
       base::Seconds(kNormalFrameTimeoutInFrameIntervals / source_frame_rate_));
 }
 

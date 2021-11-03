@@ -109,6 +109,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       ExceptionState& exception_state);
   size_t open_peer_connections() const;
   void OnPeerConnectionClosed();
+  scoped_refptr<MetronomeProvider> metronome_provider() const;
 
   // Creates a PortAllocator that uses Chrome IPC sockets and enforces privacy
   // controls according to the permissions granted on the page.

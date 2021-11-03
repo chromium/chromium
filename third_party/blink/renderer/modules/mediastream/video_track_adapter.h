@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -21,6 +22,8 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
+#include "third_party/webrtc_overrides/webrtc_timer.h"
 
 namespace blink {
 
@@ -42,6 +45,7 @@ class MODULES_EXPORT VideoTrackAdapter
 
   VideoTrackAdapter(
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+      scoped_refptr<MetronomeProvider> metronome_provider,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
   VideoTrackAdapter(const VideoTrackAdapter&) = delete;
@@ -142,15 +146,17 @@ class MODULES_EXPORT VideoTrackAdapter
   void StopFrameMonitoringOnIO();
   void SetSourceFrameSizeOnIO(const gfx::Size& frame_size);
 
-  // Compare |frame_counter_snapshot| with the current |frame_counter_|, and
-  // inform of the situation (muted, not muted) via |set_muted_state_callback|.
-  void CheckFramesReceivedOnIO(OnMutedInternalCallback set_muted_state_callback,
-                               uint64_t old_frame_counter_snapshot);
+  // Compare |old_frame_counter_snapshot_| with the current |frame_counter_|,
+  // and inform of the situation (muted, not muted) via |on_muted_callback_|.
+  void CheckFramesReceivedOnIO();
 
   // |thread_checker_| is bound to the main render thread.
   THREAD_CHECKER(thread_checker_);
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  // |metronome_provider_| is optional, but if a metronome is available then
+  // frame monitoring logic will run on the metronome.
+  const scoped_refptr<MetronomeProvider> metronome_provider_;
 
   base::WeakPtr<MediaStreamVideoSource> media_stream_video_source_;
 
@@ -165,9 +171,9 @@ class MODULES_EXPORT VideoTrackAdapter
   using FrameAdapters = WTF::Vector<scoped_refptr<VideoFrameResolutionAdapter>>;
   FrameAdapters adapters_;
 
-  // Set to true if frame monitoring has been started. It is only accessed on
-  // the IO-thread.
-  bool monitoring_frame_rate_;
+  // Is non-null while frame monitoring. It is only accessed on the IO-thread.
+  std::unique_ptr<WebRtcTimer> monitoring_frame_rate_timer_;
+  OnMutedInternalCallback on_muted_callback_;
 
   // Keeps track of it frames have been received. It is only accessed on the
   // IO-thread.
@@ -175,6 +181,7 @@ class MODULES_EXPORT VideoTrackAdapter
 
   // Running frame counter, accessed on the IO-thread.
   uint64_t frame_counter_;
+  uint64_t old_frame_counter_snapshot_;
 
   // Frame rate configured on the video source, accessed on the IO-thread.
   float source_frame_rate_;

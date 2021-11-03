@@ -633,6 +633,11 @@ void PeerConnectionDependencyFactory::OnPeerConnectionClosed() {
   }
 }
 
+scoped_refptr<MetronomeProvider>
+PeerConnectionDependencyFactory::metronome_provider() const {
+  return metronome_provider_;
+}
+
 std::unique_ptr<cricket::PortAllocator>
 PeerConnectionDependencyFactory::CreatePortAllocator(
     blink::WebLocalFrame* web_frame) {

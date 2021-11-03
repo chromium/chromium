@@ -88,8 +88,9 @@ WebRtcTimer::WebRtcTimer(scoped_refptr<MetronomeProvider> metronome_provider,
     : metronome_provider_(std::move(metronome_provider)),
       callback_(std::move(callback)),
       task_runner_(std::move(task_runner)) {
-  DCHECK(metronome_provider_);
-  metronome_provider_->AddListener(this);
+  if (metronome_provider_) {
+    metronome_provider_->AddListener(this);
+  }
 }
 
 WebRtcTimer::~WebRtcTimer() {
@@ -107,7 +108,9 @@ void WebRtcTimer::Shutdown() {
     schedulable_callback_->Inactivate();
     schedulable_callback_ = nullptr;
   }
-  metronome_provider_->RemoveListener(this);
+  if (metronome_provider_) {
+    metronome_provider_->RemoveListener(this);
+  }
   is_shutdown_ = true;
 }
 

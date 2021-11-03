@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/token.h"
 #include "media/base/video_frame.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/webrtc_overrides/metronome_provider.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -64,6 +66,9 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   explicit MediaStreamVideoSource(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
+  MediaStreamVideoSource(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      scoped_refptr<MetronomeProvider> metronome_provider);
   MediaStreamVideoSource(const MediaStreamVideoSource&) = delete;
   MediaStreamVideoSource& operator=(const MediaStreamVideoSource&) = delete;
   ~MediaStreamVideoSource() override;
@@ -357,6 +362,7 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // for both at the same time.
   RestartCallback restart_callback_;
 
+  const scoped_refptr<MetronomeProvider> metronome_provider_;
   // |track_adapter_| delivers video frames to the tracks on the IO-thread.
   scoped_refptr<VideoTrackAdapter> track_adapter_;
 
