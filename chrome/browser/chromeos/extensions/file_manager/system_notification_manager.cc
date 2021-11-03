@@ -644,15 +644,14 @@ void SystemNotificationManager::HandleIOTaskProgress(
   std::string id = base::StrCat(
       {kSwaFileOperationPrefix, base::NumberToString(status.task_id)});
 
-  // TODO(lucmult): Send the progress to feedback panels if any SWA window is
-  // open.
-  // Check if we need to remove any progress notification when there
-  // are active SWA windows.
-  // if (DoFilesSwaWindowsExist()) {
-  //  GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
-  //                                         id);
-  //  return;
-  //}
+  // If there are any SWA windows open, we remove the progress in system
+  // notification.
+  if (DoFilesSwaWindowsExist()) {
+    GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
+                                           id);
+    return;
+  }
+
   if (status.state == io_task::State::kError ||
       status.state == io_task::State::kCancelled ||
       status.state == io_task::State::kSuccess) {
