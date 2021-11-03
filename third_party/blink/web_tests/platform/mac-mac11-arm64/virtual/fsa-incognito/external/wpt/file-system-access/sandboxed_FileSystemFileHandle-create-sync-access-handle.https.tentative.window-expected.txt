@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Attempt to create a sync access handle. promise_test: Unhandled rejection with value: object "ReferenceError: file_system_type is not defined"
-Harness: the test ran to completion.
-
