@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.BatteryCharge" units="%"
-    expires_after="2021-12-12">
+    expires_after="2022-05-01">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -564,7 +564,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.DeviceThermalState"
-    enum="IOSDeviceThermalState" expires_after="2021-12-12">
+    enum="IOSDeviceThermalState" expires_after="2022-05-01">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -586,6 +586,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Stability.iOS.UTE.LowPowerModeEnabled" enum="BooleanEnabled"
     expires_after="2021-12-12">
+  <obsolete>
+    Removed 11/2021
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -631,7 +634,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.OSRestartedAfterPreviousSession"
-    enum="BooleanRebooted" expires_after="2021-12-12">
+    enum="BooleanRebooted" expires_after="2022-05-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
@@ -642,7 +645,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.OSVersion" enum="VersionComparison"
-    expires_after="2021-12-12">
+    expires_after="2022-05-01">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

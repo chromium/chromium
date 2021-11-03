@@ -253,12 +253,6 @@ void LogOSVersionChange(std::string os_version) {
                                       VersionComparison::kMaxValue);
 }
 
-// Logs wether or not low power mode is enabled.
-void LogLowPowerMode(bool low_power_mode_enabled) {
-  UMA_STABILITY_HISTOGRAM_BOOLEAN("Stability.iOS.UTE.LowPowerModeEnabled",
-                                  low_power_mode_enabled);
-}
-
 // Logs the thermal state of the device.
 void LogDeviceThermalState(DeviceThermalState thermal_state) {
   UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.iOS.UTE.DeviceThermalState",
@@ -356,7 +350,6 @@ void MobileSessionShutdownMetricsProvider::ProvidePreviousSessionData(
     if (session_info.OSVersion) {
       LogOSVersionChange(base::SysNSStringToUTF8(session_info.OSVersion));
     }
-    LogLowPowerMode(session_info.deviceWasInLowPowerMode);
     LogDeviceThermalState(session_info.deviceThermalState);
 
     UMA_STABILITY_HISTOGRAM_BOOLEAN(
