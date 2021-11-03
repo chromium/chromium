@@ -10,6 +10,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
+#include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -286,7 +287,9 @@ void RecordPaintCanvas::drawImageRect(const PaintImage& image,
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                     const SkRect& dst,
                                     float t) {
-  list_->push<DrawSkottieOp>(std::move(skottie), dst, t);
+  // TODO(crbug.com/1266051): Fill in SkottieFrameDataMap. Feature is currently
+  // under development and just haven't gotten to it yet.
+  list_->push<DrawSkottieOp>(std::move(skottie), dst, t, SkottieFrameDataMap());
 }
 
 void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

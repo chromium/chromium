@@ -22,6 +22,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkAnnotation.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -695,6 +696,23 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
   helper.Write(op->dst);
   helper.Write(SkFloatToScalar(op->t));
   helper.Write(op->skottie);
+  // Write number of images in the map first so that we know how many images to
+  // read from the buffer during deserialization.
+  helper.WriteSize(op->images.size());
+  for (const auto& image_asset_pair : op->images) {
+    const SkottieResourceIdHash& asset_id_hash = image_asset_pair.first;
+    const SkottieFrameData& frame_data = image_asset_pair.second;
+    helper.WriteSize(asset_id_hash.GetUnsafeValue());
+    // |scale_adjustment| is not ultimately used; Skottie handles image scale
+    // adjustment internally when rastering.
+    SkSize scale_adjustment = SkSize::MakeEmpty();
+    helper.Write(DrawImage(frame_data.image, /*use_dark_mode=*/false,
+                           SkIRect::MakeWH(frame_data.image.width(),
+                                           frame_data.image.height()),
+                           frame_data.quality, current_ctm),
+                 &scale_adjustment);
+    helper.Write(frame_data.quality);
+  }
   return helper.size();
 }
 
@@ -876,10 +894,10 @@ class PaintOpDeserializer {
         << T::kType;
   }
 
-  PaintOp* FinalizeOp() {
+  PaintOp* FinalizeOp(bool force_invalid = false) {
     DCHECK(op_) << "PaintOp has already been finalized. type=" << T::kType;
 
-    if (!reader_.valid() || !op_->IsValid()) {
+    if (force_invalid || !reader_.valid() || !op_->IsValid()) {
       op_->~T();
       op_ = nullptr;
       return nullptr;
@@ -891,12 +909,18 @@ class PaintOpDeserializer {
     return op_snapshot;
   }
 
+  PaintOp* InvalidateAndFinalizeOp() {
+    return FinalizeOp(/*force_invalid=*/true);
+  }
+
   T* operator->() { return op_; }
 
   template <typename... Args>
   void Read(Args&&... args) {
     reader_.Read(std::forward<Args>(args)...);
   }
+
+  void ReadSize(size_t* size) { reader_.ReadSize(size); }
 
   void AlignMemory(size_t alignment) { reader_.AlignMemory(alignment); }
 
@@ -1167,6 +1191,44 @@ PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
   deserializer->t = SkScalarToFloat(t);
 
   deserializer.Read(&deserializer->skottie);
+  // The |skottie| object gets used below, so no point in continuing if it's
+  // invalid. That can lead to crashing or unexpected behavior.
+  if (!deserializer->skottie || !deserializer->skottie->is_valid())
+    return deserializer.InvalidateAndFinalizeOp();
+
+  size_t num_images = 0;
+  deserializer.ReadSize(&num_images);
+  // In the off chance that there's a bug or corruption in the underlying
+  // buffer, |num_images| may be some invalid enormous value. Sanity check it
+  // with the animation to prevent looping below for long periods of time if an
+  // unexpected error happens.
+  size_t num_assets_in_animation =
+      deserializer->skottie->GetImageAssetMetadata().asset_storage().size();
+  if (num_images > num_assets_in_animation)
+    return deserializer.InvalidateAndFinalizeOp();
+
+  for (size_t i = 0; i < num_images; ++i) {
+    size_t asset_id_hash_raw = 0;
+    deserializer.ReadSize(&asset_id_hash_raw);
+    SkottieResourceIdHash asset_id_hash =
+        SkottieResourceIdHash::FromUnsafeValue(asset_id_hash_raw);
+
+    SkottieFrameData frame_data;
+    deserializer.Read(&frame_data.image);
+    deserializer.Read(&frame_data.quality);
+    if (!asset_id_hash || !frame_data.image)
+      return deserializer.InvalidateAndFinalizeOp();
+
+    // If we've inserted a duplicate, that means the buffer specifies 2
+    // different images for the same asset in this frame. This should not happen
+    // by design since |images| is a map with the asset id as the key. But
+    // defend against it gracefully in case the underlying buffer is corrupted.
+    bool new_entry =
+        deserializer->images.emplace(asset_id_hash, std::move(frame_data))
+            .second;
+    if (!new_entry)
+      return deserializer.InvalidateAndFinalizeOp();
+  }
   return deserializer.FinalizeOp();
 }
 
@@ -1577,7 +1639,48 @@ void DrawRRectOp::RasterWithFlags(const DrawRRectOp* op,
 void DrawSkottieOp::Raster(const DrawSkottieOp* op,
                            SkCanvas* canvas,
                            const PlaybackParams& params) {
+  for (const auto& image_asset_pair : op->images) {
+    const SkottieResourceIdHash& asset_id_hash = image_asset_pair.first;
+    const SkottieFrameData& frame_data = image_asset_pair.second;
+    sk_sp<SkImage> sk_image =
+        GetImageAssetForRaster(frame_data, canvas, params);
+    DCHECK(sk_image) << "Failed to fetch SkImage for Skottie image asset "
+                     << asset_id_hash;
+    if (!op->skottie->SetImageForAsset(
+            asset_id_hash, std::move(sk_image),
+            PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality))) {
+      NOTREACHED() << "Unknown skottie image asset received: " << asset_id_hash;
+    }
+  }
   op->skottie->Draw(canvas, op->t, op->dst);
+}
+
+sk_sp<SkImage> DrawSkottieOp::GetImageAssetForRaster(
+    const SkottieFrameData& frame_data,
+    SkCanvas* canvas,
+    const PlaybackParams& params) {
+  sk_sp<SkImage> sk_image;
+  if (params.image_provider) {
+    // There is no use case for applying dark mode filters to skottie images
+    // currently.
+    DrawImage draw_image(
+        frame_data.image, /*use_dark_mode=*/false,
+        SkIRect::MakeWH(frame_data.image.width(), frame_data.image.height()),
+        frame_data.quality, canvas->getLocalToDevice());
+    auto scoped_result = params.image_provider->GetRasterContent(draw_image);
+    if (scoped_result) {
+      sk_image = scoped_result.decoded_image().image();
+      DCHECK(sk_image);
+    }
+  } else {
+    if (frame_data.image.IsTextureBacked()) {
+      sk_image = frame_data.image.GetAcceleratedSkImage();
+      DCHECK(sk_image || !canvas->recordingContext());
+    }
+    if (!sk_image)
+      sk_image = frame_data.image.GetSwSkImage();
+  }
+  return sk_image;
 }
 
 void DrawTextBlobOp::RasterWithFlags(const DrawTextBlobOp* op,
@@ -2004,6 +2107,24 @@ bool DrawSkottieOp::AreEqual(const PaintOp* base_left,
     return false;
   if (!AreSkRectsEqual(left->dst, right->dst))
     return false;
+  if (left->images.size() != right->images.size())
+    return false;
+
+  auto left_iter = left->images.begin();
+  auto right_iter = right->images.begin();
+  for (; left_iter != left->images.end(); ++left_iter, ++right_iter) {
+    if (left_iter->first != right_iter->first ||
+        // PaintImage's comparison operator compares the underlying SkImage's
+        // pointer address. This does not necessarily hold in cases where the
+        // image's content may be the same, but it got realloacted to a
+        // different spot somewhere in memory via the transfer cache. The next
+        // best thing is to just compare the dimensions of the PaintImage.
+        left_iter->second.image.width() != right_iter->second.image.width() ||
+        left_iter->second.image.height() != right_iter->second.image.height() ||
+        left_iter->second.quality != right_iter->second.quality) {
+      return false;
+    }
+  }
   return true;
 }
 
@@ -2533,8 +2654,13 @@ size_t DrawRecordOp::AdditionalOpCount() const {
 
 DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
                              SkRect dst,
-                             float t)
-    : PaintOp(kType), skottie(std::move(skottie)), dst(dst), t(t) {}
+                             float t,
+                             SkottieFrameDataMap images)
+    : PaintOp(kType),
+      skottie(std::move(skottie)),
+      dst(dst),
+      t(t),
+      images(std::move(images)) {}
 
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 

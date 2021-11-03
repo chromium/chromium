@@ -336,6 +336,7 @@ class CC_PAINT_EXPORT PaintImage {
   friend class PlaybackImageProvider;
   friend class DrawImageRectOp;
   friend class DrawImageOp;
+  friend class DrawSkottieOp;
 
   // TODO(crbug.com/1031051): Remove these once GetSkImage()
   // is fully removed.
