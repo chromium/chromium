@@ -190,7 +190,7 @@ void WebAppProtocolHandlerIntentPickerView::InitChildViews() {
       views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  open_app_label->SetElideBehavior(gfx::ELIDE_TAIL);
+  open_app_label->SetMultiLine(true);
   AddChildView(std::move(open_app_label));
 
   // Add the app info, which will look like:
