@@ -2790,6 +2790,10 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/test/test_app_window_icon_observer.cc",
         "../browser/ui/test/test_app_window_icon_observer.h",
       ]
+
+      if (use_nss_certs) {
+        sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]
+      }
     }
     if (use_aura || toolkit_views) {
       deps += [ "//ui/events:test_support" ]
@@ -4685,6 +4689,7 @@ test("unit_tests") {
     "../browser/predictors/resource_prefetch_predictor_tables_unittest.cc",
     "../browser/predictors/resource_prefetch_predictor_unittest.cc",
     "../browser/prefetch/no_state_prefetch/prerender_unittest.cc",
+    "../browser/prefetch/prefetch_proxy/prefetch_proxy_cookie_listener_unittest.cc",
     "../browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider_unittest.cc",
     "../browser/prefetch/prefetch_proxy/prefetch_proxy_params_unittest.cc",
     "../browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_metrics_collector_unittest.cc",

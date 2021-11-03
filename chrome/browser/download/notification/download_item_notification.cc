@@ -642,12 +642,12 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
   return gfx::kPlaceholderColor;
 }
 
-void DownloadItemNotification::OnImageLoaded(const std::string& image_data) {
+void DownloadItemNotification::OnImageLoaded(std::string image_data) {
   if (image_data.empty())
     return;
 
   // TODO(yoshiki): Set option to reduce the image size to supress memory usage.
-  ImageDecoder::Start(this, image_data);
+  ImageDecoder::Start(this, std::move(image_data));
 }
 
 void DownloadItemNotification::OnImageDecoded(const SkBitmap& decoded_bitmap) {

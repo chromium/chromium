@@ -220,10 +220,12 @@ void NetInternalsTest::MessageHandler::SetUpTestReportURI(
 
 void NetInternalsTest::MessageHandler::DnsLookup(
     const base::ListValue* list_value) {
-  std::string hostname;
-  bool local;
-  ASSERT_TRUE(list_value->GetString(0, &hostname));
-  ASSERT_TRUE(list_value->GetBoolean(1, &local));
+  const auto& list = list_value->GetList();
+  ASSERT_GE(2u, list.size());
+  ASSERT_TRUE(list[0].is_string());
+  ASSERT_TRUE(list[1].is_bool());
+  const std::string hostname = list[0].GetString();
+  const bool local = list[1].GetBool();
   ASSERT_TRUE(browser());
 
   auto resolve_host_parameters = network::mojom::ResolveHostParameters::New();

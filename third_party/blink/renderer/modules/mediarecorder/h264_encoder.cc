@@ -214,7 +214,7 @@ bool H264Encoder::ConfigureEncoderOnEncodingTaskRunner(const gfx::Size& size) {
     init_params.iRCMode = RC_OFF_MODE;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   init_params.iMultipleThreadIdc = 0;
 #else
   // Threading model: Set to 1 due to https://crbug.com/583348.

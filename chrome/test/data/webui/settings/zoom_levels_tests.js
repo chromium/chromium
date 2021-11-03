@@ -4,8 +4,9 @@
 
 // clang-format off
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
-import {waitBeforeNextRender} from 'chrome://test/test_util.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for zoom-levels. */

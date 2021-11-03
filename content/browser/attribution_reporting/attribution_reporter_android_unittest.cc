@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/attribution_reporter_android.h"
 
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -41,9 +42,10 @@ class AttributionReporterTest : public ::testing::Test {
 };
 
 TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
+  base::Time time = base::Time::Now() - base::Hours(1);
   attribution_reporter_android::ReportAppImpression(
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
-      kReportToUrl, 56789);
+      kReportToUrl, 56789, time);
 
   EXPECT_EQ(1u, test_manager_.num_sources());
 
@@ -51,11 +53,13 @@ TEST_F(AttributionReporterTest, ValidImpression_Allowed) {
             test_manager_.last_impression_origin());
   EXPECT_EQ(StorableSource::SourceType::kEvent,
             test_manager_.last_impression_source_type());
+  EXPECT_EQ(time, test_manager_.last_impression_time());
 }
 
 TEST_F(AttributionReporterTest, ValidImpression_Allowed_NoOptionals) {
   attribution_reporter_android::ReportAppImpression(
-      test_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0);
+      test_manager_, nullptr, kPackageName, kEventId, kConversionUrl, "", 0,
+      base::Time::Now());
 
   EXPECT_EQ(1u, test_manager_.num_sources());
 
@@ -73,7 +77,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
 
   attribution_reporter_android::ReportAppImpression(
       test_manager_, nullptr, kPackageName, kEventId, kConversionUrl,
-      kReportToUrl, 56789);
+      kReportToUrl, 56789, base::Time::Now());
 
   EXPECT_EQ(0u, test_manager_.num_sources());
 
@@ -83,7 +87,7 @@ TEST_F(AttributionReporterTest, ValidImpression_Disallowed) {
 TEST_F(AttributionReporterTest, InvalidImpression) {
   attribution_reporter_android::ReportAppImpression(
       test_manager_, nullptr, kPackageName, kEventId, kInvalidUrl, kReportToUrl,
-      56789);
+      56789, base::Time::Now());
 
   EXPECT_EQ(0u, test_manager_.num_sources());
 }

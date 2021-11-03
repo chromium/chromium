@@ -132,5 +132,10 @@ const char kFontRenderHinting[] = "font-render-hinting";
 
 // If true, then all pop-ups and calls to window.open will fail.
 const char kBlockNewWebContents[] = "block-new-web-contents";
+
+// Allows overriding the list of restricted ports by passing a comma-separated
+// list of port numbers.
+const char kExplicitlyAllowedPorts[] = "explicitly-allowed-ports";
+
 }  // namespace switches
 }  // namespace headless

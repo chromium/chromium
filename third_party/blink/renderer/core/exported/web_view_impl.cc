@@ -606,7 +606,7 @@ void WebViewImpl::SetTabKeyCyclesThroughElements(bool value) {
     page_->SetTabKeyCyclesThroughElements(value);
 }
 
-bool WebViewImpl::StartPageScaleAnimation(const IntPoint& target_position,
+bool WebViewImpl::StartPageScaleAnimation(const gfx::Point& target_position,
                                           bool use_anchor,
                                           float new_scale,
                                           base::TimeDelta duration) {
@@ -616,17 +616,17 @@ bool WebViewImpl::StartPageScaleAnimation(const IntPoint& target_position,
   DCHECK(does_composite_);
 
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
-  gfx::Point clamped_point = ToGfxPoint(target_position);
+  gfx::Point clamped_point = target_position;
   if (!use_anchor) {
-    clamped_point = ToGfxPoint(
-        visual_viewport.ClampDocumentOffsetAtScale(target_position, new_scale));
+    clamped_point =
+        visual_viewport.ClampDocumentOffsetAtScale(target_position, new_scale);
     if (duration.is_zero()) {
       SetPageScaleFactor(new_scale);
 
       LocalFrameView* view = MainFrameImpl()->GetFrameView();
       if (view && view->GetScrollableArea()) {
         view->GetScrollableArea()->SetScrollOffset(
-            ScrollOffset(clamped_point.x(), clamped_point.y()),
+            ScrollOffset(gfx::Vector2dF(clamped_point.OffsetFromOrigin())),
             mojom::blink::ScrollType::kProgrammatic);
       }
 
@@ -642,14 +642,14 @@ bool WebViewImpl::StartPageScaleAnimation(const IntPoint& target_position,
     fake_page_scale_animation_page_scale_factor_ = new_scale;
   } else {
     MainFrameImpl()->FrameWidgetImpl()->StartPageScaleAnimation(
-        ToGfxVector2d(target_position), use_anchor, new_scale, duration);
+        target_position.OffsetFromOrigin(), use_anchor, new_scale, duration);
   }
   return true;
 }
 
 void WebViewImpl::EnableFakePageScaleAnimationForTesting(bool enable) {
   enable_fake_page_scale_animation_for_testing_ = enable;
-  fake_page_scale_animation_target_position_ = IntPoint();
+  fake_page_scale_animation_target_position_ = gfx::Point();
   fake_page_scale_animation_use_anchor_ = false;
   fake_page_scale_animation_page_scale_factor_ = 0;
 }
@@ -717,9 +717,9 @@ void WebViewImpl::ComputeScaleAndScrollForBlockRect(
     float padding,
     float default_scale_when_already_legible,
     float& scale,
-    IntPoint& scroll) {
+    gfx::Point& scroll) {
   scale = PageScaleFactor();
-  scroll = IntPoint();
+  scroll = gfx::Point();
 
   gfx::Rect rect = block_rect_in_root_frame;
 
@@ -860,7 +860,7 @@ void WebViewImpl::AnimateDoubleTapZoom(const gfx::Point& point_in_root_frame,
   DCHECK(MainFrameImpl());
 
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
 
   ComputeScaleAndScrollForBlockRect(
       point_in_root_frame, rect_to_zoom, touchPointPadding,
@@ -880,9 +880,9 @@ void WebViewImpl::AnimateDoubleTapZoom(const gfx::Point& point_in_root_frame,
 
   if (should_zoom_out) {
     scale = MinimumPageScaleFactor();
-    IntPoint target_position =
+    gfx::Point target_position =
         MainFrameImpl()->GetFrameView()->RootFrameToDocument(
-            IntPoint(point_in_root_frame.x(), point_in_root_frame.y()));
+            gfx::Point(point_in_root_frame.x(), point_in_root_frame.y()));
     is_animating = StartPageScaleAnimation(target_position, true, scale,
                                            kDoubleTapZoomAnimationDuration);
   } else {
@@ -916,7 +916,7 @@ void WebViewImpl::ZoomToFindInPageRect(const gfx::Rect& rect_in_root_frame) {
   }
 
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
 
   ComputeScaleAndScrollForBlockRect(rect_in_root_frame.origin(), block_bounds,
                                     nonUserInitiatedPointPadding,
@@ -2043,7 +2043,7 @@ void WebViewImpl::ZoomAndScrollToFocusedEditableElementRect(
     const IntRect& caret_bounds_in_document,
     bool zoom_into_legible_scale) {
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
   bool need_animation = false;
   ComputeScaleAndScrollForEditableElementRects(
       element_bounds_in_document, caret_bounds_in_document,
@@ -2057,7 +2057,7 @@ void WebViewImpl::ZoomAndScrollToFocusedEditableElementRect(
 void WebViewImpl::SmoothScroll(int target_x,
                                int target_y,
                                base::TimeDelta duration) {
-  IntPoint target_position(target_x, target_y);
+  gfx::Point target_position(target_x, target_y);
   StartPageScaleAnimation(target_position, false, PageScaleFactor(), duration);
 }
 
@@ -2066,7 +2066,7 @@ void WebViewImpl::ComputeScaleAndScrollForEditableElementRects(
     const IntRect& caret_bounds_in_document,
     bool zoom_into_legible_scale,
     float& new_scale,
-    IntPoint& new_scroll,
+    gfx::Point& new_scroll,
     bool& need_animation) {
   VisualViewport& visual_viewport = GetPage()->GetVisualViewport();
 

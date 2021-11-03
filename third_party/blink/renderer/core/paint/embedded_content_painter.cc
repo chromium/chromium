@@ -26,16 +26,16 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
   if (!embedded_content_view)
     return;
 
-  IntPoint paint_location(RoundedIntPoint(
+  gfx::Point paint_location(ToRoundedPoint(
       paint_offset + layout_embedded_content_.ReplacedContentRect().offset));
 
-  IntSize view_paint_offset =
+  gfx::Vector2d view_paint_offset =
       paint_location - embedded_content_view->FrameRect().origin();
   CullRect adjusted_cull_rect = paint_info.GetCullRect();
-  adjusted_cull_rect.Move(ToGfxVector2d(-view_paint_offset));
+  adjusted_cull_rect.Move(-view_paint_offset);
   embedded_content_view->Paint(paint_info.context,
                                paint_info.GetGlobalPaintFlags(),
-                               adjusted_cull_rect, view_paint_offset);
+                               adjusted_cull_rect, IntSize(view_paint_offset));
 }
 
 }  // namespace blink

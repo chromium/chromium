@@ -372,6 +372,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   zero_state_new_desk_button_ =
       scroll_view_contents_->AddChildView(std::make_unique<ZeroStateIconButton>(
           &kDesksNewDeskButtonIcon,
+          l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
@@ -389,6 +390,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
     zero_state_desks_templates_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<ZeroStateIconButton>(
             &kDesksTemplatesIcon,
+            l10n_util::GetStringUTF16(IDS_ASH_DESKS_TEMPLATES_DESKS_BAR_BUTTON),
             base::BindRepeating(&DesksBarView::OnDesksTemplatesButtonPressed,
                                 base::Unretained(this))));
   }

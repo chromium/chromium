@@ -17,7 +17,8 @@ class ReactionMetadata {
   explicit ReactionMetadata(ReactionType type,
                             const std::string& localized_name,
                             const std::string& thumbnail_url,
-                            const std::string& asset_url);
+                            const std::string& asset_url,
+                            int frame_count);
 
   ReactionMetadata(const ReactionMetadata& other);
 
@@ -27,6 +28,7 @@ class ReactionMetadata {
   const std::string& localized_name() const { return localized_name_; }
   const std::string& thumbnail_url() const { return thumbnail_url_; }
   const std::string& asset_url() const { return asset_url_; }
+  int frame_count() const { return frame_count_; }
 
  private:
   // The reaction type / identifier.
@@ -40,6 +42,9 @@ class ReactionMetadata {
 
   // The URL to the animated GIF for this reaction.
   std::string asset_url_;
+
+  // The number of animated frames that this reaction has.
+  int frame_count_;
 };
 
 }  // namespace content_creation

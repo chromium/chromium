@@ -46,6 +46,7 @@ class FrameTreeNode;
 class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostViewChildFrame;
+class SiteInstanceGroup;
 
 // When a page's frames are rendered by multiple processes, each renderer has a
 // full copy of the frame tree. It has full RenderFrames for the frames it is
@@ -54,24 +55,25 @@ class RenderWidgetHostViewChildFrame;
 //
 // This class is the browser-side host object for the placeholder. Each node in
 // the frame tree has a RenderFrameHost for the active SiteInstance and a set
-// of RenderFrameProxyHost objects - one for all other SiteInstances with
+// of RenderFrameProxyHost objects - one for all other SiteInstanceGroups with
 // references to this frame. The proxies allow us to keep existing window
 // references valid over cross-process navigations and route cross-site
 // asynchronous JavaScript calls, such as postMessage.
 //
 // RenderFrameProxyHost is created whenever a cross-site
 // navigation occurs and a reference to the frame navigating needs to be kept
-// alive. A RenderFrameProxyHost and a RenderFrameHost for the same SiteInstance
-// can exist at the same time, but only one will be "active" at a time.
-// There are two cases where the two objects will coexist:
+// alive. A RenderFrameProxyHost and a RenderFrameHost in the same
+// SiteInstanceGroup can exist at the same time, but only one will be "active"
+// at a time. There are two cases where the two objects will coexist:
 // * When navigating cross-process and there is already a RenderFrameProxyHost
-// for the new SiteInstance. A pending RenderFrameHost is created, but it is
-// not used until it commits. At that point, RenderFrameHostManager transitions
-// the pending RenderFrameHost to the active one and deletes the proxy.
+// for the new SiteInstanceGroup. A pending RenderFrameHost is created, but it
+// is not used until it commits. At that point, RenderFrameHostManager
+// transitions the pending RenderFrameHost to the active one and deletes the
+// proxy.
 // * When navigating cross-process and the existing document has an unload
 // event handler. When the new navigation commits, RenderFrameHostManager
-// creates a RenderFrameProxyHost for the old SiteInstance and uses it going
-// forward. It also instructs the RenderFrameHost to run the unload event
+// creates a RenderFrameProxyHost for the old SiteInstanceGroup and uses it
+// going forward. It also instructs the RenderFrameHost to run the unload event
 // handler and is kept alive for the duration. Once the event handling is
 // complete, the RenderFrameHost is deleted.
 class CONTENT_EXPORT RenderFrameProxyHost
@@ -112,12 +114,19 @@ class CONTENT_EXPORT RenderFrameProxyHost
   RenderProcessHost* GetProcess() { return process_; }
 
   // Initializes the object and creates the RenderFrameProxy in the process
-  // for the SiteInstance.
+  // for the SiteInstanceGroup.
   bool InitRenderFrameProxy();
 
   int GetRoutingID() { return routing_id_; }
 
+  // Each RenderFrameProxyHost belongs to a SiteInstanceGroup, where it is a
+  // placeholder for a frame in a different SiteInstanceGroup.
+  // TODO(crbug.com/1195535): Remove GetSiteInstance() in favor of
+  // site_instance_group().
   SiteInstance* GetSiteInstance() { return site_instance_.get(); }
+  SiteInstanceGroup* site_instance_group() {
+    return site_instance_group_.get();
+  }
 
   // TODO(https://crbug.com/1179502): FrameTree and FrameTreeNode are not const
   // as with prerenderer activation the page needs to move between
@@ -295,7 +304,12 @@ class CONTENT_EXPORT RenderFrameProxyHost
   int routing_id_;
 
   // The SiteInstance this proxy is associated with.
+  // TODO(crbug.com/1195535): Remove this in favor of site_instance_group_.
   scoped_refptr<SiteInstance> site_instance_;
+
+  // The SiteInstanceGroup this RenderFrameProxyHost belongs to, where it is a
+  // placeholder for a frame in a different SiteInstanceGroup.
+  scoped_refptr<SiteInstanceGroup> site_instance_group_;
 
   // The renderer process this RenderFrameProxyHost is associated with. It is
   // equivalent to the result of site_instance_->GetProcess(), but that

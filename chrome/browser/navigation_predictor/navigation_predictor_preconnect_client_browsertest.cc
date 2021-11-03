@@ -551,17 +551,16 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* fenced_frame_host =
       fenced_frame_test_helper().CreateFencedFrame(
           web_contents()->GetMainFrame(), url);
-  // OnVisibilityChanged callback method increases the histogram count to 2.
-  // And, the count should not increase in DidFinishLoad method.
+  // The count should not increase in DidFinishLoad method.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
-                                    2);
+                                    1);
 
   // Navigate the fenced frame.
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(fenced_frame_host,
                                                             url);
   // Histogram count should not increase after navigating the fenced frame.
   histogram_tester.ExpectTotalCount("NavigationPredictor.IsPubliclyRoutable",
-                                    2);
+                                    1);
 }
 
 }  // namespace

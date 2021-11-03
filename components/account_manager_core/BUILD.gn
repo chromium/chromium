@@ -67,14 +67,11 @@ source_set("test_support") {
   ]
 
   public_deps = [
-    "//build:chromeos_buildflags",
+    "//google_apis",
     "//testing/gmock",
   ]
 
-  deps = [
-    ":account_manager_core",
-    "//google_apis",
-  ]
+  deps = [ ":account_manager_core" ]
 }
 
 source_set("unit_tests") {

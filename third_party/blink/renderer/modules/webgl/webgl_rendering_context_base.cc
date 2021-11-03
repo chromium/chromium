@@ -1713,8 +1713,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     raster_interface->Flush();
 
     return GetDrawingBuffer()->CopyToPlatformMailbox(
-        raster_interface, mailbox, texture_target, flip_y, IntPoint(0, 0),
-        IntRect(IntPoint(0, 0), drawing_buffer_->Size()), source_buffer);
+        raster_interface, mailbox, texture_target, flip_y, gfx::Point(0, 0),
+        IntRect(gfx::Point(0, 0), drawing_buffer_->Size()), source_buffer);
   }
 
   // As the resource provider is not accelerated, we don't need an accelerated
@@ -1725,8 +1725,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (!image || !image->PaintImageForCurrentFrame())
     return false;
 
-  IntRect src_rect(IntPoint(), image->Size());
-  IntRect dest_rect(IntPoint(), resource_provider->Size());
+  IntRect src_rect(gfx::Point(), image->Size());
+  IntRect dest_rect(gfx::Point(), resource_provider->Size());
   PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
   // We use this draw helper as we need to take into account the
@@ -1736,6 +1736,26 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   image->Draw(resource_provider->Canvas(), flags, FloatRect(dest_rect),
               FloatRect(src_rect), draw_options);
   return true;
+}
+
+void WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
+    WebGraphicsContext3DVideoFramePool* frame_pool,
+    SourceDrawingBuffer src_buffer,
+    const gfx::ColorSpace& dst_color_space,
+    VideoFrameCopyCompletedCallback& callback) {
+  if (!frame_pool)
+    return;
+
+  auto* drawing_buffer = GetDrawingBuffer();
+  if (!drawing_buffer)
+    return;
+
+  ScopedFramebufferRestorer fbo_restorer(this);
+  if (!drawing_buffer->ResolveAndBindForReadAndDraw())
+    return;
+
+  drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer, is_origin_top_left_,
+                                   dst_color_space, callback);
 }
 
 IntSize WebGLRenderingContextBase::DrawingBufferSize() const {
@@ -5134,7 +5154,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
   if (!image->CurrentFrameKnownToBeOpaque())
     resource_provider->Canvas()->clear(SK_ColorTRANSPARENT);
 
-  IntRect src_rect(IntPoint(), image->Size());
+  IntRect src_rect(gfx::Point(), image->Size());
   IntRect dest_rect(0, 0, size.width(), size.height());
   PaintFlags flags;
   // TODO(ccameron): WebGL should produce sRGB images.
@@ -5592,7 +5612,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
     if (source_image) {
       source_image->CopyToTexture(
           ContextGL(), target, target_texture, level, premultiply_alpha, flip_y,
-          IntPoint(xoffset, yoffset), source_sub_rectangle);
+          gfx::Point(xoffset, yoffset), source_sub_rectangle);
     } else {
       WebGLRenderingContextBase* gl = source_canvas_webgl_context;
       if (gl->is_origin_top_left_ && !canvas()->LowLatencyEnabled())
@@ -5600,7 +5620,7 @@ void WebGLRenderingContextBase::TexImageViaGPU(
       ScopedTexture2DRestorer inner_restorer(gl);
       if (!gl->GetDrawingBuffer()->CopyToPlatformTexture(
               ContextGL(), target, target_texture, level,
-              unpack_premultiply_alpha_, !flip_y, IntPoint(xoffset, yoffset),
+              unpack_premultiply_alpha_, !flip_y, gfx::Point(xoffset, yoffset),
               source_sub_rectangle, kBackBuffer)) {
         NOTREACHED();
       }

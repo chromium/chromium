@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assertEquals, assertNotEquals} from '../chai_assert.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {FakeChromeEvent} from '../fake_chrome_event.js';
 // clang-format on
 

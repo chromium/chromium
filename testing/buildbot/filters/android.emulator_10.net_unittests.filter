@@ -1,8 +1,5 @@
 # crbug.com/1191793
 -MimeUtilTest.ExtensionTest
 
-# crbug.com/1191795
--All/CertVerifyProcInternalWithNetFetchingTest.Sha1IntermediateButAIAHasSha256/CertVerifyProcAndroid
-
 # crbug.com/1046060
 -NetworkQualityEstimatorTest.TestTCPSocketRTT

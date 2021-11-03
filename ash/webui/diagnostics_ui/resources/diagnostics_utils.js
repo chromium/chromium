@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {LockType, Network, NetworkState, NetworkType, RoutineProperties, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
+import {LockType, NavigationView, Network, NetworkState, NetworkType, RoutineProperties, RoutineResult, RoutineType, StandardRoutineResult} from './diagnostics_types.js';
 import {RoutineGroup} from './routine_group.js';
 
 /**
@@ -45,6 +45,25 @@ export function getDiagnosticsIcon(id) {
  */
 export function getNavigationIcon(id) {
   return `navigation-selector:${id}`;
+}
+
+/**
+ * Converts ID into matching navigation view. ID matches the 'id' field provided
+ * to the navigation-view-panel {SelectorItem} array.
+ * @param {string} id
+ * @return {!NavigationView}
+ */
+export function getNavigationViewForPageId(id) {
+  switch (id) {
+    case 'system':
+      return NavigationView.kSystem;
+    case 'connectivity':
+      return NavigationView.kConnectivity;
+    // TODO(ashleydp):  Add input when ready to launch.
+    default:
+      assertNotReached();
+      return NavigationView.kSystem;
+  }
 }
 
 /**

@@ -634,15 +634,15 @@ void GpuArcVideoDecodeAccelerator::ImportBufferForPicture(
       return;
     }
 
-    auto handle = CreateGpuMemoryBufferHandle(
+    auto buffer_handle = CreateGpuMemoryBufferHandle(
         pixel_format, modifier, coded_size_, std::move(handle_fds), planes);
-    if (!handle) {
+    if (!buffer_handle) {
       VLOGF(1) << "Failed to create GpuMemoryBufferHandle";
       client_->NotifyError(
           mojom::VideoDecodeAccelerator::Result::INVALID_ARGUMENT);
       return;
     }
-    gmb_handle = std::move(handle).value();
+    gmb_handle = std::move(buffer_handle).value();
   }
 
   // This is the first time of ImportBufferForPicture() after

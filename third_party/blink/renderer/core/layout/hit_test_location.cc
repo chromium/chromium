@@ -28,7 +28,7 @@ namespace blink {
 HitTestLocation::HitTestLocation()
     : is_rect_based_(false), is_rectilinear_(true) {}
 
-HitTestLocation::HitTestLocation(const IntPoint& point)
+HitTestLocation::HitTestLocation(const gfx::Point& point)
     : HitTestLocation(PhysicalOffset(point)) {}
 
 HitTestLocation::HitTestLocation(const PhysicalOffset& point)

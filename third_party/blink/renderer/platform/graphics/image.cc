@@ -245,7 +245,7 @@ void Image::DrawPattern(GraphicsContext& context,
   IntSize oriented_image_size(image.width(), image.height());
   if (orientation.UsesWidthAsHeight())
     oriented_image_size = oriented_image_size.TransposedSize();
-  subset_rect.Intersect(IntRect(IntPoint(), oriented_image_size));
+  subset_rect.Intersect(IntRect(gfx::Point(), oriented_image_size));
   if (subset_rect.IsEmpty())
     return;  // nothing to draw
 

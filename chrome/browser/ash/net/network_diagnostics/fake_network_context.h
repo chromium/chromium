@@ -16,7 +16,7 @@
 #include "services/network/test/test_network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Used in unit tests, the FakeNetworkContext class simulates the behavior of a
@@ -146,6 +146,6 @@ class FakeNetworkContext : public network::TestNetworkContext {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_NETWORK_CONTEXT_H_

@@ -83,7 +83,7 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(
         NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
     web_controller_ = WebController::CreateForWebContents(
-        shell()->web_contents(), &user_data_);
+        shell()->web_contents(), &user_data_, &log_info_);
     Observe(shell()->web_contents());
   }
 
@@ -926,6 +926,7 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
   std::unique_ptr<WebController> web_controller_;
   UserData user_data_;
   UserModel user_model_;
+  ProcessedActionStatusDetailsProto log_info_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;
@@ -3052,6 +3053,27 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   run_loop.Run();
   EXPECT_EQ(status.proto_status(), ELEMENT_RESOLUTION_FAILED);
   EXPECT_FALSE(script_executor.GetElementStore()->HasElement("e"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, FindElementError) {
+  ClientStatus element_status;
+  ElementFinder::Result element;
+  Selector selector;
+  selector.proto.set_tracking_id(1);
+  selector.proto.add_filters()->set_css_selector("#select");
+  selector.proto.add_filters()->mutable_bounding_box()->set_require_nonempty(
+      true);
+  selector.proto.add_filters()->set_css_selector("option:nth-child(100)");
+  FindElement(selector, &element_status, &element);
+  EXPECT_EQ(element_status.proto_status(), ELEMENT_RESOLUTION_FAILED);
+  ASSERT_EQ(log_info_.element_finder_info().size(), 1);
+  EXPECT_EQ(log_info_.element_finder_info(0).tracking_id(), 1);
+  EXPECT_EQ(log_info_.element_finder_info(0).failed_filter_index_range_start(),
+            0);
+  EXPECT_EQ(log_info_.element_finder_info(0).failed_filter_index_range_end(),
+            3);
+  EXPECT_EQ(log_info_.element_finder_info(0).status(),
+            ELEMENT_RESOLUTION_FAILED);
 }
 
 }  // namespace autofill_assistant

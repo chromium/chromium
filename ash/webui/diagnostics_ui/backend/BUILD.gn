@@ -43,6 +43,7 @@ static_library("backend") {
   deps = [
     "//ash/constants:constants",
     "//ash/public/cpp",
+    "//ash/services/network_health/public/mojom",
     "//ash/webui/diagnostics_ui/mojom",
     "//base",
     "//chromeos/dbus/power",
@@ -51,7 +52,6 @@ static_library("backend") {
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp",
-    "//chromeos/services/network_health/public/mojom",
     "//chromeos/strings/",
     "//chromeos/system",
     "//content/public/browser",

@@ -9,6 +9,7 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
@@ -49,6 +50,10 @@ class PrivacyScreenServiceProvider
 
   // A reference to ExportedObject for sending signals.
   scoped_refptr<dbus::ExportedObject> exported_object_;
+
+  base::ScopedObservation<PrivacyScreenController,
+                          PrivacyScreenController::Observer>
+      privacy_screen_observation_{this};
 
   privacy_screen::PrivacyScreenSetting_PrivacyScreenState state_ =
       privacy_screen::PrivacyScreenSetting_PrivacyScreenState_NOT_SUPPORTED;

@@ -4,9 +4,6 @@
 
 static_library("session") {
   sources = [
-    # TODO(yaohuali): Move arc_service_manager.(cc|h) to this folder.
-    "../arc_service_manager.cc",
-    "../arc_service_manager.h",
     "adb_sideloading_availability_delegate.h",
     "arc_bridge_host_impl.cc",
     "arc_bridge_host_impl.h",
@@ -20,6 +17,8 @@ static_library("session") {
     "arc_data_remover.h",
     "arc_dlc_installer.cc",
     "arc_dlc_installer.h",
+    "arc_service_manager.cc",
+    "arc_service_manager.h",
     "arc_session.cc",
     "arc_session.h",
     "arc_session_impl.cc",

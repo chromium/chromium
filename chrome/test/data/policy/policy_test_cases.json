@@ -12659,11 +12659,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "media.autoplay_allowed": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
-          "AutoplayAllowed": false
+          "AutoplayAllowed": true
         },
         "prefs": {
-          "media.autoplay_allowed": {}
+          "media.autoplay_allowed": {
+            "value": true
+          }
         }
       }
     ]
@@ -12678,6 +12689,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "media.autoplay_whitelist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutoplayWhitelist": [
             "https://mydomain.com",
@@ -12705,6 +12725,15 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "media.autoplay_whitelist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
         "policies": {
           "AutoplayAllowlist": [
             "https://mydomain.com",
@@ -12716,6 +12745,24 @@
             "value": [
               "https://mydomain.com",
               "https://test.mydomain.com"
+            ]
+          }
+        }
+      },
+      {
+        "note": "Precedence over AutoplayWhitelist",
+        "policies": {
+          "AutoplayWhitelist": [
+            "https://autoplay.whitelist"
+          ],
+          "AutoplayAllowlist": [
+            "https://autoplay.allowlist"
+          ]
+        },
+        "prefs": {
+          "media.autoplay_whitelist": {
+            "value": [
+              "https://autoplay.allowlist"
             ]
           }
         }
@@ -15033,6 +15080,45 @@
   },
   "UserAgentClientHintsEnabled": {
     "reason_for_missing_test": "Policy was removed"
+  },
+  "UserAgentClientHintsGREASEUpdateEnabled": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_lacros",
+      "chromeos_ash",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.user_agent_client_hints_grease_update_enabled": {
+            "location": "local_state",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": { "UserAgentClientHintsGREASEUpdateEnabled": true },
+        "prefs": {
+          "policy.user_agent_client_hints_grease_update_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": { "UserAgentClientHintsGREASEUpdateEnabled": false },
+        "prefs": {
+          "policy.user_agent_client_hints_grease_update_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
   },
   "ShowFullUrlsInAddressBar": {
     "os": [

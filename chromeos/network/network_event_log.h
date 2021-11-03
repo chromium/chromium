@@ -33,7 +33,8 @@ std::string NetworkGuidId(const std::string& guid);
 
 // TODO(https://crbug.com/1164001): remove when moved to ash.
 namespace ash {
+using ::chromeos::NetworkGuidId;
 using ::chromeos::NetworkPathId;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_NETWORK_EVENT_LOG_H_

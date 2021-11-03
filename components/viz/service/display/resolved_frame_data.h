@@ -41,6 +41,11 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   ~FixedPassData();
 
   CompositorRenderPass* render_pass = nullptr;
+  // DrawQuads in |render_pass| that can contribute additional damage (eg.
+  // surface and render passes) that need to be visited during the prewalk phase
+  // of aggregation. Stored in front-to-back order like in |render_pass|.
+  std::vector<const DrawQuad*> prewalk_quads;
+
   AggregatedRenderPassId remapped_id;
   bool is_root = false;
   std::vector<ResolvedQuadData> draw_quads;
@@ -96,6 +101,9 @@ class VIZ_SERVICE_EXPORT ResolvedPassData {
   bool is_root() const { return fixed_.is_root; }
   const std::vector<ResolvedQuadData>& draw_quads() const {
     return fixed_.draw_quads;
+  }
+  const std::vector<const DrawQuad*>& prewalk_quads() const {
+    return fixed_.prewalk_quads;
   }
 
   AggregationPassData& aggregation() { return aggregation_; }

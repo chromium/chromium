@@ -303,6 +303,15 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
       break;
 
     case media::VideoCodec::kH264:
+      if (config->options.frame_size.width() % 2 != 0 ||
+          config->options.frame_size.height() % 2 != 0) {
+        if (exception_state) {
+          exception_state->ThrowDOMException(
+              DOMExceptionCode::kNotSupportedError,
+              "H264 only supports even sized frames.");
+        }
+        return false;
+      }
       break;
 
     default:

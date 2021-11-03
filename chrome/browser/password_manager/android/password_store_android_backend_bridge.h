@@ -43,7 +43,7 @@ class PasswordStoreAndroidBackendBridge {
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
     // PasswordStoreChangeList.
-    // Used in response to 'AddLogin' and `RemoveLogin`.
+    // Used in response to 'AddLogin', 'UpdateLogin' and `RemoveLogin`.
     virtual void OnLoginsChanged(JobId job_id,
                                  const PasswordStoreChangeList& changes) = 0;
 
@@ -66,6 +66,11 @@ class PasswordStoreAndroidBackendBridge {
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.
   virtual JobId AddLogin(const PasswordForm& form) WARN_UNUSED_RESULT = 0;
+
+  // Triggers an asynchronous request to update |form| in store. The
+  // registered `Consumer` is notified with `OnLoginsChanged` when the
+  // job with the returned JobId succeeds.
+  virtual JobId UpdateLogin(const PasswordForm& form) WARN_UNUSED_RESULT = 0;
 
   // Triggers an asynchronous request to remove |form| from store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the

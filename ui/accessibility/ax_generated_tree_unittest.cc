@@ -419,13 +419,15 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         // Capture the events generated.
         std::map<AXNodeID, std::set<AXEventGenerator::Event>> actual_events;
         for (const AXEventGenerator::TargetedEvent& event : event_generator) {
-          if (event.node->IsIgnored() ||
+          const AXNode* node = fat_tree.GetFromId(event.node_id);
+          ASSERT_NE(nullptr, node);
+          if (node->IsIgnored() ||
               event.event_params.event ==
                   AXEventGenerator::Event::IGNORED_CHANGED) {
             continue;
           }
 
-          actual_events[event.node->id()].insert(event.event_params.event);
+          actual_events[event.node_id].insert(event.event_params.event);
         }
 
         // Now, turn skinny_tree into skinny_tree1 and compare
@@ -445,7 +447,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         std::map<AXNodeID, std::set<AXEventGenerator::Event>> expected_events;
         for (const AXEventGenerator::TargetedEvent& event :
              skinny_event_generator)
-          expected_events[event.node->id()].insert(event.event_params.event);
+          expected_events[event.node_id].insert(event.event_params.event);
 
         for (auto& entry : expected_events) {
           AXNodeID node_id = entry.first;

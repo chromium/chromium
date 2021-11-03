@@ -96,11 +96,11 @@ ConvolveMatrixFilterOperation* ResolveConvolveMatrix(
   IntSize kernel_size(kernel_matrix->width, kernel_matrix->height);
   double divisor = dict.Get<IDLDouble>("divisor", exception_state).value_or(1);
   double bias = dict.Get<IDLDouble>("bias", exception_state).value_or(0);
-  IntPoint target_offset =
-      IntPoint(dict.Get<IDLShort>("targetX", exception_state)
-                   .value_or(kernel_matrix->width / 2),
-               dict.Get<IDLShort>("targetY", exception_state)
-                   .value_or(kernel_matrix->height / 2));
+  gfx::Point target_offset =
+      gfx::Point(dict.Get<IDLShort>("targetX", exception_state)
+                     .value_or(kernel_matrix->width / 2),
+                 dict.Get<IDLShort>("targetY", exception_state)
+                     .value_or(kernel_matrix->height / 2));
 
   String edge_mode_string =
       dict.Get<IDLString>("edgeMode", exception_state).value_or("duplicate");

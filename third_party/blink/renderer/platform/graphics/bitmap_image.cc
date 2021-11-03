@@ -165,7 +165,7 @@ void BitmapImage::RecordDecodedImageType(UseCounter* use_counter) {
                                             use_counter);
 }
 
-bool BitmapImage::GetHotSpot(IntPoint& hot_spot) const {
+bool BitmapImage::GetHotSpot(gfx::Point& hot_spot) const {
   return decoder_ && decoder_->HotSpot(hot_spot);
 }
 

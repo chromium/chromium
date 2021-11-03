@@ -392,14 +392,14 @@ void DrawDashedOrDottedBoxSide(GraphicsContext& context,
     case BoxSide::kBottom:
     case BoxSide::kTop: {
       int mid_y = y1 + thickness / 2;
-      context.DrawLine(IntPoint(x1, mid_y), IntPoint(x2, mid_y),
+      context.DrawLine(gfx::Point(x1, mid_y), gfx::Point(x2, mid_y),
                        auto_dark_mode);
       break;
     }
     case BoxSide::kRight:
     case BoxSide::kLeft: {
       int mid_x = x1 + thickness / 2;
-      context.DrawLine(IntPoint(mid_x, y1), IntPoint(mid_x, y2),
+      context.DrawLine(gfx::Point(mid_x, y1), gfx::Point(mid_x, y2),
                        auto_dark_mode);
       break;
     }

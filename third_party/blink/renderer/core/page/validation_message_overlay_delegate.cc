@@ -134,7 +134,7 @@ void ValidationMessageOverlayDelegate::UpdateFrameViewState(
     page_->GetVisualViewport().SetSize(view_size);
   }
   IntRect intersection = overlay.Frame().RemoteViewportIntersection();
-  AdjustBubblePosition(intersection.IsEmpty() ? IntRect(IntPoint(), view_size)
+  AdjustBubblePosition(intersection.IsEmpty() ? IntRect(gfx::Point(), view_size)
                                               : intersection);
 
   // This manual invalidation is necessary to avoid a DCHECK failure in

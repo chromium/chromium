@@ -22,7 +22,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_private_key.h"
 
-namespace chromeos {
+namespace ash {
 
 ClientCertStoreAsh::ClientCertStoreAsh(
     std::unique_ptr<CertificateProvider> cert_provider,
@@ -105,4 +105,4 @@ net::ClientCertIdentityList ClientCertStoreAsh::GetAndFilterCertsOnWorkerThread(
   return client_certs;
 }
 
-}  // namespace chromeos
+}  // namespace ash

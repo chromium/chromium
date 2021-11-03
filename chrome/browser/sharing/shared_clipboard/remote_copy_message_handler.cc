@@ -226,7 +226,7 @@ void RemoteCopyMessageHandler::OnURLLoadComplete(
   LogRemoteCopyReceivedImageSizeBeforeDecode(content->size());
 
   timer_ = base::ElapsedTimer();
-  ImageDecoder::Start(this, *content);
+  ImageDecoder::Start(this, std::move(*content));
 }
 
 void RemoteCopyMessageHandler::OnImageDecoded(const SkBitmap& image) {

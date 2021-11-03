@@ -180,10 +180,6 @@ void RuntimeApplicationBase::SetApplicationStarted() {
 }
 
 void RuntimeApplicationBase::CreateCastWebView() {
-  CastWebView::CreateParams create_params;
-  create_params.delegate = weak_factory_.GetWeakPtr();
-  create_params.window_delegate = weak_factory_.GetWeakPtr();
-
   mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
   params->renderer_type = renderer_type_;
   params->handle_inner_contents = true;
@@ -192,8 +188,7 @@ void RuntimeApplicationBase::CreateCastWebView() {
   params->enabled_for_dev = true;
 #endif
 
-  cast_web_view_ =
-      web_service_->CreateWebViewInternal(create_params, std::move(params));
+  cast_web_view_ = web_service_->CreateWebViewInternal(std::move(params));
 }
 
 void RuntimeApplicationBase::StopApplication() {

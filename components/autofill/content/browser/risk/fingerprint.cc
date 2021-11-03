@@ -480,7 +480,7 @@ void GetFingerprint(
   content::RenderWidgetHostView* host_view =
       web_contents->GetRenderWidgetHostView();
   if (host_view)
-    host_view->GetRenderWidgetHost()->GetScreenInfo(&screen_info);
+    screen_info = host_view->GetRenderWidgetHost()->GetScreenInfo();
 
   internal::GetFingerprintInternal(
       obfuscated_gaia_id, window_bounds, content_bounds, screen_info, version,

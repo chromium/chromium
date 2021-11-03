@@ -724,7 +724,8 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
-      "use_goma": true
+      "use_goma": true,
+      "use_lld": false
     }
   },
   "ios14-beta-simulator": {

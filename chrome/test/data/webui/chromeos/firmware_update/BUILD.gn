@@ -61,6 +61,7 @@ js_library("update_card_test") {
     "../..:test_util",
     "//ash/webui/firmware_update_ui/resources:firmware_update_types",
     "//ash/webui/firmware_update_ui/resources:update_card",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

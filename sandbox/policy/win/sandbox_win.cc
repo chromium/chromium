@@ -980,7 +980,7 @@ bool SandboxWin::InitBrokerServices(BrokerServices* broker_services) {
   //               See <http://b/1287166>.
   DCHECK(broker_services);
   DCHECK(!g_broker_services);
-  ResultCode result = broker_services->Init();
+  ResultCode init_result = broker_services->Init();
   g_broker_services = broker_services;
 
 // In non-official builds warn about dangerous uses of DuplicateHandle. This
@@ -1009,7 +1009,7 @@ bool SandboxWin::InitBrokerServices(BrokerServices* broker_services) {
   }
 #endif
 
-  return SBOX_ALL_OK == result;
+  return SBOX_ALL_OK == init_result;
 }
 
 // static

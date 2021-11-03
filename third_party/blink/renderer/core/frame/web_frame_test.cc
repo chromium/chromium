@@ -3001,7 +3001,7 @@ TEST_F(WebFrameTest, DesktopPageCanBeZoomedInWhenWideViewportIsTurnedOff) {
 
 class WebFrameResizeTest : public WebFrameTest {
  protected:
-  static FloatSize ComputeRelativeOffset(const IntPoint& absolute_offset,
+  static FloatSize ComputeRelativeOffset(const gfx::Point& absolute_offset,
                                          const LayoutRect& rect) {
     FloatSize relative_offset =
         FloatPoint(absolute_offset) - FloatPoint(rect.Location());
@@ -3275,7 +3275,7 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   gfx::Point double_tap_point_wide(wide_div.x() + 50, wide_div.y() + 50);
   gfx::Point double_tap_point_tall(tall_div.x() + 50, tall_div.y() + 50);
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
 
   float double_tap_zoom_already_legible_scale =
       web_view_helper.GetWebView()->MinimumPageScaleFactor() *
@@ -3293,8 +3293,7 @@ TEST_F(WebFrameTest, DivAutoZoomParamsTest) {
   EXPECT_NEAR(wide_div.x(), scroll.x(), 20);
   EXPECT_EQ(0, scroll.y());
 
-  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
-                             scale);
+  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
 
   // Test zoom out back to minimum scale.
   wide_block_bound = ComputeBlockBoundHelper(web_view_helper.GetWebView(),
@@ -3376,7 +3375,7 @@ TEST_F(WebFrameTest, DivAutoZoomVeryTallTest) {
   gfx::Rect div(200, 300, 400, 5000);
   gfx::Point point(div.x() + 50, div.y() + 3000);
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
 
   gfx::Rect block_bound =
       ComputeBlockBoundHelper(web_view_helper.GetWebView(), point, true);
@@ -3946,7 +3945,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
                              initial_scale);
 
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
   bool need_animation;
   IntRect element_bounds, caret_bounds;
   GetElementAndCaretBoundsForFocusedEditableElement(
@@ -4004,7 +4003,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTest) {
   web_view_helper.GetWebView()->AdvanceFocus(true);
   // Zoom out slightly.
   const float within_tolerance_scale = scale * 0.9f;
-  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
+  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll,
                              within_tolerance_scale);
   // Move focus back to the second edit box.
   web_view_helper.GetWebView()->AdvanceFocus(false);
@@ -4056,7 +4055,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditablePreservePageScaleTest) {
                              new_scale);
 
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
   bool need_animation;
   IntRect element_bounds, caret_bounds;
   GetElementAndCaretBoundsForFocusedEditableElement(
@@ -4133,7 +4132,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
                              initial_scale);
 
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
   bool need_animation;
   IntRect element_bounds, caret_bounds;
   GetElementAndCaretBoundsForFocusedEditableElement(
@@ -4153,8 +4152,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestZoomToLegibleScaleDisabled) {
                  (viewport_height / scale - edit_box_with_no_text.height()) / 2;
   EXPECT_NEAR(v_scroll, scroll.y(), 2);
 
-  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), ToGfxPoint(scroll),
-                             scale);
+  SetScaleAndScrollAndLayout(web_view_helper.GetWebView(), scroll, scale);
 
   // Select the first textbox.
   web_view_helper.GetWebView()->AdvanceFocus(true);
@@ -4210,7 +4208,7 @@ TEST_F(WebFrameTest, DivScrollIntoEditableTestWithDeviceScaleFactor) {
   ASSERT_EQ(web_view_helper.GetWebView()->PageScaleFactor(), initial_scale);
 
   float scale;
-  IntPoint scroll;
+  gfx::Point scroll;
   bool need_animation;
   IntRect element_bounds, caret_bounds;
   GetElementAndCaretBoundsForFocusedEditableElement(
@@ -10888,12 +10886,12 @@ TEST_F(WebFrameTest, RotatedIframeViewportIntersection) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(!remote_frame_host.GetIntersectionState()
                    ->viewport_intersection.IsEmpty());
-  EXPECT_TRUE(IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
+  EXPECT_TRUE(IntRect(gfx::Point(), remote_frame->GetFrame()->View()->Size())
                   .Contains(IntRect(remote_frame_host.GetIntersectionState()
                                         ->viewport_intersection)));
   ASSERT_TRUE(!remote_frame_host.GetIntersectionState()
                    ->main_frame_intersection.IsEmpty());
-  EXPECT_TRUE(IntRect(IntPoint(), remote_frame->GetFrame()->View()->Size())
+  EXPECT_TRUE(IntRect(gfx::Point(), remote_frame->GetFrame()->View()->Size())
                   .Contains(IntRect(remote_frame_host.GetIntersectionState()
                                         ->main_frame_intersection)));
   remote_frame->Detach();
@@ -11973,7 +11971,7 @@ TEST_F(WebFrameSimTest, TickmarksDocumentRelative) {
       frame_view->LayoutViewport()->GetTickmarks();
   EXPECT_EQ(1u, original_tickmarks.size());
 
-  EXPECT_EQ(IntPoint(800, 2000), original_tickmarks[0].origin());
+  EXPECT_EQ(gfx::Point(800, 2000), original_tickmarks[0].origin());
 }
 
 TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
@@ -12216,7 +12214,7 @@ TEST_F(WebFrameSimTest, TestScrollFocusedEditableElementIntoView) {
       ->ScrollFocusedEditableElementIntoView();
 
   EXPECT_EQ(0, WebView().FakePageScaleAnimationPageScaleForTesting());
-  EXPECT_EQ(IntPoint(),
+  EXPECT_EQ(gfx::Point(),
             WebView().FakePageScaleAnimationTargetPositionForTesting());
 
   // Now resize the visual viewport so that the input box is no longer in view
@@ -12405,7 +12403,7 @@ TEST_F(WebFrameSimTest, ScrollFocusedIntoViewClipped) {
                      input->getBoundingClientRect()->width(),
                      input->getBoundingClientRect()->height());
 
-  IntRect visible_content_rect(IntPoint(), frame_view->Size());
+  IntRect visible_content_rect(gfx::Point(), frame_view->Size());
   EXPECT_TRUE(visible_content_rect.Contains(input_rect))
       << "Layout viewport [" << visible_content_rect.ToString()
       << "] does not contain input rect [" << input_rect.ToString()
@@ -12557,7 +12555,7 @@ TEST_F(WebFrameSimTest, DoubleTapZoomWhileScrolled) {
     gfx::Rect block_bounds = ComputeBlockBoundHelper(&WebView(), point, false);
     WebView().AnimateDoubleTapZoom(point, block_bounds);
     EXPECT_TRUE(WebView().FakeDoubleTapAnimationPendingForTesting());
-    IntPoint target_offset(
+    gfx::Point target_offset(
         WebView().FakePageScaleAnimationTargetPositionForTesting());
     float new_scale = WebView().FakePageScaleAnimationPageScaleForTesting();
 
@@ -12671,7 +12669,7 @@ TEST_F(WebFrameSimTest, ScrollEditContextIntoView) {
   // scrollOffset.x = controlBound.x - left padding = 500 - 150 = 350
   // scrollOffset.y = controlBound.y - (viewport.height - controlBound.height)/2
   //                = 850 - (600 - 20) / 2 = 560
-  EXPECT_EQ(IntPoint(350, 560),
+  EXPECT_EQ(gfx::Point(350, 560),
             WebView().FakePageScaleAnimationTargetPositionForTesting());
 }
 

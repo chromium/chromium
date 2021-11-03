@@ -67,12 +67,14 @@ class WebController {
   // for the lifetime of the controller.
   static std::unique_ptr<WebController> CreateForWebContents(
       content::WebContents* web_contents,
-      const UserData* user_data);
+      const UserData* user_data,
+      ProcessedActionStatusDetailsProto* log_info);
 
   // |web_contents| and |user_data| must outlive this web controller.
   WebController(content::WebContents* web_contents,
                 std::unique_ptr<DevtoolsClient> devtools_client,
-                const UserData* user_data);
+                const UserData* user_data,
+                ProcessedActionStatusDetailsProto* log_info);
 
   WebController(const WebController&) = delete;
   WebController& operator=(const WebController&) = delete;
@@ -523,6 +525,7 @@ class WebController {
   std::unique_ptr<DevtoolsClient> devtools_client_;
   // Must not be |nullptr| and outlive this web controller.
   const UserData* const user_data_;
+  ProcessedActionStatusDetailsProto* const log_info_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;

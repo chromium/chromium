@@ -161,8 +161,7 @@ class ServiceConnectionImpl : public ServiceConnection {
   void AddPowerObserver(mojo::PendingRemote<mojom::CrosHealthdPowerObserver>
                             pending_observer) override;
   void AddNetworkObserver(
-      mojo::PendingRemote<
-          chromeos::network_health::mojom::NetworkEventsObserver>
+      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
           pending_observer) override;
   void AddAudioObserver(mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
                             pending_observer) override;
@@ -582,7 +581,7 @@ void ServiceConnectionImpl::AddPowerObserver(
 }
 
 void ServiceConnectionImpl::AddNetworkObserver(
-    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
+    mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
         pending_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();

@@ -754,6 +754,11 @@ RenderFrameHostImpl* PrerenderHost::GetPrerenderedMainFrameHost() {
   return page_holder_->frame_tree()->root()->current_frame_host();
 }
 
+FrameTree& PrerenderHost::GetPrerenderFrameTree() {
+  DCHECK(page_holder_->frame_tree());
+  return *page_holder_->frame_tree();
+}
+
 void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
                                       FinalStatus status) {
   RecordFinalStatus(status);

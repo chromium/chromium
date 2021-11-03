@@ -946,7 +946,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
         }
       }
       if (!EnclosingIntRect(cursor.Current().RectInContainerFragment())
-               .Contains(FlooredIntPoint(point_in_container_fragment)))
+               .Contains(ToFlooredPoint(point_in_container_fragment)))
         continue;
       if (auto position_with_affinity =
               cursor.PositionForPointInChild(point_in_container_fragment)) {

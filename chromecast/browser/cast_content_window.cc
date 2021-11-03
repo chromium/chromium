@@ -6,9 +6,8 @@
 
 namespace chromecast {
 
-CastContentWindow::CastContentWindow(base::WeakPtr<Delegate> delegate,
-                                     mojom::CastWebViewParamsPtr params)
-    : delegate_(delegate), params_(std::move(params)) {
+CastContentWindow::CastContentWindow(mojom::CastWebViewParamsPtr params)
+    : params_(std::move(params)) {
   RegisterBackGestureRouter(gesture_router());
 }
 
@@ -26,12 +25,9 @@ void CastContentWindow::SetCastWebContents(CastWebContents* cast_web_contents) {
       gesture_router()->GetBinder());
 }
 
-void CastContentWindow::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void CastContentWindow::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
+void CastContentWindow::AddObserver(
+    mojo::PendingRemote<mojom::CastContentWindowObserver> observer) {
+  observers_.Add(std::move(observer));
 }
 
 void CastContentWindow::BindReceiver(

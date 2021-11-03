@@ -38,23 +38,6 @@ SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
   if (IsStandardSchemeWithNetworkHost(origin.scheme())) {
     registerable_domain = GetDomainAndRegistry(
         origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-    // For domains in which the eTLD+1 is not canonical, do not use the eTLD+1.
-    // This is for domains like foo.127.1, which has an eTLD+1 of 127.1, but
-    // https://127.1/ == https://127.0.0.1. This is intended as a temporary
-    // hack not to DCHECK for such origins, until the URL spec is updated to
-    // make such domains invalid in URLs.
-    // TODO(https://crbug.com/1157010): Remove once the fetch spec is updated,
-    // and GURL rejects such domains names.
-    url::CanonHostInfo host_info;
-    bool site_domain_is_safe =
-        registerable_domain.empty() || registerable_domain == origin.host() ||
-        registerable_domain ==
-            CanonicalizeHost(registerable_domain, &host_info);
-    if (!site_domain_is_safe)
-      registerable_domain.clear();
-
-    UMA_HISTOGRAM_BOOLEAN("Net.SiteDomainIsSafe", site_domain_is_safe);
   }
 
   // If origin's host's registrable domain is null, then return (origin's

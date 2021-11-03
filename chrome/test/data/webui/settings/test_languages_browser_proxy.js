@@ -5,7 +5,7 @@
 // clang-format off
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 // clang-format on

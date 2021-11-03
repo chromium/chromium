@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   void DidWaitForServiceToBeAvailable(GetSystemSaltCallback callback,
                                       bool service_is_available);
   void DidGetSystemSalt(
-      GetSystemSaltCallback callback,
+      GetSystemSaltCallback system_salt_callback,
       absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply);
 
   RawSalt raw_salt_;

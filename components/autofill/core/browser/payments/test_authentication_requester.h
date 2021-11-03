@@ -64,7 +64,7 @@ class TestAuthenticationRequester
 
   absl::optional<bool> is_user_verifiable() { return is_user_verifiable_; }
 
-  bool did_succeed() { return did_succeed_; }
+  absl::optional<bool> did_succeed() { return did_succeed_; }
 
   std::u16string number() { return number_; }
 
@@ -77,7 +77,7 @@ class TestAuthenticationRequester
   absl::optional<bool> is_user_verifiable_;
 
   // Is set to true if authentication was successful.
-  bool did_succeed_ = false;
+  absl::optional<bool> did_succeed_;
 
   // The failure type of the full card request. Set when the request is
   // finished.

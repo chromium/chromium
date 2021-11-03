@@ -324,13 +324,13 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_OnCurrentScreenChangeEvent) {
 // SetScreenInstance and observers not being notified.
 // TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ScreenAdvancedOnChange DISABLED_ScreenAdvancedOnChange
+#define MAYBE_ScreenDetailedOnChange DISABLED_ScreenDetailedOnChange
 #else
-#define MAYBE_ScreenAdvancedOnChange ScreenAdvancedOnChange
+#define MAYBE_ScreenDetailedOnChange ScreenDetailedOnChange
 #endif
 // Test that onchange events for individual screens in the screen list are
 // supported.
-IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenAdvancedOnChange) {
+IN_PROC_BROWSER_TEST_F(WindowPlacementTest, MAYBE_ScreenDetailedOnChange) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("100+100-801x802,901+100-802x802");

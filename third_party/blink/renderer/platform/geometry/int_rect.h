@@ -31,11 +31,14 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect_outsets.h"
+#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if defined(OS_MAC)
@@ -56,10 +59,10 @@ class PLATFORM_EXPORT IntRect {
 
  public:
   constexpr IntRect() = default;
-  constexpr IntRect(const IntPoint& location, const IntSize& size)
+  constexpr IntRect(const gfx::Point& location, const IntSize& size)
       : location_(location), size_(size) {}
   constexpr IntRect(int x, int y, int width, int height)
-      : location_(IntPoint(x, y)), size_(IntSize(width, height)) {}
+      : location_(gfx::Point(x, y)), size_(IntSize(width, height)) {}
 
   // Use EnclosingIntRect(), EnclosedIntRect(), RoundedIntRect(),
   // PixelSnappedIntRect(), etc. instead.
@@ -71,10 +74,14 @@ class PLATFORM_EXPORT IntRect {
   explicit IntRect(const SkIRect& r)
       : IntRect(r.x(), r.y(), r.width(), r.height()) {}
 
-  constexpr IntPoint origin() const { return location_; }
+  constexpr gfx::Point origin() const { return location_; }
   constexpr IntSize size() const { return size_; }
 
-  void set_origin(const IntPoint& location) { location_ = location; }
+  gfx::Vector2d OffsetFromOrigin() const {
+    return location_.OffsetFromOrigin();
+  }
+
+  void set_origin(const gfx::Point& location) { location_ = location; }
   void set_size(const IntSize& size) { size_ = size; }
 
   constexpr int x() const { return location_.x(); }
@@ -93,16 +100,17 @@ class PLATFORM_EXPORT IntRect {
 
   // NOTE: The result is rounded to integer values, and thus may be not the
   // exact center point.
-  IntPoint CenterPoint() const {
-    return IntPoint(x() + width() / 2, y() + height() / 2);
+  gfx::Point CenterPoint() const {
+    return gfx::Point(x() + width() / 2, y() + height() / 2);
   }
 
-  void Offset(const IntSize& size) { location_ += size; }
-  void MoveBy(const IntPoint& offset) {
+  void Offset(const IntSize& size) { Offset(ToGfxVector2d(size)); }
+  void Offset(const gfx::Vector2d& offset) { location_ += offset; }
+  void MoveBy(const gfx::Point& offset) {
     location_.Offset(offset.x(), offset.y());
   }
   void Offset(int dx, int dy) { location_.Offset(dx, dy); }
-  void SaturatedMove(int dx, int dy) { location_.SaturatedMove(dx, dy); }
+  void SaturatedMove(int dx, int dy) { location_.Offset(dx, dy); }
 
   void Expand(const IntSize& size) { size_ += size; }
   void Expand(int dw, int dh) { size_.Enlarge(dw, dh); }
@@ -120,15 +128,15 @@ class PLATFORM_EXPORT IntRect {
   void ShiftYEdgeTo(int);
   void ShiftMaxYEdgeTo(int);
 
-  constexpr IntPoint top_right() const {
-    return IntPoint(location_.x() + size_.width(), location_.y());
+  constexpr gfx::Point top_right() const {
+    return gfx::Point(location_.x() + size_.width(), location_.y());
   }  // typically topRight
-  constexpr IntPoint bottom_left() const {
-    return IntPoint(location_.x(), location_.y() + size_.height());
+  constexpr gfx::Point bottom_left() const {
+    return gfx::Point(location_.x(), location_.y() + size_.height());
   }  // typically bottomLeft
-  constexpr IntPoint bottom_right() const {
-    return IntPoint(location_.x() + size_.width(),
-                    location_.y() + size_.height());
+  constexpr gfx::Point bottom_right() const {
+    return gfx::Point(location_.x() + size_.width(),
+                      location_.y() + size_.height());
   }  // typically bottomRight
 
   WARN_UNUSED_RESULT bool Intersects(const IntRect&) const;
@@ -140,7 +148,7 @@ class PLATFORM_EXPORT IntRect {
   bool Contains(int px, int py) const {
     return px >= x() && px < right() && py >= y() && py < bottom();
   }
-  bool Contains(const IntPoint& point) const {
+  bool Contains(const gfx::Point& point) const {
     return Contains(point.x(), point.y());
   }
 
@@ -168,13 +176,13 @@ class PLATFORM_EXPORT IntRect {
   }
   void Scale(float s);
 
-  IntSize DifferenceToPoint(const IntPoint&) const;
-  int DistanceSquaredToPoint(const IntPoint& p) const {
+  IntSize DifferenceToPoint(const gfx::Point&) const;
+  int DistanceSquaredToPoint(const gfx::Point& p) const {
     return DifferenceToPoint(p).DiagonalLengthSquared();
   }
 
   IntRect TransposedRect() const {
-    return IntRect(location_.TransposedPoint(), size_.TransposedSize());
+    return IntRect(location_.y(), location_.x(), size_.height(), size_.width());
   }
 
 #if defined(OS_MAC)
@@ -205,7 +213,7 @@ class PLATFORM_EXPORT IntRect {
     size_.set_height(base::ClampSub(bottom, top));
   }
 
-  IntPoint location_;
+  gfx::Point location_;
   IntSize size_;
 };
 

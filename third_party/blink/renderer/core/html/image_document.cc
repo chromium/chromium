@@ -266,7 +266,6 @@ void ImageDocument::CreateDocumentStructure(
     // according to the spec:
     // https://html.spec.whatwg.org/C/#read-media
     ShadowRoot& shadow_root = body->EnsureUserAgentShadowRoot();
-    shadow_root.SetDocumentShadowCascade();
     shadow_root.AppendChild(div_element_);
   } else {
     body->setAttribute(html_names::kStyleAttr, "margin: 0px; height: 100%");

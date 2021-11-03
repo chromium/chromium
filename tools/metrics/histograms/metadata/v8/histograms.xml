@@ -1210,6 +1210,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.SnapshotDecompress" units="microseconds"
+    expires_after="2022-02-01">
+  <owner>sky@chromium.org</owner>
+  <owner>yukishiino@chromium.org</owner>
+  <summary>
+    Total time spent decompressing snapshots. This is emitted immediately after
+    decompressing the snapshots (from Snapshot::Initialize()).
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="V8.StopTheWorld" units="ms" expires_after="2021-10-01">
   <obsolete>
     Removed 02/2021. Renamed to V8.GC.TimeToSafepoint due to switch to

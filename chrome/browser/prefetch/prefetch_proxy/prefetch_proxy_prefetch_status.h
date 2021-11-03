@@ -114,6 +114,10 @@ enum class PrefetchProxyPrefetchStatus {
   kPrefetchIsStaleWithNSP = 31,
   kPrefetchIsStaleNSPAttemptDenied = 32,
   kPrefetchIsStaleNSPNotStarted = 33,
+
+  // The prefetch was not used because cookies were added to the URL after the
+  // initial eligibility check.
+  kPrefetchNotUsedCookiesChanged = 34,
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PREFETCH_STATUS_H_

@@ -64,6 +64,7 @@ class MockPasswordStoreAndroidBackendBridge
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (), (override));
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&), (override));
   MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&), (override));
 };
 
@@ -156,6 +157,24 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::ADD, form));
+  EXPECT_CALL(mock_reply, Run(expected_changes));
+  consumer().OnLoginsChanged(kJobId, expected_changes);
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  const JobId kJobId{13388};
+  base::MockCallback<PasswordStoreChangeListReply> mock_reply;
+
+  PasswordForm form = CreateTestLogin();
+  EXPECT_CALL(*bridge(), UpdateLogin(form)).WillOnce(Return(kJobId));
+  backend().UpdateLoginAsync(form, mock_reply.Get());
+
+  PasswordStoreChangeList expected_changes;
+  expected_changes.emplace_back(
+      PasswordStoreChange(PasswordStoreChange::UPDATE, form));
   EXPECT_CALL(mock_reply, Run(expected_changes));
   consumer().OnLoginsChanged(kJobId, expected_changes);
   RunUntilIdle();

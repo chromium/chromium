@@ -15,6 +15,11 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
+// Avoid including this header file directly. Instead:
+//  - for forward declarations, use app_service_proxy_forward.h
+//  - for the full header, use app_service_proxy.h, which aliases correctly
+//    based on the platform
+
 class Profile;
 
 namespace apps {
@@ -37,6 +42,9 @@ class AppServiceProxy : public AppServiceProxyBase {
   void FlushMojoCallsForTesting() override;
 
  private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
+
   // apps::AppServiceProxyBase overrides:
   void Initialize() override;
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;

@@ -108,7 +108,7 @@ class SidePanelBorder : public views::Border {
 
     // Outset half of the stroke thickness so that it's painted fully on the
     // outside of the clipping region.
-    scaled_bounds.Inset(gfx::Insets(-stroke_thickness / 2));
+    scaled_bounds.Inset(gfx::InsetsF(-stroke_thickness / 2));
     canvas->DrawRoundRect(scaled_bounds, corner_radius, flags);
   }
 

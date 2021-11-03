@@ -3568,6 +3568,11 @@ TEST_F(CaptureModeTest, KeyboardNavigationSpaceToClickButtons) {
 }
 
 TEST_F(CaptureModeTest, KeyboardNavigationSettingsMenuBehavior) {
+  // This test is specific to the old settings view.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kImprovedScreenCaptureSettings);
+
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
 
   // Use window capture mode to avoid having to tab through the selection
@@ -4035,6 +4040,11 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityBasic) {
 // the bar/menu, on other buttons) affects whether the settings menu should
 // close or not.
 TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
+  // This test is specific to the old settings view.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kImprovedScreenCaptureSettings);
+
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -4087,6 +4097,11 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
 
 // Tests the settings menu functionality when in region mode.
 TEST_F(CaptureModeTest, SettingsMenuVisibilityDrawingRegion) {
+  // This test is specific to the old settings view.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kImprovedScreenCaptureSettings);
+
   UpdateDisplay("800x700");
 
   auto* event_generator = GetEventGenerator();
@@ -4142,6 +4157,11 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityDrawingRegion) {
 // Tests that toggling the microphone setting updates the state in the
 // controller, and persists between sessions.
 TEST_F(CaptureModeTest, AudioRecordingSetting) {
+  // This test is specific to the old settings view.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kImprovedScreenCaptureSettings);
+
   auto* controller = StartImageRegionCapture();
   auto* event_generator = GetEventGenerator();
 

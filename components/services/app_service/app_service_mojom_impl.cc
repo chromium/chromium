@@ -60,14 +60,6 @@ void Connect(apps::mojom::Publisher* publisher,
   publisher->Connect(std::move(clone), nullptr);
 }
 
-void LogPreferredAppFileIOAction(PreferredAppsFileIOAction action) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.PreferredApps.FileIOAction", action);
-}
-
-void LogPreferredAppUpdateAction(PreferredAppsUpdateAction action) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.PreferredApps.UpdateAction", action);
-}
-
 void LogPreferredAppEntryCount(int entry_count) {
   base::UmaHistogramCounts10000("Apps.PreferredApps.EntryCount", entry_count);
 }
@@ -80,11 +72,8 @@ void WriteDataBlocking(const base::FilePath& preferred_apps_file,
   bool write_success =
       base::WriteFile(preferred_apps_file, preferred_apps.c_str(),
                       preferred_apps.size()) != -1;
-  if (write_success) {
-    LogPreferredAppFileIOAction(PreferredAppsFileIOAction::kWriteSuccess);
-  } else {
+  if (!write_success) {
     DVLOG(0) << "Fail to write preferred apps to " << preferred_apps_file;
-    LogPreferredAppFileIOAction(PreferredAppsFileIOAction::kWriteFailed);
   }
 }
 
@@ -93,13 +82,7 @@ std::string ReadDataBlocking(const base::FilePath& preferred_apps_file) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   std::string preferred_apps_string;
-  bool read_success =
-      base::ReadFileToString(preferred_apps_file, &preferred_apps_string);
-  if (read_success) {
-    LogPreferredAppFileIOAction(PreferredAppsFileIOAction::kReadSuccess);
-  } else {
-    LogPreferredAppFileIOAction(PreferredAppsFileIOAction::kReadFailed);
-  }
+  base::ReadFileToString(preferred_apps_file, &preferred_apps_string);
   return preferred_apps_string;
 }
 
@@ -352,8 +335,6 @@ void AppServiceMojomImpl::AddPreferredApp(
   apps::mojom::ReplacedAppPreferencesPtr replaced_apps =
       preferred_apps_.AddPreferredApp(app_id, intent_filter);
 
-  LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kAdd);
-
   WriteToJSON(profile_dir_, preferred_apps_);
 
   auto changes = apps::mojom::PreferredAppChanges::New();
@@ -403,8 +384,6 @@ void AppServiceMojomImpl::RemovePreferredApp(apps::mojom::AppType app_type,
       subscriber->OnPreferredAppsChanged(changes->Clone());
     }
   }
-
-  LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForAppId);
 }
 
 void AppServiceMojomImpl::RemovePreferredAppForFilter(
@@ -432,8 +411,6 @@ void AppServiceMojomImpl::RemovePreferredAppForFilter(
       subscriber->OnPreferredAppsChanged(changes->Clone());
     }
   }
-
-  LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kDeleteForFilter);
 }
 
 void AppServiceMojomImpl::SetSupportedLinksPreference(
@@ -657,7 +634,6 @@ void AppServiceMojomImpl::ReadCompleted(std::string preferred_apps_string) {
     }
   }
   if (!preferred_apps_upgraded) {
-    LogPreferredAppUpdateAction(PreferredAppsUpdateAction::kUpgraded);
     WriteToJSON(profile_dir_, preferred_apps_);
   }
 

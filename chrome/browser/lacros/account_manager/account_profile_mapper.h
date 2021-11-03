@@ -136,6 +136,13 @@ class AccountProfileMapper
                                const account_manager::Account& account,
                                const std::string& token_value);
 
+  // Removes an account from the specified profile. Should only be used in
+  // tests.
+  // Note: this currently removes the account from the OS. A better
+  // implementation would remove it from the profile, but keep it in the OS.
+  void RemoveAccountForTesting(const base::FilePath& profile_path,
+                               const account_manager::AccountKey& account_key);
+
  private:
   // Shared code for methods related to profile creation and adding accounts to
   // profiles. Pass an empty path to request a new profile. If

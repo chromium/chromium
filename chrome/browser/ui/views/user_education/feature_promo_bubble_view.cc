@@ -510,7 +510,8 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
   frame_view->SetCornerRadius(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
-  frame_view->SetDisplayVisibleArrow(true);
+  frame_view->SetDisplayVisibleArrow(params.arrow !=
+                                     views::BubbleBorder::Arrow::NONE);
   SizeToContents();
 
   if (params.focus_on_create) {

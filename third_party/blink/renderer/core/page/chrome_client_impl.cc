@@ -567,7 +567,7 @@ void ChromeClientImpl::ShowMouseOverURL(const HitTestResult& result) {
               result.InnerNode()->GetLayoutObject())) {
         if (WebPluginContainerImpl* plugin_view = embedded->Plugin()) {
           url = plugin_view->Plugin()->LinkAtPosition(
-              ToGfxPoint(result.RoundedPointInInnerNodeFrame()));
+              result.RoundedPointInInnerNodeFrame());
         }
       }
     }

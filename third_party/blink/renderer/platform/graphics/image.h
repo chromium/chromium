@@ -165,11 +165,11 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
     return SizeWithConfigAsFloat(config);
   }
 
-  IntRect Rect() const { return IntRect(IntPoint(), Size()); }
+  IntRect Rect() const { return IntRect(gfx::Point(), Size()); }
   int width() const { return Size().width(); }
   int height() const { return Size().height(); }
 
-  virtual bool GetHotSpot(IntPoint&) const { return false; }
+  virtual bool GetHotSpot(gfx::Point&) const { return false; }
 
   enum SizeAvailability {
     kSizeUnavailable,

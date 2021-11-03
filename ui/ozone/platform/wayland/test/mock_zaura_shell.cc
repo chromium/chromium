@@ -23,10 +23,7 @@ void GetAuraOutput(wl_client* client,
                    wl_resource* output_resource) {}
 
 void SurfaceSubmissionInPixelCoordinates(wl_client* client,
-                                         wl_resource* resource) {
-  if (MockZAuraShell* aura_shell = GetUserDataAs<MockZAuraShell>(resource))
-    aura_shell->SetClientSubmitsSurfacesInPixelCoordinates(true);
-}
+                                         wl_resource* resource) {}
 
 const struct zaura_shell_interface kMockZAuraShellImpl = {
     &GetAuraSurface, &GetAuraOutput, &SurfaceSubmissionInPixelCoordinates};

@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 #include "ui/aura/window.h"
@@ -211,6 +212,13 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   virtual void SetBoundsInPixels(const gfx::Rect& bounds_in_pixels) = 0;
   virtual gfx::Rect GetBoundsInPixels() const = 0;
 
+  // Returns the bounds relative to the accelerated widget. In the typical case,
+  // the origin is 0,0 and the size is the same as the pixel-bounds. On some
+  // OSs the bounds may be inset (on Windows, this is referred to as the client
+  // area). When the bounds are inset, this returns a non-zero origin with a
+  // size smaller than GetBoundsInPixels().
+  virtual gfx::Rect GetBoundsInAcceleratedWidgetPixelCoordinates();
+
   // Sets the OS capture to the root window.
   virtual void SetCapture() = 0;
 
@@ -239,12 +247,17 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   bool IsNativeWindowOcclusionEnabled();
 
   // Remembers the current occlusion state, and if it has changed, notifies
-  // observers of the change.
-  virtual void SetNativeWindowOcclusionState(Window::OcclusionState state);
+  // observers of the change. `occluded_region` is only applicable when visible
+  // and gives the occluded region. If `occluded_region` is empty, the entire
+  // AcceleratedWidget is visible.
+  virtual void SetNativeWindowOcclusionState(Window::OcclusionState state,
+                                             const SkRegion& occluded_region);
 
   Window::OcclusionState GetNativeWindowOcclusionState() {
     return occlusion_state_;
   }
+
+  const SkRegion& GetNativeOccludedRegion() const { return occluded_region_; }
 
   // Requests using unadjusted movement mouse events, i.e. WM_INPUT on Windows.
   // Returns a ScopedEnableUnadjustedMouseEvents instance which stops using
@@ -370,7 +383,8 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
 
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.
-  Window::OcclusionState occlusion_state_;
+  Window::OcclusionState occlusion_state_ = Window::OcclusionState::UNKNOWN;
+  SkRegion occluded_region_;
 
   base::ObserverList<WindowTreeHostObserver>::Unchecked observers_;
 
@@ -391,7 +405,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   float device_scale_factor_ = 1.f;
 
   // Last cursor set.  Used for testing.
-  gfx::NativeCursor last_cursor_;
+  gfx::NativeCursor last_cursor_ = ui::mojom::CursorType::kNull;
   gfx::Point last_cursor_request_position_in_host_;
 
   std::unique_ptr<ui::ViewProp> prop_;
@@ -399,10 +413,10 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // The InputMethod instance used to process key events.
   // If owned it, it is created in GetInputMethod() method;
   // If not owned it, it is passed in through SetSharedInputMethod() method.
-  ui::InputMethod* input_method_;
+  ui::InputMethod* input_method_ = nullptr;
 
   // Whether the InputMethod instance is owned by this WindowTreeHost.
-  bool owned_input_method_;
+  bool owned_input_method_ = false;
 
   // Set to true if this WindowTreeHost is currently holding pointer moves.
   bool holding_pointer_moves_ = false;

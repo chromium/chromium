@@ -482,6 +482,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
+    units="CrosDiagnosticsNavigationView" expires_after="2022-06-15">
+  <owner>gavindodd@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records requested initial screen when opening the Diagnostics App.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
     expires_after="2022-06-15">
   <owner>gavindodd@chromium.org</owner>

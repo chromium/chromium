@@ -165,11 +165,11 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didFailLoad(boolean isMainFrame, int errorCode, GURL failingUrl,
+    public void didFailLoad(boolean isInPrimaryMainFrame, int errorCode, GURL failingUrl,
             @LifecycleState int frameLifecycleState) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().didFailLoad(
-                    isMainFrame, errorCode, failingUrl, frameLifecycleState);
+                    isInPrimaryMainFrame, errorCode, failingUrl, frameLifecycleState);
         }
     }
 
@@ -215,32 +215,34 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @CalledByNative
     private void didFinishLoad(int renderProcessId, int renderFrameId, GURL url,
-            boolean isKnownValid, boolean isMainFrame, @LifecycleState int frameLifecycleState) {
+            boolean isKnownValid, boolean isInPrimaryMainFrame,
+            @LifecycleState int frameLifecycleState) {
         didFinishLoad(new GlobalRenderFrameHostId(renderProcessId, renderFrameId), url,
-                isKnownValid, isMainFrame, frameLifecycleState);
+                isKnownValid, isInPrimaryMainFrame, frameLifecycleState);
     }
 
     @Override
     public void didFinishLoad(GlobalRenderFrameHostId rfhId, GURL url, boolean isKnownValid,
-            boolean isMainFrame, @LifecycleState int rfhLifecycleState) {
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
             mObserversIterator.next().didFinishLoad(
-                    rfhId, url, isKnownValid, isMainFrame, rfhLifecycleState);
+                    rfhId, url, isKnownValid, isInPrimaryMainFrame, rfhLifecycleState);
         }
     }
 
     @CalledByNative
-    private void documentLoadedInFrame(int renderProcessId, int renderFrameId, boolean isMainFrame,
-            @LifecycleState int rfhLifecycleState) {
+    private void documentLoadedInFrame(int renderProcessId, int renderFrameId,
+            boolean isInPrimaryMainFrame, @LifecycleState int rfhLifecycleState) {
         documentLoadedInFrame(new GlobalRenderFrameHostId(renderProcessId, renderFrameId),
-                isMainFrame, rfhLifecycleState);
+                isInPrimaryMainFrame, rfhLifecycleState);
     }
 
     @Override
-    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isMainFrame,
+    public void documentLoadedInFrame(GlobalRenderFrameHostId rfhId, boolean isInPrimaryMainFrame,
             @LifecycleState int rfhLifecycleState) {
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().documentLoadedInFrame(rfhId, isMainFrame, rfhLifecycleState);
+            mObserversIterator.next().documentLoadedInFrame(
+                    rfhId, isInPrimaryMainFrame, rfhLifecycleState);
         }
     }
 

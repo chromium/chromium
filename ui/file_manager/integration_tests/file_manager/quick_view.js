@@ -1249,7 +1249,7 @@ testcase.openQuickViewBackgroundColorHtml = async () => {
 };
 
 /**
- * Tests opening Quick View containing an audio file.
+ * Tests opening Quick View containing an audio file without album preview.
  */
 testcase.openQuickViewAudio = async () => {
   const caller = getCaller();
@@ -1265,6 +1265,12 @@ testcase.openQuickViewAudio = async () => {
    * which is a child of the #quick-view shadow DOM.
    */
   const preview = ['#quick-view', 'files-safe-media[type="audio"]', previewTag];
+
+  /**
+   * The album artwork preview resides in the <files-safe-media> shadow DOM,
+   * which is a child of the #quick-view shadow DOM.
+   */
+  const albumArtworkPreview = ['#quick-view', '#audio-artwork'];
 
   // Open Files app on Downloads containing ENTRIES.beautiful song.
   const appId =
@@ -1288,6 +1294,13 @@ testcase.openQuickViewAudio = async () => {
     return checkPreviewAudioLoaded(await remoteCall.callRemoteTestUtil(
         'deepQueryAllElements', appId, [preview, ['display']]));
   });
+
+  // Check: the audio artwork is not shown on the preview page.
+  const albumArtworkElements = await remoteCall.callRemoteTestUtil(
+      'deepQueryAllElements', appId, [albumArtworkPreview, ['display']]);
+  const hasArtworkElements =
+      Array.isArray(albumArtworkElements) && albumArtworkElements.length > 0;
+  chrome.test.assertFalse(hasArtworkElements);
 
   // Get the preview document.body backgroundColor style.
   const getBackgroundStyle =

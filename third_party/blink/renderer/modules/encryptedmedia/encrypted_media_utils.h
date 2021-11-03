@@ -17,9 +17,10 @@ enum class EmeInitDataType;
 
 namespace blink {
 
-// Reported to UKM. Existing values must not change and new values must be
-// added at the end of the list.
-enum KeySystemForUkm {
+// Deprecated: This was used on some older UKMs. For new UKMs please use
+// media::GetKeySystemIntForUKM() instead. Reported to UKM. Existing values must
+// not change and new values must be added at the end of the list.
+enum KeySystemForUkmLegacy {
   kClearKey = 0,
   kWidevine = 1,
 };

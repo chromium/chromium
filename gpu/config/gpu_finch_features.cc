@@ -116,10 +116,6 @@ const base::FeatureParam<std::string>
     kDisableIncreaseBufferCountForHighFrameRate{
         &kIncreaseBufferCountForHighFrameRate,
         "DisableIncreaseBufferCountForHighFrameRate", ""};
-
-const base::Feature kUseRealVideoColorSpaceForDisplay{
-    "UseRealVideoColorSpaceForDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
-
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
@@ -460,20 +456,6 @@ bool IncreaseBufferCountForHighFrameRate() {
 bool IncreaseBufferCountForWebViewOverlays() {
   return IsAndroidSurfaceControlEnabled() &&
          base::FeatureList::IsEnabled(kWebViewSurfaceControl);
-}
-
-bool UseRealVideoColorSpaceForDisplay() {
-  // We need Android S for proper color space support in SurfaceControl.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_S)
-    return false;
-
-  // Technically if this is false, media hardcodes sRGB always, so there is no
-  // need to hard code it in display compositor. Still check for feature in case
-  // of subtle bugs in a long way color space travels from MediaCodec to
-  // SurfaceControl.
-  return base::FeatureList::IsEnabled(
-      features::kUseRealVideoColorSpaceForDisplay);
 }
 
 #endif

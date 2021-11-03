@@ -1418,30 +1418,51 @@ void WebContentsImpl::ForEachRenderFrameHostImpl(
 
 void WebContentsImpl::ForEachFrameTree(
     FrameTreeIterationCallback on_frame_tree) {
-  std::set<FrameTree*> frame_trees;
-  ForEachRenderFrameHost(base::BindRepeating(
-      [](std::set<FrameTree*>& frame_trees, RenderFrameHostImpl* rfh) {
-        frame_trees.insert(rfh->frame_tree());
-      },
-      std::ref(frame_trees)));
+  // Consider all outermost frame trees, and for each, iterate through their
+  // FrameTreeNodes to find any inner frame trees.
+  for (FrameTree* outermost_frame_tree : GetOutermostFrameTrees()) {
+    FrameTree::NodeRange node_range =
+        outermost_frame_tree->NodesIncludingInnerTreeNodes();
+    FrameTree::NodeIterator node_iter = node_range.begin();
+    while (node_iter != node_range.end()) {
+      FrameTreeNode* node = *node_iter;
+      if (FromFrameTreeNode(node) != this) {
+        // Exclude any inner frame trees based on multi-WebContents
+        // architecture.
+        node_iter.AdvanceSkippingChildren();
+      } else {
+        if (node->IsMainFrame()) {
+          on_frame_tree.Run(node->frame_tree());
+        }
+        ++node_iter;
+      }
+    }
+  }
+}
 
-  for (auto* frame_tree : frame_trees)
-    on_frame_tree.Run(frame_tree);
+std::vector<FrameTree*> WebContentsImpl::GetOutermostFrameTrees() {
+  std::vector<FrameTree*> result;
+  result.push_back(GetFrameTree());
+
+  if (blink::features::IsPrerender2Enabled()) {
+    const std::vector<FrameTree*> prerender_frame_trees =
+        GetPrerenderHostRegistry()->GetPrerenderFrameTrees();
+    result.insert(result.end(), prerender_frame_trees.begin(),
+                  prerender_frame_trees.end());
+  }
+
+  return result;
 }
 
 std::vector<RenderFrameHostImpl*> WebContentsImpl::GetOutermostMainFrames() {
   std::vector<RenderFrameHostImpl*> result;
-  result.push_back(GetMainFrame());
+
+  for (FrameTree* outermost_frame_tree : GetOutermostFrameTrees()) {
+    result.push_back(outermost_frame_tree->GetMainFrame());
+  }
 
   for (const auto& entry : GetController().GetBackForwardCache().GetEntries()) {
     result.push_back(entry->render_frame_host());
-  }
-
-  if (blink::features::IsPrerender2Enabled()) {
-    const std::vector<RenderFrameHostImpl*> prerendered_main_frames =
-        GetPrerenderHostRegistry()->GetPrerenderedMainFrames();
-    result.insert(result.end(), prerendered_main_frames.begin(),
-                  prerendered_main_frames.end());
   }
 
   // In the case of inner WebContents, we still allow this method to be called,
@@ -2065,7 +2086,7 @@ bool WebContentsImpl::IsCrashed() {
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
     case base::TERMINATION_STATUS_OOM:
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
 #if defined(OS_ANDROID)
@@ -3690,11 +3711,21 @@ RenderWidgetHostImpl* WebContentsImpl::GetKeyboardLockWidget() {
   return keyboard_lock_widget_;
 }
 
-void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
+bool WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
+    RenderFrameProxyHost* render_frame_proxy_host,
     blink::mojom::FrameVisibility visibility) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::OnRenderFrameProxyVisibilityChanged",
                         "visibility", static_cast<int>(visibility));
+
+  // Check that we are responsible for the RenderFrameProxyHost by checking that
+  // its FrameTreeNode matches our `frame_tree_` root. Otherwise this is not a
+  // visibility change that affects all frames in an inner WebContents.
+  if (render_frame_proxy_host->frame_tree_node() != frame_tree_.root())
+    return false;
+
+  DCHECK(GetOuterWebContents());
+
   switch (visibility) {
     case blink::mojom::FrameVisibility::kRenderedInViewport:
       WasShown();
@@ -3706,6 +3737,7 @@ void WebContentsImpl::OnRenderFrameProxyVisibilityChanged(
       WasOccluded();
       break;
   }
+  return true;
 }
 
 FrameTree* WebContentsImpl::CreateNewWindow(

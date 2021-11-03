@@ -84,7 +84,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
                                             AXObject::AXObjectVector&) const;
 
   Element* MenuItemElementForMenu() const;
-  Element* MouseButtonListener() const;
   HTMLElement* CorrespondingControlForLabelElement() const;
 
   //

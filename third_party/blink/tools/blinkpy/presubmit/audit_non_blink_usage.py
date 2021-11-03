@@ -325,6 +325,7 @@ _CONFIG = [
             'gfx::ScaleToFlooredSize',
             'gfx::ScaleSize',
             'gfx::ScalePoint',
+            'gfx::ScaleToRoundedPoint',
             'gfx::ScaleVector2d',
             'gfx::SkIRectToRect',
             'gfx::SkRectToRectF',
@@ -338,6 +339,7 @@ _CONFIG = [
             'gfx::ToRoundedPoint',
             'gfx::ToRoundedRect',
             'gfx::ToRoundedSize',
+            'gfx::ToRoundedVector2d',
             'gfx::TransposePoint',
             'gfx::TransposeRect',
             'gfx::TransposeSize',
@@ -579,6 +581,7 @@ _CONFIG = [
             # serialization. Please keep alphabetized.
             'ui::CanHaveInlineTextBoxChildren',
             'ui::IsCellOrTableHeader',
+            'ui::IsClickable',
             'ui::IsComboBox',
             'ui::IsContainerWithSelectableChildren',
             'ui::IsDialog',
@@ -1566,6 +1569,14 @@ _CONFIG = [
             'base::CommandLine',
             'switches::kDumpRuntimeCallStats',
         ]
+    },
+    {
+        'paths':
+        ['third_party/blink/renderer/bindings/core/v8/local_window_proxy.cc'],
+        'allowed': [
+            'base::SingleSampleMetric',
+            'base::SingleSampleMetricsFactory',
+        ],
     },
 ]
 

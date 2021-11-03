@@ -129,7 +129,7 @@ void WaitForDomAction::UpdateElementStore() {
 void WaitForDomAction::ReportActionResult(ProcessActionCallback callback,
                                           const ClientStatus& status) {
   UpdateElementStore();
-  UpdateProcessedAction(status.proto_status());
+  UpdateProcessedAction(status);
   std::move(callback).Run(std::move(processed_action_proto_));
 }
 }  // namespace autofill_assistant

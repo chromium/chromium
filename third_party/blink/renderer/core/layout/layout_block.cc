@@ -1268,7 +1268,7 @@ bool LayoutBlock::IsPointInOverflowControl(
     return false;
 
   return Layer()->GetScrollableArea()->HitTestOverflowControls(
-      result, RoundedIntPoint(hit_test_location - accumulated_offset));
+      result, ToRoundedPoint(hit_test_location - accumulated_offset));
 }
 
 bool LayoutBlock::HitTestOverflowControl(

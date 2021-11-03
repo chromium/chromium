@@ -414,7 +414,7 @@ class ReceivedImageDecoder : public ImageDecoder::ImageRequest {
       return;
     }
 
-    ImageDecoder::Start(this, *contents);
+    ImageDecoder::Start(this, std::move(*contents));
   }
 
   ImageCallback callback_;

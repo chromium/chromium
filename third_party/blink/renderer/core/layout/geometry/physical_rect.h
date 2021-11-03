@@ -158,7 +158,7 @@ struct CORE_EXPORT PhysicalRect {
 
   // TODO(crbug.com/962299): These functions should upgraded to force correct
   // pixel snapping in a type-safe way.
-  IntPoint PixelSnappedOffset() const { return RoundedIntPoint(offset); }
+  gfx::Point PixelSnappedOffset() const { return ToRoundedPoint(offset); }
   int PixelSnappedWidth() const {
     return SnapSizeToPixel(size.width, offset.left);
   }
@@ -237,9 +237,9 @@ inline PhysicalRect Intersection(const PhysicalRect& a, const PhysicalRect& b) {
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
 inline IntRect EnclosingIntRect(const PhysicalRect& r) {
-  IntPoint location = FlooredIntPoint(r.offset);
-  IntPoint max_point = CeiledIntPoint(r.MaxXMaxYCorner());
-  return IntRect(location, max_point - location);
+  gfx::Point location = ToFlooredPoint(r.offset);
+  gfx::Point max_point = ToCeiledPoint(r.MaxXMaxYCorner());
+  return IntRect(location, IntSize(max_point - location));
 }
 inline IntRect PixelSnappedIntRect(const PhysicalRect& r) {
   return {r.PixelSnappedOffset(), r.PixelSnappedSize()};

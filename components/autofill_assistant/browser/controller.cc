@@ -139,8 +139,8 @@ Service* Controller::GetService() {
 
 WebController* Controller::GetWebController() {
   if (!web_controller_) {
-    web_controller_ =
-        WebController::CreateForWebContents(web_contents(), &user_data_);
+    web_controller_ = WebController::CreateForWebContents(
+        web_contents(), &user_data_, &log_info_);
   }
   return web_controller_.get();
 }
@@ -541,6 +541,10 @@ bool Controller::ShouldShowWarning() {
 
 void Controller::SetShowFeedbackChip(bool show_feedback_chip) {
   show_feedback_chip_on_graceful_shutdown_ = show_feedback_chip;
+}
+
+ProcessedActionStatusDetailsProto& Controller::GetLogInfo() {
+  return log_info_;
 }
 
 void Controller::AddNavigationListener(

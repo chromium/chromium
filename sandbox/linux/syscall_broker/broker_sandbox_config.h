@@ -5,6 +5,9 @@
 #ifndef SANDBOX_LINUX_SYSCALL_BROKER_BROKER_SANDBOX_CONFIG_H_
 #define SANDBOX_LINUX_SYSCALL_BROKER_BROKER_SANDBOX_CONFIG_H_
 
+#include <memory>
+#include <vector>
+
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/sandbox_export.h"

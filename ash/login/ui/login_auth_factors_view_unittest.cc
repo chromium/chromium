@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_auth_factors_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/login/ui/login_test_base.h"
@@ -15,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/ax_event_observer.h"
@@ -46,24 +48,20 @@ class FakeAuthFactorModel : public AuthFactorModel {
     return IDS_SMART_LOCK_LABEL_LOOKING_FOR_PHONE;
   }
 
-  void UpdateIcon(AuthIconView* icon_view) override {
-    EXPECT_TRUE(icon_view);
-    icon_view_ = icon_view;
-  }
-
   void OnTapOrClickEvent() override { on_tap_or_click_event_called_ = true; }
 
-  void set_auth_factor_state(AuthFactorState state) { state_ = state; }
-
-  void set_should_announce_label(bool should_announce_label) {
-    should_announce_label_ = should_announce_label;
+  void UpdateIcon(AuthIconView* icon) override {
+    ASSERT_TRUE(icon);
+    icon_ = icon;
   }
+
+  using AuthFactorModel::NotifyOnStateChanged;
 
   AuthFactorType type_;
   AuthFactorState state_ = AuthFactorState::kReady;
+  AuthIconView* icon_ = nullptr;
   bool on_tap_or_click_event_called_ = false;
   bool should_announce_label_ = false;
-  AuthIconView* icon_view_ = nullptr;
 };
 
 class ScopedAXEventObserver : public views::AXEventObserver {
@@ -115,7 +113,6 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     view_ = new LoginAuthFactorsView(base::BindRepeating(
         &LoginAuthFactorsViewUnittest::set_click_to_enter_called,
         base::Unretained(this), true));
-    AddAuthFactor();
 
     // We proxy |view_| inside of |container_| so we can control layout.
     // TODO(crbug.com/1233614): Add layout tests to check positioning/ordering
@@ -127,11 +124,12 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(container_));
   }
 
-  void AddAuthFactor() {
-    auto auth_factor =
-        std::make_unique<FakeAuthFactorModel>(AuthFactorType::kFingerprint);
-    auth_factors_.push_back(auth_factor.get());
-    view_->AddAuthFactor(std::move(auth_factor));
+  void AddAuthFactors(std::vector<AuthFactorType> types) {
+    for (AuthFactorType type : types) {
+      auto auth_factor = std::make_unique<FakeAuthFactorModel>(type);
+      auth_factors_.push_back(auth_factor.get());
+      view_->AddAuthFactor(std::move(auth_factor));
+    }
   }
 
   void set_click_to_enter_called(bool called) {
@@ -148,6 +146,7 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
 };
 
 TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfNoAuthFactors) {
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   EXPECT_TRUE(view_->GetVisible());
 
   LoginAuthFactorsView::TestApi test_api(view_);
@@ -159,10 +158,11 @@ TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfNoAuthFactors) {
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfAuthFactorsUnavailable) {
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   EXPECT_TRUE(view_->GetVisible());
 
   for (auto* factor : auth_factors_) {
-    factor->set_auth_factor_state(AuthFactorState::kUnavailable);
+    factor->state_ = AuthFactorState::kUnavailable;
   }
   LoginAuthFactorsView::TestApi test_api(view_);
   test_api.UpdateState();
@@ -171,22 +171,29 @@ TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfAuthFactorsUnavailable) {
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, TapOrClickCalled) {
-  LoginAuthFactorsView::TestApi test_api(view_);
-  test_api.UpdateState();
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   auto* factor = auth_factors_[0];
+
+  // NotifyOnStateChanged() calls UpdateIcon(), which captures a pointer to the
+  // icon.
+  factor->NotifyOnStateChanged();
 
   EXPECT_FALSE(factor->on_tap_or_click_event_called_);
   const gfx::Point point(0, 0);
-  factor->icon_view_->OnMousePressed(ui::MouseEvent(
+  factor->icon_->OnMousePressed(ui::MouseEvent(
       ui::ET_MOUSE_PRESSED, point, point, base::TimeTicks::Now(), 0, 0));
   EXPECT_TRUE(factor->on_tap_or_click_event_called_);
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, ShouldAnnounceLabel) {
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   auto* factor = auth_factors_[0];
   LoginAuthFactorsView::TestApi test_api(view_);
   views::Label* label = test_api.label();
   ScopedAXEventObserver alert_observer(label, ax::mojom::Event::kAlert);
+  for (auto* factor : auth_factors_) {
+    factor->state_ = AuthFactorState::kAvailable;
+  }
 
   ASSERT_FALSE(factor->ShouldAnnounceLabel());
   ASSERT_FALSE(alert_observer.event_called);
@@ -194,9 +201,104 @@ TEST_F(LoginAuthFactorsViewUnittest, ShouldAnnounceLabel) {
   test_api.UpdateState();
   ASSERT_FALSE(alert_observer.event_called);
 
-  factor->set_should_announce_label(true);
+  factor->should_announce_label_ = true;
   test_api.UpdateState();
   EXPECT_TRUE(alert_observer.event_called);
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, SingleIconInAvailableState) {
+  // For test purposes only. No two auth factors should have the same type
+  // ordinarily.
+  AddAuthFactors({AuthFactorType::kSmartLock, AuthFactorType::kFingerprint,
+                  AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kAvailable;
+  auth_factors_[1]->state_ = AuthFactorState::kAvailable;
+  auth_factors_[2]->state_ = AuthFactorState::kUnavailable;
+  test_api.UpdateState();
+
+  EXPECT_EQ(true, test_api.auth_factor_icon_row()->GetVisible());
+  EXPECT_EQ(false, test_api.checkmark_icon()->GetVisible());
+  EXPECT_EQ(false, test_api.arrow_button()->GetVisible());
+
+  // The number of icons should match the number of auth factors initialized.
+  EXPECT_EQ(auth_factors_.size(),
+            test_api.auth_factor_icon_row()->children().size());
+
+  // Only a single icon should be visible in the Available state.
+  size_t visible_icon_count = 0;
+  for (auto* icon : test_api.auth_factor_icon_row()->children()) {
+    if (icon->GetVisible()) {
+      visible_icon_count++;
+    }
+  }
+  EXPECT_EQ(1u, visible_icon_count);
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, MultipleAuthFactorsInReadyState) {
+  // For test purposes only. No two auth factors should have the same type
+  // ordinarily.
+  AddAuthFactors({AuthFactorType::kSmartLock, AuthFactorType::kFingerprint,
+                  AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kAvailable;
+  auth_factors_[1]->state_ = AuthFactorState::kReady;
+  auth_factors_[2]->state_ = AuthFactorState::kReady;
+  test_api.UpdateState();
+
+  EXPECT_EQ(true, test_api.auth_factor_icon_row()->GetVisible());
+  EXPECT_EQ(false, test_api.checkmark_icon()->GetVisible());
+  EXPECT_EQ(false, test_api.arrow_button()->GetVisible());
+
+  // The number of icons should match the number of auth factors initialized.
+  EXPECT_EQ(auth_factors_.size(),
+            test_api.auth_factor_icon_row()->children().size());
+
+  // Only the two ready auth factors should be visible.
+  size_t visible_icon_count = 0;
+  for (auto* icon : test_api.auth_factor_icon_row()->children()) {
+    if (icon->GetVisible()) {
+      visible_icon_count++;
+    }
+  }
+  EXPECT_EQ(2u, visible_icon_count);
+
+  // Check that the combined label for Smart Lock and Fingerprint is chosen.
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_UNLOCK_METHOD_SELECTION),
+      test_api.label()->GetText());
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, ClickRequired) {
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kReady;
+  auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
+  test_api.UpdateState();
+
+  // Check that only the arrow button is shown and that the label has been
+  // updated.
+  EXPECT_EQ(true, test_api.arrow_button()->GetVisible());
+  EXPECT_EQ(false, test_api.checkmark_icon()->GetVisible());
+  EXPECT_EQ(false, test_api.auth_factor_icon_row()->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER),
+            test_api.label()->GetText());
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, Authenticated) {
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kAuthenticated;
+  auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
+  test_api.UpdateState();
+
+  // Check that only the arrow button is shown and that the label has been
+  // updated.
+  EXPECT_EQ(true, test_api.checkmark_icon()->GetVisible());
+  EXPECT_EQ(false, test_api.arrow_button()->GetVisible());
+  EXPECT_EQ(false, test_api.auth_factor_icon_row()->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_UNLOCKED),
+            test_api.label()->GetText());
 }
 
 // TODO(crbug.com/1233614): Test adding multiple auth factors and switching

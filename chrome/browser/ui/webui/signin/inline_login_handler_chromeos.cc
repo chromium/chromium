@@ -416,8 +416,9 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
 
 void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
     const base::ListValue* args) {
-  bool skip;
-  CHECK(args->GetBoolean(0, &skip));
+  const auto& list = args->GetList();
+  CHECK(!list.empty());
+  const bool skip = list[0].GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
       chromeos::prefs::kShouldSkipInlineLoginWelcomePage, skip);
 }

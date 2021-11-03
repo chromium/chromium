@@ -133,7 +133,7 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
   // zero size as occurs when a unit width border is applied to a sub-pixel
   // sized element. So round without forcing non-near-zero sizes to one.
   FloatRoundedRect rounded_rect(
-      IntRect(RoundedIntPoint(rect_with_outsets.offset),
+      IntRect(ToRoundedPoint(rect_with_outsets.offset),
               IntSize(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
                                                   rect_with_outsets.X()),
                       SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),

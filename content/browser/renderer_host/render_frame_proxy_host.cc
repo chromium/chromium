@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/scoped_active_url.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/disallow_activation_reason.h"
@@ -138,6 +139,8 @@ RenderFrameProxyHost::RenderFrameProxyHost(
     FrameTreeNode* frame_tree_node)
     : routing_id_(site_instance->GetProcess()->GetNextRoutingID()),
       site_instance_(site_instance),
+      site_instance_group_(
+          static_cast<SiteInstanceImpl*>(site_instance)->group()),
       process_(site_instance->GetProcess()),
       frame_tree_node_(frame_tree_node),
       render_frame_proxy_created_(false),
@@ -824,9 +827,11 @@ void RenderFrameProxyHost::WriteIntoTrace(
   proto->set_is_render_frame_proxy_live(is_render_frame_proxy_live());
   auto* site_instance = GetSiteInstance();
   if (site_instance) {
-    proto->set_rvh_map_id(frame_tree_node_->frame_tree()
-                              ->GetRenderViewHostMapId(site_instance)
-                              .value());
+    proto->set_rvh_map_id(
+        frame_tree_node_->frame_tree()
+            ->GetRenderViewHostMapId(
+                static_cast<SiteInstanceImpl*>(site_instance)->group())
+            .value());
     proto->set_site_instance_id(site_instance->GetId().value());
   }
 }

@@ -37,7 +37,7 @@ class ImageThumbnailRequest : public ImageDecoder::ImageRequest {
 
   void OnDecodeImageFailed() override;
 
-  void OnLoadComplete(const std::vector<uint8_t>& data);
+  void OnLoadComplete(std::vector<uint8_t> data);
 
   void FinishRequest(SkBitmap thumbnail);
 

@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 
@@ -21,7 +21,7 @@ namespace apps {
 // TODO(crbug.com/1253250): Add other mojom publisher functions.
 class AppPublisher {
  public:
-  explicit AppPublisher(Profile* profile);
+  explicit AppPublisher(AppServiceProxy* proxy);
   AppPublisher(const AppPublisher&) = delete;
   AppPublisher& operator=(const AppPublisher&) = delete;
   ~AppPublisher();
@@ -55,13 +55,7 @@ class AppPublisher {
   void Publish(std::vector<std::unique_ptr<App>> apps);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  AppServiceProxyChromeOs* proxy_ = nullptr;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  AppServiceProxyLacros* proxy_ = nullptr;
-#else
   AppServiceProxy* proxy_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  // namespace apps

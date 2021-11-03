@@ -15,6 +15,7 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/renderer/api_activity_logger.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_request_handler.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/dispatcher.h"
@@ -105,9 +106,11 @@ APIBindingHooks::RequestResult AppHooksDelegate::HandleRequest(
   } else if (method_name == "app.installState") {
     DCHECK_EQ(1u, parse_result.arguments->size());
     DCHECK((*parse_result.arguments)[0]->IsFunction());
-    int request_id = request_handler_->AddPendingRequest(
-        context, (*parse_result.arguments)[0].As<v8::Function>());
-    GetInstallState(script_context, request_id);
+    APIRequestHandler::RequestDetails request_details =
+        request_handler_->AddPendingRequest(
+            context, binding::AsyncResponseType::kCallback,
+            (*parse_result.arguments)[0].As<v8::Function>());
+    GetInstallState(script_context, request_details.request_id);
   } else {
     NOTREACHED();
   }

@@ -46,7 +46,6 @@ class FloatPoint;
 class FloatQuad;
 class FloatRect;
 class FloatSize;
-class IntPoint;
 class IntRect;
 class IntSize;
 class TransformationMatrix;
@@ -74,7 +73,6 @@ class PLATFORM_EXPORT AffineTransform {
 
   // Rounds the mapped point to the nearest integer value.
   gfx::Point MapPoint(const gfx::Point&) const;
-  IntPoint MapPoint(const IntPoint&) const;
 
   gfx::PointF MapPoint(const gfx::PointF&) const;
   FloatPoint MapPoint(const FloatPoint&) const;

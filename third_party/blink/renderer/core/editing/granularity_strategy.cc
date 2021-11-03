@@ -22,7 +22,7 @@ enum class SearchDirection { kSearchBackwards, kSearchForward };
 // location of a VisiblePosition. This way locations corresponding to
 // VisiblePositions on the same line will all have the same y coordinate
 // unless the text is transformed.
-static IntPoint PositionLocation(const VisiblePosition& vp) {
+static gfx::Point PositionLocation(const VisiblePosition& vp) {
   return AbsoluteSelectionBoundsOf(vp).bottom_left();
 }
 
@@ -70,7 +70,7 @@ SelectionStrategy CharacterGranularityStrategy::GetType() const {
 void CharacterGranularityStrategy::Clear() {}
 
 SelectionInDOMTree CharacterGranularityStrategy::UpdateExtent(
-    const IntPoint& extent_point,
+    const gfx::Point& extent_point,
     LocalFrame* frame) {
   const VisiblePosition& extent_position = CreateVisiblePosition(
       PositionForContentsPointRespectingEditingBoundary(extent_point, frame));
@@ -105,7 +105,7 @@ void DirectionGranularityStrategy::Clear() {
 }
 
 SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
-    const IntPoint& extent_point,
+    const gfx::Point& extent_point,
     LocalFrame* frame) {
   const VisibleSelection& selection =
       frame->Selection().ComputeVisibleSelectionInDOMTree();
@@ -114,15 +114,16 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
     state_ = StrategyState::kExpanding;
 
   const VisiblePosition& old_offset_extent_position = selection.VisibleExtent();
-  IntPoint old_extent_location = PositionLocation(old_offset_extent_position);
+  gfx::Point old_extent_location = PositionLocation(old_offset_extent_position);
 
-  IntPoint old_offset_extent_point =
-      old_extent_location + diff_extent_point_from_extent_position_;
-  IntPoint old_extent_point = IntPoint(old_offset_extent_point.x() - offset_,
-                                       old_offset_extent_point.y());
+  gfx::Point old_offset_extent_point =
+      old_extent_location +
+      ToGfxVector2d(diff_extent_point_from_extent_position_);
+  gfx::Point old_extent_point = gfx::Point(
+      old_offset_extent_point.x() - offset_, old_offset_extent_point.y());
 
   // Apply the offset.
-  IntPoint new_offset_extent_point = extent_point;
+  gfx::Point new_offset_extent_point = extent_point;
   int dx = extent_point.x() - old_extent_point.x();
   if (offset_ != 0) {
     if (offset_ > 0 && dx > 0)
@@ -137,7 +138,7 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
           new_offset_extent_point, frame));
   if (new_offset_extent_position.IsNull())
     return selection.AsSelection();
-  IntPoint new_offset_location = PositionLocation(new_offset_extent_position);
+  gfx::Point new_offset_location = PositionLocation(new_offset_extent_position);
 
   // Reset the offset in case of a vertical change in the location (could be
   // due to a line change or due to an unusual layout, e.g. rotated text).
@@ -289,8 +290,8 @@ SelectionInDOMTree DirectionGranularityStrategy::UpdateExtent(
                                         : StrategyState::kExpanding;
 
   diff_extent_point_from_extent_position_ =
-      extent_point + IntSize(offset_, 0) -
-      PositionLocation(new_selection_extent);
+      IntSize(extent_point + gfx::Vector2d(offset_, 0) -
+              PositionLocation(new_selection_extent));
   return SelectionInDOMTree::Builder(selection.AsSelection())
       .Collapse(selection.Base())
       .Extend(new_selection_extent.DeepEquivalent())

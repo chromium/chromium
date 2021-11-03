@@ -567,14 +567,14 @@ void AlignedDataHelper::InitializeAlignedMemoryFrames(
     auto mapping = handle->Map(video_frame_size);
     ASSERT_TRUE(!!mapping);
     uint8_t* buffer = reinterpret_cast<uint8_t*>(mapping.get());
-    for (size_t i = 0; i < num_planes; i++) {
-      auto src_plane_layout = src_layout.planes()[i];
-      auto dst_plane_layout = layout_->planes()[i];
+    for (size_t j = 0; j < num_planes; j++) {
+      auto src_plane_layout = src_layout.planes()[j];
+      auto dst_plane_layout = layout_->planes()[j];
       const uint8_t* src_ptr = src_frame_ptr + src_plane_layout.offset;
       uint8_t* dst_ptr = &buffer[dst_plane_layout.offset];
       libyuv::CopyPlane(src_ptr, src_plane_layout.stride, dst_ptr,
                         dst_plane_layout.stride, src_plane_layout.stride,
-                        src_plane_rows[i]);
+                        src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
     video_frame_data_[i] = VideoFrameData(std::move(handle));
@@ -607,11 +607,11 @@ void AlignedDataHelper::InitializeGpuMemoryBufferFrames(
         VideoFrame::CreateFrame(pixel_format, dst_coded_size, visible_rect_,
                                 natural_size_, base::TimeDelta());
     LOG_ASSERT(!!memory_frame) << "Failed creating VideoFrame";
-    for (size_t i = 0; i < num_planes; i++) {
-      libyuv::CopyPlane(src_frame_ptr + src_layout.planes()[i].offset,
-                        src_layout.planes()[i].stride, memory_frame->data(i),
-                        memory_frame->stride(i), src_layout.planes()[i].stride,
-                        src_plane_rows[i]);
+    for (size_t j = 0; j < num_planes; j++) {
+      libyuv::CopyPlane(src_frame_ptr + src_layout.planes()[j].offset,
+                        src_layout.planes()[j].stride, memory_frame->data(j),
+                        memory_frame->stride(j), src_layout.planes()[j].stride,
+                        src_plane_rows[j]);
     }
     src_frame_ptr += src_video_frame_size;
     auto frame =

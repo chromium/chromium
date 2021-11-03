@@ -167,7 +167,7 @@ bool {{proxy_name}}::{{method.name}}(
 {%-     for param in method.response_parameters -%}
           , out_param_{{param.name}}
 {%-     endfor %}));
-  ignore_result(receiver_->AcceptWithResponder(&message, std::move(responder)));
+  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
   {{interface_macros.trace_event(prefix="out_param_",
                                  method_parameters=method.response_parameters,
@@ -221,11 +221,11 @@ void {{proxy_name}}::{{method.name}}(
   std::unique_ptr<mojo::MessageReceiver> responder(
       new {{class_name}}_{{method.name}}_ForwardToCallback(
           std::move(callback)));
-  ignore_result(receiver_->AcceptWithResponder(&message, std::move(responder)));
+  ::mojo::internal::SendMessage(*receiver_, message, std::move(responder));
 {%- else %}
   // This return value may be ignored as false implies the Connector has
   // encountered an error, which will be visible through other means.
-  ignore_result(receiver_->Accept(&message));
+  ::mojo::internal::SendMessage(*receiver_, message);
 {%- endif %}
 }
 {%- endfor %}
@@ -308,8 +308,8 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
 bool {{class_name}}_{{method.name}}_ForwardToCallback::Accept(
     mojo::Message* message) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT1("mojom", "Receive reply {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-               "message", message->name());
+  TRACE_EVENT("toplevel", "Receive reply {{namespace_as_string}}::{{class_name}}::{{method.name}}",
+               perfetto::Flow::Global(message->GetTraceId()));
 #endif
 {%-     if method|method_supports_lazy_serialization %}
   if (!message->is_serialized()) {
@@ -350,7 +350,6 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
                                  method_parameters=method.response_parameters,
                                  method_name=event_name,
                                  parameter_group="async_response_parameters",
-                                 trace_event_type='_BEGIN',
                                  dereference_parameters=False)}}
 #endif
 {%-   if method|method_supports_lazy_serialization %}
@@ -368,18 +367,13 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
       response_params_description, "kFlags", "message")}}
 {%-   endif %}
 
-#if BUILDFLAG(MOJO_TRACE_ENABLED)
-  TRACE_EVENT_END1("mojom", "{{event_name}}", "message",
-                   message.name());
-#endif
-
 #if defined(ENABLE_IPC_FUZZER)
   message.set_interface_name({{class_name}}::Name_);
   message.set_method_name("{{method.name}}");
 #endif
 
   message.set_request_id(request_id_);
-  ignore_result(responder_->Accept(&message));
+  ::mojo::internal::SendMessage(*responder_, message);
   // TODO(darin): Accept() returning false indicates a malformed message, and
   // that may be good reason to close the connection. However, we don't have a
   // way to do that from here. We should add a way.
@@ -441,10 +435,10 @@ bool {{class_name}}StubDispatch::Accept(
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters == None %}
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT1(
-          "mojom",
+      TRACE_EVENT(
+          "toplevel",
           "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          "message", message->name());
+          perfetto::Flow::Global(message->GetTraceId()));
 #endif
       static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
               "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");
@@ -502,10 +496,10 @@ bool {{class_name}}StubDispatch::AcceptWithResponder(
     case internal::k{{class_name}}_{{method.name}}_Name: {
 {%-     if method.response_parameters != None %}
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
-      TRACE_EVENT1(
-          "mojom",
-          "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}",
-          "message", message->name());
+      TRACE_EVENT(
+          "toplevel",
+          "Receive {{namespace_as_string}}::{{class_name}}::{{method.name}}",
+          perfetto::Flow::Global(message->GetTraceId()));
 #endif
       static constexpr uint32_t kMessageHash = base::MD5Hash32Constexpr(
               "(Impl){{namespace_as_string}}::{{class_name}}::{{method.name}}");

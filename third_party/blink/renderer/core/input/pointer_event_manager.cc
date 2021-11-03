@@ -375,7 +375,7 @@ void PointerEventManager::AdjustTouchPointerEvent(
   HitTestResult hit_test_result =
       root_frame.GetEventHandler().HitTestResultAtLocation(location, hit_type);
   Node* adjusted_node = nullptr;
-  IntPoint adjusted_point;
+  gfx::Point adjusted_point;
   bool adjusted = frame_->GetEventHandler().BestClickableNodeForHitTestResult(
       location, hit_test_result, adjusted_point, adjusted_node);
 

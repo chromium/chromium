@@ -31,7 +31,7 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -258,4 +258,4 @@ TEST_F(ClientCertStoreAshTest, CertRequestMatching) {
       cert_1->EqualsExcludingChain(selected_identities[0]->certificate()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

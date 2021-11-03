@@ -68,7 +68,7 @@ void CompositorFilterOperations::AppendBlurFilter(float amount,
       cc::FilterOperation::CreateBlurFilter(amount, tile_mode));
 }
 
-void CompositorFilterOperations::AppendDropShadowFilter(IntPoint offset,
+void CompositorFilterOperations::AppendDropShadowFilter(gfx::Point offset,
                                                         float std_deviation,
                                                         const Color& color) {
   gfx::Point gfx_offset(offset.x(), offset.y());

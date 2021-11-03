@@ -67,20 +67,20 @@ TEST_F(GraphicsLayerTest, PaintRecursively) {
       MakeGarbageCollected<FakeGraphicsLayerClient>();
   GraphicsLayer* root = MakeGarbageCollected<GraphicsLayer>(*client);
   root->SetPaintsHitTest(true);
-  root->SetLayerState(PropertyTreeState::Root(), IntPoint());
+  root->SetLayerState(PropertyTreeState::Root(), gfx::Vector2d());
 
   // Initially layer1 doesn't draw content.
   GraphicsLayer* layer1 = MakeGarbageCollected<GraphicsLayer>(*client);
   EXPECT_FALSE(layer1->DrawsContent());
   auto t1 = Create2DTranslation(t0(), 10, 20);
   PropertyTreeState layer1_state(*t1, c0(), e0());
-  layer1->SetLayerState(layer1_state, IntPoint());
+  layer1->SetLayerState(layer1_state, gfx::Vector2d());
   root->AddChild(layer1);
   GraphicsLayer* layer2 = MakeGarbageCollected<GraphicsLayer>(*client);
   layer2->SetDrawsContent(true);
   auto t2 = Create2DTranslation(t0(), 10, 20);
   PropertyTreeState layer2_state(*t2, c0(), e0());
-  layer2->SetLayerState(layer2_state, IntPoint());
+  layer2->SetLayerState(layer2_state, gfx::Vector2d());
   root->AddChild(layer2);
 
   client->SetPainter([&](const GraphicsLayer* layer, GraphicsContext& context,

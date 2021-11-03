@@ -311,8 +311,8 @@ class DesktopWindowTreeHostLinuxTest
 };
 
 TEST_F(DesktopWindowTreeHostLinuxTest, HitTest) {
-  gfx::Rect bounds(0, 0, 100, 100);
-  std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(bounds));
+  gfx::Rect widget_bounds(0, 0, 100, 100);
+  std::unique_ptr<Widget> widget(BuildTopLevelDesktopWidget(widget_bounds));
   widget->Show();
 
   // Install a fake move/resize handler to intercept the move/resize call.

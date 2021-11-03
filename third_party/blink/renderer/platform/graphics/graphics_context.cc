@@ -81,11 +81,11 @@ SkRect GetRectForTextLine(FloatPoint pt, float width, float stroke_thickness) {
   return r;
 }
 
-std::pair<IntPoint, IntPoint> GetPointsForTextLine(FloatPoint pt,
-                                                   float width,
-                                                   float stroke_thickness) {
+std::pair<gfx::Point, gfx::Point> GetPointsForTextLine(FloatPoint pt,
+                                                       float width,
+                                                       float stroke_thickness) {
   int y = floorf(pt.y() + std::max<float>(stroke_thickness / 2.0f, 0.5f));
-  return {IntPoint(pt.x(), y), IntPoint(pt.x() + width, y)};
+  return {gfx::Point(pt.x(), y), gfx::Point(pt.x() + width, y)};
 }
 
 Color DarkModeColor(GraphicsContext& context,
@@ -458,8 +458,8 @@ static void EnforceDotsAtEndpoints(GraphicsContext& context,
   }
 }
 
-void GraphicsContext::DrawLine(const IntPoint& point1,
-                               const IntPoint& point2,
+void GraphicsContext::DrawLine(const gfx::Point& point1,
+                               const gfx::Point& point2,
                                const AutoDarkMode& auto_dark_mode,
                                bool is_text_line,
                                const PaintFlags* paint_flags) {
@@ -524,8 +524,8 @@ void GraphicsContext::DrawLineForText(const FloatPoint& pt,
   auto stroke_style = GetStrokeStyle();
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    IntPoint start;
-    IntPoint end;
+    gfx::Point start;
+    gfx::Point end;
     std::tie(start, end) = GetPointsForTextLine(pt, width, StrokeThickness());
     DrawLine(start, end, auto_dark_mode, true, paint_flags);
   } else {
@@ -1182,7 +1182,7 @@ void GraphicsContext::SetURLFragmentForRect(const String& dest_name,
 }
 
 void GraphicsContext::SetURLDestinationLocation(const String& name,
-                                                const IntPoint& location) {
+                                                const gfx::Point& location) {
   DCHECK(canvas_);
 
   // Paint previews don't make use of linked destinations.
@@ -1227,8 +1227,8 @@ Path GraphicsContext::GetPathForTextLine(const FloatPoint& pt,
   Path path;
   DCHECK_NE(stroke_style, kWavyStroke);
   if (ShouldUseStrokeForTextLine(stroke_style)) {
-    IntPoint start;
-    IntPoint end;
+    gfx::Point start;
+    gfx::Point end;
     std::tie(start, end) = GetPointsForTextLine(pt, width, stroke_thickness);
     path.MoveTo(ToGfxPointF(FloatPoint(start)));
     path.AddLineTo(ToGfxPointF(FloatPoint(end)));

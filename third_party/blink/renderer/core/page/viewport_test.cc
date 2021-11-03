@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
@@ -55,6 +54,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -111,7 +111,7 @@ static PageScaleConstraints RunViewportTest(Page* page,
   IntSize initial_viewport_size(initial_width, initial_height);
   To<LocalFrame>(page->MainFrame())
       ->View()
-      ->SetFrameRect(IntRect(IntPoint::Zero(), initial_viewport_size));
+      ->SetFrameRect(IntRect(gfx::Point(), initial_viewport_size));
   ViewportDescription description = page->GetViewportDescription();
   PageScaleConstraints constraints =
       description.Resolve(FloatSize(initial_viewport_size), Length::Fixed(980));

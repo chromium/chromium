@@ -113,7 +113,7 @@ class DraggedNodeImageBuilder {
         dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
     // TODO(chrishtr): consider using the root frame's visible rect instead
     // of the local frame, to avoid over-clipping.
-    IntRect visible_rect(IntPoint(),
+    IntRect visible_rect(gfx::Point(),
                          layer->GetLayoutObject().GetFrameView()->Size());
     // If the absolute bounding box is large enough to be possibly a memory
     // or IPC payload issue, clip it to the visible content rect.
@@ -355,7 +355,7 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
   if (!IsForDragAndDrop())
     return;
 
-  IntPoint location(x, y);
+  gfx::Point location(x, y);
   auto* html_image_element = DynamicTo<HTMLImageElement>(image);
   if (html_image_element && !image->isConnected())
     SetDragImageResource(html_image_element->CachedImage(), location);
@@ -364,15 +364,15 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
 }
 
 void DataTransfer::ClearDragImage() {
-  setDragImage(nullptr, nullptr, IntPoint());
+  setDragImage(nullptr, nullptr, gfx::Point());
 }
 
 void DataTransfer::SetDragImageResource(ImageResourceContent* img,
-                                        const IntPoint& loc) {
+                                        const gfx::Point& loc) {
   setDragImage(img, nullptr, loc);
 }
 
-void DataTransfer::SetDragImageElement(Node* node, const IntPoint& loc) {
+void DataTransfer::SetDragImageElement(Node* node, const gfx::Point& loc) {
   setDragImage(nullptr, node, loc);
 }
 
@@ -450,7 +450,7 @@ std::unique_ptr<DragImage> DataTransfer::NodeImage(LocalFrame& frame,
 }
 
 std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
-    IntPoint& loc,
+    gfx::Point& loc,
     LocalFrame* frame) const {
   if (drag_image_element_) {
     loc = drag_loc_;
@@ -619,7 +619,7 @@ DataTransfer::DataTransfer(DataTransferType type,
 
 void DataTransfer::setDragImage(ImageResourceContent* image,
                                 Node* node,
-                                const IntPoint& loc) {
+                                const gfx::Point& loc) {
   if (!CanSetDragImage())
     return;
 

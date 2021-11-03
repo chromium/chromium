@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 
 namespace blink {
 
@@ -38,7 +39,17 @@ void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
 
 void AppliedDecorationPainter::StrokeWavyTextDecoration(
     const PaintFlags* flags) {
+  // We need this because of the clipping we're doing below, as we paint both
+  // overlines and underlines here. That clip would hide the overlines, when
+  // painting the underlines.
+  GraphicsContextStateSaver state_saver(context_);
+
   context_.SetShouldAntialias(true);
+
+  // The wavy line is larger than the line, as we add whole waves before and
+  // after the line in TextDecorationInfo::PrepareWavyStrokePath().
+  context_.Clip(decoration_info_.BoundsForLine(line_));
+
   absl::optional<Path> path = decoration_info_.PrepareWavyStrokePath(line_);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       decoration_info_.Style(), DarkModeFilter::ElementRole::kText));

@@ -231,7 +231,7 @@ class ArcAppIcon {
       const base::FilePath& foreground_path,
       const base::FilePath& background_path);
   void DecodeImage(
-      const std::string& unsafe_icon_data,
+      std::string unsafe_icon_data,
       const ArcAppIconDescriptor& descriptor,
       bool resize_allowed,
       bool retain_padding,

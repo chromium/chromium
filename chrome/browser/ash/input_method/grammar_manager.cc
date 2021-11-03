@@ -230,12 +230,12 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
     properties.type = ui::ime::AssistiveWindowType::kGrammarSuggestion;
     properties.candidates = {base::UTF8ToUTF16(current_fragment_.suggestion)};
     properties.visible = true;
+    properties.announce_string = kShowGrammarSuggestionMessage;
     suggestion_button_.announce_string = base::UTF8ToUTF16(
         base::StringPrintf(kSuggestionButtonMessageTemplate,
                            current_fragment_.suggestion.c_str()));
     suggestion_handler_->SetAssistiveWindowProperties(context_id_, properties,
                                                       &error);
-    suggestion_handler_->Announce(kShowGrammarSuggestionMessage);
     if (!error.empty()) {
       LOG(ERROR) << "Fail to show suggestion. " << error;
     }

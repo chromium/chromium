@@ -205,7 +205,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfSingleValue<U> = true>
-  const FirstType& Get() WARN_UNUSED_RESULT {
+  const FirstType& WARN_UNUSED_RESULT Get() {
     return std::get<0>(GetTuple());
   }
 
@@ -213,7 +213,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfSingleValue<U> = true>
-  FirstType Take() WARN_UNUSED_RESULT {
+  FirstType WARN_UNUSED_RESULT Take() {
     return std::get<0>(TakeTuple());
   }
 
@@ -225,7 +225,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  const std::tuple<Types...>& Get() WARN_UNUSED_RESULT {
+  const std::tuple<Types...>& WARN_UNUSED_RESULT Get() {
     return GetTuple();
   }
 
@@ -233,7 +233,7 @@ class TestFuture {
   //
   // Will DCHECK if a timeout happens.
   template <typename U = T, internal::EnableIfMultiValue<U> = true>
-  std::tuple<Types...> Take() WARN_UNUSED_RESULT {
+  std::tuple<Types...> WARN_UNUSED_RESULT Take() {
     return TakeTuple();
   }
 

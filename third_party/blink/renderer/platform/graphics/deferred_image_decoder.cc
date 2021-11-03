@@ -465,7 +465,7 @@ void DeferredImageDecoder::PrepareLazyDecodedFrames() {
   }
 }
 
-bool DeferredImageDecoder::HotSpot(IntPoint& hot_spot) const {
+bool DeferredImageDecoder::HotSpot(gfx::Point& hot_spot) const {
   if (metadata_decoder_)
     return metadata_decoder_->HotSpot(hot_spot);
   if (has_hot_spot_)

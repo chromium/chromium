@@ -77,11 +77,11 @@ TEST(BindObjcBlockTestARC, TestThreeArguments) {
   std::string* ptr = &result;
   base::OnceCallback<void(const std::string&, const std::string&,
                           const std::string&)>
-      c = base::BindOnce(
+      cb = base::BindOnce(
           ^(const std::string& a, const std::string& b, const std::string& c) {
             *ptr = a + b + c;
           });
-  std::move(c).Run("six", "times", "nine");
+  std::move(cb).Run("six", "times", "nine");
   EXPECT_EQ(result, "sixtimesnine");
 }
 
@@ -92,12 +92,12 @@ TEST(BindObjcBlockTestARC, TestSixArguments) {
   int* ptr2 = &result2;
   base::OnceCallback<void(int, int, const std::string&, const std::string&, int,
                           const std::string&)>
-      c = base::BindOnce(^(int a, int b, const std::string& c,
-                           const std::string& d, int e, const std::string& f) {
+      cb = base::BindOnce(^(int a, int b, const std::string& c,
+                            const std::string& d, int e, const std::string& f) {
         *ptr = c + d + f;
         *ptr2 = a + b + e;
       });
-  std::move(c).Run(1, 2, "infinite", "improbability", 3, "drive");
+  std::move(cb).Run(1, 2, "infinite", "improbability", 3, "drive");
   EXPECT_EQ(result1, "infiniteimprobabilitydrive");
   EXPECT_EQ(result2, 6);
 }

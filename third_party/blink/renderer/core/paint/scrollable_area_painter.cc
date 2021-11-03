@@ -27,7 +27,7 @@
 namespace blink {
 
 void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
-                                         const IntPoint& paint_offset,
+                                         const gfx::Vector2d& paint_offset,
                                          const CullRect& cull_rect) {
   const auto* box = GetScrollableArea().GetLayoutBox();
   DCHECK_EQ(box->StyleRef().Visibility(), EVisibility::kVisible);
@@ -36,7 +36,7 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
 
   gfx::Rect visual_rect =
       ToGfxRect(GetScrollableArea().ResizerCornerRect(kResizerForPointer));
-  visual_rect.Offset(ToGfxVector2d(paint_offset));
+  visual_rect.Offset(paint_offset);
   if (!cull_rect.Intersects(visual_rect))
     return;
 
@@ -82,7 +82,7 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
 
   gfx::Rect touch_rect =
       ToGfxRect(scrollable_area_->ResizerCornerRect(kResizerForTouch));
-  touch_rect.Offset(ToGfxVector2d(RoundedIntPoint(paint_offset)));
+  touch_rect.Offset(ToRoundedVector2d(paint_offset));
   context.GetPaintController().RecordScrollHitTestData(
       DisplayItemClientForCorner(), DisplayItem::kResizerScrollHitTest, nullptr,
       touch_rect);
@@ -91,7 +91,7 @@ void ScrollableAreaPainter::RecordResizerScrollHitTestData(
 void ScrollableAreaPainter::DrawPlatformResizerImage(
     GraphicsContext& context,
     const IntRect& resizer_corner_rect) {
-  IntPoint points[4];
+  gfx::Point points[4];
   bool on_left = false;
   if (GetScrollableArea()
           .GetLayoutBox()
@@ -146,7 +146,7 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
 
 void ScrollableAreaPainter::PaintOverflowControls(
     const PaintInfo& paint_info,
-    const IntPoint& paint_offset) {
+    const gfx::Vector2d& paint_offset) {
   // Don't do anything if we have no overflow.
   const auto& box = *GetScrollableArea().GetLayoutBox();
   if (!box.IsScrollContainer() ||
@@ -225,12 +225,12 @@ void ScrollableAreaPainter::PaintOverflowControls(
 
 void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
                                            Scrollbar& scrollbar,
-                                           const IntPoint& paint_offset,
+                                           const gfx::Vector2d& paint_offset,
                                            const CullRect& cull_rect) {
   // TODO(crbug.com/1020913): We should not round paint_offset but should
   // consider subpixel accumulation when painting scrollbars.
   gfx::Rect visual_rect = ToGfxRect(scrollbar.FrameRect());
-  visual_rect.Offset(ToGfxVector2d(paint_offset));
+  visual_rect.Offset(paint_offset);
   if (!cull_rect.Intersects(visual_rect))
     return;
 
@@ -276,10 +276,10 @@ void ScrollableAreaPainter::PaintScrollbar(GraphicsContext& context,
 }
 
 void ScrollableAreaPainter::PaintScrollCorner(GraphicsContext& context,
-                                              const IntPoint& paint_offset,
+                                              const gfx::Vector2d& paint_offset,
                                               const CullRect& cull_rect) {
   IntRect visual_rect = GetScrollableArea().ScrollCornerRect();
-  visual_rect.MoveBy(paint_offset);
+  visual_rect.Offset(paint_offset);
   if (!cull_rect.Intersects(ToGfxRect(visual_rect)))
     return;
 

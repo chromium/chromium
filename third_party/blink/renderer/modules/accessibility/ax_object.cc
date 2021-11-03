@@ -1139,6 +1139,10 @@ AccessibleNode* AXObject::GetAccessibleNode() const {
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
                          ui::AXMode accessibility_mode) {
+  // Reduce redundant ancestor chain walking for display lock computations.
+  auto memoization_scope =
+      DisplayLockUtilities::CreateLockCheckMemoizationScope();
+
   node_data->role = ComputeFinalRoleForSerialization();
   node_data->id = AXObjectID();
 
@@ -1586,19 +1590,19 @@ void AXObject::SerializeScrollAttributes(ui::AXNodeData* node_data) {
                               IsUserScrollable());
   // Provide x,y scroll info if scrollable in any way (programmatically or via
   // user).
-  gfx::Point scroll_offset = ToGfxPoint(GetScrollOffset());
+  gfx::Point scroll_offset = GetScrollOffset();
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollX,
                              scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollY,
                              scroll_offset.y());
 
-  gfx::Point min_scroll_offset = ToGfxPoint(MinimumScrollOffset());
+  gfx::Point min_scroll_offset = MinimumScrollOffset();
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMin,
                              min_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMin,
                              min_scroll_offset.y());
 
-  gfx::Point max_scroll_offset = ToGfxPoint(MaximumScrollOffset());
+  gfx::Point max_scroll_offset = MaximumScrollOffset();
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollXMax,
                              max_scroll_offset.x());
   node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kScrollYMax,
@@ -3459,7 +3463,7 @@ bool AXObject::ComputeIsHiddenViaStyle() const {
     return false;
 
   // content-visibility:hidden or content-visibility: auto.
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*node)) {
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node)) {
     // Ensure contents of head, style and script are never exposed.
     // Note: an AXObject is created for <title> to gather the document's name.
     DCHECK(!Traversal<SVGStyleElement>::FirstAncestorOrSelf(*node)) << node;
@@ -3513,7 +3517,7 @@ bool AXObject::IsHiddenForTextAlternativeCalculation() const {
     return false;
 
   // Display-locked elements are available for text/name resolution.
-  if (DisplayLockUtilities::LockedAncestorPreventingPaint(*node))
+  if (DisplayLockUtilities::IsDisplayLockedPreventingPaint(node))
     return false;
 
   Document* document = GetDocument();
@@ -3832,6 +3836,7 @@ int AXObject::TextOffsetInContainer(int offset) const {
 
 ax::mojom::blink::DefaultActionVerb AXObject::Action() const {
   Element* action_element = ActionElement();
+
   if (!action_element)
     return ax::mojom::blink::DefaultActionVerb::kNone;
 
@@ -4048,20 +4053,27 @@ const AtomicString& AXObject::LiveRegionRelevant() const {
   return relevant;
 }
 
+bool AXObject::IsDisabled() const {
+  // Check for HTML form control with the disabled attribute.
+  if (GetElement() && GetElement()->IsDisabledFormControl())
+    return true;
+
+  // Check aria-disabled. According to ARIA in HTML section 3.1, aria-disabled
+  // attribute does NOT override the native HTML disabled attribute.
+  // https://www.w3.org/TR/html-aria/
+  if (AOMPropertyOrARIAAttributeIsTrue(AOMBooleanProperty::kDisabled))
+    return true;
+
+  // A focusable object with a disabled container.
+  return CanSetFocusAttribute() && cached_is_descendant_of_disabled_node_;
+}
+
 AXRestriction AXObject::Restriction() const {
   // According to ARIA, all elements of the base markup can be disabled.
   // According to CORE-AAM, any focusable descendant of aria-disabled
   // ancestor is also disabled.
-  bool is_disabled;
-  if (HasAOMPropertyOrARIAAttribute(AOMBooleanProperty::kDisabled,
-                                    is_disabled)) {
-    // Has aria-disabled, overrides native markup determining disabled.
-    if (is_disabled)
-      return kRestrictionDisabled;
-  } else if (CanSetFocusAttribute() && IsDescendantOfDisabledNode()) {
-    // aria-disabled on an ancestor propagates to focusable descendants.
+  if (IsDisabled())
     return kRestrictionDisabled;
-  }
 
   // Check aria-readonly if supported by current role.
   bool is_read_only;
@@ -4275,7 +4287,7 @@ bool AXObject::ContainerLiveRegionBusy() const {
              AOMBooleanProperty::kBusy);
 }
 
-AXObject* AXObject::ElementAccessibilityHitTest(const IntPoint& point) const {
+AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {
   // Check if there are any mock elements that need to be handled.
   for (const auto& child : ChildrenIncludingIgnored()) {
     if (child->IsMockObject() &&
@@ -4968,40 +4980,37 @@ bool AXObject::IsUserScrollable() const {
          To<LayoutBox>(GetLayoutObject())->CanBeScrolledAndHasScrollableArea();
 }
 
-IntPoint AXObject::GetScrollOffset() const {
+gfx::Point AXObject::GetScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
-    return IntPoint();
+    return gfx::Point();
 
-  return IntPoint(area->ScrollOffsetInt().width(),
-                  area->ScrollOffsetInt().height());
+  return ToGfxPoint(area->ScrollOffsetInt());
 }
 
-IntPoint AXObject::MinimumScrollOffset() const {
+gfx::Point AXObject::MinimumScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
-    return IntPoint();
+    return gfx::Point();
 
-  return IntPoint(area->MinimumScrollOffsetInt().width(),
-                  area->MinimumScrollOffsetInt().height());
+  return ToGfxPoint(area->MinimumScrollOffsetInt());
 }
 
-IntPoint AXObject::MaximumScrollOffset() const {
+gfx::Point AXObject::MaximumScrollOffset() const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
-    return IntPoint();
+    return gfx::Point();
 
-  return IntPoint(area->MaximumScrollOffsetInt().width(),
-                  area->MaximumScrollOffsetInt().height());
+  return ToGfxPoint(area->MaximumScrollOffsetInt());
 }
 
-void AXObject::SetScrollOffset(const IntPoint& offset) const {
+void AXObject::SetScrollOffset(const gfx::Point& offset) const {
   ScrollableArea* area = GetScrollableAreaIfScrollable();
   if (!area)
     return;
 
   // TODO(bokan): This should potentially be a UserScroll.
-  area->SetScrollOffset(ScrollOffset(offset.x(), offset.y()),
+  area->SetScrollOffset(ScrollOffset(offset.OffsetFromOrigin()),
                         mojom::blink::ScrollType::kProgrammatic);
 }
 
@@ -5396,12 +5405,11 @@ bool AXObject::PerformAction(const ui::AXActionData& action_data) {
     case ax::mojom::blink::Action::kIncrement:
       return RequestIncrementAction();
     case ax::mojom::blink::Action::kScrollToPoint:
-      return RequestScrollToGlobalPointAction(
-          IntPoint(action_data.target_point));
+      return RequestScrollToGlobalPointAction(action_data.target_point);
     case ax::mojom::blink::Action::kSetAccessibilityFocus:
       return InternalSetAccessibilityFocusAction();
     case ax::mojom::blink::Action::kSetScrollOffset:
-      SetScrollOffset(IntPoint(action_data.target_point));
+      SetScrollOffset(action_data.target_point);
       return true;
     case ax::mojom::blink::Action::kSetSequentialFocusNavigationStartingPoint:
       return RequestSetSequentialFocusNavigationStartingPointAction();
@@ -5522,7 +5530,7 @@ bool AXObject::RequestIncrementAction() {
   return OnNativeIncrementAction();
 }
 
-bool AXObject::RequestScrollToGlobalPointAction(const IntPoint& point) {
+bool AXObject::RequestScrollToGlobalPointAction(const gfx::Point& point) {
   return OnNativeScrollToGlobalPointAction(point);
 }
 
@@ -5625,7 +5633,7 @@ bool AXObject::OnNativeScrollToMakeVisibleWithSubFocusAction(
 }
 
 bool AXObject::OnNativeScrollToGlobalPointAction(
-    const IntPoint& global_point) const {
+    const gfx::Point& global_point) const {
   LayoutObject* layout_object = GetLayoutObjectForNativeScrollAction();
   if (!layout_object)
     return false;

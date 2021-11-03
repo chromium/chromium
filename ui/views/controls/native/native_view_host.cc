@@ -14,6 +14,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -244,7 +245,8 @@ bool NativeViewHost::OnMousePressed(const ui::MouseEvent& event) {
          "leads. If the overlapping view was not intended to receive events, "
          "call SetCanProcessEventsWithinSubtree(false) on the overlapping "
          "View that paints to a layer. If it's intended to receive some, but "
-         "not this event, event targeting needs to be fixed for this case.";
+         "not this event, event targeting needs to be fixed for this case.\n"
+      << GetViewDebugInfo(this);
   return View::OnMousePressed(event);
 }
 

@@ -223,6 +223,32 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   if (key != ash::kArcResizeLockTypeKey)
     return;
 
+  const auto new_value = window->GetProperty(ash::kArcResizeLockTypeKey);
+  const auto old_value = static_cast<ash::ArcResizeLockType>(old);
+
+  if (new_value != old_value) {
+    AppIdObserver::RunOnReady(
+        window, base::BindOnce(
+                    [](base::WeakPtr<ArcResizeLockManager> manager,
+                       aura::Window* window) {
+                      if (!manager)
+                        return;
+                      if (ShouldEnableResizeLock(window->GetProperty(
+                              ash::kArcResizeLockTypeKey))) {
+                        manager->EnableResizeLock(window);
+                      } else {
+                        manager->DisableResizeLock(window);
+                      }
+                      // EnableResizeLock() and DisableResizeLock() are supposed
+                      // to be called only when resizability is toggled while
+                      // resize lock state may need to be updated even when
+                      // resizability doesn't change (e.g.NONE ->
+                      // RESIZE_ENABLED_TOGGLABLE)
+                      manager->UpdateResizeLockState(window);
+                    },
+                    weak_ptr_factory_.GetWeakPtr()));
+  }
+
   // We need to always trigger UpdateCompatModeButton regardless of value
   // change because it need to be called even when the property is set to
   // ArcResizeLockType::NONE, which is the the default value of
@@ -231,33 +257,6 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
       window, base::BindOnce(&CompatModeButtonController::Update,
                              compat_mode_button_controller_->GetWeakPtr(),
                              pref_delegate_));
-
-  const auto new_value = window->GetProperty(ash::kArcResizeLockTypeKey);
-  const auto old_value = static_cast<ash::ArcResizeLockType>(old);
-
-  if (new_value == old_value)
-    return;
-
-  AppIdObserver::RunOnReady(
-      window, base::BindOnce(
-                  [](base::WeakPtr<ArcResizeLockManager> manager,
-                     aura::Window* window) {
-                    if (!manager)
-                      return;
-                    if (ShouldEnableResizeLock(
-                            window->GetProperty(ash::kArcResizeLockTypeKey))) {
-                      manager->EnableResizeLock(window);
-                    } else {
-                      manager->DisableResizeLock(window);
-                    }
-                    // EnableResizeLock() and DisableResizeLock() are supposed
-                    // to be called only when resizability is toggled while
-                    // resize lock state may need to be updated even when
-                    // resizability doesn't change (e.g.NONE ->
-                    // RESIZE_ENABLED_TOGGLABLE)
-                    manager->UpdateResizeLockState(window);
-                  },
-                  weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcResizeLockManager::OnWindowBoundsChanged(
@@ -292,8 +291,6 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
   // lock for an app for the first time.
   if (pref_delegate_->GetResizeLockState(*app_id) ==
       mojom::ArcResizeLockState::READY) {
-    UpdateResizeLockState(window);
-
     if (ShouldShowSplashScreenDialog(pref_delegate_)) {
       const bool is_for_unresizable =
           window->GetProperty(ash::kArcResizeLockTypeKey) ==
@@ -303,6 +300,8 @@ void ArcResizeLockManager::EnableResizeLock(aura::Window* window) {
                                  is_for_unresizable));
     }
   }
+
+  UpdateResizeLockState(window);
 
   window->SetProperty(ash::kResizeShadowTypeKey, ash::ResizeShadowType::kLock);
   // Show lock shadow effect on window. ash::Shell may not exist in tests.

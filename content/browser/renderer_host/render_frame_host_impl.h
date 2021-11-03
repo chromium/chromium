@@ -3925,7 +3925,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
     // Indicates whether `blink::mojom::DidDispatchDOMContentLoadedEvent` was
     // called for this document or not.
-    bool dom_content_loaded_ = false;
+    bool dom_content_loaded = false;
 
     // Prerender2:
     //

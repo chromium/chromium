@@ -10,8 +10,11 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/protocol/named_message_pipe_handler.h"
 
@@ -20,8 +23,6 @@ namespace remoting {
 namespace protocol {
 class RemoteWebAuthn_IsUvpaaResponse;
 }  // namespace protocol
-
-class IpcServer;
 
 class RemoteWebAuthnMessageHandler final
     : public mojom::WebAuthnProxy,
@@ -43,7 +44,12 @@ class RemoteWebAuthnMessageHandler final
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) override;
 
+  void AddReceiver(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
+
+  base::WeakPtr<RemoteWebAuthnMessageHandler> GetWeakPtr();
+
  private:
+  void OnReceiverDisconnected();
   void OnIsUvpaaResponse(
       uint64_t id,
       const protocol::RemoteWebAuthn_IsUvpaaResponse& response);
@@ -52,7 +58,7 @@ class RemoteWebAuthnMessageHandler final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<IpcServer> ipc_server_;
+  mojo::ReceiverSet<mojom::WebAuthnProxy> receiver_set_;
 
   // message ID => mojo callback mappings.
   base::flat_map<uint64_t,
@@ -60,6 +66,8 @@ class RemoteWebAuthnMessageHandler final
       is_uvpaa_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   uint64_t current_message_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
+
+  base::WeakPtrFactory<RemoteWebAuthnMessageHandler> weak_factory_{this};
 };
 
 }  // namespace remoting

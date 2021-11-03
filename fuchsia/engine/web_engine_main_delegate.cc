@@ -44,6 +44,7 @@ void InitializeResources() {
   const std::string locale = ui::ResourceBundle::InitSharedInstanceWithLocale(
       base::i18n::GetConfiguredLocale(), nullptr,
       ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+  ui::SetSupportedResourceScaleFactors({ui::k100Percent});
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       asset_root.Append(kCommonResourcesPakPath), ui::kScaleFactorNone);
   VLOG(1) << "Loaded resources including locale: " << locale;

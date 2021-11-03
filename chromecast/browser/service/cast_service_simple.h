@@ -26,7 +26,7 @@ class CastWindowManager;
 
 namespace shell {
 
-class CastServiceSimple : public CastService, public CastWebView::Delegate {
+class CastServiceSimple : public CastService {
  public:
   CastServiceSimple(content::BrowserContext* browser_context,
                     CastWindowManager* window_manager);
@@ -42,10 +42,6 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
   void FinalizeInternal() override;
   void StartInternal() override;
   void StopInternal() override;
-
-  // CastContentWindow::Delegate implementation:
-  void OnWindowDestroyed() override;
-  void OnVisibilityChange(VisibilityType visibility_type) override;
 
  private:
   const std::unique_ptr<CastWebViewFactory> web_view_factory_;

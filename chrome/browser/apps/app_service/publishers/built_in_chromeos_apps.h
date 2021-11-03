@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,7 +24,7 @@ namespace apps {
 class BuiltInChromeOsApps : public apps::PublisherBase {
  public:
   BuiltInChromeOsApps(const mojo::Remote<apps::mojom::AppService>& app_service,
-                      Profile* profile);
+                      AppServiceProxy* proxy);
   BuiltInChromeOsApps(const BuiltInChromeOsApps&) = delete;
   BuiltInChromeOsApps& operator=(const BuiltInChromeOsApps&) = delete;
   ~BuiltInChromeOsApps() override;

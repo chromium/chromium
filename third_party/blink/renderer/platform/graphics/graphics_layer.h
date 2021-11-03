@@ -194,20 +194,22 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
 
   bool HasLayerState() const { return layer_state_.get(); }
   void SetLayerState(const PropertyTreeStateOrAlias&,
-                     const IntPoint& layer_offset);
+                     const gfx::Vector2d& layer_offset);
   PropertyTreeStateOrAlias GetPropertyTreeState() const {
     return layer_state_->state.GetPropertyTreeState();
   }
-  IntPoint GetOffsetFromTransformNode() const { return layer_state_->offset; }
+  gfx::Vector2d GetOffsetFromTransformNode() const {
+    return layer_state_->offset;
+  }
 
   void SetContentsLayerState(const PropertyTreeStateOrAlias&,
-                             const IntPoint& layer_offset);
+                             const gfx::Vector2d& layer_offset);
   PropertyTreeStateOrAlias GetContentsPropertyTreeState() const {
     return contents_layer_state_
                ? contents_layer_state_->state.GetPropertyTreeState()
                : GetPropertyTreeState();
   }
-  IntPoint GetContentsOffsetFromTransformNode() const {
+  gfx::Vector2d GetContentsOffsetFromTransformNode() const {
     return contents_layer_state_ ? contents_layer_state_->offset
                                  : GetOffsetFromTransformNode();
   }
@@ -310,7 +312,7 @@ class PLATFORM_EXPORT GraphicsLayer : public GarbageCollected<GraphicsLayer>,
     // nodes in ObjectPaintProperties. This is to workaround under-invalidation
     // of layer state.
     RefCountedPropertyTreeState state;
-    IntPoint offset;
+    gfx::Vector2d offset;
   };
   std::unique_ptr<LayerState> layer_state_;
   std::unique_ptr<LayerState> contents_layer_state_;

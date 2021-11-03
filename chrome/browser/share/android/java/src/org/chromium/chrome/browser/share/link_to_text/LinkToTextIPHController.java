@@ -27,8 +27,11 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /**
  * This class is responsible for rendering an IPH, when receiving a link-to-text.
@@ -72,15 +75,23 @@ public class LinkToTextIPHController {
 
     // Request text fragment selectors for existing highlights
     private void getExistingSelectors(Tab tab) {
-        TextFragmentReceiver producer =
-                tab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
-                        TextFragmentReceiver.MANAGER);
-        LinkToTextCoordinator.getExistingSelectors(producer, (text) -> {
-            if (text.length > 0) {
-                if (mTracker.shouldTriggerHelpUI(FEATURE_NAME)) showMessageIPH(tab);
+        List<RenderFrameHost> renderFrameHosts =
+                tab.getWebContents().getMainFrame().getAllRenderFrameHosts();
+
+        for (RenderFrameHost renderFrameHost : renderFrameHosts) {
+            TextFragmentReceiver producer =
+                    renderFrameHost.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER);
+            if (producer == null) {
+                continue;
             }
-            producer.close();
-        });
+
+            LinkToTextCoordinator.getExistingSelectors(producer, (text) -> {
+                if (text.length > 0 && mTracker.shouldTriggerHelpUI(FEATURE_NAME)) {
+                    showMessageIPH(tab);
+                }
+                producer.close();
+            });
+        }
     }
 
     private void showMessageIPH(Tab tab) {

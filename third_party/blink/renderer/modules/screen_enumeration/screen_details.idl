@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Interface exposing multi-screen information.
+// https://github.com/webscreens/window-placement
+[
+  Exposed=Window,
+  SecureContext,
+  RuntimeEnabled=WindowPlacement
+] interface ScreenDetails : EventTarget {
+  // The set of available screens with additional per-screen info.
+  readonly attribute FrozenArray<ScreenDetailed> screens;
+
+  // Current screen reference; corresponds with window.screen.
+  readonly attribute ScreenDetailed currentScreen;
+
+  // Change event fired when the set of screens changes.
+  // NOTE: Does not fire on changes to attributes of individual Screens.
+  [HighEntropy, Measure] attribute EventHandler onscreenschange;
+
+  // Change event fired when any attribute on the currentScreen changes,
+  // including when the window is moved to another screen.
+  [HighEntropy, Measure] attribute EventHandler oncurrentscreenchange;
+};

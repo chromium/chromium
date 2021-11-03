@@ -347,7 +347,7 @@ by a child template that "extends" this file.
         </activity-alias>
 
         <activity android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
             android:exported="true"
             android:enabled="false"><!-- This will be selectively enabled at runtime. -->
@@ -378,7 +378,7 @@ by a child template that "extends" this file.
              images in that case. -->
         <activity-alias android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
             android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
             android:exported="true"
             android:enabled="false"><!-- This will be selectively enabled at runtime. -->
@@ -393,13 +393,13 @@ by a child template that "extends" this file.
         </activity-alias>
 
         <activity android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="false" />
 
         <activity android:name="org.chromium.chrome.browser.incognito.IncognitoTabLauncher"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:enabled="false"
             android:excludeFromRecents="true"
@@ -411,7 +411,7 @@ by a child template that "extends" this file.
         </activity>
 
         <activity android:name="org.chromium.chrome.browser.app.reengagement.ReengagementActivity"
-            android:theme="@android:style/Theme.Translucent"
+            android:theme="@style/Theme.BrowserUI.Translucent"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="false" />
@@ -599,7 +599,7 @@ by a child template that "extends" this file.
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
         </activity>
         <activity android:name="org.chromium.chrome.browser.bookmarks.BookmarkAddActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:excludeFromRecents="true"
             android:windowSoftInputMode="stateHidden"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
@@ -695,7 +695,7 @@ by a child template that "extends" this file.
                                running.
         -->
         <activity android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="true">
@@ -753,7 +753,7 @@ by a child template that "extends" this file.
         </activity>
 
         <activity android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="true">
             <intent-filter>
                 <action android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE" />
@@ -775,7 +775,7 @@ by a child template that "extends" this file.
         <activity android:name="org.chromium.chrome.browser.BrowserRestartActivity"
             android:launchMode="singleInstance"
             android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar"
             android:excludeFromRecents="true"
             android:process=":browser_restart_process">
         </activity>
@@ -789,7 +789,7 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -808,7 +808,7 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -838,7 +838,7 @@ by a child template that "extends" this file.
         <activity
             android:name="org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:noHistory="true"
             android:excludeFromRecents="true">
         </activity>
@@ -846,7 +846,7 @@ by a child template that "extends" this file.
         <activity
             android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:noHistory="true"
             android:excludeFromRecents="true"
             {% if enable_vr == "true" %}
@@ -1127,7 +1127,7 @@ by a child template that "extends" this file.
 
         <activity
             android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="false"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"
@@ -1136,7 +1136,7 @@ by a child template that "extends" this file.
 
         <activity
             android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager$TrampolineActivity"
-            android:theme="@android:style/Theme.NoDisplay"
+            android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:exported="false"
             android:autoRemoveFromRecents="true"
             android:excludeFromRecents="true"

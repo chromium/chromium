@@ -35,13 +35,13 @@ let availableTests = [
   async function isUvpaa() {
     let receivedRequests = 0;
     chrome.webAuthenticationProxy.onIsUvpaaRequest.addListener(
-        async (requestId) => {
+        async (requestInfo) => {
           receivedRequests++;
           chrome.test.assertTrue(receivedRequests <= 2);
           // We set the first request to false, and the second to true.
           let isUvpaa = receivedRequests == 2;
           await chrome.webAuthenticationProxy.completeIsUvpaaRequest(
-              {requestId, isUvpaa});
+              {requestId: requestInfo.requestId, isUvpaa});
           chrome.test.assertNoLastError();
           chrome.test.succeed();
         });
@@ -50,19 +50,21 @@ let availableTests = [
   },
   async function isUvpaaNotAttached() {
     let eventHandlerCalled = false;
-    chrome.webAuthenticationProxy.onIsUvpaaRequest.addListener((requestId) => {
-      eventHandlerCalled = true;
-    });
+    chrome.webAuthenticationProxy.onIsUvpaaRequest.addListener(
+        (requestInfo) => {
+          eventHandlerCalled = true;
+        });
     await chrome.test.sendMessage('ready');
     chrome.test.assertFalse(eventHandlerCalled);
     chrome.test.succeed();
   },
   async function isUvpaaResolvesOnDetach() {
     let isUvpaaEventReceived = false;
-    chrome.webAuthenticationProxy.onIsUvpaaRequest.addListener((requestId) => {
-      isUvpaaEventReceived = true;
-      chrome.webAuthenticationProxy.detach();
-    });
+    chrome.webAuthenticationProxy.onIsUvpaaRequest.addListener(
+        (requestInfo) => {
+          isUvpaaEventReceived = true;
+          chrome.webAuthenticationProxy.detach();
+        });
 
     await chrome.webAuthenticationProxy.attach();
     await chrome.test.sendMessage('ready');

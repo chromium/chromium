@@ -7,21 +7,12 @@
 
 #include "base/memory/singleton.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
 namespace apps {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class AppServiceProxyChromeOs;
-using AppServiceProxy = AppServiceProxyChromeOs;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-class AppServiceProxyLacros;
-using AppServiceProxy = AppServiceProxyLacros;
-#else
-class AppServiceProxy;
-#endif
 
 // Singleton that owns all AppServiceProxy's and associates them with Profile.
 class AppServiceProxyFactory : public BrowserContextKeyedServiceFactory {

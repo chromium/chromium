@@ -18,7 +18,7 @@ namespace metrics {
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/enums.xml: CrosDiagnosticsNavigationView.
 enum class NavigationView {
   kSystem = 0,
   kConnectivity = 1,
@@ -33,16 +33,20 @@ class DiagnosticsMetricsMessageHandler : public content::WebUIMessageHandler {
   DiagnosticsMetricsMessageHandler(DiagnosticsMetricsMessageHandler&) = delete;
   DiagnosticsMetricsMessageHandler& operator=(
       DiagnosticsMetricsMessageHandler&) = delete;
-  ~DiagnosticsMetricsMessageHandler() override = default;
+  ~DiagnosticsMetricsMessageHandler() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
+
   // Test helper functions:
   NavigationView GetCurrentViewForTesting();
   base::TimeDelta GetElapsedNavigationTimeDeltaForTesting();
   void SetWebUiForTesting(content::WebUI* web_ui);
 
  private:
+  // Records navigation events between screens within Diagnostics App.
+  void HandleRecordNavigation(base::Value::ConstListView args);
+
   NavigationView current_view_;
   base::Time navigation_started_;
 };

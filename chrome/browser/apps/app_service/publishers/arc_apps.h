@@ -14,6 +14,7 @@
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
@@ -41,7 +43,6 @@ class Profile;
 
 namespace apps {
 
-class AppServiceProxyChromeOs;
 class PublisherTest;
 class WebApkManager;
 
@@ -63,10 +64,7 @@ class ArcApps : public KeyedService,
  public:
   static ArcApps* Get(Profile* profile);
 
-  static ArcApps* CreateForTesting(Profile* profile,
-                                   apps::AppServiceProxyChromeOs* proxy);
-
-  explicit ArcApps(Profile* profile);
+  explicit ArcApps(AppServiceProxy* proxy);
   ArcApps(const ArcApps&) = delete;
   ArcApps& operator=(const ArcApps&) = delete;
 
@@ -77,14 +75,14 @@ class ArcApps : public KeyedService,
   }
 
  private:
+  friend class ArcAppsFactory;
   friend class PublisherTest;
+  FRIEND_TEST_ALL_PREFIXES(PublisherTest, ArcAppsOnApps);
 
   using AppIdToTaskIds = std::map<std::string, std::set<int>>;
   using TaskIdToAppId = std::map<int, std::string>;
 
-  ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy);
-
-  void Init();
+  void Initialize();
 
   // KeyedService overrides.
   void Shutdown() override;
@@ -228,6 +226,7 @@ class ArcApps : public KeyedService,
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
 
+  AppServiceProxy* const proxy_;
   Profile* const profile_;
   ArcIconOnceLoader arc_icon_once_loader_;
   ArcActivityAdaptiveIconImpl arc_activity_adaptive_icon_impl_;

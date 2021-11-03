@@ -312,15 +312,15 @@ UIColor* BackgroundColor() {
 
   button.pointerInteractionEnabled = YES;
   button.pointerStyleProvider = ^UIPointerStyle*(
-      UIButton* button, __unused UIPointerEffect* proposedEffect,
+      UIButton* theButton, __unused UIPointerEffect* proposedEffect,
       __unused UIPointerShape* proposedShape) {
     UITargetedPreview* preview =
-        [[UITargetedPreview alloc] initWithView:button];
+        [[UITargetedPreview alloc] initWithView:theButton];
     UIPointerHighlightEffect* effect =
         [UIPointerHighlightEffect effectWithPreview:preview];
     UIPointerShape* shape =
-        [UIPointerShape shapeWithRoundedRect:button.frame
-                                cornerRadius:button.frame.size.width / 2];
+        [UIPointerShape shapeWithRoundedRect:theButton.frame
+                                cornerRadius:theButton.frame.size.width / 2];
     return [UIPointerStyle styleWithEffect:effect shape:shape];
   };
 

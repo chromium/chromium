@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -39,8 +40,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/signin/internal/identity_manager/test_profile_oauth2_token_service_delegate_chromeos.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
 #if defined(OS_IOS)
@@ -55,8 +62,6 @@
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
 namespace signin {
-
-using ::ash::AccountManagerFactory;
 
 class IdentityManagerDependenciesOwner {
  public:
@@ -73,13 +78,16 @@ class IdentityManagerDependenciesOwner {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  AccountManagerFactory* account_manager_factory();
+  ash::AccountManagerFactory* account_manager_factory();
+  account_manager::AccountManagerFacade* GetAccountManagerFacadeForEmptyPath();
 #endif
   TestSigninClient* signin_client();
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<AccountManagerFactory> account_manager_factory_;
+  std::unique_ptr<ash::AccountManagerFactory> account_manager_factory_;
+  std::unique_ptr<account_manager::AccountManagerFacadeImpl>
+      account_manager_facade_for_empty_path_;
 #endif
   // Depending on whether a |pref_service| instance is passed in
   // the constructor, exactly one of these will be non-null.
@@ -95,7 +103,7 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
     TestSigninClient* signin_client_param)
     :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      account_manager_factory_(std::make_unique<AccountManagerFactory>()),
+      account_manager_factory_(std::make_unique<ash::AccountManagerFactory>()),
 #endif
       owned_pref_service_(
           pref_service_param
@@ -108,6 +116,19 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
               ? nullptr
               : std::make_unique<TestSigninClient>(pref_service())),
       raw_signin_client_(signin_client_param) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  mojo::Remote<crosapi::mojom::AccountManager> remote;
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      account_manager_factory_->GetAccountManagerMojoService(std::string());
+  account_manager_mojo_service->BindReceiver(
+      remote.BindNewPipeAndPassReceiver());
+  account_manager_facade_for_empty_path_ =
+      std::make_unique<account_manager::AccountManagerFacadeImpl>(
+          std::move(remote),
+          /*remote_version=*/std::numeric_limits<uint32_t>::max(),
+          /*account_manager_for_tests=*/
+          account_manager_factory_->GetAccountManager(std::string()));
+#endif
 }
 
 IdentityManagerDependenciesOwner::~IdentityManagerDependenciesOwner() {
@@ -124,10 +145,15 @@ IdentityManagerDependenciesOwner::pref_service() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-AccountManagerFactory*
+ash::AccountManagerFactory*
 IdentityManagerDependenciesOwner::account_manager_factory() {
   DCHECK(account_manager_factory_);
   return account_manager_factory_.get();
+}
+
+account_manager::AccountManagerFacade*
+IdentityManagerDependenciesOwner::GetAccountManagerFacadeForEmptyPath() {
+  return account_manager_facade_for_empty_path_.get();
 }
 #endif
 
@@ -199,7 +225,9 @@ IdentityTestEnvironment::IdentityTestEnvironment(
 
   owned_identity_manager_ = BuildIdentityManagerForTests(
       test_signin_client, test_pref_service, base::FilePath(),
-      dependencies_owner_->account_manager_factory(), account_consistency);
+      dependencies_owner_->account_manager_factory(),
+      dependencies_owner_->GetAccountManagerFacadeForEmptyPath(),
+      account_consistency);
 #else
   owned_identity_manager_ =
       BuildIdentityManagerForTests(test_signin_client, test_pref_service,
@@ -216,13 +244,13 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
     SigninClient* signin_client,
     PrefService* pref_service,
     base::FilePath user_data_dir,
-    AccountManagerFactory* account_manager_factory,
+    ash::AccountManagerFactory* account_manager_factory,
+    account_manager::AccountManagerFacade* account_manager_facade,
     AccountConsistencyMethod account_consistency) {
   auto account_tracker_service = std::make_unique<AccountTrackerService>();
   account_tracker_service->Initialize(pref_service, user_data_dir);
 
-  IdentityManager::InitParameters init_params;
-  auto* account_manager =
+  account_manager::AccountManager* account_manager =
       account_manager_factory->GetAccountManager(user_data_dir.value());
 
   if (user_data_dir.empty()) {
@@ -241,7 +269,6 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
   account_manager->SetPrefService(pref_service);
   account_manager->SetUrlLoaderFactoryForTests(
       signin_client->GetURLLoaderFactory());
-  init_params.ash_account_manager = account_manager;
 
   auto token_service = std::make_unique<FakeProfileOAuth2TokenService>(
       pref_service,
@@ -252,8 +279,8 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
           /*is_regular_profile=*/true));
 
   return FinishBuildIdentityManagerForTests(
-      std::move(init_params), std::move(account_tracker_service),
-      std::move(token_service), signin_client, pref_service, user_data_dir,
+      std::move(account_tracker_service), std::move(token_service),
+      signin_client, pref_service, user_data_dir, account_manager_facade,
       account_consistency);
 }
 #else
@@ -269,9 +296,8 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
   auto token_service =
       std::make_unique<FakeProfileOAuth2TokenService>(pref_service);
   return FinishBuildIdentityManagerForTests(
-      IdentityManager::InitParameters(), std::move(account_tracker_service),
-      std::move(token_service), signin_client, pref_service, user_data_dir,
-      account_consistency);
+      std::move(account_tracker_service), std::move(token_service),
+      signin_client, pref_service, user_data_dir, account_consistency);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -293,12 +319,14 @@ IdentityTestEnvironment::PendingRequest::~PendingRequest() = default;
 // static
 std::unique_ptr<IdentityManager>
 IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
-    IdentityManager::InitParameters&& init_params,
     std::unique_ptr<AccountTrackerService> account_tracker_service,
     std::unique_ptr<ProfileOAuth2TokenService> token_service,
     SigninClient* signin_client,
     PrefService* pref_service,
     base::FilePath user_data_dir,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    account_manager::AccountManagerFacade* account_manager_facade,
+#endif
     AccountConsistencyMethod account_consistency) {
   auto account_fetcher_service = std::make_unique<AccountFetcherService>();
   account_fetcher_service->Initialize(
@@ -319,7 +347,7 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service =
       std::make_unique<GaiaCookieManagerService>(token_service.get(),
                                                  signin_client);
-
+  IdentityManager::InitParameters init_params;
   init_params.primary_account_mutator =
       std::make_unique<PrimaryAccountMutatorImpl>(
           account_tracker_service.get(), token_service.get(),
@@ -351,6 +379,11 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
       std::move(gaia_cookie_manager_service);
   init_params.primary_account_manager = std::move(primary_account_manager);
   init_params.token_service = std::move(token_service);
+  // TODO: Set the account_manager_facade on Lacros once Mirror is enabled by
+  // default.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  init_params.account_manager_facade = account_manager_facade;
+#endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   init_params.signin_client = signin_client;
 #endif

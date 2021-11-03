@@ -64,6 +64,10 @@ def ComputePackageDiffs(before_blobs_file, after_blobs_file):
 
   growth['status_code'] = status_code
   growth['summary'] = summary
+
+  # TODO(crbug.com/1266085): Investigate using these fields.
+  growth['archive_filenames'] = []
+  growth['links'] = []
   return growth
 
 

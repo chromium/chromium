@@ -4,7 +4,7 @@
 
 // clang-format off
 // #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
+// #import 'chrome://resources/mojo/ash/services/network_health/public/mojom/network_diagnostics.mojom-lite.js';
 // clang-format on
 
 /**
@@ -15,7 +15,7 @@
 /**
  * A routine response from the Network Diagnostics mojo service.
  * @typedef {{
- *   result: chromeos.networkDiagnostics.mojom.RoutineResult,
+ *   result: ash.networkDiagnostics.mojom.RoutineResult,
  * }}
  */
 /* #export */ let RoutineResponse;
@@ -25,12 +25,12 @@
  * routine, and it's transient state.
  * @typedef {{
  *   name: string,
- *   type: !chromeos.networkDiagnostics.mojom.RoutineType,
+ *   type: !ash.networkDiagnostics.mojom.RoutineType,
  *   group: !RoutineGroup,
  *   func: function(),
  *   running: boolean,
  *   resultMsg: string,
- *   result: ?chromeos.networkDiagnostics.mojom.RoutineResult,
+ *   result: ?ash.networkDiagnostics.mojom.RoutineResult,
  * }}
  */
 /* #export */ let Routine;

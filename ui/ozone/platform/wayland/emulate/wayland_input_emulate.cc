@@ -320,10 +320,10 @@ void WaylandInputEmulate::Global(void* data,
                                  uint32_t version) {
   auto* emulate = static_cast<WaylandInputEmulate*>(data);
   if (strcmp(interface, "weston_test") == 0) {
-    const struct wl_interface* interface =
+    const struct wl_interface* wayland_interface =
         static_cast<const struct wl_interface*>(&weston_test_interface);
     emulate->weston_test_ = static_cast<struct weston_test*>(
-        wl_registry_bind(registry, name, interface, version));
+        wl_registry_bind(registry, name, wayland_interface, version));
   }
 }
 

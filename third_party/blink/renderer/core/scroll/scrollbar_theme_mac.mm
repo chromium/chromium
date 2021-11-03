@@ -371,7 +371,7 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
 
   GraphicsContextStateSaver state_saver(context);
   context.Translate(rect.x(), rect.y());
-  IntRect local_rect(IntPoint(), rect.size());
+  IntRect local_rect(gfx::Point(), rect.size());
 
   // The thumb size will be read from the ScrollbarPainter.
   int thumb_size = 0;

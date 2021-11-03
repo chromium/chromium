@@ -91,6 +91,11 @@ class BASE_EXPORT TimeDomain : public TickClock {
   virtual void OnRegisterWithSequenceManager(
       internal::SequenceManagerImpl* sequence_manager);
 
+  // Removes all canceled delayed tasks from the front of the queue. After
+  // calling this, GetNextDelayedWakeUp() is guaranteed to return a wake up time
+  // for a non-canceled task.
+  void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now);
+
  private:
   friend class internal::TaskQueueImpl;
   friend class internal::SequenceManagerImpl;

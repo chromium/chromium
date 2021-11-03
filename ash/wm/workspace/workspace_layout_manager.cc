@@ -150,6 +150,7 @@ void WorkspaceLayoutManager::OnWindowAddedToLayout(aura::Window* child) {
   window_state->AddObserver(this);
   UpdateShelfVisibility();
   UpdateFullscreenState();
+  UpdateWindowWorkspace(child);
 
   backdrop_controller_->OnWindowAddedToLayout(child);
   WindowPositioner::RearrangeVisibleWindowOnShow(child);
@@ -317,17 +318,7 @@ void WorkspaceLayoutManager::OnWindowPropertyChanged(aura::Window* window,
     // kWindowBackdropKey is not supposed to be cleared.
     DCHECK(window->GetProperty(kWindowBackdropKey));
   } else if (key == aura::client::kWindowWorkspaceKey) {
-    if (window->GetType() != aura::client::WindowType::WINDOW_TYPE_NORMAL ||
-        window->GetProperty(aura::client::kZOrderingKey) !=
-            ui::ZOrderLevel::kNormal) {
-      return;
-    }
-
-    auto* desks_controller = Shell::Get()->desks_controller();
-    if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
-      desks_controller->AddVisibleOnAllDesksWindow(window);
-    else
-      desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);
+    UpdateWindowWorkspace(window);
   }
 }
 
@@ -585,6 +576,20 @@ void WorkspaceLayoutManager::NotifyAccessibilityWorkspaceChanged() {
         ->accessibility_controller()
         ->UpdateAutoclickMenuBoundsIfNeeded();
   }
+}
+
+void WorkspaceLayoutManager::UpdateWindowWorkspace(aura::Window* window) {
+  if (window->GetType() != aura::client::WindowType::WINDOW_TYPE_NORMAL ||
+      window->GetProperty(aura::client::kZOrderingKey) !=
+          ui::ZOrderLevel::kNormal) {
+    return;
+  }
+
+  auto* desks_controller = Shell::Get()->desks_controller();
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+    desks_controller->AddVisibleOnAllDesksWindow(window);
+  else
+    desks_controller->MaybeRemoveVisibleOnAllDesksWindow(window);
 }
 
 }  // namespace ash

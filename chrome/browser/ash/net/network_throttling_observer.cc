@@ -17,7 +17,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkThrottlingObserver::NetworkThrottlingObserver(PrefService* local_state)
     : local_state_(local_state) {
@@ -67,4 +67,4 @@ void NetworkThrottlingObserver::OnPreferenceChanged(
       enabled, upload_rate, download_rate);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -18,7 +18,7 @@ class LocalDOMWindow;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
-class Screens;
+class ScreenDetails;
 
 // Supplements LocalDOMWindow with a Screens interface.
 // https://github.com/webscreens/window-placement
@@ -40,7 +40,7 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
 
   void Trace(Visitor* visitor) const override;
 
-  Screens* screens() { return screens_; }
+  ScreenDetails* screen_details() { return screen_details_; }
 
  private:
   // Returns the supplement, creating one as needed.
@@ -54,7 +54,7 @@ class WindowScreens final : public GarbageCollected<WindowScreens>,
   void OnPermissionRequestComplete(ScriptPromiseResolver* resolver,
                                    mojom::blink::PermissionStatus status);
 
-  Member<Screens> screens_;
+  Member<ScreenDetails> screen_details_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 };
 

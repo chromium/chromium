@@ -102,8 +102,10 @@ void WebAuthenticationProxyService::SignalIsUvpaaRequest(
     request_id = NewRequestId();
   }
   pending_is_uvpaa_callbacks_.emplace(request_id, std::move(callback));
+  base::Value request(base::Value::Type::DICTIONARY);
+  request.SetIntKey("requestId", request_id);
   base::Value args(base::Value::Type::LIST);
-  args.Append(request_id);
+  args.Append(std::move(request));
   event_router_->DispatchEventToExtension(
       *active_request_proxy_extension_id_,
       std::make_unique<Event>(

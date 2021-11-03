@@ -50,6 +50,10 @@ class SANDBOX_EXPORT NamespaceSandbox {
     bool fail_on_unsupported_ns_type;
   };
 
+  NamespaceSandbox() = delete;
+  NamespaceSandbox(const NamespaceSandbox&) = delete;
+  NamespaceSandbox& operator=(const NamespaceSandbox&) = delete;
+
   // Launch a new process inside its own user/PID/network namespaces (depending
   // on kernel support). Requires at a minimum that user namespaces are
   // supported (use Credentials::CanCreateProcessInNewUserNS to check this).
@@ -116,9 +120,6 @@ class SANDBOX_EXPORT NamespaceSandbox {
   static bool InNewUserNamespace();
   static bool InNewPidNamespace();
   static bool InNewNetNamespace();
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(NamespaceSandbox);
 };
 
 }  // namespace sandbox

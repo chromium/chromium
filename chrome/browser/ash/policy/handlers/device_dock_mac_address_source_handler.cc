@@ -60,9 +60,11 @@ void DeviceDockMacAddressHandler::OnDockMacAddressSourcePolicyChanged() {
       source = shill::kUsbEthernetMacAddressSourceUsbAdapterMac;
       break;
     default:
+      source = shill::kUsbEthernetMacAddressSourceUsbAdapterMac;
       LOG(ERROR) << "Unknown dock MAC address source: "
-                 << dock_mac_address_source;
-      return;
+                 << dock_mac_address_source
+                 << "; Use default source: " << source;
+      break;
   }
 
   network_device_handler_->SetUsbEthernetMacAddressSource(source);

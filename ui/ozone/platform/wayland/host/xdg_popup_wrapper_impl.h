@@ -63,6 +63,9 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   // XDG Shell Stable object.
   wl::Object<xdg_popup> xdg_popup_;
 
+  // Aura shell popup object
+  wl::Object<zaura_popup> aura_popup_;
+
   // Parameters that help to configure this popup.
   ShellPopupParams params_;
 

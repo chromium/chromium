@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 
-namespace chromeos {
+namespace ash {
 
 EnumHistogramChecker::EnumHistogramChecker(const std::string& histogram,
                                            int count,
@@ -68,4 +68,4 @@ bool EnumHistogramChecker::Check() {
   return ok;
 }
 
-}  // namespace chromeos
+}  // namespace ash

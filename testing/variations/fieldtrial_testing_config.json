@@ -3898,21 +3898,6 @@
             ]
         }
     ],
-    "GoogleLensSdkIntent": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ForcedOn_GoogleLensSdkIntent",
-                    "enable_features": [
-                        "GoogleLensSdkIntent"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleOnContent": [
         {
             "platforms": [
@@ -8050,6 +8035,28 @@
             ]
         }
     ],
+    "URLLoaderSyncClient": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20211102",
+                    "enable_features": [
+                        "URLLoaderSyncClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnifiedAutoplay": [
         {
             "platforms": [
@@ -8756,6 +8763,25 @@
             ]
         }
     ],
+    "WebProtectSaveAs": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowSavePackageScanning"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRTC-Aec3ConservativeTailFreqResponse": [
         {
             "platforms": [
@@ -9121,6 +9147,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewAppsPackageNamesAllowlist"
+                    ]
+                }
+            ]
+        }
+    ],
+    "WebViewDarkModeMatchTheme": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewDarkModeMatchTheme"
                     ]
                 }
             ]

@@ -112,6 +112,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetBrowseModeInvisible(bool invisible) override;
   void SetShowFeedbackChip(bool show_feedback_chip) override;
+  ProcessedActionStatusDetailsProto& GetLogInfo() override;
 
   bool ShouldShowWarning() override;
 
@@ -195,6 +196,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   std::vector<std::string> browse_domains_;
   UserModel* user_model_ = nullptr;
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_ui_;
+  ProcessedActionStatusDetailsProto log_info_;
 
   bool require_ui_ = false;
 };

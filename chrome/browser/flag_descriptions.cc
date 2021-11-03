@@ -1420,6 +1420,12 @@ const char kHandwritingLegacyRecognitionName[] =
 const char kHandwritingLegacyRecognitionDescription[] =
     "Enables new on-device recognition for handwriting legacy paths.";
 
+const char kHandwritingLegacyRecognitionAllLangName[] =
+    "Handwriting Legacy Recognition All Languages";
+const char kHandwritingLegacyRecognitionAllLangDescription[] =
+    "Enables new on-device recognition for handwriting legacy paths in all "
+    "supported languages.";
+
 const char kHardwareMediaKeyHandling[] = "Hardware Media Key Handling";
 const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "
@@ -1939,10 +1945,6 @@ const char kPageInfoAboutThisSiteName[] =
 const char kPageInfoAboutThisSiteDescription[] =
     "Enable the 'About this site' section in the page info.";
 
-const char kPageInfoV2DesktopName[] = "Page info version two desktop";
-const char kPageInfoV2DesktopDescription[] =
-    "Enable the second version of the page info menu on desktop.";
-
 const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
@@ -2029,6 +2031,11 @@ const char kPersistentQuotaIsTemporaryQuotaName[] =
 const char kPersistentQuotaIsTemporaryQuotaDescription[] =
     "Causes the window.PERSISTENT quota type to have the same semantics as "
     "window.TEMPORARY.";
+
+const char kPersonalizationHubName[] = "Personalization Hub UI";
+const char kPersonalizationHubDescription[] =
+    "Enable the UI to let users customize their wallpapers, screensaver, and "
+    "avatars.";
 
 const char kPlaybackSpeedButtonName[] = "Playback Speed Button";
 const char kPlaybackSpeedButtonDescription[] =
@@ -3634,6 +3641,13 @@ const char kEnableAccessibilityLiveCaptionDescription[] =
     "media playing in Chrome. Turn the feature on in "
     "chrome://settings/accessibility.";
 
+const char kEnableAutoDisableAccessibilityName[] = "Auto-disable Accessibility";
+const char kEnableAutoDisableAccessibilityDescription[] =
+    "When accessibility APIs are no longer being requested, automatically "
+    "disables accessibility. This might happen if an assistive technology is "
+    "turned off or if an extension which uses accessibility APIs no longer "
+    "needs them.";
+
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "
@@ -4814,6 +4828,11 @@ const char kLimitShelfItemsToActiveDeskDescription[] =
     "Limits items on the shelf to the ones associated with windows on the "
     "active desk";
 
+const char kImprovedScreenCaptureSettingsName[] =
+    "Advanced screen capture settings";
+const char kImprovedScreenCaptureSettingsDescription[] =
+    "Enable the advanced settings view for screen capture mode";
+
 const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";
@@ -4975,11 +4994,6 @@ const char kSchedulerConfigurationConservative[] =
     "Disables Hyper-Threading on relevant CPUs.";
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
-
-const char kSelectToSpeakNavigationControlName[] =
-    "Select-to-speak navigation control";
-const char kSelectToSpeakNavigationControlDescription[] =
-    "Enables enhanced Select-to-speak navigation features.";
 
 const char kChromeOSSharingHubName[] = "Chrome OS Sharing Hub";
 const char kChromeOSSharingHubDescription[] =

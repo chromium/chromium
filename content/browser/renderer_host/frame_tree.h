@@ -230,6 +230,9 @@ class CONTENT_EXPORT FrameTree {
   PageDelegate* page_delegate() { return page_delegate_; }
 
   using RenderViewHostMapId = base::IdType32<class RenderViewHostMap>;
+
+  // SiteInstanceGroup IDs are used to look up RenderViewHosts, since there is
+  // one RenderViewHost per SiteInstanceGroup in a given FrameTree.
   using RenderViewHostMap = std::unordered_map<RenderViewHostMapId,
                                                RenderViewHostImpl*,
                                                RenderViewHostMapId::Hasher>;
@@ -258,9 +261,15 @@ class CONTENT_EXPORT FrameTree {
   // frame tree, starting from |subtree_root|.
   NodeRange SubtreeNodes(FrameTreeNode* subtree_root);
 
+  // Returns a range to iterate over all FrameTreeNodes in this frame tree, as
+  // well as any FrameTreeNodes of inner frame trees. Note that this includes
+  // inner frame trees of inner WebContents as well.
+  NodeRange NodesIncludingInnerTreeNodes();
+
   // Returns a range to iterate over all FrameTreeNodes in a subtree, starting
   // from, but not including |parent|, as well as any FrameTreeNodes of inner
-  // frame trees.
+  // frame trees. Note that this includes inner frame trees of inner WebContents
+  // as well.
   static NodeRange SubtreeAndInnerTreeNodes(RenderFrameHostImpl* parent);
 
   // Adds a new child frame to the frame tree. |process_id| is required to
@@ -341,11 +350,10 @@ class CONTENT_EXPORT FrameTree {
   scoped_refptr<RenderViewHostImpl> GetRenderViewHost(
       SiteInstance* site_instance);
 
-  // Returns the ID used for the RenderViewHost associated with |site_instance|.
-  // Note: Callers should not assume that there is a 1:1 mapping between
-  // SiteInstances and IDs returned by this function, since several
-  // SiteInstances may share a RenderViewHost.
-  RenderViewHostMapId GetRenderViewHostMapId(SiteInstance* site_instance) const;
+  // Returns the ID used for the RenderViewHost associated with
+  // |site_instance_group|.
+  RenderViewHostMapId GetRenderViewHostMapId(
+      SiteInstanceGroup* site_instance_group) const;
 
   // Registers a RenderViewHost so that it can be reused by other frames
   // whose SiteInstance maps to the same RenderViewHostMapId.

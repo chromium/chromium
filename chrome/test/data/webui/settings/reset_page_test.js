@@ -7,8 +7,9 @@ import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ResetBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
-import {TestResetBrowserProxy} from 'chrome://test/settings/test_reset_browser_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {TestResetBrowserProxy} from './test_reset_browser_proxy.js';
 // clang-format on
 
 /** @enum {string} */
@@ -87,9 +88,11 @@ suite('DialogTests', function() {
     const dialog = resetPage.$$('settings-reset-profile-dialog');
     assertTrue(!!dialog);
 
-    const checkbox = dialog.$$('[slot=footer] cr-checkbox');
+    const checkbox =
+        dialog.shadowRoot.querySelector('[slot=footer] cr-checkbox');
     assertTrue(checkbox.checked);
-    const showReportedSettingsLink = dialog.$$('[slot=footer] a');
+    const showReportedSettingsLink =
+        dialog.shadowRoot.querySelector('[slot=footer] a');
     assertTrue(!!showReportedSettingsLink);
     showReportedSettingsLink.click();
 

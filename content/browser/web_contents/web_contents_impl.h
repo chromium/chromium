@@ -957,7 +957,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void LostMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   bool HasMouseLock(RenderWidgetHostImpl* render_widget_host) override;
   RenderWidgetHostImpl* GetMouseLockWidget() override;
-  void OnRenderFrameProxyVisibilityChanged(
+  bool OnRenderFrameProxyVisibilityChanged(
+      RenderFrameProxyHost* render_frame_proxy_host,
       blink::mojom::FrameVisibility visibility) override;
   void SendScreenRects() override;
   TextInputManager* GetTextInputManager() override;
@@ -1355,6 +1356,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            MaxFrameCountRemovedIframes);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            MaxFrameCountInjectedIframes);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
+                           ForEachFrameTreeInnerContents);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameBrowserTest, FrameIteration);
   FRIEND_TEST_ALL_PREFIXES(FormStructureBrowserTest, HTMLFiles);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerTest, HistoryNavigate);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostManagerTest, PageDoesBackAndReload);
@@ -1387,6 +1391,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   FRIEND_TEST_ALL_PREFIXES(
       PrerenderWithRenderDocumentBrowserTest,
       ModalDialogShouldNotBeDismissedAfterPrerenderSubframeNavigation);
+  FRIEND_TEST_ALL_PREFIXES(PrerenderBrowserTest, ForEachRenderFrameHost);
   FRIEND_TEST_ALL_PREFIXES(PluginContentOriginAllowlistTest,
                            ClearAllowlistOnNavigate);
   FRIEND_TEST_ALL_PREFIXES(PluginContentOriginAllowlistTest,
@@ -1791,10 +1796,22 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       bool include_speculative);
 
   // Calls |on_frame_tree| for every FrameTree in this WebContents.
+  // This does not descend into inner WebContents, but does include inner frame
+  // trees based on MPArch.
   void ForEachFrameTree(FrameTreeIterationCallback on_frame_tree);
 
+  // Returns the primary frame tree, followed by any other outermost frame trees
+  // in this WebContents. Outermost frame trees include, for example,
+  // prerendering frame trees, and do not include, for example, fenced frames or
+  // portals. Also note that bfcached pages do not have a distinct frame tree,
+  // so the primary frame tree in the result would be the only FrameTree
+  // representing any bfcached pages.
+  std::vector<FrameTree*> GetOutermostFrameTrees();
+
   // Returns the primary main frame, followed by the main frames of any other
-  // outermost frame trees in this WebContents.
+  // outermost frame trees in this WebContents and the main frames of any
+  // bfcached pages. Note that unlike GetOutermostFrameTrees, bfcached pages
+  // have a distinct RenderFrameHostImpl in this result.
   std::vector<RenderFrameHostImpl*> GetOutermostMainFrames();
 
   // Called when the base::ScopedClosureRunner returned by

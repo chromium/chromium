@@ -147,9 +147,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     view_ = RenderWidgetHostViewChildFrame::Create(widget_host_.get(),
                                                    screen_infos);
     // Test we get the expected ScreenInfo before the FrameDelegate is set.
-    display::ScreenInfo actual_screen_info;
-    view_->GetScreenInfo(&actual_screen_info);
-    EXPECT_EQ(screen_info, actual_screen_info);
+    EXPECT_EQ(screen_info, view_->GetScreenInfo());
     EXPECT_EQ(screen_infos, view_->GetScreenInfos());
 
     test_frame_connector_ =

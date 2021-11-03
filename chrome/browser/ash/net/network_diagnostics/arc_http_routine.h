@@ -12,7 +12,7 @@
 #include "components/arc/mojom/net.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Performs HTTP GET requests from within ARC to a random set of URLs
@@ -58,6 +58,6 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_HTTP_ROUTINE_H_

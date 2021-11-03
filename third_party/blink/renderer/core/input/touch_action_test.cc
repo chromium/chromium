@@ -140,7 +140,7 @@ class TouchActionTest : public testing::Test {
   void RunTouchActionTest(String file);
   void RunShadowDOMTest(String file);
   void RunIFrameTest(String file);
-  void SendTouchEvent(WebView*, WebInputEvent::Type, IntPoint client_point);
+  void SendTouchEvent(WebView*, WebInputEvent::Type, gfx::Point client_point);
   WebViewImpl* SetupTest(String file);
   void RunTestOnTree(ContainerNode* root, WebView*);
 
@@ -288,7 +288,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
         FloatRect(r->left(), r->top(), r->width(), r->height());
     IntRect client_rect = EnclosedIntRect(client_float_rect);
     for (int loc_idx = 0; loc_idx < 3; loc_idx++) {
-      IntPoint frame_point;
+      gfx::Point frame_point;
       std::stringstream context_stream;
       context_stream << failure_context.ToString() << " (";
       switch (loc_idx) {
@@ -309,7 +309,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
           FAIL() << "Invalid location index.";
       }
 
-      IntPoint window_point =
+      gfx::Point window_point =
           root->GetDocument().GetFrame()->View()->ConvertToRootFrame(
               frame_point);
       context_stream << "=" << window_point.x() << "," << window_point.y()
@@ -397,7 +397,7 @@ void TouchActionTest::RunTestOnTree(ContainerNode* root, WebView* web_view) {
 }
 void TouchActionTest::SendTouchEvent(WebView* web_view,
                                      WebInputEvent::Type type,
-                                     IntPoint client_point) {
+                                     gfx::Point client_point) {
   ASSERT_TRUE(type == WebInputEvent::Type::kPointerDown ||
               type == WebInputEvent::Type::kPointerCancel);
 

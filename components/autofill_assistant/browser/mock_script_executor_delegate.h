@@ -171,9 +171,11 @@ class MockScriptExecutorDelegate : public ScriptExecutorDelegate {
   MOCK_METHOD(void, ClearPersistentGenericUi, (), (override));
   MOCK_METHOD(void, SetBrowseModeInvisible, (bool invisible), (override));
   MOCK_METHOD(bool, ShouldShowWarning, (), (override));
+  MOCK_METHOD(ProcessedActionStatusDetailsProto&, GetLogInfo, (), (override));
 
  private:
   ClientSettings client_settings_;
+  ProcessedActionStatusDetailsProto log_info_;
 };
 
 }  // namespace autofill_assistant

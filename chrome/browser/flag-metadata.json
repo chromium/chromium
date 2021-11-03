@@ -265,6 +265,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "ash-advanced-screen-capture-settings",
+    "owners": [ "afakhry", "gzadina", "fanafan" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "ash-bento-bar",
     "owners": [ "minch", "janetmac" ],
     "expiry_milestone": 100
@@ -1441,6 +1446,11 @@
     "name": "enable-async-dns",
     "owners": [ "ericorth", "net-dev" ],
     "expiry_milestone": 81
+  },
+  {
+    "name": "enable-auto-disable-accessibility",
+    "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 100
   },
   {
     "name": "enable-autofill-account-wallet-storage",
@@ -3299,6 +3309,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "handwriting-legacy-recognition-all-lang",
+    "owners": [ "essential-inputs-team@google.com" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "happiness-tracking-surveys-for-desktop-demo",
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI
@@ -4259,11 +4274,6 @@
     "expiry_milestone": 102
   },
   {
-    "name": "page-info-version-2-desktop",
-    "owners": [ "bsep", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 97
-  },
-  {
     "name": "paint-preview-demo",
     "owners": [ "ckitagawa", "fredmello", "yashard" ],
     "expiry_milestone": 98
@@ -4361,6 +4371,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "personalization-hub",
+    "owners": ["jasontt", "assistive-eng@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
     "expiry_milestone": 105
@@ -4383,7 +4398,7 @@
   {
     "name": "prefer-constant-frame-rate",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 110
   },
   {
     "name": "print-with-postscript-type42-fonts",
@@ -4773,11 +4788,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "select-to-speak-navigation-control",
-    "owners": [ "joelriley@google.com" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "semantic-colors-debug-override",
     "owners": [ "calamity@chromium.org" ],
     "expiry_milestone": 99
@@ -4999,6 +5009,11 @@
     "name" : "side-search-state-per-tab",
     "owners": [ "chrome-cros@google.com", "tluk" ],
     "expiry_milestone" : 100
+  },
+  {
+    "name": "single-ntp",
+    "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
+    "expiry_milestone": 106
   },
   {
     "name": "single-touch-select",

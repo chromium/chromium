@@ -9,15 +9,14 @@
 
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/button_style.h"
+#include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/ash_notification_input_container.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/tray/tray_popup_utils.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,7 +25,6 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -43,8 +41,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -161,8 +157,6 @@ using Orientation = views::BoxLayout::Orientation;
 
 BEGIN_METADATA(AshNotificationView, NotificationTitleRow, views::View)
 END_METADATA
-BEGIN_METADATA(AshNotificationView, ExpandButton, views::Button)
-END_METADATA
 
 AshNotificationView::NotificationTitleRow::NotificationTitleRow(
     const std::u16string& title)
@@ -220,110 +214,6 @@ void AshNotificationView::NotificationTitleRow::UpdateVisibility(
   title_row_divider_->SetVisible(in_collapsed_mode);
 }
 
-AshNotificationView::ExpandButton::ExpandButton(PressedCallback callback)
-    : Button(std::move(callback)) {
-  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      kNotificationExpandButtonInsets, kNotificationExpandButtonChildSpacing));
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
-
-  TrayPopupUtils::ConfigureTrayPopupButton(this);
-
-  auto label = std::make_unique<views::Label>();
-  label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                   kNotificationExpandButtonLabelFontSize,
-                                   gfx::Font::Weight::MEDIUM));
-
-  label->SetPreferredSize(kNotificationExpandButtonLabelSize);
-  label->SetText(base::NumberToString16(total_grouped_notifications_));
-  label->SetVisible(ShouldShowLabel());
-  label_ = AddChildView(std::move(label));
-
-  UpdateIcons();
-
-  auto image = std::make_unique<views::ImageView>();
-  image->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
-  image_ = AddChildView(std::move(image));
-
-  views::InstallRoundRectHighlightPathGenerator(
-      this, gfx::Insets(), kNotificationExpandButtonCornerRadius);
-
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
-}
-
-AshNotificationView::ExpandButton::~ExpandButton() = default;
-
-void AshNotificationView::ExpandButton::SetExpanded(bool expanded) {
-  if (expanded_ == expanded)
-    return;
-  expanded_ = expanded;
-
-  label_->SetText(base::NumberToString16(total_grouped_notifications_));
-  label_->SetVisible(ShouldShowLabel());
-
-  image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
-  image_->SetTooltipText(l10n_util::GetStringUTF16(
-      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
-
-  SetAccessibleName(l10n_util::GetStringUTF16(
-      expanded_ ? IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP
-                : IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP));
-
-  SchedulePaint();
-}
-
-bool AshNotificationView::ExpandButton::ShouldShowLabel() const {
-  return !expanded_ && total_grouped_notifications_;
-}
-
-void AshNotificationView::ExpandButton::UpdateGroupedNotificationsCount(
-    int count) {
-  total_grouped_notifications_ = count;
-  label_->SetText(base::NumberToString16(total_grouped_notifications_));
-  label_->SetVisible(ShouldShowLabel());
-}
-
-void AshNotificationView::ExpandButton::UpdateIcons() {
-  expanded_image_ = gfx::CreateVectorIcon(
-      kUnifiedMenuExpandIcon, kNotificationExpandButtonChevronIconSize,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
-
-  collapsed_image_ = gfx::ImageSkiaOperations::CreateRotatedImage(
-      gfx::CreateVectorIcon(
-          kUnifiedMenuExpandIcon, kNotificationExpandButtonChevronIconSize,
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)),
-      SkBitmapOperations::ROTATION_180_CW);
-}
-
-gfx::Size AshNotificationView::ExpandButton::CalculatePreferredSize() const {
-  if (ShouldShowLabel())
-    return kNotificationExpandButtonWithLabelSize;
-
-  return kNotificationExpandButtonSize;
-}
-
-void AshNotificationView::ExpandButton::OnThemeChanged() {
-  views::Button::OnThemeChanged();
-
-  UpdateIcons();
-  image_->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
-
-  views::FocusRing::Get(this)->SetColor(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kFocusRingColor));
-
-  SkColor background_color = AshColorProvider::Get()->GetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
-  SetBackground(views::CreateRoundedRectBackground(background_color,
-                                                   kTrayItemCornerRadius));
-}
-
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
@@ -376,7 +266,7 @@ AshNotificationView::AshNotificationView(
                       views::Builder<views::FlexLayoutView>()
                           .SetOrientation(views::LayoutOrientation::kHorizontal)
                           .AddChild(
-                              views::Builder<ExpandButton>()
+                              views::Builder<AshNotificationExpandButton>()
                                   .CopyAddressTo(&expand_button_)
                                   .SetCallback(base::BindRepeating(
                                       &AshNotificationView::ToggleExpand,

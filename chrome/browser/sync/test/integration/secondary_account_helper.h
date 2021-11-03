@@ -33,7 +33,7 @@ base::CallbackListSubscription SetUpSigninClient(
 // Sets up necessary fakes for fake network responses to work. Meant to be
 // called from SetUpOnMainThread.
 // TODO(crbug.com/882770): On ChromeOS, we need to set up a fake
-// NetworkPortalDetector, otherwise chromeos::DelayNetworkCall will think it's
+// `NetworkPortalDetector`, otherwise `ash::DelayNetworkCall` will think it's
 // behind a captive portal and delay all network requests forever, which means
 // the ListAccounts requests (i.e. getting cookie accounts) will never make it
 // far enough to even request our fake response.

@@ -26,6 +26,12 @@
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/login/login_screen_extensions_storage_cleaner.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/net/network_pref_state_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
+#include "chrome/browser/ash/net/network_throttling_observer.h"
+// TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/notifications/gnubby_notification.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/notifications/low_disk_notification.h"
@@ -100,11 +106,8 @@ class LockToSingleUserManager;
 
 namespace chromeos {
 
-class BluetoothPrefStateObserver;
 class FastTransitionObserver;
 class NetworkChangeManagerClient;
-class NetworkPrefStateObserver;
-class NetworkThrottlingObserver;
 class SessionTerminationManager;
 class SystemTokenCertDBInitializer;
 

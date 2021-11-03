@@ -285,6 +285,7 @@ public class StartSurfaceCoordinator implements StartSurface {
             mFeedPlaceholderCoordinator = new FeedPlaceholderCoordinator(
                     mActivity, mTasksSurface.getBodyViewContainer(), false);
             mFeedPlaceholderCoordinator.setUpPlaceholderView();
+            mStartSurfaceMediator.setFeedPlaceholderHasShown();
         }
         startSurfaceOneshotSupplier.set(this);
     }

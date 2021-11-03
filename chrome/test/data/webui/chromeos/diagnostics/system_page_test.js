@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/system_page.js';
 
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, RoutineType, StandardRoutineResult, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {BatteryChargeStatus, BatteryHealth, BatteryInfo, CpuUsage, MemoryUsage, NavigationView, RoutineType, StandardRoutineResult, SystemInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCellularNetwork, fakeCpuUsage, fakeEthernetNetwork, fakeMemoryUsage, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeSystemInfo, fakeSystemInfoWithoutBattery, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
@@ -14,7 +14,7 @@ import {setNetworkHealthProviderForTesting, setSystemDataProviderForTesting, set
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -350,4 +350,32 @@ export function systemPageTestSuite() {
           .then(() => assertFalse(isVisible(getCautionBanner())));
     });
   }
+
+  test('RecordNavigationCalled', () => {
+    return initializeSystemPage(
+               fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
+               fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage)
+        .then(() => {
+          page.onNavigationPageChanged({isActive: false});
+
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              0, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
+
+          DiagnosticsBrowserProxy.setPreviousView(NavigationView.kConnectivity);
+          page.onNavigationPageChanged({isActive: true});
+
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              1, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
+          assertArrayEquals(
+              [NavigationView.kConnectivity, NavigationView.kSystem],
+              /** @type {!Array<!NavigationView>} */
+              (DiagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
+        });
+  });
 }

@@ -6,19 +6,19 @@
 
 #include <windows.h>  // Must be in front of other Windows header files.
 
+#define INITGUID
 #include <devguid.h>
+#include <devpkey.h>
 #include <ntddser.h>
 #include <setupapi.h>
 #include <stdint.h>
-
-#define INITGUID
-#include <devpkey.h>
 
 #include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_generic.h"
 #include "base/scoped_observation.h"
@@ -68,18 +68,9 @@ absl::optional<std::string> GetProperty(HDEVINFO dev_info,
   return base::WideToUTF8(buffer);
 }
 
-base::FilePath FixUpPortName(base::StringPiece port_name) {
-  // For COM numbers less than 9, CreateFile is called with a string such as
-  // "COM1". For numbers greater than 9, a prefix of "\\.\" must be added.
-  if (port_name.length() > base::StringPiece("COM9").length())
-    return base::FilePath(LR"(\\.\)").AppendASCII(port_name);
-
-  return base::FilePath::FromUTF8Unsafe(port_name);
-}
-
-// Deduce the device path for the device from the registry.
-absl::optional<base::FilePath> GetPath(HDEVINFO dev_info,
-                                       SP_DEVINFO_DATA* dev_info_data) {
+// Get the port name from the registry.
+absl::optional<std::string> GetPortName(HDEVINFO dev_info,
+                                        SP_DEVINFO_DATA* dev_info_data) {
   HKEY key = SetupDiOpenDevRegKey(dev_info, dev_info_data, DICS_FLAG_GLOBAL, 0,
                                   DIREG_DEV, KEY_READ);
   if (key == INVALID_HANDLE_VALUE) {
@@ -96,7 +87,17 @@ absl::optional<base::FilePath> GetPath(HDEVINFO dev_info,
     return absl::nullopt;
   }
 
-  return FixUpPortName(base::SysWideToUTF8(port_name));
+  return base::SysWideToUTF8(port_name);
+}
+
+// Deduce the path for the device from the port name.
+base::FilePath GetPath(std::string port_name) {
+  // For COM numbers less than 9, CreateFile is called with a string such as
+  // "COM1". For numbers greater than 9, a prefix of "\\.\" must be added.
+  if (port_name.length() > base::StringPiece("COM9").length())
+    return base::FilePath(LR"(\\.\)").AppendASCII(port_name);
+
+  return base::FilePath::FromUTF8Unsafe(port_name);
 }
 
 // Searches for the display name in the device's friendly name. Returns nullopt
@@ -229,7 +230,7 @@ void SerialDeviceEnumeratorWin::OnPathAdded(const std::wstring& device_path) {
   if (!SetupDiEnumDeviceInfo(dev_info.get(), 0, &dev_info_data))
     return;
 
-  EnumeratePort(dev_info.get(), &dev_info_data);
+  EnumeratePort(dev_info.get(), &dev_info_data, /*check_port_name=*/false);
 }
 
 void SerialDeviceEnumeratorWin::OnPathRemoved(const std::wstring& device_path) {
@@ -248,11 +249,12 @@ void SerialDeviceEnumeratorWin::OnPathRemoved(const std::wstring& device_path) {
   if (!SetupDiEnumDeviceInfo(dev_info.get(), 0, &dev_info_data))
     return;
 
-  absl::optional<base::FilePath> path = GetPath(dev_info.get(), &dev_info_data);
-  if (!path)
+  absl::optional<std::string> port_name =
+      GetPortName(dev_info.get(), &dev_info_data);
+  if (!port_name)
     return;
 
-  auto it = paths_.find(*path);
+  auto it = paths_.find(GetPath(*port_name));
   if (it == paths_.end())
     return;
 
@@ -265,30 +267,57 @@ void SerialDeviceEnumeratorWin::OnPathRemoved(const std::wstring& device_path) {
 void SerialDeviceEnumeratorWin::DoInitialEnumeration() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  // Make a device interface query to find all serial devices.
-  //
-  // By using this GUID without passing DIGCF_DEVICEINTERFACE we get to
-  // enumerate all of the devices matching this GUID as a class, which is
-  // different from an interface and seems to find some otherwise unenumerable
-  // devices.  https://crbug.com/1119497
-  base::win::ScopedDevInfo dev_info;
-  dev_info.reset(SetupDiGetClassDevs(&GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR,
-                                     nullptr, 0, DIGCF_PRESENT));
-  if (!dev_info.is_valid())
-    return;
 
-  SP_DEVINFO_DATA dev_info_data = {};
-  dev_info_data.cbSize = sizeof(dev_info_data);
-  for (DWORD i = 0; SetupDiEnumDeviceInfo(dev_info.get(), i, &dev_info_data);
-       i++) {
-    EnumeratePort(dev_info.get(), &dev_info_data);
+  // On Windows 10 and above most COM port drivers register using the COMPORT
+  // device interface class. Try to enumerate these first.
+  {
+    base::win::ScopedDevInfo dev_info;
+    dev_info.reset(SetupDiGetClassDevs(&GUID_DEVINTERFACE_COMPORT, nullptr, 0,
+                                       DIGCF_PRESENT | DIGCF_DEVICEINTERFACE));
+    if (!dev_info.is_valid())
+      return;
+
+    SP_DEVINFO_DATA dev_info_data = {.cbSize = sizeof(dev_info_data)};
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(dev_info.get(), i, &dev_info_data);
+         i++) {
+      EnumeratePort(dev_info.get(), &dev_info_data, /*check_port_name=*/false);
+    }
+  }
+
+  // To detect devices which don't register with GUID_DEVINTERFACE_COMPORT also
+  // enuerate all devices in the "Ports" and "Modems" device classes. These must
+  // be checked to see if the port name starts with "COM" because it also
+  // includes LPT ports.
+  constexpr const GUID* kDeviceClasses[] = {&GUID_DEVCLASS_MODEM,
+                                            &GUID_DEVCLASS_PORTS};
+  for (const GUID* guid : kDeviceClasses) {
+    base::win::ScopedDevInfo dev_info;
+    dev_info.reset(SetupDiGetClassDevs(guid, nullptr, 0, DIGCF_PRESENT));
+    if (!dev_info.is_valid())
+      return;
+
+    SP_DEVINFO_DATA dev_info_data = {.cbSize = sizeof(dev_info_data)};
+    for (DWORD i = 0; SetupDiEnumDeviceInfo(dev_info.get(), i, &dev_info_data);
+         i++) {
+      EnumeratePort(dev_info.get(), &dev_info_data, /*check_port_name=*/true);
+    }
   }
 }
 
 void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
-                                              SP_DEVINFO_DATA* dev_info_data) {
-  absl::optional<base::FilePath> path = GetPath(dev_info, dev_info_data);
-  if (!path)
+                                              SP_DEVINFO_DATA* dev_info_data,
+                                              bool check_port_name) {
+  absl::optional<std::string> port_name = GetPortName(dev_info, dev_info_data);
+  if (!port_name)
+    return;
+
+  if (check_port_name && !base::StartsWith(*port_name, "COM"))
+    return;
+
+  // Check whether the currently enumerating port has been seen before since
+  // the method above will generate duplicate enumerations for some ports.
+  base::FilePath path = GetPath(*port_name);
+  if (base::Contains(paths_, path))
     return;
 
   absl::optional<std::string> instance_id =
@@ -304,7 +333,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   base::UnguessableToken token = base::UnguessableToken::Create();
   auto info = mojom::SerialPortInfo::New();
   info->token = token;
-  info->path = *path;
+  info->path = path;
   info->device_instance_id = *instance_id;
 
   // TODO(https://crbug.com/1015074): While the "bus reported device
@@ -350,7 +379,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
                     << " vid=" << vendor_id_str.value_or("(none)")
                     << " pid=" << product_id_str.value_or("(none)");
 
-  paths_.insert(std::make_pair(*path, token));
+  paths_.insert(std::make_pair(path, token));
   AddPort(std::move(info));
 }
 

@@ -47,6 +47,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.HPS.Update.{Stage}.Duration" units="ms"
+    expires_after="2022-07-01">
+  <owner>evanbenn@chromium.org</owner>
+  <owner>avg@chromium.org</owner>
+  <owner>chromeos-hps-swe@google.com</owner>
+  <summary>Measures the time it took to send an {Stage} update.</summary>
+  <token key="Stage">
+    <variant name="Mcu"/>
+    <variant name="Spi"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

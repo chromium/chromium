@@ -43,7 +43,7 @@ class CustomScreenInfoRenderWidgetHostViewAndroid
   void SetScreenInfo(display::ScreenInfo screen_info);
 
   // RenderWidgetHostViewAndroid:
-  display::ScreenInfos GetScreenInfos() override;
+  display::ScreenInfos GetScreenInfos() const override;
 
  private:
   CustomScreenInfoRenderWidgetHostViewAndroid(
@@ -66,7 +66,7 @@ void CustomScreenInfoRenderWidgetHostViewAndroid::SetScreenInfo(
 }
 
 display::ScreenInfos
-CustomScreenInfoRenderWidgetHostViewAndroid::GetScreenInfos() {
+CustomScreenInfoRenderWidgetHostViewAndroid::GetScreenInfos() const {
   return display::ScreenInfos(screen_info_);
 }
 

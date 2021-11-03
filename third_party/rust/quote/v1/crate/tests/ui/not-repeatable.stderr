@@ -1,0 +1,25 @@
+error[E0599]: the method `quote_into_iter` exists for struct `Ipv4Addr`, but its trait bounds were not satisfied
+ --> $DIR/not-repeatable.rs:7:13
+  |
+3 | struct Ipv4Addr;
+  | ----------------
+  | |
+  | method `quote_into_iter` not found for this
+  | doesn't satisfy `Ipv4Addr: Iterator`
+  | doesn't satisfy `Ipv4Addr: ToTokens`
+  | doesn't satisfy `Ipv4Addr: quote::__private::ext::RepIteratorExt`
+  | doesn't satisfy `Ipv4Addr: quote::__private::ext::RepToTokensExt`
+...
+7 |     let _ = quote! { #(#ip)* };
+  |             ^^^^^^^^^^^^^^^^^^ method cannot be called on `Ipv4Addr` due to unsatisfied trait bounds
+  |
+  = note: the following trait bounds were not satisfied:
+          `Ipv4Addr: Iterator`
+          which is required by `Ipv4Addr: quote::__private::ext::RepIteratorExt`
+          `&Ipv4Addr: Iterator`
+          which is required by `&Ipv4Addr: quote::__private::ext::RepIteratorExt`
+          `Ipv4Addr: ToTokens`
+          which is required by `Ipv4Addr: quote::__private::ext::RepToTokensExt`
+          `&mut Ipv4Addr: Iterator`
+          which is required by `&mut Ipv4Addr: quote::__private::ext::RepIteratorExt`
+  = note: this error originates in the macro `$crate::quote_bind_into_iter` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -121,6 +121,7 @@ TEST_P(CookiePartitionKeyTest, FromNetworkIsolationKey) {
   bool partitioned_cookies_enabled = PartitionedCookiesEnabled();
   EXPECT_EQ(partitioned_cookies_enabled, got.has_value());
   if (partitioned_cookies_enabled) {
+    EXPECT_FALSE(got->from_script());
     EXPECT_EQ(CookiePartitionKey::FromURLForTesting(top_level_site.GetURL()),
               got.value());
   }
@@ -130,6 +131,14 @@ TEST_P(CookiePartitionKeyTest, FromWire) {
   auto want = CookiePartitionKey::FromURLForTesting(GURL("https://foo.com"));
   auto got = CookiePartitionKey::FromWire(want.site());
   EXPECT_EQ(want, got);
+  EXPECT_FALSE(got.from_script());
+}
+
+TEST_P(CookiePartitionKeyTest, FromScript) {
+  auto key = CookiePartitionKey::FromScript();
+  EXPECT_TRUE(key);
+  EXPECT_TRUE(key->from_script());
+  EXPECT_TRUE(key->site().opaque());
 }
 
 }  // namespace net

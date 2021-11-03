@@ -63,11 +63,11 @@ id<MTLLibrary> NewLibraryWithRetry(id<MTLDevice> device,
   // The completion handler will signal the condition variable we will wait
   // on. Note that completionHandler will hold a reference to |state|.
   MTLNewLibraryCompletionHandler completionHandler =
-      ^(id<MTLLibrary> library, NSError* error) {
+      ^(id<MTLLibrary> library, NSError* ns_error) {
         base::AutoLock lock(state->lock);
         state->has_result = true;
         state->library = [library retain];
-        state->error = [error retain];
+        state->error = [ns_error retain];
         state->condition_variable.Signal();
       };
 
@@ -107,11 +107,11 @@ id<MTLRenderPipelineState> NewRenderPipelineStateWithRetry(
   const base::TimeTicks start_time = base::TimeTicks::Now();
   auto state = base::MakeRefCounted<AsyncMetalState>();
   MTLNewRenderPipelineStateCompletionHandler completionHandler =
-      ^(id<MTLRenderPipelineState> render_pipeline_state, NSError* error) {
+      ^(id<MTLRenderPipelineState> render_pipeline_state, NSError* ns_error) {
         base::AutoLock lock(state->lock);
         state->has_result = true;
         state->render_pipeline_state = [render_pipeline_state retain];
-        state->error = [error retain];
+        state->error = [ns_error retain];
         state->condition_variable.Signal();
       };
   if (progress_reporter)

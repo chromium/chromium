@@ -73,6 +73,9 @@ class MockEmbeddedFrameSinkProvider
                void(const viz::FrameSinkId&,
                     mojo::PendingReceiver<mojom::blink::SurfaceEmbedder>));
 
+  MOCK_METHOD1(RegisterFrameSinkHierarchy, void(const viz::FrameSinkId&));
+  MOCK_METHOD1(UnregisterFrameSinkHierarchy, void(const viz::FrameSinkId&));
+
   // Utility method to create a scoped EmbeddedFrameSinkProvider override.
   std::unique_ptr<TestingPlatformSupport::ScopedOverrideMojoInterface>
   CreateScopedOverrideMojoInterface(

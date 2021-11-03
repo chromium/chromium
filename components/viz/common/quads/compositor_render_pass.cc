@@ -89,9 +89,9 @@ void CompositorRenderPass::SetAll(
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
     const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
-    SubtreeCaptureId subtree_capture_id,
+    SubtreeCaptureId capture_id,
     gfx::Size subtree_capture_size,
-    SharedElementResourceId shared_element_resource_id,
+    SharedElementResourceId resource_id,
     bool has_transparent_background,
     bool cache_render_pass,
     bool has_damage_from_contributing_content,
@@ -106,9 +106,9 @@ void CompositorRenderPass::SetAll(
   this->filters = filters;
   this->backdrop_filters = backdrop_filters;
   this->backdrop_filter_bounds = backdrop_filter_bounds;
-  this->subtree_capture_id = subtree_capture_id;
+  this->subtree_capture_id = capture_id;
   this->subtree_size = subtree_capture_size;
-  this->shared_element_resource_id = shared_element_resource_id;
+  this->shared_element_resource_id = resource_id;
   this->has_transparent_background = has_transparent_background;
   this->cache_render_pass = cache_render_pass;
   this->has_damage_from_contributing_content =

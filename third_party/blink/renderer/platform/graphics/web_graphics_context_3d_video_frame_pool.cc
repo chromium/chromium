@@ -89,6 +89,19 @@ WebGraphicsContext3DVideoFramePool::WebGraphicsContext3DVideoFramePool(
 WebGraphicsContext3DVideoFramePool::~WebGraphicsContext3DVideoFramePool() =
     default;
 
+gpu::raster::RasterInterface*
+WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
+  if (weak_context_provider_) {
+    if (auto* context_provider = weak_context_provider_->ContextProvider()) {
+      if (auto* raster_context_provider =
+              context_provider->RasterContextProvider()) {
+        return raster_context_provider->RasterInterface();
+      }
+    }
+  }
+  return nullptr;
+}
+
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     viz::ResourceFormat src_format,
     const gfx::Size& src_size,

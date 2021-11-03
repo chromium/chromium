@@ -135,6 +135,17 @@ JobId PasswordStoreAndroidBackendBridgeImpl::AddLogin(
   return job_id;
 }
 
+JobId PasswordStoreAndroidBackendBridgeImpl::UpdateLogin(
+    const password_manager::PasswordForm& form) {
+  JobId job_id = GetNextJobId();
+  sync_pb::PasswordWithLocalData data = PasswordWithLocalDataFromPassword(form);
+  Java_PasswordStoreAndroidBackendBridgeImpl_updateLogin(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
+                                     data.SerializeAsString()));
+  return job_id;
+}
+
 JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
     const password_manager::PasswordForm& form) {
   JobId job_id = GetNextJobId();
@@ -161,6 +172,25 @@ void PasswordStoreAndroidBackendBridgeImpl::OnLoginAdded(
       password_manager::PasswordFromProtoWithLocalData(login_data);
   changelist.emplace_back(password_manager::PasswordStoreChange::ADD,
                           added_form);
+
+  consumer_->OnLoginsChanged(JobId(job_id), changelist);
+}
+
+void PasswordStoreAndroidBackendBridgeImpl::OnLoginUpdated(
+    JNIEnv* env,
+    jint job_id,
+    const base::android::JavaParamRef<jbyteArray>& login) {
+  DCHECK(consumer_);
+
+  // TODO(crbug.com/1229655): This is a temporary workaround, while store
+  // change deltas are not received to confirm the correct operation execution.
+  sync_pb::PasswordWithLocalData login_data =
+      CreatePasswordWithLocalData(login);
+  password_manager::PasswordStoreChangeList changelist;
+  password_manager::PasswordForm updated_form =
+      password_manager::PasswordFromProtoWithLocalData(login_data);
+  changelist.emplace_back(password_manager::PasswordStoreChange::UPDATE,
+                          updated_form);
 
   consumer_->OnLoginsChanged(JobId(job_id), changelist);
 }

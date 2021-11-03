@@ -13892,8 +13892,8 @@
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
-        'per_profile': True,
       },
+      'device_only': True,
       'example_value': True,
       'id': 646,
       'caption': '''Show accessibility options in system tray menu in the login screen''',
@@ -14570,8 +14570,8 @@
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
-        'per_profile': True,
       },
+      'device_only': True,
       'example_value': True,
       'id': 657,
       'caption': '''Switch the primary mouse button to the right button on the login screen''',
@@ -14891,8 +14891,8 @@
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
-        'per_profile': True,
       },
+      'device_only': True,
       'example_value': True,
       'id': 619,
       'caption': '''Enable the keyboard focus highlighting accessibility feature''',
@@ -26248,6 +26248,35 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       If this policy is enabled or not set the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature is enabled. If the policy is disabled the feature is unavailable.''',
     },
     {
+      'name': 'UserAgentClientHintsGREASEUpdateEnabled',
+      'owners': ['miketaylr@google.com', 'mreichhoff@chromium.org', 'file://components/client_hints/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os', 'chrome.*', 'android'],
+      'features': {
+        'per_profile': False,
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the updated User-Agent GREASE algorithm to be run.',
+        },
+        {
+          'value': False,
+          'caption': 'Force the prior User-Agent GREASE algorithm to be used.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 924,
+      'caption': '''Control the User-Agent Client Hints GREASE Update feature.''',
+      'tags': [],
+      'desc': '''When enabled the User-Agent Client Hints GREASE Update feature aligns the User-Agent GREASE algorithm with the latest spec.
+      The updated spec may break some websites that restrict the characters that requests may contain. See the spec for more information: https://wicg.github.io/ua-client-hints/#grease
+      If this policy is enabled or not set the User-Agent Client Hints GREASE Update feature is enabled. If the policy is disabled the prior User-Agent GREASE algorithm is used.''',
+    },
+    {
       'name': 'SuggestedContentEnabled',
       'owners': ['wrong@chromium.org', 'chrome-knowledge-eng@google.com'],
       'type': 'main',
@@ -29622,6 +29651,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 923,
+  'highest_id_currently_used': 924,
   'highest_atomic_group_id_currently_used': 41
 }

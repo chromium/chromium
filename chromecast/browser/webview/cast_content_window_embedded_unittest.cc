@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "chromecast/browser/test/mock_cast_content_window_delegate.h"
 #include "chromecast/browser/test/mock_cast_web_view.h"
 #include "chromecast/browser/webview/cast_window_embedder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,13 +69,9 @@ class CastContentWindowEmbeddedTest : public testing::Test {
 
   void SetUp() override {
     cast_window_embedder_ = std::make_unique<MockCastWindowEmbedder>();
-    mock_cast_content_window_delegate_ =
-        std::make_unique<MockCastContentWindowDelegate>();
   }
 
   std::unique_ptr<MockCastWindowEmbedder> cast_window_embedder_;
-  std::unique_ptr<MockCastContentWindowDelegate>
-      mock_cast_content_window_delegate_;
   std::unique_ptr<CastContentWindowEmbedded> cast_content_window_embedded_;
 };
 
@@ -86,8 +81,8 @@ TEST_F(CastContentWindowEmbeddedTest, AddObserverOnWindowCreation) {
   EXPECT_CALL(*cast_window_embedder_, AddEmbeddedWindow(_)).Times(1);
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 }
 
 // Test 2: Embedded window shall remove itself from the CastWindowEmbedder's
@@ -96,8 +91,8 @@ TEST_F(CastContentWindowEmbeddedTest, RemoveObserverOnWindowClose) {
   EXPECT_CALL(*cast_window_embedder_, RemoveEmbeddedWindow(_)).Times(1);
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
   cast_content_window_embedded_.reset();
 }
 
@@ -109,8 +104,8 @@ TEST_F(CastContentWindowEmbeddedTest,
   EXPECT_CALL(*cast_window_embedder_, GenerateWindowId()).Times(1);
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 }
 
 // Test 4: Delegate can handle navigation GO_BACK event. In this case,
@@ -126,8 +121,8 @@ TEST_F(CastContentWindowEmbeddedTest, HandleNavigationEventByDelegate) {
       .WillOnce(Return(fake_window_id /* window_id */));
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
   cast_content_window_embedded_->gesture_router()->SetCanGoBack(true);
   cast_content_window_embedded_->gesture_router()->SetConsumeGestureCallback(
@@ -163,8 +158,8 @@ TEST_F(CastContentWindowEmbeddedTest, NavigationEventUnhandled) {
       .WillOnce(Return(fake_window_id /* window_id */));
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
   cast_content_window_embedded_->gesture_router()->SetCanGoBack(true);
 
@@ -203,8 +198,8 @@ TEST_F(CastContentWindowEmbeddedTest, DelegateCannotHandleGoBackGesture) {
       .WillOnce(Return(fake_window_id /* window_id */));
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
   cast_content_window_embedded_->gesture_router()->SetCanGoBack(false);
 
@@ -233,8 +228,8 @@ TEST_F(CastContentWindowEmbeddedTest, WindowIdMustMatchInitialValue) {
       .WillOnce(Return(fake_window_id /* window_id */));
 
   cast_content_window_embedded_ = std::make_unique<CastContentWindowEmbedded>(
-      mock_cast_content_window_delegate_->AsWeakPtr(), GenerateParams(),
-      cast_window_embedder_.get(), false /* force_720p_resolution */);
+      GenerateParams(), cast_window_embedder_.get(),
+      false /* force_720p_resolution */);
 
   EXPECT_EQ(fake_window_id, cast_content_window_embedded_->GetWindowId());
 }

@@ -2619,18 +2619,18 @@ RenderWidgetHostViewAndroid::DidUpdateVisualProperties(
   return viz::ScopedSurfaceIdAllocator(std::move(allocation_task));
 }
 
-void RenderWidgetHostViewAndroid::GetScreenInfo(
-    display::ScreenInfo* screen_info) {
+display::ScreenInfo RenderWidgetHostViewAndroid::GetScreenInfo() const {
   bool use_window_wide_color_gamut =
       GetContentClient()->browser()->GetWideColorGamutHeuristic() ==
       ContentBrowserClient::WideColorGamutHeuristic::kUseWindow;
   auto* window = view_.GetWindowAndroid();
   if (!window || !use_window_wide_color_gamut) {
-    RenderWidgetHostViewBase::GetScreenInfo(screen_info);
-    return;
+    return RenderWidgetHostViewBase::GetScreenInfo();
   }
+  display::ScreenInfo screen_info;
   display::DisplayUtil::DisplayToScreenInfo(
-      screen_info, window->GetDisplayWithWindowColorSpace());
+      &screen_info, window->GetDisplayWithWindowColorSpace());
+  return screen_info;
 }
 
 std::vector<std::unique_ptr<ui::TouchEvent>>

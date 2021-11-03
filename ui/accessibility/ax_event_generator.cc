@@ -102,10 +102,10 @@ bool AXEventGenerator::EventParams::operator<(const EventParams& rhs) const {
 // AXEventGenerator::TargetedEvent
 //
 
-AXEventGenerator::TargetedEvent::TargetedEvent(AXNode* node,
+AXEventGenerator::TargetedEvent::TargetedEvent(AXNodeID node_id,
                                                const EventParams& event_params)
-    : node(node), event_params(event_params) {
-  DCHECK(node);
+    : node_id(node_id), event_params(event_params) {
+  DCHECK_NE(node_id, kInvalidAXNodeID);
 }
 
 AXEventGenerator::TargetedEvent::~TargetedEvent() = default;
@@ -115,8 +115,8 @@ AXEventGenerator::TargetedEvent::~TargetedEvent() = default;
 //
 
 AXEventGenerator::Iterator::Iterator(
-    std::map<AXNode*, std::set<EventParams>>::const_iterator map_start_iter,
-    std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter)
+    std::map<AXNodeID, std::set<EventParams>>::const_iterator map_start_iter,
+    std::map<AXNodeID, std::set<EventParams>>::const_iterator map_end_iter)
     : map_iter_(map_start_iter), map_end_iter_(map_end_iter) {
   if (map_iter_ != map_end_iter_)
     set_iter_ = map_iter_->second.begin();
@@ -180,11 +180,11 @@ void swap(AXEventGenerator::Iterator& lhs, AXEventGenerator::Iterator& rhs) {
   if (lhs == rhs)
     return;
 
-  std::map<AXNode*, std::set<AXEventGenerator::EventParams>>::const_iterator
+  std::map<AXNodeID, std::set<AXEventGenerator::EventParams>>::const_iterator
       map_iter = lhs.map_iter_;
   lhs.map_iter_ = rhs.map_iter_;
   rhs.map_iter_ = map_iter;
-  std::map<AXNode*, std::set<AXEventGenerator::EventParams>>::const_iterator
+  std::map<AXNodeID, std::set<AXEventGenerator::EventParams>>::const_iterator
       map_end_iter = lhs.map_end_iter_;
   lhs.map_end_iter_ = rhs.map_end_iter_;
   rhs.map_end_iter_ = map_end_iter;
@@ -269,7 +269,7 @@ void AXEventGenerator::AddEvent(AXNode* node, AXEventGenerator::Event event) {
   if (node->GetRole() == ax::mojom::Role::kInlineTextBox)
     return;
 
-  std::set<EventParams>& node_events = tree_events_[node];
+  std::set<EventParams>& node_events = tree_events_[node->id()];
   node_events.emplace(event, ax::mojom::EventFrom::kNone,
                       ax::mojom::Action::kNone, tree_->event_intents());
 }
@@ -772,7 +772,7 @@ void AXEventGenerator::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
   live_region_tracker_->OnNodeWillBeDeleted(*node);
 
   DCHECK_EQ(tree_, tree);
-  tree_events_.erase(node);
+  tree_events_.erase(node->id());
 }
 
 void AXEventGenerator::OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) {
@@ -781,7 +781,7 @@ void AXEventGenerator::OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) {
 
 void AXEventGenerator::OnNodeWillBeReparented(AXTree* tree, AXNode* node) {
   DCHECK_EQ(tree_, tree);
-  tree_events_.erase(node);
+  tree_events_.erase(node->id());
 }
 
 void AXEventGenerator::OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) {
@@ -857,10 +857,9 @@ void AXEventGenerator::OnAtomicUpdateFinished(
 }
 
 void AXEventGenerator::AddEventsForTesting(
-    AXNode* node,
+    const AXNode& node,
     const std::set<EventParams>& events) {
-  DCHECK(node);
-  tree_events_[node] = events;
+  tree_events_[node.id()] = events;
 }
 
 void AXEventGenerator::FireLiveRegionEvents(AXNode* node) {
@@ -982,7 +981,7 @@ void AXEventGenerator::TrimEventsDueToAncestorIgnoredChanged(
   // IGNORED_CHANGED event.
   const auto& parent_map_iter =
       ancestor_ignored_changed_map.find(node->parent());
-  const auto& curr_events_iter = tree_events_.find(node);
+  const auto& curr_events_iter = tree_events_.find(node->id());
 
   // Initialize |ancestor_ignored_changed_map[node]| with an empty bitset,
   // representing neither |node| nor its ancestor has IGNORED_CHANGED.
@@ -1058,7 +1057,8 @@ void AXEventGenerator::PostprocessEvents() {
 
   // First pass through |tree_events_|, remove events that we do not need.
   for (auto& iter : tree_events_) {
-    AXNode* node = iter.first;
+    AXNodeID node_id = iter.first;
+    AXNode* node = tree_->GetFromId(node_id);
 
     // TODO(http://crbug.com/2279799): remove all of the cases that could
     // add a null node to |tree_events|.
@@ -1098,8 +1098,8 @@ void AXEventGenerator::PostprocessEvents() {
     // Don't fire text attribute changed on this node if its immediate parent
     // also has text attribute changed.
     if (parent && HasEvent(node_events, Event::TEXT_ATTRIBUTE_CHANGED) &&
-        tree_events_.find(parent) != tree_events_.end() &&
-        HasEvent(tree_events_[parent], Event::TEXT_ATTRIBUTE_CHANGED)) {
+        tree_events_.find(parent->id()) != tree_events_.end() &&
+        HasEvent(tree_events_[parent->id()], Event::TEXT_ATTRIBUTE_CHANGED)) {
       RemoveEvent(&node_events, Event::TEXT_ATTRIBUTE_CHANGED);
     }
 
@@ -1109,11 +1109,11 @@ void AXEventGenerator::PostprocessEvents() {
     // of an existing node. In that instance, we need to inform ATs that the
     // existing node's parent has changed on the platform.
     if (HasEvent(node_events, Event::PARENT_CHANGED)) {
-      while (parent && (tree_events_.find(parent) != tree_events_.end() ||
+      while (parent && (tree_events_.find(parent->id()) != tree_events_.end() ||
                         base::Contains(removed_parent_changed_nodes, parent))) {
         if ((base::Contains(removed_parent_changed_nodes, parent) ||
-             HasEvent(tree_events_[parent], Event::PARENT_CHANGED)) &&
-            !HasEvent(tree_events_[parent], Event::SUBTREE_CREATED)) {
+             HasEvent(tree_events_[parent->id()], Event::PARENT_CHANGED)) &&
+            !HasEvent(tree_events_[parent->id()], Event::SUBTREE_CREATED)) {
           RemoveEvent(&node_events, Event::PARENT_CHANGED);
           removed_parent_changed_nodes.insert(node);
           break;
@@ -1127,10 +1127,10 @@ void AXEventGenerator::PostprocessEvents() {
     parent = node->GetUnignoredParent();
     if (HasEvent(node_events, Event::SUBTREE_CREATED)) {
       while (parent &&
-             (tree_events_.find(parent) != tree_events_.end() ||
+             (tree_events_.find(parent->id()) != tree_events_.end() ||
               base::Contains(removed_subtree_created_nodes, parent))) {
         if (base::Contains(removed_subtree_created_nodes, parent) ||
-            HasEvent(tree_events_[parent], Event::SUBTREE_CREATED)) {
+            HasEvent(tree_events_[parent->id()], Event::SUBTREE_CREATED)) {
           RemoveEvent(&node_events, Event::SUBTREE_CREATED);
           removed_subtree_created_nodes.insert(node);
           break;

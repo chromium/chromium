@@ -145,6 +145,10 @@ class BASE_EXPORT PlatformThread {
     virtual ~Delegate() = default;
   };
 
+  PlatformThread() = delete;
+  PlatformThread(const PlatformThread&) = delete;
+  PlatformThread& operator=(const PlatformThread&) = delete;
+
   // Gets the current thread id, which may be useful for logging purposes.
   static PlatformThreadId CurrentId();
 
@@ -278,8 +282,6 @@ class BASE_EXPORT PlatformThread {
 
  private:
   static void SetCurrentThreadPriorityImpl(ThreadPriority priority);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(PlatformThread);
 };
 
 namespace internal {

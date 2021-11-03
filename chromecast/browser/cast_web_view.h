@@ -27,28 +27,11 @@ class CastWebService;
 // A simplified interface for loading and displaying WebContents in cast_shell.
 class CastWebView {
  public:
-  class Delegate : public CastContentWindow::Delegate {};
-
   // When the unique_ptr is reset, the CastWebView may not necessarily be
   // destroyed. In some cases ownership will be passed to the CastWebService,
   // which eventually handles destruction.
   using Scoped =
       std::unique_ptr<CastWebView, std::function<void(CastWebView*)>>;
-
-  // The parameters used to create a CastWebView instance. Passed to
-  // CastWebService::CreateWebView(). All delegate WeakPtrs will be invalidated
-  // on the main UI thread if they are destroyed before CastWebView.
-  struct CreateParams {
-    // CastWebView delegate. Must be non-null.
-    base::WeakPtr<Delegate> delegate = nullptr;
-
-    // CastContentWindow delegate. This may be null.
-    base::WeakPtr<CastContentWindow::Delegate> window_delegate = nullptr;
-
-    CreateParams();
-    CreateParams(const CreateParams& other);
-    ~CreateParams();
-  };
 
   CastWebView() = default;
 
@@ -64,6 +47,9 @@ class CastWebView {
   virtual CastWebContents* cast_web_contents() = 0;
 
   virtual base::TimeDelta shutdown_delay() const = 0;
+
+  // Called when the owning handle to CastWebView is destroyed.
+  virtual void OwnerDestroyed() = 0;
 
   void BindReceivers(
       mojo::PendingReceiver<mojom::CastWebContents> web_contents_receiver,

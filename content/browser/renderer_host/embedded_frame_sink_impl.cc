@@ -30,7 +30,7 @@ EmbeddedFrameSinkImpl::EmbeddedFrameSinkImpl(
 }
 
 EmbeddedFrameSinkImpl::~EmbeddedFrameSinkImpl() {
-  if (has_created_compositor_frame_sink_) {
+  if (has_registered_compositor_frame_sink_) {
     host_frame_sink_manager_->UnregisterFrameSinkHierarchy(
         parent_frame_sink_id_, frame_sink_id_);
   }
@@ -57,7 +57,7 @@ void EmbeddedFrameSinkImpl::CreateFrameSink(
     mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver) {
   // We might recreate the CompositorFrameSink on context loss or GPU crash.
   // Only register frame sink hierarchy the first time.
-  if (!has_created_compositor_frame_sink_) {
+  if (!has_registered_compositor_frame_sink_) {
     // The request to create an embedded frame sink and the lifetime of the
     // parent are controlled by different IPC channels. It's possible the parent
     // FrameSinkId has been invalidated by the time this request has arrived. In
@@ -76,7 +76,7 @@ void EmbeddedFrameSinkImpl::CreateFrameSink(
         frame_sink_id_, std::move(receiver), std::move(client));
   }
 
-  has_created_compositor_frame_sink_ = true;
+  has_registered_compositor_frame_sink_ = true;
 }
 
 void EmbeddedFrameSinkImpl::ConnectToEmbedder(
@@ -93,6 +93,28 @@ void EmbeddedFrameSinkImpl::OnFrameTokenChanged(
     base::TimeTicks activation_time) {
   // TODO(yiyix, fsamuel): To complete plumbing of frame tokens for offscreen
   // canvas
+}
+
+void EmbeddedFrameSinkImpl::RegisterFrameSinkHierarchy() {
+  if (!has_registered_compositor_frame_sink_ &&
+      host_frame_sink_manager_->RegisterFrameSinkHierarchy(
+          parent_frame_sink_id_, frame_sink_id_)) {
+    has_registered_compositor_frame_sink_ = true;
+    return;
+  }
+  DLOG(ERROR) << "Unable to register " << parent_frame_sink_id_
+              << " as parent of " << frame_sink_id_;
+}
+
+void EmbeddedFrameSinkImpl::UnregisterFrameSinkHierarchy() {
+  if (has_registered_compositor_frame_sink_) {
+    host_frame_sink_manager_->UnregisterFrameSinkHierarchy(
+        parent_frame_sink_id_, frame_sink_id_);
+    has_registered_compositor_frame_sink_ = false;
+    return;
+  }
+  DLOG(ERROR) << "Unable to unregister " << parent_frame_sink_id_
+              << " as parent of " << frame_sink_id_;
 }
 
 }  // namespace content

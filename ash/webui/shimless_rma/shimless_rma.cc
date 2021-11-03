@@ -13,6 +13,7 @@
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -38,6 +39,20 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 }
 
+void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"currentVersionText", IDS_SHIMLESS_RMA_CURRENT_VERSION},
+      {"currentVersionOutOfDateText",
+       IDS_SHIMLESS_RMA_CURRENT_VERSION_OUT_OF_DATE},
+      {"currentVersionUpToDateText",
+       IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE},
+      {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
+  };
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->UseStringsJs();
+}
+
 }  // namespace
 
 ShimlessRMADialogUI::ShimlessRMADialogUI(content::WebUI* web_ui)
@@ -55,6 +70,8 @@ ShimlessRMADialogUI::ShimlessRMADialogUI(content::WebUI* web_ui)
       base::make_span(kAshShimlessRmaResources, kAshShimlessRmaResourcesSize);
   SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_ASH_SHIMLESS_RMA_INDEX_HTML);
+
+  AddShimlessRmaStrings(html_source.get());
 
   ui::network_element::AddLocalizedStrings(html_source.get());
   ui::network_element::AddOncLocalizedStrings(html_source.get());

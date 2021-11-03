@@ -137,30 +137,6 @@ void FingerprintHandler::OnAuthScanDone(
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
   VLOG(1) << "Receive fingerprint auth scan result. scan_result="
           << scan_result;
-  if (SessionManager::Get()->session_state() == SessionState::LOCKED)
-    return;
-
-  // When the user touches the sensor, highlight the label(s) that finger is
-  // associated with, if it is registered with this user.
-  auto it = matches.find(user_id_);
-  if (it == matches.end() || it->second.size() < 1)
-    return;
-
-  base::ListValue fingerprint_ids;
-
-  for (const std::string& matched_path : it->second) {
-    auto path_it = std::find(fingerprints_paths_.begin(),
-                             fingerprints_paths_.end(), matched_path);
-    DCHECK(path_it != fingerprints_paths_.end());
-    fingerprint_ids.Append(
-        static_cast<int>(path_it - fingerprints_paths_.begin()));
-  }
-
-  auto fingerprint_attempt = std::make_unique<base::DictionaryValue>();
-  fingerprint_attempt->SetInteger("result", static_cast<int>(scan_result));
-  fingerprint_attempt->SetKey("indexes", std::move(fingerprint_ids));
-
-  FireWebUIListener("on-fingerprint-attempt-received", *fingerprint_attempt);
 }
 
 void FingerprintHandler::OnSessionFailed() {

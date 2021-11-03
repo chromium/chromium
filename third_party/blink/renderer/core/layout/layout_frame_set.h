@@ -97,8 +97,8 @@ class LayoutFrameSet final : public LayoutBox {
 
   bool UserResize(const MouseEvent&);
 
-  bool CanResizeRow(const IntPoint&) const;
-  bool CanResizeColumn(const IntPoint&) const;
+  bool CanResizeRow(const gfx::Point&) const;
+  bool CanResizeColumn(const gfx::Point&) const;
 
   void NotifyFrameEdgeInfoChanged();
   HTMLFrameSetElement* FrameSet() const;

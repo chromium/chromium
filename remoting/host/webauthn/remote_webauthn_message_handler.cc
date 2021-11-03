@@ -4,10 +4,10 @@
 
 #include "remoting/host/webauthn/remote_webauthn_message_handler.h"
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/logging.h"
 #include "base/notreached.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
-#include "remoting/host/webauthn/remote_webauthn_constants.h"
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
@@ -17,8 +17,9 @@ RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
     const std::string& name,
     std::unique_ptr<protocol::MessagePipe> pipe)
     : protocol::NamedMessagePipeHandler(name, std::move(pipe)) {
-  ipc_server_ = std::make_unique<MojoIpcServer<mojom::WebAuthnProxy>>(
-      GetRemoteWebAuthnChannelName(), this);
+  receiver_set_.set_disconnect_handler(
+      base::BindRepeating(&RemoteWebAuthnMessageHandler::OnReceiverDisconnected,
+                          base::Unretained(this)));
 }
 
 RemoteWebAuthnMessageHandler::~RemoteWebAuthnMessageHandler() {
@@ -29,8 +30,6 @@ RemoteWebAuthnMessageHandler::~RemoteWebAuthnMessageHandler() {
 
 void RemoteWebAuthnMessageHandler::OnConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ipc_server_->StartServer();
 }
 
 void RemoteWebAuthnMessageHandler::OnIncomingMessage(
@@ -61,8 +60,9 @@ void RemoteWebAuthnMessageHandler::OnDisconnecting() {
     std::move(entry.second).Run(false);
   }
   is_uvpaa_callbacks_.clear();
-
-  ipc_server_->StopServer();
+  VLOG(1) << "Number of bound receivers on disconnecting: "
+          << receiver_set_.size();
+  receiver_set_.Clear();
 }
 
 void RemoteWebAuthnMessageHandler::
@@ -78,6 +78,27 @@ void RemoteWebAuthnMessageHandler::
   // This simply creates the is_uvpaa_request.
   remote_webauthn.mutable_is_uvpaa_request();
   Send(remote_webauthn, base::DoNothing());
+}
+
+void RemoteWebAuthnMessageHandler::AddReceiver(
+    mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) {
+  if (!connected()) {
+    LOG(WARNING)
+        << "Pending receiver rejected since message handler is not connected.";
+    return;
+  }
+  mojo::ReceiverId id = receiver_set_.Add(this, std::move(receiver));
+  VLOG(1) << "New receiver added. Receiver ID: " << id;
+}
+
+base::WeakPtr<RemoteWebAuthnMessageHandler>
+RemoteWebAuthnMessageHandler::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void RemoteWebAuthnMessageHandler::OnReceiverDisconnected() {
+  VLOG(1) << "Receiver disconnected. Receiver ID: "
+          << receiver_set_.current_receiver();
 }
 
 void RemoteWebAuthnMessageHandler::OnIsUvpaaResponse(

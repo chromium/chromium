@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -162,10 +162,10 @@ IntSize SVGFEConvolveMatrixElement::MatrixOrder() const {
                  orderY()->CurrentValue()->Value());
 }
 
-IntPoint SVGFEConvolveMatrixElement::TargetPoint() const {
+gfx::Point SVGFEConvolveMatrixElement::TargetPoint() const {
   IntSize order = MatrixOrder();
-  IntPoint target(target_x_->CurrentValue()->Value(),
-                  target_y_->CurrentValue()->Value());
+  gfx::Point target(target_x_->CurrentValue()->Value(),
+                    target_y_->CurrentValue()->Value());
   // The spec says the default value is: targetX = floor ( orderX / 2 ))
   if (!target_x_->IsSpecified())
     target.set_x(order.width() / 2);
@@ -198,7 +198,7 @@ bool SVGFEConvolveMatrixElement::SetFilterEffectAttribute(
     return convolve_matrix->SetBias(bias_->CurrentValue()->Value());
   if (attr_name == svg_names::kTargetXAttr ||
       attr_name == svg_names::kTargetYAttr)
-    return convolve_matrix->SetTargetOffset(TargetPoint());
+    return convolve_matrix->SetTargetOffset(TargetPoint().OffsetFromOrigin());
   if (attr_name == svg_names::kPreserveAlphaAttr)
     return convolve_matrix->SetPreserveAlpha(
         preserve_alpha_->CurrentValue()->Value());
@@ -239,7 +239,7 @@ FilterEffect* SVGFEConvolveMatrixElement::Build(
 
   auto* effect = MakeGarbageCollected<FEConvolveMatrix>(
       filter, MatrixOrder(), ComputeDivisor(), bias_->CurrentValue()->Value(),
-      TargetPoint(), edge_mode_->CurrentEnumValue(),
+      TargetPoint().OffsetFromOrigin(), edge_mode_->CurrentEnumValue(),
       preserve_alpha_->CurrentValue()->Value(),
       kernel_matrix_->CurrentValue()->ToFloatVector());
   effect->InputEffects().push_back(input1);

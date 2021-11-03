@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.graphics.Bitmap;
 
+import org.chromium.components.content_creation.reactions.ReactionMetadata;
+
 import jp.tomorrowkey.android.gifplayer.BaseGifDrawable;
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -14,11 +16,14 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
  * without updating the View, to facilitate decoding the GIF for exporting purposes.
  */
 public class ReactionGifDrawable extends BaseGifDrawable {
+    private final ReactionMetadata mMetadata;
     private boolean mSteppingEnabled;
     private org.chromium.base.Callback<Void> mStepCallback;
 
-    public ReactionGifDrawable(BaseGifImage gifImage, Bitmap.Config bitmapConfig) {
+    public ReactionGifDrawable(
+            ReactionMetadata metadata, BaseGifImage gifImage, Bitmap.Config bitmapConfig) {
         super(gifImage, bitmapConfig);
+        mMetadata = metadata;
     }
 
     /**
@@ -57,6 +62,10 @@ public class ReactionGifDrawable extends BaseGifDrawable {
         setSteppingEnabled(true);
         run();
         return true;
+    }
+
+    public ReactionMetadata getMetadata() {
+        return mMetadata;
     }
 
     @Override

@@ -230,8 +230,12 @@ PermissionPromptImpl::GetPromptDisposition() const {
     case PermissionPromptStyle::kChip:
       return permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
     case PermissionPromptStyle::kQuietChip:
-      return permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_QUIET_CHIP;
+      return permissions::PermissionUiSelector::ShouldSuppressAnimation(
+                 delegate_->ReasonForUsingQuietUi())
+                 ? permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP
+                 : permissions::PermissionPromptDisposition::
+                       LOCATION_BAR_LEFT_QUIET_CHIP;
     case PermissionPromptStyle::kLocationBarRightIcon: {
       return permissions::PermissionUiSelector::ShouldSuppressAnimation(
                  delegate_->ReasonForUsingQuietUi())

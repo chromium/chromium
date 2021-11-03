@@ -21,6 +21,19 @@ config("tflite_flags") {
     "-Wno-c99-extensions",
     "-Wno-comment",
     "-Wno-extern-c-compat",
+    "-Wno-gnu-inline-cpp-without-extern",
+    "-Wno-loop-analysis",
+    "-Wno-shadow",
+
+    # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
+    "-Wno-sign-compare",
+
+    # TODO(thakis): Remove once
+    # https://github.com/tensorflow/tensorflow/pull/50528 is rolled in.
+    "-Wno-unreachable-code-break",
+    "-Wno-unreachable-code-return",
+
+    "-Wno-unused-but-set-variable",
 
     # This flag is needed to enable the strip error strings flag since a handful
     # of variables are only used in error logs, which are no-op'd in a macro
@@ -28,17 +41,6 @@ config("tflite_flags") {
     # 90kb of binary size so having a few dangling variables is well worth it,
     # in addition to keeping the updating process simple.
     "-Wno-unused-variable",
-
-    # TODO(crbug.com/1147556): Try to clean/remove no-sign-compare if possible.
-    "-Wno-sign-compare",
-    "-Wno-gnu-inline-cpp-without-extern",
-    "-Wno-loop-analysis",
-    "-Wno-unused-but-set-variable",
-
-    # TODO(thakis): Remove once
-    # https://github.com/tensorflow/tensorflow/pull/50528 is rolled in.
-    "-Wno-unreachable-code-break",
-    "-Wno-unreachable-code-return",
   ]
 
   defines = [

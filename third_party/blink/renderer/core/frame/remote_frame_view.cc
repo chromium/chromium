@@ -142,7 +142,7 @@ void RemoteFrameView::UpdateCompositingRect() {
   // If the local frame root is an OOPIF itself, then we use the root's
   // intersection rect. This represents a conservative maximum for the area
   // that needs to be rastered by the OOPIF compositor.
-  IntRect viewport_rect(IntPoint(), local_root_view->Size());
+  IntRect viewport_rect(gfx::Point(), local_root_view->Size());
   if (local_root_view->GetPage()->MainFrame() != local_root_view->GetFrame()) {
     viewport_rect = local_root_view->GetFrame().RemoteViewportIntersection();
   }
@@ -176,8 +176,8 @@ void RemoteFrameView::UpdateCompositingRect() {
       std::min(frame_size.width(), compositing_rect_.width()));
   compositing_rect_.set_height(
       std::min(frame_size.height(), compositing_rect_.height()));
-  IntPoint compositing_rect_location = compositing_rect_.origin();
-  compositing_rect_location.ClampNegativeToZero();
+  gfx::Point compositing_rect_location = compositing_rect_.origin();
+  compositing_rect_location.SetToMax(gfx::Point());
   compositing_rect_.set_origin(compositing_rect_location);
 
   if (compositing_rect_ != previous_rect)
@@ -297,8 +297,8 @@ void RemoteFrameView::Paint(GraphicsContext& context,
 
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
       GetFrame().GetCcLayer()) {
-    auto offset = ToGfxPoint(RoundedIntPoint(
-        GetLayoutEmbeddedContent()->ReplacedContentRect().offset));
+    auto offset = ToRoundedPoint(
+        GetLayoutEmbeddedContent()->ReplacedContentRect().offset);
     RecordForeignLayer(context, owner_layout_object,
                        DisplayItem::kForeignLayerRemoteFrame,
                        GetFrame().GetCcLayer(), offset);

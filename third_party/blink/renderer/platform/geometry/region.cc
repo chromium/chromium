@@ -62,7 +62,7 @@ bool Region::Contains(const Region& region) const {
                                                                region.shape_);
 }
 
-bool Region::Contains(const IntPoint& point) const {
+bool Region::Contains(const gfx::Point& point) const {
   if (!bounds_.Contains(point))
     return false;
 

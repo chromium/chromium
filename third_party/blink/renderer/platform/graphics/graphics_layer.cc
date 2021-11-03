@@ -304,11 +304,12 @@ bool GraphicsLayer::PaintRecursively(
       [&](const GraphicsLayer& layer, cc::Layer& contents_layer) {
         PaintChunkSubsetRecorder subset_recorder(context.GetPaintController());
         auto contents_state = layer.GetContentsPropertyTreeState();
-        RecordForeignLayer(
-            context, layer, DisplayItem::kForeignLayerContentsWrapper,
-            &contents_layer,
-            ToGfxPoint(layer.GetContentsOffsetFromTransformNode()),
-            &contents_state);
+        RecordForeignLayer(context, layer,
+                           DisplayItem::kForeignLayerContentsWrapper,
+                           &contents_layer,
+                           gfx::PointAtOffsetFromOrigin(
+                               layer.GetContentsOffsetFromTransformNode()),
+                           &contents_state);
         pre_composited_layers.push_back(
             PreCompositedLayerInfo{subset_recorder.Get()});
       });
@@ -697,7 +698,7 @@ void GraphicsLayer::SetElementId(const CompositorElementId& id) {
 }
 
 void GraphicsLayer::SetLayerState(const PropertyTreeStateOrAlias& layer_state,
-                                  const IntPoint& layer_offset) {
+                                  const gfx::Vector2d& layer_offset) {
   if (layer_state_) {
     if (layer_state_->state == layer_state &&
         layer_state_->offset == layer_offset)
@@ -715,7 +716,7 @@ void GraphicsLayer::SetLayerState(const PropertyTreeStateOrAlias& layer_state,
 
 void GraphicsLayer::SetContentsLayerState(
     const PropertyTreeStateOrAlias& layer_state,
-    const IntPoint& layer_offset) {
+    const gfx::Vector2d& layer_offset) {
   DCHECK(ContentsLayer());
 
   if (contents_layer_state_) {

@@ -667,7 +667,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
           ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       network_context_params->dhcp_wpad_url_client =
-          chromeos::DhcpWpadUrlClient::CreateWithSelfOwnedReceiver();
+          ash::DhcpWpadUrlClient::CreateWithSelfOwnedReceiver();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     }
   }

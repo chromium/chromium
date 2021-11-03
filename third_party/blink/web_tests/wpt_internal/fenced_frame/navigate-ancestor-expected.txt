@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+FAIL Top-level fenced frames that navigate _parent end up navigating themselves promise_test: Unhandled rejection with value: "The top-level test runner document does not navigate when a top-level fenced frame navigates _parent"
+FAIL Top-level fenced frames that navigate _top end up navigating themselves promise_test: Unhandled rejection with value: "The top-level test runner document does not navigate when a top-level fenced frame navigates _top"
+FAIL Nested fenced frames that navigate _parent end up navigating themselves promise_test: Unhandled rejection with value: "FAIL nested fenced frame _parent"
+FAIL Nested fenced frames that navigate _top end up navigating themselves promise_test: Unhandled rejection with value: "The top-level test runner document does not navigate when a nested fenced frame navigates _top"
+PASS Iframes nested in fenced frames that navigate _parent end up navigating the fenced frame
+FAIL Iframes nested in fenced frames that navigate _top end up navigating the fenced frame promise_test: Unhandled rejection with value: "The top-level test runner document does not navigate when a nested iframe navigates _top"
+Harness: the test ran to completion.
+

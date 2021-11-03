@@ -73,6 +73,7 @@ struct FeaturePromoBubbleParams {
     BOTTOM_CENTER,
     LEFT_CENTER,
     RIGHT_CENTER,
+    NONE
   };
 
   // Determines position relative to the anchor element, and where the bubble's

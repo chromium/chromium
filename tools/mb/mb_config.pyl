@@ -339,7 +339,7 @@
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-cronet': 'ios_cronet_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
-      'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest',
+      'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_no_lld',
       'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_lacros_rel_reclient',
       'linux-annotator-rel': 'release_bot',
@@ -579,8 +579,8 @@
       'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official_py3',
       'linux-builder-perf': 'official_goma_linux_perf_py3',
       'linux-builder-perf-rel': 'official_goma_linux_perf',
-      'mac-builder-perf': 'official_goma_mac_perf_py3',
-      'mac-arm-builder-perf': 'official_goma_mac_arm_perf_py3',
+      'mac-builder-perf': 'official_goma_mac_perf',
+      'mac-arm-builder-perf': 'official_goma_mac_arm_perf',
       'win32-builder-perf': 'official_goma_x86_perf',
       'win64-builder-perf': 'official_goma_perf',
     },
@@ -742,7 +742,6 @@
       'mac-autofill-captured-sites-rel': 'release_bot',
       'win-autofill-captured-sites-rel': 'release_bot',
       'win-celab-rel': 'official_celab_release_bot',
-      'win-chrome-finch-fyi': 'official_goma',
       'win-password-manager-captured-sites-rel': 'release_bot',
     },
 
@@ -914,7 +913,6 @@
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
-      'win-chrome-finch-fyi': 'official_goma',
       'win-chrome-stable': 'official_goma_x86',
       'win64-chrome': 'official_goma_x64',
       'win64-chrome-beta': 'official_goma_x64',
@@ -2480,6 +2478,10 @@
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation', 'ios_build_chromium',
     ],
 
+    'ios_simulator_debug_static_bot_xctest_no_lld': [
+        'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation', 'ios_build_chromium', 'no_lld',
+    ],
+
     'ios_simulator_debug_static_bot_xctest_reclient': [
         'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
@@ -2683,16 +2685,8 @@
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0',
     ],
 
-    'official_goma_mac_perf_py3': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'pgo_phase_0', 'use_py3_for_perf'
-    ],
-
     'official_goma_mac_arm_perf': [
       'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0',
-    ],
-
-    'official_goma_mac_arm_perf_py3': [
-      'official', 'goma', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'full_symbols', 'arm64', 'pgo_phase_0', 'use_py3_for_perf'
     ],
 
     'official_goma_mac_pgo': [
@@ -3667,6 +3661,10 @@
 
     'no_keystone_registration_framework': {
       'gn_args': 'enable_keystone_registration_framework=false',
+    },
+
+    'no_lld': {
+      'gn_args': 'use_lld=false',
     },
 
     'no_webui_optimize': {

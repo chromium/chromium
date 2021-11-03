@@ -19,15 +19,18 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 
-class Profile;
-class PrefRegistrySimple;
+namespace account_manager {
+class AccountManager;
+}
 
 namespace signin {
 class IdentityManager;
-}  // namespace signin.
+}
+
+class Profile;
+class PrefRegistrySimple;
 
 namespace ash {
-class AccountManager;
 
 // Shows signin-related errors as notifications in Ash.
 class SigninErrorNotifier : public SigninErrorController::Observer,

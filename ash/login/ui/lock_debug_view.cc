@@ -21,6 +21,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/smartlock_state.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
@@ -107,6 +108,7 @@ struct UserMetadata {
   bool enable_auth = true;
   user_manager::UserType type = user_manager::USER_TYPE_REGULAR;
   EasyUnlockIconState easy_unlock_icon_state = EasyUnlockIconState::NONE;
+  SmartLockState smart_lock_state = SmartLockState::kInactive;
   FingerprintState fingerprint_state = FingerprintState::UNAVAILABLE;
   DebugAuthEnabledState auth_enable_state = DebugAuthEnabledState::kAuthEnabled;
 };
@@ -291,61 +293,107 @@ class LockDebugView::DebugDataDispatcherTransformer
   }
 
   // Enables click to auth for the user at |user_index|.
-  void CycleEasyUnlockForUserIndex(size_t user_index) {
-    // TODO(crbug.com/1233614) Update this to cycle through SmartLockState
-    // values instead of EasyUnlockIconState values if Smart Lock UI revamp
-    // feature is enabled.
+  void CycleSmartLockForUserIndex(size_t user_index) {
     DCHECK(user_index >= 0 && user_index < debug_users_.size());
     UserMetadata* debug_user = &debug_users_[user_index];
 
-    // EasyUnlockIconState transition.
-    auto get_next_state = [](EasyUnlockIconState icon_state) {
-      switch (icon_state) {
-        case EasyUnlockIconState::NONE:
-          return EasyUnlockIconState::SPINNER;
-        case EasyUnlockIconState::SPINNER:
-          return EasyUnlockIconState::LOCKED;
-        case EasyUnlockIconState::LOCKED:
-          return EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED;
-        case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
-          return EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT;
-        case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
-          return EasyUnlockIconState::HARDLOCKED;
-        case EasyUnlockIconState::HARDLOCKED:
-          return EasyUnlockIconState::UNLOCKED;
-        case EasyUnlockIconState::UNLOCKED:
-          return EasyUnlockIconState::NONE;
-      }
-      return EasyUnlockIconState::NONE;
-    };
-    debug_user->easy_unlock_icon_state =
-        get_next_state(debug_user->easy_unlock_icon_state);
+    if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+      // SmartLockState transition.
+      auto get_next_state = [](SmartLockState state) {
+        switch (state) {
+          case SmartLockState::kInactive:
+            return SmartLockState::kConnectingToPhone;
+          case SmartLockState::kConnectingToPhone:
+            return SmartLockState::kPhoneNotFound;
+          case SmartLockState::kPhoneNotFound:
+            return SmartLockState::kPhoneFoundLockedAndDistant;
+          case SmartLockState::kPhoneFoundLockedAndDistant:
+            return SmartLockState::kPhoneFoundUnlockedAndDistant;
+          case SmartLockState::kPhoneFoundUnlockedAndDistant:
+            return SmartLockState::kPhoneFoundLockedAndProximate;
+          case SmartLockState::kPhoneFoundLockedAndProximate:
+            return SmartLockState::kPhoneAuthenticated;
+          case SmartLockState::kPhoneAuthenticated:
+            return SmartLockState::kPhoneNotLockable;
+          case SmartLockState::kPhoneNotLockable:
+            return SmartLockState::kBluetoothDisabled;
+          case SmartLockState::kBluetoothDisabled:
+            return SmartLockState::kPhoneNotAuthenticated;
+          case SmartLockState::kPhoneNotAuthenticated:
+            return SmartLockState::kPasswordReentryRequired;
+          case SmartLockState::kPasswordReentryRequired:
+            return SmartLockState::kPrimaryUserAbsent;
+          case SmartLockState::kPrimaryUserAbsent:
+            return SmartLockState::kDisabled;
+          case SmartLockState::kDisabled:
+            return SmartLockState::kInactive;
+        }
+      };
+      debug_user->smart_lock_state =
+          get_next_state(debug_user->smart_lock_state);
 
-    // Enable/disable click to unlock.
-    debug_user->enable_tap_to_unlock =
-        debug_user->easy_unlock_icon_state == EasyUnlockIconState::UNLOCKED;
+      // Enable/disable click to unlock.
+      debug_user->enable_tap_to_unlock =
+          debug_user->smart_lock_state == SmartLockState::kPhoneAuthenticated;
 
-    // Prepare icon that we will show.
-    EasyUnlockIconInfo icon_info;
-    icon_info.icon_state = debug_user->easy_unlock_icon_state;
-    if (icon_info.icon_state == EasyUnlockIconState::SPINNER) {
-      icon_info.aria_label = u"Icon is spinning";
-    } else if (icon_info.icon_state == EasyUnlockIconState::LOCKED ||
-               icon_info.icon_state ==
-                   EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED) {
-      icon_info.autoshow_tooltip = true;
-      icon_info.tooltip = base::ASCIIToUTF16(
-          "This is a long message to trigger overflow. This should show up "
-          "automatically. icon_state=" +
-          base::NumberToString(static_cast<int>(icon_info.icon_state)));
+      // Set Smart Lock state and enable/disable click to unlock.
+      debug_dispatcher_.SetSmartLockState(debug_user->account_id,
+                                          debug_user->smart_lock_state);
+
+      // TODO(crbug.com/1233614): Remove this call once "Click to enter" button
+      // no longer depends on user view tap.
+      debug_dispatcher_.SetTapToUnlockEnabledForUser(
+          debug_user->account_id, debug_user->enable_tap_to_unlock);
     } else {
-      icon_info.tooltip = u"This should not show up automatically.";
-    }
+      // EasyUnlockIconState transition.
+      auto get_next_state = [](EasyUnlockIconState icon_state) {
+        switch (icon_state) {
+          case EasyUnlockIconState::NONE:
+            return EasyUnlockIconState::SPINNER;
+          case EasyUnlockIconState::SPINNER:
+            return EasyUnlockIconState::LOCKED;
+          case EasyUnlockIconState::LOCKED:
+            return EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED;
+          case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
+            return EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT;
+          case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
+            return EasyUnlockIconState::HARDLOCKED;
+          case EasyUnlockIconState::HARDLOCKED:
+            return EasyUnlockIconState::UNLOCKED;
+          case EasyUnlockIconState::UNLOCKED:
+            return EasyUnlockIconState::NONE;
+        }
+        return EasyUnlockIconState::NONE;
+      };
+      debug_user->easy_unlock_icon_state =
+          get_next_state(debug_user->easy_unlock_icon_state);
 
-    // Show icon and enable/disable click to unlock.
-    debug_dispatcher_.ShowEasyUnlockIcon(debug_user->account_id, icon_info);
-    debug_dispatcher_.SetTapToUnlockEnabledForUser(
-        debug_user->account_id, debug_user->enable_tap_to_unlock);
+      // Enable/disable click to unlock.
+      debug_user->enable_tap_to_unlock =
+          debug_user->easy_unlock_icon_state == EasyUnlockIconState::UNLOCKED;
+
+      // Prepare icon that we will show.
+      EasyUnlockIconInfo icon_info;
+      icon_info.icon_state = debug_user->easy_unlock_icon_state;
+      if (icon_info.icon_state == EasyUnlockIconState::SPINNER) {
+        icon_info.aria_label = u"Icon is spinning";
+      } else if (icon_info.icon_state == EasyUnlockIconState::LOCKED ||
+                 icon_info.icon_state ==
+                     EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED) {
+        icon_info.autoshow_tooltip = true;
+        icon_info.tooltip = base::ASCIIToUTF16(
+            "This is a long message to trigger overflow. This should show up "
+            "automatically. icon_state=" +
+            base::NumberToString(static_cast<int>(icon_info.icon_state)));
+      } else {
+        icon_info.tooltip = u"This should not show up automatically.";
+      }
+
+      // Show icon and enable/disable click to unlock.
+      debug_dispatcher_.ShowEasyUnlockIcon(debug_user->account_id, icon_info);
+      debug_dispatcher_.SetTapToUnlockEnabledForUser(
+          debug_user->account_id, debug_user->enable_tap_to_unlock);
+    }
   }
 
   // Cycles fingerprint state for the user at |user_index|.
@@ -358,6 +406,13 @@ class LockDebugView::DebugDataDispatcherTransformer
         (static_cast<int>(FingerprintState::kMaxValue) + 1));
     debug_dispatcher_.SetFingerprintState(debug_user->account_id,
                                           debug_user->fingerprint_state);
+  }
+
+  void AuthenticateSmartLockForUserIndex(size_t user_index, bool success) {
+    DCHECK(user_index >= 0 && user_index < debug_users_.size());
+    UserMetadata* debug_user = &debug_users_[user_index];
+    debug_dispatcher_.NotifySmartLockAuthResult(debug_user->account_id,
+                                                success);
   }
 
   void AuthenticateFingerprintForUserIndex(size_t user_index, bool success) {
@@ -1096,11 +1151,24 @@ void LockDebugView::UpdatePerUserActionContainer() {
                   &DebugDataDispatcherTransformer::ToggleTapStateForUserIndex,
                   base::Unretained(debug_data_dispatcher_.get()), i),
               row);
-    AddButton("Cycle easy unlock",
+    AddButton("Cycle Smart Lock",
               base::BindRepeating(
-                  &DebugDataDispatcherTransformer::CycleEasyUnlockForUserIndex,
+                  &DebugDataDispatcherTransformer::CycleSmartLockForUserIndex,
                   base::Unretained(debug_data_dispatcher_.get()), i),
               row);
+    if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+      for (bool success : {true, false}) {
+        std::string button_label = "Send Smart Lock auth ";
+        button_label += (success ? "success" : "fail");
+        AddButton(
+            std::move(button_label),
+            base::BindRepeating(&DebugDataDispatcherTransformer::
+                                    AuthenticateSmartLockForUserIndex,
+                                base::Unretained(debug_data_dispatcher_.get()),
+                                i, success),
+            row);
+      }
+    }
     AddButton(
         "Cycle fingerprint state",
         base::BindRepeating(

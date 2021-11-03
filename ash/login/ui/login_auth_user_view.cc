@@ -1135,14 +1135,14 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
             &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
     auth_factors_view_ = auth_factors_view.get();
-    auto smart_lock_auth_factor_model =
-        std::make_unique<SmartLockAuthFactorModel>();
-    smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
-    auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_factor_model));
     auto fingerprint_auth_factor_model =
         std::make_unique<FingerprintAuthFactorModel>();
     fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
     auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
+    auto smart_lock_auth_factor_model =
+        std::make_unique<SmartLockAuthFactorModel>();
+    smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
+    auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_factor_model));
   } else {
     fingerprint_view = std::make_unique<FingerprintView>();
     fingerprint_view_ = fingerprint_view.get();
@@ -1345,7 +1345,8 @@ void LoginAuthUserView::SetAuthMethods(
 
   if (smart_lock_ui_revamp_enabled_) {
     DCHECK(fingerprint_auth_factor_model_);
-    fingerprint_auth_factor_model_->SetVisible(current_state.has_fingerprint);
+    fingerprint_auth_factor_model_->set_available(
+        current_state.has_fingerprint);
     fingerprint_auth_factor_model_->SetCanUsePin(HasAuthMethod(AUTH_PIN));
   } else {
     DCHECK(fingerprint_view_);

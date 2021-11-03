@@ -2295,11 +2295,11 @@ TEST_F(WindowOcclusionTrackerTest, NativeWindowOcclusion) {
 
   delegate_a->set_expectation(Window::OcclusionState::OCCLUDED, SkRegion());
   // Make the host call OnOcclusionStateChanged on the root window.
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
   EXPECT_FALSE(delegate_a->is_expecting_call());
 
   delegate_a->set_expectation(Window::OcclusionState::VISIBLE, SkRegion());
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
   EXPECT_FALSE(delegate_a->is_expecting_call());
 }
 

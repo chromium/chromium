@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
@@ -189,11 +190,12 @@ void OneTimeMessageHandler::SendMessage(
   bool wants_response = !response_callback.IsEmpty();
   int routing_id = RoutingIdForScriptContext(script_context);
   if (wants_response) {
-    int request_id =
+    APIRequestHandler::RequestDetails details =
         bindings_system_->api_system()->request_handler()->AddPendingRequest(
-            script_context->v8_context(), response_callback);
+            script_context->v8_context(), binding::AsyncResponseType::kCallback,
+            response_callback);
     OneTimeOpener& port = data->openers[new_port_id];
-    port.request_id = request_id;
+    port.request_id = details.request_id;
     port.routing_id = routing_id;
   }
 

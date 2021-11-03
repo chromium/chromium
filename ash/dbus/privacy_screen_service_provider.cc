@@ -33,10 +33,7 @@ GetPrivacyScreenState() {
 PrivacyScreenServiceProvider::PrivacyScreenServiceProvider() = default;
 
 PrivacyScreenServiceProvider::~PrivacyScreenServiceProvider() {
-  // TODO(b/204487925): switch to use |ScopedObservation| if ash::Shell dtor
-  // destroys |ash_dbus_services_| early.
-  if (Shell::HasInstance() && Shell::Get()->privacy_screen_controller())
-    Shell::Get()->privacy_screen_controller()->RemoveObserver(this);
+  DCHECK(Shell::Get() && Shell::Get()->privacy_screen_controller());
 }
 
 void PrivacyScreenServiceProvider::Start(
@@ -54,7 +51,7 @@ void PrivacyScreenServiceProvider::Start(
 
   auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
   DCHECK(privacy_screen_controller);
-  privacy_screen_controller->AddObserver(this);
+  privacy_screen_observation_.Observe(privacy_screen_controller);
 }
 
 void PrivacyScreenServiceProvider::OnExported(const std::string& interface_name,

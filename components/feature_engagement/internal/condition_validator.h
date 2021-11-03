@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
 
 namespace base {
@@ -94,6 +95,7 @@ class ConditionValidator {
       const EventModel& event_model,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
+      const Configuration* configuration,
       uint32_t current_day) const = 0;
 
   // Must be called to notify that the |feature| is currently showing.

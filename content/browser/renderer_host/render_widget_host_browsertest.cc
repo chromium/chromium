@@ -677,8 +677,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostBrowserTest,
   ASSERT_FALSE(web_contents()->IsFullscreen());
 
   // While not fullscreened, expect the screen size to not be overridden.
-  display::ScreenInfo screen_info;
-  host()->GetScreenInfo(&screen_info);
+  display::ScreenInfo screen_info = host()->GetScreenInfo();
   WaitForVisualPropertiesAck();
   EXPECT_EQ(screen_info.rect.size().ToString(),
             EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));
@@ -695,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostBrowserTest,
   // Exit fullscreen mode, and then the page should see the screen size again.
   ASSERT_TRUE(ExecJs(web_contents(), "document.exitFullscreen();"));
   FullscreenWaiter(web_contents()).Wait(false);
-  host()->GetScreenInfo(&screen_info);
+  screen_info = host()->GetScreenInfo();
   WaitForVisualPropertiesAck();
   EXPECT_EQ(screen_info.rect.size().ToString(),
             EvalJs(web_contents(), "`${screen.width}x${screen.height}`"));

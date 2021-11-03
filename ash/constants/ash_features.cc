@@ -602,6 +602,11 @@ const base::Feature kHandwritingGestureEditing{
 const base::Feature kHandwritingLegacyRecognition{
     "HandwritingLegacyRecognition", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables new on-device recognition for legacy handwriting input in all
+// supported languages.
+const base::Feature kHandwritingLegacyRecognitionAllLang{
+    "HandwritingLegacyRecognitionAllLang", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the Background Page in the help app.
 const base::Feature kHelpAppBackgroundPage{"HelpAppBackgroundPage",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
@@ -694,7 +699,7 @@ const base::Feature kImeStylusHandwriting{"StylusHandwriting",
 
 // Enable or disable the improved screen capture settings.
 const base::Feature kImprovedScreenCaptureSettings{
-    "ImprovedScreenCaptureSettings", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ImprovedScreenCaptureSettings", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
@@ -883,6 +888,11 @@ const base::Feature kPerDeskShelf{"PerDeskShelf",
 // resizing. This reduces jank on low end devices.
 const base::Feature kPerformantSplitViewResizing{
     "PerformantSplitViewResizing", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Provides a UI for users to customize their wallpapers, screensaver and
+// avatars.
+const base::Feature kPersonalizationHub{"PersonalizationHub",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within Chrome OS.
@@ -1625,6 +1635,10 @@ bool IsPhoneHubCameraRollEnabled() {
 
 bool IsPerformantSplitViewResizingEnabled() {
   return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
+}
+
+bool IsPersonalizationHubEnabled() {
+  return base::FeatureList::IsEnabled(kPersonalizationHub);
 }
 
 bool IsPhoneHubEnabled() {

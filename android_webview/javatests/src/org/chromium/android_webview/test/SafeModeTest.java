@@ -245,6 +245,33 @@ public class SafeModeTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testQueryActions_autoDisableIfTimestampInFuture() throws Throwable {
+        Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
+        final String variationsActionId = new VariationsSeedSafeModeAction().getId();
+        final long initialStartTimeMs = 12345L;
+        SafeModeService.setClockForTesting(() -> { return initialStartTimeMs; });
+        try (ServiceConnectionHelper helper =
+                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+            ISafeModeService service = ISafeModeService.Stub.asInterface(helper.getBinder());
+            service.setSafeMode(Arrays.asList(variationsActionId));
+        }
+
+        // If the user manually sets their clock backward in time, then the time delta will be
+        // negative. This case should also be treated as expired.
+        final long queryTime = initialStartTimeMs - 1L;
+        SafeModeService.setClockForTesting(() -> { return queryTime; });
+
+        Assert.assertTrue("SafeMode should be enabled until querying ContentProvider",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertEquals("ContentProvider should return empty set after timeout", asSet(),
+                SafeModeController.getInstance().queryActions(TEST_WEBVIEW_PACKAGE_NAME));
+        Assert.assertFalse("SafeMode should be disabled after querying ContentProvider",
+                SafeModeController.getInstance().isSafeModeEnabled(TEST_WEBVIEW_PACKAGE_NAME));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testQueryActions_extendTimeoutWithDuplicateConfig() throws Throwable {
         Intent intent = new Intent(ContextUtils.getApplicationContext(), SafeModeService.class);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();

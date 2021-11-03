@@ -146,9 +146,9 @@ class ShapePathBuilder : public PathBuilder {
     PhysicalOffset layout_object_point = PhysicalOffset::FromFloatPointRound(
         shape_outside_info_.ShapeToLayoutObjectPoint(FloatPoint(point)));
     // TODO(pfeldman): Is this kIgnoreTransforms correct?
-    return gfx::PointF(ToGfxPoint(view_->FrameToViewport(
-        RoundedIntPoint(layout_object_->LocalToAbsolutePoint(
-            layout_object_point, kIgnoreTransforms)))));
+    return gfx::PointF(view_->FrameToViewport(
+        ToRoundedPoint(layout_object_->LocalToAbsolutePoint(
+            layout_object_point, kIgnoreTransforms))));
   }
 
  private:

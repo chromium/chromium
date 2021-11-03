@@ -4,10 +4,46 @@
 
 #include "components/optimization_guide/core/page_content_annotations_common.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
 namespace optimization_guide {
+
+std::string ExecutionStatusToString(ExecutionStatus status) {
+  switch (status) {
+    case ExecutionStatus::kUnknown:
+      return "Unknown";
+    case ExecutionStatus::kSuccess:
+      return "Success";
+    case ExecutionStatus::kPending:
+      return "Pending";
+    case ExecutionStatus::kErrorInternalError:
+      return "ErrorInternalError";
+    case ExecutionStatus::kErrorModelFileNotAvailable:
+      return "ErrorModelFileNotAvailable";
+    case ExecutionStatus::kErrorModelFileNotValid:
+      return "ErrorModelFileNotValid";
+    case ExecutionStatus::kErrorEmptyOrInvalidInput:
+      return "ErrorEmptyOrInvalidInput";
+  }
+}
+
+std::string AnnotationTypeToString(AnnotationType type) {
+  switch (type) {
+    case AnnotationType::kUnknown:
+      return "Unknown";
+    case AnnotationType::kPageTopics:
+      return "PageTopics";
+    case AnnotationType::kContentVisibility:
+      return "ContentVisibility";
+    case AnnotationType::kPageEntities:
+      return "PageEntities";
+  }
+}
 
 WeightedString::WeightedString(const std::string& value, double weight)
     : value_(value), weight_(weight) {
@@ -18,13 +54,52 @@ WeightedString::WeightedString(const WeightedString&) = default;
 WeightedString::~WeightedString() = default;
 
 bool WeightedString::operator==(const WeightedString& other) const {
-  return this->value_ == other.value_ && this->weight_ == other.weight_;
+  constexpr double kWeightTolerance = 1e-6;
+  return this->value_ == other.value_ &&
+         abs(this->weight_ - other.weight_) <= kWeightTolerance;
+}
+
+std::string WeightedString::ToString() const {
+  return base::StringPrintf("WeightedString{\"%s\",%f}", value().c_str(),
+                            weight());
+}
+
+std::ostream& operator<<(std::ostream& stream, const WeightedString& ws) {
+  stream << ws.ToString();
+  return stream;
 }
 
 BatchAnnotationResult::BatchAnnotationResult() = default;
 BatchAnnotationResult::BatchAnnotationResult(const BatchAnnotationResult&) =
     default;
 BatchAnnotationResult::~BatchAnnotationResult() = default;
+
+std::string BatchAnnotationResult::ToString() const {
+  std::string output = "nullopt";
+  if (topics_ || entities_) {
+    std::vector<std::string> all_weighted_strings;
+    for (const WeightedString& ws : (topics_ ? *topics_ : *entities_)) {
+      all_weighted_strings.push_back(ws.ToString());
+    }
+    output = "{" + base::JoinString(all_weighted_strings, ",") + "}";
+  } else if (visibility_score_) {
+    output = base::NumberToString(*visibility_score_);
+  }
+  return base::StringPrintf(
+      "BatchAnnotationResult{"
+      "\"<input with length %zu>\", "
+      "status: %s, "
+      "type: %s, "
+      "output: %s}",
+      input_.size(), ExecutionStatusToString(status_).c_str(),
+      AnnotationTypeToString(type_).c_str(), output.c_str());
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const BatchAnnotationResult& result) {
+  stream << result.ToString();
+  return stream;
+}
 
 // static
 BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
@@ -36,6 +111,15 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageTopicsResult(
   result.status_ = status;
   result.topics_ = topics;
   result.type_ = AnnotationType::kPageTopics;
+
+  // Always sort the result (if present) by the given score.
+  if (result.topics_) {
+    std::sort(result.topics_->begin(), result.topics_->end(),
+              [](const WeightedString& a, const WeightedString& b) {
+                return a.weight() < b.weight();
+              });
+  }
+
   return result;
 }
 
@@ -49,6 +133,15 @@ BatchAnnotationResult BatchAnnotationResult::CreatePageEntitiesResult(
   result.status_ = status;
   result.entities_ = entities;
   result.type_ = AnnotationType::kPageEntities;
+
+  // Always sort the result (if present) by the given score.
+  if (result.entities_) {
+    std::sort(result.entities_->begin(), result.entities_->end(),
+              [](const WeightedString& a, const WeightedString& b) {
+                return a.weight() < b.weight();
+              });
+  }
+
   return result;
 }
 

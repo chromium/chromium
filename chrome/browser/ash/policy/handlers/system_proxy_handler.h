@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 
-namespace chromeos {
+namespace ash {
 class SystemProxyManager;
 }
 
@@ -27,15 +27,15 @@ class SystemProxyHandler {
   ~SystemProxyHandler();
 
   void SetSystemProxyManagerForTesting(
-      chromeos::SystemProxyManager* system_proxy_manager);
+      ash::SystemProxyManager* system_proxy_manager);
 
  private:
   void OnSystemProxySettingsPolicyChanged();
 
-  chromeos::SystemProxyManager* GetSystemProxyManager();
+  ash::SystemProxyManager* GetSystemProxyManager();
 
   // Owned by the test fixture.
-  chromeos::SystemProxyManager* system_proxy_manager_for_testing_ = nullptr;
+  ash::SystemProxyManager* system_proxy_manager_for_testing_ = nullptr;
   chromeos::CrosSettings* cros_settings_;
   base::CallbackListSubscription system_proxy_subscription_;
 };

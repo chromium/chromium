@@ -15,6 +15,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -136,7 +138,8 @@ const std::string& GetM100VersionNumber() {
 }
 
 const blink::UserAgentBrandList GetUserAgentBrandList(
-    const std::string& major_version) {
+    const std::string& major_version,
+    bool enable_updated_grease_by_policy) {
   int major_version_number;
   base::StringToInt(major_version, &major_version_number);
   absl::optional<std::string> brand;
@@ -155,27 +158,32 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
     maybe_version_override = absl::nullopt;
 
   return GenerateBrandVersionList(major_version_number, brand, major_version,
-                                  maybe_brand_override, maybe_version_override);
+                                  maybe_brand_override, maybe_version_override,
+                                  enable_updated_grease_by_policy);
 }
 
-const blink::UserAgentBrandList& GetUserAgentBrandList() {
+const blink::UserAgentBrandList& GetUserAgentBrandList(
+    bool enable_updated_grease_by_policy) {
   static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
-      GetUserAgentBrandList(version_info::GetMajorVersionNumber()));
+      GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
+                            enable_updated_grease_by_policy));
   return *brand_list;
 }
 
-const blink::UserAgentBrandList& GetForcedM100UserAgentBrandList() {
+const blink::UserAgentBrandList& GetForcedM100UserAgentBrandList(
+    bool enable_updated_grease_by_policy) {
   static const base::NoDestructor<blink::UserAgentBrandList> brand_list(
-      GetUserAgentBrandList(kMajorVersion100));
+      GetUserAgentBrandList(kMajorVersion100, enable_updated_grease_by_policy));
   return *brand_list;
 }
 
-const blink::UserAgentBrandList& GetBrandVersionList() {
+const blink::UserAgentBrandList& GetBrandVersionList(
+    bool enable_updated_grease_by_policy) {
   if (base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent))
-    return GetForcedM100UserAgentBrandList();
+    return GetForcedM100UserAgentBrandList(enable_updated_grease_by_policy);
 
-  return GetUserAgentBrandList();
+  return GetUserAgentBrandList(enable_updated_grease_by_policy);
 }
 
 }  // namespace
@@ -229,7 +237,8 @@ blink::UserAgentBrandList GenerateBrandVersionList(
     absl::optional<std::string> brand,
     std::string major_version,
     absl::optional<std::string> maybe_greasey_brand,
-    absl::optional<std::string> maybe_greasey_version) {
+    absl::optional<std::string> maybe_greasey_version,
+    bool enable_updated_grease_by_policy) {
   DCHECK_GE(seed, 0);
   const int npermutations = 6;  // 3!
   int permutation = seed % npermutations;
@@ -243,7 +252,8 @@ blink::UserAgentBrandList GenerateBrandVersionList(
   DCHECK_EQ(3u, order.size());
 
   blink::UserAgentBrandVersion greasey_bv = GetGreasedUserAgentBrandVersion(
-      order, seed, maybe_greasey_brand, maybe_greasey_version);
+      order, seed, maybe_greasey_brand, maybe_greasey_version,
+      enable_updated_grease_by_policy);
   blink::UserAgentBrandVersion chromium_bv = {"Chromium", major_version};
   blink::UserAgentBrandList greased_brand_version_list(3);
 
@@ -268,10 +278,12 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
     std::vector<int> permuted_order,
     int seed,
     absl::optional<std::string> maybe_greasey_brand,
-    absl::optional<std::string> maybe_greasey_version) {
+    absl::optional<std::string> maybe_greasey_version,
+    bool enable_updated_grease_by_policy) {
   std::string greasey_brand;
   std::string greasey_version;
-  if (base::GetFieldTrialParamByFeatureAsBool(features::kGreaseUACH,
+  if (enable_updated_grease_by_policy &&
+      base::GetFieldTrialParamByFeatureAsBool(features::kGreaseUACH,
                                               "updated_algorithm", false)) {
     const std::vector<std::string> greasey_chars = {
         " ", "(", ":", "-", ".", "/", ")", ";", "=", "?", "_"};
@@ -308,9 +320,20 @@ std::string GetPlatformForUAMetadata() {
 }
 
 blink::UserAgentMetadata GetUserAgentMetadata() {
-  blink::UserAgentMetadata metadata;
+  return GetUserAgentMetadata(nullptr);
+}
 
-  metadata.brand_version_list = GetBrandVersionList();
+blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
+  blink::UserAgentMetadata metadata;
+  bool enable_updated_grease_by_policy = true;
+  if (pref_service &&
+      pref_service->HasPrefPath(
+          policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled)) {
+    enable_updated_grease_by_policy = pref_service->GetBoolean(
+        policy::policy_prefs::kUserAgentClientHintsGREASEUpdateEnabled);
+  }
+  metadata.brand_version_list =
+      GetBrandVersionList(enable_updated_grease_by_policy);
   metadata.full_version = base::FeatureList::IsEnabled(
                               blink::features::kForceMajorVersion100InUserAgent)
                               ? GetM100VersionNumber()

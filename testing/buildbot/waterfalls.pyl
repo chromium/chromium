@@ -6460,26 +6460,6 @@
   {
     'project': 'chrome',
     'bucket': 'ci',
-    'name': 'internal.chrome.fyi',
-    'mixins': ['chrome-tester-service-account'],
-    'machines': {
-      'win-chrome-finch-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-          'win10-1703',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'variations_smoke_tests',
-        },
-      },
-    },
-  },
-  {
-    'project': 'chrome',
-    'bucket': 'ci',
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {

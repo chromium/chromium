@@ -13,10 +13,13 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace ash {
+class NetworkPortalWebDialog;
+}
+
 namespace chromeos {
 
 class NetworkState;
-class NetworkPortalWebDialog;
 class NetworkPortalNotificationControllerTest;
 
 // Shows a message center notification when the networking stack detects a
@@ -53,14 +56,14 @@ class NetworkPortalNotificationController
   void CloseDialog();
 
   // NULLifies reference to the active dialog.
-  void OnDialogDestroyed(const NetworkPortalWebDialog* dialog);
+  void OnDialogDestroyed(const ash::NetworkPortalWebDialog* dialog);
 
   // Ignores "No network" errors in browser tests.
   void SetIgnoreNoNetworkForTesting();
 
   // Browser tests should be able to verify that NetworkPortalWebDialog is
   // shown.
-  const NetworkPortalWebDialog* GetDialogForTesting() const;
+  const ash::NetworkPortalWebDialog* GetDialogForTesting() const;
 
  private:
   friend NetworkPortalNotificationControllerTest;
@@ -87,7 +90,7 @@ class NetworkPortalNotificationController
   NetworkPortalDetector* network_portal_detector_ = nullptr;
 
   // Currently displayed authorization dialog, or NULL if none.
-  NetworkPortalWebDialog* dialog_ = nullptr;
+  ash::NetworkPortalWebDialog* dialog_ = nullptr;
 
   // Do not close Portal Login dialog on "No network" error in browser tests.
   bool ignore_no_network_for_testing_ = false;
@@ -96,5 +99,10 @@ class NetworkPortalNotificationController
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash {
+using ::chromeos::NetworkPortalNotificationController;
+}
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_NOTIFICATION_CONTROLLER_H_

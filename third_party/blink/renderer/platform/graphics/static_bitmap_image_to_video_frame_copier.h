@@ -34,6 +34,10 @@ class PLATFORM_EXPORT StaticBitmapImageToVideoFrameCopier {
       bool accelerated_frame_pool_enabled);
   ~StaticBitmapImageToVideoFrameCopier();
 
+  WebGraphicsContext3DVideoFramePool* GetAcceleratedVideoFramePool(
+      base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
+          context_provider);
+
   void Convert(scoped_refptr<StaticBitmapImage> image,
                bool can_discard_alpha,
                base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>

@@ -16,20 +16,17 @@
 namespace extensions {
 namespace tabs_util {
 
-void SetLockedFullscreenState(Browser* browser,
-                              chromeos::WindowPinType new_type) {
+void SetLockedFullscreenState(Browser* browser, bool pinned) {
   aura::Window* window = browser->window()->GetNativeWindow();
   DCHECK(window);
 
-  const chromeos::WindowPinType previous_type = GetWindowPinType(window);
-
   // As this gets triggered from extensions, we might encounter this case.
-  if (previous_type == new_type)
+  if (IsWindowPinned(window) == pinned)
     return;
 
-  if (new_type != chromeos::WindowPinType::kNone) {
-    bool trusted = new_type == chromeos::WindowPinType::kTrustedPinned;
-    PinWindow(window, trusted);
+  if (pinned) {
+    // Pins from extension are always trusted.
+    PinWindow(window, /*trusted=*/true);
   } else {
     UnpinWindow(window);
   }

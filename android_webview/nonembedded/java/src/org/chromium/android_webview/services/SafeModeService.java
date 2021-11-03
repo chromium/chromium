@@ -277,6 +277,16 @@ public final class SafeModeService extends Service {
         long lastModifiedTime = getSharedPreferences().getLong(LAST_MODIFIED_TIME_KEY, 0L);
         long currentTime = sClock.currentTimeMillis();
         long timeSinceLastSafeModeConfig = currentTime - lastModifiedTime;
+
+        // It shouldn't be possible for lastModifiedTime to happen in the future (greater than
+        // currentTime). The user may have changed the clock on their device. Treat the config as
+        // expired in this case because we don't want to be in SafeMode arbitrarily long.
+        if (timeSinceLastSafeModeConfig < 0) {
+            Log.w(TAG, "Config timestamp is (%d) but current time is (%d); disabling SafeMode",
+                    lastModifiedTime, currentTime);
+            return true;
+        }
+
         return timeSinceLastSafeModeConfig >= SAFE_MODE_ENABLED_TIME_LIMIT_MS;
     }
 

@@ -15,6 +15,10 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/api/file_system/file_entry_picker.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
@@ -251,6 +255,21 @@ base::FilePath ChromeFileSystemDelegate::GetDefaultDirectory() {
   base::FilePath documents_dir;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &documents_dir);
   return documents_dir;
+}
+
+base::FilePath ChromeFileSystemDelegate::GetManagedSaveAsDirectory(
+    content::BrowserContext* browser_context,
+    const Extension& extension) {
+  if (extension.id() != extension_misc::kPdfExtensionId)
+    return base::FilePath();
+
+  ChromeDownloadManagerDelegate* download_manager =
+      DownloadCoreServiceFactory::GetForBrowserContext(browser_context)
+          ->GetDownloadManagerDelegate();
+  DownloadPrefs* download_prefs = download_manager->download_prefs();
+  if (!download_prefs->IsDownloadPathManaged())
+    return base::FilePath();
+  return download_prefs->DownloadPath();
 }
 
 bool ChromeFileSystemDelegate::ShowSelectFileDialog(

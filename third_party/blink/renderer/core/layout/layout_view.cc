@@ -588,7 +588,7 @@ PhysicalOffset LayoutView::OffsetForFixedPosition() const {
 
 PhysicalOffset LayoutView::PixelSnappedOffsetForFixedPosition() const {
   NOT_DESTROYED();
-  return PhysicalOffset(FlooredIntPoint(OffsetForFixedPosition()));
+  return PhysicalOffset(ToFlooredPoint(OffsetForFixedPosition()));
 }
 
 void LayoutView::AbsoluteQuads(Vector<FloatQuad>& quads,

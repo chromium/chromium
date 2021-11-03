@@ -10,8 +10,15 @@
 <body>
 <script>
 
+const cookieNames = ['__Host-pchttp', '__Host-pcdom', '__Host-pccookiestore'];
+
 testDomPartitionedCookies({
-  cookieNames: ['__Host-pchttp', '__Host-pcdom'],
+  cookieNames,
+  expectsCookie: false,
+});
+
+testCookieStorePartitionedCookies({
+  cookieNames,
   expectsCookie: false,
 });
 

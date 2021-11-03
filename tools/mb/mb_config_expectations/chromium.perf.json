@@ -119,8 +119,7 @@
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 2,
       "target_cpu": "arm64",
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "mac-builder-perf": {
@@ -132,8 +131,7 @@
       "is_official_build": true,
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 2,
-      "use_goma": true,
-      "use_py3_for_perf": true
+      "use_goma": true
     }
   },
   "win32-builder-perf": {

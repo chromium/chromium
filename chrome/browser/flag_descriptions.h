@@ -810,6 +810,9 @@ extern const char kHandwritingGestureEditingDescription[];
 extern const char kHandwritingLegacyRecognitionName[];
 extern const char kHandwritingLegacyRecognitionDescription[];
 
+extern const char kHandwritingLegacyRecognitionAllLangName[];
+extern const char kHandwritingLegacyRecognitionAllLangDescription[];
+
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 
@@ -1102,9 +1105,6 @@ extern const char kPageContentAnnotationsDescription[];
 extern const char kPageInfoAboutThisSiteName[];
 extern const char kPageInfoAboutThisSiteDescription[];
 
-extern const char kPageInfoV2DesktopName[];
-extern const char kPageInfoV2DesktopDescription[];
-
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 
@@ -1161,6 +1161,9 @@ extern const char kPermissionQuietChipDescription[];
 
 extern const char kPersistentQuotaIsTemporaryQuotaName[];
 extern const char kPersistentQuotaIsTemporaryQuotaDescription[];
+
+extern const char kPersonalizationHubName[];
+extern const char kPersonalizationHubDescription[];
 
 extern const char kPlaybackSpeedButtonName[];
 extern const char kPlaybackSpeedButtonDescription[];
@@ -2083,6 +2086,9 @@ extern const char kAppManagementIntentSettingsDescription[];
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
+extern const char kEnableAutoDisableAccessibilityName[];
+extern const char kEnableAutoDisableAccessibilityDescription[];
+
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 
@@ -2777,6 +2783,9 @@ extern const char kLacrosSupportDescription[];
 extern const char kLimitShelfItemsToActiveDeskName[];
 extern const char kLimitShelfItemsToActiveDeskDescription[];
 
+extern const char kImprovedScreenCaptureSettingsName[];
+extern const char kImprovedScreenCaptureSettingsDescription[];
+
 extern const char kListAllDisplayModesName[];
 extern const char kListAllDisplayModesDescription[];
 
@@ -2874,9 +2883,6 @@ extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];
 extern const char kSchedulerConfigurationPerformance[];
-
-extern const char kSelectToSpeakNavigationControlName[];
-extern const char kSelectToSpeakNavigationControlDescription[];
 
 extern const char kChromeOSSharingHubName[];
 extern const char kChromeOSSharingHubDescription[];

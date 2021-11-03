@@ -19,12 +19,14 @@
 
 namespace {
 
+ash::AccountManagerFactory* GetAccountManagerFactory() {
+  return g_browser_process->platform_part()->GetAccountManagerFactory();
+}
+
 crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
     const std::string& profile_path) {
   crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      g_browser_process->platform_part()
-          ->GetAccountManagerFactory()
-          ->GetAccountManagerMojoService(profile_path);
+      GetAccountManagerFactory()->GetAccountManagerMojoService(profile_path);
   DCHECK(account_manager_mojo_service);
 
   return account_manager_mojo_service;
@@ -44,14 +46,19 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
     mojo::Remote<crosapi::mojom::AccountManager> remote;
     GetAccountManagerMojoService(profile_path)
         ->BindReceiver(remote.BindNewPipeAndPassReceiver());
+
     // This is set to a sentinel value which will pass all minimum version
     // checks.
     // Calls within Ash are in the same process and don't need to check version
     // compatibility with itself.
     constexpr uint32_t remote_version = std::numeric_limits<uint32_t>::max();
+    // TODO(https://crbug.com/1264818): to avoid incorrect usage, pass a nullptr
+    // `AccountManager` when this is not running in a test.
+    account_manager::AccountManager* account_manager_for_tests =
+        GetAccountManagerFactory()->GetAccountManager(profile_path);
     auto account_manager_facade =
         std::make_unique<account_manager::AccountManagerFacadeImpl>(
-            std::move(remote), remote_version);
+            std::move(remote), remote_version, account_manager_for_tests);
     it = account_manager_facade_map
              ->emplace(profile_path, std::move(account_manager_facade))
              .first;

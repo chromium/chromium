@@ -32,6 +32,20 @@ void TimeDomain::OnRegisterWithSequenceManager(
   associated_thread_ = sequence_manager_->associated_thread();
 }
 
+void TimeDomain::RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) {
+  // Repeatedly trim the front of the top queue until it stabilizes. This is
+  // needed because a different queue can become the top one once you remove the
+  // canceled tasks.
+  while (!delayed_wake_up_queue_.empty()) {
+    auto* top_queue = delayed_wake_up_queue_.top().queue;
+
+    // If no tasks are removed from the top queue, then it means the top queue
+    // cannot change anymore.
+    if (!top_queue->RemoveAllCanceledDelayedTasksFromFront(lazy_now))
+      break;
+  }
+}
+
 SequenceManager* TimeDomain::sequence_manager() const {
   DCHECK(sequence_manager_);
   return sequence_manager_;

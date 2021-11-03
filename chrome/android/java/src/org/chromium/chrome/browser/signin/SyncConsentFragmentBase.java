@@ -68,7 +68,7 @@ import java.util.List;
  * The account to sync is selected among the list of Google Accounts present on
  * the device. A new account can also be added to the list, e.g. if there was
  * none at first.
- * Derived classes must implement {@link #onSigninAccepted}/{@link #onSigninRefused} to define
+ * Derived classes must implement {@link #onSyncAccepted}/{@link #onSyncRefused} to define
  * what happens after the signin flow.
  */
 public abstract class SyncConsentFragmentBase
@@ -174,16 +174,16 @@ public abstract class SyncConsentFragmentBase
         mCanUseGooglePlayServices = true;
     }
 
-    /** The sign-in was refused. */
-    protected abstract void onSigninRefused();
+    /** The sync consent was refused. */
+    protected abstract void onSyncRefused();
 
     /**
-     * The sign-in was accepted.
+     * The sync consent was accepted.
      * @param accountName The name of the account
      * @param settingsClicked Whether the user requested to see their sync settings
      * @param callback The callback invoke when sign-in process is finished or aborted
      */
-    protected abstract void onSigninAccepted(
+    protected abstract void onSyncAccepted(
             String accountName, boolean settingsClicked, Runnable callback);
 
     @Override
@@ -419,7 +419,7 @@ public abstract class SyncConsentFragmentBase
     private void onRefuseButtonClicked(View button) {
         RecordUserAction.record("Signin_Undo_Signin");
         mRecordUndoSignin = false;
-        onSigninRefused();
+        onSyncRefused();
     }
 
     private void onAcceptButtonClicked(View button) {
@@ -479,7 +479,7 @@ public abstract class SyncConsentFragmentBase
                         // Don't start sign-in if this fragment has been destroyed.
                         if (mDestroyed) return;
                         SyncUserDataWiper.wipeSyncUserDataIfRequired(wipeData).then((Void v) -> {
-                            onSigninAccepted(mSelectedAccountName, settingsClicked,
+                            onSyncAccepted(mSelectedAccountName, settingsClicked,
                                     () -> mIsSigninInProgress = false);
                         });
                     }
@@ -581,7 +581,7 @@ public abstract class SyncConsentFragmentBase
 
         // Account for forced sign-in flow disappeared before the sign-in was completed.
         if (ChildAccountStatus.isChild(mChildAccountStatus)) {
-            onSigninRefused();
+            onSyncRefused();
             return;
         }
 

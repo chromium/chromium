@@ -208,6 +208,10 @@ class ScriptExecutorDelegate {
   // the state at the moment of the invocation.
   virtual bool ShouldShowWarning() = 0;
 
+  // Get modifiable log information gathered while executing the action. This
+  // gets attached to the action's response if non empty.
+  virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
+
  protected:
   virtual ~ScriptExecutorDelegate() {}
 };

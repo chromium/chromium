@@ -150,9 +150,9 @@ class ServiceWorkerBasicAuthTest : public ContentBrowserTest {
     // such a dialog is difficult to control programmatically and doesn't work
     // on all platforms.
     ShellContentBrowserClient::Get()->set_login_request_callback(
-        base::BindLambdaForTesting([&](bool is_main_frame) {
-          login_requested_ = is_main_frame ? LoginRequested::kMainFrame
-                                           : LoginRequested::kSubFrame;
+        base::BindLambdaForTesting([&](bool is_primary_main_frame) {
+          login_requested_ = is_primary_main_frame ? LoginRequested::kMainFrame
+                                                   : LoginRequested::kSubFrame;
         }));
   }
 

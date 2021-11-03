@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -350,7 +351,7 @@ bool AXLayoutObject::IsOffScreen() const {
   IntRect content_rect =
       PixelSnappedIntRect(layout_object_->VisualRectInDocument());
   LocalFrameView* view = layout_object_->GetFrame()->View();
-  IntRect view_rect(IntPoint(), view->Size());
+  IntRect view_rect(gfx::Point(), view->Size());
   view_rect.Intersect(content_rect);
   return view_rect.IsEmpty();
 }
@@ -1159,7 +1160,7 @@ String AXLayoutObject::TextAlternative(
 // Hit testing.
 //
 
-AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
+AXObject* AXLayoutObject::AccessibilityHitTest(const gfx::Point& point) const {
   // Must be called for the document.
   if (!IsRoot() || !layout_object_)
     return nullptr;
@@ -1744,7 +1745,7 @@ void AXLayoutObject::GetWordBoundaries(Vector<int>& word_starts,
 
 AXObject* AXLayoutObject::AccessibilityImageMapHitTest(
     HTMLAreaElement* area,
-    const IntPoint& point) const {
+    const gfx::Point& point) const {
   if (!area)
     return nullptr;
 

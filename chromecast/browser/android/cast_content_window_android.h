@@ -21,8 +21,7 @@ namespace chromecast {
 // CastWebContentsActivity.
 class CastContentWindowAndroid : public CastContentWindow {
  public:
-  CastContentWindowAndroid(base::WeakPtr<Delegate> delegate,
-                           mojom::CastWebViewParamsPtr params);
+  explicit CastContentWindowAndroid(mojom::CastWebViewParamsPtr params);
 
   CastContentWindowAndroid(const CastContentWindowAndroid&) = delete;
   CastContentWindowAndroid& operator=(const CastContentWindowAndroid&) = delete;

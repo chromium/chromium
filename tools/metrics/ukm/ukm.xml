@@ -9469,7 +9469,7 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="KeySystem" enum="MediaKeySystem">
+  <metric name="KeySystem" enum="MediaKeySystemLegacy">
     <summary>
       The key system associated with this call.
     </summary>
@@ -9526,7 +9526,7 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
-  <metric name="KeySystem" enum="MediaKeySystem">
+  <metric name="KeySystem" enum="MediaKeySystemLegacy">
     <summary>
       The key system passed in requestMediaKeySystemAccess() call.
     </summary>

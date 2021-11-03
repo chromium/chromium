@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/policy/core/common/policy_loader_ios_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_interaction_manager_constants.h"
@@ -32,6 +34,9 @@
 #endif
 
 using chrome_test_util::IdentityCellMatcherForEmail;
+using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SignOutAccountsButton;
+using chrome_test_util::GoogleSyncSettingsButton;
 
 namespace {
 
@@ -51,7 +56,7 @@ id<GREYMatcher> GetContinueButtonWithIdentityMatcher(
 }
 
 // Returns a matcher for the whole forced sign-in screen.
-id<GREYMatcher> GetFirstRunScreenMatcher() {
+id<GREYMatcher> GetForcedSigninScreenMatcher() {
   return grey_accessibilityID(
       first_run::kFirstRunSignInScreenAccessibilityIdentifier);
 }
@@ -61,7 +66,7 @@ id<GREYMatcher> GetFirstRunScreenMatcher() {
 void TriggerForcedSigninScreen() {
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  [ChromeEarlGrey waitForMatcher:GetFirstRunScreenMatcher()];
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 }
 
 // Checks that the forced sign-in prompt is fully dismissed by making sure
@@ -88,6 +93,54 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 50)
       onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
+}
+
+// Signs in the browser from the forced sign-in screen.
+void SigninBrowserFromForcedSigninScreen(FakeChromeIdentity* fakeIdentity) {
+  // Show forced sign-in screen.
+  TriggerForcedSigninScreen();
+
+  // Scroll to the "Continue as ..." button to go to the bottom of the screen.
+  ScrollToElementAndAssertVisibility(
+      GetContinueButtonWithIdentityMatcher(fakeIdentity));
+
+  [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
+                                          fakeIdentity)]
+      performAction:grey_tap()];
+}
+
+// Opens the sign-out actions sheets from the account settings.
+void OpenAccountSignOutActionsSheets() {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
+}
+
+// Signs out from the sign-out actions sheets UI. Will handle the data action
+// sheet if |syncEnabled|.
+void SignOutFromActionSheets(BOOL syncEnabled) {
+  id<GREYMatcher> confirmationButtonMatcher = [ChromeMatchersAppInterface
+      buttonWithAccessibilityLabelID:IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(confirmationButtonMatcher,
+                                          grey_not(SignOutAccountsButton()),
+                                          nil)] performAction:grey_tap()];
+
+  if (syncEnabled) {
+    confirmationButtonMatcher = [ChromeMatchersAppInterface
+        buttonWithAccessibilityLabelID:
+            IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON];
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(confirmationButtonMatcher,
+                                            grey_not(SignOutAccountsButton()),
+                                            nil)] performAction:grey_tap()];
+  }
+}
+
+// Opens account settings and signs out from them.
+void OpenAccountSettingsAndSignOut(BOOL syncEnabled) {
+  OpenAccountSignOutActionsSheets();
+  SignOutFromActionSheets(syncEnabled);
 }
 
 }  // namespace
@@ -127,7 +180,7 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
   // sure that sign-out is done and that the sign-in screen animation is done
   // before tearing down avoids the conflict.
   [ChromeEarlGreyAppInterface signOutAndClearIdentities];
-  [ChromeEarlGrey waitForMatcher:GetFirstRunScreenMatcher()];
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 
   [super tearDown];
 }
@@ -251,6 +304,134 @@ void ScrollToElementAndAssertVisibility(id<GREYMatcher> elementMatcher) {
   [[EarlGrey selectElementWithMatcher:GetContinueButtonWithIdentityMatcher(
                                           fakeIdentity2)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the sign-out action sheet has the right UI.
+- (void)testSignOutActionSheetUI {
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Sign in account without enabling sync.
+  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Open the SignOut menu actions sheets.
+  OpenAccountSignOutActionsSheets();
+
+  // Check the action sheet message and title that are exclusive to forced
+  // sign-in.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SIGNOUT_DIALOG_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests signing out account from settings with sync disabled.
+- (void)testSignOutFromAccountSettingSyncDisabled {
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Sign in account without enabling sync.
+  SigninBrowserFromForcedSigninScreen(fakeIdentity1);
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Sign out account from account settings.
+  OpenAccountSettingsAndSignOut(NO);
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Tests signing out account from settings with sync enabled.
+- (void)testSignOutFromAccountSettingSyncEnable {
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Sign in and enable sync.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  const NSTimeInterval kSyncOperationTimeout = 5.0;
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+
+  OpenAccountSettingsAndSignOut(YES);
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
+}
+
+// Test cancelling sign out from account settings.
+- (void)testSignOutFromAccountSettingCancel {
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Sign in and enable sync.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+
+  OpenAccountSignOutActionsSheets();
+
+  // Note that the iPad does not provide a CANCEL button by design. Click
+  // anywhere on the screen to exit.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_anyOf(chrome_test_util::CancelButton(),
+                                          SignOutAccountsButton(), nil)]
+      atIndex:1] performAction:grey_tap()];
+
+  // Verify that the force sign-in screen isn't triggered when cancelling
+  // sign-out.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests signing out from sync settings.
+- (void)testSignOutFromSyncSettings {
+  // Add account.
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+
+  // Make sure the forced sign-in screen isn't shown.
+  [[EarlGrey selectElementWithMatcher:GetForcedSigninScreenMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  // Sign in and enable sync.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1];
+  const NSTimeInterval kSyncOperationTimeout = 5.0;
+  [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:GoogleSyncSettingsButton()];
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_accessibilityLabel(l10n_util::GetNSString(
+                      IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC))]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kManageSyncTableViewAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  SignOutFromActionSheets(YES);
+
+  // Wait and verify that the forced sign-in screen is shown.
+  [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 }
 
 @end

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -30,6 +31,8 @@ CastPermissionUserData::CastPermissionUserData(
       feature_permissions_(std::move(feature_permissions)),
       additional_feature_permission_origins_(
           std::move(additional_feature_permission_origins)) {
+  feature_permissions_.insert(static_cast<int32_t>(
+      content::PermissionType::PROTECTED_MEDIA_IDENTIFIER));
   web_contents->SetUserData(&kCastPermissionUserDataKey,
                             base::WrapUnique(this));
 }

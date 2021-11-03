@@ -1,0 +1,13 @@
+error[E0271]: type mismatch resolving `<outside::C as ExternType>::Kind == Trivial`
+  --> $DIR/unique_ptr_to_opaque.rs:22:5
+   |
+22 |     cxx::UniquePtr::new(outside::C { a: 4 });
+   |     ^^^^^^^^^^^^^^^^^^^ expected enum `Trivial`, found enum `cxx::kind::Opaque`
+   |
+note: required by `UniquePtr::<T>::new`
+  --> $DIR/unique_ptr.rs:38:5
+   |
+38 | /     pub fn new(value: T) -> Self
+39 | |     where
+40 | |         T: ExternType<Kind = Trivial>,
+   | |______________________________________^

@@ -110,8 +110,8 @@ class CORE_EXPORT HitTestResult {
   void SetPointInInnerNodeFrame(const PhysicalOffset& point) {
     point_in_inner_node_frame_ = point;
   }
-  IntPoint RoundedPointInInnerNodeFrame() const {
-    return RoundedIntPoint(PointInInnerNodeFrame());
+  gfx::Point RoundedPointInInnerNodeFrame() const {
+    return ToRoundedPoint(PointInInnerNodeFrame());
   }
   LocalFrame* InnerNodeFrame() const;
 

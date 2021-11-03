@@ -3903,4 +3903,14 @@ bool WebMediaPlayerImpl::IsVideoBeingCaptured() const {
   return tick_clock_->NowTicks() - last_frame_request_time_ < base::Seconds(5);
 }
 
+void WebMediaPlayerImpl::RegisterFrameSinkHierarchy() {
+  DCHECK(bridge_);
+  bridge_->RegisterFrameSinkHierarchy();
+}
+
+void WebMediaPlayerImpl::UnregisterFrameSinkHierarchy() {
+  DCHECK(bridge_);
+  bridge_->UnregisterFrameSinkHierarchy();
+}
+
 }  // namespace blink

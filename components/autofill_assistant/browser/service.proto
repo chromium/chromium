@@ -981,6 +981,9 @@ message ProcessedActionStatusDetailsProto {
   // Additional information from the |WebController|.
   optional WebControllerErrorInfoProto web_controller_error_info = 5;
 
+  // Additional information from the |ElementFinder|.
+  repeated ElementFinderInfoProto element_finder_info = 6;
+
   reserved 4;
 }
 
@@ -1210,6 +1213,25 @@ message WebControllerErrorInfoProto {
   optional WebAction failed_web_action = 1;
 }
 
+message ElementFinderInfoProto {
+  // Tracking ID of the |Selector|.
+  optional int64 tracking_id = 1;
+
+  // If the Selector fails to be resolved, this index holds the starting index
+  // of filters currently being applied.
+  optional int32 failed_filter_index_range_start = 2;
+
+  // If a filter failed, this index holds the filter that was supposed to be
+  // applied next.
+  optional int32 failed_filter_index_range_end = 3;
+
+  // The original status of |ElementFinder|.
+  optional ProcessedActionStatusProto status = 4;
+
+  // If set, the document could not be resolved.
+  optional bool get_document_failed = 5;
+}
+
 // The pseudo type values come from
 // https://chromedevtools.github.io/devtools-protocol/tot/DOM#type-PseudoType.
 enum PseudoType {
@@ -1238,6 +1260,12 @@ message SelectorProto {
   // the output of the previous filter as input. The root of these filters is
   // the main frame's document.
   repeated Filter filters = 9;
+
+  // An ID that's used to identify selector in logs, as they pass through
+  // different layers. It is passed to the client only as FYI. Client might
+  // choose to echo back these ids when reporting specific selectors as
+  // matching or not matching.
+  optional int64 tracking_id = 10;
 
   // A filter that starts with one or more elements and returns one on more
   // elements. Filters are meant to be applied sequentially.

@@ -72,6 +72,10 @@ Database* DOMWindowWebDatabase::openDatabase(
     if (window.GetSecurityOrigin()->IsLocal())
       UseCounter::Count(window, WebFeature::kFileAccessedDatabase);
 
+    if (!window.GetExecutionContext()->IsSecureContext()) {
+      UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
+    }
+
     if (window.IsCrossSiteSubframeIncludingScheme()) {
       Deprecation::CountDeprecation(
           &window, WebFeature::kOpenWebDatabaseThirdPartyContext);

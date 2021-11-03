@@ -569,6 +569,10 @@ const char kRecordSnapshotSizeDescription[] =
     "snapshots. PDF snaphot will be taken just for the purpose of the "
     "histogram recording.";
 
+const char kSingleNtpName[] = "Enable Single NTP";
+const char kSingleNtpDescription[] =
+    "When enabled, uses one NTP for all tabs in a Browser";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

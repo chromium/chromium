@@ -18,7 +18,6 @@ class Notification;
 
 namespace views {
 class BoxLayout;
-class ImageView;
 class LabelButton;
 class View;
 }  // namespace views
@@ -26,6 +25,7 @@ class View;
 namespace ash {
 
 class RoundedImageView;
+class AshNotificationExpandButton;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -79,54 +79,6 @@ class ASH_EXPORT AshNotificationView
       const std::u16string& label) override;
   gfx::Size GetIconViewSize() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
-
-  // Customized expand button for this notification view. Used for grouped as
-  // well as singular notifications.
-  class ExpandButton : public views::Button {
-   public:
-    METADATA_HEADER(ExpandButton);
-    explicit ExpandButton(PressedCallback callback = PressedCallback());
-    ExpandButton(const ExpandButton&) = delete;
-    ExpandButton& operator=(const ExpandButton&) = delete;
-    ~ExpandButton() override;
-
-    // Change the expanded state. The icon will change.
-    void SetExpanded(bool expanded);
-
-    // Whether the label displaying the number of notifications in a grouped
-    // notification needs to be displayed.
-    bool ShouldShowLabel() const;
-
-    // Update the count of total grouped notifications in the parent view and
-    // update the text for the label accordingly.
-    void UpdateGroupedNotificationsCount(int count);
-
-    // Generate the icons used for chevron in the expanded and collapsed state.
-    void UpdateIcons();
-
-    // views::Button:
-    gfx::Size CalculatePreferredSize() const override;
-    void OnThemeChanged() override;
-
-    views::Label* label_for_test() { return label_; }
-
-   private:
-    // Owned by views hierarchy.
-    views::Label* label_;
-    views::ImageView* image_;
-
-    // Cached icons used to display the chevron in the button.
-    gfx::ImageSkia expanded_image_;
-    gfx::ImageSkia collapsed_image_;
-
-    // total number of grouped child notifications in this button's parent view.
-    int total_grouped_notifications_ = 0;
-
-    // The expand state of the button.
-    bool expanded_ = false;
-  };
-  BEGIN_VIEW_BUILDER(/*no export*/, ExpandButton, views::Button)
-  END_VIEW_BUILDER
 
  private:
   friend class AshNotificationViewTest;
@@ -185,7 +137,7 @@ class ASH_EXPORT AshNotificationView
 
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
-  ExpandButton* expand_button_ = nullptr;
+  AshNotificationExpandButton* expand_button_ = nullptr;
   views::View* control_buttons_container_ = nullptr;
   views::View* left_content_ = nullptr;
   views::Label* message_view_in_expanded_state_ = nullptr;
@@ -224,7 +176,5 @@ class ASH_EXPORT AshNotificationView
 };
 
 }  // namespace ash
-
-DEFINE_VIEW_BUILDER(/* no export */, ash::AshNotificationView::ExpandButton)
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_ASH_NOTIFICATION_VIEW_H_

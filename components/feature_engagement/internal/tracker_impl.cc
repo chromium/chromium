@@ -184,7 +184,8 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
-      *display_lock_controller_, time_provider_->GetCurrentDay());
+      *display_lock_controller_, configuration_.get(),
+      time_provider_->GetCurrentDay());
   if (result.NoErrors()) {
     condition_validator_->NotifyIsShowing(
         feature, feature_config, configuration_->GetRegisteredFeatures());
@@ -222,7 +223,8 @@ bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
   FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, *event_model_, *availability_model_,
-      *display_lock_controller_, time_provider_->GetCurrentDay());
+      *display_lock_controller_, configuration_.get(),
+      time_provider_->GetCurrentDay());
   DVLOG(2) << "Would trigger result for " << feature.name
            << ": trigger=" << result.NoErrors()
            << " tracking_only=" << feature_config.tracking_only << " "
@@ -255,7 +257,7 @@ Tracker::TriggerState TrackerImpl::GetTriggerState(
 
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, configuration_->GetFeatureConfig(feature), *event_model_,
-      *availability_model_, *display_lock_controller_,
+      *availability_model_, *display_lock_controller_, configuration_.get(),
       time_provider_->GetCurrentDay());
 
   if (result.trigger_ok) {

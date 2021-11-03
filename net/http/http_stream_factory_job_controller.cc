@@ -83,6 +83,20 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
   input = url::SchemeHostPort(url::kHttpsScheme, input.host(), input.port());
 }
 
+void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
+  const ProxyServer::Scheme max_scheme = ProxyServer::Scheme::SCHEME_QUIC;
+  ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_DIRECT;
+  if (!proxy_info.is_empty())
+    proxy_scheme = proxy_info.proxy_server().scheme();
+  if (success) {
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,
+                              max_scheme);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeFailed", proxy_scheme,
+                              max_scheme);
+  }
+}
+
 }  // namespace
 
 // The maximum time to wait for the alternate job to complete before resuming
@@ -286,6 +300,8 @@ void HttpStreamFactory::JobController::OnStreamReady(
   CHECK(request_);
 
   DCHECK(request_->completed());
+
+  HistogramProxyUsed(job->proxy_info(), /*success=*/true);
   delegate_->OnStreamReady(used_ssl_config, job->proxy_info(),
                            std::move(stream));
 }
@@ -391,6 +407,8 @@ void HttpStreamFactory::JobController::OnStreamFailed(
     RunLoop(status);
     return;
   }
+
+  HistogramProxyUsed(job->proxy_info(), /*success=*/false);
   delegate_->OnStreamFailed(status, *job->net_error_details(), used_ssl_config,
                             job->proxy_info(), job->resolve_error_info());
 }

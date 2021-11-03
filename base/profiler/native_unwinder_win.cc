@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/profiler/native_unwinder.h"
 #include "base/profiler/win32_stack_frame_unwinder.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -42,24 +43,24 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
       // when the stack was copied, if the module was unloaded and a different
       // module loaded in overlapping memory. This likely would cause a crash
       // but has not been observed in practice.
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
 
     if (!stack->back().module->IsNative()) {
       // This is a non-native module associated with the auxiliary unwinder
       // (e.g. corresponding to a frame in V8 generated code). Report as
       // UNRECOGNIZED_FRAME to allow that unwinder to unwind the frame.
-      return UnwindResult::UNRECOGNIZED_FRAME;
+      return UnwindResult::kUnrecognizedFrame;
     }
 
     uintptr_t prev_stack_pointer = RegisterContextStackPointer(thread_context);
     if (!frame_unwinder.TryUnwind(stack->size() == 1u, thread_context,
                                   stack->back().module)) {
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
 
     if (ContextPC(thread_context) == 0)
-      return UnwindResult::COMPLETED;
+      return UnwindResult::kCompleted;
 
     // Exclusive range of expected stack pointer values after the unwind.
     struct {
@@ -79,7 +80,7 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
             expected_stack_pointer_range.start ||
         RegisterContextStackPointer(thread_context) >=
             expected_stack_pointer_range.end) {
-      return UnwindResult::ABORTED;
+      return UnwindResult::kAborted;
     }
 
     // Record the frame to which we just unwound.
@@ -89,7 +90,7 @@ UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
   }
 
   NOTREACHED();
-  return UnwindResult::COMPLETED;
+  return UnwindResult::kCompleted;
 }
 
 std::unique_ptr<Unwinder> CreateNativeUnwinder(ModuleCache* module_cache) {

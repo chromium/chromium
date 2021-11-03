@@ -13,8 +13,8 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -39,8 +39,9 @@ class ASH_EXPORT InnerExpandedDesksBarButton : public DeskButtonBase {
   // TODO(sophiewen): Move callback to DeskButtonBase constructor parameter. We
   // also want to eventually use views::Button::Callback.
   InnerExpandedDesksBarButton(ExpandedDesksBarButton* outer_button,
-                              base::RepeatingClosure callback)
-      : DeskButtonBase(std::u16string(), kBorderCornerRadius, kCornerRadius),
+                              base::RepeatingClosure callback,
+                              const std::u16string& text)
+      : DeskButtonBase(text, kBorderCornerRadius, kCornerRadius),
         outer_button_(outer_button),
         button_callback_(callback) {
     paint_contents_only_ = true;
@@ -109,7 +110,9 @@ ExpandedDesksBarButton::ExpandedDesksBarButton(
       button_icon_(button_icon),
       button_label_(button_label),
       inner_button_(AddChildView(
-          std::make_unique<InnerExpandedDesksBarButton>(this, callback))),
+          std::make_unique<InnerExpandedDesksBarButton>(this,
+                                                        callback,
+                                                        button_label))),
       label_(AddChildView(std::make_unique<views::Label>())) {
   DCHECK(button_icon_);
   SetPaintToLayer();

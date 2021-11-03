@@ -46,11 +46,11 @@ void AutofillProgressDialogViewAndroid::Dismiss(
     // If the confirmation is shown, the dialog must have been dismissed
     // automatically without user actions.
     DCHECK(!is_canceled_by_user);
-    if (controller_) {
-      controller_->OnDismissed(/*is_canceled_by_user=*/false);
-      controller_ = nullptr;
-    }
-    ShowConfirmation();
+    DCHECK(controller_);
+    std::u16string confirmation_message = controller_->GetConfirmationMessage();
+    controller_->OnDismissed(/*is_canceled_by_user=*/false);
+    controller_ = nullptr;
+    ShowConfirmation(confirmation_message);
     return;
   }
 
@@ -94,12 +94,12 @@ void AutofillProgressDialogViewAndroid::ShowDialog() {
           IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
 }
 
-void AutofillProgressDialogViewAndroid::ShowConfirmation() {
+void AutofillProgressDialogViewAndroid::ShowConfirmation(
+    std::u16string confirmation_message) {
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!java_object_.is_null()) {
     Java_AutofillProgressDialogBridge_showConfirmation(
-        env, java_object_,
-        ConvertUTF16ToJavaString(env, controller_->GetConfirmationMessage()));
+        env, java_object_, ConvertUTF16ToJavaString(env, confirmation_message));
   }
 }
 

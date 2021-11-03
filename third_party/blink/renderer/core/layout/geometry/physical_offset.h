@@ -94,8 +94,6 @@ struct CORE_EXPORT PhysicalOffset {
   constexpr LayoutPoint ToLayoutPoint() const { return {left, top}; }
   constexpr LayoutSize ToLayoutSize() const { return {left, top}; }
 
-  explicit PhysicalOffset(const IntPoint& point)
-      : left(point.x()), top(point.y()) {}
   explicit PhysicalOffset(const IntSize& size)
       : left(size.width()), top(size.height()) {}
   explicit PhysicalOffset(const gfx::Point& point)
@@ -152,13 +150,23 @@ struct CORE_EXPORT PhysicalOffset {
 
 // TODO(crbug.com/962299): These functions should upgraded to force correct
 // pixel snapping in a type-safe way.
-inline IntPoint RoundedIntPoint(const PhysicalOffset& o) {
+inline gfx::Point ToRoundedPoint(const PhysicalOffset& o) {
   return {o.left.Round(), o.top.Round()};
 }
-inline IntPoint FlooredIntPoint(const PhysicalOffset& o) {
+inline gfx::Point ToFlooredPoint(const PhysicalOffset& o) {
   return {o.left.Floor(), o.top.Floor()};
 }
-inline IntPoint CeiledIntPoint(const PhysicalOffset& o) {
+inline gfx::Point ToCeiledPoint(const PhysicalOffset& o) {
+  return {o.left.Ceil(), o.top.Ceil()};
+}
+
+inline gfx::Vector2d ToRoundedVector2d(const PhysicalOffset& o) {
+  return {o.left.Round(), o.top.Round()};
+}
+inline gfx::Vector2d ToFlooredVector2d(const PhysicalOffset& o) {
+  return {o.left.Floor(), o.top.Floor()};
+}
+inline gfx::Vector2d ToCeiledVector2d(const PhysicalOffset& o) {
   return {o.left.Ceil(), o.top.Ceil()};
 }
 

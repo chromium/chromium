@@ -4,8 +4,9 @@
 
 // clang-format off
 import {Route, Router} from 'chrome://settings/settings.js';
-import {setupPopstateListener} from 'chrome://test/settings/test_util.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {setupPopstateListener} from './test_util.js';
 
 // clang-format on
 

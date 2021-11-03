@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -32,6 +31,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -67,7 +67,7 @@ void DrawIcon(cc::PaintCanvas* canvas,
   // area) and so that all placeholder images on the same page look consistent.
   canvas->drawImageRect(
       icon_image->PaintImageForCurrentFrame(),
-      IntRect(IntPoint::Zero(), icon_image->Size()),
+      IntRect(gfx::Point(), icon_image->Size()),
       FloatRect(x, y, scale_factor * kIconWidth, scale_factor * kIconHeight),
       sampling, &flags, SkCanvas::kFast_SrcRectConstraint);
 }

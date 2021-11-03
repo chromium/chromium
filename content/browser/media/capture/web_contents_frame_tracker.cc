@@ -47,9 +47,7 @@ class WebContentsContext : public WebContentsFrameTracker::Context {
     if (auto* view = GetCurrentView()) {
       // If we know the available size of the screen, we don't want to exceed
       // it as it may result in strange capture behavior in some cases.
-      display::ScreenInfo info;
-      view->GetScreenInfo(&info);
-      return info.rect;
+      return view->GetScreenInfo().rect;
     }
     return absl::nullopt;
   }

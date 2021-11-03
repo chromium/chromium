@@ -1101,7 +1101,7 @@ TEST(ChromeUnwinderAndroidV2Test, TryUnwind) {
       reinterpret_cast<uintptr_t>(stack_memory.data());
   context.arm_lr = second_pc;
 
-  EXPECT_EQ(UnwindResult::UNRECOGNIZED_FRAME,
+  EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
             unwinder.TryUnwind(&context, stack_top, &unwound_frames));
   ExpectFramesEq(std::vector<Frame>({{first_pc, chrome_module},
                                      {second_pc, chrome_module},

@@ -7,7 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chromeos/ui/base/window_properties.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -18,25 +19,30 @@
 namespace extensions {
 namespace tabs_util {
 
-void SetLockedFullscreenState(Browser* browser,
-                              chromeos::WindowPinType new_type) {
+void SetLockedFullscreenState(Browser* browser, bool pinned) {
   aura::Window* window = browser->window()->GetNativeWindow();
   DCHECK(window);
 
   const chromeos::WindowPinType previous_type =
-      window->GetProperty(chromeos::kWindowPinTypeKey);
+      window->GetProperty(lacros::kWindowPinTypeKey);
+  DCHECK_NE(previous_type, chromeos::WindowPinType::kTrustedPinned)
+      << "Extensions only set Trusted Pinned";
+
+  bool previous_pinned =
+      previous_type == chromeos::WindowPinType::kTrustedPinned;
   // As this gets triggered from extensions, we might encounter this case.
-  if (previous_type == new_type)
+  if (previous_pinned == pinned)
     return;
 
-  window->SetProperty(chromeos::kWindowPinTypeKey, new_type);
+  window->SetProperty(lacros::kWindowPinTypeKey,
+                      pinned ? chromeos::WindowPinType::kTrustedPinned
+                             : chromeos::WindowPinType::kNone);
 
   auto* pinned_mode_extension =
       views::DesktopWindowTreeHostLinux::From(window->GetHost())
           ->GetPinnedModeExtension();
-  if (new_type != chromeos::WindowPinType::kNone) {
-    bool trusted = new_type == chromeos::WindowPinType::kTrustedPinned;
-    pinned_mode_extension->Pin(trusted);
+  if (pinned) {
+    pinned_mode_extension->Pin(/*trusted=*/true);
   } else {
     pinned_mode_extension->Unpin();
   }

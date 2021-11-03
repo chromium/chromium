@@ -285,6 +285,7 @@ js_library("network_info_test") {
 
 js_library("network_list_test") {
   deps = [
+    ":test_diagnostics_browser_proxy",
     "../..:chai_assert",
     "../..:test_util",
     "//ash/webui/diagnostics_ui/resources:diagnostics_types",

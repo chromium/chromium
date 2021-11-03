@@ -19,6 +19,7 @@
 #include "ash/wm/desks/templates/desks_templates_delete_button.h"
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
@@ -34,6 +35,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
@@ -116,7 +118,7 @@ class DesksTemplatesItemViewTestApi {
   const base::GUID uuid() const { return item_view_->uuid_; }
 
   const std::vector<DesksTemplatesIconView*>& icon_views() const {
-    return item_view_->icon_views_;
+    return item_view_->icon_container_view_->icon_views_;
   }
 
  private:
@@ -348,6 +350,15 @@ class DesksTemplatesTest : public OverviewTestBase {
 
     return overview_session->grid_list();
   }
+
+  // OverviewTestBase:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
+    OverviewTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the helpers `AddEntry()` and `DeleteEntry()`, which will be used in
@@ -489,7 +500,7 @@ TEST_F(DesksTemplatesTest, HideOverviewItemsOnTemplateGridShow) {
   EXPECT_EQ(1.0f, test_window->layer()->opacity());
 }
 
-// Tests that when thetemplates grid is shown and the active desk is closed,
+// Tests that when the templates grid is shown and the active desk is closed,
 // overview items stay hidden.
 TEST_F(DesksTemplatesTest, OverviewItemsStayHiddenInTemplateGridOnDeskClose) {
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
@@ -810,13 +821,13 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
 }
 
 // Tests that the overflow count view is visible, in bounds, displays the right
-// count when there is more than `DesksTemplatesItemView::kMaxIcons` icons.
+// count when there is more than `DesksTemplatesIconContainer::kMaxIcons` icons.
 TEST_F(DesksTemplatesTest, OverflowIconView) {
   // Create a `DeskTemplate` using which has 1 app more than the max and each
   // app has 1 window.
   const int kNumOverflowApps = 1;
   std::vector<int> window_info(
-      kNumOverflowApps + DesksTemplatesItemView::kMaxIcons, 1);
+      kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(window_info));
 
@@ -829,7 +840,7 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
       DesksTemplatesItemViewTestApi(item_view).icon_views();
 
   // There should only be the max number of icons plus the overflow icon.
-  EXPECT_EQ(DesksTemplatesItemView::kMaxIcons + 1,
+  EXPECT_EQ(DesksTemplatesIconContainer::kMaxIcons + 1,
             static_cast<int>(icon_views.size()));
 
   // The overflow counter should have no identifier and its count should be
@@ -845,15 +856,15 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
 }
 
 // Tests that when there isn't enough space to display
-// `DesksTemplatesItemView::kMaxIcons` icons and the overflow
+// `DesksTemplatesIconContainer::kMaxIcons` icons and the overflow
 // icon view, the overflow icon view is visible and its count incremented by the
 // number of icons that had to be hidden.
 TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   // Create a `DeskTemplate` using which has 3 apps more than
-  // `DesksTemplatesItemView::kMaxIcons` and each app has 2 windows.
+  // `DesksTemplatesIconContainer::kMaxIcons` and each app has 2 windows.
   const int kNumOverflowApps = 3;
   std::vector<int> window_info(
-      kNumOverflowApps + DesksTemplatesItemView::kMaxIcons, 2);
+      kNumOverflowApps + DesksTemplatesIconContainer::kMaxIcons, 2);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(window_info));
 
@@ -865,10 +876,10 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   const std::vector<DesksTemplatesIconView*>& icon_views =
       DesksTemplatesItemViewTestApi(item_view).icon_views();
 
-  // Even though there are more than `DesksTemplatesItemView::kMaxIcons`, there
-  // should still be `DesksTemplatesItemView::kMaxIcons`+ 1
+  // Even though there are more than `DesksTemplatesIconContainer::kMaxIcons`,
+  // there should still be `DesksTemplatesIconContainer::kMaxIcons`+ 1
   // DesksTemplatesIconView's created.
-  EXPECT_EQ(icon_views.size(), DesksTemplatesItemView::kMaxIcons + 1u);
+  EXPECT_EQ(icon_views.size(), DesksTemplatesIconContainer::kMaxIcons + 1u);
 
   // Count the number of hidden icon views and also check that there's a
   // contiguous block of visible icon views, followed by a contiguous block of
@@ -932,12 +943,12 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
   EXPECT_FALSE(icon_views.back()->GetVisible());
 }
 
-// Tests that when there are less than `DesksTemplatesItemView::kMaxIcons` the
-// overflow icon is not visible.
+// Tests that when there are less than `DesksTemplatesIconContainer::kMaxIcons`
+// the overflow icon is not visible.
 TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
-  // Create a `DeskTemplate` using which has `DesksTemplatesItemView::kMaxIcons`
-  // apps and each app has 1 window.
-  std::vector<int> window_info(DesksTemplatesItemView::kMaxIcons, 1);
+  // Create a `DeskTemplate` using which has
+  // `DesksTemplatesIconContainer::kMaxIcons` apps and each app has 1 window.
+  std::vector<int> window_info(DesksTemplatesIconContainer::kMaxIcons, 1);
   AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now(),
            CreateRestoreData(window_info));
 
@@ -1031,7 +1042,8 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   ASSERT_TRUE(GetOverviewSession()
                   ->GetGridWithRootWindow(root_window)
-                  ->desks_templates_grid_widget());
+                  ->desks_templates_grid_widget()
+                  ->IsVisible());
 
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
@@ -1039,7 +1051,8 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_FALSE(GetOverviewSession()
                    ->GetGridWithRootWindow(root_window)
-                   ->desks_templates_grid_widget());
+                   ->desks_templates_grid_widget()
+                   ->IsVisible());
 }
 
 }  // namespace ash

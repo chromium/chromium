@@ -1349,4 +1349,8 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
+ProcessedActionStatusDetailsProto& ScriptExecutor::GetLogInfo() {
+  return delegate_->GetLogInfo();
+}
+
 }  // namespace autofill_assistant

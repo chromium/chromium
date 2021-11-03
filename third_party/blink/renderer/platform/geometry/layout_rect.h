@@ -65,7 +65,7 @@ class PLATFORM_EXPORT LayoutRect {
       : location_(location), size_(size) {}
   constexpr LayoutRect(const DoublePoint& location, const DoubleSize& size)
       : location_(location), size_(size) {}
-  constexpr LayoutRect(const IntPoint& location, const IntSize& size)
+  constexpr LayoutRect(const gfx::Point& location, const IntSize& size)
       : location_(location), size_(size) {}
   constexpr explicit LayoutRect(const IntRect& rect)
       : location_(rect.origin()), size_(rect.size()) {}
@@ -87,7 +87,7 @@ class PLATFORM_EXPORT LayoutRect {
   constexpr LayoutPoint Location() const { return location_; }
   constexpr LayoutSize Size() const { return size_; }
 
-  IntPoint PixelSnappedLocation() const { return RoundedIntPoint(location_); }
+  gfx::Point PixelSnappedLocation() const { return ToRoundedPoint(location_); }
   IntSize PixelSnappedSize() const {
     return IntSize(SnapSizeToPixel(size_.Width(), location_.X()),
                    SnapSizeToPixel(size_.Height(), location_.Y()));
@@ -126,7 +126,7 @@ class PLATFORM_EXPORT LayoutRect {
   void MoveBy(const LayoutPoint& offset) {
     location_.Move(offset.X(), offset.Y());
   }
-  void MoveBy(const IntPoint& offset) {
+  void MoveBy(const gfx::Point& offset) {
     location_.Move(LayoutUnit(offset.x()), LayoutUnit(offset.y()));
   }
   void Move(LayoutUnit dx, LayoutUnit dy) { location_.Move(dx, dy); }
@@ -330,21 +330,21 @@ constexpr bool operator!=(const LayoutRect& a, const LayoutRect& b) {
 }
 
 inline IntRect PixelSnappedIntRect(const LayoutRect& rect) {
-  return IntRect(RoundedIntPoint(rect.Location()),
+  return IntRect(ToRoundedPoint(rect.Location()),
                  IntSize(SnapSizeToPixel(rect.Width(), rect.X()),
                          SnapSizeToPixel(rect.Height(), rect.Y())));
 }
 
 inline IntRect EnclosingIntRect(const LayoutRect& rect) {
-  IntPoint location = FlooredIntPoint(rect.MinXMinYCorner());
-  IntPoint max_point = CeiledIntPoint(rect.MaxXMaxYCorner());
-  return IntRect(location, max_point - location);
+  gfx::Point location = ToFlooredPoint(rect.MinXMinYCorner());
+  gfx::Point max_point = ToCeiledPoint(rect.MaxXMaxYCorner());
+  return IntRect(location, IntSize(max_point - location));
 }
 
 inline IntRect EnclosedIntRect(const LayoutRect& rect) {
-  IntPoint location = CeiledIntPoint(rect.MinXMinYCorner());
-  IntPoint max_point = FlooredIntPoint(rect.MaxXMaxYCorner());
-  return IntRect(location, max_point - location);
+  gfx::Point location = ToCeiledPoint(rect.MinXMinYCorner());
+  gfx::Point max_point = ToFlooredPoint(rect.MaxXMaxYCorner());
+  return IntRect(location, IntSize(max_point - location));
 }
 
 inline LayoutRect EnclosingLayoutRect(const FloatRect& rect) {
@@ -380,8 +380,7 @@ inline IntRect PixelSnappedIntRectFromEdges(LayoutUnit left,
 }
 
 inline IntRect PixelSnappedIntRect(LayoutPoint location, LayoutSize size) {
-  return IntRect(RoundedIntPoint(location),
-                 PixelSnappedIntSize(size, location));
+  return IntRect(ToRoundedPoint(location), PixelSnappedIntSize(size, location));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const LayoutRect&);

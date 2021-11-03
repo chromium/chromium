@@ -415,7 +415,7 @@ void CustomScrollbar::PositionScrollbarParts() {
     part.value->GetMutableForPainting().FirstFragment().SetPaintOffset(
         PhysicalOffset(part_rect.origin()));
     // The part's frame_rect is relative to the scrollbar.
-    part_rect.MoveBy(-Location());
+    part_rect.Offset(-ToIntSize(Location()));
     part.value->SetFrameRect(LayoutRect(part_rect));
   }
 }

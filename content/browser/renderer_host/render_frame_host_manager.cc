@@ -2963,7 +2963,8 @@ void RenderFrameHostManager::SwapOuterDelegateFrame(
   // false to |is_loading| below.
   // TODO(lazyboy): This |is_loading| behavior might not be what we want,
   // investigate and fix.
-  DCHECK_EQ(render_frame_host->GetSiteInstance(), proxy->GetSiteInstance());
+  DCHECK_EQ(render_frame_host->GetSiteInstance()->group(),
+            proxy->site_instance_group());
   render_frame_host->SwapOuterDelegateFrame(proxy);
   proxy->SetRenderFrameProxyCreated(true);
 }
@@ -3324,10 +3325,8 @@ void RenderFrameHostManager::CommitPending(
     for (auto& proxy : proxy_hosts_to_restore) {
       // We only cache pages when swapping BrowsingInstance, so we should never
       // be reusing SiteInstanceGroups.
-      CHECK(!base::Contains(proxy_hosts_, static_cast<SiteInstanceImpl*>(
-                                              proxy.second->GetSiteInstance())
-                                              ->group()
-                                              ->GetId()));
+      CHECK(!base::Contains(proxy_hosts_,
+                            proxy.second->site_instance_group()->GetId()));
       static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
           ->AddObserver(this);
       TRACE_EVENT_INSTANT(

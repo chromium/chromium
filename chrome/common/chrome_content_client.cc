@@ -269,9 +269,6 @@ static const char* const kChromeStandardURLSchemes[] = {
 #if defined(OS_ANDROID)
     content::kAndroidAppScheme,
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    chrome::kCrosScheme,
-#endif
 };
 
 void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {

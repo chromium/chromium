@@ -8,6 +8,4 @@
 <template is="dom-if" if="[[showErrorPage_]]">
   <whats-new-error-page></whats-new-error-page>
 </template>
-<template is="dom-if" if="[[url_]]">
-  <iframe id="content" src="[[url_]]"></iframe>
-</template>
+<iframe id="content" hidden$="[[!canHandleMessages_]]" src="[[url_]]"></iframe>

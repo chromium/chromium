@@ -6,8 +6,11 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "remoting/host/mojo_ipc/mojo_ipc_util.h"
 
 namespace remoting {
 
@@ -33,6 +36,14 @@ bool GetInstalledBinaryPath(const base::FilePath::StringType& binary,
 
   *full_path = path;
   return true;
+}
+
+const mojo::NamedPlatformChannel::ServerName&
+GetChromotingHostServicesServerName() {
+  static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
+      server_name(WorkingDirectoryIndependentServerNameFromUTF8(
+          "chromoting_host_services_mojo_ipc"));
+  return *server_name;
 }
 
 }  // namespace remoting

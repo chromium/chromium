@@ -356,8 +356,8 @@ class ChromePrintContext : public PrintContext {
         context.SetStrokeThickness(1);
         context.SetStrokeColor(Color(0, 0, 255));
         context.DrawLine(
-            IntPoint(0, current_height - 1),
-            IntPoint(spool_size_in_pixels.width(), current_height - 1),
+            gfx::Point(0, current_height - 1),
+            gfx::Point(spool_size_in_pixels.width(), current_height - 1),
             AutoDarkMode::Disabled());
         context.Restore();
       }
@@ -492,7 +492,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
   }
 
   void ComputePageRects(const FloatSize& print_size) override {
-    IntRect rect(IntPoint(0, 0), FlooredIntSize(print_size));
+    IntRect rect(gfx::Point(0, 0), FlooredIntSize(print_size));
     print_params_.print_content_area = ToGfxRect(rect);
     page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
   }
@@ -1444,7 +1444,7 @@ void WebLocalFrameImpl::MoveRangeSelectionExtent(const gfx::Point& point) {
       DocumentUpdateReason::kSelection);
 
   GetFrame()->Selection().MoveRangeSelectionExtent(
-      GetFrame()->View()->ViewportToFrame(IntPoint(point)));
+      GetFrame()->View()->ViewportToFrame(point));
 }
 
 void WebLocalFrameImpl::MoveRangeSelection(
@@ -1462,8 +1462,8 @@ void WebLocalFrameImpl::MoveRangeSelection(
   if (granularity == WebFrame::kWordGranularity)
     blink_granularity = blink::TextGranularity::kWord;
   GetFrame()->Selection().MoveRangeSelection(
-      GetFrame()->View()->ViewportToFrame(IntPoint(base_in_viewport)),
-      GetFrame()->View()->ViewportToFrame(IntPoint(extent_in_viewport)),
+      GetFrame()->View()->ViewportToFrame(base_in_viewport),
+      GetFrame()->View()->ViewportToFrame(extent_in_viewport),
       blink_granularity);
 }
 
@@ -1475,8 +1475,8 @@ void WebLocalFrameImpl::MoveCaretSelection(
   // needs to be audited.  see http://crbug.com/590369 for more details.
   GetFrame()->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
-  const IntPoint point_in_contents =
-      GetFrame()->View()->ViewportToFrame(IntPoint(point_in_viewport));
+  const gfx::Point point_in_contents =
+      GetFrame()->View()->ViewportToFrame(point_in_viewport);
   GetFrame()->Selection().MoveCaretSelection(point_in_contents);
 }
 
@@ -1831,7 +1831,7 @@ gfx::Rect WebLocalFrameImpl::GetSelectionBoundsRectForTesting() const {
 gfx::Point WebLocalFrameImpl::GetPositionInViewportForTesting() const {
   DCHECK(GetFrame());  // Not valid after the Frame is detached.
   LocalFrameView* view = GetFrameView();
-  return ToGfxPoint(view->ConvertToRootFrame(IntPoint()));
+  return view->ConvertToRootFrame(gfx::Point());
 }
 
 // WebLocalFrameImpl public --------------------------------------------------
@@ -2265,8 +2265,8 @@ void WebLocalFrameImpl::DidFinish() {
 }
 
 HitTestResult WebLocalFrameImpl::HitTestResultForVisualViewportPos(
-    const IntPoint& pos_in_viewport) {
-  IntPoint root_frame_point(
+    const gfx::Point& pos_in_viewport) {
+  gfx::Point root_frame_point(
       GetFrame()->GetPage()->GetVisualViewport().ViewportToRootFrame(
           pos_in_viewport));
   HitTestLocation location(
@@ -2537,7 +2537,7 @@ WebFrameWidget* WebLocalFrameImpl::FrameWidget() const {
 
 void WebLocalFrameImpl::CopyImageAtForTesting(
     const gfx::Point& pos_in_viewport) {
-  GetFrame()->CopyImageAtViewportPoint(IntPoint(pos_in_viewport));
+  GetFrame()->CopyImageAtViewportPoint(pos_in_viewport);
 }
 
 void WebLocalFrameImpl::ShowContextMenuFromExternal(

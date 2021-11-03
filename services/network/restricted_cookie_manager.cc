@@ -534,12 +534,48 @@ void RestrictedCookieManager::SetCanonicalCookie(
       GURL::SchemeIsCryptographic(origin_.scheme())
           ? net::CookieSourceScheme::kSecure
           : net::CookieSourceScheme::kNonSecure;
+
+  // If the renderer's cookie has a partition key that was not created using
+  // CookiePartitionKey::FromScript, then the cookie's partition key should be
+  // equal to RestrictedCookieManager's partition key.
+  absl::optional<net::CookiePartitionKey> cookie_partition_key =
+      cookie.PartitionKey();
+  if (cookie_partition_key) {
+    // RestrictedCookieManager having a null partition key strictly implies the
+    // feature is disabled. If that is the case, we treat the cookie as
+    // unpartitioned.
+    if (!cookie_partition_key_) {
+      cookie_partition_key = absl::nullopt;
+    } else {
+      bool cookie_partition_key_ok =
+          cookie.PartitionKey()->from_script() ||
+          cookie.PartitionKey().value() == cookie_partition_key_.value();
+      UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.CookiePartitionKeyOK",
+                            cookie_partition_key_ok);
+      if (!cookie_partition_key_ok) {
+        mojo::ReportBadMessage(
+            "RestrictedCookieManager: unexpected cookie partition key");
+        std::move(callback).Run(false);
+        return;
+      }
+      if (cookie.PartitionKey()->from_script()) {
+        cookie_partition_key = cookie_partition_key_;
+      }
+    }
+  }
+
   auto sanitized_cookie = net::CanonicalCookie::FromStorage(
       cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(), now,
       cookie.ExpiryDate(), now, cookie.IsSecure(), cookie.IsHttpOnly(),
       cookie.SameSite(), cookie.Priority(), cookie.IsSameParty(),
-      cookie.PartitionKey(), source_scheme, origin_.port());
+      cookie_partition_key, source_scheme, origin_.port());
   DCHECK(sanitized_cookie);
+  // FromStorage() uses a less strict version of IsCanonical(), we need to check
+  // the stricter version as well here.
+  if (!sanitized_cookie->IsCanonical()) {
+    std::move(callback).Run(false);
+    return;
+  }
   net::CanonicalCookie cookie_copy = *sanitized_cookie;
 
   net::CookieOptions options = MakeOptionsForSet(

@@ -123,7 +123,8 @@ export class FakeShimlessRmaService {
       this.setFakeCurrentState_(
           state.state, state.canCancel, state.canGoBack, state.error);
     }
-    return this.methods_.resolveMethod('getCurrentState');
+    return this.methods_.resolveMethodWithDelay(
+        'getCurrentState', this.resolveMethodDelayMs_);
   }
 
   /**

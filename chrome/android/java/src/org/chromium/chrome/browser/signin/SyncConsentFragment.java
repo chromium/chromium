@@ -90,14 +90,13 @@ public class SyncConsentFragment extends SyncConsentFragmentBase {
     }
 
     @Override
-    protected void onSigninRefused() {
+    protected void onSyncRefused() {
         getActivity().finish();
     }
 
     @Override
-    protected void onSigninAccepted(
-            String accountName, boolean settingsClicked, Runnable callback) {
-        // TODO(https://crbug.com/1002056): Change onSigninAccepted to get CoreAccountInfo.
+    protected void onSyncAccepted(String accountName, boolean settingsClicked, Runnable callback) {
+        // TODO(https://crbug.com/1002056): Change onSyncAccepted to get CoreAccountInfo.
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
             @Nullable
             Account account = AccountUtils.findAccountByName(accounts, accountName);

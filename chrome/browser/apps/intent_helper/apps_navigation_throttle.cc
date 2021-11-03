@@ -45,7 +45,14 @@ namespace apps {
 // static
 std::unique_ptr<content::NavigationThrottle>
 AppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame())
+  // Don't handle navigations in subframes or main frames that are in a nested
+  // frame tree (e.g. portals, fenced-frame). We specifically allow
+  // prerendering navigations so that we can destroy the prerender. Opening an
+  // app must only happen when the user intentionally navigates; however, for a
+  // prerender, the prerender-activating navigation doesn't run throttles so we
+  // must cancel it during initial loading to get a standard (non-prerendering)
+  // navigation at link-click-time.
+  if (!handle->IsInPrimaryMainFrame() && !handle->IsInPrerenderedMainFrame())
     return nullptr;
 
   content::WebContents* web_contents = handle->GetWebContents();
@@ -105,9 +112,8 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
   const GURL& url = handle->GetURL();
   navigate_from_link_ = IsNavigateFromLink(handle);
 
-  // Do not pop up the intent picker bubble or automatically launch the app if
-  // we shouldn't override url loading, or if we don't have a browser, or we are
-  // already in an app browser.
+  // Do not automatically launch the app if we shouldn't override url loading,
+  // or if we don't have a browser, or we are already in an app browser.
   if (ShouldOverrideUrlLoading(starting_url_, url) &&
       !InAppBrowser(web_contents)) {
     // Handles apps that are automatically launched and the navigation needs to
@@ -190,6 +196,16 @@ AppsNavigationThrottle::CaptureWebAppScopeNavigations(
       if (web_app::AppBrowserController::IsForWebApp(browser, *app_id)) {
         // Already in the app window; navigation already captured.
         return absl::nullopt;
+      }
+
+      if (handle->IsInPrerenderedMainFrame()) {
+        // If this is a prerender navigation that would otherwise launch an
+        // app, we must cancel it. We only want to launch an app once the URL
+        // is intentionally navigated to by the user. We cancel the navigation
+        // here so that when the link is clicked, we'll run NavigationThrottles
+        // again. If we leave the prerendering alive, the activating navigation
+        // won't run throttles.
+        return content::NavigationThrottle::CANCEL_AND_IGNORE;
       }
 
       if (capture_links ==

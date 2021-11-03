@@ -7338,84 +7338,45 @@ TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {
       /*enabled_features=*/{features::kAutofillEnableAccountWalletStorage},
       /*disabled_features=*/{});
 
-  const std::string kHistogramName =
-      "Autofill.HadUserOptedIn_To_WalletSyncTransportServerCards";
-
   // Make sure the function returns true.
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user already opted-in. Check that the function now returns
   // false.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
       prefs_.get(), active_info.account_id, true);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, true, 1);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-opt the user out. Check that the function now returns true.
   ::autofill::prefs::SetUserOptedInWalletSyncTransport(
       prefs_.get(), active_info.account_id, false);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user has no server cards. Check that the function now returns
   // false.
   SetServerCards({});
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    // The metric should not be logged if the user had no server cards.
-    histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-set some server cards. Check that the function now returns true.
   SetServerCards(server_cards);
   personal_data_->Refresh();
   WaitForOnPersonalDataChanged();
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set that the user enabled the sync feature. Check that the function now
   // returns false.
   sync_service_.SetHasSyncConsent(true);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    // The metric should not be logged for syncing users.
-    histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Re-disable the sync feature. Check that the function now returns true.
   sync_service_.SetHasSyncConsent(false);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
-    histogram_tester.ExpectUniqueSample(kHistogramName, false, 1);
-  }
+  EXPECT_TRUE(personal_data_->ShouldShowCardsFromAccountOption());
 
   // Set a null sync service. Check that the function now returns false.
   personal_data_->SetSyncServiceForTest(nullptr);
-  {
-    base::HistogramTester histogram_tester;
-    EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
-    // The metric should not be logged if there is no sync service since this
-    // means the user has no server cards.
-    histogram_tester.ExpectTotalCount(kHistogramName, 0);
-  }
+  EXPECT_FALSE(personal_data_->ShouldShowCardsFromAccountOption());
 }
 #else   // !defined(OS_ANDROID) && !defined(OS_IOS) &&
         // !BUILDFLAG(IS_CHROMEOS_ASH)

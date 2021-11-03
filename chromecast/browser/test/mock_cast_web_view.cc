@@ -13,9 +13,9 @@ bool MockCastWebContents::TryBindReceiver(mojo::GenericPendingReceiver&) {
   return false;
 }
 
-MockCastWebView::MockCastWebView() {
-  mock_cast_web_contents_ = std::make_unique<MockCastWebContents>();
-}
+MockCastWebView::MockCastWebView()
+    : mock_cast_web_contents_(std::make_unique<MockCastWebContents>()),
+      cast_web_contents_receiver_(mock_cast_web_contents_.get()) {}
 
 MockCastWebView::~MockCastWebView() = default;
 
@@ -33,6 +33,13 @@ CastWebContents* MockCastWebView::cast_web_contents() {
 
 base::TimeDelta MockCastWebView::shutdown_delay() const {
   return base::TimeDelta();
+}
+
+void MockCastWebView::OwnerDestroyed() {}
+
+void MockCastWebView::Bind(
+    mojo::PendingReceiver<mojom::CastWebContents> receiver) {
+  cast_web_contents_receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace chromecast

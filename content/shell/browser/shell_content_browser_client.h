@@ -147,7 +147,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
         std::move(select_client_certificate_callback);
   }
   void set_login_request_callback(
-      base::OnceCallback<void(bool is_main_frame)> login_request_callback) {
+      base::OnceCallback<void(bool is_primary_main_frame)>
+          login_request_callback) {
     login_request_callback_ = std::move(login_request_callback);
   }
   void set_url_loader_factory_params_callback(

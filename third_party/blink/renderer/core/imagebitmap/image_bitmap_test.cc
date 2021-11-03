@@ -330,7 +330,7 @@ TEST_F(ImageBitmapTest,
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   options->setColorSpaceConversion("default");
   auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
-      image_data, IntRect(IntPoint(0, 0), image_data->Size()), options);
+      image_data, IntRect(gfx::Point(0, 0), image_data->Size()), options);
   DCHECK(image_bitmap);
 }
 

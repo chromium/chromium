@@ -67,6 +67,8 @@ class AppServiceProxyBase : public KeyedService,
 
   void ReInitializeForTesting(Profile* profile);
 
+  Profile* profile() const { return profile_; }
+
   mojo::Remote<apps::mojom::AppService>& AppService();
   apps::AppRegistryCache& AppRegistryCache();
   apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
@@ -287,9 +289,11 @@ class AppServiceProxyBase : public KeyedService,
 
   bool IsValidProfile();
 
+  // Called in AppServiceProxyFactory::BuildServiceInstanceFor immediately
+  // following the creation of AppServiceProxy. Use this method to perform any
+  // operation that depends on a fully instantiated AppServiceProxy (i.e. to
+  // avoid calling other virtual methods in the AppServiceProxy constructor).
   virtual void Initialize();
-
-  void AddAppIconSource(Profile* profile);
 
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
@@ -354,6 +358,10 @@ class AppServiceProxyBase : public KeyedService,
 
   bool is_using_testing_profile_ = false;
   base::OnceClosure dialog_created_callback_;
+
+ private:
+  // For access to Initialize.
+  friend class AppServiceProxyFactory;
 
   // For test access to OnApps.
   friend class AppServiceProxyPreferredAppsTest;

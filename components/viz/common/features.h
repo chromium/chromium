@@ -82,6 +82,7 @@ VIZ_COMMON_EXPORT std::string InkPredictor();
 VIZ_COMMON_EXPORT bool ShouldUsePlatformDelegatedInk();
 #if defined(OS_ANDROID)
 VIZ_COMMON_EXPORT bool UseSurfaceLayerForVideo();
+VIZ_COMMON_EXPORT bool UseRealVideoColorSpaceForDisplay();
 #endif
 VIZ_COMMON_EXPORT bool IsSurfaceSyncThrottling();
 VIZ_COMMON_EXPORT absl::optional<double> IsDynamicSchedulerEnabledForDraw();

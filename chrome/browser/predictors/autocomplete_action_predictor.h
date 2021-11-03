@@ -121,10 +121,6 @@ class AutocompleteActionPredictor
   // i.e., it is now quite likely that the user will select the related domain.
   static bool IsPreconnectable(const AutocompleteMatch& match);
 
-  // Returns true if there is an active Omnibox prerender and it has been
-  // abandoned.
-  bool IsPrerenderAbandonedForTesting();
-
   // Should be called when a URL is opened from the omnibox.
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
 

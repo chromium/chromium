@@ -820,10 +820,10 @@ ScrollOffset VisualViewport::MaximumScrollOffset() const {
   return ScrollOffset(max_position);
 }
 
-IntPoint VisualViewport::ClampDocumentOffsetAtScale(const IntPoint& offset,
-                                                    float scale) {
+gfx::Point VisualViewport::ClampDocumentOffsetAtScale(const gfx::Point& offset,
+                                                      float scale) {
   if (!LocalMainFrame() || !LocalMainFrame()->View())
-    return IntPoint();
+    return gfx::Point();
 
   LocalFrameView* view = LocalMainFrame()->View();
 
@@ -838,10 +838,10 @@ IntPoint VisualViewport::ClampDocumentOffsetAtScale(const IntPoint& offset,
       view->LayoutViewport()
           ->MinimumScrollOffsetInt();  // VisualViewportMin should be (0, 0)
 
-  IntSize clamped = ToIntSize(offset);
-  clamped = clamped.ShrunkTo(max);
-  clamped = clamped.ExpandedTo(min);
-  return IntPoint(clamped);
+  gfx::Point clamped = offset;
+  clamped.SetToMin(ToGfxPoint(max));
+  clamped.SetToMax(ToGfxPoint(min));
+  return clamped;
 }
 
 void VisualViewport::SetBrowserControlsAdjustment(float adjustment) {
@@ -993,15 +993,15 @@ FloatPoint VisualViewport::RootFrameToViewport(
   return point_in_viewport;
 }
 
-IntPoint VisualViewport::ViewportToRootFrame(
-    const IntPoint& point_in_viewport) const {
+gfx::Point VisualViewport::ViewportToRootFrame(
+    const gfx::Point& point_in_viewport) const {
   // FIXME: How to snap to pixels?
   return FlooredIntPoint(
       FloatPoint(ViewportToRootFrame(FloatPoint(point_in_viewport))));
 }
 
-IntPoint VisualViewport::RootFrameToViewport(
-    const IntPoint& point_in_root_frame) const {
+gfx::Point VisualViewport::RootFrameToViewport(
+    const gfx::Point& point_in_root_frame) const {
   // FIXME: How to snap to pixels?
   return FlooredIntPoint(
       FloatPoint(RootFrameToViewport(FloatPoint(point_in_root_frame))));

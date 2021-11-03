@@ -11,6 +11,9 @@ preprocessed_files = [
   "privacy_page_test.js",
   "route_tests.js",
   "settings_toggle_button_tests.js",
+  "test_about_page_browser_proxy.ts",
+  "test_lifetime_browser_proxy.ts",
+  "test_sync_browser_proxy.ts",
 ]
 
 # Test files that do not require preprocessing. If adding // <if expr> to any
@@ -109,24 +112,19 @@ non_preprocessed_files = [
   "startup_urls_page_test.js",
   "sync_account_control_test.js",
   "sync_test_util.js",
-  "test_about_page_browser_proxy.js",
-  "test_android_info_browser_proxy.js",
-  "test_chrome_cleanup_proxy.js",
-  "test_clear_browsing_data_browser_proxy.js",
-  "test_extension_control_browser_proxy.js",
-  "test_hats_browser_proxy.js",
+  "test_clear_browsing_data_browser_proxy.ts",
+  "test_extension_control_browser_proxy.ts",
+  "test_hats_browser_proxy.ts",
   "test_languages_browser_proxy.js",
-  "test_lifetime_browser_proxy.js",
-  "test_local_data_browser_proxy.js",
-  "test_metrics_browser_proxy.js",
-  "test_open_window_proxy.js",
+  "test_local_data_browser_proxy.ts",
+  "test_metrics_browser_proxy.ts",
+  "test_open_window_proxy.ts",
   "test_password_manager_proxy.js",
-  "test_privacy_page_browser_proxy.js",
+  "test_privacy_page_browser_proxy.ts",
   "test_profile_info_browser_proxy.js",
-  "test_reset_browser_proxy.js",
-  "test_search_engines_browser_proxy.js",
+  "test_reset_browser_proxy.ts",
+  "test_search_engines_browser_proxy.ts",
   "test_site_settings_prefs_browser_proxy.js",
-  "test_sync_browser_proxy.js",
   "test_util.js",
   "zoom_levels_tests.js",
 ]
@@ -137,6 +135,8 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
     "import_data_dialog_test.js",
     "system_page_tests.js",
   ]
+} else {
+  non_preprocessed_files += [ "passwords_section_test_cros.js" ]
 }
 
 if (!is_mac && !is_chromeos_ash) {
@@ -148,9 +148,9 @@ if (!is_mac && !is_chromeos_ash) {
 
 if (is_chromeos_ash) {
   non_preprocessed_files += [
-    "passwords_section_test_cros.js",
     "people_page_test_cros.js",
     "site_list_tests_cros.js",
+    "test_android_info_browser_proxy.ts",
   ]
 } else {
   non_preprocessed_files += [
@@ -160,11 +160,12 @@ if (is_chromeos_ash) {
   ]
 }
 
-if (is_win) {
+if (is_win && is_chrome_branded) {
   non_preprocessed_files += [
     "chrome_cleanup_page_test.js",
     "incompatible_applications_page_test.js",
     "safety_check_chrome_cleaner_test.js",
+    "test_chrome_cleanup_proxy.ts",
   ]
 }
 

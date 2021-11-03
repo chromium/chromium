@@ -108,10 +108,10 @@ const CGFloat kButtonFontSize = 17;
          @[ self.readingListButton, bookmarksButton, openButton ]) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider = ^UIPointerStyle*(
-          UIButton* button, __unused UIPointerEffect* proposedEffect,
+          UIButton* theButton, __unused UIPointerEffect* proposedEffect,
           __unused UIPointerShape* proposedShape) {
         UITargetedPreview* preview =
-            [[UITargetedPreview alloc] initWithView:button];
+            [[UITargetedPreview alloc] initWithView:theButton];
         UIPointerHoverEffect* effect =
             [UIPointerHoverEffect effectWithPreview:preview];
         return [UIPointerStyle styleWithEffect:effect shape:nil];

@@ -5,8 +5,8 @@
 /** @fileoverview Test implementation of PasswordManagerProxy. */
 
 // clang-format off
-import {assertEquals} from '../chai_assert.js';
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 

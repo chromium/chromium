@@ -254,6 +254,11 @@ struct GlobalData {
   // reserved so that functions can still return that to indicate an error.
   jlong instance_num = 1;
 
+  // metrics_enabled records whether the user opted into metrics and crash
+  // reporting. If so then logging of events related to server-link
+  // transactions is permitted.
+  bool metrics_enabled = false;
+
   absl::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
       root_secret;
   network::mojom::NetworkContext* network_context = nullptr;
@@ -303,6 +308,7 @@ GlobalData& GetGlobalData() {
 
 void ResetGlobalData() {
   GlobalData& global_data = GetGlobalData();
+  global_data.metrics_enabled = false;
   global_data.current_transaction.reset();
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
@@ -314,7 +320,8 @@ void ResetGlobalData() {
 void RecordEvent(const GlobalData* global_data, CableV2MobileEvent event) {
   base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent", event);
 
-  if (global_data && global_data->server_link_tunnel_id.has_value()) {
+  if (global_data && global_data->metrics_enabled &&
+      global_data->server_link_tunnel_id.has_value()) {
     protobuf::LogEvent(global_data->env, *global_data->server_link_tunnel_id,
                        protobuf::Type::kEvent, static_cast<unsigned>(event));
   }
@@ -324,7 +331,8 @@ void RecordResult(const GlobalData* global_data, CableV2MobileResult result) {
   base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileResult",
                                 result);
 
-  if (global_data && global_data->server_link_tunnel_id.has_value()) {
+  if (global_data && global_data->metrics_enabled &&
+      global_data->server_link_tunnel_id.has_value()) {
     protobuf::LogEvent(global_data->env, *global_data->server_link_tunnel_id,
                        protobuf::Type::kResult, static_cast<unsigned>(result));
   }
@@ -595,12 +603,13 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 // These functions are the entry points for CableAuthenticator.java and
 // BLEHandler.java calling into C++.
 
-static void JNI_CableAuthenticator_Setup(
-    JNIEnv* env,
-    jlong registration_long,
-    jlong network_context_long,
-    const JavaParamRef<jbyteArray>& secret) {
+static void JNI_CableAuthenticator_Setup(JNIEnv* env,
+                                         jlong registration_long,
+                                         jlong network_context_long,
+                                         const JavaParamRef<jbyteArray>& secret,
+                                         jboolean metrics_enabled) {
   GlobalData& global_data = GetGlobalData();
+  global_data.metrics_enabled = metrics_enabled;
 
   // The root_secret may not be provided when triggered for server-link. It
   // won't be used in that case either, but we need to be able to grab it if

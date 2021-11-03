@@ -7,6 +7,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
 import {str, strf} from '../../../common/js/util.js';
 import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
+import {DisplayPanel} from '../../elements/xf_display_panel.js';
 
 /**
  * Progress center panel.
@@ -16,9 +17,10 @@ export class ProgressCenterPanel {
   constructor() {
     /**
      * Reference to the feedback panel host.
-     * TODO(crbug.com/947388) Add closure annotation here.
+     * @private {!DisplayPanel}
      */
-    this.feedbackHost_ = document.querySelector('#progress-panel');
+    this.feedbackHost_ = /** @type {!DisplayPanel} */ (
+        document.querySelector('#progress-panel'));
 
     /**
      * Items that are progressing, or completed.
@@ -54,35 +56,45 @@ export class ProgressCenterPanel {
   /**
    * Generate source string for display on the feedback panel.
    * @param {!ProgressCenterItem} item Item we're generating a message for.
-   * @param {Object} info Cached information to use for formatting.
+   * @param {?Object} info Cached information to use for formatting.
    * @return {string} String formatted based on the item state.
    */
   generateSourceString_(item, info) {
+    info = info || {};
+    const {source, destination, count} = info;
     switch (item.state) {
       case ProgressItemState.PROGRESSING:
+        // Single items:
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
-            return strf('COPY_FILE_NAME', info['source']);
-          } else if (item.type === ProgressItemType.MOVE) {
-            return strf('MOVE_FILE_NAME', info['source']);
-          } else {
-            return item.message;
+            return strf('COPY_FILE_NAME', source);
           }
-        } else {
-          if (item.type === ProgressItemType.COPY) {
-            return strf('COPY_ITEMS_REMAINING', info['source']);
-          } else if (item.type === ProgressItemType.MOVE) {
-            return strf('MOVE_ITEMS_REMAINING', info['source']);
-          } else {
-            return item.message;
+          if (item.type === ProgressItemType.MOVE) {
+            return strf('MOVE_FILE_NAME', source);
           }
+          if (item.type === ProgressItemType.DELETE) {
+            return strf('DELETE_FILE_NAME', source);
+          }
+          return item.message;
         }
+
+        // Multiple items:
+        if (item.type === ProgressItemType.COPY) {
+          return strf('COPY_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.MOVE) {
+          return strf('MOVE_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.DELETE) {
+          return strf('DELETE_ITEMS_REMAINING', count);
+        }
+        return item.message;
         break;
       case ProgressItemState.COMPLETED:
-        if (info['count'] > 1) {
-          return strf('FILE_ITEMS', info['source']);
+        if (count > 1) {
+          return strf('FILE_ITEMS', count);
         }
-        return info['source'] || item.message;
+        return source || item.message;
       case ProgressItemState.ERROR:
         return item.message;
       case ProgressItemState.CANCELED:
@@ -114,7 +126,9 @@ export class ProgressCenterPanel {
    * @return {string} String formatted based on the item state.
    */
   generatePrimaryString_(item, info) {
-    const hasDestination = this.isNonEmptyString_(info['destination']);
+    info = info || {};
+    const {source, destination, count} = info;
+    const hasDestination = this.isNonEmptyString_(destination);
     switch (item.state) {
       case ProgressItemState.PROGRESSING:
         // Source and primary string are the same for missing destination.
@@ -123,49 +137,45 @@ export class ProgressCenterPanel {
         }
         // fall through
       case ProgressItemState.COMPLETED:
+        // Single items:
         if (item.itemCount === 1) {
           if (item.type === ProgressItemType.COPY) {
-            if (hasDestination) {
-              return strf(
-                  'COPY_FILE_NAME_LONG', info['source'], info['destination']);
-            } else {
-              return strf('FILE_COPIED', info['source']);
-            }
-          } else if (item.type === ProgressItemType.MOVE) {
-            if (hasDestination) {
-              return strf(
-                  'MOVE_FILE_NAME_LONG', info['source'], info['destination']);
-            } else {
-              return strf('FILE_MOVED', info['source']);
-            }
-          } else if (item.type === ProgressItemType.ZIP) {
-            return strf('ZIP_FILE_NAME', info['source']);
-          } else {
-            return item.message;
+            return hasDestination ?
+                strf('COPY_FILE_NAME_LONG', source, destination) :
+                strf('FILE_COPIED', source);
           }
-        } else {
-          if (item.type === ProgressItemType.COPY) {
-            if (hasDestination) {
-              return strf(
-                  'COPY_ITEMS_REMAINING_LONG', info['source'],
-                  info['destination']);
-            } else {
-              return strf('FILE_ITEMS_COPIED', info['source']);
-            }
-          } else if (item.type === ProgressItemType.MOVE) {
-            if (hasDestination) {
-              return strf(
-                  'MOVE_ITEMS_REMAINING_LONG', info['source'],
-                  info['destination']);
-            } else {
-              return strf('FILE_ITEMS_MOVED', info['source']);
-            }
-          } else if (item.type === ProgressItemType.ZIP) {
-            return strf('ZIP_ITEMS_REMAINING', info['count']);
-          } else {
-            return item.message;
+          if (item.type === ProgressItemType.MOVE) {
+            return hasDestination ?
+                strf('MOVE_FILE_NAME_LONG', source, destination) :
+                strf('FILE_MOVED', source);
           }
+          if (item.type === ProgressItemType.ZIP) {
+            return strf('ZIP_FILE_NAME', source);
+          }
+          if (item.type === ProgressItemType.DELETE) {
+            return strf('DELETE_FILE_NAME', source);
+          }
+          return item.message;
         }
+
+        // Multiple items:
+        if (item.type === ProgressItemType.COPY) {
+          return hasDestination ?
+              strf('COPY_ITEMS_REMAINING_LONG', count, destination) :
+              strf('FILE_ITEMS_COPIED', source);
+        }
+        if (item.type === ProgressItemType.MOVE) {
+          return hasDestination ?
+              strf('MOVE_ITEMS_REMAINING_LONG', count, destination) :
+              strf('FILE_ITEMS_MOVED', count);
+        }
+        if (item.type === ProgressItemType.ZIP) {
+          return strf('ZIP_ITEMS_REMAINING', count);
+        }
+        if (item.type === ProgressItemType.DELETE) {
+          return strf('DELETE_ITEMS_REMAINING', count);
+        }
+        return item.message;
         break;
       case ProgressItemState.ERROR:
         return item.message;
@@ -235,8 +245,6 @@ export class ProgressCenterPanel {
    * Process item updates for feedback panels.
    * @param {!ProgressCenterItem} item Item being updated.
    * @param {?ProgressCenterItem} newItem Item updating with new content.
-   * @suppress {checkTypes}
-   * TODO(crbug.com/947388) Remove the suppress, and fix closure compile.
    */
   updateFeedbackPanelItem(item, newItem) {
     let panelItem = this.feedbackHost_.findPanelItemById(item.id);
@@ -247,13 +255,15 @@ export class ProgressCenterPanel {
         setTimeout(() => {
           this.feedbackHost_.attachPanelItem(panelItem);
         }, this.PENDING_TIME_MS_);
-        if (item.type === 'format') {
+        if (item.type === ProgressItemType.FORMAT) {
           panelItem.panelType = panelItem.panelTypeFormatProgress;
-        } else if (item.type === 'sync') {
+        } else if (item.type === ProgressItemType.SYNC) {
           panelItem.panelType = panelItem.panelTypeSyncProgress;
         } else {
           panelItem.panelType = panelItem.panelTypeProgress;
         }
+        // TODO(lucmult): Remove `userData`, it's only used in
+        // generatePrimaryString_() which already refers to `item`.
         panelItem.userData = {
           'source': item.sourceMessage,
           'destination': item.destinationMessage,
@@ -281,10 +291,12 @@ export class ProgressCenterPanel {
       panelItem.progress = item.progressRateInPercent.toString();
       switch (item.state) {
         case ProgressItemState.COMPLETED:
-          // Create a completed panel for copies, moves and formats.
-          // TODO(crbug.com/947388) decide if we want these for delete, etc.
-          if (item.type === 'copy' || item.type === 'move' ||
-              item.type === 'format' || item.type === 'zip') {
+          // Create a completed panel for copies, moves, deletes and formats.
+          if (item.type === ProgressItemType.COPY ||
+              item.type === ProgressItemType.MOVE ||
+              item.type === ProgressItemType.FORMAT ||
+              item.type === ProgressItemType.ZIP ||
+              item.type === ProgressItemType.DELETE) {
             const donePanelItem = this.feedbackHost_.addPanelItem(item.id);
             donePanelItem.id = item.id;
             donePanelItem.panelType = donePanelItem.panelTypeDone;

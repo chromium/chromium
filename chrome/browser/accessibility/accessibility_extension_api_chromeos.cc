@@ -635,10 +635,6 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
   bool enabled;
   switch (params_feature) {
     case accessibility_private::AccessibilityFeature::
-        ACCESSIBILITY_FEATURE_SELECTTOSPEAKNAVIGATIONCONTROL:
-      enabled = ::features::IsSelectToSpeakNavigationControlEnabled();
-      break;
-    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_ENHANCEDNETWORKVOICES:
       enabled = ::features::IsEnhancedNetworkVoicesEnabled();
       break;

@@ -781,7 +781,6 @@ void HTMLPlugInElement::RemovePluginFromFrameView(
 void HTMLPlugInElement::DidAddUserAgentShadowRoot(ShadowRoot&) {
   ShadowRoot* shadow_root = UserAgentShadowRoot();
   DCHECK(shadow_root);
-  shadow_root->SetDocumentShadowCascade();
   shadow_root->AppendChild(
       MakeGarbageCollected<HTMLSlotElement>(GetDocument()));
 }

@@ -32,7 +32,6 @@ import cyglog_to_orderfile
 import patch_orderfile
 import process_profiles
 import profile_android_startup
-import symbol_extractor
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
@@ -585,7 +584,6 @@ class OrderfileGenerator(object):
     self._orderfile_updater = orderfile_updater_class(self._clank_dir,
                                                       self._step_recorder)
     assert os.path.isdir(constants.DIR_SOURCE_ROOT), 'No src directory found'
-    symbol_extractor.SetArchitecture(options.arch)
 
   @staticmethod
   def _RemoveBlanks(src_file, dest_file):
@@ -711,12 +709,12 @@ class OrderfileGenerator(object):
 
   def _VerifySymbolOrder(self):
     self._step_recorder.BeginStep('Verify Symbol Order')
-    return_code = self._step_recorder.RunCommand(
-        [self._CHECK_ORDERFILE_SCRIPT, self._compiler.lib_chrome_so,
-         self._GetPathToOrderfile(),
-         '--target-arch=' + self._options.arch],
-        constants.DIR_SOURCE_ROOT,
-        raise_on_error=False)
+    return_code = self._step_recorder.RunCommand([
+        self._CHECK_ORDERFILE_SCRIPT, self._compiler.lib_chrome_so,
+        self._GetPathToOrderfile()
+    ],
+                                                 constants.DIR_SOURCE_ROOT,
+                                                 raise_on_error=False)
     if return_code:
       self._step_recorder.FailStep('Orderfile check returned %d.' % return_code)
 

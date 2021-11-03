@@ -890,9 +890,8 @@ std::vector<std::string> GesturePropertyProvider::GetPropertyNamesById(
 
   // Dump all property names of the device.
   std::vector<std::string> names;
-  for (auto it = device_data->properties.begin();
-       it != device_data->properties.end(); ++it)
-    names.push_back(it->first);
+  for (const auto& pair : device_data->properties)
+    names.push_back(pair.first);
   return names;
 }
 

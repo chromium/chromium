@@ -27,7 +27,7 @@ namespace base {
 class TimeTicks;
 }
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
 
@@ -184,4 +184,4 @@ void DnsLatencyRoutine::OnComplete(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

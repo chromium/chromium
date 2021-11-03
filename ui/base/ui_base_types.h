@@ -15,6 +15,11 @@ namespace ui {
 
 class Event;
 
+// This enum must be version-skew tolerant. It is persisted to disk by ChromeOS
+// full restore, and read from disk by a possibly newer version of chrome. This
+// means that it's ok to add new values, but existing values should never be
+// changed or removed.
+//
 // Window "show" state.
 enum WindowShowState {
   // A default un-set state.

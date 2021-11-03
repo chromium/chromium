@@ -151,6 +151,10 @@ struct CookieOptions {
 
 struct CookiePartitionKey {
   SchemefulSite site;
+  // Indicates the CookiePartitionKey is a placeholder indicating that the
+  // cookie should be partitioned, but it was created in the renderer so we
+  // don't know what its partition key is yet.
+  bool from_script = false;
 };
 
 struct CookiePartitionKeychain {

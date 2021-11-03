@@ -1151,7 +1151,7 @@ bool AudioManagerMac::SuppressNoiseReduction(AudioDeviceID device_id) {
 
     if (initially_enabled) {
       const UInt32 disable = 0;
-      OSStatus result =
+      result =
           AudioObjectSetPropertyData(device_id, &kNoiseReductionPropertyAddress,
                                      0, nullptr, sizeof(disable), &disable);
       if (result != noErr) {

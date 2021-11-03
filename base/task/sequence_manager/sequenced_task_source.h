@@ -54,6 +54,11 @@ class SequencedTaskSource {
   // from SelectNextTask() has been completed.
   virtual void DidRunTask() = 0;
 
+  // Removes all canceled delayed tasks from the front of the queue. After
+  // calling this, GetNextTaskTime() is guaranteed to return a ready time for a
+  // non-canceled task.
+  virtual void RemoveAllCanceledDelayedTasksFromFront(LazyNow* lazy_now) = 0;
+
   // Returns the ready time for the next pending task, is_null() if the next
   // task can run immediately, or is_max() if there are no more immediate or
   // delayed tasks. |option| allows control on which kind of tasks can be

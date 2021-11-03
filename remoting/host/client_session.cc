@@ -633,6 +633,18 @@ void ClientSession::OnMouseCursorPosition(
     desktop_and_cursor_composer_->SetMouseCursorPosition(position);
 }
 
+void ClientSession::BindWebAuthnProxy(
+    mojo::PendingReceiver<mojom::WebAuthnProxy> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!remote_webauthn_message_handler_) {
+    LOG(WARNING)
+        << "No WebAuthn message handler is found. Binding request rejected.";
+    return;
+  }
+  remote_webauthn_message_handler_->AddReceiver(std::move(receiver));
+}
+
 void ClientSession::RegisterCreateHandlerCallbackForTesting(
     const std::string& prefix,
     protocol::DataChannelManager::CreateHandlerCallback constructor) {
@@ -937,7 +949,9 @@ void ClientSession::CreateRemoteWebAuthnMessageHandler(
   // RemoteWebAuthnMessageHandler manages its own lifetime and is tied to the
   // lifetime of |pipe|. Once |pipe| is closed, this instance will be cleaned
   // up.
-  new RemoteWebAuthnMessageHandler(channel_name, std::move(pipe));
+  auto* unowned_handler =
+      new RemoteWebAuthnMessageHandler(channel_name, std::move(pipe));
+  remote_webauthn_message_handler_ = unowned_handler->GetWeakPtr();
 }
 
 }  // namespace remoting

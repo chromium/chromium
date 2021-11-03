@@ -36,6 +36,7 @@ class NeverConditionValidator : public ConditionValidator {
       const EventModel& event_model,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
+      const Configuration* configuration,
       uint32_t current_day) const override;
   void NotifyIsShowing(
       const base::Feature& feature,

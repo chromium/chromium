@@ -216,7 +216,7 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
 }
 
 ScrollbarPart ScrollbarThemeOverlay::HitTest(const Scrollbar& scrollbar,
-                                             const IntPoint& position) {
+                                             const gfx::Point& position) {
   ScrollbarPart part = ScrollbarTheme::HitTest(scrollbar, position);
   if (part != kThumbPart)
     return kNoPart;

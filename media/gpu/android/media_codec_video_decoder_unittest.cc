@@ -195,13 +195,13 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     // If there is a CDM available, then we expect that MCVD will be waiting
     // for the media crypto object.
     // TODO(liberato): why does CreateJavaObjectPtr() not link?
-    if (cdm_ && cdm_->media_crypto_ready_cb) {
-      std::move(cdm_->media_crypto_ready_cb)
+    if (cdm_ && cdm_->media_crypto_ready_cb_) {
+      std::move(cdm_->media_crypto_ready_cb_)
           .Run(std::make_unique<base::android::ScopedJavaGlobalRef<jobject>>(
                    media_crypto_),
                require_secure_video_decoder_);
       // The callback is consumed, mark that we ran it so tests can verify.
-      cdm_->ran_media_crypto_ready_cb = true;
+      cdm_->ran_media_crypto_ready_cb_ = true;
       base::RunLoop().RunUntilIdle();
     }
 
@@ -837,7 +837,7 @@ TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL3) {
   CreateCdm(true, false);
   InitializeWithOverlay_OneDecodePending(
       TestVideoConfig::NormalEncrypted(codec_));
-  ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb);
+  ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, true);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, false);
   ASSERT_EQ(codec_allocator_->most_recent_config->codec_type, CodecType::kAny);
@@ -850,7 +850,7 @@ TEST_P(MediaCodecVideoDecoderTest, CdmInitializationWorksForL1) {
   CreateCdm(true, true);
   InitializeWithOverlay_OneDecodePending(
       TestVideoConfig::NormalEncrypted(codec_));
-  ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb);
+  ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, true);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, true);
   ASSERT_EQ(codec_allocator_->most_recent_config->codec_type,
@@ -864,7 +864,7 @@ TEST_P(MediaCodecVideoDecoderTest, CdmIsSetEvenForClearStream) {
   // We use the Large config, since VPx can be rejected if it's too small, in
   // favor of software decode, since this is unencrypted.
   InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb);
+  ASSERT_TRUE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, true);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, false);
   ASSERT_NE(codec_allocator_->most_recent_config->codec_type,
@@ -878,8 +878,8 @@ TEST_P(MediaCodecVideoDecoderTest, NoMediaCryptoContext_ClearStream) {
   // is not available.
   CreateCdm(false, false);
   InitializeWithOverlay_OneDecodePending(TestVideoConfig::Normal(codec_));
-  ASSERT_FALSE(!!cdm_->media_crypto_ready_cb);
-  ASSERT_FALSE(!!cdm_->ran_media_crypto_ready_cb);
+  ASSERT_FALSE(!!cdm_->media_crypto_ready_cb_);
+  ASSERT_FALSE(!!cdm_->ran_media_crypto_ready_cb_);
   ASSERT_EQ(surface_chooser_->current_state_.is_secure, false);
   ASSERT_EQ(surface_chooser_->current_state_.is_required, false);
   ASSERT_NE(codec_allocator_->most_recent_config->codec_type,

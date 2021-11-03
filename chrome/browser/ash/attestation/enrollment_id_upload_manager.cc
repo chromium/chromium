@@ -82,10 +82,10 @@ void EnrollmentIdUploadManager::Start() {
   if (!policy_data || !policy_data->enrollment_id_needed())
     return;
 
-  ObtainAndUploadCertificate();
+  ObtainAndUploadEnrollmentId();
 }
 
-void EnrollmentIdUploadManager::ObtainAndUploadCertificate() {
+void EnrollmentIdUploadManager::ObtainAndUploadEnrollmentId() {
   // Do not allow multiple concurrent requests.
   if (request_in_flight_)
     return;

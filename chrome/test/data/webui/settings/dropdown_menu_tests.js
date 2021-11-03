@@ -4,7 +4,7 @@
 
 import 'chrome://settings/settings.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {waitAfterNextRender} from 'chrome://test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 /** @fileoverview Suite of tests for settings-dropdown-menu. */
 suite('SettingsDropdownMenu', function() {

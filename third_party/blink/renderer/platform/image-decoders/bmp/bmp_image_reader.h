@@ -379,7 +379,7 @@ class PLATFORM_EXPORT BMPImageReader final {
   Vector<RGBTriple> color_table_;
 
   // The coordinate to which we've decoded the image.
-  IntPoint coord_;
+  gfx::Point coord_;
 
   // Variables that track whether we've seen pixels with alpha values != 0
   // and == 0, respectively.  See comments in ProcessNonRLEData() on how

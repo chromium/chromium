@@ -172,6 +172,7 @@ class Controller : public ScriptExecutorDelegate,
   void SetBrowseModeInvisible(bool invisible) override;
   bool ShouldShowWarning() override;
   void SetShowFeedbackChip(bool show_feedback_chip) override;
+  ProcessedActionStatusDetailsProto& GetLogInfo() override;
 
   // Show the UI if it's not already shown. This is only meaningful while in
   // states where showing the UI is optional, such as RUNNING, in tracking mode.
@@ -626,6 +627,10 @@ class Controller : public ScriptExecutorDelegate,
   std::unique_ptr<GenericUserInterfaceProto> generic_user_interface_;
 
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_user_interface_;
+
+  // Log information about action execution. Gets reset at the start of every
+  // action and attached to the action result on completion.
+  ProcessedActionStatusDetailsProto log_info_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

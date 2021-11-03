@@ -217,8 +217,8 @@ FloatRect UnionRects(const Vector<FloatRect>& rects) {
 }
 
 IntRect EnclosedIntRect(const FloatRect& rect) {
-  IntPoint location = CeiledIntPoint(rect.origin());
-  IntPoint max_point = FlooredIntPoint(rect.bottom_right());
+  gfx::Point location = CeiledIntPoint(rect.origin());
+  gfx::Point max_point = FlooredIntPoint(rect.bottom_right());
   IntSize size(base::ClampSub(max_point.x(), location.x()),
                base::ClampSub(max_point.y(), location.y()));
   size.ClampNegativeToZero();

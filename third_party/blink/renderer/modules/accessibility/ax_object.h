@@ -70,7 +70,6 @@ namespace blink {
 class AccessibleNodeList;
 class AXObject;
 class AXObjectCacheImpl;
-class IntPoint;
 class LayoutObject;
 class LocalFrameView;
 class Node;
@@ -431,6 +430,11 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Check object state.
   virtual bool IsAutofillAvailable() const;
   virtual bool IsClickable() const;
+  // Is |this| disabled for any of the follow reasons:
+  // * aria-disabled
+  // * disabled form control
+  // * a focusable descendant of a disabled container
+  bool IsDisabled() const;
   virtual AccessibilityExpanded IsExpanded() const;
   virtual bool IsFocused() const;
   // aria-grabbed is deprecated in WAI-ARIA 1.1.
@@ -859,12 +863,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Hit testing.
   // Called on the root AX object to return the deepest available element.
-  virtual AXObject* AccessibilityHitTest(const IntPoint&) const {
+  virtual AXObject* AccessibilityHitTest(const gfx::Point&) const {
     return nullptr;
   }
   // Called on the AX object after the layout tree determines which is the right
   // AXLayoutObject.
-  AXObject* ElementAccessibilityHitTest(const IntPoint&) const;
+  AXObject* ElementAccessibilityHitTest(const gfx::Point&) const;
 
   //
   // High-level accessibility tree access. Other modules should only use these
@@ -1162,10 +1166,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Scrollable containers.
   bool IsScrollableContainer() const;
   bool IsUserScrollable() const;  // Only true if actual scrollbars are present.
-  IntPoint GetScrollOffset() const;
-  IntPoint MinimumScrollOffset() const;
-  IntPoint MaximumScrollOffset() const;
-  void SetScrollOffset(const IntPoint&) const;
+  gfx::Point GetScrollOffset() const;
+  gfx::Point MinimumScrollOffset() const;
+  gfx::Point MaximumScrollOffset() const;
+  void SetScrollOffset(const gfx::Point&) const;
 
   // Tables and grids.
   bool IsTableLikeRole() const;
@@ -1220,7 +1224,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool RequestClickAction();
   bool RequestFocusAction();
   bool RequestIncrementAction();
-  bool RequestScrollToGlobalPointAction(const IntPoint&);
+  bool RequestScrollToGlobalPointAction(const gfx::Point&);
   bool RequestScrollToMakeVisibleAction();
   bool RequestScrollToMakeVisibleWithSubFocusAction(
       const IntRect&,
@@ -1244,7 +1248,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool OnNativeClickAction();
   virtual bool OnNativeFocusAction();
   virtual bool OnNativeIncrementAction();
-  bool OnNativeScrollToGlobalPointAction(const IntPoint&) const;
+  bool OnNativeScrollToGlobalPointAction(const gfx::Point&) const;
   bool OnNativeScrollToMakeVisibleAction() const;
   bool OnNativeScrollToMakeVisibleWithSubFocusAction(
       const IntRect&,

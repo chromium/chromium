@@ -48,7 +48,8 @@ class PLATFORM_EXPORT LayoutPoint {
   constexpr LayoutPoint() = default;
   constexpr LayoutPoint(LayoutUnit x, LayoutUnit y) : x_(x), y_(y) {}
   constexpr LayoutPoint(int x, int y) : x_(LayoutUnit(x)), y_(LayoutUnit(y)) {}
-  constexpr LayoutPoint(const IntPoint& point) : x_(point.x()), y_(point.y()) {}
+  constexpr LayoutPoint(const gfx::Point& point)
+      : x_(point.x()), y_(point.y()) {}
   constexpr explicit LayoutPoint(const FloatPoint& point)
       : x_(point.x()), y_(point.y()) {}
   constexpr explicit LayoutPoint(const gfx::PointF& point)
@@ -145,7 +146,7 @@ ALWAYS_INLINE LayoutSize operator-(const LayoutPoint& a, const LayoutPoint& b) {
   return LayoutSize(a.X() - b.X(), a.Y() - b.Y());
 }
 
-ALWAYS_INLINE LayoutSize operator-(const LayoutPoint& a, const IntPoint& b) {
+ALWAYS_INLINE LayoutSize operator-(const LayoutPoint& a, const gfx::Point& b) {
   return LayoutSize(a.X() - b.x(), a.Y() - b.y());
 }
 
@@ -182,20 +183,16 @@ constexpr LayoutSize ToSize(const LayoutPoint& a) {
   return LayoutSize(a.X(), a.Y());
 }
 
-inline IntPoint FlooredIntPoint(const LayoutPoint& point) {
-  return IntPoint(point.X().Floor(), point.Y().Floor());
+inline gfx::Point ToFlooredPoint(const LayoutPoint& point) {
+  return gfx::Point(point.X().Floor(), point.Y().Floor());
 }
 
-inline IntPoint RoundedIntPoint(const LayoutPoint& point) {
-  return IntPoint(point.X().Round(), point.Y().Round());
+inline gfx::Point ToRoundedPoint(const LayoutPoint& point) {
+  return gfx::Point(point.X().Round(), point.Y().Round());
 }
 
-inline IntPoint RoundedIntPoint(const LayoutSize& size) {
-  return IntPoint(size.Width().Round(), size.Height().Round());
-}
-
-inline IntPoint CeiledIntPoint(const LayoutPoint& point) {
-  return IntPoint(point.X().Ceil(), point.Y().Ceil());
+inline gfx::Point ToCeiledPoint(const LayoutPoint& point) {
+  return gfx::Point(point.X().Ceil(), point.Y().Ceil());
 }
 
 inline LayoutPoint FlooredLayoutPoint(const FloatPoint& p) {

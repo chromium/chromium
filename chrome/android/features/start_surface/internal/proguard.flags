@@ -2,19 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
-# is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
-# Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
-# TODO(bjoyce): Remove the android support library keep after verifying
-#     AndroidX migration is sound.
--keep class android.support.design.widget.AppBarLayout$Behavior {
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>();
-}
--keep class android.support.design.widget.AppBarLayout$ScrollingViewBehavior {
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>();
-}
 
 # To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
 # is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.

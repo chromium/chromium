@@ -2064,7 +2064,7 @@ void LocalFrame::SetViewportIntersectionFromParent(
 
     // Return <0, 0, 0, 0> if there is no area.
     if (rect.IsEmpty())
-      rect.set_origin(IntPoint(0, 0));
+      rect.set_origin(gfx::Point(0, 0));
     Client()->OnMainFrameIntersectionChanged(rect);
   }
 
@@ -2094,13 +2094,12 @@ IntSize LocalFrame::GetMainFrameViewportSize() const {
              : IntSize(local_root.intersection_state_.main_frame_viewport_size);
 }
 
-IntPoint LocalFrame::GetMainFrameScrollOffset() const {
+gfx::Point LocalFrame::GetMainFrameScrollOffset() const {
   LocalFrame& local_root = LocalFrameRoot();
   return local_root.IsMainFrame()
              ? FlooredIntPoint(
                    local_root.View()->GetScrollableArea()->GetScrollOffset())
-             : IntPoint(
-                   local_root.intersection_state_.main_frame_scroll_offset);
+             : local_root.intersection_state_.main_frame_scroll_offset;
 }
 
 void LocalFrame::SetOpener(Frame* opener_frame) {
@@ -2705,7 +2704,7 @@ void LocalFrame::SetInitialFocus(bool reverse) {
 
 #if defined(OS_MAC)
 void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
-  HitTestLocation location(View()->ViewportToFrame(IntPoint(point)));
+  HitTestLocation location(View()->ViewportToFrame(gfx::Point(point)));
   HitTestResult result = GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
   uint32_t index =
@@ -2784,8 +2783,8 @@ void LocalFrame::UpdateWindowControlsOverlay(
 }
 
 HitTestResult LocalFrame::HitTestResultForVisualViewportPos(
-    const IntPoint& pos_in_viewport) {
-  IntPoint root_frame_point(
+    const gfx::Point& pos_in_viewport) {
+  gfx::Point root_frame_point(
       GetPage()->GetVisualViewport().ViewportToRootFrame(pos_in_viewport));
   HitTestLocation location(View()->ConvertFromRootFrame(root_frame_point));
   HitTestResult result = GetEventHandler().HitTestResultAtLocation(
@@ -2859,7 +2858,7 @@ void LocalFrame::AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) {
   }
 }
 
-void LocalFrame::CopyImageAtViewportPoint(const IntPoint& viewport_point) {
+void LocalFrame::CopyImageAtViewportPoint(const gfx::Point& viewport_point) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_point);
   if (!IsA<HTMLCanvasElement>(result.InnerNodeOrImageMapImage()) &&
       result.AbsoluteImageURL().IsEmpty()) {
@@ -2883,9 +2882,8 @@ void LocalFrame::CopyImageAtViewportPoint(const IntPoint& viewport_point) {
 void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
   gfx::Point viewport_position =
       GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  IntPoint location(viewport_position);
-  Node* node =
-      HitTestResultForVisualViewportPos(location).InnerNodeOrImageMapImage();
+  Node* node = HitTestResultForVisualViewportPos(viewport_position)
+                   .InnerNodeOrImageMapImage();
   if (!node || !(IsA<HTMLCanvasElement>(*node) || IsA<HTMLImageElement>(*node)))
     return;
 
@@ -2900,7 +2898,7 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
 }
 
 void LocalFrame::MediaPlayerActionAtViewportPoint(
-    const IntPoint& viewport_position,
+    const gfx::Point& viewport_position,
     const blink::mojom::blink::MediaPlayerActionType type,
     bool enable) {
   HitTestResult result = HitTestResultForVisualViewportPos(viewport_position);
@@ -3104,8 +3102,8 @@ namespace {
 // TODO(editing-dev): We should move |CreateMarkupInRect()| to
 // "core/editing/serializers/Serialization.cpp".
 String CreateMarkupInRect(LocalFrame* frame,
-                          const IntPoint& start_point,
-                          const IntPoint& end_point) {
+                          const gfx::Point& start_point,
+                          const gfx::Point& end_point) {
   VisiblePosition start_visible_position = CreateVisiblePosition(
       PositionForContentsPointRespectingEditingBoundary(start_point, frame));
   VisiblePosition end_visible_position = CreateVisiblePosition(
@@ -3141,9 +3139,9 @@ void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
   clip_text = clip_data.ClipData();
   clip_rect = ToGfxRect(clip_data.RectInViewport());
 
-  IntPoint start_point(rect_in_viewport.x(), rect_in_viewport.y());
-  IntPoint end_point(rect_in_viewport.x() + rect_in_viewport.width(),
-                     rect_in_viewport.y() + rect_in_viewport.height());
+  gfx::Point start_point(rect_in_viewport.x(), rect_in_viewport.y());
+  gfx::Point end_point(rect_in_viewport.x() + rect_in_viewport.width(),
+                       rect_in_viewport.y() + rect_in_viewport.height());
   clip_html = CreateMarkupInRect(this, View()->ViewportToFrame(start_point),
                                  View()->ViewportToFrame(end_point));
 }

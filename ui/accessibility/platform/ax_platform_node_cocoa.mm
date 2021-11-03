@@ -411,8 +411,12 @@ bool IsAXSetter(SEL selector) {
 @interface AXPlatformNodeCocoa (Private)
 // Helper function for string attributes that don't require extra processing.
 - (NSString*)getStringAttribute:(ax::mojom::StringAttribute)attribute;
+
 // Returns AXValue, or nil if AXValue isn't an NSString.
 - (NSString*)getAXValueAsString;
+
+// Returns the native wrapper for the given node id.
+- (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id;
 @end
 
 @implementation AXPlatformNodeCocoa {
@@ -478,6 +482,13 @@ bool IsAXSetter(SEL selector) {
   return [value isKindOfClass:[NSString class]] ? value : nil;
 }
 
+- (AXPlatformNodeCocoa*)fromNodeID:(ui::AXNodeID)id {
+  ui::AXPlatformNode* cell = _node->GetDelegate()->GetFromNodeID(id);
+  if (cell)
+    return cell->GetNativeViewAccessible();
+  return nil;
+}
+
 - (NSString*)getName {
   return base::SysUTF8ToNSString(_node->GetName());
 }
@@ -540,6 +551,7 @@ bool IsAXSetter(SEL selector) {
         _pendingAnnouncement.reset();
       });
 }
+
 // NSAccessibility informal protocol implementation.
 
 - (BOOL)accessibilityIsIgnored {
@@ -760,16 +772,20 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityARIACurrentAttribute];
 
   // Focusable element or a control element.
-  if (_node->HasIntAttribute(ax::mojom::IntAttribute::kRestriction) ||
-      _node->HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) ||
-      _node->HasState(ax::mojom::State::kFocusable)) {
+  if (ui::IsControl(role)) {
     [axAttributes addObjectsFromArray:@[
       NSAccessibilityAccessKeyAttribute,
     ]];
   }
 
+  // Autocomplete.
   if (_node->HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete))
     [axAttributes addObject:NSAccessibilityAutocompleteValueAttribute];
+
+  // Details.
+  if (_node->HasIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)) {
+    [axAttributes addObject:NSAccessibilityDetailsElementsAttribute];
+  }
 
   // Table and grid.
   if (ui::IsTableLike(role)) {
@@ -906,6 +922,21 @@ bool IsAXSetter(SEL selector) {
 
 - (NSArray*)AXColumnHeaderUIElements {
   return [self accessibilityColumnHeaderUIElements];
+}
+
+- (NSArray*)AXDetailsElements {
+  if (![self instanceActive])
+    return nil;
+
+  NSMutableArray* elements = [[[NSMutableArray alloc] init] autorelease];
+  for (ui::AXNodeID id :
+       _node->GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds)) {
+    AXPlatformNodeCocoa* node = [self fromNodeID:id];
+    if (node)
+      [elements addObject:node];
+  }
+
+  return [elements count] ? elements : nil;
 }
 
 - (NSString*)AXRole {
@@ -1447,12 +1478,9 @@ bool IsAXSetter(SEL selector) {
   ax::mojom::Role role = _node->GetRole();
   if (ui::IsTableLike(role)) {
     for (ui::AXNodeID id : delegate->GetColHeaderNodeIds()) {
-      ui::AXPlatformNode* cell = delegate->GetFromNodeID(id);
-      if (cell) {
-        gfx::NativeViewAccessible native_cell = cell->GetNativeViewAccessible();
-        if (native_cell)
-          [ret addObject:native_cell];
-      }
+      AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
+      if (colheader)
+        [ret addObject:colheader];
     }
     return [ret count] ? ret : nil;
   }
@@ -1466,20 +1494,16 @@ bool IsAXSetter(SEL selector) {
   if (!table)
     return nil;
 
-  ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
-  DCHECK(tableDelegate);
-
   absl::optional<int> column = delegate->GetTableCellColIndex();
   if (!column)
     return nil;
 
+  ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
+  DCHECK(tableDelegate);
   for (ui::AXNodeID id : tableDelegate->GetColHeaderNodeIds(*column)) {
-    ui::AXPlatformNode* cell = tableDelegate->GetFromNodeID(id);
-    if (cell) {
-      gfx::NativeViewAccessible native_cell = cell->GetNativeViewAccessible();
-      if (native_cell)
-        [ret addObject:native_cell];
-    }
+    AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
+    if (colheader)
+      [ret addObject:colheader];
   }
   return [ret count] ? ret : nil;
 }

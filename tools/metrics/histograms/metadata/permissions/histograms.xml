@@ -75,6 +75,10 @@ chromium-metrics-reviews@google.com.
     <variant name="LocationBarLeftChip"
         summary="A chip on the left-hand side of the location bar that shows
                  a bubble when clicked"/>
+    <variant name="LocationBarLeftQuietAbusiveChip"
+        summary="A less prominent, non-animated version of a chip on the
+                 left-hand side of the location bar that shows a bubble when
+                 clicked"/>
     <variant name="LocationBarLeftQuietChip"
         summary="A less prominent version of a chip on the left-hand side of
                  the location bar that shows a bubble when clicked"/>

@@ -227,9 +227,9 @@ TEST_F(WindowTreeHostWithOcclusionTest, ToggleOccluded) {
   ASSERT_TRUE(NativeWindowOcclusionTracker::
                   IsNativeWindowOcclusionTrackingAlwaysEnabled(host()));
   host()->Show();
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::OCCLUDED, {});
   EXPECT_FALSE(host()->compositor()->IsVisible());
-  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE);
+  host()->SetNativeWindowOcclusionState(Window::OcclusionState::VISIBLE, {});
   EXPECT_TRUE(host()->compositor()->IsVisible());
 }
 #endif

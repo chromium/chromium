@@ -374,8 +374,8 @@ void BluetoothLowEnergyWeaveClientConnection::SendMessageImpl(
   // For each packet, create a WriteRequest and add it to the queue.
   for (uint32_t i = 0; i < weave_packets.size(); ++i) {
     WriteRequestType request_type = (i != weave_packets.size() - 1)
-                                        ? WriteRequestType::REGULAR
-                                        : WriteRequestType::MESSAGE_COMPLETE;
+                                        ? WriteRequestType::kRegular
+                                        : WriteRequestType::kMessageComplete;
     queued_write_requests_.emplace(std::make_unique<WriteRequest>(
         weave_packets[i], request_type, message.get()));
   }
@@ -662,7 +662,7 @@ void BluetoothLowEnergyWeaveClientConnection::SendConnectionRequest() {
 
   queued_write_requests_.emplace(std::make_unique<WriteRequest>(
       packet_generator_->CreateConnectionRequest(),
-      WriteRequestType::CONNECTION_REQUEST));
+      WriteRequestType::kConnectionRequest));
   ProcessNextWriteRequest();
 }
 
@@ -735,7 +735,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnRemoteCharacteristicWritten() {
   }
 
   if (pending_write_request_->request_type ==
-      WriteRequestType::CONNECTION_CLOSE) {
+      WriteRequestType::kConnectionClose) {
     // Once a "connection close" uWeave packet has been sent, the connection
     // is ready to be disconnected.
     PA_LOG(INFO) << "uWeave \"connection close\" packet sent to "
@@ -746,7 +746,7 @@ void BluetoothLowEnergyWeaveClientConnection::OnRemoteCharacteristicWritten() {
   }
 
   if (pending_write_request_->request_type ==
-      WriteRequestType::MESSAGE_COMPLETE) {
+      WriteRequestType::kMessageComplete) {
     if (queued_wire_messages_.empty()) {
       PA_LOG(ERROR) << "Sent a WriteRequest with type == MESSAGE_COMPLETE, but "
                     << "there were no queued WireMessages. Cannot process "
@@ -809,9 +809,9 @@ void BluetoothLowEnergyWeaveClientConnection::OnWriteRemoteCharacteristicError(
     return;
   }
 
-  if (pending_write_request_->request_type == WriteRequestType::REGULAR ||
+  if (pending_write_request_->request_type == WriteRequestType::kRegular ||
       pending_write_request_->request_type ==
-          WriteRequestType::MESSAGE_COMPLETE) {
+          WriteRequestType::kMessageComplete) {
     std::unique_ptr<WireMessage> failed_message =
         std::move(queued_wire_messages_.front());
     queued_wire_messages_.pop();
@@ -854,7 +854,7 @@ void BluetoothLowEnergyWeaveClientConnection::
   queued_write_requests_.emplace(
       std::make_unique<WriteRequest>(packet_generator_->CreateConnectionClose(
                                          packet_receiver_->GetReasonToClose()),
-                                     WriteRequestType::CONNECTION_CLOSE));
+                                     WriteRequestType::kConnectionClose));
 
   if (pending_write_request_) {
     PA_LOG(WARNING) << "Waiting for current write to complete, then will send "

@@ -26,7 +26,7 @@ export type AndroidSmsInfo = {
   enabled: boolean,
 };
 
-interface AndroidInfoBrowserProxy {
+export interface AndroidInfoBrowserProxy {
   /**
    * Returns android messages info with messages feature state
    * and messages for web permissions origin.

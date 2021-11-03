@@ -328,7 +328,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
     // Chip experiment is disabled.
     EXPECT_EQ(
         test_api_->manager()->current_request_prompt_disposition_for_testing(),
-        permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
   }
 }
 
@@ -441,7 +442,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 }
 
 IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
@@ -461,7 +463,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 }
 
 // For `QuietUiReason::kEnabledInPrefs` reputation we show an animated quiet UI
@@ -529,5 +532,6 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP);
 }

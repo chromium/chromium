@@ -46,6 +46,30 @@
 
     <style name="Theme.BrowserUI.DayNight" />
 
+    <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
+         attributes in case the context ends up being used to inflate views. -->
+    <style name="Theme.BrowserUI.NoDisplay" parent="Theme.BrowserUI.DayNight">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowNoDisplay">true</item>
+    </style>
+
+    <!-- These themes are used instead of android:style/Theme.Translucent* so that they have the
+         required attributes in case the context ends up being used to inflate views. -->
+    <style name="Theme.BrowserUI.Translucent" parent="Theme.BrowserUI.DayNight">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+    <style name="Theme.BrowserUI.Translucent.NoTitleBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
     <style name="TextInputStyle" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
     </style>

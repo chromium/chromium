@@ -20,6 +20,7 @@ source_set("file_system") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/filename_generation",
     "//content/public/browser",
     "//extensions/browser/api",
     "//extensions/browser/api/file_handlers",

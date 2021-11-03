@@ -406,6 +406,10 @@ static_assert(!StrEqConstexpr("abc", "ab"), "strings should not be equal");
 // TODO(skyostil): Remove after migrating to the Perfetto client API.
 class BASE_EXPORT BuiltinCategories {
  public:
+  BuiltinCategories() = delete;
+  BuiltinCategories(const BuiltinCategories&) = delete;
+  BuiltinCategories& operator=(const BuiltinCategories&) = delete;
+
   // Returns a built-in category name at |index| in the registry.
   static constexpr const char* At(size_t index) {
     return kBuiltinCategories[index];
@@ -526,8 +530,6 @@ class BASE_EXPORT BuiltinCategories {
     return IsStringInArray(category, kBuiltinCategories,
                            base::size(kBuiltinCategories));
   }
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BuiltinCategories);
 };
 
 }  // namespace trace_event

@@ -21,8 +21,6 @@ class MockZAuraShell : public GlobalObject {
   MockZAuraShell& operator=(const MockZAuraShell&) = delete;
 
   ~MockZAuraShell() override;
-
-  MOCK_METHOD(void, SetClientSubmitsSurfacesInPixelCoordinates, (bool));
 };
 
 }  // namespace wl

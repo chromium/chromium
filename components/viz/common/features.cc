@@ -134,6 +134,12 @@ const base::Feature kWebViewVulkanIntermediateBuffer{
 // UseSurfaceLayerForVideo from chrome.
 const base::Feature kUseSurfaceLayerForVideoDefault{
     "UseSurfaceLayerForVideoDefault", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Historically media on android hardcoded SRGB color space because of lack of
+// color space support in surface control. This controls if we want to use real
+// color space in DisplayCompositor.
+const base::Feature kUseRealVideoColorSpaceForDisplay{
+    "UseRealVideoColorSpaceForDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 // Used by CC to throttle frame production of older surfaces. Used by the
@@ -288,6 +294,16 @@ bool UseSurfaceLayerForVideo() {
     return true;
   }
   return base::FeatureList::IsEnabled(kUseSurfaceLayerForVideoDefault);
+}
+
+bool UseRealVideoColorSpaceForDisplay() {
+  // We need Android S for proper color space support in SurfaceControl.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SdkVersion::SDK_VERSION_S)
+    return false;
+
+  return base::FeatureList::IsEnabled(
+      features::kUseRealVideoColorSpaceForDisplay);
 }
 #endif
 

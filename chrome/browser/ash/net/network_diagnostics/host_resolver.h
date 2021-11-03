@@ -14,7 +14,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Performs a DNS host resolution. This is a single-use class.
@@ -62,6 +62,6 @@ class HostResolver : public network::ResolveHostClientBase {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HOST_RESOLVER_H_

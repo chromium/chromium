@@ -4102,6 +4102,27 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                   CollectAllRenderFrameHosts(inner_contents->GetMainFrame())));
 }
 
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       ForEachFrameTreeInnerContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  auto* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
+          web_contents->GetMainFrame()->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+
+  // Intentionally exclude inner frame trees based on multi-WebContents.
+  web_contents->ForEachFrameTree(
+      base::BindLambdaForTesting([&](FrameTree* frame_tree) {
+        EXPECT_NE(frame_tree, inner_contents->GetFrameTree());
+      }));
+}
+
 namespace {
 
 class LoadingObserver : public WebContentsObserver {
@@ -4983,10 +5004,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplAllowInsecureLocalhostBrowserTest,
   observer.Wait();
 }
 
-class WebContentsObserverBrowsertest : public WebContentsImplBrowserTest {
+class WebContentsFencedFrameBrowserTest : public WebContentsImplBrowserTest {
  public:
-  WebContentsObserverBrowsertest() = default;
-  ~WebContentsObserverBrowsertest() override = default;
+  WebContentsFencedFrameBrowserTest() = default;
+  ~WebContentsFencedFrameBrowserTest() override = default;
 
   WebContentsImpl* web_contents() {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -5002,7 +5023,7 @@ class WebContentsObserverBrowsertest : public WebContentsImplBrowserTest {
 
 // Tests that DidUpdateFaviconURL() works only with the primary page by checking
 // if it's not called on the fenced frame loading.
-IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowsertest, UpdateFavicon) {
+IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, UpdateFavicon) {
   ASSERT_TRUE(embedded_test_server()->Start());
   testing::NiceMock<MockWebContentsObserver> observer(web_contents());
   const GURL main_url =
@@ -5023,6 +5044,34 @@ IN_PROC_BROWSER_TEST_F(WebContentsObserverBrowsertest, UpdateFavicon) {
   inner_fenced_frame_rfh =
       fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
           inner_fenced_frame_rfh, fenced_frame_url);
+}
+
+// Tests that pages are still visible after a page is navigated away
+// from a page that contained a fenced frame. (crbug.com/1265615)
+IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest, RemainsVisible) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL main_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title1.html");
+
+  RenderFrameHost* primary_rfh = web_contents()->GetMainFrame();
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
+
+  // Create fenced frame.
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title2.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh,
+                                                   fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  const GURL same_origin_url =
+      embedded_test_server()->GetURL("fencedframe.test", "/title3.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), same_origin_url));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(PA_ALLOW_PCSCAN)

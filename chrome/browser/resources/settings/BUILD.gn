@@ -117,7 +117,6 @@ preprocess_if_expr("preprocess") {
     "autofill_page/password_manager_proxy.ts",
     "autofill_page/show_password_mixin.ts",
     "base_mixin.ts",
-    "chrome_cleanup_page/chrome_cleanup_proxy.ts",
     "clear_browsing_data_dialog/clear_browsing_data_browser_proxy.ts",
     "controls/cr_policy_pref_mixin.ts",
     "controls/pref_control_mixin.ts",
@@ -129,7 +128,6 @@ preprocess_if_expr("preprocess") {
     "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
     "i18n_setup.ts",
-    "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     "lazy_load.ts",
     "lifetime_browser_proxy.ts",
     "metrics_browser_proxy.ts",
@@ -187,6 +185,13 @@ preprocess_if_expr("preprocess") {
       "languages_page/languages_settings_metrics_proxy.ts",
       "languages_page/languages_types.ts",
       "people_page/manage_profile_browser_proxy.ts",
+    ]
+  }
+
+  if (is_win) {
+    in_files += [
+      "chrome_cleanup_page/chrome_cleanup_proxy.ts",
+      "incompatible_applications_page/incompatible_applications_browser_proxy.ts",
     ]
   }
 }

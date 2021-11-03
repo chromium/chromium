@@ -1351,7 +1351,7 @@ bool JPEGImageDecoder::OutputScanlines() {
     buffer.SetHasAlpha(true);
 
     // For JPEGs, the frame always fills the entire image.
-    buffer.SetOriginalFrameRect(IntRect(IntPoint(), Size()));
+    buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
   }
 
 #if defined(TURBO_JPEG_RGB_SWIZZLE)

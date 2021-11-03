@@ -52,9 +52,6 @@
 -keepclassmembers class * extends android.app.Fragment {
   public <init>();
 }
--keepclassmembers class * extends android.support.v4.app.Fragment {
-  public <init>();
-}
 -keepclassmembers class * extends androidx.fragment.app.Fragment {
   public <init>();
 }
@@ -79,7 +76,7 @@
   public <init>(...);
 }
 
-# Referenced by android.support.v7.preference.PreferenceInflater.
+# Referenced by androidx.preference.PreferenceInflater.
 -keep public class androidx.preference.SwitchPreference {}
 
 # Don't obfuscate Parcelables as they might be marshalled outside Chrome.
@@ -286,28 +283,6 @@
   public <init>();
 }
 
-# SearchView is used in website_preferences_menu.xml and is constructed by
-# Android using reflection.
-# TODO(bjoyce): Remove after verifying AndroidX migration is sound.
--keep class android.support.v7.widget.SearchView {
-  public <init>(...);
-}
-
-# This class member is referenced in BottomSheetBottomNav as a temporary
-# measure until the support library contains a solution for disabling shifting
-# mode. TODO(twellington): remove once support library has a fix and is rolled.
-# TODO(bjoyce): Remove after verifying AndroidX migration is sound.
--keepclassmembers class android.support.design.internal.BottomNavigationMenuView {
-    boolean mShiftingMode;
-}
-
-# This class member is referenced in BottomSheetBottomNav as a temporary
-# measure until the support library contains a solution for disabling shifting
-# mode. TODO(twellington): remove once support library has a fix and is rolled.
--keepclassmembers class com.google.android.material.bottomnavigation.BottomNavigationMenuView {
-    boolean mShiftingMode;
-}
-
 # Let proguard know CastMediaOptions in CastOptions is always null, so it can
 # trim unused MediaNotificationService methods. This saves about 170 methods in
 # the dex file. https://crbug.com/855081
@@ -399,19 +374,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
-# is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
-# Note that AppBarLayout$Behavior is needed to keep the scrolling behavior.
-# TODO(bjoyce): Remove the android support library keep after verifying
-#     AndroidX migration is sound.
--keep class android.support.design.widget.AppBarLayout$Behavior {
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>();
-}
--keep class android.support.design.widget.AppBarLayout$ScrollingViewBehavior {
-    public <init>(android.content.Context, android.util.AttributeSet);
-    public <init>();
-}
 
 # To fix crbug/1017396. This is because AppBarLayout$ScrollingViewBehavior
 # is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.

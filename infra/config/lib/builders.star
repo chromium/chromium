@@ -96,7 +96,8 @@ os = struct(
     MAC_10_14 = os_enum("Mac-10.14", os_category.MAC),
     MAC_10_15 = os_enum("Mac-10.15", os_category.MAC),
     MAC_11 = os_enum("Mac-11", os_category.MAC),
-    MAC_DEFAULT = os_enum("Mac-10.15", os_category.MAC),
+    # TODO(crbug.com/1254953) Remove 10.15 once builders have been migrated to Mac11
+    MAC_DEFAULT = os_enum("Mac-10.15|Mac-11", os_category.MAC),
     MAC_ANY = os_enum("Mac", os_category.MAC),
     WINDOWS_7 = os_enum("Windows-7", os_category.WINDOWS),
     WINDOWS_8_1 = os_enum("Windows-8.1", os_category.WINDOWS),
@@ -893,18 +894,29 @@ def _bootstrap_properties(ctx):
             bootstrap = bootstrap_node.props.bootstrap
 
             properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-            non_bootstrapped_properties = {
-                "$bootstrap": {
-                    "top_level_project": {
-                        "repo": {
-                            "host": "chromium.googlesource.com",
-                            "project": "chromium/src",
-                        },
-                        "ref": settings.ref,
+            properties_property = {
+                "top_level_project": {
+                    "repo": {
+                        "host": "chromium.googlesource.com",
+                        "project": "chromium/src",
                     },
-                    "properties_file": "infra/config/generated/{}".format(properties_file),
-                    "exe": builder.exe,
+                    "ref": settings.ref,
                 },
+                "properties_file": "infra/config/generated/{}".format(properties_file),
+            }
+            exe_property = {
+                "exe": builder.exe,
+            }
+
+            # TODO(crbug.com/1261886) Once bootstrapper is changed to use
+            # $bootstrap/properties and $bootstrap/exe, we can remove code for
+            # setting $bootstrap
+            bootstrap_property = dict(properties_property)
+            bootstrap_property.update(exe_property)
+            non_bootstrapped_properties = {
+                "$bootstrap/properties": properties_property,
+                "$bootstrap/exe": exe_property,
+                "$bootstrap": bootstrap_property,
                 "led_builder_is_bootstrapped": True,
             }
             builder_properties = json.decode(builder.properties)

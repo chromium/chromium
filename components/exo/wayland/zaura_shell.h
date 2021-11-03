@@ -21,7 +21,7 @@ class ShellSurfaceBase;
 
 namespace wayland {
 
-constexpr uint32_t kZAuraShellVersion = 27;
+constexpr uint32_t kZAuraShellVersion = 28;
 
 // Adds bindings to the Aura Shell. Normally this implies Ash on ChromeOS
 // builds. On non-ChromeOS builds the protocol provides access to Aura windowing
@@ -105,6 +105,20 @@ class AuraToplevel {
   ~AuraToplevel();
 
   void SetOrientationLock(uint32_t lock_type);
+  void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
+
+ private:
+  ShellSurfaceBase* shell_surface_;
+};
+
+class AuraPopup {
+ public:
+  AuraPopup(ShellSurfaceBase* shell_surface);
+  AuraPopup(const AuraPopup&) = delete;
+  AuraPopup& operator=(const AuraPopup&) = delete;
+  ~AuraPopup();
+
+  void SetClientSubmitsSurfacesInPixelCoordinates(bool enable);
 
  private:
   ShellSurfaceBase* shell_surface_;

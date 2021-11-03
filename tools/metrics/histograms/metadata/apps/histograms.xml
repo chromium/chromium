@@ -2728,7 +2728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.PreferredApps.EntryCount" units="entries"
-    expires_after="2021-11-21">
+    expires_after="2022-11-01">
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>
@@ -2741,6 +2741,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.PreferredApps.FileIOAction"
     enum="PreferredAppsFileIOAction" expires_after="2022-04-24">
+  <obsolete>
+    Obsoleted in November 2021.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>
@@ -2752,6 +2755,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.PreferredApps.UpdateAction"
     enum="PreferredAppsUpdateAction" expires_after="2022-04-24">
+  <obsolete>
+    Obsoleted in November 2021.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>mxcai@chromium.org</owner>
   <summary>

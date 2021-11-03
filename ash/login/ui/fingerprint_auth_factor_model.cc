@@ -19,7 +19,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kFingerprintIconSizeDp = 28;
+constexpr int kFingerprintIconSizeDp = 32;
 constexpr int kFingerprintFailedAnimationDurationMs = 700;
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
 constexpr base::TimeDelta kResetToDefaultMessageDelayMs =
@@ -69,8 +69,13 @@ AuthFactorModel::AuthFactorState
 FingerprintAuthFactorModel::GetAuthFactorState() {
   // TODO(crbug.com/1233614): Calculate the correct AuthFactorState based on the
   // current FingerprintState.
-  if (!visible_)
+  if (!available_)
     return AuthFactorState::kUnavailable;
+
+  if (auth_result_.has_value()) {
+    return auth_result_.value() ? AuthFactorState::kAuthenticated
+                                : AuthFactorState::kErrorTemporary;
+  }
 
   return state_ == FingerprintState::UNAVAILABLE ? AuthFactorState::kUnavailable
                                                  : AuthFactorState::kReady;
@@ -116,24 +121,15 @@ int FingerprintAuthFactorModel::GetAccessibleNameId() {
   return GetLabelId();
 }
 
-void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
-  if (auth_result_.has_value()) {
-    if (auth_result_.value()) {
-      // We do not need to treat the light/dark mode for this use-case since
-      // this hint is shown for a short time interval.
-      icon_view->SetImage(gfx::CreateVectorIcon(
-          kLockScreenFingerprintSuccessIcon, kFingerprintIconSizeDp,
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPositive)));
-    } else {
-      icon_view->SetAnimationDecoder(
-          std::make_unique<HorizontalImageSequenceAnimationDecoder>(
-              *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                  IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
-              base::Milliseconds(kFingerprintFailedAnimationDurationMs),
-              kFingerprintFailedAnimationNumFrames),
-          AnimatedRoundedImageView::Playback::kSingle);
-    }
+void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon) {
+  if (auth_result_.has_value() && !auth_result_.value()) {
+    icon->SetAnimationDecoder(
+        std::make_unique<HorizontalImageSequenceAnimationDecoder>(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
+            base::Milliseconds(kFingerprintFailedAnimationDurationMs),
+            kFingerprintFailedAnimationNumFrames),
+        AnimatedRoundedImageView::Playback::kSingle);
     return;
   }
 
@@ -152,11 +148,11 @@ void FingerprintAuthFactorModel::UpdateIcon(AuthIconView* icon_view) {
     case FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING:
       FALLTHROUGH;
     case FingerprintState::DISABLED_FROM_TIMEOUT:
-      icon_view->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintIcon,
-                                                kFingerprintIconSizeDp, color));
+      icon->SetImage(gfx::CreateVectorIcon(kLockScreenFingerprintIcon,
+                                           kFingerprintIconSizeDp, color));
       break;
     case FingerprintState::DISABLED_FROM_ATTEMPTS:
-      icon_view->SetAnimationDecoder(
+      icon->SetAnimationDecoder(
           std::make_unique<HorizontalImageSequenceAnimationDecoder>(
               *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                   IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
@@ -185,10 +181,6 @@ void FingerprintAuthFactorModel::OnResetState() {
     auth_result_.reset();
   }
   NotifyOnStateChanged();
-}
-
-void FingerprintAuthFactorModel::SetVisible(bool visible) {
-  visible_ = visible;
 }
 
 }  // namespace ash

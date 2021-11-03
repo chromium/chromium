@@ -311,7 +311,7 @@ void SharesheetHeaderView::ShowTextPreview() {
   if (intent_->files.has_value() && !intent_->files.value().empty()) {
     std::vector<std::u16string> file_names;
     for (const auto& file : intent_->files.value()) {
-      const auto& file_path =
+      auto file_path =
           apps::GetFileSystemURL(profile_, file->url).path();
       file_names.push_back(file_path.BaseName().LossyDisplayName());
     }
@@ -426,11 +426,11 @@ void SharesheetHeaderView::ResolveImages() {
 }
 
 void SharesheetHeaderView::ResolveImage(size_t index) {
-  const auto& file_path =
+  auto file_path =
       apps::GetFileSystemURL(profile_, intent_->files.value()[index]->url)
           .path();
 
-  const auto& size = GetImagePreviewSize(index, intent_->files.value().size());
+  auto size = GetImagePreviewSize(index, intent_->files.value().size());
   auto image = std::make_unique<HoldingSpaceImage>(
       size, file_path,
       base::BindRepeating(&SharesheetHeaderView::LoadImage,
