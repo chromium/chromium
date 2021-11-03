@@ -18,7 +18,7 @@ namespace metrics {
 
 // The enums below are used in histograms, do not remove/renumber entries. If
 // you're adding to any of these enums, update the corresponding enum listing in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/enums.xml: CrosDiagnosticsNavigationView.
 enum class NavigationView {
   kSystem = 0,
   kConnectivity = 1,

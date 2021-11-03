@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -37,6 +38,26 @@ class DiagnosticsAppIntegrationTest : public SystemWebAppIntegrationTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+
+  content::WebContents* LaunchDiagnosticsApp(
+      const std::string override_url = "") {
+    WaitForTestSystemAppInstall();
+    auto params = GetAppLaunchParams(override_url);
+
+    return LaunchApp(std::move(params));
+  }
+
+  apps::AppLaunchParams GetAppLaunchParams(
+      const std::string override_url = "") {
+    auto params = LaunchParamsForApp(web_app::SystemAppType::DIAGNOSTICS);
+
+    // Override starting URL when provided.
+    if (override_url != "") {
+      params.override_url = GURL(override_url);
+    }
+
+    return params;
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -76,6 +97,45 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest, UsageMetricsTest) {
                                       kUsedWithSuccess, 1);
   histogram_tester_.ExpectTotalCount(kDiagnosticsUmaFeatureUsetimeFullPath, 1);
   histogram_tester_.ExpectTotalCount(kDiagnosticsUmaOpenDurationFullPath, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
+                       DiagnosticsAppRecordsInitialScreen) {
+  LaunchDiagnosticsApp();
+
+  // One maps to the "CrosDiagnosticsNavigationView" system enum.
+  histogram_tester_.ExpectUniqueSample("ChromeOS.DiagnosticsUi.InitialScreen",
+                                       0, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
+                       DiagnosticsAppRecordsInitialScreenSystem) {
+  // Launch Diagnostics at System UI.
+  LaunchDiagnosticsApp("chrome://diagnostics/?system");
+
+  // One maps to the "CrosDiagnosticsNavigationView" system enum.
+  histogram_tester_.ExpectUniqueSample("ChromeOS.DiagnosticsUi.InitialScreen",
+                                       0, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
+                       DiagnosticsAppRecordsInitialScreenConnectivity) {
+  // Launch Diagnostics at Connectivity UI.
+  LaunchDiagnosticsApp("chrome://diagnostics/?connectivity");
+
+  // One maps to the "CrosDiagnosticsNavigationView" connectivity enum.
+  histogram_tester_.ExpectUniqueSample("ChromeOS.DiagnosticsUi.InitialScreen",
+                                       1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
+                       DiagnosticsAppRecordsInitialScreenInput) {
+  // Launch Diagnostics at Input UI.
+  LaunchDiagnosticsApp("chrome://diagnostics/?input");
+
+  // One maps to the "CrosDiagnosticsNavigationView" input enum.
+  histogram_tester_.ExpectUniqueSample("ChromeOS.DiagnosticsUi.InitialScreen",
+                                       2, 1);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
