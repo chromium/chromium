@@ -241,7 +241,7 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       bubble_view->GetFocusManager()->SetFocusedView(nullptr);
 
         auto* main_page = static_cast<PageInfoMainView*>(current_ui);
-        main_page->selector_rows_.clear();
+        main_page->toggle_rows_.clear();
         main_page->permissions_view_->RemoveAllChildViews();
 
       current_ui->SetPermissionInfo(permissions_list,

@@ -211,13 +211,13 @@ void PageInfoMainView::SetPermissionInfo(
   }
 
   for (const auto& permission : permission_info_list) {
-    auto* selector =
+    auto* toggle_row =
         content_view->AddChildView(std::make_unique<PermissionToggleRowView>(
             ui_delegate_, navigation_handler_, permission, should_show_spacer));
-    selector->AddObserver(this);
-    selector->SetProperty(views::kCrossAxisAlignmentKey,
-                          views::LayoutAlignment::kStretch);
-    selector_rows_.push_back(std::move(selector));
+    toggle_row->AddObserver(this);
+    toggle_row->SetProperty(views::kCrossAxisAlignmentKey,
+                            views::LayoutAlignment::kStretch);
+    toggle_rows_.push_back(std::move(toggle_row));
   }
 
   for (auto& object : chosen_object_info_list) {
@@ -236,8 +236,8 @@ void PageInfoMainView::SetPermissionInfo(
   reset_button_ = content_view->AddChildView(
       std::make_unique<views::MdTextButton>(base::BindRepeating(
           [=](PageInfoMainView* view) {
-            for (auto* selector_row : view->selector_rows_) {
-              selector_row->ResetPermission();
+            for (auto* toggle_row : view->toggle_rows_) {
+              toggle_row->ResetPermission();
             }
             for (auto* object_row : view->chosen_object_rows_) {
               object_row->ResetPermission();

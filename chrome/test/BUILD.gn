@@ -5948,7 +5948,6 @@ test("unit_tests") {
       "../browser/ui/omnibox/clipboard_utils_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedal_implementations_unittest.cc",
       "../browser/ui/omnibox/omnibox_pedals_unittest.cc",
-      "../browser/ui/page_info/permission_menu_model_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/generation_confirmation_bubble_controller_unittest.cc",
       "../browser/ui/passwords/bubble_controllers/items_bubble_controller_unittest.cc",

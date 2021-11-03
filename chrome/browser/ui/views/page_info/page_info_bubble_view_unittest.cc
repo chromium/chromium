@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/page_switcher_view.h"
-#include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -113,7 +112,7 @@ class PageInfoBubbleViewTestApi {
     navigation_handler_ = bubble;
     bubble_delegate_ = bubble;
     toggle_rows_ =
-        &static_cast<PageInfoMainView*>(current_view())->selector_rows_;
+        &static_cast<PageInfoMainView*>(current_view())->toggle_rows_;
   }
 
   views::View* current_view() {
@@ -457,12 +456,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 // Test UI construction and reconstruction via
 // PageInfoBubbleView::SetPermissionInfo().
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
-  // This test exercises PermissionSelectorRow in a way that it is not used in
-  // practice. In practice, every setting in PermissionSelectorRow starts off
-  // "set", so there is always one option checked in the resulting MenuModel.
-  // This test creates settings that are left at their defaults, leading to zero
-  // checked options, and checks that the text on the MenuButtons is right.
-
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::GEOLOCATION;
   list.back().source = content_settings::SETTING_SOURCE_USER;
@@ -478,47 +471,47 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   api_->SetPermissionInfo(list);
   EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 
-    EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
-    EXPECT_TRUE(api_->reset_permissions_button()->GetEnabled());
-    EXPECT_EQ(u"Reset permission", api_->reset_permissions_button()->GetText());
-    PermissionToggleRowView* toggle_view = api_->GetPermissionToggleRowAt(0);
-    EXPECT_TRUE(toggle_view);
+  EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+  EXPECT_TRUE(api_->reset_permissions_button()->GetEnabled());
+  EXPECT_EQ(u"Reset permission", api_->reset_permissions_button()->GetText());
+  PermissionToggleRowView* toggle_view = api_->GetPermissionToggleRowAt(0);
+  EXPECT_TRUE(toggle_view);
 
-    // Verify labels match the settings on the PermissionInfoList.
-    EXPECT_EQ(u"Location", api_->GetPermissionLabelTextAt(0));
-    EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(0));
+  // Verify labels match the settings on the PermissionInfoList.
+  EXPECT_EQ(u"Location", api_->GetPermissionLabelTextAt(0));
+  EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(0));
 
-    // Verify calling SetPermissionInfo() directly updates the UI.
-    list.back().setting = CONTENT_SETTING_BLOCK;
-    api_->SetPermissionInfo(list);
-    EXPECT_FALSE(api_->GetPermissionToggleIsOnAt(0));
+  // Verify calling SetPermissionInfo() directly updates the UI.
+  list.back().setting = CONTENT_SETTING_BLOCK;
+  api_->SetPermissionInfo(list);
+  EXPECT_FALSE(api_->GetPermissionToggleIsOnAt(0));
 
-    // Simulate a user selection via the UI. Note this will also cover logic in
-    // PageInfo to update the pref.
-    api_->SimulateTogglingPermissionAt(0);
-    EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
-    EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(0));
+  // Simulate a user selection via the UI. Note this will also cover logic in
+  // PageInfo to update the pref.
+  api_->SimulateTogglingPermissionAt(0);
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
+  EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(0));
 
-    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi(api_->reset_permissions_button())
-        .NotifyClick(event);
-    // After resetting permissions, button doesn't disappear but is disabled.
-    EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
-    EXPECT_FALSE(api_->reset_permissions_button()->GetEnabled());
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(api_->reset_permissions_button())
+      .NotifyClick(event);
+  // After resetting permissions, button doesn't disappear but is disabled.
+  EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+  EXPECT_FALSE(api_->reset_permissions_button()->GetEnabled());
 
-    // In the ask state, the toggle is in the off state, indicating that
-    // permission isn't granted.
-    EXPECT_FALSE(api_->GetPermissionToggleIsOnAt(0));
+  // In the ask state, the toggle is in the off state, indicating that
+  // permission isn't granted.
+  EXPECT_FALSE(api_->GetPermissionToggleIsOnAt(0));
 
-    // However, since the setting is now default, recreating the dialog with
-    // those settings should omit the permission from the UI.
-    //
-    // TODO(https://crbug.com/829576): Reconcile the comment above with the fact
-    // that |num_expected_children| is not, at this point, 0 and therefore the
-    // permission is not being omitted from the UI.
-    api_->SetPermissionInfo(list);
-    EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
+  // However, since the setting is now default, recreating the dialog with
+  // those settings should omit the permission from the UI.
+  //
+  // TODO(https://crbug.com/829576): Reconcile the comment above with the fact
+  // that |num_expected_children| is not, at this point, 0 and therefore the
+  // permission is not being omitted from the UI.
+  api_->SetPermissionInfo(list);
+  EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
 }
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
@@ -818,11 +811,6 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
 }
 
 TEST_F(PageInfoBubbleViewTest, SetPermissionInfoForUsbGuard) {
-  // This test exercises PermissionSelectorRow in a way that it is not used in
-  // practice. In practice, every setting in PermissionSelectorRow starts off
-  // "set", so there is always one option checked in the resulting MenuModel.
-  // This test creates settings that are left at their defaults, leading to zero
-  // checked options, and checks that the text on the MenuButtons is right.
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::USB_GUARD;
   list.back().source = content_settings::SETTING_SOURCE_USER;

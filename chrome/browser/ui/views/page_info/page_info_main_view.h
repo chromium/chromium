@@ -10,7 +10,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view_observer.h"
-#include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
+#include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -36,7 +36,7 @@ class PageInfoBubbleViewTestApi;
 // and  site-related settings.
 class PageInfoMainView : public views::View,
                          public PageInfoUI,
-                         public PermissionSelectorRowObserver,
+                         public PermissionToggleRowViewObserver,
                          public ChosenObjectViewObserver {
  public:
   // The width of the column size for permissions and chosen object icons.
@@ -58,7 +58,7 @@ class PageInfoMainView : public views::View,
 
   gfx::Size CalculatePreferredSize() const override;
 
-  // PermissionSelectorRowObserver:
+  // PermissionToggleRowViewObserver:
   void OnPermissionChanged(const PageInfo::PermissionInfo& permission) override;
 
   // ChosenObjectViewObserver:
@@ -140,7 +140,7 @@ class PageInfoMainView : public views::View,
   // These rows bundle together all the |View|s involved in a single row of the
   // permissions section, and keep those views updated when the underlying
   // |Permission| changes.
-  std::vector<PermissionToggleRowView*> selector_rows_;
+  std::vector<PermissionToggleRowView*> toggle_rows_;
 
   std::vector<ChosenObjectView*> chosen_object_rows_;
 
