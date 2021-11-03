@@ -100,11 +100,7 @@ PageInfoMainView::PageInfoMainView(
   }
 
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
-    auto info = ui_delegate_->GetAboutThisSiteInfo();
-    if (info.has_value()) {
-      about_this_site_section_ =
-          AddChildView(CreateAboutThisSiteSection(info.value()));
-    }
+    about_this_site_section_ = AddChildView(CreateContainerView());
   }
 
   presenter_->InitializeUiState(this, std::move(initialized_callback));
@@ -324,6 +320,17 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
             std::u16string(), PageInfoViewFactory::GetOpenSubpageIcon())
             .release());
     connection_button_->SetTitleText(security_description->summary);
+
+    // Show "About this site" section only if connection is secure, because
+    // security information has higher priority.
+    if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSite)) {
+      auto info = ui_delegate_->GetAboutThisSiteInfo();
+      if (info.has_value()) {
+        about_this_site_section_->RemoveAllChildViews();
+        about_this_site_section_->AddChildView(
+            CreateAboutThisSiteSection(info.value()));
+      }
+    }
   } else {
     security_content_view_ = security_container_view_->AddChildView(
         std::make_unique<PageInfoSecurityContentView>(
