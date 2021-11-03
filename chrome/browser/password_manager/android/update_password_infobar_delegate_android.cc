@@ -46,7 +46,10 @@ void UpdatePasswordInfoBarDelegate::Create(
 }
 
 UpdatePasswordInfoBarDelegate::~UpdatePasswordInfoBarDelegate() {
-  password_manager::metrics_util::LogUpdateUIDismissalReason(infobar_response_);
+  auto submission_event =
+      passwords_state_.form_manager()->GetPendingCredentials().submission_event;
+  password_manager::metrics_util::LogUpdateUIDismissalReason(infobar_response_,
+                                                             submission_event);
   if (auto* recorder = passwords_state_.form_manager()->GetMetricsRecorder()) {
     recorder->RecordUIDismissalReason(infobar_response_);
   }

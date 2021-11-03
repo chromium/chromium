@@ -354,6 +354,7 @@ void PasswordFormManager::UpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event) {
   parsed_submitted_form_->form_data.submission_event = event;
   parsed_submitted_form_->submission_event = event;
+  password_save_manager_->UpdateSubmissionIndicatorEvent(event);
 }
 
 void PasswordFormManager::OnNopeUpdateClicked() {

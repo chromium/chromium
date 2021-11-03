@@ -2696,6 +2696,8 @@ class MockPasswordSaveManager : public PasswordSaveManager {
   MOCK_METHOD2(GeneratedPasswordAccepted,
                void(PasswordForm, base::WeakPtr<PasswordManagerDriver>));
   MOCK_METHOD0(PasswordNoLongerGenerated, void());
+  MOCK_METHOD1(UpdateSubmissionIndicatorEvent,
+               void(autofill::mojom::SubmissionIndicatorEvent));
   MOCK_CONST_METHOD0(IsNewLogin, bool());
   MOCK_CONST_METHOD0(IsPasswordUpdate, bool());
   MOCK_CONST_METHOD0(HasGeneratedPassword, bool());

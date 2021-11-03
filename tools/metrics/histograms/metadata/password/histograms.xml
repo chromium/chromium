@@ -2529,6 +2529,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-31">
+  <owner>kazinova@google.com</owner>
+  <owner>khamutov@google.com</owner>
+  <summary>
+    Why was the save password UI closed on a cleared change password form?
+    Recorded when the save bubble/infobar is dismissed.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.SavingOnUsernameFirstFlow"
     enum="SavingOnUsernameFirstFlow" expires_after="2022-05-01">
   <owner>kazinova@google.com</owner>
@@ -2767,6 +2778,17 @@ chromium-metrics-reviews@google.com.
     enum="PasswordManagerUIDismissalReason" expires_after="2022-04-24">
   <owner>vasilii@chromium.org</owner>
   <summary>Why was the update password UI (bubble or infobar) closed?</summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason"
+    enum="PasswordManagerUIDismissalReason" expires_after="2022-05-31">
+  <owner>kazinova@google.com</owner>
+  <owner>khamutov@google.com</owner>
+  <summary>
+    Why was the update password UI closed on a cleared change password form?
+    Recorded when the update bubble/infobar is dismissed.
+  </summary>
 </histogram>
 
 <histogram name="PasswordManager.UsernameCorrectionFound"

@@ -350,7 +350,8 @@ void SaveUpdateBubbleController::ReportInteractions() {
 
   // Log UMA histograms.
   if (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
-    metrics_util::LogUpdateUIDismissalReason(dismissal_reason_);
+    metrics_util::LogUpdateUIDismissalReason(
+        dismissal_reason_, pending_password_.submission_event);
   } else if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {
     absl::optional<metrics_util::PasswordAccountStorageUserState> user_state =
         absl::nullopt;
@@ -360,7 +361,8 @@ void SaveUpdateBubbleController::ReportInteractions() {
           ComputePasswordAccountStorageUserState(
               profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
     }
-    metrics_util::LogSaveUIDismissalReason(dismissal_reason_, user_state);
+    metrics_util::LogSaveUIDismissalReason(
+        dismissal_reason_, pending_password_.submission_event, user_state);
   }
 
   // Update the delegate so that it can send votes to the server.

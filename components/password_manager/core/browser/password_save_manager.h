@@ -103,6 +103,11 @@ class PasswordSaveManager {
   virtual void BlockMovingToAccountStoreFor(
       const autofill::GaiaIdHash& gaia_id_hash) = 0;
 
+  // Updates the submission indicator event for pending credentials at the
+  // moment of submisison detection.
+  virtual void UpdateSubmissionIndicatorEvent(
+      autofill::mojom::SubmissionIndicatorEvent event) = 0;
+
   virtual bool IsNewLogin() const = 0;
   virtual bool IsPasswordUpdate() const = 0;
   virtual bool HasGeneratedPassword() const = 0;

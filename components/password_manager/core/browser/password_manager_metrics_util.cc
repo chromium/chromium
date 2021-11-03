@@ -59,6 +59,7 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason) {
 
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event,
     absl::optional<PasswordAccountStorageUserState> user_state) {
   base::UmaHistogramEnumeration("PasswordManager.SaveUIDismissalReason", reason,
                                 NUM_UI_RESPONSES);
@@ -70,6 +71,13 @@ void LogSaveUIDismissalReason(
         "PasswordManager.SaveUIDismissalReason." + suffix, reason,
         NUM_UI_RESPONSES);
   }
+
+  if (submission_event ==
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.SaveUIOnClearedPasswordChangeFormDismissalReason",
+        reason, NUM_UI_RESPONSES);
+  }
 }
 
 void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason) {
@@ -78,9 +86,18 @@ void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason) {
       NUM_UI_RESPONSES);
 }
 
-void LogUpdateUIDismissalReason(UIDismissalReason reason) {
+void LogUpdateUIDismissalReason(
+    UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event) {
   base::UmaHistogramEnumeration("PasswordManager.UpdateUIDismissalReason",
                                 reason, NUM_UI_RESPONSES);
+
+  if (submission_event ==
+      autofill::mojom::SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.UpdateUIOnClearedPasswordChangeFormDismissalReason",
+        reason, NUM_UI_RESPONSES);
+  }
 }
 
 void LogMoveUIDismissalReason(UIDismissalReason reason,

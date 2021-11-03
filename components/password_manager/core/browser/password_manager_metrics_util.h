@@ -522,17 +522,24 @@ void LogGeneralUIDismissalReason(UIDismissalReason reason);
 
 // Log the |reason| a user dismissed the save password bubble. If
 // |user_state| is set, the |reason| is also logged to a separate
-// user-state-specific histogram.
+// user-state-specific histogram. If the submission is detected on a cleared
+// change password form, dismissal reason is also recorded in a histogram
+// specific for this type of submission.
 void LogSaveUIDismissalReason(
     UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event,
     absl::optional<PasswordAccountStorageUserState> user_state);
 
 // Log the |reason| a user dismissed the save password prompt after previously
 // having unblocklisted the origin while on the page.
 void LogSaveUIDismissalReasonAfterUnblocklisting(UIDismissalReason reason);
 
-// Log the |reason| a user dismissed the update password bubble.
-void LogUpdateUIDismissalReason(UIDismissalReason reason);
+// Log the |reason| a user dismissed the update password bubble. If the
+// submission is detected on a cleared change password form, dismissal reason is
+// also recorded in a histogram specific for this type of submission.
+void LogUpdateUIDismissalReason(
+    UIDismissalReason reason,
+    autofill::mojom::SubmissionIndicatorEvent submission_event);
 
 // Log the |reason| a user dismissed the move password bubble.
 void LogMoveUIDismissalReason(UIDismissalReason reason,

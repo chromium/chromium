@@ -481,6 +481,12 @@ void PasswordSaveManagerImpl::BlockMovingToAccountStoreFor(
                                     form_to_block.password_value);
 }
 
+void PasswordSaveManagerImpl::UpdateSubmissionIndicatorEvent(
+    autofill::mojom::SubmissionIndicatorEvent event) {
+  pending_credentials_.form_data.submission_event = event;
+  pending_credentials_.submission_event = event;
+}
+
 bool PasswordSaveManagerImpl::IsNewLogin() const {
   return pending_credentials_state_ == PendingCredentialsState::NEW_LOGIN ||
          pending_credentials_state_ == PendingCredentialsState::AUTOMATIC_SAVE;

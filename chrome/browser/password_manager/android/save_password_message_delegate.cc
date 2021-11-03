@@ -321,8 +321,11 @@ void SavePasswordMessageDelegate::RecordMessageShownMetrics() {
 
 void SavePasswordMessageDelegate::RecordDismissalReasonMetrics(
     password_manager::metrics_util::UIDismissalReason ui_dismissal_reason) {
+  auto submission_event =
+      passwords_state_.form_manager()->GetPendingCredentials().submission_event;
   password_manager::metrics_util::LogSaveUIDismissalReason(
-      ui_dismissal_reason, /*user_state=*/absl::nullopt);
+      ui_dismissal_reason, submission_event,
+      /*user_state=*/absl::nullopt);
   if (passwords_state_.form_manager()->WasUnblocklisted()) {
     password_manager::metrics_util::LogSaveUIDismissalReasonAfterUnblocklisting(
         ui_dismissal_reason);
