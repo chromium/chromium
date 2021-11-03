@@ -876,6 +876,22 @@ cc_test(
     ],
 )
 
+cc_test(
+    name = "sample_element_size_test",
+    srcs = ["sample_element_size_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = NOTEST_TAGS_NONMOBILE,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":flat_hash_map",
+        ":flat_hash_set",
+        ":node_hash_map",
+        ":node_hash_set",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
 cc_library(
     name = "btree",
     srcs = [

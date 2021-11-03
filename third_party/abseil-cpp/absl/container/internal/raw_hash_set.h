@@ -1643,7 +1643,7 @@ class raw_hash_set {
     // bound more carefully.
     if (std::is_same<SlotAlloc, std::allocator<slot_type>>::value &&
         slots_ == nullptr) {
-      infoz() = Sample();
+      infoz() = Sample(sizeof(slot_type));
     }
 
     char* mem = static_cast<char*>(Allocate<alignof(slot_type)>(

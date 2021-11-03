@@ -91,6 +91,7 @@ struct HashtablezInfo : public profiling_internal::Sample<HashtablezInfo> {
   absl::Time create_time;
   int32_t depth;
   void* stack[kMaxStackDepth];
+  size_t inline_element_size;
 };
 
 inline void RecordRehashSlow(HashtablezInfo* info, size_t total_probe_length) {
@@ -143,7 +144,7 @@ inline void RecordEraseSlow(HashtablezInfo* info) {
       std::memory_order_relaxed);
 }
 
-HashtablezInfo* SampleSlow(int64_t* next_sample);
+HashtablezInfo* SampleSlow(int64_t* next_sample, size_t inline_element_size);
 void UnsampleSlow(HashtablezInfo* info);
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
@@ -238,12 +239,14 @@ extern ABSL_PER_THREAD_TLS_KEYWORD int64_t global_next_sample;
 
 // Returns an RAII sampling handle that manages registration and unregistation
 // with the global sampler.
-inline HashtablezInfoHandle Sample() {
+inline HashtablezInfoHandle Sample(
+    size_t inline_element_size ABSL_ATTRIBUTE_UNUSED) {
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
   if (ABSL_PREDICT_TRUE(--global_next_sample > 0)) {
     return HashtablezInfoHandle(nullptr);
   }
-  return HashtablezInfoHandle(SampleSlow(&global_next_sample));
+  return HashtablezInfoHandle(
+      SampleSlow(&global_next_sample, inline_element_size));
 #else
   return HashtablezInfoHandle(nullptr);
 #endif  // !ABSL_PER_THREAD_TLS

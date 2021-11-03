@@ -383,8 +383,8 @@ class CordRepRing : public CordRep {
 
   // Destroys the provided ring buffer, decrementing the reference count of all
   // contained child CordReps. The provided 1\`rep` should have a ref count of
-  // one (pre decrement destroy call observing `refcount.IsOne()`) or zero (post
-  // decrement destroy call observing `!refcount.Decrement()`).
+  // one (pre decrement destroy call observing `refcount.IsOne()`) or zero
+  // (post decrement destroy call observing `!refcount.Decrement()`).
   static void Destroy(CordRepRing* rep);
 
   // Returns a mutable reference to the logical end position array.

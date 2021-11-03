@@ -460,6 +460,16 @@ class Cord {
   // `Cord::chunk_begin()` and `Cord::chunk_end()`.
   class ChunkRange {
    public:
+    // Fulfill minimum c++ container requirements [container.requirements]
+    // Theses (partial) container type definitions allow ChunkRange to be used
+    // in various utilities expecting a subset of [container.requirements].
+    // For example, the below enables using `::testing::ElementsAre(...)`
+    using value_type = absl::string_view;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using iterator = ChunkIterator;
+    using const_iterator = ChunkIterator;
+
     explicit ChunkRange(const Cord* cord) : cord_(cord) {}
 
     ChunkIterator begin() const;
@@ -591,6 +601,16 @@ class Cord {
   // `Cord::char_begin()` and `Cord::char_end()`.
   class CharRange {
    public:
+    // Fulfill minimum c++ container requirements [container.requirements]
+    // Theses (partial) container type definitions allow CharRange to be used
+    // in various utilities expecting a subset of [container.requirements].
+    // For example, the below enables using `::testing::ElementsAre(...)`
+    using value_type = char;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using iterator = CharIterator;
+    using const_iterator = CharIterator;
+
     explicit CharRange(const Cord* cord) : cord_(cord) {}
 
     CharIterator begin() const;
@@ -880,6 +900,10 @@ class Cord {
   // Helper for Append().
   template <typename C>
   void AppendImpl(C&& src);
+
+  // Prepends the provided data to this instance. `method` contains the public
+  // API method for this action which is tracked for Cordz sampling purposes.
+  void PrependArray(absl::string_view src, MethodIdentifier method);
 
   // Assigns the value in 'src' to this instance, 'stealing' its contents.
   // Requires src.length() > kMaxBytesToCopy.
@@ -1218,6 +1242,10 @@ inline absl::string_view Cord::Flatten() {
 
 inline void Cord::Append(absl::string_view src) {
   contents_.AppendArray(src, CordzUpdateTracker::kAppendString);
+}
+
+inline void Cord::Prepend(absl::string_view src) {
+  PrependArray(src, CordzUpdateTracker::kPrependString);
 }
 
 extern template void Cord::Append(std::string&& src);
