@@ -279,6 +279,7 @@ export function makeInfoView(browserBridge) {
         'skia_renderer': 'Skia Renderer',
         'canvas_oop_rasterization': 'Canvas out-of-process rasterization',
         'raw_draw': 'Raw Draw',
+        'video_encode': 'Video Encode',
       };
 
       const statusMap = {
