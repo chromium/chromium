@@ -126,19 +126,6 @@ float ScreenDetailed::devicePixelRatio() const {
   return GetScreenInfo(*frame, display_id_).device_scale_factor;
 }
 
-const String& ScreenDetailed::id() const {
-  // TODO(http://crbug.com/994889): Implement temporary, generated per-origin
-  // unique device IDs that reset when cookies are deleted. See related:
-  // web_bluetooth_device_id.h, unguessable_token.h, and uuid.h
-  NOTIMPLEMENTED_LOG_ONCE();
-  return g_empty_string;
-}
-
-Vector<String> ScreenDetailed::pointerTypes() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return Vector<String>();
-}
-
 const String& ScreenDetailed::label() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return g_empty_string;

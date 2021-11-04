@@ -28,12 +28,6 @@
   // Specifies the ratio between physical and logical pixels.
   [HighEntropy=Direct, Measure] readonly attribute float devicePixelRatio;
 
-  // A temporary generated per-origin unique ID; reset when cookies are deleted.
-  [HighEntropy=Direct, Measure] readonly attribute DOMString id;
-
-  // The set of pointer types supported by the screen.
-  [HighEntropy, Measure] readonly attribute FrozenArray<DOMString> pointerTypes;
-
   // A user-friendly label for the screen, determined by the user agent and OS.
   [HighEntropy=Direct, Measure] readonly attribute DOMString label;
 };

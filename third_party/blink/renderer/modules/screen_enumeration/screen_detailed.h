@@ -38,8 +38,6 @@ class MODULES_EXPORT ScreenDetailed final : public Screen {
   bool isPrimary() const;
   bool isInternal() const;
   float devicePixelRatio() const;
-  const String& id() const;
-  Vector<String> pointerTypes() const;
   const String& label() const;
 
   // Not web-exposed; for internal usage only (see Screen).

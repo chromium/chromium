@@ -31,8 +31,6 @@ promise_test(async t => {
   assert_equals(typeof screens[0].isPrimary, 'boolean');
   assert_equals(typeof screens[0].isInternal, 'boolean');
   assert_equals(typeof screens[0].devicePixelRatio, 'number');
-  assert_equals(typeof screens[0].id, 'string');
-  assert_equals(typeof screens[0].pointerTypes, 'object');
   assert_equals(typeof screens[0].label, 'string');
 }, 'getScreenDetails() returns at least 1 Screen with permission granted');
 
