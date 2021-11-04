@@ -590,6 +590,91 @@ class EncodedFunctionUnwind(NamedTuple):
   address_unwinds: Tuple[EncodedAddressUnwind, ...]
 
 
+# The trivial unwind is defined as a single `RETURN_TO_LR` instruction
+# at the start of the function.
+TRIVIAL_UNWIND: Tuple[EncodedAddressUnwind, ...] = EncodeAddressUnwinds(
+    (AddressUnwind(address_offset=0,
+                   unwind_type=UnwindType.RETURN_TO_LR,
+                   sp_offset=0,
+                   registers=()), ))
+
+# The refuse to unwind filler unwind is used to fill the invalid space
+# before the first function in the first page and after the last function
+# in the last page.
+REFUSE_TO_UNWIND: Tuple[EncodedAddressUnwind, ...] = (EncodedAddressUnwind(
+    address_offset=0,
+    complete_instruction_sequence=bytes([0b10000000, 0b00000000])), )
+
+
+def EncodeFunctionUnwinds(function_unwinds: Iterable[FunctionUnwind]
+                          ) -> Iterable[EncodedFunctionUnwind]:
+  """Encodes the unwind state for all functions defined in the binary.
+
+  This function
+  - sorts the collection of `FunctionUnwind`s by address.
+  - fills in gaps between functions with trivial unwind.
+  - fills the space in the space in last page after last function with refuse
+    to unwind.
+
+  Note:
+    This function assumes that min function start address is the text section
+    start address.
+
+  Argument:
+    function_unwinds: An iterable of function unwind states.
+
+  Returns:
+    The encoded function unwind states with no gaps between functions, ordered
+    by ascending address.
+  """
+
+  def GetPageNumber(address: int) -> int:
+    """Calculates the page number.
+
+    Page number is calculated as byte_offset_from_text_section_start >> 17,
+    i.e. the upper bits (17 ~ 31bits) of byte offset from text section start.
+    """
+    return (address - text_section_start_address) >> 17
+
+  def GetPageOffset(address: int) -> int:
+    """Calculates the page offset.
+
+    Page offset is calculated as (byte_offset_from_text_section_start >> 1)
+    & 0xffff, i.e. the lower bits (1 ~ 16bits) of instruction offset from
+    text section start.
+    """
+    return ((address - text_section_start_address) >> 1) & 0xffff
+
+  sorted_function_unwinds: List[FunctionUnwind] = sorted(
+      function_unwinds, key=lambda function_unwind: function_unwind.address)
+
+  text_section_start_address: int = sorted_function_unwinds[0].address
+  prev_func_end_address: int = sorted_function_unwinds[0].address
+
+  for unwind in sorted_function_unwinds:
+    assert prev_func_end_address <= unwind.address, (
+        'Detected overlap between functions.')
+
+    if prev_func_end_address < unwind.address:
+      # Gaps between functions are typically filled by regions of thunks which
+      # do not alter the stack pointer. Filling these gaps with TRIVIAL_UNWIND
+      # is the appropriate unwind strategy.
+      yield EncodedFunctionUnwind(GetPageNumber(prev_func_end_address),
+                                  GetPageOffset(prev_func_end_address),
+                                  TRIVIAL_UNWIND)
+
+    yield EncodedFunctionUnwind(GetPageNumber(unwind.address),
+                                GetPageOffset(unwind.address),
+                                EncodeAddressUnwinds(unwind.address_unwinds))
+
+    prev_func_end_address = unwind.address + unwind.size
+
+  if GetPageOffset(prev_func_end_address) != 0:
+    yield EncodedFunctionUnwind(GetPageNumber(prev_func_end_address),
+                                GetPageOffset(prev_func_end_address),
+                                REFUSE_TO_UNWIND)
+
+
 def EncodeFunctionOffsetTable(
     encoded_address_unwind_sequences: Iterable[
         Tuple[EncodedAddressUnwind, ...]],
