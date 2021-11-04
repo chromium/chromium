@@ -185,6 +185,9 @@ chromium-metrics-reviews@google.com.
     <variant name="Other" summary="Other apps."/>
     <variant name="Overall" summary="Total statistics."/>
     <variant name="PlayStore" summary="Play Store."/>
+    <variant name="PreNotified" summary="Pre-ANR situation is notified."/>
+    <variant name="RecoveryFailed"
+        summary="Recovery failed for pre-ANR situation."/>
     <variant name="SystemApp" summary="System components."/>
     <variant name="SystemServer" summary="System Server."/>
   </token>

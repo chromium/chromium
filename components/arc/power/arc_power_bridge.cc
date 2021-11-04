@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -383,6 +384,16 @@ void ArcPowerBridge::OnGetScreenBrightnessPercent(
 void ArcPowerBridge::OnWakefulnessChanged(mojom::WakefulnessMode mode) {
   for (auto& observer : observer_list_)
     observer.OnWakefulnessChanged(mode);
+}
+
+void ArcPowerBridge::OnPreAnr(mojom::AnrType type) {
+  base::UmaHistogramEnumeration("Arc.Anr.PreNotified", type);
+  for (auto& observer : observer_list_)
+    observer.OnPreAnr(type);
+}
+
+void ArcPowerBridge::OnAnrRecoveryFailed(::arc::mojom::AnrType type) {
+  base::UmaHistogramEnumeration("Arc.Anr.RecoveryFailed", type);
 }
 
 void ArcPowerBridge::UpdateAndroidScreenBrightness(double percent) {

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module arc.mojom;
+
+import "components/arc/mojom/anr.mojom";
 
 // Enumerates the modes of CPU restrictions.
 // This enum should be synced with CpuRestrictionState in
@@ -57,7 +59,7 @@ enum WakefulnessMode {
   DOZING
 };
 
-// Next method ID: 5
+// Next method ID: 8
 interface PowerHost {
   // Acquire and release wake locks on the host side.
   OnAcquireDisplayWakeLock@0(DisplayWakeLockType type);
@@ -72,6 +74,13 @@ interface PowerHost {
   // Request that the screen brightness be changed to |percent|.
   // |percent| is of the range [0, 100]
   [MinVersion=3] OnScreenBrightnessUpdateRequest@3(double percent);
+
+  // Notifies that the system is in pre-ANR mode. This means real ANR crash may
+  // happen soon.
+  [MinVersion=8] OnPreAnr@6(AnrType type);
+
+  // Notifies that ANR recovery failed and ANR crash has happened.
+  [MinVersion=8] OnAnrRecoveryFailed@7(AnrType type);
 };
 
 // Next method ID: 9

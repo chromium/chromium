@@ -14,6 +14,7 @@ if (is_chromeos_ash) {
     sources = [
       "accessibility_helper.mojom",
       "adbd.mojom",
+      "anr.mojom",
       "app.mojom",
       "app_permissions.mojom",
       "appfuse.mojom",

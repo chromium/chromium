@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
+#include "components/arc/mojom/anr.mojom.h"
 #include "components/arc/mojom/metrics.mojom.h"
 #include "components/arc/mojom/process.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
