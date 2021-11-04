@@ -639,6 +639,9 @@ COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kSmartDim;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kSpareRendererOnPrimaryProfileCreation;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSoundContentSetting;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
