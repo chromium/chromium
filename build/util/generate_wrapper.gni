@@ -94,6 +94,7 @@ template("generate_wrapper") {
 
     if (defined(invoker.use_vpython3) && invoker.use_vpython3) {
       args += [ "--use-vpython3" ]
+      data += [ "//.vpython3" ]
     }
     args += [ "--" ]
     args += _wrapped_arguments
