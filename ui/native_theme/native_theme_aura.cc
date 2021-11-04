@@ -65,7 +65,7 @@ NativeTheme* NativeTheme::GetInstanceForDarkUI() {
   static base::NoDestructor<NativeThemeAura> s_native_theme(false, true);
   return s_native_theme.get();
 }
-#endif  // OS_WIN
+#endif  // !OS_WIN
 #endif  // !OS_APPLE
 
 ////////////////////////////////////////////////////////////////////////////////
