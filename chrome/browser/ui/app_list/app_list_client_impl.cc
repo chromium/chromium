@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -549,9 +550,13 @@ void AppListClientImpl::OpenURL(Profile* profile,
                                 const GURL& url,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
-  NavigateParams params(profile, url, transition);
-  params.disposition = disposition;
-  Navigate(&params);
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(url, true);
+  } else {
+    NavigateParams params(profile, url, transition);
+    params.disposition = disposition;
+    Navigate(&params);
+  }
 }
 
 void AppListClientImpl::NotifySearchResultsForLogging(
