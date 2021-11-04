@@ -41,7 +41,8 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
     private boolean mReentrantTriggering;
     private boolean mTriggerDelayedOnCreateInputConnection;
 
-    @IntDef({FocusState.NOT_APPLICABLE, FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS,
+    @IntDef({FocusState.NOT_APPLICABLE, FocusState.WINDOW_FOCUS_LOST,
+            FocusState.VIEW_FOCUSED_WITHOUT_WINDOW_FOCUS,
             FocusState.VIEW_FOCUSED_THEN_WINDOW_FOCUSED})
     @interface FocusState {
         int NOT_APPLICABLE = 0;
