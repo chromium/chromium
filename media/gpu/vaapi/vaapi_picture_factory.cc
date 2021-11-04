@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/video/picture.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_bindings.h"
 
 #if defined(USE_OZONE)

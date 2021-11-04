@@ -18,7 +18,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"  // nogncheck
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #endif
 
@@ -35,16 +34,14 @@ class UserInputMonitorTest : public testing::Test {
   // testing::Test.
   void SetUp() override {
 #if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
-      if (ui::OzonePlatform::GetPlatformNameForTest() == "drm") {
-        // OzonePlatformDrm::InitializeUI hangs in tests on the DRM platform.
-        GTEST_SKIP();
-      }
-      // Initialise Ozone in single process mode, as all tests do.
-      ui::OzonePlatform::InitParams params;
-      params.single_process = true;
-      ui::OzonePlatform::InitializeForUI(params);
+    if (ui::OzonePlatform::GetPlatformNameForTest() == "drm") {
+      // OzonePlatformDrm::InitializeUI hangs in tests on the DRM platform.
+      GTEST_SKIP();
     }
+    // Initialise Ozone in single process mode, as all tests do.
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
 #endif
   }
 };

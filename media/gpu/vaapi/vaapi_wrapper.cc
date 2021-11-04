@@ -41,7 +41,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/base/ui_base_features.h"
 
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"

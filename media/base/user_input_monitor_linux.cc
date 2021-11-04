@@ -4,36 +4,12 @@
 
 #include "media/base/user_input_monitor.h"
 
-#include <stddef.h>
-#include <sys/select.h>
-#include <unistd.h>
 #include <memory>
 
 #include "base/bind.h"
-#include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/files/file_descriptor_watcher_posix.h"
-#include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/synchronization/lock.h"
-#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/skia/include/core/SkPoint.h"
-#include "ui/events/devices/x11/xinput_util.h"
-#include "ui/events/keyboard_event_counter.h"
-#include "ui/events/keycodes/keyboard_code_conversion_x.h"
-#include "ui/gfx/x/xinput.h"
-
-#if defined(USE_X11)
-#include "ui/base/x/x11_user_input_monitor.h"  // nogncheck
-#endif
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"                     // nogncheck
-#include "ui/ozone/public/ozone_platform.h"               // nogncheck
-#include "ui/ozone/public/platform_user_input_monitor.h"  // nogncheck
-#endif
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/platform_user_input_monitor.h"
 
 namespace media {
 namespace {
@@ -125,20 +101,9 @@ class UserInputMonitorLinux : public UserInputMonitorBase {
 
 UserInputMonitorAdapter* CreateUserInputMonitor(
     const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner) {
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return new UserInputMonitorLinuxCore<ui::PlatformUserInputMonitor>(
-        ui::OzonePlatform::GetInstance()->GetPlatformUserInputMonitor(
-            io_task_runner));
-  }
-#endif
-#if defined(USE_X11)
-  return new UserInputMonitorLinuxCore<ui::XUserInputMonitor>(
-      std::make_unique<ui::XUserInputMonitor>(io_task_runner));
-#else
-  NOTREACHED();
-  return nullptr;
-#endif
+  return new UserInputMonitorLinuxCore<ui::PlatformUserInputMonitor>(
+      ui::OzonePlatform::GetInstance()->GetPlatformUserInputMonitor(
+          io_task_runner));
 }
 
 //

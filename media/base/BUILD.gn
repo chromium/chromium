@@ -408,14 +408,8 @@ source_set("base") {
     deps += [ "//third_party/libvpx" ]
   }
 
-  if (use_x11 || ozone_platform_x11) {
+  if (is_linux && !is_chromecast) {
     sources += [ "user_input_monitor_linux.cc" ]
-    deps += [
-      "//ui/base:features",
-      "//ui/events:events_base",
-      "//ui/events/devices/x11",
-      "//ui/gfx/x",
-    ]
   } else if (is_mac) {
     sources += [ "user_input_monitor_mac.cc" ]
     frameworks = [
@@ -428,9 +422,6 @@ source_set("base") {
     sources += [ "user_input_monitor_win.cc" ]
   } else {
     defines += [ "DISABLE_USER_INPUT_MONITOR" ]
-  }
-  if (use_x11) {
-    deps += [ "//ui/base/x" ]
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
