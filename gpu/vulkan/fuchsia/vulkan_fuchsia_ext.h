@@ -16,20 +16,20 @@ extern "C" {
 #endif
 
 const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_CREATE_INFO_FUCHSIAX =
-    static_cast<VkStructureType>(1001004000);
+    static_cast<VkStructureType>(1000367000);
 const VkStructureType VK_STRUCTURE_TYPE_FUCHSIA_IMAGE_FORMAT_FUCHSIAX =
     static_cast<VkStructureType>(1001004001);
 const VkStructureType
     VK_STRUCTURE_TYPE_IMPORT_MEMORY_BUFFER_COLLECTION_FUCHSIAX =
-        static_cast<VkStructureType>(1001004004);
+        static_cast<VkStructureType>(1000367004);
 const VkStructureType
     VK_STRUCTURE_TYPE_BUFFER_COLLECTION_IMAGE_CREATE_INFO_FUCHSIAX =
-        static_cast<VkStructureType>(1001004005);
+        static_cast<VkStructureType>(1000367005);
 const VkStructureType VK_STRUCTURE_TYPE_BUFFER_COLLECTION_PROPERTIES_FUCHSIAX =
-    static_cast<VkStructureType>(1001004006);
+    static_cast<VkStructureType>(1000367006);
 
 const VkObjectType VK_OBJECT_TYPE_BUFFER_COLLECTION_FUCHSIAX =
-    static_cast<VkObjectType>(1001004002);
+    static_cast<VkObjectType>(1000367002);
 
 #define VK_FUCHSIA_buffer_collection_x 1
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkBufferCollectionFUCHSIAX)
