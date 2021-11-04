@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_POPUP_VIEW_UTILS_H_
 
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_border_arrow_utils.h"
 
 namespace content {
 class WebContents;
@@ -70,6 +72,39 @@ bool CanShowDropdownHere(int item_height,
 // overlap |screen_bounds|.
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents);
+
+// Returns the total vertical space to place a on |content_area_bounds| on a
+// specific |side| of the |element_bounds|.
+int GetAvailableVerticalSpaceOnSideOfElement(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    views::BubbleArrowSide side);
+
+// Returns the total horizontal space to place on |content_area_bounds| on a
+// specific |side| of the |element_bounds|.
+int GetAvailableHorizontalSpaceOnSideOfElement(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    views::BubbleArrowSide side);
+
+// Returns true if there is enough space to place the bubble with
+// |bubble_preferred_size| plus an additional |spacing| on a specific |side| of
+// the |element_bounds| in the |content_area_bounds|. |spacing| defines the
+// number of additional pixels the bubble should be displaced from the element.
+bool IsBubblePlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
+                                      const gfx::Rect& element_bounds,
+                                      const gfx::Size& bubble_preferred_size,
+                                      int spacing,
+                                      views::BubbleArrowSide side);
+
+// Returns the first side within this order kTop, kBottom, kLeft, kRight, for
+// which which the bubble with a |bubble_preferred_size| fits on the side of the
+// |element_bounds| in the |content_area_bounds| taking the arrow length into
+// account. If neither side fits, the function returns kBottom.
+views::BubbleArrowSide GetOptimalBubbleArrowSide(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    const gfx::Size& bubble_preferred_size);
 
 // Returns whether there is an open permissions prompt in |web_contents| with
 // bounds that overlap |screen_bounds|.

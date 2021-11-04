@@ -18,6 +18,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
+using views::BubbleBorder;
+
 void CalculatePopupXAndWidthHorizontallyCentered(
     int popup_preferred_width,
     const gfx::Rect& content_area_bounds,
@@ -238,4 +240,87 @@ bool PopupMayExceedContentAreaBounds(content::WebContents* web_contents) {
     return widget && widget->GetName() == ExtensionPopup::kViewClassName;
   }
   return false;
+}
+
+int GetAvailableVerticalSpaceOnSideOfElement(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    views::BubbleArrowSide side) {
+  // Note that the side of the arrow is opposite to the side of the element the
+  // bubble is located on.
+  switch (side) {
+    case views::BubbleArrowSide::kLeft:
+    case views::BubbleArrowSide::kRight:
+      // For a bubble that is either on the left of the right side of the
+      // element, the height of the content area is the total available space.
+      return content_area_bounds.height();
+
+    case views::BubbleArrowSide::kBottom:
+      // If the bubble sits above the element, return the space between the
+      // upper edge of the element and the content area.
+      return element_bounds.y() - content_area_bounds.y();
+
+    case views::BubbleArrowSide::kTop:
+      // If the bubble sits below the element, return the space between the
+      // lower edge of the element and the content area.
+      return content_area_bounds.bottom() - element_bounds.bottom();
+  }
+}
+
+int GetAvailableHorizontalSpaceOnSideOfElement(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    views::BubbleArrowSide side) {
+  // Note that the side of the arrow is opposite to the side of the element the
+  // bubble is located on.
+  switch (side) {
+    case views::BubbleArrowSide::kRight:
+      return element_bounds.x() - content_area_bounds.x();
+
+    case views::BubbleArrowSide::kLeft:
+      return content_area_bounds.right() - element_bounds.right();
+
+    case views::BubbleArrowSide::kTop:
+    case views::BubbleArrowSide::kBottom:
+      return content_area_bounds.width();
+  }
+}
+
+bool IsBubblePlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
+                                      const gfx::Rect& element_bounds,
+                                      const gfx::Size& bubble_preferred_size,
+                                      int additional_spacing,
+                                      views::BubbleArrowSide side) {
+  switch (side) {
+    case views::BubbleArrowSide::kLeft:
+    case views::BubbleArrowSide::kRight:
+      return bubble_preferred_size.width() + additional_spacing <=
+             GetAvailableHorizontalSpaceOnSideOfElement(content_area_bounds,
+                                                        element_bounds, side);
+
+    case views::BubbleArrowSide::kTop:
+    case views::BubbleArrowSide::kBottom:
+      return bubble_preferred_size.height() + additional_spacing <=
+             GetAvailableVerticalSpaceOnSideOfElement(content_area_bounds,
+                                                      element_bounds, side);
+  }
+}
+
+views::BubbleArrowSide GetOptimalBubbleArrowSide(
+    const gfx::Rect& content_area_bounds,
+    const gfx::Rect& element_bounds,
+    const gfx::Size& bubble_preferred_size) {
+  // Probe for a side of the element on which the bubble can be shown entirely.
+  const std::vector<views::BubbleArrowSide> sides_by_preference(
+      {views::BubbleArrowSide::kTop, views::BubbleArrowSide::kBottom,
+       views::BubbleArrowSide::kLeft, views::BubbleArrowSide::kRight});
+  for (views::BubbleArrowSide possible_side : sides_by_preference) {
+    if (IsBubblePlaceableOnSideOfElement(
+            content_area_bounds, element_bounds, bubble_preferred_size,
+            BubbleBorder::kVisibleArrowLength, possible_side)) {
+      return possible_side;
+    }
+  }
+
+  return views::BubbleArrowSide::kBottom;
 }
