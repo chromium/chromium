@@ -125,8 +125,6 @@ static_library("test_support") {
     "test/logging_timer.h",
     "test/result_catcher.cc",
     "test/result_catcher.h",
-    "test/test_background_page_ready_observer.cc",
-    "test/test_background_page_ready_observer.h",
     "test/test_content_script_load_waiter.cc",
     "test/test_content_script_load_waiter.h",
     "test/test_content_utility_client.cc",
