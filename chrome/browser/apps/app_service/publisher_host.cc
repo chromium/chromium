@@ -99,7 +99,7 @@ void PublisherHost::Initialize() {
   extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(
       app_service, profile, &proxy_->InstanceRegistry());
   if (!g_omit_plugin_vm_apps_for_testing_) {
-    plugin_vm_apps_ = std::make_unique<PluginVmApps>(app_service, profile);
+    plugin_vm_apps_ = std::make_unique<PluginVmApps>(proxy_);
   }
   // Lacros does not support multi-signin, so only create for the primary
   // profile. This also avoids creating an instance for the lock screen app

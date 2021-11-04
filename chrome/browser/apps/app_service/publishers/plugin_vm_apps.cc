@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -88,6 +89,20 @@ void PopulatePermissions(apps::mojom::App* app, Profile* profile) {
   }
 }
 
+std::unique_ptr<apps::App> CreatePluginVmApp(Profile* profile, bool allowed) {
+  std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
+      apps::AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId,
+      allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
+      l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME));
+
+  app->icon_key =
+      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
+                    IDR_LOGO_PLUGIN_VM_DEFAULT_192, apps::IconEffects::kNone);
+
+  // TODO(crbug.com/1253250): Add other fields for the App struct.
+  return app;
+}
+
 apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId,
@@ -112,15 +127,13 @@ apps::mojom::AppPtr GetPluginVmApp(Profile* profile, bool allowed) {
 
 namespace apps {
 
-PluginVmApps::PluginVmApps(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile)
-    : profile_(profile), registry_(nullptr) {
+PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
+    : AppPublisher(proxy), profile_(proxy->profile()), registry_(nullptr) {
   // Don't show anything for non-primary profiles. We can't use
   // `PluginVmFeatures::Get()->IsAllowed()` here because we still let the user
   // uninstall Plugin VM when it isn't allowed for some other reasons (e.g.
   // policy).
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile_)) {
     return;
   }
 
@@ -130,7 +143,19 @@ PluginVmApps::PluginVmApps(
   }
   registry_->AddObserver(this);
 
-  PublisherBase::Initialize(app_service, apps::mojom::AppType::kPluginVm);
+  PublisherBase::Initialize(proxy->AppService(),
+                            apps::mojom::AppType::kPluginVm);
+
+  std::vector<std::unique_ptr<App>> apps;
+  apps.push_back(CreatePluginVmApp(profile_, is_allowed_));
+  for (const auto& pair :
+       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
+                                        ApplicationList_VmType_PLUGIN_VM)) {
+    const guest_os::GuestOsRegistryService::Registration& registration =
+        pair.second;
+    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
+  }
+  AppPublisher::Publish(std::move(apps));
 
   // Register for Plugin VM changes to policy and installed state, so that we
   // can update the availability and status of the Plugin VM app. Unretained is
@@ -178,6 +203,17 @@ void PluginVmApps::Connect(
   subscriber->OnApps(std::move(apps), apps::mojom::AppType::kPluginVm,
                      true /* should_notify_initialized */);
   subscribers_.Add(std::move(subscriber));
+}
+
+void PluginVmApps::LoadIcon(const std::string& app_id,
+                            const IconKey& icon_key,
+                            IconType icon_type,
+                            int32_t size_hint_in_dip,
+                            bool allow_placeholder_icon,
+                            apps::LoadIconCallback callback) {
+  registry_->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
+                      allow_placeholder_icon, IconKey::kInvalidResourceId,
+                      std::move(callback));
 }
 
 void PluginVmApps::LoadIcon(const std::string& app_id,
@@ -274,21 +310,51 @@ void PluginVmApps::OnRegistryUpdated(
 
   for (const std::string& app_id : updated_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      Publish(Convert(*registration, /*new_icon_key=*/false), subscribers_);
+      PublisherBase::Publish(Convert(*registration, /*new_icon_key=*/false),
+                             subscribers_);
+      AppPublisher::Publish(
+          CreateApp(*registration, /*generate_new_icon_key=*/false));
     }
   }
   for (const std::string& app_id : removed_apps) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_type = apps::mojom::AppType::kPluginVm;
-    app->app_id = app_id;
-    app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-    Publish(std::move(app), subscribers_);
+    apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+    mojom_app->app_type = apps::mojom::AppType::kPluginVm;
+    mojom_app->app_id = app_id;
+    mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+    PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+    std::unique_ptr<App> app =
+        std::make_unique<App>(AppType::kPluginVm, app_id);
+    app->readiness = apps::Readiness::kUninstalledByUser;
+    AppPublisher::Publish(std::move(app));
   }
   for (const std::string& app_id : inserted_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      Publish(Convert(*registration, /*new_icon_key=*/true), subscribers_);
+      PublisherBase::Publish(Convert(*registration, /*new_icon_key=*/true),
+                             subscribers_);
+      AppPublisher::Publish(
+          CreateApp(*registration, /*generate_new_icon_key=*/true));
     }
   }
+}
+
+std::unique_ptr<App> PluginVmApps::CreateApp(
+    const guest_os::GuestOsRegistryService::Registration& registration,
+    bool generate_new_icon_key) {
+  DCHECK_EQ(registration.VmType(), guest_os::GuestOsRegistryService::VmType::
+                                       ApplicationList_VmType_PLUGIN_VM);
+
+  std::unique_ptr<App> app =
+      AppPublisher::MakeApp(AppType::kPluginVm, registration.app_id(),
+                            Readiness::kReady, registration.Name());
+
+  if (generate_new_icon_key) {
+    app->icon_key = std::move(
+        *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
+  }
+
+  // TODO(crbug.com/1253250): Add other fields for the App struct.
+  return app;
 }
 
 apps::mojom::AppPtr PluginVmApps::Convert(
@@ -328,7 +394,7 @@ void PluginVmApps::OnPluginVmAllowedChanged(bool is_allowed) {
   app->app_type = apps::mojom::AppType::kPluginVm;
   app->app_id = plugin_vm::kPluginVmShelfAppId;
   SetAppAllowed(app.get(), is_allowed);
-  Publish(std::move(app), subscribers_);
+  PublisherBase::Publish(std::move(app), subscribers_);
 }
 
 void PluginVmApps::OnPluginVmConfiguredChanged() {
@@ -338,7 +404,7 @@ void PluginVmApps::OnPluginVmConfiguredChanged() {
   app->app_id = plugin_vm::kPluginVmShelfAppId;
   SetShowInAppManagement(
       app.get(), plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile_));
-  Publish(std::move(app), subscribers_);
+  PublisherBase::Publish(std::move(app), subscribers_);
 }
 
 void PluginVmApps::OnPermissionChanged() {
@@ -346,7 +412,7 @@ void PluginVmApps::OnPermissionChanged() {
   app->app_type = apps::mojom::AppType::kPluginVm;
   app->app_id = plugin_vm::kPluginVmShelfAppId;
   PopulatePermissions(app.get(), profile_);
-  Publish(std::move(app), subscribers_);
+  PublisherBase::Publish(std::move(app), subscribers_);
 }
 
 }  // namespace apps
