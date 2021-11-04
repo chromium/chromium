@@ -3622,6 +3622,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "lightweight-reactions-android",
+    "owners": [ "gujen", "sophey" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "list-all-display-modes",
     "owners": [ "//ui/display/OWNERS" ],
     // This flag is used for debugging and development purposes to list all
