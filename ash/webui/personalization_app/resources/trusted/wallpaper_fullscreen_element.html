@@ -1,9 +1,15 @@
 <style>
   #container {
+    background-color: transparent;
     height: 100%;
     pointer-events: auto;
     position: relative;
     width: 100%;
+  }
+
+  #container::backdrop {
+    background: transparent;
+    opacity: 0;
   }
 
   #exit {
@@ -119,9 +125,4 @@
     <iron-icon icon="personalization:confirm_selection"></iron-icon>
     <span>[[i18n('setAsWallpaper')]]</span>
   </cr-button>
-  <!-- TODO(b/202392508) remove this debug view when transparency works -->
-  <template is="dom-if" if="[[getImageUrl_(pendingSelected_, localImageData_)]]">
-    <img is="cr-auto-img" tabindex="-1"
-        auto-src="[[getImageUrl_(pendingSelected_, localImageData_)]]">
-  </template>
 </div>

@@ -36,6 +36,8 @@ class FakePersonalizationAppUiDelegate
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
 
+  void MakeTransparent() override {}
+
   void FetchCollections(FetchCollectionsCallback callback) override;
 
   void FetchImagesForCollection(

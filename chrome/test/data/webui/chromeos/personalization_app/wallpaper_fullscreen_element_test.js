@@ -133,6 +133,29 @@ export function WallpaperFullscreenTest() {
     assertEquals(null, wallpaperFullscreenElement.selectedLayout_);
   });
 
+  test('sets fullscreen class on body when entering fullscreen', async () => {
+    wallpaperFullscreenElement = initElement(WallpaperFullscreen.is);
+    const {requestFullscreenPromise, exitFullscreenPromise} =
+        mockFullscreenApis();
+    await waitAfterNextRender(wallpaperFullscreenElement);
+
+    assertEquals('', document.body.className);
+
+    personalizationStore.data.fullscreen = true;
+    personalizationStore.data.currentSelected = currentSelectedCustomImage;
+    personalizationStore.notifyObservers();
+
+    await requestFullscreenPromise;
+
+    assertEquals('fullscreen-preview', document.body.className);
+
+    wallpaperFullscreenElement.exitFullscreen();
+
+    await exitFullscreenPromise;
+
+    assertEquals('', document.body.className);
+  });
+
   test('exits full screen on exit button click', async () => {
     wallpaperFullscreenElement = initElement(WallpaperFullscreen.is);
     const {requestFullscreenPromise, exitFullscreenPromise} =

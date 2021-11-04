@@ -12,6 +12,7 @@ import {TestBrowserProxy} from '../../test_browser_proxy.js';
 export class TestWallpaperProvider extends TestBrowserProxy {
   constructor() {
     super([
+      'makeTransparent',
       'fetchCollections',
       'fetchImagesForCollection',
       'getLocalImages',
@@ -119,6 +120,11 @@ export class TestWallpaperProvider extends TestBrowserProxy {
    */
   get images() {
     return this.images_;
+  }
+
+  /** @override */
+  makeTransparent() {
+    this.methodCalled('makeTransparent');
   }
 
   /** @override */

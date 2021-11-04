@@ -16,6 +16,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/public/cpp/window_backdrop.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -30,7 +31,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -42,6 +47,8 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/aura/window.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -92,7 +99,7 @@ AccountId GetAccountId(const Profile* profile) {
 
 ChromePersonalizationAppUiDelegate::ChromePersonalizationAppUiDelegate(
     content::WebUI* web_ui)
-    : profile_(Profile::FromWebUI(web_ui)) {
+    : web_ui_(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
 }
@@ -105,6 +112,33 @@ void ChromePersonalizationAppUiDelegate::BindInterface(
         receiver) {
   wallpaper_receiver_.reset();
   wallpaper_receiver_.Bind(std::move(receiver));
+}
+
+void ChromePersonalizationAppUiDelegate::MakeTransparent() {
+  auto* web_contents = web_ui_->GetWebContents();
+
+  // Disable the window backdrop that creates an opaque layer in tablet mode.
+  auto* window_backdrop =
+      ash::WindowBackdrop::Get(web_contents->GetTopLevelNativeWindow());
+  window_backdrop->SetBackdropMode(
+      ash::WindowBackdrop::BackdropMode::kDisabled);
+
+  // Set transparency on the top level native window and tell the WM not to
+  // change it when window state changes.
+  aura::Window* top_level_window = web_contents->GetTopLevelNativeWindow();
+  top_level_window->SetProperty(::chromeos::kWindowManagerManagesOpacityKey,
+                                false);
+  top_level_window->SetTransparent(true);
+
+  // Set the background color to transparent.
+  web_contents->GetRenderWidgetHostView()->SetBackgroundColor(
+      SK_ColorTRANSPARENT);
+
+  // Set a background color override.
+  static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
+                                    web_contents->GetTopLevelNativeWindow())
+                                    ->contents_web_view())
+      ->SetBackgroundColorOverride(SK_ColorTRANSPARENT);
 }
 
 void ChromePersonalizationAppUiDelegate::FetchCollections(

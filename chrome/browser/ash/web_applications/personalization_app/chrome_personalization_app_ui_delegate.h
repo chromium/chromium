@@ -74,6 +74,12 @@ class ChromePersonalizationAppUiDelegate
           receiver) override;
 
   // ash::personalization_app::mojom::WallpaperProvider:
+
+  // Configure the window to be transparent so that the user can trigger a "full
+  // screen preview" mode. This allows the user to see through the app window to
+  // see the chosen wallpaper. This is safe to call multiple times in a row.
+  void MakeTransparent() override;
+
   void FetchCollections(FetchCollectionsCallback callback) override;
 
   void FetchImagesForCollection(
@@ -205,6 +211,8 @@ class ChromePersonalizationAppUiDelegate
   // is checked when the SWA requests thumbnail data or sets an image as the
   // user's background.
   std::set<base::FilePath> local_images_;
+
+  content::WebUI* const web_ui_ = nullptr;
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;

@@ -9,7 +9,6 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -20,6 +19,8 @@ import {setFullscreenEnabledAction} from './personalization_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './personalization_controller.js';
 import {DisplayableImage} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
+
+const fullscreenClass = 'fullscreen-preview';
 
 /** @polymer */
 export class WallpaperFullscreen extends WithPersonalizationStore {
@@ -64,15 +65,6 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         value: null,
       },
       /**
-       * TODO(b/202392508) can remove this when transparency works
-       * @type {!Object<string, string>}
-       * @private
-       */
-      localImageData_: {
-        type: Object,
-        value: {},
-      },
-      /**
        * When preview mode starts, this is set to currentSelected.layout. If the
        * user changes layout option, this will be updated locally to track which
        * option the user has selected (currentSelected.layout does not change
@@ -106,7 +98,6 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         state => state.pendingSelected?.hasOwnProperty('path'));
     this.watch('currentSelected_', state => state.currentSelected);
     this.watch('pendingSelected_', state => state.pendingSelected);
-    this.watch('localImageData_', state => state.local.data);
     window.addEventListener('beforeunload', () => {
       // Attempt to cancel preview in the scenario the user exits wallpaper
       // picker by pressing CTRL + W while preview is still enabled.
@@ -135,13 +126,11 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
    * @private
    */
   onVisibleChanged_(value) {
-    if (value) {
-      // Should only reach here if there is a valid image selected.
-      assert(!!this.currentSelected_);
-    }
     if (value && !this.getFullscreenElement()) {
       this.selectedLayout_ = this.currentSelected_.layout;
-      this.shadowRoot.getElementById('container').requestFullscreen();
+      this.shadowRoot.getElementById('container')
+          .requestFullscreen()
+          .then(() => document.body.classList.add(fullscreenClass));
     } else if (!value && this.getFullscreenElement()) {
       this.selectedLayout_ = null;
       this.exitFullscreen();
@@ -160,6 +149,7 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
       // wallpaper button.
       cancelPreviewWallpaper(this.wallpaperProvider_);
       this.dispatch(setFullscreenEnabledAction(/*enabled=*/ false));
+      document.body.classList.remove(fullscreenClass);
     }
   }
 
@@ -198,22 +188,6 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     assert(str === 'FILL' || str === 'CENTER');
     const layout = getWallpaperLayoutEnum(str);
     return (selectedLayout === layout).toString();
-  }
-
-  /**
-   * @param {?DisplayableImage} image
-   * @param {!Object<string, string>} localImageData
-   * @return {?string}
-   * @private
-   */
-  getImageUrl_(image, localImageData) {
-    if (image?.url?.url) {
-      return image.url.url;
-    }
-    if (image?.path && localImageData[image.path]) {
-      return localImageData[image.path];
-    }
-    return null;
   }
 }
 

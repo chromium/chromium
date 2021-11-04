@@ -10,6 +10,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -35,6 +37,10 @@ class ContentsWebView
   void SetStatusBubble(StatusBubbleViews* status_bubble);
   StatusBubbleViews* GetStatusBubble() const;
 
+  // Allow overriding the view background color. This is used to make a
+  // transparent background for SWAs.
+  void SetBackgroundColorOverride(absl::optional<SkColor> background_color);
+
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;
@@ -52,8 +58,11 @@ class ContentsWebView
   void DestroyClonedLayer() override;
 
  private:
+  absl::optional<SkColor> GetBackgroundColor();
   void UpdateBackgroundColor();
   StatusBubbleViews* status_bubble_;
+
+  absl::optional<SkColor> background_color_override_;
 
   std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };

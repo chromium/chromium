@@ -33,6 +33,7 @@ export function getWallpaperProvider() {
   if (!wallpaperProvider) {
     wallpaperProvider =
         ash.personalizationApp.mojom.WallpaperProvider.getRemote();
+    wallpaperProvider.makeTransparent();
   }
   return wallpaperProvider;
 }

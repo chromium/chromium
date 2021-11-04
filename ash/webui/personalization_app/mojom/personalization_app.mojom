@@ -97,6 +97,10 @@ interface WallpaperObserver {
 // the Personalization App (chrome://personalization). It is a mojom wrapper for
 // APIs found in |backdrop_wallpaper.proto|.
 interface WallpaperProvider {
+    // Called to force the browser window to make the native views transparent
+    // so that the user can see wallpaper in fullscreen on their desktop. Safe
+    // to call multiple times.
+    MakeTransparent();
 
     // Fetch a list of WallpaperCollection objects from the Backdrop API. Will
     // be displayed to the user to allow them to select an individual collection

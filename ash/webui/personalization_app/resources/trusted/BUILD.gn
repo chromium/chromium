@@ -28,6 +28,7 @@ static_files = [
   "personalization_message_handler.js",
   "personalization_reducers.js",
   "personalization_store.js",
+  "personalization_test_api.js",
   "styles.js",
 ]
 
@@ -149,6 +150,14 @@ js_library("personalization_store") {
     "//ui/webui/resources/js:i18n_behavior.m",
     "//ui/webui/resources/js/cr/ui:store",
     "//ui/webui/resources/js/cr/ui:store_client",
+  ]
+}
+
+js_library("personalization_test_api") {
+  deps = [
+    ":personalization_actions",
+    ":personalization_store",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
