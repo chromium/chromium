@@ -98,7 +98,7 @@ int InnerPageDecoder::TryAdvance() {
 // static
 bool InnerPageDecoder::IsOnValidPage(DatabasePageReader* db_reader) {
   static_assert(kPageTypePageOffset < DatabasePageReader::kMinUsablePageSize,
-                "The check below may perform an out-of-bounds memory access");
+                "The check below may perform an out-of-bounds memory access 🙁");
   return db_reader->page_data()[kPageTypePageOffset] == kInnerTablePageType;
 }
 
@@ -171,12 +171,12 @@ bool LeafPageDecoder::TryAdvance() {
   const int cell_pointer_offset =
       kFirstCellOfsetLeafPageOffset + (read_index << 1);
   DCHECK_LE(cell_pointer_offset + 2, db_reader_->page_size())
-      << "ComputeCellCount() used an incorrect upper bound";
+      << "ComputeCellCount() used an incorrect upper bound 😅";
   const int cell_pointer = LoadBigEndianUint16(page_data + cell_pointer_offset);
 
   static_assert(std::numeric_limits<uint16_t>::max() + 3 <
                     std::numeric_limits<int>::max(),
-                "The addition below may overflow");
+                "The addition below may overflow 🤬");
   if (cell_pointer + 3 >= db_reader_->page_size()) {
     // Each cell needs at least 1 byte for page type varint, 1 byte for the
     // rowid varint, and 1 byte for the record header size varint. Skip cells
@@ -190,7 +190,7 @@ bool LeafPageDecoder::TryAdvance() {
 
   const uint8_t* const cell_start = page_data + cell_pointer;
   const uint8_t* const page_end = page_data + db_reader_->page_size();
-  DCHECK_LT(cell_start, page_end) << "Failed to skip empty cells";
+  DCHECK_LT(cell_start, page_end) << "Failed to skip empty cells 😒";
 
   const uint8_t* rowid_start;
   std::tie(last_record_size_, rowid_start) = ParseVarint(cell_start, page_end);
@@ -227,7 +227,7 @@ bool LeafPageDecoder::TryAdvance() {
 // static
 bool LeafPageDecoder::IsOnValidPage(DatabasePageReader* db_reader) {
   static_assert(kPageTypePageOffset < DatabasePageReader::kMinUsablePageSize,
-                "The check below may perform an out-of-bounds RAM access");
+                "The check below may perform an out-of-bounds RAM access ￣へ￣");
   return db_reader->page_data()[kPageTypePageOffset] == kLeafTablePageType;
 }
 
@@ -238,13 +238,13 @@ int LeafPageDecoder::ComputeCellCount(DatabasePageReader* db_reader) {
       LoadBigEndianUint16(db_reader->page_data() + kCellCountPageOffset);
   static_assert(
       kCellCountPageOffset + 2 <= DatabasePageReader::kMinUsablePageSize,
-      "The read above may be out of bounds");
+      "The read above may be out of bounds :0");
 
   int upper_bound =
       (db_reader->page_size() - kFirstCellOfsetLeafPageOffset) >> 1;
   static_assert(
       kFirstCellOfsetLeafPageOffset <= DatabasePageReader::kMinUsablePageSize,
-      "The |upper_bound| computation above may overflow");
+      "The |upper_bound| computation above may overflow (⊙ˍ⊙)");
 
   return std::min(header_count, upper_bound);
 }
