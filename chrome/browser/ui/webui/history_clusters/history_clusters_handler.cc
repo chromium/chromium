@@ -80,6 +80,8 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile, const Visit& visit) {
   }
 
   if (base::FeatureList::IsEnabled(kUserVisibleDebug)) {
+    visit_mojom->debug_info["visit_id"] =
+        base::NumberToString(annotated_visit.visit_row.visit_id);
     visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
     visit_mojom->debug_info["visit_duration"] = base::NumberToString(
         annotated_visit.visit_row.visit_duration.InSecondsF());

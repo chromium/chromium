@@ -165,6 +165,7 @@ std::string GetDebugJSONForVisits(
     base::DictionaryValue debug_visit;
     debug_visit.SetIntKey("visitId", visit.visit_row.visit_id);
     debug_visit.SetStringKey("url", visit.url_row.url().spec());
+    debug_visit.SetStringKey("title", visit.url_row.title());
     debug_visit.SetIntKey("foreground_time_secs",
                           visit.visit_row.visit_duration.InSeconds());
     debug_visit.SetIntKey(
@@ -204,6 +205,8 @@ std::string GetDebugJSONForClusters(
       debug_keywords.Append(keyword);
     }
     debug_cluster.SetKey("keywords", std::move(debug_keywords));
+    debug_cluster.SetBoolKey("should_show_on_prominent_ui_surfaces",
+                             cluster.should_show_on_prominent_ui_surfaces);
 
     base::ListValue debug_visits;
     for (const auto& visit : cluster.visits) {
@@ -229,6 +232,12 @@ std::string GetDebugJSONForClusters(
         debug_entities.Append(std::move(debug_entity));
       }
       debug_visit.SetKey("entities", std::move(debug_entities));
+
+      base::ListValue debug_duplicate_visits;
+      for (const auto duplicate_visit : visit.duplicate_visit_ids) {
+        debug_duplicate_visits.Append(int(duplicate_visit));
+      }
+      debug_visit.SetKey("duplicate_visits", std::move(debug_duplicate_visits));
 
       debug_visits.Append(std::move(debug_visit));
     }
