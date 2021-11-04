@@ -196,6 +196,9 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
             mDefaultAccountName = null;
             mSelectedAccountName = null;
             mModel.set(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA, null);
+            if (mDialogCoordinator != null) {
+                mDialogCoordinator.dismissDialog();
+            }
         } else {
             mDefaultAccountName = accounts.get(0).name;
             if (mSelectedAccountName == null
@@ -211,9 +214,6 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     private void onChildAccountStatusReady(@Status int status, @Nullable Account childAccount) {
         final boolean isChild = ChildAccountStatus.isChild(status);
         mModel.set(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED, isChild);
-        if (isChild && mDialogCoordinator != null) {
-            mDialogCoordinator.dismissDialog();
-        }
         // Selected account data will be updated in {@link #onProfileDataUpdated}
         mProfileDataCache.setBadge(isChild ? R.drawable.ic_account_child_20dp : 0);
     }

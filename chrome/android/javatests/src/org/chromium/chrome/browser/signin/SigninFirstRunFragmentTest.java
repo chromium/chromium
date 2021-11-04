@@ -213,6 +213,24 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    public void testRemovingAllAccountsDismissesAccountPickerDialog() {
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, /*avatar=*/null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        onView(withText(TEST_EMAIL1)).perform(click());
+        onView(withText(R.string.signin_account_picker_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        mAccountManagerTestRule.removeAccount(TEST_EMAIL1);
+
+        onView(withText(R.string.signin_account_picker_dialog_title)).check(doesNotExist());
+        onView(withText(R.string.signin_add_account_to_device)).check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
     public void testFragmentWithDefaultAccount() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
