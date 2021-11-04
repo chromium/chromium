@@ -6,15 +6,21 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "components/policy/core/browser/url_util.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_dialog.h"
+#endif
+
 namespace {
 
-void CreateURLAccessRequest(const GURL& url,
-                            PermissionRequestCreator* creator,
-                            WebApprovalsManager::RemoteRequestSent callback) {
+void CreateURLAccessRequest(
+    const GURL& url,
+    PermissionRequestCreator* creator,
+    WebApprovalsManager::ApprovalRequestInitiatedCallback callback) {
   creator->CreateURLAccessRequest(url, std::move(callback));
 }
 
@@ -24,19 +30,36 @@ WebApprovalsManager::WebApprovalsManager() = default;
 
 WebApprovalsManager::~WebApprovalsManager() = default;
 
-void WebApprovalsManager::RequestRemoteApproval(const GURL& url,
-                                                RemoteRequestSent callback) {
+void WebApprovalsManager::RequestLocalApproval(
+    const GURL& url,
+    ApprovalRequestInitiatedCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  chromeos::ParentAccessDialog::ShowError result =
+      chromeos::ParentAccessDialog::Show(/*parent*/ nullptr);
+
+  if (result != chromeos::ParentAccessDialog::ShowError::kNone) {
+    LOG(ERROR) << "Error showing ParentAccessDialog: " << result;
+    std::move(callback).Run(false);
+    return;
+  }
+  std::move(callback).Run(true);
+#endif
+}
+
+void WebApprovalsManager::RequestRemoteApproval(
+    const GURL& url,
+    ApprovalRequestInitiatedCallback callback) {
   GURL effective_url = policy::url_util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
-  AddPermissionRequestInternal(
+  AddRemoteApprovalRequestInternal(
       base::BindRepeating(CreateURLAccessRequest,
                           policy::url_util::Normalize(effective_url)),
       std::move(callback), 0);
 }
 
 bool WebApprovalsManager::AreRemoteApprovalRequestsEnabled() const {
-  return FindEnabledApprovalRequestCreator(0) <
+  return FindEnabledRemoteApprovalRequestCreator(0) <
          remote_approval_request_creators_.size();
 }
 
@@ -49,7 +72,7 @@ void WebApprovalsManager::ClearRemoteApprovalRequestsCreators() {
   remote_approval_request_creators_.clear();
 }
 
-size_t WebApprovalsManager::FindEnabledApprovalRequestCreator(
+size_t WebApprovalsManager::FindEnabledRemoteApprovalRequestCreator(
     size_t start) const {
   for (size_t i = start; i < remote_approval_request_creators_.size(); ++i) {
     if (remote_approval_request_creators_[i]->IsEnabled())
@@ -58,12 +81,11 @@ size_t WebApprovalsManager::FindEnabledApprovalRequestCreator(
   return remote_approval_request_creators_.size();
 }
 
-void WebApprovalsManager::AddPermissionRequestInternal(
-    const CreatePermissionRequestCallback& create_request,
-    RemoteRequestSent callback,
+void WebApprovalsManager::AddRemoteApprovalRequestInternal(
+    const CreateRemoteApprovalRequestCallback& create_request,
+    ApprovalRequestInitiatedCallback callback,
     size_t index) {
-  // Find a permission request creator that is enabled.
-  size_t next_index = FindEnabledApprovalRequestCreator(index);
+  size_t next_index = FindEnabledRemoteApprovalRequestCreator(index);
   if (next_index >= remote_approval_request_creators_.size()) {
     std::move(callback).Run(false);
     return;
@@ -71,14 +93,14 @@ void WebApprovalsManager::AddPermissionRequestInternal(
 
   create_request.Run(
       remote_approval_request_creators_[next_index].get(),
-      base::BindOnce(&WebApprovalsManager::OnPermissionRequestIssued,
+      base::BindOnce(&WebApprovalsManager::OnRemoteApprovalRequestIssued,
                      weak_ptr_factory_.GetWeakPtr(), create_request,
                      std::move(callback), next_index));
 }
 
-void WebApprovalsManager::OnPermissionRequestIssued(
-    const CreatePermissionRequestCallback& create_request,
-    RemoteRequestSent callback,
+void WebApprovalsManager::OnRemoteApprovalRequestIssued(
+    const CreateRemoteApprovalRequestCallback& create_request,
+    ApprovalRequestInitiatedCallback callback,
     size_t index,
     bool success) {
   if (success) {
@@ -86,5 +108,6 @@ void WebApprovalsManager::OnPermissionRequestIssued(
     return;
   }
 
-  AddPermissionRequestInternal(create_request, std::move(callback), index + 1);
+  AddRemoteApprovalRequestInternal(create_request, std::move(callback),
+                                   index + 1);
 }

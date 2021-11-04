@@ -34,7 +34,7 @@ std::string BuildHtml(bool allow_access_requests,
                       const std::string& second_custodian_email,
                       FilteringBehaviorReason reason,
                       const std::string& app_locale,
-                      bool already_sent_request,
+                      bool already_sent_remote_request,
                       bool is_main_frame);
 
 }  //  namespace supervised_user_error_page

@@ -221,8 +221,8 @@ void SupervisedUserInterstitial::GoBack() {
   OnInterstitialDone();
 }
 
-void SupervisedUserInterstitial::RequestPermission(
-    base::OnceCallback<void(bool)> RequestCallback) {
+void SupervisedUserInterstitial::RequestUrlAccessRemote(
+    base::OnceCallback<void(bool)> callback) {
   UMA_HISTOGRAM_ENUMERATION("ManagedMode.BlockingInterstitialCommand",
                             ACCESS_REQUEST, HISTOGRAM_BOUNDING_VALUE);
 
@@ -238,7 +238,17 @@ void SupervisedUserInterstitial::RequestPermission(
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   supervised_user_service->web_approvals_manager().RequestRemoteApproval(
-      url_, std::move(RequestCallback));
+      url_, std::move(callback));
+}
+
+void SupervisedUserInterstitial::RequestUrlAccessLocal(
+    base::OnceCallback<void(bool)> callback) {
+  // TODO(b/195461480): Log metrics.
+
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile_);
+  supervised_user_service->web_approvals_manager().RequestLocalApproval(
+      url_, std::move(callback));
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {

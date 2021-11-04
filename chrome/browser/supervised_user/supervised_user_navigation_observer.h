@@ -138,12 +138,13 @@ class SupervisedUserNavigationObserver
   // be called when an interstitial is no longer showing. This should be
   // enforced by the mojo caller.
   void GoBack() override;
-  void RequestPermission(RequestPermissionCallback callback) override;
+  void RequestUrlAccessRemote(RequestUrlAccessRemoteCallback callback) override;
+  void RequestUrlAccessLocal(RequestUrlAccessLocalCallback callback) override;
   void Feedback() override;
 
-  // When a request is successfully created, this method is called
-  // asynchronously.
-  void RequestCreated(RequestPermissionCallback callback,
+  // When a remote URL approval request is successfully created, this method is
+  // called asynchronously.
+  void RequestCreated(RequestUrlAccessRemoteCallback callback,
                       const std::string& host,
                       bool successfully_created_request);
 

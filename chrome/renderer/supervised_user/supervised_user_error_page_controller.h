@@ -43,10 +43,11 @@ class SupervisedUserErrorPageController
   ~SupervisedUserErrorPageController() override;
 
   void GoBack();
-  void RequestPermission();
+  void RequestUrlAccessRemote();
+  void RequestUrlAccessLocal();
   void Feedback();
 
-  void RequestPermissionCallback(bool success);
+  void OnRequestUrlAccessRemote(bool success);
 
   // gin::WrappableBase
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(

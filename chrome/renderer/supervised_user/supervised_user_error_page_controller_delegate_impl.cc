@@ -27,10 +27,16 @@ void SupervisedUserErrorPageControllerDelegateImpl::GoBack() {
     supervised_user_interface_->GoBack();
 }
 
-void SupervisedUserErrorPageControllerDelegateImpl::RequestPermission(
-    base::OnceCallback<void(bool)> callback) {
+void SupervisedUserErrorPageControllerDelegateImpl::RequestUrlAccessRemote(
+    UrlAccessRequestInitiated callback) {
   if (supervised_user_interface_)
-    supervised_user_interface_->RequestPermission(std::move(callback));
+    supervised_user_interface_->RequestUrlAccessRemote(std::move(callback));
+}
+
+void SupervisedUserErrorPageControllerDelegateImpl::RequestUrlAccessLocal(
+    UrlAccessRequestInitiated callback) {
+  if (supervised_user_interface_)
+    supervised_user_interface_->RequestUrlAccessLocal(std::move(callback));
 }
 
 void SupervisedUserErrorPageControllerDelegateImpl::Feedback() {

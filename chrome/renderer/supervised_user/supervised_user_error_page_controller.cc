@@ -5,6 +5,7 @@
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate.h"
@@ -58,11 +59,21 @@ void SupervisedUserErrorPageController::GoBack() {
     delegate_->GoBack();
 }
 
-void SupervisedUserErrorPageController::RequestPermission() {
+void SupervisedUserErrorPageController::RequestUrlAccessRemote() {
   if (delegate_) {
-    delegate_->RequestPermission(base::BindOnce(
-        &SupervisedUserErrorPageController::RequestPermissionCallback,
+    delegate_->RequestUrlAccessRemote(base::BindOnce(
+        &SupervisedUserErrorPageController::OnRequestUrlAccessRemote,
         weak_factory_.GetWeakPtr()));
+  }
+}
+
+void SupervisedUserErrorPageController::RequestUrlAccessLocal() {
+  if (delegate_) {
+    delegate_->RequestUrlAccessLocal(base::BindOnce([](bool success) {
+      // We might want to handle the error in starting local approval flow
+      // later. For now just log a result.
+      VLOG(0) << "Local URL approval initiation result: " << success;
+    }));
   }
 }
 
@@ -71,8 +82,7 @@ void SupervisedUserErrorPageController::Feedback() {
     delegate_->Feedback();
 }
 
-void SupervisedUserErrorPageController::RequestPermissionCallback(
-    bool success) {
+void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
   std::string result = success ? "true" : "false";
   std::string in_main_frame = render_frame_->IsMainFrame() ? "true" : "false";
   std::string js = base::StringPrintf("setRequestStatus(%s, %s)",
@@ -86,7 +96,9 @@ SupervisedUserErrorPageController::GetObjectTemplateBuilder(
   return gin::Wrappable<SupervisedUserErrorPageController>::
       GetObjectTemplateBuilder(isolate)
           .SetMethod("goBack", &SupervisedUserErrorPageController::GoBack)
-          .SetMethod("requestPermission",
-                     &SupervisedUserErrorPageController::RequestPermission)
+          .SetMethod("requestUrlAccessRemote",
+                     &SupervisedUserErrorPageController::RequestUrlAccessRemote)
+          .SetMethod("requestUrlAccessLocal",
+                     &SupervisedUserErrorPageController::RequestUrlAccessLocal)
           .SetMethod("feedback", &SupervisedUserErrorPageController::Feedback);
 }

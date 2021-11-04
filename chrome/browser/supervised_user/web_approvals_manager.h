@@ -16,12 +16,19 @@
 class GURL;
 class PermissionRequestCreator;
 
-// Manages remote web approval requests from Family Link users.
+// Manages remote and local web approval requests from Family Link users.
+//
 // Remote requests are forwarded to the guardian and processed asynchronously.
-// The result of the remote approval is not handled in this class.
+// The result of the remote approval syncs as a new web rule to the client and
+// is not handled in this class.
+// Local request opens OS specific local approval flow. The result of the local
+// approval is not handled in this class.
+
 class WebApprovalsManager {
  public:
-  using RemoteRequestSent = base::OnceCallback<void(bool)>;
+  // Callback indicating whether the URL access request was initiated
+  // successfully.
+  using ApprovalRequestInitiatedCallback = base::OnceCallback<void(bool)>;
 
   WebApprovalsManager();
 
@@ -30,10 +37,17 @@ class WebApprovalsManager {
 
   ~WebApprovalsManager();
 
+  // Requests a local approval flow for the `url`.
+  // Runs the `callback` to inform the caller whether the flow initiation was
+  // successful.
+  void RequestLocalApproval(const GURL& url,
+                            ApprovalRequestInitiatedCallback callback);
+
   // Adds a remote approval request for the `url`.
-  // The callback is run when the request was sent or sending of the request
+  // The `callback` is run when the request was sent or sending of the request
   // failed.
-  void RequestRemoteApproval(const GURL& url, RemoteRequestSent callback);
+  void RequestRemoteApproval(const GURL& url,
+                             ApprovalRequestInitiatedCallback callback);
 
   // Returns whether remote approval requests are enabled.
   bool AreRemoteApprovalRequestsEnabled() const;
@@ -46,20 +60,20 @@ class WebApprovalsManager {
   void ClearRemoteApprovalRequestsCreators();
 
  private:
-  using CreatePermissionRequestCallback =
+  using CreateRemoteApprovalRequestCallback =
       base::RepeatingCallback<void(PermissionRequestCreator*,
-                                   RemoteRequestSent)>;
+                                   ApprovalRequestInitiatedCallback)>;
 
-  size_t FindEnabledApprovalRequestCreator(size_t start) const;
+  size_t FindEnabledRemoteApprovalRequestCreator(size_t start) const;
 
-  void AddPermissionRequestInternal(
-      const CreatePermissionRequestCallback& create_request,
-      RemoteRequestSent callback,
+  void AddRemoteApprovalRequestInternal(
+      const CreateRemoteApprovalRequestCallback& create_request,
+      ApprovalRequestInitiatedCallback callback,
       size_t index);
 
-  void OnPermissionRequestIssued(
-      const CreatePermissionRequestCallback& create_request,
-      RemoteRequestSent callback,
+  void OnRemoteApprovalRequestIssued(
+      const CreateRemoteApprovalRequestCallback& create_request,
+      ApprovalRequestInitiatedCallback callback,
       size_t index,
       bool success);
 

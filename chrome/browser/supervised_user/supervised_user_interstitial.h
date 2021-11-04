@@ -46,7 +46,8 @@ class SupervisedUserInterstitial {
       bool is_main_frame);
 
   void GoBack();
-  void RequestPermission(base::OnceCallback<void(bool)> callback);
+  void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);
+  void RequestUrlAccessLocal(base::OnceCallback<void(bool)> callback);
   void ShowFeedback();
 
   // Getter methods.

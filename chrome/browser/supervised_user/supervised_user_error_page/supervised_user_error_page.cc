@@ -75,7 +75,7 @@ std::string BuildHtml(bool allow_access_requests,
                       const std::string& second_custodian_email,
                       FilteringBehaviorReason reason,
                       const std::string& app_locale,
-                      bool already_sent_request,
+                      bool already_sent_remote_request,
                       bool is_main_frame) {
   base::DictionaryValue strings;
   strings.SetString("blockPageTitle",
@@ -93,7 +93,7 @@ std::string BuildHtml(bool allow_access_requests,
   strings.SetString("custodianEmail", custodian_email);
   strings.SetString("secondCustodianName", second_custodian);
   strings.SetString("secondCustodianEmail", second_custodian_email);
-  strings.SetBoolean("alreadySentRequest", already_sent_request);
+  strings.SetBoolean("alreadySentRemoteRequest", already_sent_remote_request);
   strings.SetBoolean("isMainFrame", is_main_frame);
   bool web_filter_interstitial_refresh_enabled =
       supervised_users::IsWebFilterInterstitialRefreshEnabled();

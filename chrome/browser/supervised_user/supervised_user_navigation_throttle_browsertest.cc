@@ -459,7 +459,7 @@ void SupervisedUserIframeFilterTest::RequestPermissionFromFrame(int frame_id) {
   auto* render_frame_host = tracker()->GetHost(frame_id);
   DCHECK(render_frame_host);
   DCHECK(render_frame_host->IsRenderFrameLive());
-  std::string command = "sendCommand(\'request\')";
+  std::string command = "sendCommand(\'requestUrlAccessRemote\')";
   ASSERT_TRUE(content::ExecuteScript(
       content::ToRenderFrameHost(render_frame_host), command));
 }

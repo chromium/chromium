@@ -39,7 +39,9 @@ class SupervisedUserErrorPageControllerDelegateImpl
 
   // SupervisedUserErrorPageControllerDelegate:
   void GoBack() override;
-  void RequestPermission(base::OnceCallback<void(bool)> callback) override;
+  void RequestUrlAccessRemote(UrlAccessRequestInitiated callback) override;
+  void RequestUrlAccessLocal(UrlAccessRequestInitiated callback) override;
+
   void Feedback() override;
 
   // content::RenderFrameObserver:
