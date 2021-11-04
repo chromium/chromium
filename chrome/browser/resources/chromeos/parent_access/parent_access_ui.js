@@ -10,7 +10,7 @@ import {WebviewManager} from 'chrome://resources/js/webview_manager.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ParentAccessController} from './parent_access_controller.js';
 
-const parentAccessHandler =
+const parentAccessUIHandler =
     parentAccessUi.mojom.ParentAccessUIHandler.getRemote();
 
 /**
@@ -82,16 +82,17 @@ Polymer({
     this.webviewUrl_ = loadTimeData.getString('webviewUrl');
 
     const eventOriginFilter = loadTimeData.getString('eventOriginFilter');
-    const result = await parentAccessHandler.getOAuthToken();
 
-    if (result.status != parentAccessUi.mojom.GetOAuthTokenStatus.kSuccess) {
+    const oauthFetchResult = await parentAccessUIHandler.getOAuthToken();
+    if (oauthFetchResult.status !=
+        parentAccessUi.mojom.GetOAuthTokenStatus.kSuccess) {
       // TODO(b/200187536): show error page.
       return;
     }
 
     const webview =
         /** @type {!WebView} */ (this.$.webview);
-    const accessToken = result.oauthToken;
+    const accessToken = oauthFetchResult.oauthToken;
 
     // Set up the WebviewManager to handle the configuration and
     // access control for the webview.
@@ -116,6 +117,24 @@ Polymer({
       this.server.whenParentAccessResult(),
       this.server.whenInitializationError()
     ]);
-    // TODO(202213966): pass result through to handler.
+
+    // Notify ParentAccessUIHandler that we received a result.
+    const decodedParentAccessResult =
+        await parentAccessUIHandler.onParentAccessResult(parentAccessResult);
+
+    switch (decodedParentAccessResult.status) {
+      case parentAccessUi.mojom.ParentAccessResultStatus.kParentVerified:
+        // TODO(b/199753153): notify app that successful result was received.
+        break;
+
+      // ConsentDeclined result status is not currently supported, so show an
+      // error.
+      case parentAccessUi.mojom.ParentAccessResultStatus.kConsentDeclined:
+      case parentAccessUi.mojom.ParentAccessResultStatus.kError:
+      default:
+        // TODO(b/200187536): show error page
+        break;
+    }
+
   },
 });

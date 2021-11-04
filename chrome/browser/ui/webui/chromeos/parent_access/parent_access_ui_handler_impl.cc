@@ -6,8 +6,10 @@
 
 #include <string>
 
+#include "base/base64.h"
 #include "base/notreached.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -68,6 +70,51 @@ void ParentAccessUIHandlerImpl::OnAccessTokenFetchComplete(
   std::move(callback).Run(
       parent_access_ui::mojom::GetOAuthTokenStatus::kSuccess,
       access_token_info.token);
+}
+
+void ParentAccessUIHandlerImpl::OnParentAccessResult(
+    const std::string& parent_access_result,
+    OnParentAccessResultCallback callback) {
+  std::string decoded_parent_access_result;
+  if (!base::Base64Decode(parent_access_result,
+                          &decoded_parent_access_result)) {
+    LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error decoding "
+                  "parent_access_result from base64";
+    std::move(callback).Run(
+        parent_access_ui::mojom::ParentAccessResultStatus::kError);
+    return;
+  }
+
+  kids::platform::parentaccess::client::proto::ParentAccessCallback
+      parent_access_callback;
+  if (!parent_access_callback.ParseFromString(decoded_parent_access_result)) {
+    LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Error parsing "
+                  "decoded_parent_access_result to proto";
+    std::move(callback).Run(
+        parent_access_ui::mojom::ParentAccessResultStatus::kError);
+    return;
+  }
+
+  //  TODO(b/200587178): Communicate parsed callback to ChromeOS caller.
+
+  switch (parent_access_callback.callback_case()) {
+    case kids::platform::parentaccess::client::proto::ParentAccessCallback::
+        CallbackCase::kOnParentVerified:
+      std::move(callback).Run(
+          parent_access_ui::mojom::ParentAccessResultStatus::kParentVerified);
+      break;
+    case kids::platform::parentaccess::client::proto::ParentAccessCallback::
+        CallbackCase::kOnConsentDeclined:
+      std::move(callback).Run(
+          parent_access_ui::mojom::ParentAccessResultStatus::kConsentDeclined);
+      break;
+    default:
+      std::move(callback).Run(
+          parent_access_ui::mojom::ParentAccessResultStatus::kError);
+      LOG(ERROR) << "ParentAccessHandler::ParentAccessResult: Unknown type of "
+                    "callback received";
+      break;
+  }
 }
 
 }  // namespace chromeos

@@ -39,8 +39,10 @@ class ParentAccessUIHandlerImpl
       delete;
   ~ParentAccessUIHandlerImpl() override;
 
-  // parent_access_ui::mojom::ParentAccessUIHandlerImpl overrides:
+  // parent_access_ui::mojom::ParentAccessUIHandler overrides:
   void GetOAuthToken(GetOAuthTokenCallback callback) override;
+  void OnParentAccessResult(const std::string& parent_access_result,
+                            OnParentAccessResultCallback callback) override;
 
  private:
   void OnAccessTokenFetchComplete(GetOAuthTokenCallback callback,
