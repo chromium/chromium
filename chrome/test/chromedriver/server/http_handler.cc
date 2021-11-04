@@ -857,6 +857,13 @@ HttpHandler::HttpHandler(
                             &ExecuteWebAuthnCommand,
                             base::BindRepeating(&ExecuteSetUserVerified)))),
 
+      // Extensions for Secure Payment Confirmation API:
+      // https://w3c.github.io/secure-payment-confirmation/#sctn-automation
+      CommandMapping(
+          kPost, "session/:sessionId/secure-payment-confirmation/set-mode",
+          WrapToCommand("SetSPCTransactionMode",
+                        base::BindRepeating(&ExecuteSetSPCTransactionMode))),
+
       // Extension for Permissions Standard Automation "set permission" command:
       // https://w3c.github.io/permissions/#set-permission-command
       CommandMapping(kPost, "session/:sessionId/permissions",

@@ -161,6 +161,10 @@ Status ExecuteUnimplementedCommand(Session* session,
                                    const base::DictionaryValue& params,
                                    std::unique_ptr<base::Value>* value);
 
+Status ExecuteSetSPCTransactionMode(Session* session,
+                                    const base::DictionaryValue& params,
+                                    std::unique_ptr<base::Value>* value);
+
 Status ExecuteGenerateTestReport(Session* session,
                                  const base::DictionaryValue& params,
                                  std::unique_ptr<base::Value>* value);

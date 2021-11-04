@@ -210,6 +210,9 @@ class Command(object):
   SET_USER_VERIFIED = (
       _Method.POST,
       '/session/:sessionId/webauthn/authenticator/:authenticatorId/uv')
+  SET_SPC_TRANSACTION_MODE = (
+      _Method.POST,
+      '/session/:sessionId/secure-payment-confirmation/set-mode')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
 

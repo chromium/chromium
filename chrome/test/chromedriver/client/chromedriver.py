@@ -771,6 +771,10 @@ class ChromeDriver(object):
               'isUserVerified': isUserVerified}
     return self.ExecuteCommand(Command.SET_USER_VERIFIED, params)
 
+  def SetSPCTransactionMode(self, mode):
+    params = {'mode': mode}
+    return self.ExecuteCommand(Command.SET_SPC_TRANSACTION_MODE, params)
+
   def GetSessionId(self):
     if not hasattr(self, '_session_id'):
       return None

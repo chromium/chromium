@@ -1270,6 +1270,26 @@ Status ExecuteUnimplementedCommand(Session* session,
   return Status(kUnknownCommand);
 }
 
+Status ExecuteSetSPCTransactionMode(Session* session,
+                                    const base::DictionaryValue& params,
+                                    std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError())
+    return status;
+
+  const std::string* mode = params.FindStringKey("mode");
+  if (!mode)
+    return Status(kInvalidArgument, "missing parameter 'mode'");
+
+  base::Value body(base::Value::Type::DICTIONARY);
+  body.SetStringKey("mode", *mode);
+
+  return web_view->SendCommandAndGetResult("Page.setSPCTransactionMode",
+                                           base::Value::AsDictionaryValue(body),
+                                           value);
+}
+
 Status ExecuteGenerateTestReport(Session* session,
                                  const base::DictionaryValue& params,
                                  std::unique_ptr<base::Value>* value) {
