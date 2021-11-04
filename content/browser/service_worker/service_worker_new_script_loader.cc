@@ -83,9 +83,13 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   DCHECK_NE(cache_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
 
   network::ResourceRequest resource_request(original_request);
+  const bool is_main_script =
+      (resource_destination_ ==
+       network::mojom::RequestDestination::kServiceWorker);
+
 #if DCHECK_IS_ON()
   service_worker_loader_helpers::CheckVersionStatusBeforeWorkerScriptLoad(
-      version_->status(), resource_destination_);
+      version_->status(), is_main_script);
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -93,9 +97,6 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   // ServiceWorkerVersion keeps the registration alive while the service
   // worker is starting up, and it must be starting up here.
   DCHECK(registration);
-  const bool is_main_script =
-      (resource_destination_ ==
-       network::mojom::RequestDestination::kServiceWorker);
   if (is_main_script) {
     // Request SSLInfo. It will be persisted in service worker storage and
     // may be used by ServiceWorkerMainResourceLoader for navigations handled
