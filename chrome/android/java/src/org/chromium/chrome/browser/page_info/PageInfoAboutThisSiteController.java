@@ -105,6 +105,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
+        mMainController.setAboutThisSiteShown(true);
     }
 
     private @Nullable SiteInfo getSiteInfo() {

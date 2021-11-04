@@ -14,10 +14,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
+import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
 import androidx.test.espresso.ViewAssertion;
@@ -32,13 +35,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -74,8 +78,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-
 @Batch(Batch.PER_CLASS)
+@SuppressLint("VisibleForTests")
 public class PageInfoAboutThisSiteTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
 
@@ -110,10 +114,13 @@ public class PageInfoAboutThisSiteTest {
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
         mTestServerRule.setServerUsesHttps(true);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
+
+        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.AboutThisSite");
+        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.NoAboutThisSite");
     }
 
     private void openPageInfo() {
-        ChromeActivity activity = sActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
@@ -121,6 +128,15 @@ public class PageInfoAboutThisSiteTest {
                     .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, false);
         });
         onViewWaiting(allOf(withId(org.chromium.chrome.R.id.page_info_url_wrapper), isDisplayed()));
+    }
+
+    private void dismissPageInfo() throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PageInfoController.getLastPageInfoControllerForTesting().runAfterDismiss(
+                    helper::notifyCalled);
+        });
+        helper.waitForCallback(0);
     }
 
     @NonNull
@@ -154,11 +170,19 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    public void testAboutThisSiteRowWithData() {
+    public void testAboutThisSiteRowWithData() throws TimeoutException {
         mockResponse(createDescription());
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(isDisplayed()));
         onView(withText(containsString("Some description"))).check(matches(isDisplayed()));
+
+        dismissPageInfo();
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Security.PageInfo.TimeOpen.AboutThisSiteShown"));
+        assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Security.PageInfo.TimeOpen.AboutThisSiteNotShown"));
     }
 
     @Test
@@ -173,10 +197,18 @@ public class PageInfoAboutThisSiteTest {
 
     @Test
     @MediumTest
-    public void testAboutThisSiteRowWithoutData() {
+    public void testAboutThisSiteRowWithoutData() throws TimeoutException {
         mockResponse(null);
         openPageInfo();
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).check(matches(not(isDisplayed())));
+
+        dismissPageInfo();
+        assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Security.PageInfo.TimeOpen.AboutThisSiteShown"));
+        assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Security.PageInfo.TimeOpen.AboutThisSiteNotShown"));
     }
 
     @Test
