@@ -1649,7 +1649,7 @@ try_.chromium_mac_builder(
     name = "mac11-arm64-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     goma_jobs = goma.jobs.J150,
-    os = os.MAC_10_15,
+    os = os.MAC_11,
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which

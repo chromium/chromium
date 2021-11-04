@@ -2713,6 +2713,7 @@ ci.clang_mac_builder(
         category = "ToT Mac",
         short_name = "rel",
     ),
+    cores = None,
 )
 
 ci.clang_mac_builder(
@@ -2721,6 +2722,7 @@ ci.clang_mac_builder(
         category = "ToT Mac",
         short_name = "dbg",
     ),
+    cores = None,
 )
 
 ci.clang_mac_builder(
@@ -2729,6 +2731,7 @@ ci.clang_mac_builder(
         category = "ToT Mac",
         short_name = "asn",
     ),
+    cores = None,
 )
 
 ci.clang_mac_builder(
@@ -2738,6 +2741,7 @@ ci.clang_mac_builder(
         short_name = "mac",
     ),
     executable = "recipe:chromium_clang_coverage_tot",
+    cores = None,
 )
 
 ci.dawn_linux_builder(
@@ -4078,6 +4082,7 @@ ci.fyi_builder(
         category = "perfetto",
         short_name = "mac",
     ),
+    cores = None,
     os = os.MAC_DEFAULT,
     schedule = "with 3h interval",
     triggered_by = [],
@@ -4721,7 +4726,7 @@ ci.fyi_mac_builder(
         category = "mac",
         short_name = "herm",
     ),
-    cores = 8,
+    cores = 12,
 )
 
 ci.fyi_windows_builder(
@@ -6306,6 +6311,7 @@ ci.memory_builder(
         category = "mac",
         short_name = "tst",
     ),
+    cores = 12,
     main_console_view = "main",
     os = os.MAC_DEFAULT,
     triggered_by = ["Mac ASan 64 Builder"],
