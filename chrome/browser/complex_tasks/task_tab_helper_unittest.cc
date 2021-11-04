@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/content/navigation_task_id.h"
@@ -93,7 +94,7 @@ class TaskTabHelperUnitTest : public ChromeRenderViewHostTestHarness {
     return web_contents()->GetController().GetLastCommittedEntry();
   }
 
-  MockTaskTabHelper* task_tab_helper_;
+  raw_ptr<MockTaskTabHelper> task_tab_helper_;
   base::HistogramTester histogram_tester_;
 };
 

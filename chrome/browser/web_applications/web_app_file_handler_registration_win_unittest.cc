@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -172,7 +173,7 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
   base::ScopedTempDir temp_version_dir_;
   content::BrowserTaskEnvironment task_environment_{
       content::BrowserTaskEnvironment::IO_MAINLOOP};
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   const AppId app_id_ = "app_id";
   // These are set in SetUp() and are the ProgIds for file handlers in the

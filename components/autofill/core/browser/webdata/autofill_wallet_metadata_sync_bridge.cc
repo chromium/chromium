@@ -353,7 +353,7 @@ AutofillWalletMetadataSyncBridge::AutofillWalletMetadataSyncBridge(
     : ModelTypeSyncBridge(std::move(change_processor)),
       web_data_backend_(web_data_backend) {
   DCHECK(web_data_backend_);
-  scoped_observation_.Observe(web_data_backend_);
+  scoped_observation_.Observe(web_data_backend_.get());
 
   LoadDataCacheAndMetadata();
 

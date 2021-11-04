@@ -5,6 +5,7 @@
 #ifndef CC_TREES_SCOPED_ABORT_REMAINING_SWAP_PROMISES_H_
 #define CC_TREES_SCOPED_ABORT_REMAINING_SWAP_PROMISES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/swap_promise_manager.h"
 
@@ -26,7 +27,7 @@ class ScopedAbortRemainingSwapPromises {
       const ScopedAbortRemainingSwapPromises&) = delete;
 
  private:
-  SwapPromiseManager* swap_promise_manager_;
+  raw_ptr<SwapPromiseManager> swap_promise_manager_;
 };
 
 }  // namespace cc

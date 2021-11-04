@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -57,7 +58,7 @@ class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
   }
 
  private:
-  ui::Layer* layer_;
+  raw_ptr<ui::Layer> layer_;
 };
 
 struct RenderSurfaceCachingTrait {

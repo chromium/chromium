@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_SNAPSHOT_CONTROLLER_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_SNAPSHOT_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -98,7 +99,7 @@ class SnapshotController {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   // Client owns this class.
-  SnapshotController::Client* client_;
+  raw_ptr<SnapshotController::Client> client_;
   SnapshotController::State state_;
   int64_t delay_after_document_available_ms_;
   int64_t delay_after_document_on_load_completed_ms_;

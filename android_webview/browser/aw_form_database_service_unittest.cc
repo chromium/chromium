@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -43,7 +44,7 @@ class AwFormDatabaseServiceTest : public Test {
   // The path to the temporary directory used for the test operations.
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  JNIEnv* env_;
+  raw_ptr<JNIEnv> env_;
   std::unique_ptr<AwFormDatabaseService> service_;
 };
 

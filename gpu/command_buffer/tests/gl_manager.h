@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -56,11 +57,11 @@ class GLManager : private GpuControl {
     // The size of the backbuffer.
     gfx::Size size = gfx::Size(4, 4);
     // If not null will share resources with this context.
-    GLManager* share_group_manager = nullptr;
+    raw_ptr<GLManager> share_group_manager = nullptr;
     // If not null will share a mailbox manager with this context.
-    GLManager* share_mailbox_manager = nullptr;
+    raw_ptr<GLManager> share_mailbox_manager = nullptr;
     // If not null will create a virtual manager based on this context.
-    GLManager* virtual_manager = nullptr;
+    raw_ptr<GLManager> virtual_manager = nullptr;
     // Whether or not glBindXXX generates a resource.
     bool bind_generates_resource = false;
     // Whether or not the context is auto-lost when GL_OUT_OF_MEMORY occurs.
@@ -75,7 +76,7 @@ class GLManager : private GpuControl {
     // Whether the backbuffer has an alpha channel.
     bool backbuffer_alpha = true;
     // The ImageFactory to use to generate images for the backbuffer.
-    gpu::ImageFactory* image_factory = nullptr;
+    raw_ptr<gpu::ImageFactory> image_factory = nullptr;
     // Whether to preserve the backbuffer after a call to SwapBuffers().
     bool preserve_backbuffer = false;
     // Shared memory limits
@@ -188,7 +189,7 @@ class GLManager : private GpuControl {
       passthrough_discardable_manager_;
   std::unique_ptr<gles2::ShaderTranslatorCache> translator_cache_;
   gles2::FramebufferCompletenessCache completeness_cache_;
-  MailboxManager* mailbox_manager_ = nullptr;
+  raw_ptr<MailboxManager> mailbox_manager_ = nullptr;
   scoped_refptr<gl::GLShareGroup> share_group_;
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<gles2::GLES2Decoder> decoder_;

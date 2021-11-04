@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/rand_util.h"
@@ -97,7 +98,7 @@ class NestedMessageLoopRunnerImpl
   }
 
  private:
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

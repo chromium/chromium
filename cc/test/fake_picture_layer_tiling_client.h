@@ -5,6 +5,7 @@
 #ifndef CC_TEST_FAKE_PICTURE_LAYER_TILING_CLIENT_H_
 #define CC_TEST_FAKE_PICTURE_LAYER_TILING_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "cc/raster/raster_source.h"
 #include "cc/test/fake_tile_manager_client.h"
 #include "cc/tiles/picture_layer_tiling.h"
@@ -69,8 +70,8 @@ class FakePictureLayerTilingClient : public PictureLayerTilingClient {
   std::unique_ptr<TileManager> tile_manager_;
   scoped_refptr<RasterSource> raster_source_;
   gfx::Size tile_size_;
-  PictureLayerTilingSet* twin_set_;
-  PictureLayerTiling* twin_tiling_;
+  raw_ptr<PictureLayerTilingSet> twin_set_;
+  raw_ptr<PictureLayerTiling> twin_tiling_;
   gfx::Rect text_rect_;
   Region invalidation_;
   bool has_valid_tile_priorities_;

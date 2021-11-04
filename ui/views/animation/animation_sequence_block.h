@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -159,7 +160,7 @@ class VIEWS_EXPORT AnimationSequenceBlock {
   void TerminateBlock();
 
   base::PassKey<AnimationBuilder> builder_key_;
-  AnimationBuilder* owner_;
+  raw_ptr<AnimationBuilder> owner_;
   base::TimeDelta start_;
 
   // The block duration.  This will contain nullopt (interpreted as zero) until

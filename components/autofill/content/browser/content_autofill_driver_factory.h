@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -86,7 +87,7 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver,
       AutofillManager::AutofillManagerFactoryCallback
           autofill_manager_factory_callback);
 
-  AutofillClient* const client_;
+  const raw_ptr<AutofillClient> client_;
   std::string app_locale_;
   BrowserAutofillManager::AutofillDownloadManagerState enable_download_manager_;
   AutofillManager::AutofillManagerFactoryCallback

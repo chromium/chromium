@@ -12,6 +12,7 @@
 #include <wrl/client.h>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_log.h"
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -66,7 +67,7 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
                      const AV1ReferenceFrameVector& ref_frames,
                      DXVA_PicParams_AV1* pp);
 
-  D3D11VideoDecoderClient* client_;
+  raw_ptr<D3D11VideoDecoderClient> client_;
   std::unique_ptr<MediaLog> media_log_;
   ComD3D11VideoDecoder video_decoder_;
   ComD3D11VideoDevice video_device_;

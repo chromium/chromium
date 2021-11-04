@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
@@ -125,7 +126,7 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   // Guarded by |browser_context_lock_|.
   // Written only on the UI thread, so the UI thread doesn't need to acquire the
   // lock when reading. Can be read from other threads with the lock.
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 
   // Protects |browser_context_|.
   base::Lock browser_context_lock_;
@@ -134,7 +135,7 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   // All fields below are only accessed on the UI thread.
 
   // May be null during initialization and in unit tests.
-  StoragePartitionImpl* storage_partition_;
+  raw_ptr<StoragePartitionImpl> storage_partition_;
 
   // Maps the ID of a running EmbeddedWorkerInstance to the SiteInstance whose
   // renderer process it's running inside. Since the embedded workers themselves

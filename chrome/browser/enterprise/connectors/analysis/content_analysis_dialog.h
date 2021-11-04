@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
@@ -228,15 +229,15 @@ class ContentAnalysisDialog : public views::DialogDelegate,
 
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // Views above the buttons. |contents_view_| owns every other view.
-  views::View* contents_view_ = nullptr;
-  DeepScanningTopImageView* image_ = nullptr;
-  DeepScanningSideIconImageView* side_icon_image_ = nullptr;
-  DeepScanningSideIconSpinnerView* side_icon_spinner_ = nullptr;
-  views::Label* message_ = nullptr;
-  views::Link* learn_more_link_ = nullptr;
+  raw_ptr<views::View> contents_view_ = nullptr;
+  raw_ptr<DeepScanningTopImageView> image_ = nullptr;
+  raw_ptr<DeepScanningSideIconImageView> side_icon_image_ = nullptr;
+  raw_ptr<DeepScanningSideIconSpinnerView> side_icon_spinner_ = nullptr;
+  raw_ptr<views::Label> message_ = nullptr;
+  raw_ptr<views::Link> learn_more_link_ = nullptr;
 
   base::TimeTicks first_shown_timestamp_;
 

@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -147,7 +148,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   NewBuffersCB new_buffers_cb_;
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   ByteQueue queue_;
 

@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 
@@ -60,7 +61,7 @@ class InternalNodeAttachedDataStorage {
   }
 
  private:
-  NodeAttachedData* data_ = nullptr;
+  raw_ptr<NodeAttachedData> data_ = nullptr;
   uint8_t buffer_[kDataSize];
 };
 

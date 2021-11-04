@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -60,7 +61,7 @@ class FakeProxy : public Proxy {
       bool enable_frame_rate_throttling) override {}
 
  private:
-  LayerTreeHost* layer_tree_host_;
+  raw_ptr<LayerTreeHost> layer_tree_host_;
 };
 
 }  // namespace cc

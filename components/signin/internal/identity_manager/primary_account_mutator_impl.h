@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_IMPL_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_PRIMARY_ACCOUNT_MUTATOR_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -48,10 +49,10 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
 
   // Pointers to the services used by the PrimaryAccountMutatorImpl. They
   // *must* outlive this instance.
-  AccountTrackerService* account_tracker_ = nullptr;
-  ProfileOAuth2TokenService* token_service_ = nullptr;
-  PrimaryAccountManager* primary_account_manager_ = nullptr;
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<AccountTrackerService> account_tracker_ = nullptr;
+  raw_ptr<ProfileOAuth2TokenService> token_service_ = nullptr;
+  raw_ptr<PrimaryAccountManager> primary_account_manager_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   signin::AccountConsistencyMethod account_consistency_;
 };
 

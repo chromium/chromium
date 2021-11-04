@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -166,7 +167,7 @@ class IsolatedAppThrottleBrowserTest : public HttpsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<IsolatedAppContentBrowserClient> test_client_;
-  ContentBrowserClient* old_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppThrottleBrowserTest,

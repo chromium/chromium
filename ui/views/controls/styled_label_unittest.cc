@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "build/build_config.h"
@@ -97,7 +98,7 @@ class StyledLabelInWidgetTest : public ViewsTestBase {
   }
 
  private:
-  StyledLabel* styled_;
+  raw_ptr<StyledLabel> styled_;
   std::unique_ptr<Widget> widget_;
 };
 

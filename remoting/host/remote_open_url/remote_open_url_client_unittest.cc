@@ -8,6 +8,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -59,7 +60,7 @@ class RemoteOpenUrlClientTest : public testing::Test {
 
   // The delegate is owned by |client_| so |client_| must outlive the last use
   // of |delegate_|.
-  MockRemoteOpenUrlClientDelegate* delegate_;
+  raw_ptr<MockRemoteOpenUrlClientDelegate> delegate_;
   std::unique_ptr<RemoteOpenUrlClient> client_;
   MockRemoteUrlOpener remote_url_opener_;
 

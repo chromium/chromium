@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UNINSTALL_JOB_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -80,11 +81,11 @@ class WebAppUninstallJob {
     kDone = 2,
   } state_ = State::kNotStarted;
 
-  OsIntegrationManager* os_integration_manager_;
-  WebAppSyncBridge* sync_bridge_;
-  WebAppIconManager* icon_manager_;
-  WebAppRegistrar* registrar_;
-  PrefService* profile_prefs_;
+  raw_ptr<OsIntegrationManager> os_integration_manager_;
+  raw_ptr<WebAppSyncBridge> sync_bridge_;
+  raw_ptr<WebAppIconManager> icon_manager_;
+  raw_ptr<WebAppRegistrar> registrar_;
+  raw_ptr<PrefService> profile_prefs_;
 
   AppId app_id_;
   webapps::WebappUninstallSource source_;

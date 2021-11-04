@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/model/model_error.h"
@@ -90,8 +91,8 @@ class SessionSyncBridge : public syncer::ModelTypeSyncBridge,
   void ReportError(const syncer::ModelError& error);
 
   const base::RepeatingClosure notify_foreign_session_updated_cb_;
-  SyncSessionsClient* const sessions_client_;
-  LocalSessionEventRouter* const local_session_event_router_;
+  const raw_ptr<SyncSessionsClient> sessions_client_;
+  const raw_ptr<LocalSessionEventRouter> local_session_event_router_;
 
   SessionsGlobalIdMapper global_id_mapper_;
   std::unique_ptr<SessionStore> store_;

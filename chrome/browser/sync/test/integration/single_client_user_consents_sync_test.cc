@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -79,7 +80,7 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  FakeServer* fake_server_;
+  raw_ptr<FakeServer> fake_server_;
   // TODO(markusheintz): User a string with the serialized proto instead of an
   // int. The requires creating better expectations with a proper creation
   // time.

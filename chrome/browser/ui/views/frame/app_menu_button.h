@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
@@ -72,7 +73,7 @@ class AppMenuButton : public ToolbarButton {
 
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
 
-  views::MenuButtonController* menu_button_controller_;
+  raw_ptr<views::MenuButtonController> menu_button_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_APP_MENU_BUTTON_H_

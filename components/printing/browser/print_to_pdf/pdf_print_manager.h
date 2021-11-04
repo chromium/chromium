@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "components/printing/browser/print_manager.h"
@@ -95,7 +96,7 @@ class PdfPrintManager : public printing::PrintManager,
   void Reset();
   void ReleaseJob(PrintResult result);
 
-  content::RenderFrameHost* printing_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
   std::string page_ranges_;
   bool ignore_invalid_page_ranges_ = false;
   printing::mojom::PrintPagesParamsPtr print_pages_params_;

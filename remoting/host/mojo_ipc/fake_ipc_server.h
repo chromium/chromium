@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_MOJO_IPC_FAKE_IPC_SERVER_H_
 #define REMOTING_HOST_MOJO_IPC_FAKE_IPC_SERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/mojo_ipc/ipc_server.h"
 
 namespace remoting {
@@ -34,7 +35,7 @@ class FakeIpcServer final : public IpcServer {
   mojo::ReceiverId current_receiver() const override;
 
  private:
-  TestState* test_state_;
+  raw_ptr<TestState> test_state_;
 };
 
 }  // namespace remoting

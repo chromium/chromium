@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -899,8 +900,8 @@ class HeadlessWebContentsBeginFrameControlTest
             base::Unretained(this)));
   }
 
-  HeadlessBrowserContext* browser_context_ = nullptr;  // Not owned.
-  HeadlessWebContentsImpl* web_contents_ = nullptr;    // Not owned.
+  raw_ptr<HeadlessBrowserContext> browser_context_ = nullptr;  // Not owned.
+  raw_ptr<HeadlessWebContentsImpl> web_contents_ = nullptr;    // Not owned.
 
   bool page_ready_ = false;
   bool needs_begin_frames_ = false;

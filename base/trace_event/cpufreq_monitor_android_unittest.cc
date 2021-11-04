@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -189,7 +190,7 @@ class CPUFreqMonitorTest : public testing::Test {
   scoped_refptr<TestTaskRunner> task_runner_;
   std::unique_ptr<ScopedTempDir> temp_dir_;
   std::unique_ptr<CPUFreqMonitor> monitor_;
-  TestDelegate* delegate_;
+  raw_ptr<TestDelegate> delegate_;
 };
 
 TEST_F(CPUFreqMonitorTest, TestStart) {

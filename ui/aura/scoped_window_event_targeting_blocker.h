@@ -6,6 +6,7 @@
 #define UI_AURA_SCOPED_WINDOW_EVENT_TARGETING_BLOCKER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window_observer.h"
 
@@ -31,7 +32,7 @@ class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
   void OnWindowDestroying(Window* window) override;
 
  private:
-  Window* window_;
+  raw_ptr<Window> window_;
 };
 
 }  // namespace aura

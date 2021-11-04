@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
  private:
   base::WeakPtr<BlobUrlRegistry> registry_;
-  BlobRegistryImpl::Delegate* delegate_;
+  raw_ptr<BlobRegistryImpl::Delegate> delegate_;
 
   std::set<GURL> urls_;
 

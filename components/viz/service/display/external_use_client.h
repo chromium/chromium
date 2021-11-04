@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
@@ -109,7 +110,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
     GrBackendFormat backend_format_;
-    const cc::PaintOpBuffer* paint_op_buffer_ = nullptr;
+    raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
     absl::optional<SkColor> clear_color_;
   };
 

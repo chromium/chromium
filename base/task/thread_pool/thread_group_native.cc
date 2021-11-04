@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/task_tracker.h"
 
@@ -33,7 +34,7 @@ class ThreadGroupNative::ScopedCommandsExecutor
   }
 
  private:
-  ThreadGroupNative* const outer_;
+  const raw_ptr<ThreadGroupNative> outer_;
   size_t num_threadpool_work_to_submit_ = 0;
 };
 

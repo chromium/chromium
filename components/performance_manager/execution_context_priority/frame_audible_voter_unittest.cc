@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -81,7 +82,7 @@ class FrameAudibleVoterTest : public GraphTestHarness {
   VoterId voter_id() const { return wrapper_->voter_id(); }
 
  private:
-  GraphOwnedWrapper* wrapper_ = nullptr;
+  raw_ptr<GraphOwnedWrapper> wrapper_ = nullptr;
 };
 
 // Tests that the FrameAudibleVoter correctly casts a vote for a frame

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/button.h"
 #include "chrome/browser/vr/elements/text.h"
 
@@ -28,7 +29,7 @@ class TextButton : public Button {
  private:
   void OnSetColors(const ButtonColors& colors) override;
 
-  Text* text_ = nullptr;
+  raw_ptr<Text> text_ = nullptr;
 };
 
 }  // namespace vr

@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 
 namespace dom_distiller {
@@ -48,7 +49,7 @@ class DistilledPagePrefsAndroid {
                       jlong obs);
 
  private:
-  DistilledPagePrefs* distilled_page_prefs_;
+  raw_ptr<DistilledPagePrefs> distilled_page_prefs_;
 };
 
 class DistilledPagePrefsObserverAndroid : public DistilledPagePrefs::Observer {

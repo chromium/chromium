@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -76,7 +77,7 @@ class WebrtcVideoEncoderWrapper : public webrtc::VideoEncoder {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback registered by WebRTC to receive encoded frames.
-  webrtc::EncodedImageCallback* encoded_callback_
+  raw_ptr<webrtc::EncodedImageCallback> encoded_callback_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // Timestamp to be added to the EncodedImage when sending it to

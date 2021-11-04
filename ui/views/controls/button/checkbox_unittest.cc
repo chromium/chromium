@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -49,7 +50,7 @@ class CheckboxTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<Widget> widget_;
-  Checkbox* checkbox_ = nullptr;
+  raw_ptr<Checkbox> checkbox_ = nullptr;
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {

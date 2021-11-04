@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -53,7 +54,7 @@ class MockReadErrorDelegate : public PersistentPrefStore::ReadErrorDelegate {
   }
 
  private:
-  Data* data_;
+  raw_ptr<Data> data_;
 };
 
 enum class CommitPendingWriteMode {

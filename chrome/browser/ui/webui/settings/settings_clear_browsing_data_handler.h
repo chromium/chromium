@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/engagement/important_sites_util.h"
@@ -125,13 +126,13 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   void OnTemplateURLServiceChanged() override;
 
   // Cached profile corresponding to the WebUI of this handler.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Counters that calculate the data volume for individual data types.
   std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>> counters_;
 
   // SyncService to observe sync state changes.
-  syncer::SyncService* sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 

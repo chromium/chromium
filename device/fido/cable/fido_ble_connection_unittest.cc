@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
@@ -136,11 +137,11 @@ class FidoBleConnectionTest : public ::testing::Test {
 
     ON_CALL(*fido_device_, GetGattServices())
         .WillByDefault(
-            Invoke(fido_device_, &MockBluetoothDevice::GetMockServices));
+            Invoke(fido_device_.get(), &MockBluetoothDevice::GetMockServices));
 
     ON_CALL(*fido_device_, GetGattService(_))
         .WillByDefault(
-            Invoke(fido_device_, &MockBluetoothDevice::GetMockService));
+            Invoke(fido_device_.get(), &MockBluetoothDevice::GetMockService));
     AddFidoService();
   }
 
@@ -149,8 +150,9 @@ class FidoBleConnectionTest : public ::testing::Test {
         .WillByDefault(Invoke([this, &device_address](auto& callback) {
           connection_ =
               new NiceMockBluetoothGattConnection(adapter_, device_address);
-          std::move(callback).Run(std::move(base::WrapUnique(connection_)),
-                                  /*error_code=*/absl::nullopt);
+          std::move(callback).Run(
+              std::move(base::WrapUnique(connection_.get())),
+              /*error_code=*/absl::nullopt);
         }));
 
     ON_CALL(*fido_device_, IsGattServicesDiscoveryComplete)
@@ -182,7 +184,7 @@ class FidoBleConnectionTest : public ::testing::Test {
                    BluetoothRemoteGattCharacteristic::ErrorCallback&) {
               notify_session_ = new NiceMockBluetoothGattNotifySession(
                   fido_status_->GetWeakPtr());
-              std::move(callback).Run(base::WrapUnique(notify_session_));
+              std::move(callback).Run(base::WrapUnique(notify_session_.get()));
             }));
   }
 
@@ -394,17 +396,17 @@ class FidoBleConnectionTest : public ::testing::Test {
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<NiceMockBluetoothAdapter>();
 
-  MockBluetoothDevice* fido_device_;
-  MockBluetoothGattService* fido_service_;
+  raw_ptr<MockBluetoothDevice> fido_device_;
+  raw_ptr<MockBluetoothGattService> fido_service_;
 
-  MockBluetoothGattCharacteristic* fido_control_point_;
-  MockBluetoothGattCharacteristic* fido_status_;
-  MockBluetoothGattCharacteristic* fido_control_point_length_;
-  MockBluetoothGattCharacteristic* fido_service_revision_;
-  MockBluetoothGattCharacteristic* fido_service_revision_bitfield_;
+  raw_ptr<MockBluetoothGattCharacteristic> fido_control_point_;
+  raw_ptr<MockBluetoothGattCharacteristic> fido_status_;
+  raw_ptr<MockBluetoothGattCharacteristic> fido_control_point_length_;
+  raw_ptr<MockBluetoothGattCharacteristic> fido_service_revision_;
+  raw_ptr<MockBluetoothGattCharacteristic> fido_service_revision_bitfield_;
 
-  MockBluetoothGattConnection* connection_;
-  MockBluetoothGattNotifySession* notify_session_;
+  raw_ptr<MockBluetoothGattConnection> connection_;
+  raw_ptr<MockBluetoothGattNotifySession> notify_session_;
 };
 
 TEST_F(FidoBleConnectionTest, Address) {

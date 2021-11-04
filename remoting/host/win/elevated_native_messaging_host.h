@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -72,7 +73,7 @@ class ElevatedNativeMessagingHost
   base::TimeDelta host_process_timeout_;
 
   // EventHandler of the parent process.
-  extensions::NativeMessageHost::Client* client_;
+  raw_ptr<extensions::NativeMessageHost::Client> client_;
 
   // Native messaging channel used to communicate with the elevated host.
   std::unique_ptr<extensions::NativeMessagingChannel> elevated_channel_;

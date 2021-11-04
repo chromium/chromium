@@ -15,6 +15,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -57,7 +58,7 @@ class WaitForURLsDeletedObserver : public history::HistoryServiceObserver {
                      const history::DeletionInfo& deletion_info) override;
 
   // Weak. Owned by our owner.
-  base::RunLoop* runner_;
+  raw_ptr<base::RunLoop> runner_;
 };
 
 WaitForURLsDeletedObserver::WaitForURLsDeletedObserver(base::RunLoop* runner)
@@ -107,7 +108,7 @@ class GetURLTask : public history::HistoryDBTask {
  private:
   ~GetURLTask() override {}
 
-  bool* result_storage_;
+  raw_ptr<bool> result_storage_;
   const GURL url_;
 };
 

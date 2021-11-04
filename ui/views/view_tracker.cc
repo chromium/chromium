@@ -19,7 +19,7 @@ void ViewTracker::SetView(View* view) {
   observation_.Reset();
   view_ = view;
   if (view_)
-    observation_.Observe(view_);
+    observation_.Observe(view_.get());
 }
 
 void ViewTracker::OnViewIsDeleting(View* observed_view) {

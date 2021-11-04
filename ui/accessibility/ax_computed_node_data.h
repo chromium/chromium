@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -122,7 +123,7 @@ class AX_EXPORT AXComputedNodeData final {
   std::u16string ComputeTextContentUTF16() const;
 
   // The node that is associated with this instance. Weak, owns us.
-  const AXNode* const owner_;
+  const raw_ptr<const AXNode> owner_;
 
   mutable absl::optional<int> unignored_index_in_parent_;
   mutable absl::optional<int> unignored_child_count_;

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/cast/message_port/message_port.h"
@@ -48,9 +49,9 @@ class MessagePortTlsConnection final
   void OnPipeError() final;
 
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
-  openscreen::TaskRunner* const task_runner_;
+  const raw_ptr<openscreen::TaskRunner> task_runner_;
 
-  TlsConnection::Client* client_ = nullptr;
+  raw_ptr<TlsConnection::Client> client_ = nullptr;
 };
 
 }  // namespace openscreen_platform

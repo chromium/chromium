@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/token.h"
@@ -156,7 +157,7 @@ struct VideoCaptureController::ControllerClient {
 
   // ID used for identifying this object.
   const VideoCaptureControllerID controller_id;
-  VideoCaptureControllerEventHandler* const event_handler;
+  const raw_ptr<VideoCaptureControllerEventHandler> event_handler;
 
   const media::VideoCaptureSessionId session_id;
   const media::VideoCaptureParams parameters;
@@ -912,7 +913,7 @@ void VideoCaptureController::PerformForClientsWithOpenSession(
   for (const auto& client : controller_clients_) {
     if (client->session_closed)
       continue;
-    action.Run(client->event_handler, client->controller_id);
+    action.Run(client->event_handler.get(), client->controller_id);
   }
 }
 

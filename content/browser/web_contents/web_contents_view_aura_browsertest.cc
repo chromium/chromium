@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -292,7 +293,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
-  RenderWidgetHostImpl* drop_target_widget_;
+  raw_ptr<RenderWidgetHostImpl> drop_target_widget_;
 
   // A closure indicating that async drop operation has completed.
   base::OnceClosure async_drop_closure_;
@@ -355,7 +356,7 @@ class SpuriousMouseMoveEventObserver
   }
 
  private:
-  RenderWidgetHost* host_;
+  raw_ptr<RenderWidgetHost> host_;
 };
 }  // namespace
 

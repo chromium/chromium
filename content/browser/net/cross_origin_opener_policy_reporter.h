@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -81,7 +82,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
                              bool is_report_only);
 
   // See the class comment.
-  StoragePartition* storage_partition_;
+  raw_ptr<StoragePartition> storage_partition_;
   base::UnguessableToken reporting_source_;
   GURL source_url_;
   GlobalRenderFrameHostId source_routing_id_;

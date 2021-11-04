@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -87,7 +88,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
       int importance) const override {}
 
  private:
-  TestGpuMemoryBufferManager* manager_;
+  raw_ptr<TestGpuMemoryBufferManager> manager_;
   gfx::GpuMemoryBufferId id_;
   const gfx::Size size_;
   gfx::BufferFormat format_;
@@ -136,9 +137,9 @@ class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
       int importance) const override {}
 
  private:
-  TestGpuMemoryBufferManager* manager_;
+  raw_ptr<TestGpuMemoryBufferManager> manager_;
   gfx::GpuMemoryBufferId id_;
-  gfx::GpuMemoryBuffer* client_buffer_;
+  raw_ptr<gfx::GpuMemoryBuffer> client_buffer_;
 };
 
 }  // namespace

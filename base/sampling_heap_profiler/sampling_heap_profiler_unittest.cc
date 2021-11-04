@@ -9,6 +9,7 @@
 
 #include "base/allocator/allocator_shim.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
@@ -68,7 +69,7 @@ class SamplesCollector : public PoissonAllocationSampler::SamplesObserver {
 
  private:
   size_t watch_size_;
-  void* sample_address_ = nullptr;
+  raw_ptr<void> sample_address_ = nullptr;
 };
 
 TEST_F(SamplingHeapProfilerTest, SampleObserver) {
@@ -273,7 +274,7 @@ class StartStopThread : public SimpleThread {
   }
 
  private:
-  WaitableEvent* event_;
+  raw_ptr<WaitableEvent> event_;
 };
 
 TEST_F(SamplingHeapProfilerTest, StartStop) {

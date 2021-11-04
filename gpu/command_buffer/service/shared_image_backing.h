@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -249,7 +250,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   const uint32_t usage_;
   const size_t estimated_size_;
 
-  SharedImageFactory* factory_ = nullptr;
+  raw_ptr<SharedImageFactory> factory_ = nullptr;
 
   // Bound to the thread on which the backing is created. The |factory_|
   // can only be used from this thread.

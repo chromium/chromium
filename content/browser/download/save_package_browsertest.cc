@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -136,7 +137,7 @@ class DownloadCompleteObserver : public DownloadManager::Observer {
       item_ = nullptr;
     }
 
-    download::DownloadItem* item_;
+    raw_ptr<download::DownloadItem> item_;
     base::OnceClosure completed_closure_;
   };
 

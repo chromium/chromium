@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/download_manager_delegate.h"
 
@@ -59,7 +60,7 @@ class ShellDownloadManagerDelegate : public DownloadManagerDelegate {
                           DownloadTargetCallback callback,
                           const base::FilePath& suggested_path);
 
-  DownloadManager* download_manager_;
+  raw_ptr<DownloadManager> download_manager_;
   base::FilePath default_download_path_;
   bool suppress_prompting_;
   base::WeakPtrFactory<ShellDownloadManagerDelegate> weak_ptr_factory_{this};

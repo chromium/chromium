@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
@@ -209,8 +210,8 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
     bool visible() const;
 
    private:
-    View* view_ = nullptr;
-    const BoxLayout* layout_ = nullptr;
+    raw_ptr<View> view_ = nullptr;
+    raw_ptr<const BoxLayout> layout_ = nullptr;
     gfx::Insets margins_;
   };
 
@@ -351,7 +352,7 @@ class VIEWS_EXPORT BoxLayout : public LayoutManager {
   bool collapse_margins_spacing_;
 
   // The view that this BoxLayout is managing the layout for.
-  views::View* host_ = nullptr;
+  raw_ptr<views::View> host_ = nullptr;
 };
 
 }  // namespace views

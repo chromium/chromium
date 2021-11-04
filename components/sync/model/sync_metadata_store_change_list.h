@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
@@ -40,7 +41,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
 
  private:
   // The metadata store to store metadata in; always outlives |this|.
-  SyncMetadataStore* store_;
+  raw_ptr<SyncMetadataStore> store_;
 
   // The sync model type for this metadata.
   syncer::ModelType type_;

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 #define CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_QUOTA_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/cpp/storage_key_quota_client.h"
@@ -50,7 +51,7 @@ class CONTENT_EXPORT NativeIOQuotaClient
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  NativeIOManager* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<NativeIOManager> manager_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace content

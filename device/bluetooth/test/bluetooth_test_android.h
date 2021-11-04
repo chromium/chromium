@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
 namespace device {
@@ -150,7 +151,7 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   base::android::ScopedJavaGlobalRef<jobject> j_fake_bluetooth_adapter_;
 
   int gatt_open_connections_ = 0;
-  BluetoothRemoteGattDescriptor* remembered_ccc_descriptor_ = nullptr;
+  raw_ptr<BluetoothRemoteGattDescriptor> remembered_ccc_descriptor_ = nullptr;
 };
 
 // Defines common test fixture name. Use TEST_F(BluetoothTest, YourTestName).

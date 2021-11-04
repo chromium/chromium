@@ -9,6 +9,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
@@ -179,7 +180,7 @@ class CastTransportImpl : public CastTransport {
   std::unique_ptr<CastMessage> current_message_;
 
   // Channel used for I/O operations.
-  Channel* const channel_;
+  const raw_ptr<Channel> channel_;
 
   // Methods for communicating message receipt and error status to client code.
   std::unique_ptr<Delegate> delegate_;

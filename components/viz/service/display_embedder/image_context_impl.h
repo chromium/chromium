@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -105,7 +106,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   const bool allow_keeping_read_access_ = true;
 
   // Fallback in case we cannot produce a |representation_|.
-  gpu::SharedContextState* fallback_context_state_ = nullptr;
+  raw_ptr<gpu::SharedContextState> fallback_context_state_ = nullptr;
   GrBackendTexture fallback_texture_;
 
   // Only one of the follow should be non-null at the same time.
@@ -126,7 +127,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
 
   // The |promise_image_texture| is used for fulfilling the promise image. It is
   // used on GPU thread.
-  SkPromiseImageTexture* promise_image_texture_ = nullptr;
+  raw_ptr<SkPromiseImageTexture> promise_image_texture_ = nullptr;
 };
 
 }  // namespace viz

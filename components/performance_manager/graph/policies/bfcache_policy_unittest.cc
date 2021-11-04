@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/policies/bfcache_policy.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -71,7 +72,7 @@ class BFCachePolicyTest : public GraphTestHarness {
   performance_manager::TestNodeWrapper<performance_manager::FrameNodeImpl>
       frame_node_2_;
 
-  MockBFCachePolicy* policy_;
+  raw_ptr<MockBFCachePolicy> policy_;
 };
 
 TEST_F(BFCachePolicyTest, BFCacheFlushedWhenPageBecomesNonVisible) {

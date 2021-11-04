@@ -5,6 +5,7 @@
 #ifndef NET_SOCKET_SOCKET_BIO_ADAPTER_H_
 #define NET_SOCKET_SOCKET_BIO_ADAPTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_repeating_callback.h"
@@ -108,7 +109,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
 
   // The pointer is non-owning so this class may be used with both
   // ClientSocketHandles and raw StreamSockets.
-  StreamSocket* socket_;
+  raw_ptr<StreamSocket> socket_;
 
   CompletionRepeatingCallback read_callback_;
   CompletionRepeatingCallback write_callback_;
@@ -138,7 +139,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   // have failed.
   int write_error_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<SocketBIOAdapter> weak_factory_{this};
 };

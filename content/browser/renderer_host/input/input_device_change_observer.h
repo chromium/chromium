@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_DEVICE_CHANGE_OBSERVER_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -33,7 +34,7 @@ class CONTENT_EXPORT InputDeviceChangeObserver
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
  private:
-  RenderViewHostImpl* render_view_host_impl_;
+  raw_ptr<RenderViewHostImpl> render_view_host_impl_;
 };
 
 }  // namespace content

@@ -17,6 +17,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -264,9 +265,9 @@ class BASE_EXPORT SequenceManagerImpl
     NonNestableTaskDeque non_nestable_task_queue;
     // TODO(altimin): Switch to instruction pointer crash key when it's
     // available.
-    debug::CrashKeyString* file_name_crash_key = nullptr;
-    debug::CrashKeyString* function_name_crash_key = nullptr;
-    debug::CrashKeyString* async_stack_crash_key = nullptr;
+    raw_ptr<debug::CrashKeyString> file_name_crash_key = nullptr;
+    raw_ptr<debug::CrashKeyString> function_name_crash_key = nullptr;
+    raw_ptr<debug::CrashKeyString> async_stack_crash_key = nullptr;
     std::array<char, static_cast<size_t>(debug::CrashKeySize::Size64)>
         async_stack_buffer = {};
 
@@ -309,7 +310,7 @@ class BASE_EXPORT SequenceManagerImpl
     // objects in this container are stored in TLS.
     std::deque<ExecutingTask> task_execution_stack;
 
-    Observer* observer = nullptr;  // NOT OWNED
+    raw_ptr<Observer> observer = nullptr;  // NOT OWNED
 
     ObserverList<CurrentThread::DestructionObserver>::Unchecked
         destruction_observers;

@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -69,7 +70,7 @@ class AdditionalBrowser {
 
  private:
   std::unique_ptr<Browser> browser_;
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 };
 
 }  // namespace
@@ -133,7 +134,7 @@ class ExtensionsMenuViewUnitTest : public TestWithBrowserView {
  private:
   base::AutoReset<bool> allow_extension_menu_instances_;
 
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
 };
 
 void ExtensionsMenuViewUnitTest::SetUp() {

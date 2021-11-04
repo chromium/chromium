@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_SAFE_BROWSING_VERDICT_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_SAFE_BROWSING_VERDICT_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/common/extension_set.h"
 
@@ -51,9 +52,9 @@ class SafeBrowsingVerdictHandler {
       const ExtensionIdSet& unchanged,
       const Blocklist::BlocklistStateMap& state_map);
 
-  ExtensionPrefs* extension_prefs_ = nullptr;
-  ExtensionRegistry* registry_ = nullptr;
-  ExtensionService* extension_service_ = nullptr;
+  raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
+  raw_ptr<ExtensionRegistry> registry_ = nullptr;
+  raw_ptr<ExtensionService> extension_service_ = nullptr;
 
   // Set of greylisted extensions. These extensions are disabled if they are
   // already installed in Chromium at the time when they are added to

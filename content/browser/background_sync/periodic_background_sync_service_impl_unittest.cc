@@ -4,6 +4,7 @@
 
 #include "content/browser/background_sync/periodic_background_sync_service_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/background_sync/background_sync_service_impl_test_harness.h"
 
 namespace content {
@@ -67,7 +68,7 @@ class PeriodicBackgroundSyncServiceImplTest
       periodic_sync_service_remote_;
 
   // Owned by |background_sync_context_|
-  PeriodicBackgroundSyncServiceImpl* periodic_sync_service_impl_;
+  raw_ptr<PeriodicBackgroundSyncServiceImpl> periodic_sync_service_impl_;
 };
 
 // Tests

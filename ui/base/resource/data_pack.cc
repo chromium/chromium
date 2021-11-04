@@ -16,6 +16,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -161,7 +162,8 @@ class ScopedFileWriter {
 
  private:
   bool valid_ = false;
-  FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
+  raw_ptr<FILE> file_ =
+      nullptr;  // base::ScopedFILE doesn't check errors on close.
 };
 
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {

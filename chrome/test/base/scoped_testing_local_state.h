@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_SCOPED_TESTING_LOCAL_STATE_H_
 #define CHROME_TEST_BASE_SCOPED_TESTING_LOCAL_STATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 
 class TestingBrowserProcess;
@@ -23,7 +24,7 @@ class ScopedTestingLocalState {
   }
 
  private:
-  TestingBrowserProcess* browser_process_;
+  raw_ptr<TestingBrowserProcess> browser_process_;
   TestingPrefServiceSimple local_state_;
 };
 

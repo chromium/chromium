@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/values.h"
 #include "content/public/test/browser_task_environment.h"
@@ -246,7 +247,7 @@ class ContentVerifierTest : public ExtensionsTest {
 
   scoped_refptr<ContentVerifier> content_verifier_;
   scoped_refptr<Extension> extension_;
-  TestContentVerifierDelegate* content_verifier_delegate_raw_;
+  raw_ptr<TestContentVerifierDelegate> content_verifier_delegate_raw_;
 };
 
 class ContentVerifierTestWithBackgroundType

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
@@ -44,7 +45,7 @@ class InsecureCredentialsHelper : public PasswordStoreConsumer {
 
   base::OnceCallback<void(LoginsResult)> operation_;
 
-  PasswordStoreInterface* store_;
+  raw_ptr<PasswordStoreInterface> store_;
 };
 
 InsecureCredentialsHelper::InsecureCredentialsHelper(

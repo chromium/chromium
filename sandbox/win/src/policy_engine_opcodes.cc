@@ -376,7 +376,7 @@ ptrdiff_t OpcodeFactory::AllocRelative(void* start,
   if (memory_size() < bytes)
     return 0;
   memory_bottom_ -= bytes;
-  if (reinterpret_cast<UINT_PTR>(memory_bottom_) & 1) {
+  if (reinterpret_cast<UINT_PTR>(memory_bottom_.get()) & 1) {
     // TODO(cpu) replace this for something better.
     ::DebugBreak();
   }

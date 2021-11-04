@@ -177,7 +177,7 @@ void ToolbarActionsBarBubbleViews::Init() {
     body_text_->SetMultiLine(true);
     body_text_->SizeToFit(width);
     body_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(body_text_);
+    AddChildView(body_text_.get());
   }
 
   if (!item_list.empty()) {
@@ -189,7 +189,7 @@ void ToolbarActionsBarBubbleViews::Init() {
     item_list_->SetMultiLine(true);
     item_list_->SizeToFit(width);
     item_list_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(item_list_);
+    AddChildView(item_list_.get());
   }
 }
 

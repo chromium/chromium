@@ -11,6 +11,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -122,7 +123,7 @@ class NotificationChannelsProviderAndroid
 
   bool platform_supports_channels_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Flag to keep track of whether |cached_channels_| has been initialized yet.
   bool initialized_cached_channels_;

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_H_
 
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/devtools_permission_overrides.h"
 #include "content/public/browser/permission_controller.h"
@@ -110,7 +111,7 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   SubscriptionsMap subscriptions_;
   SubscriptionId::Generator subscription_id_generator_;
 
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
 };
 
 }  // namespace content

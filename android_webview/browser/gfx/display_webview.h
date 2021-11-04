@@ -5,6 +5,7 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_DISPLAY_WEBVIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -65,7 +66,7 @@ class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
       OverlayProcessorWebView* overlay_processor_webview,
       viz::FrameSinkManagerImpl* frame_sink_manager);
 
-  OverlayProcessorWebView* const overlay_processor_webview_;
+  const raw_ptr<OverlayProcessorWebView> overlay_processor_webview_;
   base::ScopedObservation<viz::FrameSinkManagerImpl, viz::FrameSinkObserver>
       frame_sink_manager_observation_{this};
 };

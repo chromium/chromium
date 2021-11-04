@@ -4,6 +4,7 @@
 
 #include "extensions/browser/blocklist_extension_prefs.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/blocklist_state.h"
@@ -29,7 +30,7 @@ class BlocklistExtensionPrefsUnitTest : public ExtensionServiceTestBase {
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  private:
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 TEST_F(BlocklistExtensionPrefsUnitTest, OmahaBlocklistState) {

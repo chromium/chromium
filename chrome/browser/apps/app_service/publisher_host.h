@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
@@ -63,7 +64,7 @@ class PublisherHost {
  private:
   void Initialize();
 
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<BuiltInChromeOsApps> built_in_chrome_os_apps_;

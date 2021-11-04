@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -40,8 +41,8 @@ TEST_F(PasswordSyncUtilTest, GetSyncUsernameIfSyncingPasswords) {
     enum { SYNCING_PASSWORDS, NOT_SYNCING_PASSWORDS } password_sync;
     std::string fake_sync_username;
     std::string expected_result;
-    const syncer::SyncService* sync_service;
-    const signin::IdentityManager* identity_manager;
+    raw_ptr<const syncer::SyncService> sync_service;
+    raw_ptr<const signin::IdentityManager> identity_manager;
   } kTestCases[] = {
       {TestCase::NOT_SYNCING_PASSWORDS, "a@example.org", std::string(),
        sync_service(), identity_manager()},

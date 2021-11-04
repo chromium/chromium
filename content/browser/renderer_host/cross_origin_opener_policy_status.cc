@@ -121,7 +121,7 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
     current_url_ =
         frame_tree_node_->opener()->current_frame_host()->GetLastCommittedURL();
   }
-  previous_document_rph_observation_.Observe(previous_document_rph_);
+  previous_document_rph_observation_.Observe(previous_document_rph_.get());
 }
 
 CrossOriginOpenerPolicyStatus::~CrossOriginOpenerPolicyStatus() {

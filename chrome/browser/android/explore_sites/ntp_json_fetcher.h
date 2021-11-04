@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/explore_sites/catalog.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -51,7 +52,7 @@ class NTPJsonFetcher {
   void OnJsonParseError(const std::string& error);
 
   Callback callback_;
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   base::WeakPtrFactory<NTPJsonFetcher> weak_factory_{this};
 };

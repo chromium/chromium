@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -53,7 +54,7 @@ class EnvironmentRecorder {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 };
 
 }  // namespace metrics

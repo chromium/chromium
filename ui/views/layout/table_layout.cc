@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -280,7 +281,7 @@ struct TableLayout::ViewState {
     DCHECK_GT(row_span, 0u);
   }
 
-  View* view;
+  raw_ptr<View> view;
   size_t start_col;
   size_t start_row;
   size_t col_span;

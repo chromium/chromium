@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -270,7 +271,7 @@ class VotesUploader {
       autofill::FormStructure& form_structure);
 
   // The client which implements embedder-specific PasswordManager operations.
-  PasswordManagerClient* client_;
+  raw_ptr<PasswordManagerClient> client_;
 
   // Whether generation popup was shown at least once.
   bool generation_popup_was_shown_ = false;

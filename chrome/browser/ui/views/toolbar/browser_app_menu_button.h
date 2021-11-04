@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_APP_MENU_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_APP_MENU_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
@@ -59,7 +60,7 @@ class BrowserAppMenuButton : public AppMenuButton {
       AppMenuIconController::Severity::NONE};
 
   // Our owning toolbar view.
-  ToolbarView* const toolbar_view_;
+  const raw_ptr<ToolbarView> toolbar_view_;
 
   absl::optional<FeaturePromoController::PromoHandle> reopen_tab_promo_handle_;
 

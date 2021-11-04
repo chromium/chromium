@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/manifest_verifier.h"
@@ -135,8 +136,8 @@ class InstallablePaymentAppCrawler {
   DeveloperConsoleLogger log_;
   const url::Origin merchant_origin_;
   const content::GlobalRenderFrameHostId initiator_frame_routing_id_;
-  PaymentManifestDownloader* downloader_;
-  PaymentManifestParser* parser_;
+  raw_ptr<PaymentManifestDownloader> downloader_;
+  raw_ptr<PaymentManifestParser> parser_;
   FinishedCrawlingCallback callback_;
   base::OnceClosure finished_using_resources_;
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -52,7 +53,7 @@ class ChildWebDialog : public ui::WebDialogDelegate {
   bool ShouldShowDialogTitle() const override;
 
  private:
-  views::Widget* parent_widget_;
+  raw_ptr<views::Widget> parent_widget_;
   const std::u16string title_;
   const GURL url_;
   const ui::ModalType modal_type_;

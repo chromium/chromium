@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
+#include "base/memory/raw_ptr.h"
 
 #include <ostream>
 
@@ -119,7 +120,7 @@ class BrowserAddedWaiter final : public BrowserListObserver {
 
  private:
   base::RunLoop run_loop_;
-  Browser* browser_added_ = nullptr;
+  raw_ptr<Browser> browser_added_ = nullptr;
 };
 
 Browser* GetBrowserForAppId(const AppId& app_id) {
@@ -1286,7 +1287,7 @@ Browser* WebAppIntegrationTestDriver::GetAppBrowserForSite(
 
 Browser* WebAppIntegrationTestDriver::browser() {
   Browser* browser = active_browser_
-                         ? active_browser_
+                         ? active_browser_.get()
                          : chrome::FindTabbedBrowser(
                                profile(), /*match_original_profiles=*/false);
   DCHECK(browser);

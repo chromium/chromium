@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -135,7 +136,7 @@ class MediaDrmStorageImpl final
   // Called after checking if an empty origin ID is allowed.
   void OnEmptyOriginIdAllowed(bool allowed);
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   GetOriginIdCB get_origin_id_cb_;
   AllowEmptyOriginIdCB allow_empty_origin_id_cb_;
 

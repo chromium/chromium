@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -114,9 +115,9 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 // Implementation of the browserAction and pageAction APIs.
@@ -143,7 +144,7 @@ class ExtensionActionFunction : public ExtensionFunction {
 
   // All the extension action APIs take a single argument called details that
   // is a dictionary.
-  base::DictionaryValue* details_;
+  raw_ptr<base::DictionaryValue> details_;
 
   // The tab id the extension action function should apply to, if any, or
   // kDefaultTabId if none was specified.
@@ -153,7 +154,7 @@ class ExtensionActionFunction : public ExtensionFunction {
   content::WebContents* contents_;
 
   // The extension action for the current extension.
-  ExtensionAction* extension_action_;
+  raw_ptr<ExtensionAction> extension_action_;
 };
 
 //

@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,7 +42,7 @@ class ClipboardFilter : public ClipboardStub {
   void InjectClipboardEvent(const ClipboardEvent& event) override;
 
  private:
-  ClipboardStub* clipboard_stub_ = nullptr;
+  raw_ptr<ClipboardStub> clipboard_stub_ = nullptr;
   bool enabled_ = true;
   absl::optional<size_t> max_size_;
 };

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/security_state/core/security_state.h"
@@ -46,7 +47,7 @@ class SafetyTipInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   SafetyTipInteraction action_taken_ = SafetyTipInteraction::kNoAction;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_REPUTATION_SAFETY_TIP_INFOBAR_DELEGATE_H_

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_BACKGROUND_H_
 #define CHROME_BROWSER_VR_ELEMENTS_ENVIRONMENT_BACKGROUND_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
 #include "device/vr/gl_bindings.h"
@@ -93,7 +94,7 @@ class Background : public UiElement {
   sk_sp<SkSurface> normal_gradient_surface_;
   sk_sp<SkSurface> incognito_gradient_surface_;
   sk_sp<SkSurface> fullscreen_gradient_surface_;
-  SkiaSurfaceProvider* provider_ = nullptr;
+  raw_ptr<SkiaSurfaceProvider> provider_ = nullptr;
 
   float normal_factor_ = 1.0f;
   float incognito_factor_ = 0.0f;

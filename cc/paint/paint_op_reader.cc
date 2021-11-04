@@ -14,6 +14,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -51,7 +52,7 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
 struct TypefaceCtx {
   explicit TypefaceCtx(SkStrikeClient* client) : client(client) {}
   bool invalid_typeface = false;
-  SkStrikeClient* client = nullptr;
+  raw_ptr<SkStrikeClient> client = nullptr;
 };
 
 sk_sp<SkTypeface> DeserializeTypeface(const void* data,

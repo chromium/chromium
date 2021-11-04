@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -125,10 +126,10 @@ class MenuButtonTest : public ViewsTestBase {
   }
 
  private:
-  Widget* widget_ = nullptr;          // Owned by self.
-  TestMenuButton* button_ = nullptr;  // Owned by |widget_|.
+  raw_ptr<Widget> widget_ = nullptr;          // Owned by self.
+  raw_ptr<TestMenuButton> button_ = nullptr;  // Owned by |widget_|.
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  test::TestInkDrop* ink_drop_ = nullptr;  // Owned by |button_|.
+  raw_ptr<test::TestInkDrop> ink_drop_ = nullptr;  // Owned by |button_|.
 };
 
 // A Button that will acquire a PressedLock in the pressed callback and
@@ -213,7 +214,7 @@ class TestDragDropClient : public aura::client::DragDropClient,
   bool drag_in_progress_ = false;
 
   // Target window where drag operations are occurring.
-  aura::Window* target_ = nullptr;
+  raw_ptr<aura::Window> target_ = nullptr;
 };
 
 TestDragDropClient::TestDragDropClient() = default;

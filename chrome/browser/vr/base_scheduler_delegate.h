@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_VR_BASE_SCHEDULER_DELEGATE_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/scheduler_delegate.h"
 #include "chrome/browser/vr/vr_export.h"
 #include "device/vr/util/fps_meter.h"
@@ -48,7 +49,7 @@ class VR_EXPORT BaseSchedulerDelegate : public SchedulerDelegate {
   base::TaskRunner* task_runner() { return task_runner_.get(); }
 
  private:
-  SchedulerUiInterface* ui_;
+  raw_ptr<SchedulerUiInterface> ui_;
   bool webxr_mode_ = false;
 
   int webxr_frames_received_ = 0;

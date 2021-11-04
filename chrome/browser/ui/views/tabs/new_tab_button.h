@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_NEW_TAB_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -90,10 +91,10 @@ class NewTabButton : public views::ImageButton,
   void UpdateInkDropBaseColor();
 
   // Tab strip that contains this button.
-  TabStrip* tab_strip_;
+  raw_ptr<TabStrip> tab_strip_;
 
   // Contains our ink drop layer so it can paint above our background.
-  views::InkDropContainerView* ink_drop_container_;
+  raw_ptr<views::InkDropContainerView> ink_drop_container_;
 
   // For tracking whether this object has been destroyed. Must be last.
   base::WeakPtrFactory<NewTabButton> weak_factory_{this};

@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
@@ -101,7 +102,7 @@ class BrowserAssociatedInterface : public Interface {
 
     ~InternalState() {}
 
-    Interface* impl_;
+    raw_ptr<Interface> impl_;
     absl::optional<mojo::AssociatedReceiverSet<Interface>> receivers_;
   };
 

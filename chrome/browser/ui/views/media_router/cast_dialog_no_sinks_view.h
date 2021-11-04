@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_DIALOG_NO_SINKS_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
@@ -37,10 +38,10 @@ class CastDialogNoSinksView : public views::View {
  private:
   void SetHelpIconView();
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   base::OneShotTimer timer_;
-  views::View* icon_ = nullptr;
-  views::Label* label_ = nullptr;
+  raw_ptr<views::View> icon_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 }  // namespace media_router

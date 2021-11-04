@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/passwords/move_to_account_store_bubble_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
@@ -30,7 +31,7 @@ class MoveToAccountStoreBubbleViewTest : public PasswordBubbleViewTestBase {
   void TearDown() override;
 
  protected:
-  MoveToAccountStoreBubbleView* view_;
+  raw_ptr<MoveToAccountStoreBubbleView> view_;
 };
 
 void MoveToAccountStoreBubbleViewTest::CreateViewAndShow() {

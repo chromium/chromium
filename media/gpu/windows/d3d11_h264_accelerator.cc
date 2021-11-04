@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -51,7 +52,7 @@ class D3D11H264Picture : public H264Picture {
     picture->set_in_picture_use(true);
   }
 
-  D3D11PictureBuffer* picture;
+  raw_ptr<D3D11PictureBuffer> picture;
   size_t picture_index_;
 
   D3D11H264Picture* AsD3D11H264Picture() override { return this; }

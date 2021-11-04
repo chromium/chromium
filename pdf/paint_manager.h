@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
@@ -166,7 +167,7 @@ class PaintManager {
   void OnManualCallbackComplete(int32_t);
 
   // Non-owning pointer. See the constructor.
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   // This graphics device will be null if no graphics has been set yet.
   std::unique_ptr<Graphics> graphics_;

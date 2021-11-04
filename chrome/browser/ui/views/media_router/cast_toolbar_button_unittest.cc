@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -136,7 +137,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
-  CastToolbarButton* button_ = nullptr;  // owned by |widget_|.
+  raw_ptr<CastToolbarButton> button_ = nullptr;  // owned by |widget_|.
   MockContextMenuObserver context_menu_observer_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoggerImpl> logger_;

@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_monster.h"
@@ -124,7 +125,7 @@ class MatchFilter {
   // 'foo.bar.com', '.foo.bar.com', and 'baz.foo.bar.com'.
   bool MatchesDomain(const std::string& domain);
 
-  const api::cookies::GetAll::Params::Details* details_;
+  raw_ptr<const api::cookies::GetAll::Params::Details> details_;
 };
 
 }  // namespace cookies_helpers

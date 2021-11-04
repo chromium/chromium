@@ -7,6 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_request.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
 
@@ -46,7 +47,7 @@ class RegisterProtocolHandlerPermissionRequest
   void PermissionDecided(ContentSetting result, bool is_one_time);
   void DeleteRequest();
 
-  ProtocolHandlerRegistry* registry_;
+  raw_ptr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler handler_;
   // Fullscreen will be blocked for the duration of the lifetime of this block.
   // TODO(avi): Move to either permissions::PermissionRequest or the

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/media_engagement_score.h"
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
@@ -114,13 +115,13 @@ class MediaEngagementService : public KeyedService,
   base::flat_map<content::WebContents*, MediaEngagementContentsObserver*>
       contents_observers_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Clear any data for a specific origin.
   void Clear(const url::Origin& origin);
 
   // An internal clock for testing.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   std::vector<MediaEngagementScore> GetAllStoredScores() const;
 

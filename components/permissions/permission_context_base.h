@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -222,7 +223,7 @@ class PermissionContextBase : public KeyedService,
                          ContentSetting content_setting,
                          bool is_one_time);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   const ContentSettingsType content_settings_type_;
   const blink::mojom::PermissionsPolicyFeature permissions_policy_feature_;
   std::unordered_map<std::string, std::unique_ptr<PermissionRequest>>

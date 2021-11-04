@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -114,7 +115,7 @@ class MediaRouterContextualMenuUnitTest : public BrowserWithTestWindowTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 
-  ToolbarActionsModel* toolbar_actions_model_ = nullptr;
+  raw_ptr<ToolbarActionsModel> toolbar_actions_model_ = nullptr;
   MockMediaRouterContextualMenuObserver observer_;
 };
 

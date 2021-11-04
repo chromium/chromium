@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist_state_fetcher.h"
 #include "chrome/common/safe_browsing/crx_info.pb.h"
 
@@ -33,7 +34,7 @@ class TestBlocklistStateFetcher {
   bool HandleFetcher(const std::string& id);
 
  private:
-  BlocklistStateFetcher* fetcher_;
+  raw_ptr<BlocklistStateFetcher> fetcher_;
 
   std::map<std::string, ClientCRXListInfoResponse_Verdict> verdicts_;
 

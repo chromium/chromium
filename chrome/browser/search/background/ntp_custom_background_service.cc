@@ -127,7 +127,7 @@ NtpCustomBackgroundService::NtpCustomBackgroundService(Profile* profile)
       background_updated_timestamp_(base::TimeTicks::Now()) {
   background_service_ = NtpBackgroundServiceFactory::GetForProfile(profile_);
   if (background_service_)
-    background_service_observation_.Observe(background_service_);
+    background_service_observation_.Observe(background_service_.get());
 
   // Update theme info when the pref is changed via Sync.
   pref_change_registrar_.Init(pref_service_);

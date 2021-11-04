@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
@@ -93,7 +94,7 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
   void ResumeNavigation();
 
   // Must outlive this class.
-  AsyncDocumentSubresourceFilter* parent_frame_filter_;
+  raw_ptr<AsyncDocumentSubresourceFilter> parent_frame_filter_;
 
   int pending_load_policy_calculations_ = 0;
   DeferStage defer_stage_ = DeferStage::kNotDeferring;

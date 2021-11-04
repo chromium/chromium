@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_
 #define CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -88,7 +89,7 @@ class FeaturePromoSnoozeService {
   void SaveSnoozeData(const base::Feature& iph_feature,
                       const SnoozeData& snooze_data);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SNOOZE_SERVICE_H_

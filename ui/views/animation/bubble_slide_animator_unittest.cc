@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -110,11 +111,11 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
 
  protected:
   std::unique_ptr<Widget> anchor_widget_;
-  BubbleDialogDelegateView* bubble_ = nullptr;
-  Widget* widget_ = nullptr;
-  View* view1_;
-  View* view2_;
-  View* view3_;
+  raw_ptr<BubbleDialogDelegateView> bubble_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<View> view1_;
+  raw_ptr<View> view2_;
+  raw_ptr<View> view3_;
   std::unique_ptr<TestBubbleSlideAnimator> delegate_;
 };
 

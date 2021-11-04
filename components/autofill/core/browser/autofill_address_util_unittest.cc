@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/autofill_address_util.h"
 
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +33,7 @@ class AddressFormattingTest : public ::testing::Test {
   std::string GetLocale() { return "en-US"; }
 
  private:
-  ui::ResourceBundle* orig_resource_bundle_;
+  raw_ptr<ui::ResourceBundle> orig_resource_bundle_;
 };
 
 // This is a regression test from crbug.com/1259928. Address formats of

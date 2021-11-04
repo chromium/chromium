@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -36,14 +37,14 @@ class WindowMonitorAura : public EventMonitorAura, public aura::WindowObserver {
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
     DCHECK_EQ(window, target_window_);
-    DCHECK(window_observation_.IsObservingSource(target_window_));
+    DCHECK(window_observation_.IsObservingSource(target_window_.get()));
     window_observation_.Reset();
     target_window_ = nullptr;
     TearDown();
   }
 
  private:
-  aura::Window* target_window_;
+  raw_ptr<aura::Window> target_window_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
 };

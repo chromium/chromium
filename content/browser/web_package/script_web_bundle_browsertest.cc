@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -109,7 +110,7 @@ class ScriptWebBundleBrowserTest : public ContentBrowserTest {
 
  private:
   content::ContentMockCertVerifier mock_cert_verifier_;
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   ContentBrowserClient browser_client_;
   base::test::ScopedFeatureList feature_list_;
   net::EmbeddedTestServer https_server_{

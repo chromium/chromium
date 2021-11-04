@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 
@@ -36,7 +37,7 @@ class CC_EXPORT LCDTextMetricsReporter {
  private:
   explicit LCDTextMetricsReporter(const LayerTreeHostImpl*);
 
-  const LayerTreeHostImpl* layer_tree_host_impl_;
+  raw_ptr<const LayerTreeHostImpl> layer_tree_host_impl_;
   base::TimeTicks last_report_frame_time_;
   base::TimeTicks current_frame_time_;
   uint64_t frame_count_since_last_report_ = 0;

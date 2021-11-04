@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_TEST_WORKER_NODE_FACTORY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_TEST_WORKER_NODE_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 
 namespace performance_manager {
@@ -54,7 +55,7 @@ struct TestWorkerNodeFactory {
   void DeleteWorker(WorkerNodeImpl* worker_node);
 
  private:
-  TestGraphImpl* graph_;
+  raw_ptr<TestGraphImpl> graph_;
 
   base::flat_set<TestNodeWrapper<WorkerNodeImpl>, TestNodeWrapperComparator>
       worker_nodes_;

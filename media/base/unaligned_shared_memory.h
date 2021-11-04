@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -54,7 +55,7 @@ class MEDIA_EXPORT UnalignedSharedMemory {
   size_t size_;
 
   // Pointer to the unaligned data in the shared memory mapping.
-  uint8_t* mapping_ptr_ = nullptr;
+  raw_ptr<uint8_t> mapping_ptr_ = nullptr;
 };
 
 // Wrapper over base::WritableSharedMemoryMapping that is mapped at unaligned

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -198,9 +199,9 @@ class Gpu::EstablishRequest
 
   virtual ~EstablishRequest() = default;
 
-  Gpu* const parent_;
+  const raw_ptr<Gpu> parent_;
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  base::WaitableEvent* establish_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> establish_event_ = nullptr;
 
   base::Lock lock_;
   bool received_ = false;

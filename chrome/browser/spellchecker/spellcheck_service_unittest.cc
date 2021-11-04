@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
@@ -213,7 +214,7 @@ class SpellcheckServiceHybridUnitTestBase
   static const std::vector<std::string>
       windows_spellcheck_languages_for_testing_;
 
-  SpellcheckService* spellcheck_service_;
+  raw_ptr<SpellcheckService> spellcheck_service_;
 };
 
 void SpellcheckServiceHybridUnitTestBase::RunGetDictionariesTest(

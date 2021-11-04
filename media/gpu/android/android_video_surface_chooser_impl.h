@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -90,7 +91,7 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   bool initial_state_received_ = false;
 
   // Not owned by us.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Time at which we most recently got a failed overlay request.
   base::TimeTicks most_recent_overlay_failure_;

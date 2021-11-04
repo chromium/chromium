@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
@@ -158,7 +159,7 @@ class TestRunner {
   int InternalRunTest(const wchar_t* command);
   DWORD timeout_ms();
 
-  BrokerServices* broker_;
+  raw_ptr<BrokerServices> broker_;
   scoped_refptr<TargetPolicy> policy_;
   base::TimeDelta timeout_;
   SboxTestsState state_;

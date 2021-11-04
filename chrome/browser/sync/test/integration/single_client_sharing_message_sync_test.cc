@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/features.h"
@@ -131,7 +132,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const std::vector<SharingMessageSpecifics> expected_specifics_;
 };
 
@@ -196,7 +197,7 @@ class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const std::string expected_payload_;
 };
 

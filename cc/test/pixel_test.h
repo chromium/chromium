@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -108,7 +109,7 @@ class PixelTest : public testing::Test {
   viz::TestGpuServiceHolder::ScopedResetter gpu_service_resetter_;
 
   // For SkiaRenderer.
-  viz::TestGpuServiceHolder* gpu_service_holder_ = nullptr;
+  raw_ptr<viz::TestGpuServiceHolder> gpu_service_holder_ = nullptr;
 
   viz::RendererSettings renderer_settings_;
   viz::DebugRendererSettings debug_settings_;
@@ -125,7 +126,7 @@ class PixelTest : public testing::Test {
   scoped_refptr<viz::ContextProvider> child_context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> child_resource_provider_;
   std::unique_ptr<viz::DirectRenderer> renderer_;
-  viz::SoftwareRenderer* software_renderer_ = nullptr;
+  raw_ptr<viz::SoftwareRenderer> software_renderer_ = nullptr;
   std::unique_ptr<SkBitmap> result_bitmap_;
 
   void SetUpGLWithoutRenderer(gfx::SurfaceOrigin output_surface_origin);

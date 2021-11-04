@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -122,9 +123,9 @@ class AppPrefs {
 
  private:
   const GURL& origin_;
-  HostContentSettingsMap* settings_ = nullptr;
+  raw_ptr<HostContentSettingsMap> settings_ = nullptr;
   std::unique_ptr<base::DictionaryValue> origin_dict_;
-  base::Value* dict_ = nullptr;
+  raw_ptr<base::Value> dict_ = nullptr;
 };
 
 // Queries variations for the number of days which dismissing and ignoring the

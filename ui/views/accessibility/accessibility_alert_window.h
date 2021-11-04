@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -46,7 +47,7 @@ class VIEWS_EXPORT AccessibilityAlertWindow : public aura::EnvObserver {
   std::unique_ptr<aura::Window> alert_window_;
 
   // The accessibility cache associated with |alert_window_|.
-  views::AXAuraObjCache* cache_;
+  raw_ptr<views::AXAuraObjCache> cache_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> observation_{this};
 };

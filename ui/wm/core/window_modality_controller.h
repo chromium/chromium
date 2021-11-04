@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
@@ -75,11 +76,11 @@ class WM_CORE_EXPORT WindowModalityController : public ui::EventHandler,
   // transient window of the |window|.
   void CancelTouchesOnTransientWindowTree(aura::Window* window);
 
-  aura::Env* env_;
+  raw_ptr<aura::Env> env_;
 
   std::vector<aura::Window*> windows_;
 
-  ui::EventTarget* event_target_;
+  raw_ptr<ui::EventTarget> event_target_;
 };
 
 }  // namespace wm

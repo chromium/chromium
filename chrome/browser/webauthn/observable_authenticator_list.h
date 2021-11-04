@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 
@@ -50,7 +51,7 @@ class ObservableAuthenticatorList {
       base::StringPiece authenticator_id);
 
   std::vector<AuthenticatorReference> authenticator_list_;
-  AuthenticatorListObserver* observer_ = nullptr;
+  raw_ptr<AuthenticatorListObserver> observer_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_OBSERVABLE_AUTHENTICATOR_LIST_H_

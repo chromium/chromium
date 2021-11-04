@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_SECURITY_KEY_SECURITY_KEY_IPC_SERVER_IMPL_H_
 #define REMOTING_HOST_SECURITY_KEY_SECURITY_KEY_IPC_SERVER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/security_key/security_key_ipc_server.h"
 
 #include <cstdint>
@@ -71,7 +72,7 @@ class SecurityKeyIpcServerImpl : public SecurityKeyIpcServer,
   int connection_id_;
 
   // Interface which provides details about the client session.
-  ClientSessionDetails* client_session_details_ = nullptr;
+  raw_ptr<ClientSessionDetails> client_session_details_ = nullptr;
 
   // Tracks whether the connection is in the process of being closed.
   bool connection_close_pending_ = false;

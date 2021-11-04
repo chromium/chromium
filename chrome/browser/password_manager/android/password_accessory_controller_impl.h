@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -183,17 +184,17 @@ class PasswordAccessoryControllerImpl
   void AllPasswordsSheetDismissed();
 
   // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   // Keeps track of credentials which are stored for all origins in this tab.
-  password_manager::CredentialCache* credential_cache_ = nullptr;
+  raw_ptr<password_manager::CredentialCache> credential_cache_ = nullptr;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.
-  password_manager::PasswordManagerClient* password_client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;
 
   // The authenticator used to trigger a biometric re-auth before filling.
   // null, if there is no ongoing authentication.

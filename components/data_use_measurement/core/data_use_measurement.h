@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -178,7 +179,7 @@ class DataUseMeasurement
 
   // Watches for network connection changes. Global singleton object and
   // outlives |this|
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // The current connection type.
   network::mojom::ConnectionType connection_type_ =

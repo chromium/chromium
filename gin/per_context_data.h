@@ -5,6 +5,7 @@
 #ifndef GIN_PER_CONTEXT_DATA_H_
 #define GIN_PER_CONTEXT_DATA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "gin/gin_export.h"
 #include "v8/include/v8-forward.h"
@@ -38,8 +39,8 @@ class GIN_EXPORT PerContextData : public base::SupportsUserData {
   ContextHolder* context_holder() { return context_holder_; }
 
  private:
-  ContextHolder* context_holder_;
-  Runner* runner_;
+  raw_ptr<ContextHolder> context_holder_;
+  raw_ptr<Runner> runner_;
 };
 
 }  // namespace gin

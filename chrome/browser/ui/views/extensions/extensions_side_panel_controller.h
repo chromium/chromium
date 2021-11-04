@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -73,9 +74,9 @@ class ExtensionsSidePanelController
   void SidePanelButtonPressed();
 
   const extensions::ExtensionId extension_id_;
-  SidePanel* side_panel_;
-  BrowserView* browser_view_;
-  views::WebView* web_view_;
+  raw_ptr<SidePanel> side_panel_;
+  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<views::WebView> web_view_;
   std::unique_ptr<content::WebContents> web_contents_;
 
   // A handler to handle unhandled keyboard messages coming back from the

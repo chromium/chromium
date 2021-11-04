@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -414,7 +415,7 @@ class ContentVerifier::HashHelper {
   // List of pending callbacks of GetContentHash().
   std::map<CallbackKey, CallbackInfo> callback_infos_;
 
-  ContentVerifier* const content_verifier_ = nullptr;
+  const raw_ptr<ContentVerifier> content_verifier_ = nullptr;
 
   base::WeakPtrFactory<HashHelper> weak_factory_{this};
 };

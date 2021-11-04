@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -80,7 +81,7 @@ class ShippingOptionItem : public PaymentRequestItemList::Item {
     NOTREACHED();
   }
 
-  mojom::PaymentShippingOption* shipping_option_;
+  raw_ptr<mojom::PaymentShippingOption> shipping_option_;
 };
 
 }  // namespace

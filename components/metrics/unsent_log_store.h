@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "components/metrics/log_store.h"
@@ -131,7 +132,7 @@ class UnsentLogStore : public LogStore {
   // A weak pointer to the PrefService object to read and write the preference
   // from.  Calling code should ensure this object continues to exist for the
   // lifetime of the UnsentLogStore object.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // The name of the preference to serialize logs to/from.
   const char* log_data_pref_name_;

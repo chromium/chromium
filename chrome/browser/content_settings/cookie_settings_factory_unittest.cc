@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -26,7 +27,7 @@ class CookieSettingsFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  content_settings::CookieSettings* cookie_settings_;
+  raw_ptr<content_settings::CookieSettings> cookie_settings_;
   const GURL kBlockedSite;
   const GURL kAllowedSite;
   const GURL kFirstPartySite;

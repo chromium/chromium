@@ -12,6 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -226,7 +227,7 @@ class HttpServerPropertiesManagerTest : public testing::Test,
     pref_delegate_ = new MockPrefDelegate;
 
     http_server_props_ = std::make_unique<HttpServerProperties>(
-        base::WrapUnique(pref_delegate_), /*net_log=*/nullptr,
+        base::WrapUnique(pref_delegate_.get()), /*net_log=*/nullptr,
         GetMockTickClock());
 
     EXPECT_FALSE(http_server_props_->IsInitialized());
@@ -282,7 +283,8 @@ class HttpServerPropertiesManagerTest : public testing::Test,
     return http_server_properties_dict;
   }
 
-  MockPrefDelegate* pref_delegate_;  // Owned by HttpServerPropertiesManager.
+  raw_ptr<MockPrefDelegate>
+      pref_delegate_;  // Owned by HttpServerPropertiesManager.
   std::unique_ptr<HttpServerProperties> http_server_props_;
   base::Time one_day_from_now_;
   quic::ParsedQuicVersionVector advertised_versions_;

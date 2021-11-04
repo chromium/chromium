@@ -5,6 +5,7 @@
 #ifndef CC_TEST_FAKE_RASTER_SOURCE_H_
 #define CC_TEST_FAKE_RASTER_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/raster/raster_source.h"
 #include "ui/gfx/geometry/rect.h"
@@ -51,7 +52,7 @@ class FakeRasterSource : public RasterSource {
       ImageProvider* image_provider) const override;
 
  private:
-  base::WaitableEvent* playback_allowed_event_;
+  raw_ptr<base::WaitableEvent> playback_allowed_event_;
 };
 
 }  // namespace cc

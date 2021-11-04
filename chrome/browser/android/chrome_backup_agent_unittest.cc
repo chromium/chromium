@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/android/chrome_backup_agent.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,10 +51,10 @@ class ChromeBackupAgentTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::vector<std::string> expected_pref_names_;
   TestingProfileManager testing_profile_manager_;
-  TestingProfile* testing_profile_;
-  sync_preferences::TestingPrefServiceSyncable* pref_service_;
-  PrefRegistrySimple* registry_;
-  JNIEnv* env_;
+  raw_ptr<TestingProfile> testing_profile_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  raw_ptr<PrefRegistrySimple> registry_;
+  raw_ptr<JNIEnv> env_;
 };
 
 TEST_F(ChromeBackupAgentTest, GetBoolBackupNames) {

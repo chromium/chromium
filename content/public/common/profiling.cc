@@ -12,6 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -98,7 +99,7 @@ class ProfilingThreadControl {
   }
 
  private:
-  base::Thread* thread_;
+  raw_ptr<base::Thread> thread_;
   base::Lock lock_;
 };
 

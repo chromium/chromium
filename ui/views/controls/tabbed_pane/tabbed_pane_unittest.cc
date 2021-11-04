@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -148,7 +149,7 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
   }
 
   std::unique_ptr<Widget> widget_;
-  TabbedPane* tabbed_pane_;
+  raw_ptr<TabbedPane> tabbed_pane_;
 };
 
 // Tests the preferred size and layout when tabs are aligned horizontally.

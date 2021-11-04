@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_export.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +35,7 @@ class AudioDebugRecordingTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockAudioManager> mock_audio_manager_;
-  MockAudioDebugRecordingManager* mock_debug_recording_manager_;
+  raw_ptr<MockAudioDebugRecordingManager> mock_debug_recording_manager_;
 };
 
 }  // namespace media

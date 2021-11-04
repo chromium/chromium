@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_ICON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -116,7 +117,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   gfx::ImageSkia favicon_;
   TabNetworkState network_state_ = TabNetworkState::kNone;

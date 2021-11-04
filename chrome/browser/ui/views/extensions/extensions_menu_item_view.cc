@@ -83,7 +83,7 @@ ExtensionsMenuItemView::ExtensionsMenuItemView(
   layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetIgnoreDefaultMainAxisMargins(true);
 
-  AddChildView(primary_action_button_);
+  AddChildView(primary_action_button_.get());
   primary_action_button_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,

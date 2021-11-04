@@ -172,7 +172,7 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
                            context.host_resolver,
                            context.ssl_config_service,
                            context.client_socket_factory
-                               ? context.client_socket_factory
+                               ? context.client_socket_factory.get()
                                : ClientSocketFactory::GetDefaultFactory(),
                            context.http_server_properties,
                            context.cert_verifier,
@@ -401,7 +401,7 @@ CommonConnectJobParams HttpNetworkSession::CreateCommonConnectJobParams(
   // Use null websocket_endpoint_lock_manager, which is only set for WebSockets,
   // and only when not using a proxy.
   return CommonConnectJobParams(
-      context_.client_socket_factory ? context_.client_socket_factory
+      context_.client_socket_factory ? context_.client_socket_factory.get()
                                      : ClientSocketFactory::GetDefaultFactory(),
       context_.host_resolver, &http_auth_cache_,
       context_.http_auth_handler_factory, &spdy_session_pool_,

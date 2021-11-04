@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/views/controls/image_view_base.h"
@@ -83,7 +84,7 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
   State state_ = State::kStopped;
 
   // The compositor associated with the widget of this view.
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   // The most recent timestamp at which a paint was scheduled for this view.
   base::TimeTicks previous_timestamp_;

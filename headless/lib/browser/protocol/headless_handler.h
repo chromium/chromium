@@ -5,6 +5,7 @@
 #ifndef HEADLESS_LIB_BROWSER_PROTOCOL_HEADLESS_HANDLER_H_
 #define HEADLESS_LIB_BROWSER_PROTOCOL_HEADLESS_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "headless/lib/browser/protocol/domain_handler.h"
 #include "headless/lib/browser/protocol/dp_headless_experimental.h"
 
@@ -41,8 +42,8 @@ class HeadlessHandler : public DomainHandler,
                   std::unique_ptr<BeginFrameCallback> callback) override;
 
  private:
-  HeadlessBrowserImpl* browser_;
-  content::WebContents* web_contents_;
+  raw_ptr<HeadlessBrowserImpl> browser_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<HeadlessExperimental::Frontend> frontend_;
 };
 

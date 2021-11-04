@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -63,7 +64,7 @@ class FileSystemBrowserTest : public ContentBrowserTest,
 
  protected:
   bool is_incognito_;
-  Shell* browser_ = nullptr;
+  raw_ptr<Shell> browser_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

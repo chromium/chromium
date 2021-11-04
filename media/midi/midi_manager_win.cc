@@ -23,6 +23,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -455,7 +456,7 @@ class MidiManagerWin::InPort final : public Port {
   }
 
  private:
-  MidiManagerWin* manager_;
+  raw_ptr<MidiManagerWin> manager_;
   HMIDIIN in_handle_;
   ScopedMIDIHDR hdr_;
   base::TimeTicks start_time_;

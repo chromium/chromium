@@ -447,7 +447,7 @@ int CastSocketImpl::DoSslConnectComplete(int result) {
           logger_);
     }
     auth_delegate_ = new AuthTransportDelegate(this);
-    transport_->SetReadDelegate(base::WrapUnique(auth_delegate_));
+    transport_->SetReadDelegate(base::WrapUnique(auth_delegate_.get()));
     SetConnectState(ConnectionState::AUTH_CHALLENGE_SEND);
   } else if (result == net::ERR_CONNECTION_TIMED_OUT) {
     SetConnectState(ConnectionState::FINISHED);

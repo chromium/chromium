@@ -145,7 +145,7 @@ void WebAppMover::Start() {
   sync_service_ = SyncServiceFactory::GetForProfile(profile_);
   // This can be a nullptr if the --disable-sync switch is specified.
   if (sync_service_)
-    sync_observer_.Observe(sync_service_);
+    sync_observer_.Observe(sync_service_.get());
   // We must wait for sync to complete at least one cycle (if it is turned on).
   // This avoids our local updates accidentally re-installing any web apps that
   // were uninstalled on other devices. Installing the replacement app will send

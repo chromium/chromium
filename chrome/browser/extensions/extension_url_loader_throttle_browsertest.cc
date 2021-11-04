@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -97,7 +98,7 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
   }
 
  private:
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 };
 
 class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest

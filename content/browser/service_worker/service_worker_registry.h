@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -466,7 +467,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       Args&&... args);
 
   // The ServiceWorkerContextCore object must outlive this.
-  ServiceWorkerContextCore* const context_;
+  const raw_ptr<ServiceWorkerContextCore> context_;
 
   mojo::Remote<storage::mojom::ServiceWorkerStorageControl>
       remote_storage_control_;

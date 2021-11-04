@@ -4,6 +4,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -178,7 +179,7 @@ class CapabilityAccessRecursiveObserver
   }
 
  private:
-  apps::AppCapabilityAccessCache* cache_;
+  raw_ptr<apps::AppCapabilityAccessCache> cache_;
   AccountId account_id_ = AccountId::FromUserEmail("test@gmail.com");
   std::set<std::string> accessing_camera_apps_;
   std::set<std::string> accessing_microphone_apps_;

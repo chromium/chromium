@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -117,7 +118,7 @@ class PluginPrivateDataByOriginChecker {
 
   // Not owned by this object. Caller is responsible for keeping the
   // FileSystemContext alive until |callback_| is called.
-  storage::FileSystemContext* filesystem_context_;
+  raw_ptr<storage::FileSystemContext> filesystem_context_;
 
   const GURL origin_;
   const std::string plugin_name_;

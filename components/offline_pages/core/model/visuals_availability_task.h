@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/task/task.h"
@@ -35,7 +36,7 @@ class VisualsAvailabilityTask : public Task {
 
   void OnVisualsAvailable(VisualsAvailability availability);
 
-  OfflinePageMetadataStore* store_;
+  raw_ptr<OfflinePageMetadataStore> store_;
   int64_t offline_id_;
   VisualsAvailableCallback exists_callback_;
   base::WeakPtrFactory<VisualsAvailabilityTask> weak_ptr_factory_{this};

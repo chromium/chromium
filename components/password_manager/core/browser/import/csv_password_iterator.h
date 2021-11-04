@@ -9,6 +9,7 @@
 
 #include <iterator>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -57,7 +58,7 @@ class CSVPasswordIterator {
   void SeekToNextValidRow();
 
   // |map_| stores the meaning of particular columns in the row.
-  const CSVPassword::ColumnMap* map_ = nullptr;
+  raw_ptr<const CSVPassword::ColumnMap> map_ = nullptr;
   // |csv_rest_| contains the CSV lines left to be iterated over.
   base::StringPiece csv_rest_;
   // |csv_row_| contains the CSV row which the iterator points at.

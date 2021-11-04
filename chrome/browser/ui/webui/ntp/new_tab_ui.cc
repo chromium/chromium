@@ -171,7 +171,7 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
   Profile* profile_for_window_type =
       web_contents
           ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          : profile_;
+          : profile_.get();
 
   NTPResourceCache::WindowType win_type =
       NTPResourceCache::GetWindowType(profile_for_window_type);

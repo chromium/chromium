@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "courgette/image_utils.h"
 
 namespace courgette {
@@ -70,7 +71,7 @@ class LabelManager {
 
    private:
     // The target LabelVector, owned by the caller.
-    LabelVector* labels_;
+    raw_ptr<LabelVector> labels_;
 
     // A bound on indexes.
     int num_index_ = 0;

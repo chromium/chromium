@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -108,7 +109,7 @@ class FakeVideoCaptureStack::Receiver final : public media::VideoFrameReceiver {
 
   void OnStopped() override {}
 
-  FakeVideoCaptureStack* const capture_stack_;
+  const raw_ptr<FakeVideoCaptureStack> capture_stack_;
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_;
 };
 

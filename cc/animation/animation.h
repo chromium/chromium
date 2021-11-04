@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
@@ -158,9 +159,9 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
   explicit Animation(int id);
   virtual ~Animation();
 
-  AnimationHost* animation_host_;
-  AnimationTimeline* animation_timeline_;
-  AnimationDelegate* animation_delegate_;
+  raw_ptr<AnimationHost> animation_host_;
+  raw_ptr<AnimationTimeline> animation_timeline_;
+  raw_ptr<AnimationDelegate> animation_delegate_;
 
   int id_;
   std::unique_ptr<KeyframeEffect> keyframe_effect_;

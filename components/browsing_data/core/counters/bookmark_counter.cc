@@ -5,6 +5,7 @@
 #include "components/browsing_data/core/counters/bookmark_counter.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -55,7 +56,7 @@ class BookmarkModelHelper : public bookmarks::BaseBookmarkModelObserver {
  private:
   ~BookmarkModelHelper() override { bookmark_model_->RemoveObserver(this); }
 
-  bookmarks::BookmarkModel* bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   BookmarkModelCallback callback_;
 };
 

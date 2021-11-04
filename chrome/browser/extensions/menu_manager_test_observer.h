@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MENU_MANAGER_TEST_OBSERVER_H_
 #define CHROME_BROWSER_EXTENSIONS_MENU_MANAGER_TEST_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
 
 #include <set>
@@ -43,7 +44,7 @@ class MenuManagerTestObserver : public MenuManager::TestObserver {
  private:
   bool MenusItemsFound(const ExtensionId& extension_id);
 
-  MenuManager* const menu_manager_;
+  const raw_ptr<MenuManager> menu_manager_;
   std::set<ExtensionId> ids_with_reads_;
   std::set<ExtensionId> ids_with_writes_;
   ExtensionId waiting_for_id_;

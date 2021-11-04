@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -75,10 +76,10 @@ class ChromeEnterpriseRealTimeUrlLookupService
   double GetMinAllowedTimestampForReferrerChains() const override;
 
   // Unowned object used for checking profile based settings.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Unowned pointer to ConnectorsService, used to get a DM token.
-  enterprise_connectors::ConnectorsService* connectors_service_;
+  raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
 
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;
 

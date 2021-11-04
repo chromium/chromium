@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -111,7 +112,7 @@ class NamedFrameCreatedObserver : public content::WebContentsObserver {
   }
 
   base::RunLoop run_loop_;
-  content::RenderFrameHost* frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> frame_ = nullptr;
   std::string frame_name_;
 };
 

@@ -4,6 +4,7 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -185,7 +186,7 @@ class TestHttpDelegate : public HttpStreamRequest::Delegate {
   void OnQuicBroken() override {}
 
  private:
-  base::RunLoop* loop_;
+  raw_ptr<base::RunLoop> loop_;
 };
 
 // This test sets up a request which will reenter the connection pools by

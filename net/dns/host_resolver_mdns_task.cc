@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "net/base/ip_endpoint.h"
@@ -122,7 +123,7 @@ class HostResolverMdnsTask::Transaction {
   std::unique_ptr<MDnsTransaction> async_transaction_;
 
   // Back pointer. Expected to destroy |this| before destroying itself.
-  HostResolverMdnsTask* const task_;
+  const raw_ptr<HostResolverMdnsTask> task_;
 };
 
 HostResolverMdnsTask::HostResolverMdnsTask(

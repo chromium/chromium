@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "net/cert/x509_cert_types.h"
@@ -111,7 +112,7 @@ class ScopedTestEVPolicy {
 
  private:
   SHA256HashValue fingerprint_;
-  EVRootCAMetadata* const ev_root_ca_metadata_;
+  const raw_ptr<EVRootCAMetadata> ev_root_ca_metadata_;
 };
 
 }  // namespace net

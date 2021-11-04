@@ -6,6 +6,7 @@
 #define UI_VIEWS_ANIMATION_COMPOSITOR_ANIMATION_RUNNER_H_
 
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -51,12 +52,12 @@ class VIEWS_EXPORT CompositorAnimationRunner
 
   // When |widget_| is nullptr, it means the widget has been destroyed and
   // |compositor_| must also be nullptr.
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 
   // When |compositor_| is nullptr, it means either the animation is not
   // running, or the compositor or |widget_| associated with the compositor_ has
   // been destroyed during animation.
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor> compositor_ = nullptr;
 
   base::TimeDelta min_interval_ = base::TimeDelta::Max();
   base::TimeTicks last_tick_;

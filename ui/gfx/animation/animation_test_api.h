@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_export.h"
@@ -37,7 +38,7 @@ class AnimationTestApi {
   void Step(base::TimeTicks ticks);
 
  private:
-  Animation* animation_;
+  raw_ptr<Animation> animation_;
 };
 
 // For manual animation time control in tests. Creating this object will
@@ -53,7 +54,7 @@ class AnimationContainerTestApi {
   void IncrementTime(base::TimeDelta delta);
 
  private:
-  AnimationContainer* container_;
+  raw_ptr<AnimationContainer> container_;
 };
 
 }  // namespace gfx

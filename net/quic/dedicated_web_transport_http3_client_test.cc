@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/schemeful_site.h"
@@ -176,7 +177,7 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DedicatedWebTransportHttp3Client> client_;
-  TestConnectionHelper* helper_;  // Owned by |context_|.
+  raw_ptr<TestConnectionHelper> helper_;  // Owned by |context_|.
   ::testing::NiceMock<MockVisitor> visitor_;
   std::unique_ptr<QuicSimpleServer> server_;
   std::unique_ptr<base::RunLoop> run_loop_;

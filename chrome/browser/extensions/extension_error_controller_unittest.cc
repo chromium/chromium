@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_error_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -44,7 +45,7 @@ class MockExtensionErrorUI : public ExtensionErrorUI {
   void Close() override;
 
   // Keep a copy of the delegate around for ourselves.
-  ExtensionErrorUI::Delegate* delegate_;
+  raw_ptr<ExtensionErrorUI::Delegate> delegate_;
 };
 
 // We use this as a slight hack to get the created Error UI, if any. We should

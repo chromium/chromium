@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
@@ -107,8 +108,8 @@ class TrialComparisonCertVerifier::Job {
   const CertVerifier::RequestParams params_;
   const NetLogWithSource net_log_;
 
-  TrialComparisonCertVerifier* parent_ = nullptr;  // Non-owned.
-  Request* request_ = nullptr;                     // Non-owned.
+  raw_ptr<TrialComparisonCertVerifier> parent_ = nullptr;  // Non-owned.
+  raw_ptr<Request> request_ = nullptr;                     // Non-owned.
 
   // Results from the primary verification.
   base::TimeTicks primary_start_;
@@ -159,8 +160,8 @@ class TrialComparisonCertVerifier::Job::Request : public CertVerifier::Request {
   void OnJobAborted();
 
  private:
-  TrialComparisonCertVerifier::Job* parent_;
-  CertVerifyResult* client_result_;
+  raw_ptr<TrialComparisonCertVerifier::Job> parent_;
+  raw_ptr<CertVerifyResult> client_result_;
   CompletionOnceCallback client_callback_;
 };
 

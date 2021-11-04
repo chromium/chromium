@@ -75,7 +75,7 @@ bool PlatformSensorWin::CheckSensorConfiguration(
 
 PlatformSensorWin::~PlatformSensorWin() {
   sensor_reader_->SetClient(nullptr);
-  sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_);
+  sensor_thread_runner_->DeleteSoon(FROM_HERE, sensor_reader_.get());
 }
 
 }  // namespace device

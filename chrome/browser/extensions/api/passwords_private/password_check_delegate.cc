@@ -237,7 +237,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(
           presenter,
           BulkLeakCheckServiceFactory::GetForProfile(profile_),
           profile_->GetPrefs()) {
-  observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_);
+  observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_.get());
   observed_insecure_credentials_manager_.Observe(
       &insecure_credentials_manager_);
   observed_bulk_leak_check_service_.Observe(

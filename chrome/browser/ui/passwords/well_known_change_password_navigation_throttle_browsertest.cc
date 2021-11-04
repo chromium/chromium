@@ -7,6 +7,7 @@
 #include <map>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -197,7 +198,7 @@ class WellKnownChangePasswordNavigationThrottleBrowserTest
   void SetUpOnMainThread() override;
   void TestNavigationThrottleForLocalhost(const std::string& expected_path);
 
-  MockAffiliationService* url_service_ = nullptr;
+  raw_ptr<MockAffiliationService> url_service_ = nullptr;
 
  private:
 };

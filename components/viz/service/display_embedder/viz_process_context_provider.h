@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -117,7 +118,7 @@ class VIZ_SERVICE_EXPORT VizProcessContextProvider
 
   // The |gpu_task_scheduler_helper_| has 1:1 relationship with the Display
   // compositor.
-  gpu::GpuTaskSchedulerHelper* gpu_task_scheduler_helper_;
+  raw_ptr<gpu::GpuTaskSchedulerHelper> gpu_task_scheduler_helper_;
   std::unique_ptr<gpu::InProcessCommandBuffer> command_buffer_;
   std::unique_ptr<gpu::gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<gpu::TransferBuffer> transfer_buffer_;

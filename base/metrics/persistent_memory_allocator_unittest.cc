@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -413,11 +414,11 @@ class CounterThread : public SimpleThread {
   unsigned count() { return count_; }
 
  private:
-  PersistentMemoryAllocator::Iterator* iterator_;
-  Lock* lock_;
-  ConditionVariable* condition_;
+  raw_ptr<PersistentMemoryAllocator::Iterator> iterator_;
+  raw_ptr<Lock> lock_;
+  raw_ptr<ConditionVariable> condition_;
   unsigned count_;
-  bool* wake_up_;
+  raw_ptr<bool> wake_up_;
 };
 
 // Ensure that parallel iteration returns the same number of objects as

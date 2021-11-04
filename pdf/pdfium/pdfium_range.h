@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "ui/gfx/geometry/point.h"
@@ -48,7 +49,7 @@ class PDFiumRange {
   std::u16string GetText() const;
 
  private:
-  PDFiumPage* page_;
+  raw_ptr<PDFiumPage> page_;
   // Index of first character.
   int char_index_;
   // How many characters are part of this range (negative if backwards).

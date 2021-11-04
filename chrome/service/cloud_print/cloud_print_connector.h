@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/connector_settings.h"
@@ -183,7 +184,7 @@ class CloudPrintConnector
   void ReportStats();
 
   // CloudPrintConnector client.
-  Client* client_;
+  raw_ptr<Client> client_;
   // Connector settings.
   ConnectorSettings settings_;
   // Pointer to current print system.

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -40,7 +41,7 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
   void SetUp() override {
     Super::SetUp();
     pltd_ = new PageLoadTrackerDecorator();
-    graph()->PassToGraph(base::WrapUnique(pltd_));
+    graph()->PassToGraph(base::WrapUnique(pltd_.get()));
   }
 
   void TestPageAlmostIdleTransitions(bool timeout_waiting_for_response,
@@ -54,7 +55,7 @@ class PageLoadTrackerDecoratorTest : public GraphTestHarness {
     return PageLoadTrackerDecorator::kWaitingForIdleTimeout;
   }
 
-  PageLoadTrackerDecorator* pltd_ = nullptr;
+  raw_ptr<PageLoadTrackerDecorator> pltd_ = nullptr;
 };
 
 void PageLoadTrackerDecoratorTest::TestPageAlmostIdleTransitions(

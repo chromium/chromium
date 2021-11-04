@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_HISTORY_REPORT_HISTORIC_VISITS_MIGRATION_TASK_H_
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/history/core/browser/history_db_task.h"
 
@@ -28,8 +29,8 @@ class HistoricVisitsMigrationTask : public history::HistoryDBTask {
  private:
   ~HistoricVisitsMigrationTask() override {}
 
-  base::WaitableEvent* wait_event_;
-  UsageReportsBufferService* usage_reports_buffer_service_;
+  raw_ptr<base::WaitableEvent> wait_event_;
+  raw_ptr<UsageReportsBufferService> usage_reports_buffer_service_;
 };
 
 }  // namespace history_report

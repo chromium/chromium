@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
@@ -40,7 +41,7 @@ class VIEWS_EXPORT TableLayoutView : public View {
   TableLayoutView& SetMinimumSize(const gfx::Size& size);
 
  private:
-  TableLayout* table_layout_ =
+  raw_ptr<TableLayout> table_layout_ =
       SetLayoutManager(std::make_unique<TableLayout>());
 };
 

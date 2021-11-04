@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
 
@@ -77,7 +78,7 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   using ObserverMap = std::map<std::string, NamedChangeCallback>;
 
   ObserverMap observers_;
-  PrefService* service_;
+  raw_ptr<PrefService> service_;
 };
 
 #endif  // COMPONENTS_PREFS_PREF_CHANGE_REGISTRAR_H_

@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/directory_lister.h"
@@ -117,7 +118,7 @@ class ListerDelegate : public DirectoryLister::DirectoryListerDelegate {
   bool cancel_lister_on_list_done_;
 
   // This is owned by the individual tests, rather than the ListerDelegate.
-  DirectoryLister* lister_;
+  raw_ptr<DirectoryLister> lister_;
 
   base::RunLoop run_loop;
 

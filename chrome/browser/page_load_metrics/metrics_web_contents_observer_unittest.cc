@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -66,7 +67,7 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
     observer->OnVisibilityChanged(content::Visibility::VISIBLE);
   }
 
-  TestMetricsWebContentsObserverEmbedder* embedder_interface_;
+  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_ANNOTATIONS_WEB_CONTENTS_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
 #include "components/optimization_guide/content/browser/page_text_observer.h"
@@ -61,10 +62,10 @@ class PageContentAnnotationsWebContentsObserver
                           const PageTextDumpResult& result);
 
   // Not owned. Guaranteed to outlive |this|.
-  PageContentAnnotationsService* page_content_annotations_service_;
+  raw_ptr<PageContentAnnotationsService> page_content_annotations_service_;
 
   // Not owned. Guaranteed to outlive |this|.
-  const TemplateURLService* template_url_service_;
+  raw_ptr<const TemplateURLService> template_url_service_;
 
   // The max size to request for text dump.
   const uint64_t max_size_for_text_dump_;

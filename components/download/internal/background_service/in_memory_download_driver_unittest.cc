@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/download/internal/background_service/test/mock_download_driver_client.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -77,7 +78,7 @@ class TestInMemoryDownload : public InMemoryDownload {
   size_t EstimateMemoryUsage() const override { return 0u; }
 
  private:
-  InMemoryDownload::Delegate* delegate_;
+  raw_ptr<InMemoryDownload::Delegate> delegate_;
 };
 
 // Factory that injects to InMemoryDownloadDriver and only creates fake objects.
@@ -154,7 +155,7 @@ class InMemoryDownloadDriverTest : public testing::Test {
  private:
   testing::NiceMock<MockDriverClient> driver_client_;
   std::unique_ptr<InMemoryDownloadDriver> driver_;
-  TestInMemoryDownloadFactory* factory_;
+  raw_ptr<TestInMemoryDownloadFactory> factory_;
 };
 
 // Verifies in memory download success and remove API.

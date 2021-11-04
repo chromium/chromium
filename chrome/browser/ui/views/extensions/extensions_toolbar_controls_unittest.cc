@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_controls.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -74,7 +75,7 @@ class ExtensionsToolbarControlsTest : public TestWithBrowserView {
   void LayoutContainerIfNecessary();
 
  private:
-  extensions::ExtensionService* extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

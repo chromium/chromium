@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -96,7 +97,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
     // If non-null, this trigger was launched by an unswapped prefetcher,
     // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
     // set to null.
-    const NoStatePrefetchContents* deferred_launcher;
+    raw_ptr<const NoStatePrefetchContents> deferred_launcher;
 
     // Initially null, |handle| is set once we start this trigger. It is owned
     // by this struct, and must be deleted before destructing this struct.
@@ -143,7 +144,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
 
   bool has_shutdown_;
 
-  NoStatePrefetchManager* const manager_;
+  const raw_ptr<NoStatePrefetchManager> manager_;
 
   // All triggers known to this NoStatePrefetchLinkManager. Insertions are
   // always made at the back, so the oldest trigger is at the front, and the

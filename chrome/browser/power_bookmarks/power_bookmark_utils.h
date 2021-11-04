@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 
@@ -38,7 +39,7 @@ struct PowerBookmarkQueryFields : bookmarks::QueryFields {
   std::vector<std::u16string> tags;
 
   // If his field is left null, the root of the bookmark model will be searched.
-  const bookmarks::BookmarkNode* folder{nullptr};
+  raw_ptr<const bookmarks::BookmarkNode> folder{nullptr};
 
   // The type of bookmark to search for. By default this is empty which will
   // retrieve any type of bookmark. If set to PowerBookmarkType::UNSPECIFIED,

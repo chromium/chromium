@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "build/build_config.h"
 
@@ -84,7 +85,7 @@ const TEB* GetThreadEnvironmentBlock(PlatformThreadId thread_id,
 
   struct THREAD_BASIC_INFORMATION {
     NTSTATUS ExitStatus;
-    TEB* Teb;
+    raw_ptr<TEB> Teb;
     CLIENT_ID ClientId;
     KAFFINITY AffinityMask;
     LONG Priority;
