@@ -326,7 +326,7 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
                                                window_state);
   }
 
-  // Only allow drag that happens on caption or top area. Note: for a maxmized
+  // Only allow drag that happens on caption or top area. Note: for a maximized
   // or fullscreen window, the window component here is always HTCAPTION, but
   // for a snapped window, the window component here can either be HTCAPTION or
   // HTTOP.
@@ -341,7 +341,8 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
   // mode (and thus the drag for this type of chrome app window always happens
   // on caption or top area). The case where the caption area of the chrome app
   // window can be hidden is handled above.
-  if (app_type != AppType::BROWSER && app_type != AppType::CHROME_APP)
+  if (app_type != AppType::BROWSER && app_type != AppType::CHROME_APP &&
+      app_type != AppType::LACROS)
     return nullptr;
 
   window_state->CreateDragDetails(point_in_parent, window_component, source);
