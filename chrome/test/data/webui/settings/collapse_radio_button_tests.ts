@@ -13,20 +13,19 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('CrCollapseRadioButton', function() {
-  /** @type {!SettingsCollapseRadioButtonElement} */
-  let collapseRadioButton;
+  let collapseRadioButton: SettingsCollapseRadioButtonElement;
 
   setup(function() {
     document.body.innerHTML = '';
-    collapseRadioButton = /** @type {!SettingsCollapseRadioButtonElement} */ (
-        document.createElement('settings-collapse-radio-button'));
+    collapseRadioButton =
+        document.createElement('settings-collapse-radio-button');
     document.body.appendChild(collapseRadioButton);
     flush();
   });
 
   test('openOnSelection', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
@@ -37,7 +36,7 @@ suite('CrCollapseRadioButton', function() {
 
   test('closeOnDeselect', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
@@ -49,7 +48,7 @@ suite('CrCollapseRadioButton', function() {
   // Button should remain closed when noAutomaticCollapse flag is set.
   test('closedWhenInitiallyClosedAndNoAutomaticCollapse', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
@@ -67,7 +66,7 @@ suite('CrCollapseRadioButton', function() {
   // Button should remain opened when noAutomaticCollapse flag is set.
   test('openedWhenInitiallyOpenedAndNoAutomaticCollapse', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
@@ -86,11 +85,11 @@ suite('CrCollapseRadioButton', function() {
   // open the iron collapse.
   test('openOnExpandHit', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
-    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
+    collapseRadioButton.shadowRoot!.querySelector('cr-expand-button')!.click();
     flush();
     assertTrue(collapse.opened);
   });
@@ -99,11 +98,11 @@ suite('CrCollapseRadioButton', function() {
   // the iron collapse.
   test('closeOnExpandHitWhenSelected', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
-    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
+    collapseRadioButton.shadowRoot!.querySelector('cr-expand-button')!.click();
     flush();
     assertFalse(collapse.opened);
   });
@@ -112,7 +111,7 @@ suite('CrCollapseRadioButton', function() {
   // the radio button immediately.
   test('openOnExpandHitWhenNoAutomaticCollapse', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = false;
     flush();
     assertFalse(collapse.opened);
@@ -121,7 +120,7 @@ suite('CrCollapseRadioButton', function() {
     flush();
     assertFalse(collapse.opened);
 
-    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
+    collapseRadioButton.shadowRoot!.querySelector('cr-expand-button')!.click();
     flush();
     assertTrue(collapse.opened);
   });
@@ -130,7 +129,7 @@ suite('CrCollapseRadioButton', function() {
   // the radio button immediately.
   test('closeOnExpandHitWhenSelectedWhenNoAutomaticCollapse', function() {
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
     collapseRadioButton.checked = true;
     flush();
     assertTrue(collapse.opened);
@@ -139,7 +138,7 @@ suite('CrCollapseRadioButton', function() {
     flush();
     assertTrue(collapse.opened);
 
-    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
+    collapseRadioButton.shadowRoot!.querySelector('cr-expand-button')!.click();
     flush();
     assertFalse(collapse.opened);
   });
@@ -158,11 +157,11 @@ suite('CrCollapseRadioButton', function() {
     collapseRadioButton.checked = false;
     collapseRadioButton.disabled = true;
     const collapse =
-        collapseRadioButton.shadowRoot.querySelector('iron-collapse');
+        collapseRadioButton.shadowRoot!.querySelector('iron-collapse')!;
 
     flush();
     assertFalse(collapse.opened);
-    collapseRadioButton.shadowRoot.querySelector('cr-expand-button').click();
+    collapseRadioButton.shadowRoot!.querySelector('cr-expand-button')!.click();
 
     flush();
     assertTrue(collapse.opened);
@@ -175,6 +174,8 @@ suite('CrCollapseRadioButton', function() {
       type: chrome.settingsPrivate.PrefType.NUMBER,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+      key: 'test',
+      value: 0,
     };
     flush();
     assertTrue(isChildVisible(collapseRadioButton, 'cr-policy-pref-indicator'));

@@ -149,5 +149,11 @@ export class SettingsCollapseRadioButtonElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-collapse-radio-button': SettingsCollapseRadioButtonElement;
+  }
+}
+
 customElements.define(
     SettingsCollapseRadioButtonElement.is, SettingsCollapseRadioButtonElement);

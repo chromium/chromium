@@ -40,7 +40,7 @@ non_preprocessed_files = [
   "chooser_exception_list_entry_tests.js",
   "chooser_exception_list_tests.js",
   "clear_browsing_data_test.js",
-  "collapse_radio_button_tests.js",
+  "collapse_radio_button_tests.ts",
   "controlled_button_tests.js",
   "controlled_radio_button_tests.js",
   "cookies_page_test.js",
