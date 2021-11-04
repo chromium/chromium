@@ -74,13 +74,6 @@ class ChromeAppListModelUpdater::TemporarySortManager {
     return iter->second;
   }
 
-  void SetPermanentPosition(const std::string& id,
-                            const syncer::StringOrdinal& position) {
-    auto iter = permanent_position_storage_.find(id);
-    DCHECK(iter != permanent_position_storage_.end());
-    iter->second = position;
-  }
-
   void Deactivate() {
     DCHECK(is_active_);
     is_active_ = false;
@@ -476,55 +469,23 @@ void ChromeAppListModelUpdater::UpdateAppItemFromSyncItem(
     return;
 
   VLOG(2) << this << " UpdateAppItemFromSyncItem: " << sync_item->ToString();
-  const bool position_change =
-      (sync_item->item_ordinal.IsValid() &&
-       (!chrome_item->position().IsValid() ||
-        !chrome_item->position().Equals(sync_item->item_ordinal)));
-  if (position_change) {
+  if (sync_item->item_ordinal.IsValid() &&
+      (!chrome_item->position().IsValid() ||
+       !chrome_item->position().Equals(sync_item->item_ordinal))) {
     // This updates the position in both chrome and ash:
     SetItemPosition(chrome_item->id(), sync_item->item_ordinal);
   }
-
   // Only update the item name if it is a Folder or the name is empty.
   if (update_name && sync_item->item_name != chrome_item->name() &&
       (chrome_item->is_folder() || chrome_item->name().empty())) {
     // This updates the name in both chrome and ash:
     SetItemName(chrome_item->id(), sync_item->item_name);
   }
-
-  const bool folder_change =
-      (update_folder && chrome_item->folder_id() != sync_item->parent_id);
-  if (folder_change) {
+  if (update_folder && chrome_item->folder_id() != sync_item->parent_id) {
     VLOG(2) << " Moving Item To Folder: " << sync_item->parent_id;
     // This updates the folder in both chrome and ash:
     SetItemFolderId(chrome_item->id(), sync_item->parent_id);
   }
-
-  // The code below handles position change or folder change under temporary
-  // sort.
-
-  if (!is_under_temporary_sort() || (!position_change && !folder_change))
-    return;
-
-  // TODO(https://crbug.com/1260447): the features of temporary sort are
-  // partially implemented. The cases of app installation/removal are not
-  // handled right now. As a result, `temporary_sort_manager_` may not cover all
-  // items. Therefore manually check the existence of `id` here. When all the
-  // features are completed, replace with a DCHECK statement.
-  const std::string& item_id = sync_item->item_id;
-  if (position_change && temporary_sort_manager_->HasId(item_id)) {
-    temporary_sort_manager_->SetPermanentPosition(item_id,
-                                                  sync_item->item_ordinal);
-  }
-
-  // Revert the temporary sort order if an item's position or parent folder
-  // changes on a remote device. Because the remote update may conflict with the
-  // temporary sort order.
-  // The item local positions are not committed because remote updates, usually
-  // triggered by user in active ways on remote devices such as dragging then
-  // dropping an item, are believed to reflect user expectation on item layout
-  // so remote updates are more important than revertible local updates.
-  EndTemporarySortAndTakeAction(EndAction::kRevert);
 }
 
 void ChromeAppListModelUpdater::NotifyProcessSyncChangesFinished() {
@@ -678,7 +639,7 @@ void ChromeAppListModelUpdater::RequestPositionUpdate(
   if (!temporary_sort_manager_)
     return;
 
-  // Commit positions and clear the sort order if a local item is moved.
+  // Clear the sort order if an item is moved by user manually.
   if (reason == ash::RequestPositionUpdateReason::kMoveItem)
     EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
 }

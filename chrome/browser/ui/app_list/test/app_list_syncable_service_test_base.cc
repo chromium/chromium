@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ui/app_list/page_break_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 
@@ -25,6 +24,7 @@ void AppListSyncableServiceTestBase::SetUp() {
   DCHECK(temp_dir_.CreateUniqueTempDir());
   TestingBrowserProcess::GetGlobal()->SetProfileManager(
       std::make_unique<ProfileManagerWithoutInit>(temp_dir_.GetPath()));
+
   SetUpFakeModelUpdaterFactoryIfNecessary();
   app_list_syncable_service_ =
       std::make_unique<app_list::AppListSyncableService>(profile_.get());
@@ -36,17 +36,9 @@ void AppListSyncableServiceTestBase::RemoveAllExistingItems() {
   for (const auto& pair : app_list_syncable_service()->sync_items()) {
     existing_item_ids.emplace_back(pair.first);
   }
-
-  AppListModelUpdater* model_updater = GetModelUpdater();
   for (std::string& id : existing_item_ids) {
     app_list_syncable_service()->RemoveItem(id);
-    model_updater->RemoveItem(id);
   }
-
-  // Delete all default page breaks.
-  for (size_t i = 0; i < app_list::kDefaultPageBreakAppIdsLength; ++i)
-    model_updater->RemoveItem(app_list::kDefaultPageBreakAppIds[i]);
-
   content::RunAllTasksUntilIdle();
 }
 
@@ -104,11 +96,6 @@ AppListSyncableServiceTestBase::GetNamesOfSortedItemsFromSyncableService() {
     names.push_back(app_list_syncable_service()->GetSyncItem(id)->item_name);
   }
   return names;
-}
-
-syncer::StringOrdinal AppListSyncableServiceTestBase::GetPositionFromSyncData(
-    const std::string& id) const {
-  return app_list_syncable_service_->GetSyncItem(id)->item_ordinal;
 }
 
 AppListModelUpdater* AppListSyncableServiceTestBase::GetModelUpdater() {
