@@ -57,6 +57,8 @@ class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
 
   void EditButtonPressed();
 
+  gfx::Size GetImageSize();
+
   const gfx::Image& image_;
 
   base::WeakPtr<content::WebContents> web_contents_;

@@ -36,13 +36,6 @@ namespace {
 constexpr int kImageWidthPx = 336;
 constexpr int kImageHeightPx = 252;
 
-// Calculates the size of the image with padding.
-constexpr gfx::Size GetImageSize() {
-  // TODO(kmilka): Freeform capture will lead to variable aspect ratio, we
-  // should handle this gracefully.
-  return gfx::Size(kImageWidthPx, kImageHeightPx);
-}
-
 // Adds a new small vertical padding row to the current bottom of |layout|.
 void AddSmallPaddingRow(views::GridLayout* layout) {
   layout->AddPaddingRow(views::GridLayout::kFixedSize,
@@ -104,14 +97,21 @@ void ScreenshotCapturedBubble::Init() {
 
   // Captured image, with padding and border.
   views::ColumnSet* column_set_image = layout->AddColumnSet(kImageColumnSetId);
+
+  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh);
+
+  int width_padding =
+      (kImageWidthPx + border_radius - GetImageSize().width()) / 2;
+
+  column_set_image->AddPaddingColumn(views::GridLayout::kFixedSize,
+                                     width_padding);
   column_set_image->AddColumn(
       views::GridLayout::CENTER,  // Center horizontally, do not resize.
       views::GridLayout::CENTER,  // Align center vertically, do not resize.
       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   using Alignment = views::ImageView::Alignment;
   auto image_view = std::make_unique<views::ImageView>();
-  const int border_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh);
   image_view->SetBorder(views::CreateRoundedRectBorder(
       /*thickness=*/2, border_radius, gfx::kGoogleGrey200));
   image_view->SetHorizontalAlignment(Alignment::kCenter);
@@ -124,10 +124,12 @@ void ScreenshotCapturedBubble::Init() {
 
   layout->StartRow(views::GridLayout::kFixedSize, kImageColumnSetId);
 
-  // Image. TODO(kmilka): Use a scaled thumbnail here?
   image_view->SetImage(image_.ToImageSkia());
   image_view->SetVisible(true);
   image_view_ = layout->AddView(std::move(image_view));
+
+  column_set_image->AddPaddingColumn(views::GridLayout::kFixedSize,
+                                     width_padding);
 
   // Edit button.
   auto edit_button = std::make_unique<views::MdTextButton>(
@@ -244,6 +246,18 @@ void ScreenshotCapturedBubble::EditButtonPressed() {
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.window_action = NavigateParams::SHOW_WINDOW;
   std::move(edit_callback_).Run(&params);
+}
+
+// Calculates the size of the image with padding.
+gfx::Size ScreenshotCapturedBubble::GetImageSize() {
+  float scale_factor_x =
+      static_cast<float>(kImageWidthPx) / static_cast<float>(image_.Width());
+  float scale_factor_y =
+      static_cast<float>(kImageHeightPx) / static_cast<float>(image_.Height());
+  float scale_factor =
+      scale_factor_x < scale_factor_y ? scale_factor_x : scale_factor_y;
+  return gfx::Size(scale_factor * image_.Width(),
+                   scale_factor * image_.Height());
 }
 
 BEGIN_METADATA(ScreenshotCapturedBubble, LocationBarBubbleDelegateView)
