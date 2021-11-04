@@ -60,13 +60,17 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
+
 # Dual-GPU NVIDIA MacBook Pros no longer activate the discrete GPU.
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_backgrounded_high_performance [ Skip ]
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_high_performance [ Skip ]
 crbug.com/681341 [ mac nvidia ] GpuProcess_mac_webgl_terminated_high_performance [ Skip ]
-
-# Dual-GPU problem with SkiaRenderer.
-crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
 
 # Android and Fuchsia do not support software fallback.
 [ android ] GpuProcess_disable_gpu [ Skip ]
@@ -78,15 +82,30 @@ crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_h
 [ fuchsia ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 [ fuchsia ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
-# Fuchsia flakes.
-crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
+# Software Compositing is not supported on ChromeOS.
+crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
 
 # SwiftShader GL does not work on CrOS, wait for it to be replaced by SwANGLE.
 crbug.com/1084794 [ chromeos ] GpuProcess_feature_status_under_swiftshader [ Skip ]
 crbug.com/1084794 [ chromeos ] GpuProcess_swiftshader_for_webgl [ Skip ]
 
-# Software Compositing is not supported on ChromeOS.
-crbug.com/1084796 [ chromeos ] GpuProcess_readback_webgl_gpu_process [ Skip ]
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+# Dual-GPU problem with SkiaRenderer.
+crbug.com/1170840 [ mac amd skia-renderer-gl ] GpuProcess_mac_webgl_terminated_high_performance [ Failure ]
+
+# Fuchsia flakes.
+crbug.com/1207726 [ fuchsia ] GpuProcess_canvas2d [ RetryOnFailure ]
 
 # Started crashing with passthrough field trial.
 crbug.com/1099576 [ mac amd ] GpuProcess_mac_webgl_backgrounded_high_performance [ Failure ]

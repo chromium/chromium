@@ -60,6 +60,25 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
+
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
 # Incorrectly reporting SCALING instead of DIRECT on Win10 w/ UHD 630 GPUs.
 crbug.com/1079393 [ win intel-0x3e92 ] InfoCollection_direct_composition [ Failure ]
 

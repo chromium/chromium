@@ -60,6 +60,13 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
+
 # Require page actions - which are only supported in pixel tests.
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLMain [ Skip ]
 crbug.com/1048892 TraceTest_OffscreenCanvasIBRCWebGLWorker [ Skip ]
@@ -105,6 +112,45 @@ crbug.com/1096431 [ fuchsia fuchsia-board-qemu-x64 ] TraceTest_Video_VP9_DXVA [ 
 # Skip unaccelerated canvas test since we don't use swap chains without GPU compositing.
 crbug.com/1009860 [ win10 ] SwapChainTraceTest_CanvasUnacceleratedLowLatency2D [ Skip ]
 
+# Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
+# tests that disable GPU compositing (--disable-gpu-compositing).
+[ android ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ android ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ android ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ chromeos ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ chromeos ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
+[ fuchsia ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
+[ fuchsia ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
+
+# Cannot use file in Chromium checkout for fake video capture device on Android,
+# ChromeOS, or Fuchsia.
+crbug.com/1129879 [ android ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+crbug.com/1129879 [ chromeos ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+crbug.com/1129879 [ fuchsia ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
+
+# WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
+crbug.com/976495 [ linux skia-renderer-gl ] TraceTest_WebGPU* [ Skip ]
+crbug.com/976495 [ linux skia-renderer-dawn ] TraceTest_WebGPU* [ Skip ]
+crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPU* [ Skip ]
+crbug.com/976497 [ android ] TraceTest_WebGPU* [ Skip ]
+crbug.com/852089 [ chromeos ] TraceTest_WebGPU* [ Skip ]
+crbug.com/852089 [ fuchsia ] TraceTest_WebGPU* [ Skip ]
+crbug.com/852089 [ win7 ] TraceTest_WebGPU* [ Skip ]
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
+
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
 # VP9 videos fail to trigger zero copy video presentation path.
 crbug.com/930343 [ win intel ] VideoPathTraceTest_DirectComposition_Video_VP9_Fullsize [ Failure ]
 
@@ -141,24 +187,6 @@ crbug.com/1079393 [ win10 intel-0x5912 ] OverlayModeTraceTest_DirectComposition_
 # Hardware overlay promotion fails on Win10 AMD.
 crbug.com/1246268 [ win10 amd-0x7340 ] OverlayModeTraceTest_DirectComposition_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
-# Software compositing is not supported on Android/ChromeOS/Fuchsia: we skip the
-# tests that disable GPU compositing (--disable-gpu-compositing).
-[ android ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
-[ android ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
-[ android ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
-[ chromeos ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
-[ chromeos ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
-[ chromeos ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
-[ fuchsia ] TraceTest_RepeatedWebGLTo2D_SoftwareCompositing [ Skip ]
-[ fuchsia ] TraceTest_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
-[ fuchsia ] TraceTest_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
-
-# Cannot use file in Chromium checkout for fake video capture device on Android
-# or ChromeOS.
-crbug.com/1129879 [ android ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
-crbug.com/1129879 [ chromeos ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
-crbug.com/1129879 [ fuchsia ] TraceTest_Video_Media_Stream_Incompatible_Stride [ Skip ]
-
 # BGRA swap chains don't consistently get promoted to overlays.
 crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_MP4_BGRA [ Failure ]
 crbug.com/1119491 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_VP9_BGRA [ Failure ]
@@ -172,15 +200,6 @@ crbug.com/1213170 [ mac ] TraceTest_WebGPU* [ Failure ]
 
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
 crbug.com/1213657 [ linux skia-renderer-vulkan ] TraceTest_WebGPU* [ Failure ]
-
-# WebGPU is only supported on Win10, Mac, and Linux+SkiaRenderer+Vulkan.
-crbug.com/976495 [ linux skia-renderer-gl ] TraceTest_WebGPU* [ Skip ]
-crbug.com/976495 [ linux skia-renderer-dawn ] TraceTest_WebGPU* [ Skip ]
-crbug.com/976495 [ linux skia-renderer-disabled ] TraceTest_WebGPU* [ Skip ]
-crbug.com/976497 [ android ] TraceTest_WebGPU* [ Skip ]
-crbug.com/852089 [ chromeos ] TraceTest_WebGPU* [ Skip ]
-crbug.com/852089 [ fuchsia ] TraceTest_WebGPU* [ Skip ]
-crbug.com/852089 [ win7 ] TraceTest_WebGPU* [ Skip ]
 
 # Flakes on linux-rel.
 crbug.com/1216377 [ linux ] TraceTest_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]

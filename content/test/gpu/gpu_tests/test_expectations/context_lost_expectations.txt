@@ -60,35 +60,12 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
-# Win8 Release and Debug NVIDIA bots.
-crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-
-# Flakily timing out on Win x64 Debug bot. Unfortunately we can't identify this
-# separately from the 32-bit bots.
-crbug.com/628697 [ win debug ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
-
-# Flaky on Mac 10.7 and 10.8 resulting in crashes during browser
-# startup, so skip this test in those configurations.
-crbug.com/497411 [ mountainlion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-crbug.com/498149 [ lion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
-
-# Too difficult to make this test work on Mac and Android for now. Disabling
-# GLES3 support at the GL bindings level doesn't work there yet.
-crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
-crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
-
-# Flaking on Nexus 5X
-crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
-crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
-crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
-crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
-crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
-
-# Flaking on Nexus 9 and we don't really care about this configuration -> Skip.
-crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
-crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
-crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
 
 # Mac NVIDIA only uses the low-power GPU.
 crbug.com/1186582 [ mac nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
@@ -103,9 +80,6 @@ crbug.com/1078566 [ android ] GpuNormalTermination_NewWebGLNotBlocked [ Skip ]
 
 # Fuchsia cannot launch a new tab.
 [ fuchsia ] ContextLost_WebGLContextLostInHiddenTab [ Skip ]
-
-# Flaky on Fuchsia.
-crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Webgpu not fully supported on Win7, Linux, Android, ChromeOS, and Fuchsia
 [ win7 ] ContextLost_WebGPUContextLostFromGPUProcessExit [ Skip ]
@@ -129,17 +103,64 @@ crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure
 [ chromeos ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
 [ chromeos ] GpuNormalTermination_WebGPUNotBlocked [ Skip ]
 
-# Flakily not getting WebGL blocked on context loss
-crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
-
 # GPU process fallback isn't supported on certain platforms.
 crbug.com/1154047 [ chromeos ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1154047 [ android ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1154047 [ fuchsia ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
+# Flaking on Nexus 9 and we don't really care about this configuration -> Skip.
+crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
+
+# Was broken on Win8 Release and Debug NVIDIA bots. Can probably be removed
+# since Windows 8 is no longer tested.
+crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+
+# Flaky on Mac 10.7 and 10.8 resulting in crashes during browser
+# startup, so skip this test in those configurations.
+crbug.com/497411 [ mountainlion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+crbug.com/498149 [ lion debug ] ContextLost_WebGLContextLostFromSelectElement [ Skip ]
+
+# Too difficult to make this test work on Mac and Android for now. Disabling
+# GLES3 support at the GL bindings level doesn't work there yet.
+crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
+crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
+
 # Flaky hangs on Mac Debug NVIDIA, stalling the test suite for 40 minutes
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForHardwareGpu [ Skip ]
 crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
+
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+# Flakily timing out on Win x64 Debug bot. Unfortunately we can't identify this
+# separately from the 32-bit bots.
+crbug.com/628697 [ win debug ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
+
+# Flaking on Nexus 5X
+crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
+crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
+crbug.com/1210594 [ android android-nexus-5x ] ContextLost_WorkerRAFAfterGPUCrash [ Failure ]
+crbug.com/1064853 [ android android-nexus-5x ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
+crbug.com/1218559 [ android android-nexus-5x no-passthrough ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
+crbug.com/1218559 [ android android-nexus-5x no-passthrough ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+
+# Flaky on Fuchsia.
+crbug.com/1122373 [ fuchsia ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
+
+# Flakily not getting WebGL blocked on context loss
+crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ RetryOnFailure ]
+
 crbug.com/1254745 [ mac amd debug no-passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 
 # Flaky tab crash on Win10 x64 Debug (NVIDIA)

@@ -60,6 +60,12 @@
 # results: [ Failure RetryOnFailure Skip ]
 # END TAG HEADER
 
+###############################
+# Permanent Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to never be removed.
+# This is for things like tests that will never be supported on a particular
+# platform/configuration.
 
 # ===================================
 # Extension availability expectations
@@ -92,23 +98,44 @@
 crbug.com/776222 [ android ] WebglExtension_WEBGL_video_texture [ Skip ]
 crbug.com/1058744 [ no-passthrough ] WebglExtension_OES_draw_buffers_indexed [ Skip ]
 
-crbug.com/1142754 [ linux ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-crbug.com/1142754 [ fuchsia ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+# Extensions unavailable on Android.
+[ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
+[ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
+[ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
+
+# Extension only available via passthrough decoder.
 crbug.com/1194209 [ mac no-passthrough ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
-
-# Were skipped to allow ANGLE changes to merge, but should be fine now.
-crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ Failure ]
-crbug.com/864524 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
-crbug.com/864524 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
-crbug.com/864524 [ linux ] WebglExtension_OVR_multiview2 [ Failure ]
-
-# Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
-crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
 # Extension only available through passthrough decoder?
 crbug.com/849576 [ no-passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 
-crbug.com/945970 [ android ] WebglExtension_EXT_float_blend [ Failure ]
+# This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
+# proprietary codecs.
+crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
+crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
+
+# Too slow (take about one hour to run)
+crbug.com/619403 deqp/functional/gles3/builtinprecision/* [ Skip ]
+
+# Won't investigate failures on validating command decoder. Remove once it's unshipped.
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/misc/origin-clean-conformance-offscreencanvas.html [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
+crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/clipping.html [ Skip ]
+
+###############################
+# Temporary Skip Expectations #
+###############################
+# The "Skip" expectations in this section are expected to be removable at some
+# point. This is for things like tests that fail in a way that negatively and
+# significantly impacts other tests, e.g. killing the test device.
+
+# Unclear if these are permanently unsupported or not.
+crbug.com/1142754 [ linux ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+crbug.com/1142754 [ fuchsia ] WebglExtension_WEBGL_webcodecs_video_frame [ Skip ]
+
+# Skipped because EXT_disjoint_timer_query was disabled due to security concerns.
+crbug.com/808744 [ android ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
 
 # TODO(crbug.com/891861): Remove when either workaround is implemented in cmd decoder,
 # or when angle is used everywhere.
@@ -116,6 +143,54 @@ crbug.com/891861 [ mac no-passthrough ] WebglExtension_WEBGL_draw_instanced_base
 crbug.com/891861 [ mac no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
 crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_draw_instanced_base_vertex_base_instance [ Skip ]
 crbug.com/891861 [ android no-passthrough ] WebglExtension_WEBGL_multi_draw_instanced_base_vertex_base_instance [ Skip ]
+
+# This test needs to be rewritten to measure its expected
+# performance; it's currently too flaky even on release bots.
+crbug.com/735483 conformance/rendering/texture-switch-performance.html [ Skip ]
+crbug.com/735483 conformance2/rendering/texture-switch-performance.html [ Skip ]
+
+# Crashes with the Quadro P400's drivers. Can probably be removed after the
+# switch to GTX 1660s.
+crbug.com/1236820 [ linux nvidia ] conformance2/glsl3/reciprocal-sqrt-of-sum-of-squares-crash.html [ Skip ]
+
+# Caused kernel panics on drivers from around November 2020, can likely be
+# re-enabled once newer drivers are obtained.
+crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
+
+# Can occasionally kill machines. Appears to be tied to kernel version, so can
+# be removed once upgraded to kernel 5.4.0-77 or later.
+crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ Skip ]
+
+# Until Qualcomm devices on the waterfall and CQ are updated to Android S, skip this new test.
+crbug.com/1076188 [ android qualcomm ] conformance2/glsl3/fragment-shader-loop-crash.html [ Skip ]
+
+# TODO(crbug.com/1000354): Remove when either workaround is implemented in cmd decoder,
+# or when angle is used everywhere.
+crbug.com/1000354 [ android no-passthrough ] conformance2/extensions/ext-texture-norm16.html [ Skip ]
+
+# Skip these, rather than expect them to fail to avoid that they impact the
+# following tests result.
+crbug.com/1237319 [ chromeos passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Skip ]
+crbug.com/1237319 [ chromeos passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Skip ]
+
+# Was timing out, but may be removable now.
+crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
+
+###################
+# Failures/Flakes #
+###################
+# Non-"Skip" expectations go here to suppress regular flakes/failures.
+
+# Were skipped to allow ANGLE changes to merge, but should be fine now.
+crbug.com/864524 [ win ] WebglExtension_OVR_multiview2 [ FAilure ]
+crbug.com/864524 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/864524 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
+crbug.com/864524 [ linux ] WebglExtension_OVR_multiview2 [ Failure ]
+
+crbug.com/945970 [ android ] WebglExtension_EXT_float_blend [ Failure ]
 
 # ========================
 # Conformance expectations
@@ -137,11 +212,6 @@ crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/ext-textur
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/angleproject/6245 [ no-passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ Failure ]
 
-# This test uses H.264 and the ChromeOS and Fuchsia bots aren't compiled with
-# proprietary codecs.
-crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
-crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
-
 # Failing on some platforms.
 crbug.com/1175371 [ android ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 crbug.com/1175371 [ linux ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
@@ -156,14 +226,6 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
 crbug.com/949249 [ win passthrough angle-d3d11 ] conformance2/extensions/ovr_multiview2.html [ Failure ]
 crbug.com/949249 [ linux passthrough angle-opengl ] conformance2/extensions/ovr_multiview2.html [ Failure ]
-
-# Too slow (take about one hour to run)
-crbug.com/619403 deqp/functional/gles3/builtinprecision/* [ Skip ]
-
-# This test needs to be rewritten to measure its expected
-# performance; it's currently too flaky even on release bots.
-crbug.com/735483 conformance/rendering/texture-switch-performance.html [ Skip ]
-crbug.com/735483 conformance2/rendering/texture-switch-performance.html [ Skip ]
 
 # This test is unfortunately flaky for unknown reasons.
 # TODO(crbug.com/979444): once this is passing on the passthrough
@@ -649,7 +711,6 @@ crbug.com/angleproject/4242 [ linux intel no-passthrough mesa_lt_19.1 ] conforma
 crbug.com/905003 [ linux nvidia ] conformance2/textures/misc/integer-cubemap-specification-order-bug.html [ Failure ]
 crbug.com/angleproject/5783 [ linux nvidia angle-opengl passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/906846 [ linux nvidia ] conformance2/rendering/canvas-resizing-with-pbo-bound.html [ RetryOnFailure ]
-crbug.com/1236820 [ linux nvidia ] conformance2/glsl3/reciprocal-sqrt-of-sum-of-squares-crash.html [ Skip ]
 
 # Linux NVIDIA Quadro P400, OpenGL backend
 crbug.com/703779 [ angle-opengl linux nvidia-0x1cb3 ] conformance/extensions/webgl-compressed-texture-size-limit.html [ Failure ]
@@ -670,37 +731,19 @@ crbug.com/483282 [ linux amd ] deqp/functional/gles3/transformfeedback/array_sep
 crbug.com/483282 [ linux amd ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
 
 # Linux AMD RX 5500 XT
-crbug.com/1147232 [ linux amd-0x7340 no-passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 crbug.com/1152588 [ linux amd-0x7340 ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
 crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] conformance2/state/gl-get-calls.html [ Failure ]
 crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/integerstatequery.html [ Failure ]
 
-# Linux Intel
-crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ Skip ]
-
 ####################
 # Android failures #
 ####################
-
-# Skip these, rather than expect them to fail, to speed up test
-# execution. The browser is restarted even after expected test
-# failures.
-[ android ] WebglExtension_WEBGL_compressed_texture_pvrtc [ Skip ]
-[ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-[ android qualcomm ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
-
-# Until Qualcomm devices on the waterfall and CQ are updated to Android S, skip this new test.
-crbug.com/1076188 [ android qualcomm ] conformance2/glsl3/fragment-shader-loop-crash.html [ Skip ]
 
 crbug.com/angleproject/4417 [ android ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 
 # Video uploads to some texture formats new in WebGL 2.0 are
 # failing.
 crbug.com/951628 [ android no-passthrough ] conformance/rendering/blending.html [ Failure ]
-
-# TODO(crbug.com/1000354): Remove when either workaround is implemented in cmd decoder,
-# or when angle is used everywhere.
-crbug.com/1000354 [ android no-passthrough ] conformance2/extensions/ext-texture-norm16.html [ Skip ]
 
 # Qualcomm (Pixel 2) failures
 
@@ -714,7 +757,6 @@ crbug.com/906737 [ android qualcomm ] conformance/extensions/webgl-compressed-te
 crbug.com/906742 [ android qualcomm no-passthrough ] conformance2/glsl3/compare-structs-containing-arrays.html [ Failure ]
 crbug.com/1155942 [ android qualcomm ] conformance2/glsl3/precision-side-effects-bug.html [ Failure ]
 crbug.com/1176485 [ android qualcomm ] conformance2/glsl3/uint-int-shift-bug.html [ Failure ]
-crbug.com/1008535 [ android android-pixel-2 passthrough ] conformance2/textures/misc/tex-image-with-bad-args-from-dom-elements.html [ Skip ]
 crbug.com/1000354 [ android android-pixel-2 passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/951628 [ android android-pixel-2 passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1027125 [ android qualcomm ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
@@ -777,20 +819,6 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 #####################
 # ChromeOS failures #
 #####################
-
-# Skip these, rather than expect them to fail to avoid that they impact the
-# following tests result.
-crbug.com/1237319 [ chromeos passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Skip ]
-crbug.com/1237319 [ chromeos passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Skip ]
-crbug.com/1237319 [ chromeos passthrough ] conformance/textures/misc/texture-size-limit.html [ Skip ]
-crbug.com/1237319 [ chromeos passthrough ] conformance2/textures/misc/tex-3d-size-limit.html [ Skip ]
-crbug.com/1237319 [ chromeos passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Skip ]
-
-# Won't investigate failures on validating command decoder. Remove once it's unshipped.
-crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/canvas_sub_rectangle/tex-3d-* [ Skip ]
-crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/misc/origin-clean-conformance-offscreencanvas.html [ Skip ]
-crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
-crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/clipping.html [ Skip ]
 
 crbug.com/1215700 [ chromeos no-passthrough ] deqp/functional/gles3/negativetextureapi.html [ Failure ]
 
