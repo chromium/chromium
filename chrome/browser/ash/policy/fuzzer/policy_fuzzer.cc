@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/dbus/ash_dbus_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_decoder.h"
@@ -64,6 +65,7 @@ struct Environment {
     logging::SetLogMessageHandler(&VoidifyingLogHandler);
 
     base::CommandLine::Init(0, nullptr);
+    TestTimeouts::Initialize();
     CHECK(scoped_temp_dir.CreateUniqueTempDir());
     CHECK(base::PathService::Override(chrome::DIR_USER_DATA,
                                       scoped_temp_dir.GetPath()));
