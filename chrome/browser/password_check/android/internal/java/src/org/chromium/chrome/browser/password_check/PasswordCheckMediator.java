@@ -189,6 +189,8 @@ class PasswordCheckMediator
         } else {
             header = items.get(0).model;
         }
+        @PasswordCheckUIStatus
+        int oldStatus = header.get(CHECK_STATUS);
         header.set(CHECK_STATUS, status);
         Pair<Integer, Integer> progress = header.get(CHECK_PROGRESS);
         if (progress == null) progress = UNKNOWN_PROGRESS;
@@ -199,6 +201,11 @@ class PasswordCheckMediator
             compromisedCredentialCount = getPasswordCheck().getCompromisedCredentialsCount();
             checkTimestamp = getPasswordCheck().getLastCheckTimestamp();
             header.set(SHOW_CHECK_SUBTITLE, true);
+
+            // If a check was just completed, record some metrics.
+            if (oldStatus == PasswordCheckUIStatus.RUNNING) {
+                recordMetricsOnCheckCompletion();
+            }
         }
         header.set(CHECK_TIMESTAMP, checkTimestamp);
         header.set(COMPROMISED_CREDENTIALS_COUNT, compromisedCredentialCount);
@@ -206,6 +213,22 @@ class PasswordCheckMediator
         if (items.size() == 0) {
             items.add(new ListItem(PasswordCheckProperties.ItemType.HEADER, header));
         }
+    }
+
+    private void recordMetricsOnCheckCompletion() {
+        int countTotal = 0;
+        int countWithAutoChange = 0;
+        // Note: items[0] is the header, so skip that one.
+        ListModel<ListItem> items = mModel.get(ITEMS);
+        for (int i = 1; i < items.size(); i++) {
+            countTotal++;
+            CompromisedCredential credential = items.get(i).model.get(COMPROMISED_CREDENTIAL);
+            if (credential.hasAutoChangeButton()) {
+                countWithAutoChange++;
+            }
+        }
+        PasswordCheckMetricsRecorder.recordCompromisedCredentialsCountAfterCheck(
+                countTotal, countWithAutoChange);
     }
 
     @Override

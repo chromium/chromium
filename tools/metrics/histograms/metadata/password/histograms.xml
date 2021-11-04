@@ -986,6 +986,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid"
+    units="credentials" expires_after="2022-04-24">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Count of compromised credentials shown in the UI, recorded whenever a bulk
+    leak check finished successfully. As opposed to 'BulkCheck.LeaksFound', this
+    metric includes duplicates (i.e. same username+password pair saved for
+    multiple domains), and it also includes other types of compromised
+    credentials (e.g. phished).
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.BulkCheck.CompromisedCredentialsCountWithAutoChangeAfterCheckAndroid"
+    units="credentials" expires_after="2022-04-24">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <summary>
+    Count of compromised credentials that have a 'Change automatically' button,
+    recorded whenever a bulk leak check finished successfully. Should be
+    compared to 'CompromisedCredentialsCountAfterCheckAndroid'.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.BulkCheck.Error"
     enum="PasswordLeakDetectionError" expires_after="2022-04-17">
   <owner>vasilii@chromium.org</owner>
