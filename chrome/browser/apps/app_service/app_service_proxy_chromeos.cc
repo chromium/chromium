@@ -227,9 +227,9 @@ void AppServiceProxyChromeOs::FlushMojoCallsForTesting() {
   receivers_.FlushForTesting();
 }
 
-void AppServiceProxyChromeOs::ReInitializeCrostiniForTesting(Profile* profile) {
+void AppServiceProxyChromeOs::ReInitializeCrostiniForTesting() {
   if (app_service_.is_connected() && publisher_host_) {
-    publisher_host_->ReInitializeCrostiniForTesting(profile);
+    publisher_host_->ReInitializeCrostiniForTesting(this);  // IN-TEST
   }
 }
 

@@ -10,7 +10,9 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
@@ -23,6 +25,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/display/display.h"
@@ -76,32 +79,18 @@ base::flat_map<std::string, std::string> ExtrasFromShortcutId(
 
 namespace apps {
 
-CrostiniApps::CrostiniApps(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile)
-    : profile_(profile), registry_(nullptr), crostini_enabled_(false) {
-  Initialize(app_service);
+CrostiniApps::CrostiniApps(AppServiceProxy* proxy)
+    : AppPublisher(proxy),
+      profile_(proxy->profile()),
+      registry_(nullptr),
+      crostini_enabled_(false) {
+  Initialize(proxy->AppService());
 }
 
 CrostiniApps::~CrostiniApps() {
   if (registry_) {
     registry_->RemoveObserver(this);
   }
-}
-
-void CrostiniApps::ReInitializeForTesting(
-    const mojo::Remote<apps::mojom::AppService>& app_service,
-    Profile* profile) {
-  // Some test code creates a profile (and therefore profile-linked services
-  // like the App Service) before it creates the fake user that lets
-  // IsCrostiniUIAllowedForProfile return true. To work around that, we issue a
-  // second Initialize call.
-  receiver().reset();
-  profile_ = profile;
-  registry_ = nullptr;
-  crostini_enabled_ = false;
-
-  Initialize(app_service);
 }
 
 void CrostiniApps::Initialize(
@@ -126,6 +115,27 @@ void CrostiniApps::Initialize(
                           base::Unretained(this)));
 
   PublisherBase::Initialize(app_service, apps::mojom::AppType::kCrostini);
+
+  std::vector<std::unique_ptr<App>> apps;
+  for (const auto& pair :
+       registry_->GetRegisteredApps(guest_os::GuestOsRegistryService::VmType::
+                                        ApplicationList_VmType_TERMINA)) {
+    const guest_os::GuestOsRegistryService::Registration& registration =
+        pair.second;
+    apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
+  }
+  AppPublisher::Publish(std::move(apps));
+}
+
+void CrostiniApps::LoadIcon(const std::string& app_id,
+                            const IconKey& icon_key,
+                            IconType icon_type,
+                            int32_t size_hint_in_dip,
+                            bool allow_placeholder_icon,
+                            apps::LoadIconCallback callback) {
+  registry_->LoadIcon(app_id, icon_key, icon_type, size_hint_in_dip,
+                      allow_placeholder_icon, IDR_LOGO_CROSTINI_DEFAULT,
+                      std::move(callback));
 }
 
 void CrostiniApps::Connect(
@@ -304,20 +314,30 @@ void CrostiniApps::OnRegistryUpdated(
       crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_);
   for (const std::string& app_id : updated_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      Publish(Convert(*registration, /*new_icon_key=*/update_icon),
-              subscribers_);
+      PublisherBase::Publish(
+          Convert(*registration, /*new_icon_key=*/update_icon), subscribers_);
+      AppPublisher::Publish(
+          CreateApp(*registration, /*generate_new_icon_key=*/update_icon));
     }
   }
   for (const std::string& app_id : removed_apps) {
-    apps::mojom::AppPtr app = apps::mojom::App::New();
-    app->app_type = apps::mojom::AppType::kCrostini;
-    app->app_id = app_id;
-    app->readiness = apps::mojom::Readiness::kUninstalledByUser;
-    Publish(std::move(app), subscribers_);
+    apps::mojom::AppPtr mojom_app = apps::mojom::App::New();
+    mojom_app->app_type = apps::mojom::AppType::kCrostini;
+    mojom_app->app_id = app_id;
+    mojom_app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+    PublisherBase::Publish(std::move(mojom_app), subscribers_);
+
+    std::unique_ptr<App> app =
+        std::make_unique<App>(AppType::kCrostini, app_id);
+    app->readiness = Readiness::kUninstalledByUser;
+    AppPublisher::Publish(std::move(app));
   }
   for (const std::string& app_id : inserted_apps) {
     if (auto registration = registry_->GetRegistration(app_id)) {
-      Publish(Convert(*registration, /*new_icon_key=*/true), subscribers_);
+      PublisherBase::Publish(Convert(*registration, /*new_icon_key=*/true),
+                             subscribers_);
+      AppPublisher::Publish(
+          CreateApp(*registration, /*generate_new_icon_key=*/true));
     }
   }
 }
@@ -336,7 +356,39 @@ void CrostiniApps::OnCrostiniEnabledChanged() {
   app->show_in_launcher = show;
   app->show_in_shelf = show;
   app->show_in_search = apps::mojom::OptionalBool::kTrue;
-  Publish(std::move(app), subscribers_);
+  PublisherBase::Publish(std::move(app), subscribers_);
+}
+
+std::unique_ptr<App> CrostiniApps::CreateApp(
+    const guest_os::GuestOsRegistryService::Registration& registration,
+    bool generate_new_icon_key) {
+  DCHECK_EQ(
+      registration.VmType(),
+      guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
+
+  std::unique_ptr<App> app =
+      AppPublisher::MakeApp(AppType::kCrostini, registration.app_id(),
+                            Readiness::kReady, registration.Name());
+
+  if (generate_new_icon_key) {
+    if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {
+      // Treat the Crostini Terminal as a special case, loading an icon defined
+      // by a resource instead of asking the Crostini VM (or the cache of
+      // previous responses from the Crostini VM). Presumably this is for
+      // bootstrapping: the Crostini Terminal icon (the UI for enabling and
+      // installing Crostini apps) should be showable even before the user has
+      // installed their first Crostini app and before bringing up an Crostini
+      // VM for the first time.
+      app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
+                              IDR_LOGO_CROSTINI_TERMINAL, IconEffects::kNone);
+    } else {
+      app->icon_key = std::move(
+          *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
+    }
+  }
+
+  // TODO(crbug.com/1253250): Add other fields for the App struct.
+  return app;
 }
 
 apps::mojom::AppPtr CrostiniApps::Convert(

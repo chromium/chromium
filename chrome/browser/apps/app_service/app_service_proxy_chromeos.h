@@ -96,7 +96,7 @@ class AppServiceProxyChromeOs : public AppServiceProxyBase,
   // apps::AppServiceProxyBase overrides:
   void FlushMojoCallsForTesting() override;
 
-  void ReInitializeCrostiniForTesting(Profile* profile);
+  void ReInitializeCrostiniForTesting();
   void SetDialogCreatedCallbackForTesting(base::OnceClosure callback);
   void UninstallForTesting(const std::string& app_id,
                            gfx::NativeWindow parent_window,

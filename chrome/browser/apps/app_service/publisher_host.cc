@@ -66,9 +66,9 @@ void PublisherHost::FlushMojoCallsForTesting() {
   }
 }
 
-void PublisherHost::ReInitializeCrostiniForTesting(Profile* profile) {
-  crostini_apps_->ReInitializeForTesting(  // IN-TEST
-      proxy_->AppService(), profile);
+void PublisherHost::ReInitializeCrostiniForTesting(AppServiceProxy* proxy) {
+  DCHECK(proxy);
+  crostini_apps_->Initialize(proxy->AppService());
 }
 
 void PublisherHost::Shutdown() {
@@ -95,7 +95,7 @@ void PublisherHost::Initialize() {
   if (guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)) {
     borealis_apps_ = std::make_unique<BorealisApps>(app_service, profile);
   }
-  crostini_apps_ = std::make_unique<CrostiniApps>(app_service, profile);
+  crostini_apps_ = std::make_unique<CrostiniApps>(proxy_);
   extension_apps_ = std::make_unique<ExtensionAppsChromeOs>(
       app_service, profile, &proxy_->InstanceRegistry());
   if (!g_omit_plugin_vm_apps_for_testing_) {

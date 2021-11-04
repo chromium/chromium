@@ -11,8 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 
-class Profile;
-
 namespace web_app {
 class WebApps;
 }  // namespace web_app
@@ -45,7 +43,7 @@ class PublisherHost {
 
   void FlushMojoCallsForTesting();
 
-  void ReInitializeCrostiniForTesting(Profile* profile);
+  void ReInitializeCrostiniForTesting(AppServiceProxy* proxy);
 
   void Shutdown();
 #endif
