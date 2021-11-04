@@ -555,7 +555,10 @@ suite('PrivacyReviewPage', function() {
     assertCompletionCardVisible();
 
     return whenPopState(function() {
-             page.shadowRoot.querySelector('#completeButton').click();
+             const completionFragment =
+                 page.shadowRoot.querySelector('#completionFragment');
+             completionFragment.shadowRoot.querySelector('#leaveButton')
+                 .click();
            })
         .then(function() {
           assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());

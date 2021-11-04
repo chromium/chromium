@@ -1,0 +1,37 @@
+<style include="privacy-review-fragment-shared">
+  :host {
+    display: flex;
+    flex-flow: column;
+  }
+
+  .main-content {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--cr-section-padding) 120px;
+    text-align: center;
+  }
+
+  .footer {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 0;
+  }
+</style>
+<div class="main-content">
+  <img aria-hidden="true"
+      src="chrome://settings/images/privacy_review_completion_banner.svg">
+  <div class="headline">$i18n{privacyReviewCompletionCardHeader}</div>
+  <div class="cr-secondary-text">
+    $i18n{privacyReviewCompletionCardSubHeader}
+  </div>
+</div>
+<div class="footer">
+  <cr-button class="action-button" id="leaveButton"
+      on-click="onLeaveButtonClick_">
+    $i18n{privacyReviewCompletionCardLeaveButton}
+  </cr-button>
+</div>

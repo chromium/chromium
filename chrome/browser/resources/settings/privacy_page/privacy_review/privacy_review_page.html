@@ -36,22 +36,9 @@
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
-      <privacy-review-welcome-fragment id="welcomeFragment" prefs="{{prefs}}"
-          on-start-button-click="onNextButtonClick_">
-      </privacy-review-welcome-fragment>
-  </template>
-  <template is="dom-if"
-      if="[[showFragment_(
-             privacyReviewStepEnum_.COMPLETION, privacyReviewStep_)]]">
-    <div id="completionFragment">
-      <div>$i18n{privacyReviewCompletionCardHeader}</div>
-      <div class="footer">
-        <cr-button class="action-button" id="completeButton" role="button"
-            tabindex="0" on-click="onNextButtonClick_">
-          $i18n{privacyReviewCompletionCardLeaveButton}
-        </cr-button>
-      </div>
-    </div>
+    <privacy-review-welcome-fragment id="welcomeFragment" prefs="{{prefs}}"
+        on-start-button-click="onNextButtonClick_">
+    </privacy-review-welcome-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(privacyReviewStepEnum_.MSBB, privacyReviewStep_)]]">
@@ -84,6 +71,13 @@
              privacyReviewStepEnum_.COOKIES, privacyReviewStep_)]]">
     <privacy-review-cookies-fragment id="cookiesFragment" prefs="{{prefs}}">
     </privacy-review-cookies-fragment>
+  </template>
+  <template is="dom-if"
+      if="[[showFragment_(
+             privacyReviewStepEnum_.COMPLETION, privacyReviewStep_)]]">
+    <privacy-review-completion-fragment id="completionFragment"
+        on-leave-button-click="onNextButtonClick_">
+    </privacy-review-completion-fragment>
   </template>
   <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
     <div id="settingFooter" class="footer hr">

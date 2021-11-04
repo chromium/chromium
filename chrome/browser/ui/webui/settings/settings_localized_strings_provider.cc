@@ -1630,6 +1630,8 @@ void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_DONT_SHOW_AGAIN_CHECKBOX},
       {"privacyReviewCompletionCardHeader",
        IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER},
+      {"privacyReviewCompletionCardSubHeader",
+       IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_SUB_HEADER},
       {"privacyReviewCompletionCardLeaveButton",
        IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_LEAVE_BUTTON},
       {"privacyReviewMsbbCardHeader",

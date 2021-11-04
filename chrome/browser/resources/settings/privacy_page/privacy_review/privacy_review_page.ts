@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import './privacy_review_clear_on_exit_fragment.js';
+import './privacy_review_completion_fragment.js';
 import './privacy_review_cookies_fragment.js';
 import './privacy_review_history_sync_fragment.js';
 import './privacy_review_msbb_fragment.js';

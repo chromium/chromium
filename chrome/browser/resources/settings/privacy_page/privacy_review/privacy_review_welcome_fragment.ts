@@ -34,7 +34,8 @@ export class PrivacyReviewWelcomeFragmentElement extends PolymerElement {
     };
   }
 
-  private onStartButtonClick_() {
+  private onStartButtonClick_(e: Event) {
+    e.stopPropagation();
     this.shadowRoot!.querySelector('settings-checkbox')!.sendPrefChange();
     this.dispatchEvent(
         new CustomEvent('start-button-click', {bubbles: true, composed: true}));
