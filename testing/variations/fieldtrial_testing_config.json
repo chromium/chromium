@@ -1547,6 +1547,40 @@
             ]
         }
     ],
+    "BootstrapTaskPrioritization": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "NoBootstrapTaskPrioritization",
+                    "enable_features": [
+                        "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "TreatBootstrapAsDefault"
+                    ]
+                },
+                {
+                    "name": "BootstrapTaskPrioritizationPostNativeInitOnly",
+                    "enable_features": [
+                        "ElidePrioritizationOfPreNativeBootstrapTasks"
+                    ],
+                    "disable_features": [
+                        "TreatBootstrapAsDefault"
+                    ]
+                },
+                {
+                    "name": "BootstrapTaskPrioritizationPreNativeInitOnly",
+                    "enable_features": [
+                        "TreatBootstrapAsDefault"
+                    ],
+                    "disable_features": [
+                        "ElidePrioritizationOfPreNativeBootstrapTasks"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserJankinessProfiling": [
         {
             "platforms": [
@@ -3453,21 +3487,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EarlyLibraryLoad"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ElidePrioritizationOfPreNativeBootstrapTasks": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_on_96+",
-                    "enable_features": [
-                        "ElidePrioritizationOfPreNativeBootstrapTasks"
                     ]
                 }
             ]
@@ -7895,21 +7914,6 @@
                     "enable_features": [
                         "TranslateRankerEnforcement",
                         "TranslateRankerQuery"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TreatBootstrapAsDefault": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_on_96+",
-                    "enable_features": [
-                        "TreatBootstrapAsDefault"
                     ]
                 }
             ]
