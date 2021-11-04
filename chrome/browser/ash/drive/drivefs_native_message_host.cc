@@ -215,7 +215,7 @@ ConnectToDriveFsNativeMessageExtension(
       std::move(extension_receiver), std::move(drivefs_remote));
   if (!native_message_host) {
     return drivefs::mojom::DriveFsDelegate::ExtensionConnectionStatus::
-        kExtensionNotFound;
+        kFeatureNotEnabled;
   }
 
   auto native_message_port = std::make_unique<extensions::NativeMessagePort>(

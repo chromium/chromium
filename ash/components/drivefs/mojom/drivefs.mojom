@@ -148,9 +148,11 @@ interface DriveFsDelegate {
   // Invoked from time to time to indicate that drivefs is operational.
   OnHeartbeat();
 
+  [Extensible]
   enum ExtensionConnectionStatus {
     kSuccess,
     kExtensionNotFound,
+    kFeatureNotEnabled,
   };
 
   // Initiates connection to the extension specified.
