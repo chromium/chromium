@@ -21,12 +21,12 @@ suite('RuntimeHostPermissions', function() {
   const ITEM_ID = 'a'.repeat(32);
 
   setup(function() {
-    loadTimeData.overrideValues({extensionsMenuAccessControlEnabled: false});
     document.body.innerHTML = '';
     element = document.createElement('extensions-runtime-host-permissions');
     delegate = new TestService();
     element.delegate = delegate;
     element.itemId = ITEM_ID;
+    element.useNewSiteAccessPage = false;
 
     document.body.appendChild(element);
 
@@ -85,7 +85,7 @@ suite('RuntimeHostPermissions', function() {
   });
 
   test('permissions display new site access menu', function() {
-    loadTimeData.overrideValues({extensionsMenuAccessControlEnabled: true});
+    element.set('useNewSiteAccessPage', true);
     const permissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: true,

@@ -60,6 +60,8 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
 
       delegate: Object,
 
+      useNewSiteAccessText: Boolean,
+
       /**
        * Whether the dialog to add a new host permission is shown.
        */
@@ -126,21 +128,13 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
         type: Object,
         value: chrome.developerPrivate.HostAccess,
       },
-
-      /**
-       * Whether the new site access menu should be shown.
-       */
-      extensionsMenuAccessControlEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('extensionsMenuAccessControlEnabled'),
-      },
     };
   }
 
   permissions: chrome.developerPrivate.RuntimeHostPermissions;
   itemId: string;
   delegate: ItemDelegate;
+  useNewSiteAccessText: boolean;
   private showHostDialog_: boolean;
   private hostDialogModel_: string|null;
   private hostDialogAnchorElement_: HTMLElement|null;
@@ -148,7 +142,6 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private actionMenuAnchorElement_: HTMLElement|null;
   private oldHostAccess_: string|null;
   private revertingHostAccess_: boolean;
-  private extensionsMenuAccessControlEnabled_: boolean;
 
   private onHostAccessChange_() {
     const selectMenu = this.$['host-access'];
@@ -193,14 +186,14 @@ class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
 
   private getHostPermissionsHeading_(): string {
     return loadTimeData.getString(
-        this.extensionsMenuAccessControlEnabled_ ? 'newHostPermissionsHeading' :
-                                                   'hostPermissionsHeading');
+        this.useNewSiteAccessText ? 'newHostPermissionsHeading' :
+                                    'hostPermissionsHeading');
   }
 
   private showSpecificSites_(): boolean {
     // TODO(crbug.com/1253673): Show a different "customize for each site" menu
     // for the new site access menu.
-    return !this.extensionsMenuAccessControlEnabled_ &&
+    return !this.useNewSiteAccessText &&
         this.permissions.hostAccess ===
         chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES;
   }

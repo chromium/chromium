@@ -271,11 +271,17 @@
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS" desc="The label above the list of the websites that the extension can access.">
     Site access
   </message>
+  <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_NEW" desc="The label of the button to click to view the list of websites that the extension can access.">
+    Site permissions
+  </message>
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_ADD_HOST" desc="The label of the option to add a new site that the extension should be allowed to access.">
     Add a new page
   </message>
   <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY" desc="The text to indicate that an extension does not have any site access.">
     This extension has no additional site access.
+  </message>
+  <message name="IDS_EXTENSIONS_ITEM_SITE_ACCESS_SUBLABEL" desc="The sublabel of the button to click to view the list of websites that the extension can access.">
+    Choose when this extension can read and change your site data
   </message>
   <message name="IDS_EXTENSIONS_ITEM_SOURCE" desc="The label above an extension's source, which indicates where the extension came from (webstore, third-party, local disk, etc).">
     Source

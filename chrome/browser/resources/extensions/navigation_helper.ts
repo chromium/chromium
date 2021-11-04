@@ -13,6 +13,7 @@ export enum Page {
   LIST = 'items-list',
   DETAILS = 'details-view',
   ACTIVITY_LOG = 'activity-log',
+  EXTENSION_SITE_ACCESS = 'extension-site-access',
   SHORTCUTS = 'keyboard-shortcuts',
   ERRORS = 'error-page',
 }
@@ -90,6 +91,10 @@ export class NavigationHelper {
     id = search.get('activity');
     if (id) {
       return {page: Page.ACTIVITY_LOG, extensionId: id};
+    }
+    id = search.get('siteAccess');
+    if (id) {
+      return {page: Page.EXTENSION_SITE_ACCESS, extensionId: id};
     }
     id = search.get('options');
     if (id) {
@@ -181,6 +186,9 @@ export class NavigationHelper {
         } else {
           path = '/?id=' + entry.extensionId;
         }
+        break;
+      case Page.EXTENSION_SITE_ACCESS:
+        path = '/?siteAccess=' + entry.extensionId;
         break;
       case Page.SHORTCUTS:
         path = '/shortcuts';

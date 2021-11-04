@@ -59,8 +59,7 @@ namespace {
 constexpr char kInDevModeKey[] = "inDevMode";
 constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
-constexpr char kExtensionsMenuAccessControlEnabled[] =
-    "extensionsMenuAccessControlEnabled";
+constexpr char kUseNewSiteAccessPage[] = "useNewSiteAccessPage";
 
 std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
@@ -192,6 +191,7 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
     {"itemPermissionsEmpty", IDS_EXTENSIONS_ITEM_PERMISSIONS_EMPTY},
     {"itemRemoveExtension", IDS_EXTENSIONS_ITEM_REMOVE_EXTENSION},
     {"itemSiteAccess", IDS_EXTENSIONS_ITEM_SITE_ACCESS},
+    {"itemSiteAccessSublabel", IDS_EXTENSIONS_ITEM_SITE_ACCESS_SUBLABEL},
     {"itemSiteAccessAddHost", IDS_EXTENSIONS_ITEM_SITE_ACCESS_ADD_HOST},
     {"itemSiteAccessEmpty", IDS_EXTENSIONS_ITEM_SITE_ACCESS_EMPTY},
     {"itemSource", IDS_EXTENSIONS_ITEM_SOURCE},
@@ -221,6 +221,7 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
     {"loadErrorRetry", IDS_EXTENSIONS_LOAD_ERROR_RETRY},
     {"loadingActivities", IDS_EXTENSIONS_LOADING_ACTIVITIES},
     {"missingOrUninstalledExtension", IDS_MISSING_OR_UNINSTALLED_EXTENSION},
+    {"newItemSiteAccessTitle", IDS_EXTENSIONS_ITEM_SITE_ACCESS_NEW},
     {"noActivities", IDS_EXTENSIONS_NO_ACTIVITIES},
     {"noErrorsToShow", IDS_EXTENSIONS_ERROR_NO_ERRORS_CODE_MESSAGE},
     {"runtimeHostsDialogInputError",
@@ -331,7 +332,7 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
   source->AddBoolean(
-      kExtensionsMenuAccessControlEnabled,
+      kUseNewSiteAccessPage,
       base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
 
   return source;

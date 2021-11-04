@@ -78,6 +78,9 @@ export class ExtensionsDetailViewElement extends
       /** Whether the user has enabled the UI's developer mode. */
       inDevMode: Boolean,
 
+      /** Whether the extension's site access will be shown in a new page. */
+      useNewSiteAccessPage: Boolean,
+
       /** Whether "allow in incognito" option should be shown. */
       incognitoAvailable: Boolean,
 
@@ -96,6 +99,7 @@ export class ExtensionsDetailViewElement extends
   data: chrome.developerPrivate.ExtensionInfo;
   delegate: ItemDelegate;
   inDevMode: boolean;
+  useNewSiteAccessPage: boolean;
   incognitoAvailable: boolean;
   showActivityLog: boolean;
   fromActivityLog: boolean;
@@ -130,6 +134,8 @@ export class ExtensionsDetailViewElement extends
    * Focuses the back button when page is loaded.
    */
   private onViewEnterStart_() {
+    // TODO(crbug.com/1253673): Focus on the site access link if we returned to
+    // this view from that subpage.
     const elementToFocus = this.fromActivityLog ?
         this.$.extensionsActivityLogLink :
         this.$.closeButton;
@@ -148,6 +154,11 @@ export class ExtensionsDetailViewElement extends
 
   private onActivityLogTap_() {
     navigation.navigateTo({page: Page.ACTIVITY_LOG, extensionId: this.data.id});
+  }
+
+  private onSiteAccessTap_() {
+    navigation.navigateTo(
+        {page: Page.EXTENSION_SITE_ACCESS, extensionId: this.data.id});
   }
 
   private getDescription_(description: string, fallback: string): string {
@@ -280,6 +291,12 @@ export class ExtensionsDetailViewElement extends
         getItemSourceString(getItemSource(this.data));
   }
 
+  private getSiteAccessTitle_(): string {
+    return loadTimeData.getString(
+        this.useNewSiteAccessPage ? 'newItemSiteAccessTitle' :
+                                    'itemSiteAccess');
+  }
+
   private hasPermissions_(): boolean {
     return this.data.permissions.simplePermissions.length > 0 ||
         this.hasRuntimeHostPermissions_();
@@ -292,6 +309,10 @@ export class ExtensionsDetailViewElement extends
   private showSiteAccessContent_(): boolean {
     return this.showFreeformRuntimeHostPermissions_() ||
         this.showHostPermissionsToggleList_();
+  }
+
+  private showSiteAccessLink_(): boolean {
+    return this.hasRuntimeHostPermissions_() && this.useNewSiteAccessPage;
   }
 
   private showFreeformRuntimeHostPermissions_(): boolean {

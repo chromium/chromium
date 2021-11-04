@@ -64,7 +64,7 @@
   <div id="section-heading">
     <div id="section-heading-heading">
       <span id="section-heading-text">
-        [[getHostPermissionsHeading_(extensionsMenuAccessControlEnabled_)]]
+        [[getHostPermissionsHeading_(useNewSiteAccessPage)]]
       </span>
       <a class="link-icon-button" aria-label="$i18n{learnMore}"
           href="$i18n{hostPermissionsLearnMoreLink}" target="_blank"
@@ -77,7 +77,7 @@
       <select id="host-access" class="md-select" on-change="onHostAccessChange_"
           value="[[permissions.hostAccess]]"
           aria-labelledby="section-heading-text">
-        <template is="dom-if" if="[[!extensionsMenuAccessControlEnabled_]]">
+        <template is="dom-if" if="[[!useNewSiteAccessPage]]">
           <option value="[[HostAccess_.ON_CLICK]]">
             $i18n{hostAccessOnClick}
           </option>
@@ -88,7 +88,7 @@
             $i18n{hostAccessOnAllSites}
           </option>
         </template>
-        <template is="dom-if" if="[[extensionsMenuAccessControlEnabled_]]">
+        <template is="dom-if" if="[[useNewSiteAccessPage]]">
           <option value="[[HostAccess_.ON_CLICK]]">
             $i18n{newHostAccessOnClick}
           </option>

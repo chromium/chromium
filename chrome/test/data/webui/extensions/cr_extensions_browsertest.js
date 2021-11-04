@@ -9,6 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
+GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 
@@ -290,6 +291,20 @@ TEST_F('CrExtensionsDetailViewTest', 'Warnings', function() {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
+// Extension Site Access Tests
+
+var CrExtensionsSiteAccessTest = class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_access_test.js';
+  }
+};
+
+TEST_F('CrExtensionsSiteAccessTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 
 var CrExtensionsItemListTest = class extends CrExtensionsBrowserTest {
@@ -506,6 +521,13 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogFail);
     });
 
+TEST_F(
+    'CrExtensionsManagerTestWithIdQueryParam', 'UrlNavigationToSiteAccessFail',
+    function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.UrlNavigationToSiteAccessFail);
+    });
+
 CrExtensionsManagerTestWithActivityLogFlag =
     class extends CrExtensionsManagerTestWithIdQueryParam {
   /** @override */
@@ -526,6 +548,26 @@ TEST_F(
     'UrlNavigationToActivityLogSuccess', function() {
       this.runMochaTest(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogSuccess);
+    });
+
+CrExtensionsManagerTestWithNewSiteAccess =
+    class extends CrExtensionsManagerTestWithIdQueryParam {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_new_site_access.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kExtensionsMenuAccessControl']};
+  }
+};
+
+TEST_F(
+    'CrExtensionsManagerTestWithNewSiteAccess',
+    'UrlNavigationToSiteAccessSuccess', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.UrlNavigationToSiteAccessSuccess);
     });
 
 ////////////////////////////////////////////////////////////////////////////////
