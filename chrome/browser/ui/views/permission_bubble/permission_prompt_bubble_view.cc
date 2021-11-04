@@ -242,7 +242,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
   // If bubble hanging off the padlock icon, with no chip showing, closing the
   // dialog should dismiss the pending request because there's no way to bring
   // the bubble back.
-  if (prompt_style == PermissionPromptStyle::kBubbleOnly) {
+  if (prompt_style_ == PermissionPromptStyle::kBubbleOnly) {
     DialogDelegate::SetCloseCallback(
         base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
                        base::Unretained(this)));
@@ -381,7 +381,7 @@ void PermissionPromptBubbleView::DenyPermission() {
 void PermissionPromptBubbleView::ClosingPermission() {
   DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
   RecordDecision(permissions::PermissionAction::DISMISSED);
-  delegate_->Closing();
+  delegate_->Dismiss();
 }
 
 void PermissionPromptBubbleView::RecordDecision(

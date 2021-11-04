@@ -35,6 +35,7 @@ class BubbleButtonController : public views::ButtonController {
         bubble_owner_(bubble_owner) {}
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
+    bubble_owner_->RecordOnMousePressed();
     suppress_button_release_ = bubble_owner_->IsBubbleShowing();
     return views::ButtonController::OnMousePressed(event);
   }
@@ -95,6 +96,7 @@ void PermissionChip::OpenBubble() {
   DCHECK(!IsBubbleShowing());
 
   prompt_bubble_tracker_.SetView(CreateBubble());
+  delegate_->SetBubbleShown();
 }
 
 void PermissionChip::Hide() {
@@ -146,6 +148,14 @@ bool PermissionChip::IsBubbleShowing() const {
   return prompt_bubble_tracker_.view() != nullptr;
 }
 
+void PermissionChip::RecordOnMousePressed() {
+  if (IsBubbleShowing() && ShouldCloseBubbleOnLostFocus()) {
+    // If the permission prompt bubble is closed because the user clicked on the
+    // chip, record this as Dismissed.
+    OnPromptBubbleDismissed();
+  }
+}
+
 views::Widget* PermissionChip::GetPromptBubbleWidgetForTesting() {
   return GetPromptBubbleWidget();
 }
@@ -156,7 +166,18 @@ views::Widget* PermissionChip::GetPromptBubbleWidget() {
              : nullptr;
 }
 
-void PermissionChip::OnPromptBubbleDismissed() {}
+void PermissionChip::OnPromptBubbleDismissed() {
+  should_dismiss_ = true;
+  delegate_->SetDismissOnTabClose();
+  // If the permission prompt bubble is closed, we count it as "Dismissed",
+  // hence it should record the time when the bubble is closed and not when the
+  // permission request is finalized.
+  delegate_->SetDecisionTime();
+}
+
+bool PermissionChip::ShouldCloseBubbleOnLostFocus() const {
+  return false;
+}
 
 void PermissionChip::Show(bool always_open_bubble) {
   // TODO(olesiamarukhno): Add tests for animation logic.
@@ -218,9 +239,13 @@ void PermissionChip::Finalize() {
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT));
 
-  // `delegate_->Closing()` will destroy `this`. It's not safe to run any code
-  // afterwards.
-  delegate_->Closing();
+  // `delegate_->Dismiss()` and `delegate_->Ignore()` will destroy `this`. It's
+  // not safe to run any code afterwards.
+  if (should_dismiss_) {
+    delegate_->Dismiss();
+  } else {
+    delegate_->Ignore();
+  }
 }
 
 BEGIN_METADATA(PermissionChip, views::View)

@@ -17,6 +17,7 @@
 class BubbleOwnerDelegate {
  public:
   virtual bool IsBubbleShowing() const = 0;
+  virtual void RecordOnMousePressed() = 0;
 };
 
 // A class for an interface for chip view that is shown in the location bar to
@@ -65,6 +66,10 @@ class PermissionChip : public views::AccessiblePaneView,
 
   views::Widget* GetPromptBubbleWidgetForTesting();
 
+  views::View* get_prompt_bubble_view_for_testing() {
+    return prompt_bubble_tracker_.view();
+  }
+
   bool should_start_open_for_testing() { return should_start_open_; }
   bool should_expand_for_testing() { return should_expand_; }
   OmniboxChipButton* get_chip_button_for_testing() { return chip_button_; }
@@ -84,7 +89,12 @@ class PermissionChip : public views::AccessiblePaneView,
 
   virtual void OnPromptBubbleDismissed();
 
+  virtual bool ShouldCloseBubbleOnLostFocus() const;
+
  private:
+  // BubbleOwnerDelegate:
+  void RecordOnMousePressed() override;
+
   void Show(bool always_open_bubble);
   void ExpandAnimationEnded();
   void ChipButtonPressed();
@@ -113,6 +123,7 @@ class PermissionChip : public views::AccessiblePaneView,
 
   bool should_start_open_ = false;
   bool should_expand_ = true;
+  bool should_dismiss_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_

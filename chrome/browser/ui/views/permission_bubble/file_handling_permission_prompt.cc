@@ -71,6 +71,6 @@ void FileHandlingPermissionPrompt::OnDialogResponse(bool allow,
     // dismissal. After enough dismissals, the permission will be embargoed.
     // It would probably better not to embargo, since the user must have
     // explicitly opted out of making the decision permanent.
-    delegate_->Closing();
+    delegate_->Dismiss();
   }
 }

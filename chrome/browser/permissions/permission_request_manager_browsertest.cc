@@ -696,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Cleanup remaining request. And check that this was the last request.
-  GetPermissionRequestManager()->Closing();
+  GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, GetPermissionRequestManager()->Requests().size());
 }
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   auto disposition_from_prompt_bubble =
       manager->view_for_testing()->GetPromptDisposition();
 
-  manager->Closing();
+  manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(disposition.has_value());
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
 
   //  DCHECK failure if Closing executed on HIDDEN PermissionRequestManager.
   manager->OnVisibilityChanged(content::Visibility::VISIBLE);
-  manager->Closing();
+  manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
                                               &request_quiet);
 
     bubble_factory()->WaitForPermissionBubble();
-    GetPermissionRequestManager()->Closing();
+    GetPermissionRequestManager()->Dismiss();
     base::RunLoop().RunUntilIdle();
 
     if (!test.expected_message) {
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Close first request.
-  GetPermissionRequestManager()->Closing();
+  GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
 
   if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1u, GetPermissionRequestManager()->Requests().size());
 
   // Close second request. No more requests pending
-  GetPermissionRequestManager()->Closing();
+  GetPermissionRequestManager()->Dismiss();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(request1.finished());
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   rfh_a.WaitUntilRenderFrameDeleted();
 
   // Cleanup before we delete the requests.
-  GetPermissionRequestManager()->Closing();
+  GetPermissionRequestManager()->Dismiss();
 }
 
 class PermissionRequestManagerOneTimeGeolocationPermissionBrowserTest

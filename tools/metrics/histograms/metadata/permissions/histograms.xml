@@ -712,6 +712,136 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.Prompt.{PermissionType}.{Disposition}.Action"
+    units="PermissionAction" expires_after="M100">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Tracks the action that a user had taken for a {PermissionType} permission
+    prompt with disposition of type {Disposition}. Recorded when a permission
+    prompt has been resolved.
+  </summary>
+  <token key="Disposition">
+    <variant name="LocationBarLeftChip"/>
+    <variant name="LocationBarLeftChipAutoBubble"/>
+    <variant name="LocationBarLeftQuietAbusiveChip"/>
+    <variant name="LocationBarLeftQuietChip"/>
+  </token>
+  <token key="PermissionType">
+    <variant name="AR"/>
+    <variant name="AudioAndVideoCapture"/>
+    <variant name="AudioCapture"/>
+    <variant name="ClipboardReadWrite"/>
+    <variant name="Geolocation"/>
+    <variant name="IdleDetection"/>
+    <variant name="MidiSysEx"/>
+    <variant name="Notifications"/>
+    <variant name="VideoCapture"/>
+    <variant name="VR"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.{Disposition}.Ignored.DidShowBubble"
+    enum="Boolean" expires_after="M100">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records if a permission prompt bubble of type {PermissionType} was displayed
+    as a result of a user having clicked on a chip with disposition
+    {Disposition} that was subsequently ignored. Chip framework is only
+    available on Desktop.
+  </summary>
+  <token key="Disposition">
+    <variant name="LocationBarLeftChip"/>
+    <variant name="LocationBarLeftChipAutoBubble"/>
+    <variant name="LocationBarLeftQuietAbusiveChip"/>
+    <variant name="LocationBarLeftQuietChip"/>
+  </token>
+  <token key="PermissionType">
+    <variant name="AR"/>
+    <variant name="AudioAndVideoCapture"/>
+    <variant name="AudioCapture"/>
+    <variant name="ClipboardReadWrite"/>
+    <variant name="Geolocation"/>
+    <variant name="IdleDetection"/>
+    <variant name="MidiSysEx"/>
+    <variant name="Notifications"/>
+    <variant name="VideoCapture"/>
+    <variant name="VR"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.{Disposition}.{Action}.TimeToAction"
+    units="ms" expires_after="M100">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records how long it takes for the user to take the {Action} action on a
+    prompt of type {PermissionType} with {Disposition} disposition. The Ignored
+    state will be recorded if the user closes the tab or a permission chip gets
+    expired.
+  </summary>
+  <token key="Action">
+    <variant name="Denied"/>
+    <variant name="Dismissed"/>
+    <variant name="Granted"/>
+    <variant name="GrantedOnce"/>
+    <variant name="Ignored"/>
+  </token>
+  <token key="Disposition">
+    <variant name="LocationBarLeftChip"/>
+    <variant name="LocationBarLeftChipAutoBubble"/>
+    <variant name="LocationBarLeftQuietAbusiveChip"/>
+    <variant name="LocationBarLeftQuietChip"/>
+  </token>
+  <token key="PermissionType">
+    <variant name="AR"/>
+    <variant name="AudioAndVideoCapture"/>
+    <variant name="AudioCapture"/>
+    <variant name="ClipboardReadWrite"/>
+    <variant name="Geolocation"/>
+    <variant name="IdleDetection"/>
+    <variant name="MidiSysEx"/>
+    <variant name="Notifications"/>
+    <variant name="VideoCapture"/>
+    <variant name="VR"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Permissions.Prompt.{PermissionType}.{Disposition}.{Action}.{ButtonClick}"
+    enum="Boolean" expires_after="M100">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recrods {ButtonClick} if a user clicked on &quot;Leanr More&quot; or
+    &quot;Manage&quot; buttons on the quiet chip of type {PermissionType} with
+    {Disposition} disposition. Recorded when the permission prompt gets resolved
+    with {Action} action and only for the quiet chip.
+  </summary>
+  <token key="ButtonClick">
+    <variant name="DidClickLearnMore"/>
+    <variant name="DidClickManage"/>
+  </token>
+  <token key="Action">
+    <variant name="Denied"/>
+    <variant name="Dismissed"/>
+    <variant name="Granted"/>
+    <variant name="GrantedOnce"/>
+    <variant name="Ignored"/>
+  </token>
+  <token key="Disposition">
+    <variant name="LocationBarLeftQuietAbusiveChip"/>
+    <variant name="LocationBarLeftQuietChip"/>
+  </token>
+  <token key="PermissionType">
+    <variant name="Geolocation"/>
+    <variant name="Notifications"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.QuietChip.TimeToInteraction" units="ms"
     expires_after="2022-08-25">
   <owner>elklm@chromium.org</owner>

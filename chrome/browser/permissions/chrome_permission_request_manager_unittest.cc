@@ -101,7 +101,7 @@ class ChromePermissionRequestManagerTest
   }
 
   void Closing() {
-    manager_->Closing();
+    manager_->Dismiss();
     base::RunLoop().RunUntilIdle();
   }
 

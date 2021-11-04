@@ -458,6 +458,14 @@ bool ContentSettingBubbleContents::ShouldShowCloseButton() const {
   return true;
 }
 
+void ContentSettingBubbleContents::OnWidgetDestroying(views::Widget* widget) {
+  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+      widget->closed_reason() ==
+          views::Widget::ClosedReason::kCloseButtonClicked) {
+    content_setting_bubble_model_->OnBubbleDismissedByUser();
+  }
+}
+
 void ContentSettingBubbleContents::Init() {
   DCHECK(content_setting_bubble_model_);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

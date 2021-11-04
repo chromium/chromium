@@ -23,6 +23,7 @@ class Combobox;
 class ImageButton;
 class RadioButton;
 class LabelButton;
+class Widget;
 }  // namespace views
 
 // ContentSettingBubbleContents is used when the user turns on different kinds
@@ -58,10 +59,21 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   void OnListItemRemovedAt(int index) override;
   int GetSelectedRadioOption() override;
 
+  void managed_button_clicked_for_test() {
+    content_setting_bubble_model_->is_UMA_for_test = true;
+    content_setting_bubble_model_->OnManageButtonClicked();
+  }
+
+  void learn_more_button_clicked_for_test() {
+    content_setting_bubble_model_->is_UMA_for_test = true;
+    content_setting_bubble_model_->OnLearnMoreClicked();
+  }
+
  protected:
   // views::WidgetDelegate:
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // views::BubbleDialogDelegateView:
   void Init() override;

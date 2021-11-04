@@ -231,6 +231,8 @@ class ContentSettingBubbleModel {
   // Cast this bubble into ContentSettingQuietRequestBubbleModel if possible.
   virtual ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel();
 
+  bool is_UMA_for_test = false;
+
  protected:
   // |web_contents| must outlive this.
   ContentSettingBubbleModel(Delegate* delegate,

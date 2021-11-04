@@ -1622,6 +1622,12 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   CHECK_GT(manager->Requests().size(), 0u);
   DCHECK_EQ(manager->Requests().size(), 1u);
+  manager->set_managed_clicked();
+  if (is_UMA_for_test) {
+    // `delegate()->ShowContentSettingsPage` opens a new tab. It is not needed
+    // for UMA tests.
+    return;
+  }
   const permissions::RequestType request_type =
       manager->Requests()[0]->request_type();
   if (delegate()) {
@@ -1643,6 +1649,15 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
 }
 
 void ContentSettingQuietRequestBubbleModel::OnLearnMoreClicked() {
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  manager->set_learn_more_clicked();
+  if (is_UMA_for_test) {
+    // `delegate()->ShowLearnMorePage` opens a new tab. It is not needed for UMA
+    // tests.
+    return;
+  }
+
   if (delegate()) {
     // We only show learn more button for Notification quiet ui dialog when it
     // is triggered due to abusive requests or contents. We don't have any learn

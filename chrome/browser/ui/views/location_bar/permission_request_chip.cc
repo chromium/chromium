@@ -130,6 +130,7 @@ void PermissionRequestChip::Collapse(bool allow_restart) {
 }
 
 void PermissionRequestChip::OnPromptBubbleDismissed() {
+  PermissionChip::OnPromptBubbleDismissed();
   ShowBlockedIcon();
 }
 

@@ -302,7 +302,10 @@ class PermissionUmaUtil {
       base::TimeDelta time_to_decision,
       PermissionPromptDisposition ui_disposition,
       absl::optional<PermissionPromptDispositionReason> ui_reason,
-      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood);
+      absl::optional<PredictionGrantLikelihood> predicted_grant_likelihood,
+      bool did_show_prompt,
+      bool did_click_manage,
+      bool did_click_learn_more);
 
   static void RecordWithBatteryBucket(const std::string& histogram);
 

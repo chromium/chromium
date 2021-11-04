@@ -93,6 +93,10 @@ views::View* PermissionQuietChip::CreateBubble() {
   return nullptr;
 }
 
+bool PermissionQuietChip::ShouldCloseBubbleOnLostFocus() const {
+  return true;
+}
+
 void PermissionQuietChip::RecordChipButtonPressed() {
   base::UmaHistogramMediumTimes("Permissions.QuietChip.TimeToInteraction",
                                 base::TimeTicks::Now() - chip_shown_time_);

@@ -60,8 +60,9 @@ class PermissionPrompt {
 
     virtual void Accept() = 0;
     virtual void AcceptThisTime() = 0;
-    virtual void Closing() = 0;
     virtual void Deny() = 0;
+    virtual void Dismiss() = 0;
+    virtual void Ignore() = 0;
 
     // If |ShouldCurrentRequestUseQuietUI| return true, this will provide a
     // reason as to why the quiet UI needs to be used. Returns `absl::nullopt`
@@ -81,6 +82,17 @@ class PermissionPrompt {
 
     // Whether the current request has been shown to the user at least once.
     virtual bool WasCurrentRequestAlreadyDisplayed() = 0;
+
+    // Set whether the current request should be dismissed if the current tab is
+    // closed.
+    virtual void SetDismissOnTabClose() = 0;
+
+    // Set whether the permission prompt bubble was shown for the current
+    // request.
+    virtual void SetBubbleShown() = 0;
+
+    // Set when the user made any decision for the currentrequest.
+    virtual void SetDecisionTime() = 0;
   };
 
   typedef base::RepeatingCallback<
