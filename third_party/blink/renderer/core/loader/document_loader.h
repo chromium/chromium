@@ -481,6 +481,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Computes and creates CSP for this document.
   ContentSecurityPolicy* CreateCSP();
 
+  // Whether the isolated code cache should be used for this document.
+  bool UseIsolatedCodeCache();
+
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
   std::unique_ptr<WebNavigationParams> params_;

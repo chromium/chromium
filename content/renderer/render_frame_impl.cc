@@ -3737,6 +3737,12 @@ void RenderFrameImpl::DidCreateDocumentLoader(
     document_loader->SetServiceWorkerNetworkProvider(
         ServiceWorkerNetworkProviderForFrame::CreateInvalidInstance());
   }
+
+  // Set the code cache host earlier if the kEarlyCodeCache feature is enabled
+  // to allow fetching the code cache as soon as possible.
+  if (base::FeatureList::IsEnabled(blink::features::kEarlyCodeCache)) {
+    document_loader->SetCodeCacheHost(std::move(pending_code_cache_host_));
+  }
 }
 
 void RenderFrameImpl::DidCommitNavigation(
@@ -3853,8 +3859,10 @@ void RenderFrameImpl::DidCommitNavigation(
   // required. When pending_code_cache_host_ is nullptr this method just resets
   // any earlier code cache host interface. Since we are committing a new
   // navigation any interfaces requested prior to this point should not be used.
-  frame_->GetDocumentLoader()->SetCodeCacheHost(
-      std::move(pending_code_cache_host_));
+  if (!base::FeatureList::IsEnabled(blink::features::kEarlyCodeCache)) {
+    frame_->GetDocumentLoader()->SetCodeCacheHost(
+        std::move(pending_code_cache_host_));
+  }
 
   // TODO(crbug.com/888079): Turn this into a DCHECK for origin equality when
   // the linked bug is fixed. Currently sometimes the browser and renderer

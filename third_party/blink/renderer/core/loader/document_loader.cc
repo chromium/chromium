@@ -1691,13 +1691,8 @@ void DocumentLoader::StartLoadingResponse() {
     return;
   }
 
-  bool use_isolated_code_cache =
-      RuntimeEnabledFeatures::CacheInlineScriptCodeEnabled() &&
-      ShouldUseIsolatedCodeCache(mojom::blink::RequestContextType::HYPERLINK,
-                                 response_);
-
   // The |cached_metadata_handler_| is created, even when
-  // |use_isolated_code_cache| is false to support the parts that don't
+  // |UseIsolatedCodeCache()| is false to support the parts that don't
   // go throught the site-isolated-code-cache.
   auto cached_metadata_sender = CachedMetadataSender::Create(
       response_, blink::mojom::CodeCacheType::kJavascript, requestor_origin_);
@@ -1706,7 +1701,7 @@ void DocumentLoader::StartLoadingResponse() {
           WTF::TextEncoding(), std::move(cached_metadata_sender));
 
   CodeCacheHost* code_cache_host = nullptr;
-  if (use_isolated_code_cache) {
+  if (UseIsolatedCodeCache()) {
     code_cache_host = GetCodeCacheHost();
     DCHECK(code_cache_host);
   }
@@ -2187,6 +2182,13 @@ void DocumentLoader::CommitNavigation() {
   DCHECK(!frame_->GetDocument() || !frame_->GetDocument()->IsActive());
   DCHECK_EQ(frame_->Tree().ChildCount(), 0u);
   state_ = kCommitted;
+
+  if (body_loader_ && !loading_main_document_from_mhtml_archive_ &&
+      !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
+      UseIsolatedCodeCache() &&
+      base::FeatureList::IsEnabled(features::kEarlyCodeCache)) {
+    body_loader_->StartLoadingCodeCache(GetCodeCacheHost());
+  }
 
   // Prepare a DocumentInit before clearing the frame, because it may need to
   // inherit an aliased security context.
@@ -2712,6 +2714,12 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   }
 
   return csp;
+}
+
+bool DocumentLoader::UseIsolatedCodeCache() {
+  return RuntimeEnabledFeatures::CacheInlineScriptCodeEnabled() &&
+         ShouldUseIsolatedCodeCache(mojom::blink::RequestContextType::HYPERLINK,
+                                    response_);
 }
 
 bool& GetDisableCodeCacheForTesting() {

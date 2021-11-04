@@ -47,6 +47,9 @@ void StaticDataNavigationBodyLoader::StartLoadingBody(
   Continue();
 }
 
+void StaticDataNavigationBodyLoader::StartLoadingCodeCache(
+    CodeCacheHost* code_cache_host) {}
+
 void StaticDataNavigationBodyLoader::Continue() {
   if (freeze_mode_ != LoaderFreezeMode::kNone || !client_ || is_in_continue_)
     return;

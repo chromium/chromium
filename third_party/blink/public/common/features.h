@@ -537,6 +537,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kLateFormNewlineNormalization;
 // and released to stable with no issues.
 BLINK_COMMON_EXPORT extern const base::Feature kAutoExpandDetailsElement;
 
+BLINK_COMMON_EXPORT extern const base::Feature kEarlyCodeCache;
+
 }  // namespace features
 }  // namespace blink
 

@@ -76,6 +76,9 @@ class BLINK_EXPORT WebNavigationBodyLoader {
   // Starts loading the body. Client must be non-null, and will receive
   // the body, code cache and final result.
   virtual void StartLoadingBody(Client*, CodeCacheHost* code_cache_host) = 0;
+
+  // Starts loading the code cache.
+  virtual void StartLoadingCodeCache(CodeCacheHost* code_cache_host) = 0;
 };
 
 }  // namespace blink
