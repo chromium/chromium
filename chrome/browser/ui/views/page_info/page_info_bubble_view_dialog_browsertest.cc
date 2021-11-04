@@ -444,7 +444,7 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
   void SetUpOnMainThread() override {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server_.Start(8080));
+    ASSERT_TRUE(https_server_.Start(434343));
 
     host_resolver()->AddRule("*", "127.0.0.1");
 
@@ -513,14 +513,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
   ShowAndVerifyUi();
 }
 
-// This test is flaky on Windows. https://crbug.com/1266256
-#if defined(OS_WIN)
-#define MAYBE_InvokeUi_AboutThisSiteSubpage \
-  DISABLED_InvokeUi_AboutThisSiteSubpage
-#else
-#define MAYBE_InvokeUi_AboutThisSiteSubpage InvokeUi_AboutThisSiteSubpage
-#endif
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDialogBrowserTest,
-                       MAYBE_InvokeUi_AboutThisSiteSubpage) {
+                       InvokeUi_AboutThisSiteSubpage) {
   ShowAndVerifyUi();
 }
