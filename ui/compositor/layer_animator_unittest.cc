@@ -23,8 +23,10 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_delegate.h"
 #include "ui/compositor/layer_animation_element.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator_collection.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
@@ -128,6 +130,10 @@ class TestImplicitAnimationObserver : public ImplicitAnimationObserver {
     animations_completed_ = completed;
   }
 
+  void SetAnimationsCompletedCallback(base::RepeatingClosure callback) {
+    animations_completed_callback_ = std::move(callback);
+  }
+
   bool WasAnimationAbortedForProperty(
       LayerAnimationElement::AnimatableProperty property) const {
     return ImplicitAnimationObserver::WasAnimationAbortedForProperty(property);
@@ -152,6 +158,10 @@ class TestImplicitAnimationObserver : public ImplicitAnimationObserver {
   // ImplicitAnimationObserver implementation
   void OnImplicitAnimationsCompleted() override {
     animations_completed_ = true;
+
+    if (animations_completed_callback_)
+      animations_completed_callback_.Run();
+
     if (quit_wait_loop_)
       std::move(quit_wait_loop_).Run();
   }
@@ -162,6 +172,7 @@ class TestImplicitAnimationObserver : public ImplicitAnimationObserver {
 
   bool animations_completed_;
   bool notify_when_animator_destructed_;
+  base::RepeatingClosure animations_completed_callback_;
 
   base::OnceClosure quit_wait_loop_;
 };
@@ -3474,6 +3485,30 @@ TEST(LayerAnimatorTest,
   animator->SetOpacity(1.0f);
   EXPECT_EQ(nullptr, observer.animator_layer());
   EXPECT_FALSE(animator->is_animating());
+}
+
+TEST(LayerAnimatorTest,
+     SetPropertyWithObserverThatDeletesLayerOnImplicitAnimationCompletion) {
+  LayerOwner layer_owner(std::make_unique<Layer>(LAYER_SOLID_COLOR));
+
+  // Create observer which deletes layer on implicit animation completion.
+  TestImplicitAnimationObserver layer_animation_observer(true);
+  layer_animation_observer.SetAnimationsCompletedCallback(
+      base::BindRepeating(base::IgnoreResult(&LayerOwner::ReleaseLayer),
+                          base::Unretained(&layer_owner)));
+
+  {
+    // Kick off and observe a property animation.
+    ScopedLayerAnimationSettings settings(layer_owner.layer()->GetAnimator());
+    settings.SetTransitionDuration(base::Seconds(1));
+    settings.AddObserver(&layer_animation_observer);
+    layer_owner.layer()->SetOpacity(1.f);
+  }
+
+  // Set the same property which will result in implicit completion of the
+  // running animation which, in turn, will result in layer deletion.
+  layer_owner.layer()->SetOpacity(0.f);
+  EXPECT_FALSE(layer_owner.layer());
 }
 
 class CountCyclesObserver : public LayerAnimationObserver {
