@@ -126,6 +126,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(chip);
 
     EXPECT_TRUE(chip->should_expand_for_testing());
+    EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
     // TODO(crbug.com/1232460): Verify that OmniboxChipButton::is_animating is
     // true. Right now the value is flaky.
     EXPECT_EQ(OmniboxChipButton::Theme::kBlue,
