@@ -508,6 +508,10 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
         fragment_data->ClearNextFragment();
       }
     } else {
+      // We don't need any additional fragments for culled inlines.
+      if (!object.IsBox() && !object.HasInlineFragments())
+        return nullptr;
+
       DCHECK(allow_update);
       fragment_data = &last_fragment->EnsureNextFragment();
     }
@@ -544,7 +548,8 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     // might set paint properties on a culled inline.
     pre_paint_info->fragment_data =
         GetOrCreateFragmentData(object, context, *pre_paint_info);
-    DCHECK(pre_paint_info->fragment_data);
+    if (!pre_paint_info->fragment_data)
+      return;
   }
 
   // This must happen before updatePropertiesForSelf, because the latter reads
