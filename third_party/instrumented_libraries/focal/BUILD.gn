@@ -157,12 +157,9 @@ template("instrumented_library") {
 }
 
 instrumented_library("atk1.0") {
-  extra_configure_flags = [
-    "--disable-static",
-
-    # See above.
-    "--disable-introspection",
-  ]
+  build_method = "meson"
+  package_ldflags = [ "-Wl,-z,undefs" ]
+  extra_configure_flags = [ "-Dintrospection=false" ]
 }
 
 instrumented_library("brltty") {
