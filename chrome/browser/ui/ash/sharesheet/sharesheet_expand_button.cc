@@ -56,7 +56,7 @@ void SharesheetExpandButton::SetToDefaultState() {
 void SharesheetExpandButton::SetToExpandedState() {
   ScopedLightModeAsDefault scoped_light_mode_as_default;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kCaretDownIcon,
+      vector_icons::kCaretUpIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorProminent),
       kExpandButtonCaretIconSize));
