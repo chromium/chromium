@@ -14,6 +14,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
+#include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -31,6 +33,7 @@
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -68,6 +71,9 @@ const DlpContentRestrictionSet kVideoCaptureReported(
 const DlpContentRestrictionSet kScreenShareRestricted(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kScreenShareReported(
+    DlpContentRestriction::kScreenShare,
+    DlpRulesManager::Level::kReport);
 
 constexpr char kScreenShareBlockedNotificationId[] = "screen_share_dlp_blocked";
 constexpr char kScreenSharePausedNotificationId[] =
@@ -77,6 +83,7 @@ constexpr char kScreenShareResumedNotificationId[] =
 constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
 constexpr char kExampleUrl[] = "https://example.com";
+constexpr char kGoogleUrl[] = "https://google.com";
 constexpr char kSrcPattern[] = "example.com";
 }  // namespace
 
@@ -347,8 +354,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -396,8 +402,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, VideoCaptureReported) {
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -446,8 +451,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -496,8 +500,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(browser()->profile(), true));
   chrome::NewTab(browser2);
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser2, GURL("https://google.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
 
   // Resize browsers so that second window covers the first one.
   // Browser window can't have width less than 500.
@@ -622,6 +625,87 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
       GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
 
   helper_.ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+}
+
+// Starting screen sharing and navigating other tabs should create exactly one
+// reporting event.
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenShareReporting) {
+  SetupReporting();
+  const GURL origin(kExampleUrl);
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Setup screen sharing (media stream)
+  auto picker_factory = std::make_unique<FakeDesktopMediaPickerFactory>();
+  DesktopCaptureAccessHandler access_handler{std::move(picker_factory)};
+  blink::mojom::MediaStreamRequestResult result;
+  blink::MediaStreamDevices devices;
+  const std::string id =
+      content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+          web_contents->GetMainFrame()->GetProcess()->GetID(),
+          web_contents->GetMainFrame()->GetRoutingID(),
+          url::Origin::Create(origin),
+          content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                  content::DesktopMediaID::kFakeId),
+          /*extension_name=*/"",
+          content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+  content::MediaStreamRequest request(
+      web_contents->GetMainFrame()->GetProcess()->GetID(),
+      web_contents->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
+      origin, /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_id=*/std::string(), id,
+      blink::mojom::MediaStreamType::NO_SERVICE,
+      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+      /*disable_local_echo=*/false,
+      /*request_pan_tilt_zoom_permission=*/false);
+  base::RunLoop wait_loop;
+  content::MediaResponseCallback callback = base::BindOnce(
+      [](base::RunLoop* wait_loop,
+         blink::mojom::MediaStreamRequestResult* request_result,
+         blink::MediaStreamDevices* devices_result,
+         const blink::MediaStreamDevices& devices,
+         blink::mojom::MediaStreamRequestResult result,
+         std::unique_ptr<content::MediaStreamUI> ui) {
+        *request_result = result;
+        *devices_result = devices;
+        wait_loop->Quit();
+      },
+      &wait_loop, &result, &devices);
+
+  helper_.ChangeConfidentiality(web_contents, kScreenShareReported);
+
+  access_handler.HandleRequest(web_contents, request, std::move(callback),
+                               /*extension=*/nullptr);
+  wait_loop.Run();
+
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kReport, 1u);
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false, 1);
+
+  // Open new tab and navigate to a url.
+  // Then move back to the screen-shared tab.
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kGoogleUrl)));
+  ASSERT_NE(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+  // Just additional check that visiting a tab with restricted content does not
+  // affect the shared tab.
+  helper_.ChangeConfidentiality(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      kScreenShareRestricted);
+  chrome::SelectNextTab(browser());
+  ASSERT_EQ(browser()->tab_strip_model()->GetActiveWebContents(), web_contents);
+
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kReport, 1u);
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
