@@ -32,7 +32,7 @@ class MediaRoute;
 class RouteRequestResult {
  public:
   // Keep in sync with:
-  // - RouteRequestResultCode in media_router.mojom
+  // - RouteRequestResultCode in route_request_result_code.mojom
   // - MediaRouteProviderResult enum in tools/metrics/histograms/enums.xml
   // - media_router_mojom_traits.h
   enum ResultCode {

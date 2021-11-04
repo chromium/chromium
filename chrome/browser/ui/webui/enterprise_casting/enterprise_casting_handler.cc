@@ -14,6 +14,14 @@ EnterpriseCastingHandler::EnterpriseCastingHandler(
 
 EnterpriseCastingHandler::~EnterpriseCastingHandler() = default;
 
-void EnterpriseCastingHandler::UpdatePin() {
-  page_->SetPin(base::NumberToString(base::RandInt(0, 9999)));
+void EnterpriseCastingHandler::AddSink(
+    const std::string& access_code,
+    enterprise_casting::mojom::CastDiscoveryMethod discovery_method,
+    AddSinkCallback callback) {
+  // TODO (b/204571687): Complete communication with the discovery server once
+  // implementation has finished on the discovery server interface
+}
+
+void EnterpriseCastingHandler::CastToSink(CastToSinkCallback callback) {
+  // TODO (b/204572061): Complete casting implementation
 }

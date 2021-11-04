@@ -8,5 +8,9 @@ assert(!is_android, "EnterpriseCasting is not for android.")
 
 mojom("mojo_bindings") {
   sources = [ "enterprise_casting.mojom" ]
+  public_deps =
+      [ "//components/media_router/common/mojom:route_request_result_code" ]
   webui_module_path = "/"
+
+  disable_variants = true
 }

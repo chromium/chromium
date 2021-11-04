@@ -18,27 +18,17 @@ class EnterpriseCastingElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  static get properties() {
-    return {
-      pin: String,
-    };
-  }
-
-  private pin: string;
   private listenerIds: Array<number>;
   private router: PageCallbackRouter;
 
   constructor() {
     super();
-    this.pin = '';
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.listenerIds.push(
-        this.router.setPin.addListener(this.setPin.bind(this)));
   }
 
   disconnectedCallback() {
@@ -46,18 +36,8 @@ class EnterpriseCastingElement extends PolymerElement {
     this.listenerIds.forEach(id => this.router.removeListener(id));
   }
 
-  requestPin() {
-    BrowserProxy.getInstance().handler.updatePin();
-  }
-
   close() {
     chrome.send('dialogClose');
-  }
-
-  private setPin(pin: string) {
-    if (this.pin != pin) {
-      this.pin = pin;
-    }
   }
 }
 

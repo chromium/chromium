@@ -19,12 +19,21 @@ class EnterpriseCastingHandler : public enterprise_casting::mojom::PageHandler {
       mojo::PendingRemote<enterprise_casting::mojom::Page> page);
   ~EnterpriseCastingHandler() override;
 
-  // enterprise_casting::mojom::PageHandler :
-  void UpdatePin() override;
+  // enterprise_casting::mojom::PageHandler overrides:
+  void AddSink(const std::string& access_code,
+               enterprise_casting::mojom::CastDiscoveryMethod discovery_method,
+               AddSinkCallback callback) override;
+
+  // enterprise_casting::mojom::PageHandler overrides:
+  void CastToSink(CastToSinkCallback callback) override;
 
  private:
   mojo::Remote<enterprise_casting::mojom::Page> page_;
   mojo::Receiver<enterprise_casting::mojom::PageHandler> receiver_;
+
+  // The dispatcher only needs to cast to the most recent sink that was
+  // added. Store this value after the call to add is made.
+  const std::string recent_sink_id;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ENTERPRISE_CASTING_ENTERPRISE_CASTING_HANDLER_H_
