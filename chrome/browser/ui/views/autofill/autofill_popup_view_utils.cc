@@ -30,11 +30,11 @@ bool IsVerticalArrowSide(views::BubbleArrowSide side) {
 }
 
 // Returns false if the element is not sufficiently visible to place an arrow.
-bool IsElementSufficienttlyVisibleForAVerticalArrow(
+bool IsElementSufficientlyVisibleForAVerticalArrow(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     views::BubbleArrowSide side) {
-  // Only consider the visible size of the element for vertival arrows.
+  // Only consider the visible size of the element for vertical arrows.
   if (!IsVerticalArrowSide(side)) {
     return true;
   }
@@ -393,7 +393,7 @@ views::BubbleArrowSide GetOptimalBubbleArrowSide(
     if (IsBubblePlaceableOnSideOfElement(
             content_area_bounds, element_bounds, bubble_preferred_size,
             BubbleBorder::kVisibleArrowLength, possible_side) &&
-        IsElementSufficienttlyVisibleForAVerticalArrow(
+        IsElementSufficientlyVisibleForAVerticalArrow(
             content_area_bounds, element_bounds, possible_side)) {
       return possible_side;
     }

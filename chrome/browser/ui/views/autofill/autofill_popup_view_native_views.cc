@@ -1467,15 +1467,26 @@ bool AutofillPopupViewNativeViews::DoUpdateBoundsAndRedrawPopup() {
   }
   preferred_size.set_width(AdjustWidth(preferred_size.width() + scroll_width));
 
-  if (base::FeatureList::IsEnabled(
+  if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillCenterAlignedSuggestions)) {
-    CalculatePopupXAndWidthHorizontallyCentered(
-        preferred_size.width(), max_bounds_for_popup, element_bounds,
-        controller_->IsRTL(), &popup_bounds);
-  } else {
     CalculatePopupXAndWidth(preferred_size.width(), max_bounds_for_popup,
                             element_bounds, controller_->IsRTL(),
                             &popup_bounds);
+  } else {
+    // Deduce the arrow and the position.
+    BubbleBorder::Arrow arrow = GetOptimalBubblePlacement(
+        content_area_bounds, element_bounds, preferred_size,
+        controller_->IsRTL(), scroll_width, 120, popup_bounds);
+
+    // Those values are not supported for adding an arrow.
+    // Currenrly, they can not be returned by GetOptimalBubblePlacement().
+    DCHECK(arrow != BubbleBorder::Arrow::NONE);
+    DCHECK(arrow != BubbleBorder::Arrow::FLOAT);
+
+    // Set the arrow position to the border.
+    bubble_border_->set_arrow(arrow);
+    bubble_border_->AddArrowToBubbleCornerAndPointTowardsAnchor(
+        element_bounds, /*move_bubble_to_add_arrow=*/true, popup_bounds);
   }
 
   if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
