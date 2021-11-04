@@ -175,11 +175,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "arc-allow-data-retention",
-    "owners": [ "yaohuali" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "arc-custom-tabs-experiment",
     "owners": [ "hashimoto", "dominickn" ],
     "expiry_milestone": 95

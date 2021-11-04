@@ -49353,7 +49353,6 @@ from previous Chrome versions.
   <int value="-1337185440" label="enable-webvr"/>
   <int value="-1336110789" label="CastMediaRouteProvider:disabled"/>
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
-  <int value="-1334976417" label="ArcAllowDataRetention:disabled"/>
   <int value="-1334909143" label="NtpModulesDragAndDrop:disabled"/>
   <int value="-1334336593" label="SystemKoreanPhysicalTyping:disabled"/>
   <int value="-1334327410" label="ash-enable-touch-view-testing"/>
@@ -53897,7 +53896,6 @@ from previous Chrome versions.
   <int value="2114843059" label="ContextualSuggestionsOptOut:enabled"/>
   <int value="2114894984" label="DelayCompetingLowPriorityRequests:enabled"/>
   <int value="2115848376" label="LacrosSupport:disabled"/>
-  <int value="2115946659" label="ArcAllowDataRetention:enabled"/>
   <int value="2118287149" label="HelpAppSearchServiceIntegration:enabled"/>
   <int value="2118374092" label="MessagesForAndroidReaderMode:disabled"/>
   <int value="2119964154" label="enable-download-resumption"/>

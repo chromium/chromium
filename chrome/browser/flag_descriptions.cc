@@ -80,11 +80,6 @@ const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "
     "to catch up to the frame that should be drawn based on current time.";
 
-const char kArcAllowDataRetentionName[] =
-    "Allow to keep ARC data during ARC turn-off.";
-const char kArcAllowDataRetentionDescription[] =
-    "Allow to not remove ARC data during ARC turn-off.";
-
 const char kAriaElementReflectionName[] = "Enable ARIA element reflection";
 const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
