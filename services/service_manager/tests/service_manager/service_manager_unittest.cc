@@ -251,14 +251,13 @@ class ServiceManagerTest : public testing::Test,
   }
 
   void StartTarget() {
+    // The test executable is a data_deps and thus generated test data.
     base::FilePath target_path;
-    CHECK(base::PathService::Get(base::DIR_ASSETS, &target_path));
+    CHECK(base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &target_path));
 
+    target_path = target_path.AppendASCII(kTestTargetName);
 #if defined(OS_WIN)
-    target_path =
-        target_path.AppendASCII(kTestTargetName).AddExtensionASCII("exe");
-#else
-    target_path = target_path.Append(FILE_PATH_LITERAL(kTestTargetName));
+    target_path = target_path.AddExtensionASCII("exe");
 #endif
 
     base::CommandLine child_command_line(target_path);

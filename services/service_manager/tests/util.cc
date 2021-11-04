@@ -45,8 +45,9 @@ mojom::ConnectResult LaunchAndConnectToProcess(
     const Identity& target,
     service_manager::Connector* connector,
     base::Process* process) {
+  // The test executable is a data_deps and thus generated test data.
   base::FilePath target_path;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &target_path));
+  CHECK(base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &target_path));
   target_path = target_path.AppendASCII(target_exe_name);
 
   base::CommandLine child_command_line(target_path);

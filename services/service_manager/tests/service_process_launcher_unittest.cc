@@ -78,13 +78,9 @@ class ServiceProcessLauncherDelegateImpl
 TEST(ServiceProcessLauncherTest, MAYBE_StartJoin) {
   base::test::TaskEnvironment task_environment;
 
+  // The test executable is a data_deps and thus generated test data.
   base::FilePath test_service_path;
-#if defined(OS_FUCHSIA)
-  // Service binaries are treated as "assets".
-  base::PathService::Get(base::DIR_ASSETS, &test_service_path);
-#else
-  base::PathService::Get(base::DIR_EXE, &test_service_path);
-#endif
+  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &test_service_path);
   test_service_path = test_service_path.AppendASCII(kTestServiceName)
                           .AddExtension(kServiceExtension);
 

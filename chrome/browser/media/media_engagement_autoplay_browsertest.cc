@@ -153,14 +153,15 @@ class MediaEngagementAutoplayBrowserTest
     base::JSONWriter::Write(list, &json_data);
     EXPECT_TRUE(base::WriteFile(input_path, json_data));
 
-    // Get the path to the "generator" binary in the module path.
-    base::FilePath module_dir;
+    // Get the path to the "generator" script. As it is copied by
+    // //tools/media_engagement_preload/BUILD.gn, it is generated test data.
+    base::FilePath generator_dir;
     EXPECT_TRUE(
-        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &module_dir));
+        base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &generator_dir));
 
     // Launch the generator and wait for it to finish.
     base::CommandLine cmd(GetPythonPath());
-    cmd.AppendArgPath(module_dir.Append(
+    cmd.AppendArgPath(generator_dir.Append(
         FILE_PATH_LITERAL("tools/media_engagement_preload/make_dafsa.py")));
     cmd.AppendArgPath(input_path);
     cmd.AppendArgPath(output_path);

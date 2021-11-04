@@ -31,6 +31,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/fuchsia/default_job.h"
+#include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/filtered_service_directory.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
@@ -205,9 +206,8 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
 
   // Map /pkg (read-only files deployed from the package) into the child's
   // namespace.
-  base::FilePath package_root;
-  base::PathService::Get(base::DIR_ASSETS, &package_root);
-  options->paths_to_clone.push_back(package_root);
+  options->paths_to_clone.push_back(
+      base::FilePath(base::kPackageRootDirectoryPath));
 
   // If /config/data/tzdata/icu/ exists then it contains up-to-date timezone
   // data which should be provided to all sub-processes, for consistency.

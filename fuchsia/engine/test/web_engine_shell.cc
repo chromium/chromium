@@ -165,7 +165,7 @@ int main(int argc, char** argv) {
   fuchsia::web::CreateContextParams create_context_params;
   fuchsia::web::ContentDirectoryProvider content_directory;
   base::FilePath pkg_path;
-  base::PathService::Get(base::DIR_ASSETS, &pkg_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   content_directory.set_directory(base::OpenDirectoryHandle(
       pkg_path.AppendASCII("fuchsia/engine/test/shell_data")));
   content_directory.set_name("shell-data");

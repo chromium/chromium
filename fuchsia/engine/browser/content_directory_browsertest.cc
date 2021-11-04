@@ -107,7 +107,7 @@ class ContentDirectoryTest : public cr_fuchsia::WebEngineBrowserTest {
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;
 
     base::FilePath pkg_path;
-    CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
 
     testdata_content_directory_ = std::make_unique<ScopedBindContentDirectory>(
         "testdata", base::OpenDirectoryHandle(
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, FromVfsPseudoDir) {
 
   std::string contents;
   base::FilePath pkg_path;
-  base::PathService::Get(base::DIR_ASSETS, &pkg_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   ASSERT_TRUE(base::ReadFileToString(
       pkg_path.AppendASCII("fuchsia/engine/test/data/title1.html"), &contents));
 
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(ContentDirectoryTest, BigFilesAreSniffable) {
 
   std::string contents;
   base::FilePath pkg_path;
-  base::PathService::Get(base::DIR_ASSETS, &pkg_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path);
   ASSERT_TRUE(base::ReadFileToString(
       pkg_path.AppendASCII("fuchsia/engine/test/data/mime_override.html"),
       &contents));

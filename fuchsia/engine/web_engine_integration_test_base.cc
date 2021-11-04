@@ -23,7 +23,7 @@ fuchsia::web::ContentDirectoryProvider CreateTestDataDirectoryProvider() {
   fuchsia::web::ContentDirectoryProvider provider;
   provider.set_name("testdata");
   base::FilePath pkg_path;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
   provider.set_directory(base::OpenDirectoryHandle(
       pkg_path.AppendASCII("fuchsia/engine/test/data")));
   return provider;

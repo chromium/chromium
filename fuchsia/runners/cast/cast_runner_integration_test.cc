@@ -319,7 +319,7 @@ class TestCastComponent {
     fuchsia::web::ContentDirectoryProvider provider;
     provider.set_name("testdata");
     base::FilePath pkg_path;
-    CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
     provider.set_directory(base::OpenDirectoryHandle(
         pkg_path.AppendASCII("fuchsia/runners/cast/testdata")));
     std::vector<fuchsia::web::ContentDirectoryProvider> providers;

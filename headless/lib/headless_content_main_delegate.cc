@@ -97,15 +97,15 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
       ui::kScaleFactorNone);
 
 #else
-  base::FilePath dir_module;
-  bool result = base::PathService::Get(base::DIR_ASSETS, &dir_module);
+  base::FilePath resource_dir;
+  bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
   DCHECK(result);
 
   // Try loading the headless library pak file first. If it doesn't exist (i.e.,
   // when we're running with the --headless switch), fall back to the browser's
   // resource pak.
   base::FilePath headless_pak =
-      dir_module.Append(FILE_PATH_LITERAL("headless_lib.pak"));
+      resource_dir.Append(FILE_PATH_LITERAL("headless_lib.pak"));
   if (base::PathExists(headless_pak)) {
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         headless_pak, ui::kScaleFactorNone);
@@ -114,21 +114,21 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
 
   // Otherwise, load resources.pak, chrome_100 and chrome_200.
   base::FilePath resources_pak =
-      dir_module.Append(FILE_PATH_LITERAL("resources.pak"));
+      resource_dir.Append(FILE_PATH_LITERAL("resources.pak"));
   base::FilePath chrome_100_pak =
-      dir_module.Append(FILE_PATH_LITERAL("chrome_100_percent.pak"));
+      resource_dir.Append(FILE_PATH_LITERAL("chrome_100_percent.pak"));
   base::FilePath chrome_200_pak =
-      dir_module.Append(FILE_PATH_LITERAL("chrome_200_percent.pak"));
+      resource_dir.Append(FILE_PATH_LITERAL("chrome_200_percent.pak"));
 
 #if defined(OS_MAC) && !defined(COMPONENT_BUILD)
   // In non component builds, check if fall back in Resources/ folder is
   // available.
   if (!base::PathExists(resources_pak)) {
     resources_pak =
-        dir_module.Append(FILE_PATH_LITERAL("Resources/resources.pak"));
-    chrome_100_pak = dir_module.Append(
+        resource_dir.Append(FILE_PATH_LITERAL("Resources/resources.pak"));
+    chrome_100_pak = resource_dir.Append(
         FILE_PATH_LITERAL("Resources/chrome_100_percent.pak"));
-    chrome_200_pak = dir_module.Append(
+    chrome_200_pak = resource_dir.Append(
         FILE_PATH_LITERAL("Resources/chrome_200_percent.pak"));
   }
 #endif
