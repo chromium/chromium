@@ -8,6 +8,7 @@ import abc
 import enum
 import re
 import collections
+import struct
 from typing import Dict, Iterable, List, NamedTuple, Sequence, TextIO, Tuple
 
 _STACK_CFI_INIT_REGEX = re.compile(
@@ -320,7 +321,6 @@ class UnwindInstructionsParser(abc.ABC):
   def GetBreakpadInstructionsRegex(self) -> re.Pattern:
     pass
 
-  #
   @abc.abstractmethod
   def ParseFromMatch(self, address_offset: int, cfa_sp_offset: int,
                      match: re.Match) -> Tuple[AddressUnwind, int]:
@@ -565,6 +565,31 @@ def EncodeAddressUnwinds(address_unwinds: Tuple[AddressUnwind, ...]
   return tuple(encoded_unwinds)
 
 
+class EncodedFunctionUnwind(NamedTuple):
+  """Record representing unwind information for a function.
+
+  This structure represents the same concept as `FunctionUnwind`, but with
+  some differences:
+  - Attribute `address` is split into 2 attributes: `page_number` and
+    `page_offset`.
+  - Attribute `size` is dropped.
+  - Attribute `address_unwinds` becomes a collection of `EncodedAddressUnwind`s,
+    instead of a collection of `AddressUnwind`s.
+
+  Attributes:
+    page_number: The upper bits (17 ~ 31bits) of byte offset from text section
+      start.
+    page_offset: The lower bits (1 ~ 16bits) of instruction offset from text
+      section start.
+    address_unwinds: A collection of `EncodedAddressUnwind`s.
+
+  """
+
+  page_number: int
+  page_offset: int
+  address_unwinds: Tuple[EncodedAddressUnwind, ...]
+
+
 def EncodeFunctionOffsetTable(
     encoded_address_unwind_sequences: Iterable[
         Tuple[EncodedAddressUnwind, ...]],
@@ -601,3 +626,69 @@ def EncodeFunctionOffsetTable(
           unwind_instruction_table_offsets[complete_instruction_sequence])
 
   return bytes(function_offset_table), offsets
+
+
+def EncodePageTableAndFunctionTable(
+    function_unwinds: Iterable[EncodedFunctionUnwind],
+    function_offset_table_offsets: Dict[Tuple[EncodedAddressUnwind, ...], int]
+) -> Tuple[bytes, bytes]:
+  """Encode page table and function table as bytes.
+
+  Page table:
+  A table that contains the mapping from page_number to the location of the
+  entry for the first function on the page in the function table.
+
+  Function table:
+  A table that contains the mapping from page_offset to the location of an entry
+  in the function offset table.
+
+  Arguments:
+    function_unwinds: All encoded function unwinds in the module.
+    function_offset_table_offsets: The offset mapping returned from
+      `EncodeFunctionOffsetTable`.
+
+  Returns:
+    A tuple containing:
+    - The page table as bytes.
+    - The function table as bytes.
+  """
+  page_function_unwinds: Dict[
+      int, List[EncodedFunctionUnwind]] = collections.defaultdict(list)
+  for function_unwind in function_unwinds:
+    page_function_unwinds[function_unwind.page_number].append(function_unwind)
+
+  raw_page_table: List[int] = []
+  function_table = bytearray()
+
+  for page_number, same_page_function_unwinds in sorted(
+      page_function_unwinds.items(), key=lambda item: item[0]):
+    # Pad empty pages.
+    # Empty pages can occur when a function spans over multiple pages.
+    # Example:
+    # A page table with a starting function that spans 3 over pages.
+    # page_table:
+    # [0, 1, 1, 1]
+    # function_table:
+    # [
+    #   # Page 0
+    #   (0, 20) # This function spans from page 0 offset 0 to page 3 offset 5.
+    #   # Page 1 is empty.
+    #   # Page 2 is empty.
+    #   # Page 3
+    #   (6, 70)
+    # ]
+    assert page_number > len(raw_page_table) - 1
+    number_of_empty_pages = page_number - len(raw_page_table)
+    raw_page_table.extend([len(function_table)] * (number_of_empty_pages + 1))
+    assert page_number == len(raw_page_table) - 1
+
+    for function_unwind in sorted(
+        same_page_function_unwinds,
+        key=lambda function_unwind: function_unwind.page_offset):
+      function_table += struct.pack(
+          'HH', function_unwind.page_offset,
+          function_offset_table_offsets[function_unwind.address_unwinds])
+
+  page_table = struct.pack(f'{len(raw_page_table)}I', *raw_page_table)
+
+  return page_table, bytes(function_table)

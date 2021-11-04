@@ -9,14 +9,17 @@ arm builds.
 """
 
 import io
+import struct
+
 import unittest
 import unittest.mock
 
 from create_unwind_table import (
     AddressCfi, AddressUnwind, FilterToNonTombstoneCfi, FunctionCfi,
     EncodeAddressUnwind, EncodeAddressUnwinds, EncodedAddressUnwind,
-    EncodeAsBytes, EncodeFunctionOffsetTable, EncodeStackPointerUpdate,
-    EncodePop, EncodeUnwindInstructionTable, NullParser, PushOrSubSpParser,
+    EncodeAsBytes, EncodeFunctionOffsetTable, EncodedFunctionUnwind,
+    EncodeStackPointerUpdate, EncodePop, EncodePageTableAndFunctionTable,
+    EncodeUnwindInstructionTable, NullParser, PushOrSubSpParser,
     ReadFunctionCfi, StoreSpParser, Uleb128Encode, UnwindType, VPushParser)
 
 
@@ -689,3 +692,90 @@ class _TestFunctionOffsetTable(unittest.TestCase):
         sequence1: 0,
         sequence2: 4,
     }, offsets)
+
+
+class _TestEncodePageTableAndFunctionTable(unittest.TestCase):
+  def testMultipleFunctionUnwinds(self):
+    address_unwind_sequence0 = (
+        EncodedAddressUnwind(0x10, bytes([0, 3])),
+        EncodedAddressUnwind(0x0, bytes([3])),
+    )
+    address_unwind_sequence1 = (
+        EncodedAddressUnwind(0x10, bytes([1, 3])),
+        EncodedAddressUnwind(0x0, bytes([3])),
+    )
+    address_unwind_sequence2 = (
+        EncodedAddressUnwind(0x200, bytes([2, 3])),
+        EncodedAddressUnwind(0x0, bytes([3])),
+    )
+
+    function_unwinds = [
+        EncodedFunctionUnwind(page_number=0,
+                              page_offset=0,
+                              address_unwinds=address_unwind_sequence0),
+        EncodedFunctionUnwind(page_number=0,
+                              page_offset=0x8000,
+                              address_unwinds=address_unwind_sequence1),
+        EncodedFunctionUnwind(page_number=1,
+                              page_offset=0x8000,
+                              address_unwinds=address_unwind_sequence2),
+    ]
+
+    function_offset_table_offsets = {
+        address_unwind_sequence0: 0x100,
+        address_unwind_sequence1: 0x200,
+        address_unwind_sequence2: 0x300,
+    }
+
+    page_table, function_table = EncodePageTableAndFunctionTable(
+        function_unwinds, function_offset_table_offsets)
+
+    self.assertEqual(2 * 4, len(page_table))
+    self.assertEqual((0, 8), struct.unpack('2I', page_table))
+
+    self.assertEqual(6 * 2, len(function_table))
+    self.assertEqual((0, 0x100, 0x8000, 0x200, 0x8000, 0x300),
+                     struct.unpack('6H', function_table))
+
+  def testMultiPageFunction(self):
+    address_unwind_sequence0 = (
+        EncodedAddressUnwind(0x10, bytes([0, 3])),
+        EncodedAddressUnwind(0x0, bytes([3])),
+    )
+    address_unwind_sequence1 = (
+        EncodedAddressUnwind(0x10, bytes([1, 3])),
+        EncodedAddressUnwind(0x0, bytes([3])),
+    )
+    address_unwind_sequence2 = (
+        EncodedAddressUnwind(0x200, bytes([2, 3])),
+        EncodedAddressUnwind(0x0, bytes([3])),
+    )
+
+    function_unwinds = [
+        EncodedFunctionUnwind(page_number=0,
+                              page_offset=0,
+                              address_unwinds=address_unwind_sequence0),
+        # Large function.
+        EncodedFunctionUnwind(page_number=0,
+                              page_offset=0x8000,
+                              address_unwinds=address_unwind_sequence1),
+        EncodedFunctionUnwind(page_number=4,
+                              page_offset=0x8000,
+                              address_unwinds=address_unwind_sequence2),
+    ]
+
+    function_offset_table_offsets = {
+        address_unwind_sequence0: 0x100,
+        address_unwind_sequence1: 0x200,
+        address_unwind_sequence2: 0x300,
+    }
+
+    page_table, function_table = EncodePageTableAndFunctionTable(
+        function_unwinds, function_offset_table_offsets)
+
+    self.assertEqual(5 * 4, len(page_table))
+    self.assertEqual((0, 8, 8, 8, 8), struct.unpack('5I', page_table))
+
+    self.assertEqual(6 * 2, len(function_table))
+    self.assertEqual((0, 0x100, 0x8000, 0x200, 0x8000, 0x300),
+                     struct.unpack('6H', function_table))
