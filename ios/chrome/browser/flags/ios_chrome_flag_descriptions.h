@@ -218,10 +218,10 @@ extern const char kExpandedTabStripDescription[];
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
 
-// Title and description for the flag to introduce a Following feed in the
-// Chrome iOS NTP.
-extern const char kFollowingFeedInNtpName[];
-extern const char kFollowingFeedInNtpDescription[];
+// Title and description for the flag to introduce following web channels on
+// Chrome iOS.
+extern const char kEnableWebChannelsName[];
+extern const char kEnableWebChannelsDescription[];
 
 // Title and description for the flag to disable all extended sync promos.
 extern const char kForceDisableExtendedSyncPromosName[];

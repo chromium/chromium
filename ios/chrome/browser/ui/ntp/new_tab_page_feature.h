@@ -35,8 +35,10 @@ extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
 
 // Feature flag to enable the Following feed in the NTP.
-// Use IsFollowingFeedEnabled() instead of this constant directly.
-extern const base::Feature kFollowingFeedInNTP;
+// Use IsWebChannelsEnabled() instead of this constant directly.
+// TODO(crbug.com/1264872): move it to web_channels feature directory when there
+// has one since this feature will be used outside of NTP.
+extern const base::Feature kEnableWebChannels;
 
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
@@ -52,8 +54,8 @@ bool IsDiscoverFeedAppFlowsEnabled();
 // Whether the Discover feed shorter cache is enabled.
 bool IsDiscoverFeedShorterCacheEnabled();
 
-// Whether the Following Feed is enabled.
-bool IsFollowingFeedEnabled();
+// Whether the Following Feed is enabled on NTP.
+bool IsWebChannelsEnabled();
 
 // Whether the NTP view hierarchy repair is enabled.
 bool IsNTPViewHierarchyRepairEnabled();
