@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle.h"
 
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
@@ -12,6 +13,7 @@
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/web_bundle_loader.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle_list.h"
@@ -85,6 +87,7 @@ ScriptWebBundle::ScriptWebBundle(ScriptElementBase& element,
                                  Document& element_document,
                                  const ScriptWebBundleRule& rule)
     : element_(&element), element_document_(&element_document), rule_(rule) {
+  UseCounter::Count(element_document_, WebFeature::kScriptWebBundle);
   CreateBundleLoaderAndRegister();
 }
 
