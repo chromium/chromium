@@ -83,7 +83,7 @@ void QuotaInternalsHandler::ReportPerOriginInfo(
 void QuotaInternalsHandler::ReportStatistics(const Statistics& stats) {
   base::DictionaryValue dict;
   for (auto itr(stats.begin()); itr != stats.end(); ++itr) {
-    dict.SetString(itr->first, itr->second);
+    dict.SetStringKey(itr->first, itr->second);
   }
 
   FireWebUIListener("StatisticsUpdated", dict);
