@@ -28,6 +28,7 @@ class ChromeBrowserMainPartsFuchsia : public ChromeBrowserMainParts {
 
   // content::BrowserMainParts overrides.
   int PreMainMessageLoopRun() override;
+  void PostMainMessageLoopRun() override;
 
  private:
   std::unique_ptr<base::ProcessLifecycle> lifecycle_;

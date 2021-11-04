@@ -55,7 +55,7 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
     scenic_session_.set_event_handler(
         fit::bind_member(this, &ViewProviderScenic::OnScenicEvents));
   }
-  ~ViewProviderScenic() override = default;
+  ~ViewProviderScenic() override { scenic_.Unbind(); }
 
   // fuchsia::ui::app::ViewProvider overrides.
   void CreateView(
@@ -229,4 +229,12 @@ int ChromeBrowserMainPartsFuchsia::PreMainMessageLoopRun() {
   }
 
   return ChromeBrowserMainParts::PreMainMessageLoopRun();
+}
+
+void ChromeBrowserMainPartsFuchsia::PostMainMessageLoopRun() {
+  // ViewProviderScenic owns the Scenic channel and its lifetime is bound
+  // to this callback so replacing it will unnbind the scenic channel.
+  ui::fuchsia::SetScenicViewPresenter(ui::fuchsia::PresentViewCallback());
+
+  ChromeBrowserMainParts::PostMainMessageLoopRun();
 }
