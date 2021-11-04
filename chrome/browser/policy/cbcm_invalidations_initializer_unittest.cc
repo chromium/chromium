@@ -6,14 +6,12 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -102,10 +100,6 @@ class CBCMInvalidationsInitializerTest
 
  private:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kCBCMPolicyInvalidations, features::kCBCMRemoteCommands},
-        {});
-
     DeviceOAuth2TokenStoreDesktop::RegisterPrefs(
         testing_local_state_.registry());
     DeviceOAuth2TokenServiceFactory::Initialize(GetURLLoaderFactory(),
@@ -125,7 +119,6 @@ class CBCMInvalidationsInitializerTest
   FakeCloudPolicyClient mock_policy_client_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple testing_local_state_;
 };
 

@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
-#include "components/policy/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -30,8 +29,6 @@ std::unique_ptr<DeviceOAuth2TokenStore> CreatePlatformTokenStore(
       local_state);
 #elif defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-  DCHECK(
-      base::FeatureList::IsEnabled(policy::features::kCBCMPolicyInvalidations));
   return std::make_unique<DeviceOAuth2TokenStoreDesktop>(local_state);
 #else
   NOTREACHED();

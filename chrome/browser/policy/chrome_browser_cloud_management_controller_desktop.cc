@@ -29,7 +29,6 @@
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
@@ -237,9 +236,6 @@ ChromeBrowserCloudManagementControllerDesktop::CreateClientDataDelegate() {
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
-  DCHECK(
-      base::FeatureList::IsEnabled(policy::features::kCBCMPolicyInvalidations));
-
   if (invalidation_service_) {
     NOTREACHED() << "Trying to start an invalidation service when there's "
                     "already one. Please see crbug.com/1186159.";
@@ -275,21 +271,19 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
       0 /* highest_handled_invalidation_version */);
   policy_invalidator_->Initialize(invalidation_service_.get());
 
-  if (base::FeatureList::IsEnabled(policy::features::kCBCMRemoteCommands)) {
-    g_browser_process->browser_policy_connector()
-        ->machine_level_user_cloud_policy_manager()
-        ->core()
-        ->StartRemoteCommandsService(
-            std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
-            PolicyInvalidationScope::kCBCM);
+  g_browser_process->browser_policy_connector()
+      ->machine_level_user_cloud_policy_manager()
+      ->core()
+      ->StartRemoteCommandsService(
+          std::make_unique<enterprise_commands::CBCMRemoteCommandsFactory>(),
+          PolicyInvalidationScope::kCBCM);
 
-    commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
-        g_browser_process->browser_policy_connector()
-            ->machine_level_user_cloud_policy_manager()
-            ->core(),
-        base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
-    commands_invalidator_->Initialize(invalidation_service_.get());
-  }
+  commands_invalidator_ = std::make_unique<RemoteCommandsInvalidatorImpl>(
+      g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager()
+          ->core(),
+      base::DefaultClock::GetInstance(), PolicyInvalidationScope::kCBCM);
+  commands_invalidator_->Initialize(invalidation_service_.get());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

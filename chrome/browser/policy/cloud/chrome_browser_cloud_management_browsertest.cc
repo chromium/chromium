@@ -16,7 +16,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/branding_buildflags.h"
@@ -44,7 +43,6 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
@@ -807,9 +805,6 @@ INSTANTIATE_TEST_SUITE_P(
 class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
  public:
   MachineLevelUserCloudPolicyRobotAuthTest() : observer_(&delegate_) {
-    scoped_feature_list_.InitAndEnableFeature(
-        policy::features::kCBCMPolicyInvalidations);
-
     BrowserDMTokenStorage::SetForTesting(&storage_);
     storage_.SetEnrollmentToken(kEnrollmentToken);
     storage_.SetClientId(kClientID);
@@ -870,7 +865,6 @@ class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
   std::unique_ptr<EmbeddedPolicyTestServer> test_server_;
   FakeBrowserDMTokenStorage storage_;
   base::ScopedTempDir temp_dir_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   ChromeBrowserCloudManagementControllerObserver observer_;
 };  // namespace policy

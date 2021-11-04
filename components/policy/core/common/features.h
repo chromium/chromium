@@ -13,16 +13,6 @@
 namespace policy {
 namespace features {
 
-// Feature that controls whether the browser registers for FCM invalidations for
-// Machine Level Policies. If enabled, |kCBCMServiceAccounts| must also be
-// enabled.
-POLICY_EXPORT extern const base::Feature kCBCMPolicyInvalidations;
-
-// Feature that controls if remote commands are enabled in CBCM. If enabled,
-// the browser will register for remote commands FCM invalidations, and fetch
-// remote commands when fetching policies.
-POLICY_EXPORT extern const base::Feature kCBCMRemoteCommands;
-
 // Enable chrome://management page on Android.
 POLICY_EXPORT extern const base::Feature kChromeManagementPageAndroid;
 

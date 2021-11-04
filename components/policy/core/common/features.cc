@@ -8,12 +8,6 @@ namespace policy {
 
 namespace features {
 
-const base::Feature kCBCMPolicyInvalidations{"CBCMPolicyInvalidations",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kCBCMRemoteCommands{"CBCMRemoteCommands",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kPolicyBlocklistThrottleRequiresPoliciesLoaded{
     "PolicyBlocklistThrottleRequiresPoliciesLoaded",
     base::FEATURE_DISABLED_BY_DEFAULT};

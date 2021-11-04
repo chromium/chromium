@@ -28,7 +28,6 @@
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
-#include "components/policy/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(OS_ANDROID)
@@ -149,10 +148,7 @@ void ChromeBrowserCloudManagementController::Init(
   if (!IsEnabled())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          policy::features::kCBCMPolicyInvalidations)) {
-    delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
-  }
+  delegate_->InitializeOAuthTokenFactory(url_loader_factory, local_state);
 
   if (create_cloud_policy_manager_callback_) {
     // The conditions that allow controller initialization should also unblock

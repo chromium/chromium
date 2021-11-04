@@ -9,7 +9,6 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/device_account_initializer.h"
-#include "components/policy/core/common/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -33,9 +32,6 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
         policy_client_(policy_client),
         callback_(std::move(callback)),
         url_loader_factory_(url_loader_factory) {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations));
-
     DCHECK(url_loader_factory_);
 
     device_account_initializer_ =
@@ -54,10 +50,6 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
 
   // DeviceAccountInitializer::Delegate:
   void OnDeviceAccountTokenFetched(bool empty_token) override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     if (empty_token) {
       // Not being able to obtain a token isn't a showstopper for machine
       // level policies: the browser will fallback to fetching policies on a
@@ -71,10 +63,6 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
   }
 
   void OnDeviceAccountTokenStored() override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     // When the token is stored, the account init procedure is complete and
     // it's now time to save the associated email address.
     DeviceOAuth2TokenServiceFactory::Get()->SetServiceAccountEmail(
@@ -83,18 +71,10 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
   }
 
   void OnDeviceAccountTokenError(EnrollmentStatus status) override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     std::move(callback_).Run(false);
   }
 
   void OnDeviceAccountClientError(DeviceManagementStatus status) override {
-    DCHECK(base::FeatureList::IsEnabled(
-        policy::features::kCBCMPolicyInvalidations))
-        << "DeviceAccountInitializer is active but CBCM service accounts "
-           "are not enabled.";
     std::move(callback_).Run(false);
   }
 
@@ -130,11 +110,6 @@ CBCMInvalidationsInitializer::~CBCMInvalidationsInitializer() = default;
 void CBCMInvalidationsInitializer::OnServiceAccountSet(
     CloudPolicyClient* client,
     const std::string& account_email) {
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kCBCMPolicyInvalidations)) {
-    return;
-  }
-
   // If there's no invalidations service active yet, now's the time to start it.
   // It will be notified when the service account for is ready to be used.
   if (!delegate_->IsInvalidationsServiceStarted())
@@ -146,10 +121,9 @@ void CBCMInvalidationsInitializer::OnServiceAccountSet(
   if (!DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable() ||
       DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId() !=
           CoreAccountId::FromEmail(account_email)) {
-    // If this feature is enabled, we need to ensure the device service
-    // account is initialized and fetch auth codes to exchange for a refresh
-    // token. Creating this object starts that process and the callback will
-    // be called from it whether it succeeds or not.
+    // Initialize the device service account and fetch auth codes to exchange
+    // for a refresh token. Creating this object starts that process and the
+    // callback will be called from it whether it succeeds or not.
     account_initializer_helper_ =
         std::make_unique<MachineLevelDeviceAccountInitializerHelper>(
             account_email, client,
