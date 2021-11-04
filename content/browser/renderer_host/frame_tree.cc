@@ -586,8 +586,8 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
                       ChromeTrackEvent::kSiteInstance,
                       *static_cast<SiteInstanceImpl*>(current_instance));
 
-  // Update the focused frame in all other SiteInstances.  If focus changes to
-  // a cross-process frame, this allows the old focused frame's renderer
+  // Update the focused frame in all other SiteInstanceGroups.  If focus changes
+  // to a cross-group frame, this allows the old focused frame's renderer
   // process to clear focus from that frame and fire blur events.  It also
   // ensures that the latest focused frame is available in all renderers to
   // compute document.activeElement.
@@ -596,10 +596,16 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
   // new focused frame (since it initiated the focus change), and we notify the
   // new focused frame's SiteInstance (if it differs from |source|) separately
   // below.
+  // TODO(https://crbug.com/1261963, yangsharon): CollectSiteInstances needs to
+  // be updated to CollectSiteInstanceGroups, otherwise in the case multiple
+  // SiteInstances are in the same group, SetFocusedFrame below will be called
+  // multiple times. While SiteInstances and SiteInstanceGroups are 1:1,
+  // CollectSiteInstances and CollectSiteInstanceGroups are equivalent.
   for (auto* instance : frame_tree_site_instances) {
     if (instance != source && instance != current_instance) {
       RenderFrameProxyHost* proxy =
-          node->render_manager()->GetRenderFrameProxyHost(instance);
+          node->render_manager()->GetRenderFrameProxyHost(
+              static_cast<SiteInstanceImpl*>(instance)->group());
       if (proxy) {
         proxy->SetFocusedFrame();
       } else {
@@ -729,8 +735,8 @@ void FrameTree::SetPageFocus(SiteInstance* instance, bool is_focused) {
   // This is only used to set page-level focus in cross-process subframes, and
   // requests to set focus in main frame's SiteInstance are ignored.
   if (instance != root_manager->current_frame_host()->GetSiteInstance()) {
-    RenderFrameProxyHost* proxy =
-        root_manager->GetRenderFrameProxyHost(instance);
+    RenderFrameProxyHost* proxy = root_manager->GetRenderFrameProxyHost(
+        static_cast<SiteInstanceImpl*>(instance)->group());
     proxy->GetAssociatedRemoteFrame()->SetPageFocus(is_focused);
   }
 }

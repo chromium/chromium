@@ -26,7 +26,8 @@ absl::optional<blink::FrameToken> GetFrameToken(FrameTreeNode* frame,
     return rfh->GetFrameToken();
 
   RenderFrameProxyHost* proxy =
-      frame->render_manager()->GetRenderFrameProxyHost(site_instance);
+      frame->render_manager()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
   if (proxy)
     return proxy->GetFrameToken();
 

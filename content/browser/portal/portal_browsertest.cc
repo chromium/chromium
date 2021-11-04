@@ -1811,7 +1811,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
   RenderFrameHostImpl* rfhi = iframe_ftn->current_frame_host();
   RenderFrameProxyHost* rfph =
       iframe_ftn->render_manager()->GetRenderFrameProxyHost(
-          portal_main_frame->GetSiteInstance());
+          portal_main_frame->GetSiteInstance()->group());
 
   // Simulate renderer sending RemoteFrameHost::DidFocusFrame IPC.
   rfph->DidFocusFrame();

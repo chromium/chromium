@@ -289,8 +289,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   // SiteInstance.
   void CreateProxiesForChildFrame(FrameTreeNode* child);
 
-  // Returns the RenderFrameProxyHost for the given SiteInstance, if any.
-  RenderFrameProxyHost* GetRenderFrameProxyHost(SiteInstance* instance) const;
+  // Returns the RenderFrameProxyHost for the given SiteInstanceGroup, if any.
+  RenderFrameProxyHost* GetRenderFrameProxyHost(
+      SiteInstanceGroup* site_instance_group) const;
 
   // If |render_frame_host| is on the pending deletion list, this deletes it.
   // Returns whether it was deleted.

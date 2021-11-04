@@ -6019,12 +6019,12 @@ void RenderFrameHostImpl::EnterFullscreen(
   // appropriate ancestor <iframe> elements, fire fullscreenchange events, etc.
   // Thus, walk through the ancestor chain of this frame and for each (parent,
   // child) pair, send a message about the pending fullscreen change to the
-  // child's proxy in parent's SiteInstance. The renderer process will use this
-  // to find the <iframe> element in the parent frame that will need fullscreen
-  // styles. This is done at most once per SiteInstance: for example, with a
-  // A-B-A-B hierarchy, if the bottom frame goes fullscreen, this only needs to
-  // notify its parent, and Blink-side logic will take care of applying
-  // necessary changes to the other two ancestors.
+  // child's proxy in parent's SiteInstanceGroup. The renderer process will use
+  // this to find the <iframe> element in the parent frame that will need
+  // fullscreen styles. This is done at most once per SiteInstanceGroup: for
+  // example, with a A-B-A-B hierarchy, if the bottom frame goes fullscreen,
+  // this only needs to notify its parent, and Blink-side logic will take care
+  // of applying necessary changes to the other two ancestors.
   std::set<SiteInstance*> notified_instances;
   notified_instances.insert(GetSiteInstance());
   for (RenderFrameHostImpl* rfh = this; rfh->GetParent();
@@ -6035,7 +6035,7 @@ void RenderFrameHostImpl::EnterFullscreen(
 
     RenderFrameProxyHost* child_proxy =
         rfh->frame_tree_node()->render_manager()->GetRenderFrameProxyHost(
-            parent_site_instance);
+            static_cast<SiteInstanceImpl*>(parent_site_instance)->group());
     child_proxy->GetAssociatedRemoteFrame()->WillEnterFullscreen(
         options.Clone());
     notified_instances.insert(parent_site_instance);

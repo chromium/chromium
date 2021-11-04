@@ -1208,19 +1208,19 @@ TEST_P(RenderFrameHostManagerTest, CreateProxiesForOpeners) {
 
   // Ensure rvh1 is kept with the proxy of the current tab.
   EXPECT_TRUE(rfh1_deleted_observer.deleted());
-  EXPECT_EQ(rvh1, manager->GetRenderFrameProxyHost(site_instance1.get())
+  EXPECT_EQ(rvh1, manager->GetRenderFrameProxyHost(site_instance1->group())
                       ->GetRenderViewHost());
 
   // Ensure a proxy and inactive RVH are created in the first opener tab.
-  RenderFrameProxyHost* rfph1 =
-      opener1_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance());
+  RenderFrameProxyHost* rfph1 = opener1_manager->GetRenderFrameProxyHost(
+      rfh2->GetSiteInstance()->group());
   TestRenderViewHost* opener1_rvh =
       static_cast<TestRenderViewHost*>(rfph1->GetRenderViewHost());
   EXPECT_FALSE(opener1_rvh->is_active());
 
   // Ensure a proxy and inactive RVH are created in the second opener tab.
-  RenderFrameProxyHost* rfph2 =
-      opener2_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance());
+  RenderFrameProxyHost* rfph2 = opener2_manager->GetRenderFrameProxyHost(
+      rfh2->GetSiteInstance()->group());
   TestRenderViewHost* opener2_rvh =
       static_cast<TestRenderViewHost*>(rfph2->GetRenderViewHost());
   EXPECT_FALSE(opener2_rvh->is_active());
@@ -1233,10 +1233,10 @@ TEST_P(RenderFrameHostManagerTest, CreateProxiesForOpeners) {
 
   // No scripting is allowed across BrowsingInstances, so we should not create
   // proxies for the opener chain in this case.
-  EXPECT_FALSE(
-      opener1_manager->GetRenderFrameProxyHost(rfh3->GetSiteInstance()));
-  EXPECT_FALSE(
-      opener2_manager->GetRenderFrameProxyHost(rfh3->GetSiteInstance()));
+  EXPECT_FALSE(opener1_manager->GetRenderFrameProxyHost(
+      rfh3->GetSiteInstance()->group()));
+  EXPECT_FALSE(opener2_manager->GetRenderFrameProxyHost(
+      rfh3->GetSiteInstance()->group()));
 }
 
 // Test that a page can disown the opener of the WebContents.
@@ -1399,11 +1399,11 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
   EXPECT_TRUE(opener1_manager->current_frame_host()->IsRenderFrameLive());
 
   // Use a cross-process navigation in the opener to make the old RVH inactive.
-  EXPECT_FALSE(
-      opener1_manager->GetRenderFrameProxyHost(rfh1->GetSiteInstance()));
+  EXPECT_FALSE(opener1_manager->GetRenderFrameProxyHost(
+      rfh1->GetSiteInstance()->group()));
   opener1->NavigateAndCommit(kUrl2);
-  RenderFrameProxyHost* rfph1 =
-      opener1_manager->GetRenderFrameProxyHost(rfh1->GetSiteInstance());
+  RenderFrameProxyHost* rfph1 = opener1_manager->GetRenderFrameProxyHost(
+      rfh1->GetSiteInstance()->group());
   RenderViewHostImpl* rvh1 = rfph1->GetRenderViewHost();
   EXPECT_TRUE(rvh1);
   EXPECT_FALSE(rvh1->is_active());
@@ -1414,7 +1414,8 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
   // Ensure that the RenderFrameProxyHost stays around and the RenderFrameProxy
   // is deleted.
   RenderFrameProxyHost* render_frame_proxy_host =
-      opener1_manager->GetRenderFrameProxyHost(rfh1->GetSiteInstance());
+      opener1_manager->GetRenderFrameProxyHost(
+          rfh1->GetSiteInstance()->group());
   EXPECT_EQ(rfph1, render_frame_proxy_host);
   EXPECT_FALSE(render_frame_proxy_host->is_render_frame_proxy_live());
 
@@ -1423,13 +1424,14 @@ TEST_P(RenderFrameHostManagerTest, CleanUpProxiesOnProcessCrash) {
   EXPECT_FALSE(rfph1->GetRenderViewHost()->IsRenderViewLive());
 
   // Reload the initial tab. This should recreate the opener's RVH in the
-  // original SiteInstance.
+  // original SiteInstanceGroup.
   contents()->GetController().Reload(ReloadType::NORMAL, true);
   contents()->GetMainFrame()->PrepareForCommit();
   TestRenderFrameHost* rfh2 = contents()->GetMainFrame();
-  EXPECT_TRUE(opener1_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance())
-                  ->GetRenderViewHost()
-                  ->IsRenderViewLive());
+  EXPECT_TRUE(
+      opener1_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance()->group())
+          ->GetRenderViewHost()
+          ->IsRenderViewLive());
   EXPECT_EQ(
       opener1_manager->GetFrameTokenForSiteInstance(rfh2->GetSiteInstance()),
       rfh2->GetRenderViewHost()->opener_frame_token());
@@ -1758,7 +1760,7 @@ TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
                   ->GetPrimaryFrameTree()
                   .root()
                   ->render_manager()
-                  ->GetRenderFrameProxyHost(site_instance.get()));
+                  ->GetRenderFrameProxyHost(site_instance->group()));
 }
 
 // Test that a RenderFrameHost is properly deleted when a cross-site navigation
@@ -1811,7 +1813,7 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
                     ->GetPrimaryFrameTree()
                     .root()
                     ->render_manager()
-                    ->GetRenderFrameProxyHost(site_instance.get()));
+                    ->GetRenderFrameProxyHost(site_instance->group()));
   }
 }
 
@@ -1914,9 +1916,9 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
 
   // Proxies should exist.
   EXPECT_NE(nullptr,
-            root_manager->GetRenderFrameProxyHost(site_instance.get()));
-  EXPECT_NE(nullptr, iframe1->GetRenderFrameProxyHost(site_instance.get()));
-  EXPECT_NE(nullptr, iframe2->GetRenderFrameProxyHost(site_instance.get()));
+            root_manager->GetRenderFrameProxyHost(site_instance->group()));
+  EXPECT_NE(nullptr, iframe1->GetRenderFrameProxyHost(site_instance->group()));
+  EXPECT_NE(nullptr, iframe2->GetRenderFrameProxyHost(site_instance->group()));
 
   // Detach the first child FrameTreeNode. This should kill the pending host but
   // not yet destroy proxies in |site_instance| since the other child remains.
@@ -1929,8 +1931,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
 
   // Proxies should still exist.
   EXPECT_NE(nullptr,
-            root_manager->GetRenderFrameProxyHost(site_instance.get()));
-  EXPECT_NE(nullptr, iframe2->GetRenderFrameProxyHost(site_instance.get()));
+            root_manager->GetRenderFrameProxyHost(site_instance->group()));
+  EXPECT_NE(nullptr, iframe2->GetRenderFrameProxyHost(site_instance->group()));
 
   // Detach the second child FrameTreeNode. This should trigger cleanup of
   // RenderFrameProxyHosts in |site_instance|.
@@ -1941,7 +1943,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   EXPECT_TRUE(delete_watcher2.deleted());
 
   EXPECT_EQ(0U, site_instance->active_frame_count());
-  EXPECT_EQ(nullptr, root_manager->GetRenderFrameProxyHost(site_instance.get()))
+  EXPECT_EQ(nullptr,
+            root_manager->GetRenderFrameProxyHost(site_instance->group()))
       << "Proxies should have been cleaned up";
   EXPECT_TRUE(site_instance->HasOneRef())
       << "This SiteInstance should be destroyable now.";
@@ -2018,13 +2021,13 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   RenderFrameHostImpl* cross_site = NavigateToEntry(iframe, &entry);
   DidNavigateFrame(iframe, cross_site);
 
-  // A proxy to the iframe should now exist in the SiteInstance of the main
+  // A proxy to the iframe should now exist in the SiteInstanceGroup of the main
   // frames.
   EXPECT_NE(cross_site->GetSiteInstance(), contents1->GetSiteInstance());
-  EXPECT_NE(nullptr,
-            iframe->GetRenderFrameProxyHost(contents1->GetSiteInstance()));
-  EXPECT_NE(nullptr,
-            iframe->GetRenderFrameProxyHost(contents2->GetSiteInstance()));
+  EXPECT_NE(nullptr, iframe->GetRenderFrameProxyHost(
+                         contents1->GetSiteInstance()->group()));
+  EXPECT_NE(nullptr, iframe->GetRenderFrameProxyHost(
+                         contents2->GetSiteInstance()->group()));
 
   // Navigate |contents2| away from the sad tab (and thus away from the
   // SiteInstance of |contents1|). This should not destroy the proxies needed by
@@ -2032,10 +2035,10 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   EXPECT_FALSE(contents2->GetMainFrame()->IsRenderFrameLive());
   contents2->NavigateAndCommit(kUrl3);
   EXPECT_TRUE(contents2->GetMainFrame()->IsRenderFrameLive());
-  EXPECT_NE(nullptr,
-            iframe->GetRenderFrameProxyHost(contents1->GetSiteInstance()));
-  EXPECT_EQ(nullptr,
-            iframe->GetRenderFrameProxyHost(contents2->GetSiteInstance()));
+  EXPECT_NE(nullptr, iframe->GetRenderFrameProxyHost(
+                         contents1->GetSiteInstance()->group()));
+  EXPECT_EQ(nullptr, iframe->GetRenderFrameProxyHost(
+                         contents2->GetSiteInstance()->group()));
 }
 
 // Ensure that we don't grant WebUI bindings to a pending RenderViewHost when
@@ -2162,17 +2165,18 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWithCycleOnOpenerChain) {
 
   // Navigate main window to a cross-site URL.  This will call
   // CreateOpenerProxies() to create proxies for the two opener tabs in the new
-  // SiteInstance.
+  // SiteInstanceGroup.
   contents()->NavigateAndCommit(kUrl2);
   TestRenderFrameHost* rfh2 = main_test_rfh();
   EXPECT_NE(site_instance1, rfh2->GetSiteInstance());
+  EXPECT_NE(site_instance1->group(), rfh2->GetSiteInstance()->group());
 
-  // Check that each tab now has a proxy in the new SiteInstance.
+  // Check that each tab now has a proxy in the new SiteInstanceGroup.
   RenderFrameProxyHost* tab1_proxy =
-      tab1_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance());
+      tab1_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance()->group());
   EXPECT_TRUE(tab1_proxy);
   RenderFrameProxyHost* tab2_proxy =
-      tab2_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance());
+      tab2_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance()->group());
   EXPECT_TRUE(tab2_proxy);
 
   // Verify that the proxies' openers point to each other.
@@ -2215,14 +2219,15 @@ TEST_P(RenderFrameHostManagerTest, CreateOpenerProxiesWhenOpenerPointsToSelf) {
 
   // Navigate main window to a cross-site URL.  This will call
   // CreateOpenerProxies() to create proxies for the opener tab in the new
-  // SiteInstance.
+  // SiteInstanceGroup.
   contents()->NavigateAndCommit(kUrl2);
   TestRenderFrameHost* rfh2 = main_test_rfh();
   EXPECT_NE(site_instance1, rfh2->GetSiteInstance());
+  EXPECT_NE(site_instance1->group(), rfh2->GetSiteInstance()->group());
 
-  // Check that the opener now has a proxy in the new SiteInstance.
+  // Check that the opener now has a proxy in the new SiteInstanceGroup.
   RenderFrameProxyHost* opener_proxy =
-      opener_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance());
+      opener_manager->GetRenderFrameProxyHost(rfh2->GetSiteInstance()->group());
   EXPECT_TRUE(opener_proxy);
 
   // Verify that the proxy's opener points to itself.
@@ -2450,7 +2455,8 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
 
   // The main frame should have proxies for B.
   RenderFrameProxyHost* proxyB =
-      root->render_manager()->GetRenderFrameProxyHost(host1->GetSiteInstance());
+      root->render_manager()->GetRenderFrameProxyHost(
+          host1->GetSiteInstance()->group());
   EXPECT_TRUE(proxyB);
 
   TestRenderFrameHost* host2 =
@@ -2470,7 +2476,8 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
 
   // The main frame should have proxies for C.
   RenderFrameProxyHost* proxyC =
-      root->render_manager()->GetRenderFrameProxyHost(host3->GetSiteInstance());
+      root->render_manager()->GetRenderFrameProxyHost(
+          host3->GetSiteInstance()->group());
   EXPECT_TRUE(proxyC);
 
   DidNavigateFrame(child3, host3);
@@ -2569,7 +2576,8 @@ TEST_P(RenderFrameHostManagerTest,
 
   // The main frame should now have a proxy for C.
   RenderFrameProxyHost* proxyC =
-      root->render_manager()->GetRenderFrameProxyHost(hostC->GetSiteInstance());
+      root->render_manager()->GetRenderFrameProxyHost(
+          hostC->GetSiteInstance()->group());
   EXPECT_TRUE(proxyC);
 
   DidNavigateFrame(child, hostC);
@@ -3125,7 +3133,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
       blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent);
   RenderFrameProxyHost* proxy_to_child =
       root->render_manager()->GetRenderFrameProxyHost(
-          child_host->GetSiteInstance());
+          child_host->GetSiteInstance()->group());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
             observer.GetRequestPolicy(proxy_to_child));
@@ -3143,8 +3151,8 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
       root->child_at(0)->current_replication_state().insecure_request_policy);
   child_host->DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent);
-  RenderFrameProxyHost* proxy_to_parent =
-      child->GetRenderFrameProxyHost(main_test_rfh()->GetSiteInstance());
+  RenderFrameProxyHost* proxy_to_parent = child->GetRenderFrameProxyHost(
+      main_test_rfh()->GetSiteInstance()->group());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kBlockAllMixedContent,
             observer.GetRequestPolicy(proxy_to_parent));
@@ -3236,7 +3244,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   ASSERT_NE(child_host->GetProcess(), main_test_rfh()->GetProcess());
   RenderFrameProxyHost* proxy_to_child =
       root->render_manager()->GetRenderFrameProxyHost(
-          child_host->GetSiteInstance());
+          child_host->GetSiteInstance()->group());
   ASSERT_TRUE(proxy_to_child);
   ASSERT_EQ(proxy_to_child->GetProcess(), child_host->GetProcess());
   base::RunLoop().RunUntilIdle();
@@ -3255,7 +3263,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   child_host = static_cast<TestRenderFrameHost*>(
       NavigationSimulator::NavigateAndCommitFromDocument(kUrl3, child_host));
   proxy_to_child = root->render_manager()->GetRenderFrameProxyHost(
-      child_host->GetSiteInstance());
+      child_host->GetSiteInstance()->group());
   ASSERT_TRUE(proxy_to_child);
   ASSERT_EQ(proxy_to_child->GetProcess(), child_host->GetProcess());
   base::RunLoop().RunUntilIdle();
@@ -3501,7 +3509,7 @@ class RenderFrameHostManagerAdTaggingSignalTest
   RenderFrameProxyHost* GetProxyHost(FrameTreeNode* proxy_node,
                                      FrameTreeNode* proxy_to_node) {
     return proxy_node->render_manager()->GetRenderFrameProxyHost(
-        proxy_to_node->current_frame_host()->GetSiteInstance());
+        proxy_to_node->current_frame_host()->GetSiteInstance()->group());
   }
 
  private:

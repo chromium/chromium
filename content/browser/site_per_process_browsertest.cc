@@ -2258,7 +2258,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       "Where A = http://a.com/\n"
       "      B = http://b.com/",
       DepictFrameTree(root));
-  SiteInstance* b_site_instance =
+  SiteInstanceImpl* b_site_instance =
       root->child_at(0)->current_frame_host()->GetSiteInstance();
 
   // Kill the first subframe's renderer (B).
@@ -2290,7 +2290,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       DepictFrameTree(root));
   FrameTreeNode* grandchild = root->child_at(2)->child_at(0);
   RenderFrameProxyHost* grandchild_rfph =
-      grandchild->render_manager()->GetRenderFrameProxyHost(b_site_instance);
+      grandchild->render_manager()->GetRenderFrameProxyHost(
+          b_site_instance->group());
   EXPECT_FALSE(grandchild_rfph->is_render_frame_proxy_live());
 
   // Navigate the second subframe to b.com to recreate process B.
@@ -2324,7 +2325,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // It is safe to obtain the root frame tree node here, as it doesn't change.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
-  SiteInstance* site_instance_a = root->current_frame_host()->GetSiteInstance();
+  SiteInstanceImpl* site_instance_a =
+      root->current_frame_host()->GetSiteInstance();
 
   // Open a popup and navigate it cross-process to b.com.
   ShellAddedObserver new_shell_observer;
@@ -2359,7 +2361,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The proxy for the popup in a.com should've died.
   RenderFrameProxyHost* rfph =
-      popup_root->render_manager()->GetRenderFrameProxyHost(site_instance_a);
+      popup_root->render_manager()->GetRenderFrameProxyHost(
+          site_instance_a->group());
   EXPECT_FALSE(rfph->is_render_frame_proxy_live());
 
   // Recreate the a.com renderer.
@@ -2383,7 +2386,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(rfph->is_render_frame_proxy_live());
   RenderFrameProxyHost* child_rfph =
       popup_root->child_at(0)->render_manager()->GetRenderFrameProxyHost(
-          site_instance_a);
+          site_instance_a->group());
   EXPECT_TRUE(child_rfph);
   EXPECT_FALSE(child_rfph->is_render_frame_proxy_live());
 }
@@ -4237,9 +4240,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       static_cast<WebContentsImpl*>(foo_shell->web_contents())
           ->GetPrimaryFrameTree()
           .root();
-  SiteInstance* site_instance_a = root->current_frame_host()->GetSiteInstance();
+  SiteInstanceImpl* site_instance_a =
+      root->current_frame_host()->GetSiteInstance();
   RenderFrameProxyHost* popup_rfph_for_a =
-      foo_root->render_manager()->GetRenderFrameProxyHost(site_instance_a);
+      foo_root->render_manager()->GetRenderFrameProxyHost(
+          site_instance_a->group());
   EXPECT_TRUE(popup_rfph_for_a);
 
   // Verify that the main frame can find the "foo" popup by name.  If
@@ -4294,16 +4299,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       static_cast<WebContentsImpl*>(foo_shell->web_contents())
           ->GetPrimaryFrameTree()
           .root();
-  SiteInstance* site_instance_a = root->current_frame_host()->GetSiteInstance();
-  EXPECT_FALSE(
-      foo_root->render_manager()->GetRenderFrameProxyHost(site_instance_a));
+  SiteInstanceImpl* site_instance_a =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(foo_root->render_manager()->GetRenderFrameProxyHost(
+      site_instance_a->group()));
 
   // Set window.name in the popup's frame.
   EXPECT_TRUE(ExecJs(foo_shell, "window.name = 'foo'"));
 
   // A proxy for the popup should now exist in a.com.
-  EXPECT_TRUE(
-      foo_root->render_manager()->GetRenderFrameProxyHost(site_instance_a));
+  EXPECT_TRUE(foo_root->render_manager()->GetRenderFrameProxyHost(
+      site_instance_a->group()));
 
   // Verify that the a.com popup can now find the "foo" popup by name.
   GURL named_frame_url(embedded_test_server()->GetURL("c.com", "/title2.html"));
@@ -7837,7 +7843,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
           ->GetPrimaryFrameTree()
           .root();
   RenderFrameProxyHost* proxy =
-      popup2_root->render_manager()->GetRenderFrameProxyHost(b_instance);
+      popup2_root->render_manager()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(b_instance)->group());
   EXPECT_TRUE(proxy);
   EXPECT_TRUE(proxy->is_render_frame_proxy_live());
 
@@ -9187,7 +9194,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // cross-process navigation.
   RenderFrameProxyHost* root_proxy =
       root->render_manager()->GetRenderFrameProxyHost(
-          b_root_site_instance.get());
+          b_root_site_instance->group());
   EXPECT_TRUE(root_proxy);
   EXPECT_TRUE(root_proxy->is_render_frame_proxy_live());
 
@@ -9203,7 +9210,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // test), since it is also doing a cross-process navigation.
   RenderFrameProxyHost* child_proxy =
       child->render_manager()->GetRenderFrameProxyHost(
-          b_subframe_site_instance.get());
+          b_subframe_site_instance->group());
   EXPECT_TRUE(child_proxy);
   EXPECT_TRUE(child_proxy->is_render_frame_proxy_live());
 
@@ -9226,7 +9233,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // The root proxy should be gone.
   EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(
-      b_subframe_site_instance.get()));
+      b_subframe_site_instance->group()));
 }
 
 // Similar to TwoCrossSitePendingNavigationsAndMainFrameWins, but checks the
@@ -9400,7 +9407,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   scoped_refptr<SiteInstanceImpl> b_site_instance(
       speculative_rfh->GetSiteInstance());
   RenderFrameProxyHost* proxy =
-      root->render_manager()->GetRenderFrameProxyHost(b_site_instance.get());
+      root->render_manager()->GetRenderFrameProxyHost(b_site_instance->group());
   EXPECT_TRUE(proxy);
   EXPECT_TRUE(proxy->is_render_frame_proxy_live());
 

@@ -587,7 +587,7 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   TestRenderFrameHost* orig_rfh = main_test_rfh();
   int orig_rvh_delete_count = 0;
   orig_rfh->GetRenderViewHost()->set_delete_counter(&orig_rvh_delete_count);
-  SiteInstance* instance1 = contents()->GetSiteInstance();
+  SiteInstanceImpl* instance1 = contents()->GetSiteInstance();
 
   // Navigate to URL.  First URL should use first RenderViewHost.
   const GURL url("http://www.google.com");
@@ -619,7 +619,7 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
 
   // DidNavigate from the pending page.
   new_site_navigation->Commit();
-  SiteInstance* instance2 = contents()->GetSiteInstance();
+  SiteInstanceImpl* instance2 = contents()->GetSiteInstance();
 
   // Keep the number of active frames in pending_rfh's SiteInstance
   // non-zero so that orig_rfh doesn't get deleted when it gets
@@ -632,9 +632,9 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   EXPECT_EQ(url2, contents()->GetVisibleURL());
   EXPECT_NE(instance1, instance2);
   EXPECT_EQ(nullptr, contents()->GetSpeculativePrimaryMainFrame());
-  // We keep a proxy for the original RFH's SiteInstance.
+  // We keep a proxy for the original RFH's SiteInstanceGroup.
   EXPECT_TRUE(contents()->GetRenderManagerForTesting()->GetRenderFrameProxyHost(
-      instance1));
+      instance1->group()));
   EXPECT_EQ(orig_rvh_delete_count, 0);
 
   // Going back should switch SiteInstances again.  The first SiteInstance is
@@ -656,7 +656,7 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   EXPECT_EQ(instance1, contents()->GetSiteInstance());
   // There should be a proxy for the pending RFH SiteInstance.
   EXPECT_TRUE(contents()->GetRenderManagerForTesting()->GetRenderFrameProxyHost(
-      instance2));
+      instance2->group()));
   EXPECT_EQ(pending_rvh_delete_count, 0);
 
   // Close contents and ensure RVHs are deleted.
@@ -986,7 +986,7 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
   navigation->ReadyToCommit();
   TestRenderFrameHost* pending_rfh =
       contents()->GetSpeculativePrimaryMainFrame();
-  SiteInstance* instance = pending_rfh->GetSiteInstance();
+  SiteInstanceImpl* instance = pending_rfh->GetSiteInstance();
 
   // While it is still pending, simulate opening a new tab with the first tab
   // as its opener.  This will call CreateOpenerProxies on the opener to ensure
@@ -997,19 +997,21 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
   contents()->GetRenderManager()->CreateOpenerProxies(instance, nullptr);
 
   // If swapped out is forbidden, a new proxy should be created for the opener
-  // in |instance|, and we should ensure that its routing ID is returned here.
-  // Otherwise, we should find the pending RFH and not create a new proxy.
+  // in the group |instance| belongs to, and we should ensure that its routing
+  // ID is returned here. Otherwise, we should find the pending RFH and not
+  // create a new proxy.
   auto opener_frame_token =
       popup->GetRenderManager()->GetOpenerFrameToken(instance);
   RenderFrameProxyHost* proxy =
-      contents()->GetRenderManager()->GetRenderFrameProxyHost(instance);
+      contents()->GetRenderManager()->GetRenderFrameProxyHost(
+          instance->group());
   EXPECT_TRUE(proxy);
   EXPECT_EQ(*opener_frame_token, proxy->GetFrameToken());
 
   // Ensure that committing the navigation removes the proxy.
   navigation->Commit();
-  EXPECT_FALSE(
-      contents()->GetRenderManager()->GetRenderFrameProxyHost(instance));
+  EXPECT_FALSE(contents()->GetRenderManager()->GetRenderFrameProxyHost(
+      instance->group()));
 }
 
 // Tests that WebContentsImpl uses the current URL, not the SiteInstance's site,

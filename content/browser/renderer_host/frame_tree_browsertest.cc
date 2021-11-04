@@ -1561,8 +1561,10 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
                             .root();
 
   // There should not be a proxy for the root's own SiteInstance.
-  SiteInstance* root_instance = root->current_frame_host()->GetSiteInstance();
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(root_instance));
+  SiteInstanceImpl* root_instance =
+      root->current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(
+      root->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
 
   // Load same-site page into iframe.
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));
@@ -1576,7 +1578,8 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   // Ensure that we have created a new process for the subframe.
   ASSERT_EQ(2U, root->child_count());
   FrameTreeNode* child = root->child_at(0);
-  SiteInstance* child_instance = child->current_frame_host()->GetSiteInstance();
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
   RenderViewHost* rvh = child->current_frame_host()->render_view_host();
   RenderProcessHost* rph = child->current_frame_host()->GetProcess();
 
@@ -1585,15 +1588,18 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
 
   // Ensure that the root node has a proxy for the child node's SiteInstance.
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(child_instance));
+  EXPECT_TRUE(
+      root->render_manager()->GetRenderFrameProxyHost(child_instance->group()));
 
   // Also ensure that the child has a proxy for the root node's SiteInstance.
-  EXPECT_TRUE(child->render_manager()->GetRenderFrameProxyHost(root_instance));
+  EXPECT_TRUE(
+      child->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
 
   // The nodes should not have proxies for their own SiteInstance.
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(root_instance));
   EXPECT_FALSE(
-      child->render_manager()->GetRenderFrameProxyHost(child_instance));
+      root->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
+  EXPECT_FALSE(child->render_manager()->GetRenderFrameProxyHost(
+      child_instance->group()));
 
   // Ensure that the RenderViews and RenderFrames are all live.
   EXPECT_TRUE(
