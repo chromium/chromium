@@ -91,7 +91,6 @@ static const char kBrowser[] = "browser";
 static const char kCopyTree[] = "copyTree";
 static const char kHTML[] = "html";
 static const char kInternal[] = "internal";
-static const char kLabelImages[] = "labelImages";
 static const char kNative[] = "native";
 static const char kPage[] = "page";
 static const char kPDF[] = "pdf";
@@ -229,17 +228,6 @@ void HandleAccessibilityRequestCallback(
                  is_web_enabled ? (screenreader ? kOn : kOff) : kDisabled);
   data.SetString(kHTML, is_web_enabled ? (html ? kOn : kOff) : kDisabled);
 
-  // The "labelImages" flag works only if "web" is enabled, the current profile
-  // has the kAccessibilityImageLabelsEnabled preference set and the appropriate
-  // command line switch has been used.
-  bool are_accessibility_image_labels_enabled =
-      is_web_enabled &&
-      pref->GetBoolean(prefs::kAccessibilityImageLabelsEnabled);
-  bool label_images = mode.has_mode(ui::AXMode::kLabelImages);
-  data.SetString(kLabelImages, are_accessibility_image_labels_enabled
-                                   ? (label_images ? kOn : kOff)
-                                   : kDisabled);
-
   // The "pdf" flag is independent of the others.
   data.SetString(kPDF, pdf ? kOn : kOff);
 
@@ -278,8 +266,6 @@ void HandleAccessibilityRequestCallback(
         BuildTargetDescriptor(rvh);
     descriptor->SetBoolean(kNative, is_native_enabled);
     descriptor->SetBoolean(kWeb, is_web_enabled);
-    descriptor->SetBoolean(kLabelImages,
-                           are_accessibility_image_labels_enabled);
     rvh_list->Append(std::move(descriptor));
   }
   data.Set(kPagesField, std::move(rvh_list));
@@ -475,9 +461,6 @@ void AccessibilityUIMessageHandler::ToggleAccessibility(
   if (mode & ui::AXMode::kHTML)
     current_mode.set_mode(ui::AXMode::kHTML, true);
 
-  if (mode & ui::AXMode::kLabelImages)
-    current_mode.set_mode(ui::AXMode::kLabelImages, true);
-
   web_contents->SetAccessibilityMode(current_mode);
 
   if (should_request_tree) {
@@ -524,8 +507,6 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
     new_mode = ui::AXMode::kScreenReader;
   } else if (flag_name_str == kHTML) {
     new_mode = ui::AXMode::kHTML;
-  } else if (flag_name_str == kLabelImages) {
-    new_mode = ui::AXMode::kLabelImages;
   } else {
     NOTREACHED();
     return;
@@ -535,8 +516,7 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(const base::ListValue* args) {
   // web contents without enabling web contents accessibility too.
   if (enabled && (new_mode.has_mode(ui::AXMode::kInlineTextBoxes) ||
                   new_mode.has_mode(ui::AXMode::kScreenReader) ||
-                  new_mode.has_mode(ui::AXMode::kHTML) ||
-                  new_mode.has_mode(ui::AXMode::kLabelImages))) {
+                  new_mode.has_mode(ui::AXMode::kHTML))) {
     new_mode.set_mode(ui::AXMode::kWebContents, true);
   }
 
