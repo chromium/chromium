@@ -1076,13 +1076,12 @@ export class Viewport {
    * @private
    */
   arrowLeftHandler_(e, formFieldFocused) {
-    if (hasKeyModifiers(e)) {
+    if (formFieldFocused || hasKeyModifiers(e)) {
       return;
     }
 
-    // Go to the previous page if there are no horizontal scrollbars and
-    // no form field is focused.
-    if (!(this.documentHasScrollbars().horizontal || formFieldFocused)) {
+    // Go to the previous page if there are no horizontal scrollbars.
+    if (!this.documentHasScrollbars().horizontal) {
       this.goToPreviousPage();
       // Since we do the movement of the page.
       e.preventDefault();
@@ -1102,13 +1101,12 @@ export class Viewport {
    * @private
    */
   arrowRightHandler_(e, formFieldFocused) {
-    if (hasKeyModifiers(e)) {
+    if (formFieldFocused || hasKeyModifiers(e)) {
       return;
     }
 
-    // Go to the next page if there are no horizontal scrollbars and no
-    // form field is focused.
-    if (!(this.documentHasScrollbars().horizontal || formFieldFocused)) {
+    // Go to the next page if there are no horizontal scrollbars.
+    if (!this.documentHasScrollbars().horizontal) {
       this.goToNextPage();
       // Since we do the movement of the page.
       e.preventDefault();
@@ -1128,13 +1126,12 @@ export class Viewport {
    * @private
    */
   arrowUpDownHandler_(e, formFieldFocused) {
-    if (hasKeyModifiers(e)) {
+    if (formFieldFocused || hasKeyModifiers(e)) {
       return;
     }
 
-    // Go to the previous/next page if Presentation mode is on and no form field
-    // is focused.
-    if (!(document.fullscreenElement === null || formFieldFocused)) {
+    // Go to the previous/next page if Presentation mode is on.
+    if (document.fullscreenElement !== null) {
       e.key === 'ArrowDown' ? this.goToNextPage() : this.goToPreviousPage();
       e.preventDefault();
     } else if (

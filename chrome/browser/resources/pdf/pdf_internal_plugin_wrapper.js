@@ -52,8 +52,16 @@ for (const type of ['pinchstart', 'pinchupdate', 'pinchend']) {
 
 document.addEventListener('keydown', e => {
   // Only forward potential shortcut keys.
-  if (!e.ctrlKey && !e.metaKey && e.key !== ' ') {
-    return;
+  switch (e.key) {
+    case ' ':
+    case 'ArrowLeft':
+    case 'ArrowRight':
+      break;
+    default:
+      if (e.ctrlKey || e.metaKey) {
+        break;
+      }
+      return;
   }
 
   // Take over Ctrl+A, but not other shortcuts, such as zoom or print.
