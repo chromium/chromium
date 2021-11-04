@@ -5,8 +5,13 @@
   }
 
   .small-icon {
-    height: 30px;
-    width: 30px;
+    height: 20px;
+    width: 20px;
+  }
+
+  #performUpdateButton {
+    border-color: var(--google-blue-600);
+    border-radius: 12px;
   }
 </style>
 
@@ -29,11 +34,11 @@
     <p id="networkUnavailable" hidden$="[[networkAvailable]]">
       To check if OS is up to date, connect to the internet in previous screen
     </p>
-    <cr-button disabled="[[updateInProgress_]]"
-        hidden$="[[!updateAvailable_]]"
-        id="performUpdate" on-click="onUpdateButtonClicked_">
-      Update to version [[updateVersion_]] & restart
-      <iron-icon id="restartIcon" icon="shimless-icon:wifi" class="small-icon">
+    <cr-button id="performUpdateButton" disabled="[[updateInProgress_]]"
+        hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">
+        [[i18n('updateVersionRestartLabel')]]
+      <iron-icon id="restartIcon" icon="shimless-icon:update"
+          class="small-icon">
       </iron-icon>
     </cr-button>
   </div>

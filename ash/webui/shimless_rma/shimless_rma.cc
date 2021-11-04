@@ -47,6 +47,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"currentVersionUpToDateText",
        IDS_SHIMLESS_RMA_CURRENT_VERSION_UP_TO_DATE},
       {"repairCompletedTitleText", IDS_SHIMLESS_RMA_REPAIR_COMPLETED},
+      {"updateVersionRestartLabel",
+       IDS_SHIMLESS_RMA_UPDATE_VERSION_AND_RESTART},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
