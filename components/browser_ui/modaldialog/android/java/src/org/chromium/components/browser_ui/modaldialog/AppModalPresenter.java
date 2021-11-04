@@ -54,15 +54,23 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     @Override
     protected void addDialogView(PropertyModel model) {
-        int style = R.style.Theme_Chromium_ModalDialog_TextPrimaryButton;
-        int buttonStyles = model.get(ModalDialogProperties.BUTTON_STYLES);
-        if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
-            style = R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton;
-        } else if (buttonStyles
+        int styles[][] = {
+                {R.style.Theme_Chromium_ModalDialog_TextPrimaryButton,
+                        R.style.ThemeOverlay_Chromium_ModalDialog_TextPrimaryButton_Fullscreen},
+                {R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton,
+                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledPrimaryButton_Fullscreen},
+                {R.style.Theme_Chromium_ModalDialog_FilledNegativeButton,
+                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledNegativeButton_Fullscreen}};
+        int index = (model.get(ModalDialogProperties.FULLSCREEN_DIALOG)) ? 1 : 0;
+        int buttonIndex = 0;
+        int buttonStyle = model.get(ModalDialogProperties.BUTTON_STYLES);
+        if (buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {
+            buttonIndex = 1;
+        } else if (buttonStyle
                 == ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_FILLED) {
-            style = R.style.Theme_Chromium_ModalDialog_FilledNegativeButton;
+            buttonIndex = 2;
         }
-        mDialog = new Dialog(mContext, style);
+        mDialog = new Dialog(mContext, styles[buttonIndex][index]);
         mDialog.setOnCancelListener(dialogInterface
                 -> dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE));
         // Cancel on touch outside should be disabled by default. The ModelChangeProcessor wouldn't

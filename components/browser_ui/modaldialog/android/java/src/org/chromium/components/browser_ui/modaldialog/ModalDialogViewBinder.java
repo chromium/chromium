@@ -69,6 +69,8 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.BUTTON_STYLES == propertyKey) {
             assert checkFilledButtonConsistency(model);
             // Intentionally left empty since this is only read once before the dialog is inflated.
+        } else if (ModalDialogProperties.FULLSCREEN_DIALOG == propertyKey) {
+            view.setIgnoreWidthConstraints(true);
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }

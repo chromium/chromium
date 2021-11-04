@@ -32,6 +32,8 @@ public class BoundedLinearLayout extends LinearLayout {
 
     private final int mMaxHeight;
 
+    private boolean mIgnoreWidthConstraints;
+
     /**
      * Constructor for inflating from XML.
      */
@@ -50,6 +52,15 @@ public class BoundedLinearLayout extends LinearLayout {
         mMaxHeight = maxHeight <= 0 ? NOT_SPECIFIED : maxHeight;
     }
 
+    /**
+     * @param ignoreWidthConstraints A boolean indicating whether we should ignore width constraints
+     *         to support a full-screen type view.
+     */
+    public void setIgnoreWidthConstraints(boolean ignoreWidthConstraints) {
+        mIgnoreWidthConstraints = ignoreWidthConstraints;
+        requestLayout();
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         final DisplayMetrics metrics = getContext().getResources().getDisplayMetrics();
@@ -58,7 +69,7 @@ public class BoundedLinearLayout extends LinearLayout {
         // Limit the width.
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         final TypedValue tv = isPortrait ? mMaxWidthPortrait : mMaxWidthLandscape;
-        if (tv.type != TypedValue.TYPE_NULL) {
+        if (tv.type != TypedValue.TYPE_NULL && !isWidthConstraintsIgnored()) {
             int maxWidthPixel = NOT_SPECIFIED;
             if (tv.type == TypedValue.TYPE_DIMENSION) {
                 maxWidthPixel = (int) tv.getDimension(metrics);
@@ -83,5 +94,12 @@ public class BoundedLinearLayout extends LinearLayout {
         int mode = MeasureSpec.getMode(measureSpec);
         if (mode == MeasureSpec.UNSPECIFIED) mode = MeasureSpec.AT_MOST;
         return MeasureSpec.makeMeasureSpec(maxPixel, mode);
+    }
+
+    /**
+     * When true, {@code app:maxWidthPortrait} and {@code app:maxWidthLandscape} are ignored.
+     */
+    private boolean isWidthConstraintsIgnored() {
+        return mIgnoreWidthConstraints;
     }
 }
