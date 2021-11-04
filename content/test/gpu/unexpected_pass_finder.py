@@ -32,7 +32,6 @@ using an inline `# finder:disable` comment for a single expectation or a pair of
 from __future__ import print_function
 
 import argparse
-import logging
 import os
 import sys
 
@@ -42,6 +41,7 @@ sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 from unexpected_passes import gpu_builders
 from unexpected_passes import gpu_expectations
 from unexpected_passes import gpu_queries
+from unexpected_passes_common import argument_parsing
 from unexpected_passes_common import builders
 from unexpected_passes_common import result_output
 
@@ -61,6 +61,8 @@ def ParseArgs():
   parser = argparse.ArgumentParser(
       description=('Script for finding cases of stale expectations that can '
                    'be removed/modified.'))
+  argument_parsing.AddCommonArguments(parser)
+
   input_group = parser.add_mutually_exclusive_group()
   input_group.add_argument(
       '--expectation-file',
@@ -98,55 +100,9 @@ def ParseArgs():
           'webgl_conformance2',
       ],
       help='The test suite being checked.')
-  parser.add_argument('--project',
-                      required=True,
-                      help='The billing project to use for BigQuery queries. '
-                      'Must have access to the ResultDB BQ tables, e.g. '
-                      '"chrome-luci-data.chromium.gpu_ci_test_results".')
-  parser.add_argument('--num-samples',
-                      type=int,
-                      default=100,
-                      help='The number of recent builds to query.')
-  parser.add_argument('--output-format',
-                      choices=[
-                          'html',
-                          'print',
-                      ],
-                      default='html',
-                      help='How to output script results.')
-  parser.add_argument('--remove-stale-expectations',
-                      action='store_true',
-                      default=False,
-                      help='Automatically remove any expectations that are '
-                      'determined to be stale from the expectation file.')
-  parser.add_argument('--modify-semi-stale-expectations',
-                      action='store_true',
-                      default=False,
-                      help='If any semi-stale expectations are found, prompt '
-                      'the user about the modification of each one.')
-  parser.add_argument('-v',
-                      '--verbose',
-                      action='count',
-                      default=0,
-                      help='Increase logging verbosity, can be passed multiple '
-                      'times.')
-  parser.add_argument('-q',
-                      '--quiet',
-                      action='store_true',
-                      default=False,
-                      help='Disable logging for non-errors.')
-  parser.add_argument('--large-query-mode',
-                      action='store_true',
-                      default=False,
-                      help='Run the script in large query mode. This incurs '
-                      'a significant performance hit, but allows the use of '
-                      'larger sample sizes on large test suites by partially '
-                      'working around a hard memory limit in BigQuery.')
 
   args = parser.parse_args()
-  if args.quiet:
-    args.verbose = -1
-  SetLoggingVerbosity(args.verbose)
+  argument_parsing.SetLoggingVerbosity(args)
 
   if not (args.tests or args.expectation_file):
     args.expectation_file = os.path.join(
@@ -159,18 +115,6 @@ def ParseArgs():
                                  'Can only be used with expectation files')
 
   return args
-
-
-def SetLoggingVerbosity(verbosity_level):
-  if verbosity_level == -1:
-    level = logging.ERROR
-  elif verbosity_level == 0:
-    level = logging.WARNING
-  elif verbosity_level == 1:
-    level = logging.INFO
-  else:
-    level = logging.DEBUG
-  logging.getLogger().setLevel(level)
 
 
 def main():
